@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close with a positive result if controlled near-limit evidence identifies a remediable loss of authority, rebound, or constraint interaction and a matched candidate comparison against T3 recovers at least four recurring failures without material regression. Close with a limited or negative result if the measured near-limit behavior does not distinguish the failures, or if a behavior-informed intervention is measured with the required complete-hold, acquisition, interruption, terminal-joint, and branch diagnostics and leaves the same plateau or regresses T3.",
     "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3 achieves 153 of 160 development successes, leaving four no-first-reach and three interrupted-hold failures. Resolving whether near-limit plant behavior prevents reliable control is necessary before choosing another policy representation or requesting official assessment.",
-    "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, closing I6 with a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, so I7 rejected that tested residual-setpoint feedback recipe without rejecting feedback control generally. In I8, T12 trained a direct-action policy with a localized branch-aware near-limit governor. M9 measured T12 against T3 on the same 160-episode panel: both achieved 153/160 with zero discordant episodes. Querying the recorded diagnostics showed the same seven failing episode seeds and the same four no-first-reach / three interrupted-hold split; T12 retained the same near-limit terminal configurations and branch-error pattern. This is evidence against the tested governor, not against branch-aware or feedback control in general.",
+    "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
     "handoff_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
-    "handoff_source_session_id": "S17",
+    "handoff_source_session_id": "S18",
     "id": "I9",
     "opened_in_session": "S18",
     "question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
@@ -8204,7 +8204,7 @@
     }
   },
   "counters": {
-    "event": 34,
+    "event": 35,
     "inquiry": 9,
     "measurement": 9,
     "session": 18,
@@ -8213,7 +8213,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -16511,34 +16511,201 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T00:22:51Z",
+      "error": null,
+      "id": "E35",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; and I8 with T12, M9, and E32. E34 opened I9 without requesting training or measurement and without consuming a new training allocation. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four episodes without first reach and three episodes with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
+        "decision_frontier": "The unresolved distinction is whether the recurring negative-angle failures are caused primarily by near-limit plant behavior\u2014constraint force, rebound, or reduced effective control authority\u2014or by policy action selection despite a controllable plant. A controlled approach-and-reversal measurement near the shoulder limit, recording joint position, velocity, actuator force, and constraint force, would discriminate these explanations. Evidence of limit-induced authority loss or rebound would justify a behavior-informed controller and a matched T3 comparison; ordinary reversible dynamics with adequate authority would redirect away from another limit-governor recipe toward a different learning or control mechanism. Any intervention must preserve complete-hold success, first reach, hold interruptions, terminal joint positions, and branch diagnostics.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "T10",
+          "T11",
+          "M8",
+          "T12",
+          "M9",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 official episodes, with every success requiring a complete uninterrupted 100-step hold. T3 remains at 153/160 on the development panel, so the official goal is unmet and unmeasured. I9 targets the unresolved near-limit mechanism behind the seven recurring failures before another intervention or official assessment.",
+        "next_direction_or_closure": "I9 is opened and this goal-review session is complete. In the fresh inquiry session, first obtain a controlled near-limit approach-and-reversal measurement that records the compiled limit behavior, joint response, actuator force, and constraint force. Use that result to decide whether a behavior-informed controller is scientifically justified, then compare any resulting candidate against T3 using the established complete-hold and trajectory diagnostics. No official assessment is requested because the 98% goal is not supported.",
+        "next_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?"
+      },
+      "result": {
+        "session_id": "S18",
+        "status": "checkpointed"
+      },
+      "session_id": "S18",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "d801a5d86b6cd0618a9917369e057a1ff7e76b76",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; and I8 with T12, M9, and E32. E34 opened I9 without requesting training or measurement and without consuming a new training allocation. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four episodes without first reach and three episodes with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
+        "decision_frontier": "The unresolved distinction is whether the recurring negative-angle failures are caused primarily by near-limit plant behavior\u2014constraint force, rebound, or reduced effective control authority\u2014or by policy action selection despite a controllable plant. A controlled approach-and-reversal measurement near the shoulder limit, recording joint position, velocity, actuator force, and constraint force, would discriminate these explanations. Evidence of limit-induced authority loss or rebound would justify a behavior-informed controller and a matched T3 comparison; ordinary reversible dynamics with adequate authority would redirect away from another limit-governor recipe toward a different learning or control mechanism. Any intervention must preserve complete-hold success, first reach, hold interruptions, terminal joint positions, and branch diagnostics.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "T10",
+          "T11",
+          "M8",
+          "T12",
+          "M9",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 official episodes, with every success requiring a complete uninterrupted 100-step hold. T3 remains at 153/160 on the development panel, so the official goal is unmet and unmeasured. I9 targets the unresolved near-limit mechanism behind the seven recurring failures before another intervention or official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I9 is opened and this goal-review session is complete. In the fresh inquiry session, first obtain a controlled near-limit approach-and-reversal measurement that records the compiled limit behavior, joint response, actuator force, and constraint force. Use that result to decide whether a behavior-informed controller is scientifically justified, then compare any resulting candidate against T3 using the established complete-hold and trajectory diagnostics. No official assessment is requested because the 98% goal is not supported.",
+        "next_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
+        "session_id": "S18"
+      },
+      "presentation": {
+        "backend_session_id": "1e493b57-cb44-44dc-afe2-161a6056de23",
+        "campaign_id": "339736e0-5583-4bc4-8729-5023fc3077b7",
+        "campaign_usage": "46m58s | 125.81 AIU | prompt 20.3m (86% cached) | output 174.1k",
+        "session_id": "S18",
+        "session_kind": "goal_review",
+        "session_usage": "1m16s | 8.41 AIU | prompt 1.2m (79% cached) | output 4.5k"
+      },
+      "result": {
+        "session_id": "S18",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "bebf5b8bbc653b6f4f29352af5a1aa27bfae35f5",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E35",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; and I8 with T12, M9, and E32. E34 opened I9 without requesting training or measurement and without consuming a new training allocation. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four episodes without first reach and three episodes with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
+        "decision_frontier": "The unresolved distinction is whether the recurring negative-angle failures are caused primarily by near-limit plant behavior\u2014constraint force, rebound, or reduced effective control authority\u2014or by policy action selection despite a controllable plant. A controlled approach-and-reversal measurement near the shoulder limit, recording joint position, velocity, actuator force, and constraint force, would discriminate these explanations. Evidence of limit-induced authority loss or rebound would justify a behavior-informed controller and a matched T3 comparison; ordinary reversible dynamics with adequate authority would redirect away from another limit-governor recipe toward a different learning or control mechanism. Any intervention must preserve complete-hold success, first reach, hold interruptions, terminal joint positions, and branch diagnostics.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "T10",
+          "T11",
+          "M8",
+          "T12",
+          "M9",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 official episodes, with every success requiring a complete uninterrupted 100-step hold. T3 remains at 153/160 on the development panel, so the official goal is unmet and unmeasured. I9 targets the unresolved near-limit mechanism behind the seven recurring failures before another intervention or official assessment.",
+        "next_direction_or_closure": "I9 is opened and this goal-review session is complete. In the fresh inquiry session, first obtain a controlled near-limit approach-and-reversal measurement that records the compiled limit behavior, joint response, actuator force, and constraint force. Use that result to decide whether a behavior-informed controller is scientifically justified, then compare any resulting candidate against T3 using the established complete-hold and trajectory diagnostics. No official assessment is requested because the 98% goal is not supported.",
+        "next_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?"
+      }
+    },
+    "request_fingerprint": "1d52eae47f5a6a4cd30c0cbf3bd20f73ea04bab825a8314c7fbfce97924804b6",
+    "session_id": "S18",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
-      "T12",
-      "M9",
-      "E32"
+      "E34"
     ],
-    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; and I8 with T12, M9, and E32. T12 used the maintainer allocation of 120000 requested steps and completed 120832 steps. No official assessment has been requested.",
-    "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four episodes without first reach and three episodes with interrupted holding. The official 98% criterion is unmeasured and unmet.",
-    "current_synthesis": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, closing I6 with a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, so I7 rejected that tested residual-setpoint feedback recipe without rejecting feedback control generally. In I8, T12 trained a direct-action policy with a localized branch-aware near-limit governor. M9 measured T12 against T3 on the same 160-episode panel: both achieved 153/160 with zero discordant episodes. Querying the recorded diagnostics showed the same seven failing episode seeds and the same four no-first-reach / three interrupted-hold split; T12 retained the same near-limit terminal configurations and branch-error pattern. This is evidence against the tested governor, not against branch-aware or feedback control in general.",
-    "decision_frontier": "I8 is closed with a limited negative result: the tested action-level branch-aware near-limit governor neither recovered the localized failures nor changed their acquisition-versus-hold composition. The goal remains open. The next decision is whether to obtain a materially different controlled-trajectory or action-representation intervention that can avoid the shoulder-limit terminal configuration, rather than applying another small branch-guidance variant. Evidence that a new representation or trajectory changes terminal shoulder position and recovers at least four of the seven failures without regressions would support that route; unchanged limit-pinned failures would redirect toward identifying near-limit dynamics or constraint behavior directly.",
+    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; and I8 with T12, M9, and E32. E34 opened I9 without requesting training or measurement and without consuming a new training allocation. No official assessment has been requested.",
+    "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four episodes without first reach and three episodes with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+    "current_synthesis": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
+    "decision_frontier": "The unresolved distinction is whether the recurring negative-angle failures are caused primarily by near-limit plant behavior\u2014constraint force, rebound, or reduced effective control authority\u2014or by policy action selection despite a controllable plant. A controlled approach-and-reversal measurement near the shoulder limit, recording joint position, velocity, actuator force, and constraint force, would discriminate these explanations. Evidence of limit-induced authority loss or rebound would justify a behavior-informed controller and a matched T3 comparison; ordinary reversible dynamics with adequate authority would redirect away from another limit-governor recipe toward a different learning or control mechanism. Any intervention must preserve complete-hold success, first reach, hold interruptions, terminal joint positions, and branch diagnostics.",
     "evidence_references": [
+      "T2",
       "T3",
       "M4",
+      "M5",
+      "M6",
+      "T8",
+      "T9",
+      "M7",
+      "T10",
+      "T11",
       "M8",
       "T12",
       "M9",
-      "E32"
+      "E32",
+      "E34"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes out of 200 official episodes, with every success requiring a complete uninterrupted 100-step hold. The strongest development result remains T3 at 153/160, and I8 did not improve that plateau, so the official goal remains unmet and official assessment remains unjustified.",
-    "inquiry_id": "I8",
-    "next_direction_or_closure": "I8 is explicitly closed with a limited negative conclusion based on M9: the tested localized branch-aware action governor did not improve the plateau. The fresh goal-review session should decide whether a materially different trajectory or action representation is justified by the unchanged limit-pinned diagnostics, while preserving T3 as the development reference. No official assessment is requested because the 98% goal is not supported.",
-    "next_question": "Can a materially different controlled-trajectory or action representation avoid the shoulder-limit terminal configuration and recover the localized negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline?",
-    "scientific_commit": "62bc553d35908135c787996f1b182b5833fe174a",
-    "session_id": "S17"
+    "human_goal_connection": "The human goal requires at least 196 successes out of 200 official episodes, with every success requiring a complete uninterrupted 100-step hold. T3 remains at 153/160 on the development panel, so the official goal is unmet and unmeasured. I9 targets the unresolved near-limit mechanism behind the seven recurring failures before another intervention or official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I9 is opened and this goal-review session is complete. In the fresh inquiry session, first obtain a controlled near-limit approach-and-reversal measurement that records the compiled limit behavior, joint response, actuator force, and constraint force. Use that result to decide whether a behavior-informed controller is scientifically justified, then compare any resulting candidate against T3 using the established complete-hold and trajectory diagnostics. No official assessment is requested because the 98% goal is not supported.",
+    "next_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
+    "scientific_commit": "bebf5b8bbc653b6f4f29352af5a1aa27bfae35f5",
+    "session_id": "S18"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -16546,21 +16713,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1e493b57-cb44-44dc-afe2-161a6056de23",
-    "id": "S18",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E34"
-    ],
-    "scientific_parent_commit": "d801a5d86b6cd0618a9917369e057a1ff7e76b76"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
