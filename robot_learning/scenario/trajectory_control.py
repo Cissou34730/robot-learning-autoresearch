@@ -1,4 +1,4 @@
-"""Stateful branch-transition guidance for the arm."""
+"""Target-conditioned anticipatory braking for the arm."""
 
 import numpy as np
 
@@ -15,16 +15,17 @@ LIMIT_MARGIN = np.deg2rad(8.0)
 TARGET_LIMIT_MARGIN = np.deg2rad(18.0)
 LIMIT_POSITION_GAIN = 4.0
 LIMIT_VELOCITY_GAIN = 0.25
-LIMIT_FORCE_FEEDBACK_GAIN = 0.8
-ACTUATOR_FORCE_SCALE = 5.0
 ACQUISITION_DISTANCE = 0.025
 ACQUISITION_BLEND = 0.25
 HOLD_BLEND = 0.08
 NEAR_LIMIT_POSITION_GAIN = np.array([1.0, 0.7], dtype=np.float64)
 NEAR_LIMIT_VELOCITY_GAIN = np.array([0.10, 0.08], dtype=np.float64)
-TRANSITION_DISTANCE = 0.04
-HOLD_EXIT_DISTANCE = 0.015
-STATE_HOLD_BLEND = 0.5
+ANTICIPATORY_DISTANCE = 0.08
+ANTICIPATORY_TARGET_MARGIN = np.deg2rad(30.0)
+ANTICIPATORY_LOOKAHEAD_SECONDS = 0.12
+ANTICIPATORY_BRAKING_ACCELERATION = 4.0
+ANTICIPATORY_POSITION_GAIN = np.array([1.0, 0.7], dtype=np.float64)
+ANTICIPATORY_VELOCITY_GAIN = np.array([0.20, 0.16], dtype=np.float64)
 
 
 def wrap_to_pi(angle: float) -> float:
@@ -83,17 +84,15 @@ def _smoothstep(phase: float) -> float:
     return phase * phase * (3.0 - 2.0 * phase)
 
 
-def branch_transition_action(
-    data, action: np.ndarray, state: dict[str, bool]
-) -> np.ndarray:
-    """Latch a branch-consistent hold controller after boundary acquisition."""
+def anticipatory_target_action(data, action: np.ndarray) -> np.ndarray:
+    """Apply target-conditioned lookahead braking near a shoulder limit."""
     target = select_branch_target(np.asarray(data.mocap_pos[0]))
     qpos = np.asarray(data.qpos[:2], dtype=np.float64)
     qvel = np.asarray(data.qvel[:2], dtype=np.float64)
     guided = np.asarray(action, dtype=np.float64).copy()
 
-    if abs(target[0]) < JOINT_LIMIT - TARGET_LIMIT_MARGIN:
-        state["holding"] = False
+    target_margin = JOINT_LIMIT - abs(float(target[0]))
+    if target_margin >= ANTICIPATORY_TARGET_MARGIN:
         return np.clip(guided, -1.0, 1.0)
 
     distance = float(
@@ -101,30 +100,47 @@ def branch_transition_action(
             data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
         )
     )
-    if state["holding"] and distance > HOLD_EXIT_DISTANCE:
-        state["holding"] = False
-    elif not state["holding"] and distance <= SUCCESS_THRESHOLD:
-        state["holding"] = True
-
-    if distance <= TRANSITION_DISTANCE or state["holding"]:
-        branch_error = np.asarray(
-            [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
-            dtype=np.float64,
-        )
-        reference_action = (
-            NEAR_LIMIT_POSITION_GAIN * branch_error
-            - NEAR_LIMIT_VELOCITY_GAIN * qvel
-        )
-        blend = STATE_HOLD_BLEND if state["holding"] else ACQUISITION_BLEND
-        guided = (1.0 - blend) * guided + blend * np.clip(
-            reference_action, -1.0, 1.0
-        )
-
-    constraint_force = float(data.qfrc_constraint[0])
-    guided[0] += LIMIT_FORCE_FEEDBACK_GAIN * np.clip(
-        constraint_force / ACTUATOR_FORCE_SCALE,
-        -1.0,
+    distance_weight = np.clip(
+        (ANTICIPATORY_DISTANCE - distance)
+        / (ANTICIPATORY_DISTANCE - SUCCESS_THRESHOLD),
+        0.0,
         1.0,
+    )
+    target_weight = np.clip(
+        (ANTICIPATORY_TARGET_MARGIN - target_margin)
+        / ANTICIPATORY_TARGET_MARGIN,
+        0.0,
+        1.0,
+    )
+    branch_error = np.asarray(
+        [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
+        dtype=np.float64,
+    )
+    projected_qpos = qpos + ANTICIPATORY_LOOKAHEAD_SECONDS * qvel
+    projected_error = np.asarray(
+        [
+            wrap_to_pi(float(target[index] - projected_qpos[index]))
+            for index in range(2)
+        ],
+        dtype=np.float64,
+    )
+    stopping_distance = np.square(qvel) / (
+        2.0 * ANTICIPATORY_BRAKING_ACCELERATION
+    )
+    moving_toward_target = branch_error * qvel > 0.0
+    overshoot_risk = np.clip(
+        stopping_distance / np.maximum(np.abs(branch_error), 0.05),
+        0.0,
+        1.0,
+    )
+    brake_weight = distance_weight * target_weight * overshoot_risk
+    brake_weight = np.where(moving_toward_target, brake_weight, 0.0)
+    reference_action = (
+        ANTICIPATORY_POSITION_GAIN * projected_error
+        - ANTICIPATORY_VELOCITY_GAIN * qvel
+    )
+    guided = (1.0 - 0.35 * brake_weight) * guided + (
+        0.35 * brake_weight * np.clip(reference_action, -1.0, 1.0)
     )
     return np.clip(guided, -1.0, 1.0)
 
