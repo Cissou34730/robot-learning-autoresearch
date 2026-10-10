@@ -90,3 +90,4 @@
 | E53 | checkpoint | I13 | checkpointed |
 | E54 | inquiry | I14 | completed |
 | E55 | checkpoint | - | checkpointed |
+| M17 | measurement | I14 | completed |
