@@ -15,3 +15,4 @@
 | E4 | restore_recipe | I1 | restored |
 | T3 | training | I1 | completed |
 | E5 | restore_recipe | I1 | restored |
+| T4 | training | I1 | completed |
