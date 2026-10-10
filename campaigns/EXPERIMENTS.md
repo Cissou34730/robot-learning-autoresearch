@@ -37,3 +37,4 @@
 | M8 | measurement | I3 | completed |
 | E18 | restore_recipe | I3 | restored |
 | T9 | training | I3 | completed |
+| M9 | measurement | I3 | completed |
