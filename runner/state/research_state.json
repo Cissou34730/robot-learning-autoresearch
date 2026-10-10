@@ -3282,7 +3282,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 1,
     "measurement": 5,
     "session": 3,
@@ -3291,7 +3291,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5912,49 +5912,198 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:46:05Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and is not assigned a formal model role. T2 checkpoints are rejected for the tested reward recipe, and T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal.",
+        "completed_operations": [
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run with 120000 requested steps and 120832 actual rollout-aligned steps. M3: one 160-episode held-out research evaluation. E2: inquiry I1 opened. M4: one fresh 160-episode diagnostic evaluation. T2: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. M5: three paired 160-episode research evaluations on one fresh panel. T3: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. T4: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. E4-E6: recipe restoration events. E7: inquiry I1 closed with a limited-negative outcome. M1 failed and produced no evidence.",
+        "current_goal_gap": "The best completed development evidence is 96.875% (155/160), leaving a 1.125 percentage-point gap to the 98% objective. This is not an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 supplied branch-aware and hold-aware diagnostics. M5 showed the restored T1 baseline at 96.875% with four non-reaches ending near shoulder limits and one hold interruption, while the tested branch-residual plus near-target velocity reward intervention fell to 81.875% and 81.25% with 28 non-reaches for both evaluated T2 checkpoints. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard produced poor learning trajectories and therefore reject those recipes without resolving the broader mechanisms. The closed I1 inquiry supports a limited-negative conclusion: the tested targeted intervention route did not reach 98%, while branch/limit reach generation, approach stabilization, and policy optimization remain competing explanations.",
+        "decision_frontier": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, while distinguishing shoulder-limit or branch reach failures from approach-momentum hold interruptions and avoiding the learning degradation seen in T2, T3, and T4? Fresh held-out evidence must retain radius stratification, branch-aware residuals, and reach-versus-hold diagnostics. A candidate at or above 98% with preserved inner performance supports official-assessment readiness; otherwise the remaining failure mechanism and route must be revised explicitly.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E2",
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The strongest valid development evidence is T1:checkpoint-120832 at 96.875% (155/160) on the fresh M5 paired panel, so no candidate is ready for official assessment.",
+        "next_direction_or_closure": "I1 is closed with a limited-negative outcome. The next goal-review session should select a new intervention or discriminating measurement from the restored T1 baseline; it must not continue the rejected T2 reward, T3 observation, or T4 action-guard recipes without a new scientific rationale. Do not request official assessment until fresh development evidence reaches at least 98% with preserved inner-radius performance.",
+        "next_question": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest development candidate measured so far, supported by M3 at 93.75%, but no working, best-known, or retained role is assigned. No candidate establishes the official goal.",
-    "completed_operations": [
-      "E2"
-    ],
-    "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run with 120000 requested steps and 120832 actual rollout-aligned steps, producing archived checkpoints. M3: one 160-episode held-out research evaluation at seed 4200. E2: one bounded inquiry opened with no training allocation or measurement resource consumed. M1 failed during implementation and produced no evidence.",
-    "current_goal_gap": "The best completed development evidence is 93.75% (150/160), leaving a 4.25 percentage-point gap to the 98% objective. Ten failures were observed: seven above 16 cm, including outer non-reaches and repeated hold interruptions, and three inner-workspace non-reaches. This is not an official assessment result.",
-    "current_synthesis": "M2 observed modest compiled link masses, gear-5 motors with no force limits, high bounded-action accelerations, and passive settling after release across tested impulse traces. This weakens insufficient actuator authority and persistent free-motion instability as leading explanations, but does not exclude policy-induced approach momentum or oscillation. T1 trained a fresh PPO policy on the complete 6\u201320 cm radius range; its training progress reached 0.58 success at checkpoint-120832, but training statistics do not establish development performance and the terminal checkpoint has no privileged status. M3 measured T1:checkpoint-120832 at 93.75% on 160 held-out episodes. Its detailed diagnostics show both outer non-reach cases and repeated one-step hold interruptions, while most inner-radius episodes hold successfully; therefore the inherited concern that missing inner-radius coverage is the dominant residual gap is weakened for this candidate, not ruled out generally. The evidence still does not establish whether the residual failures arise from branch or singularity-adjacent reach generation, approach momentum and policy-induced hold oscillation, or broader policy capacity/optimization limits, because M3 records no final joint posture, branch residual, action, or velocity. E2 opened I1 rather than requesting official assessment because the candidate is below the goal threshold and the mechanism remains decision-relevant.",
-    "decision_frontier": "Which mechanism causes the residual outer-workspace failures\u2014branch/singularity-adjacent reach generation, approach momentum and hold oscillation, or a broader policy-capacity/optimization limitation\u2014and which PI-owned intervention can raise held-out success from 93.75% to at least 98% without sacrificing inner-radius performance? Fresh evidence must stratify inner versus outer outcomes and distinguish non-reach from hold interruption using branch-aware endpoint or residual diagnostics and, where available, action/velocity information. Evidence showing at least 98% on a fresh held-out panel with preserved inner performance supports moving toward official assessment; persistent outer non-reaches support branch-aware or outer-focused learning/control changes; repeated hold interruptions support stabilization-oriented policy or reward changes; broad failures without a diagnostic pattern support a capacity or optimization investigation.",
-    "evidence_references": [
-      "M2",
-      "T1",
-      "M3",
-      "E2"
-    ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. M3 measured 150/160 successes (93.75%) for T1:checkpoint-120832 on a held-out development panel, so the candidate is not ready for official assessment. E2 opened inquiry I1 to resolve the mechanism of the remaining failures and identify a goal-directed intervention.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Checkpoint the goal-review decision that I1 is open, then continue in the fresh I1 inquiry session. The first inquiry action should obtain the missing branch-aware and hold-aware evidence, or implement the smallest PI-owned diagnostic capability needed to produce it, before selecting a targeted intervention. Do not request official assessment until a candidate has fresh evidence meeting the 98% goal threshold.",
-    "next_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?",
-    "scientific_commit": "eda0e966e529a6b67a675c286a601368a772cfcc",
-    "session_id": "S2"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "2ba18f99f4945f95885cdb0f0cfa31d467bb7edb",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and is not assigned a formal model role. T2 checkpoints are rejected for the tested reward recipe, and T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal.",
+        "completed_operations": [
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run with 120000 requested steps and 120832 actual rollout-aligned steps. M3: one 160-episode held-out research evaluation. E2: inquiry I1 opened. M4: one fresh 160-episode diagnostic evaluation. T2: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. M5: three paired 160-episode research evaluations on one fresh panel. T3: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. T4: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. E4-E6: recipe restoration events. E7: inquiry I1 closed with a limited-negative outcome. M1 failed and produced no evidence.",
+        "current_goal_gap": "The best completed development evidence is 96.875% (155/160), leaving a 1.125 percentage-point gap to the 98% objective. This is not an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 supplied branch-aware and hold-aware diagnostics. M5 showed the restored T1 baseline at 96.875% with four non-reaches ending near shoulder limits and one hold interruption, while the tested branch-residual plus near-target velocity reward intervention fell to 81.875% and 81.25% with 28 non-reaches for both evaluated T2 checkpoints. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard produced poor learning trajectories and therefore reject those recipes without resolving the broader mechanisms. The closed I1 inquiry supports a limited-negative conclusion: the tested targeted intervention route did not reach 98%, while branch/limit reach generation, approach stabilization, and policy optimization remain competing explanations.",
+        "decision_frontier": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, while distinguishing shoulder-limit or branch reach failures from approach-momentum hold interruptions and avoiding the learning degradation seen in T2, T3, and T4? Fresh held-out evidence must retain radius stratification, branch-aware residuals, and reach-versus-hold diagnostics. A candidate at or above 98% with preserved inner performance supports official-assessment readiness; otherwise the remaining failure mechanism and route must be revised explicitly.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E2",
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The strongest valid development evidence is T1:checkpoint-120832 at 96.875% (155/160) on the fresh M5 paired panel, so no candidate is ready for official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed with a limited-negative outcome. The next goal-review session should select a new intervention or discriminating measurement from the restored T1 baseline; it must not continue the rejected T2 reward, T3 observation, or T4 action-guard recipes without a new scientific rationale. Do not request official assessment until fresh development evidence reaches at least 98% with preserved inner-radius performance.",
+        "next_question": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "c1ccd7d9-8e61-4ec5-ba76-1d8baf40638c",
+        "campaign_id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
+        "campaign_usage": "15m00s | 36.11 AIU | prompt 7m (91% cached) | output 59.4k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "7m32s | 18.82 AIU | prompt 4.6m (94% cached) | output 25.8k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "40c54c088a1ed7a787fe3285cd28f0dccd10befc",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "6aaf4a55999690f4e2f94e3a415595e43aee643a044a3d056b9d1838c91a3dd2",
+          "path": "robot_learning/scenario/environment.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py"
+      ]
     },
-    "backend_session_id": "c1ccd7d9-8e61-4ec5-ba76-1d8baf40638c",
-    "id": "S3",
+    "failure": null,
+    "id": "E8",
     "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and is not assigned a formal model role. T2 checkpoints are rejected for the tested reward recipe, and T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal.",
+        "completed_operations": [
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run with 120000 requested steps and 120832 actual rollout-aligned steps. M3: one 160-episode held-out research evaluation. E2: inquiry I1 opened. M4: one fresh 160-episode diagnostic evaluation. T2: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. M5: three paired 160-episode research evaluations on one fresh panel. T3: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. T4: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. E4-E6: recipe restoration events. E7: inquiry I1 closed with a limited-negative outcome. M1 failed and produced no evidence.",
+        "current_goal_gap": "The best completed development evidence is 96.875% (155/160), leaving a 1.125 percentage-point gap to the 98% objective. This is not an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 supplied branch-aware and hold-aware diagnostics. M5 showed the restored T1 baseline at 96.875% with four non-reaches ending near shoulder limits and one hold interruption, while the tested branch-residual plus near-target velocity reward intervention fell to 81.875% and 81.25% with 28 non-reaches for both evaluated T2 checkpoints. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard produced poor learning trajectories and therefore reject those recipes without resolving the broader mechanisms. The closed I1 inquiry supports a limited-negative conclusion: the tested targeted intervention route did not reach 98%, while branch/limit reach generation, approach stabilization, and policy optimization remain competing explanations.",
+        "decision_frontier": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, while distinguishing shoulder-limit or branch reach failures from approach-momentum hold interruptions and avoiding the learning degradation seen in T2, T3, and T4? Fresh held-out evidence must retain radius stratification, branch-aware residuals, and reach-versus-hold diagnostics. A candidate at or above 98% with preserved inner performance supports official-assessment readiness; otherwise the remaining failure mechanism and route must be revised explicitly.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E2",
+          "M4",
+          "T2",
+          "M5",
+          "E4",
+          "T3",
+          "E5",
+          "T4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The strongest valid development evidence is T1:checkpoint-120832 at 96.875% (155/160) on the fresh M5 paired panel, so no candidate is ready for official assessment.",
+        "next_direction_or_closure": "I1 is closed with a limited-negative outcome. The next goal-review session should select a new intervention or discriminating measurement from the restored T1 baseline; it must not continue the rejected T2 reward, T3 observation, or T4 action-guard recipes without a new scientific rationale. Do not request official assessment until fresh development evidence reaches at least 98% with preserved inner-radius performance.",
+        "next_question": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?"
+      }
+    },
+    "request_fingerprint": "35f2bf1a52c338dda398d56cbe3120b7d11be101e6ba9224c9a864c61693b185",
+    "session_id": "S3",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and is not assigned a formal model role. T2 checkpoints are rejected for the tested reward recipe, and T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal.",
+    "completed_operations": [
       "M4",
       "T2",
       "M5",
@@ -5965,7 +6114,38 @@
       "E6",
       "E7"
     ],
-    "scientific_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192"
+    "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run with 120000 requested steps and 120832 actual rollout-aligned steps. M3: one 160-episode held-out research evaluation. E2: inquiry I1 opened. M4: one fresh 160-episode diagnostic evaluation. T2: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. M5: three paired 160-episode research evaluations on one fresh panel. T3: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. T4: one fresh 120000-step PPO run with 120832 actual rollout-aligned steps. E4-E6: recipe restoration events. E7: inquiry I1 closed with a limited-negative outcome. M1 failed and produced no evidence.",
+    "current_goal_gap": "The best completed development evidence is 96.875% (155/160), leaving a 1.125 percentage-point gap to the 98% objective. This is not an official assessment result.",
+    "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 supplied branch-aware and hold-aware diagnostics. M5 showed the restored T1 baseline at 96.875% with four non-reaches ending near shoulder limits and one hold interruption, while the tested branch-residual plus near-target velocity reward intervention fell to 81.875% and 81.25% with 28 non-reaches for both evaluated T2 checkpoints. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard produced poor learning trajectories and therefore reject those recipes without resolving the broader mechanisms. The closed I1 inquiry supports a limited-negative conclusion: the tested targeted intervention route did not reach 98%, while branch/limit reach generation, approach stabilization, and policy optimization remain competing explanations.",
+    "decision_frontier": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, while distinguishing shoulder-limit or branch reach failures from approach-momentum hold interruptions and avoiding the learning degradation seen in T2, T3, and T4? Fresh held-out evidence must retain radius stratification, branch-aware residuals, and reach-versus-hold diagnostics. A candidate at or above 98% with preserved inner performance supports official-assessment readiness; otherwise the remaining failure mechanism and route must be revised explicitly.",
+    "evidence_references": [
+      "M2",
+      "T1",
+      "M3",
+      "E2",
+      "M4",
+      "T2",
+      "M5",
+      "E4",
+      "T3",
+      "E5",
+      "T4",
+      "E6",
+      "E7"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The strongest valid development evidence is T1:checkpoint-120832 at 96.875% (155/160) on the fresh M5 paired panel, so no candidate is ready for official assessment.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed with a limited-negative outcome. The next goal-review session should select a new intervention or discriminating measurement from the restored T1 baseline; it must not continue the rejected T2 reward, T3 observation, or T4 action-guard recipes without a new scientific rationale. Do not request official assessment until fresh development evidence reaches at least 98% with preserved inner-radius performance.",
+    "next_question": "Which new PI-owned intervention can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?",
+    "scientific_commit": "40c54c088a1ed7a787fe3285cd28f0dccd10befc",
+    "session_id": "S3"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "2ba18f99f4945f95885cdb0f0cfa31d467bb7edb",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
