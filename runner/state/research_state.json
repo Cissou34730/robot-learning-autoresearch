@@ -1,15 +1,23 @@
 {
   "active_inquiry": {
-    "closure_condition": "Close when a redesigned policy representation, branch-selection method, or trajectory-acquisition method is tested on the fixed development panel with complete-hold diagnostics: improvement to at least 157/160 with no loss of T3 successes supports continuation toward official assessment; failure to improve, regression in uninterrupted holds, or evidence of matched post-constraint hold loss despite comparable pre-constraint trajectories redirects or reopens the plant-side route; unavailable or non-discriminating evidence remains inconclusive.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3:checkpoint-120832 remains below the development threshold at 153/160, with residual failures concentrated in the inner negative-angle shoulder-limit region. M17 supports a candidate-specific pre-constraint branch or trajectory mechanism, so resolving and correcting that mechanism is the most credible route to improve success without sacrificing the 100-step hold.",
+    "closure_condition": "Close when a matched-state or controlled plant-side diagnostic establishes whether residual hold loss persists after comparable pre-constraint trajectories, shoulder force, and velocity: reproducible matched post-constraint failure supports a plant-aware redesign; absence of such failure redirects back to trajectory acquisition or branch representation; unavailable or non-discriminating evidence remains inconclusive.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. M18 showed that the distinct risk-aware branch selector did not improve the fixed panel: T18 achieved 152/160 and lost T3's one discordant success. This redirects the bounded investigation from that representation route to the unresolved plant-side contribution identified by M10 and M13.",
     "handoff_conclusion": "M17 matched T3:checkpoint-120832 and T17:checkpoint-65536 on the same 160-episode panel. In discordant episode seed 4342, T3 was within tolerance at control step 17 with zero shoulder constraint force, then completed 100 uninterrupted hold steps under active constraint. T17 was outside tolerance at step 17 before constraint activation, reached at step 18 with shoulder constraint force 4.6332 and positive shoulder-directed velocity 2.1851, and held only 3 steps with 121 interruptions. This supports candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism. The plant-transient explanation is not eliminated: M10 and M13 establish that shoulder-limit transients exist, and the matched episode does not prove that plant effects never contribute. M14-M16 only show that the tested force-feedback, memoryless anticipatory, and combined stateful recipes did not recover the residual failures; they do not invalidate branch-aware control or establish a universal absence of plant-side effects. E58 opened I15; its active question is now the bounded route for addressing the supported mechanism.",
     "handoff_question": "How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution?",
     "handoff_source_session_id": "S30",
     "id": "I15",
     "opened_in_session": "S30",
-    "question": "How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution?",
-    "rationale": "M17 matched T3 and T17 on the same 160-episode panel. In the discordant seed 4342 episode, T3 entered tolerance one control step earlier with zero shoulder constraint force and then completed the hold under active constraint, while T17 was outside tolerance before force activation, reached later with active constraint force and positive shoulder-directed velocity, and suffered repeated interruptions. This corrects the prior emphasis on an unresolved plant transient as the primary route, while retaining M10 and M13 as evidence that plant transients exist and could matter if a representation-directed redesign leaves matched post-constraint failures unexplained. M14-M16 were negative results for specific force-feedback, anticipatory, and combined stateful recipes only; they do not reject branch-aware control or trajectory redesign generally. Training trajectories and unmeasured checkpoints can nominate candidates, but they do not establish development performance, so the inquiry must produce fixed-panel evidence before any official assessment.",
-    "reframes": []
+    "question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
+    "rationale": "M18 is completed fixed-panel evidence against the tested T18 selector, not against branch-aware methods in general. Its regression and lack of improvement satisfy the I15 redirect condition. The remaining scientific distinction is whether M10/M13's observed shoulder-limit transients are causal in the residual failures or merely correlated with candidate-specific approach errors. A plant-side measurement that matches pre-constraint state and compares post-constraint hold behavior will discriminate these routes before another intervention is trained.",
+    "reframes": [
+      {
+        "closure_condition": "Close when a matched-state or controlled plant-side diagnostic establishes whether residual hold loss persists after comparable pre-constraint trajectories, shoulder force, and velocity: reproducible matched post-constraint failure supports a plant-aware redesign; absence of such failure redirects back to trajectory acquisition or branch representation; unavailable or non-discriminating evidence remains inconclusive.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. M18 showed that the distinct risk-aware branch selector did not improve the fixed panel: T18 achieved 152/160 and lost T3's one discordant success. This redirects the bounded investigation from that representation route to the unresolved plant-side contribution identified by M10 and M13.",
+        "question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
+        "rationale": "M18 is completed fixed-panel evidence against the tested T18 selector, not against branch-aware methods in general. Its regression and lack of improvement satisfy the I15 redirect condition. The remaining scientific distinction is whether M10/M13's observed shoulder-limit transients are causal in the residual failures or merely correlated with candidate-specific approach errors. A plant-side measurement that matches pre-constraint state and compares post-constraint hold behavior will discriminate these routes before another intervention is trained.",
+        "session_id": "S31"
+      }
+    ]
   },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
@@ -13121,7 +13129,7 @@
     }
   },
   "counters": {
-    "event": 59,
+    "event": 60,
     "inquiry": 15,
     "measurement": 18,
     "session": 31,
@@ -29700,9 +29708,68 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T01:55:19Z",
+      "error": null,
+      "id": "E60",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "reframe",
+        "closure_condition": "Close when a matched-state or controlled plant-side diagnostic establishes whether residual hold loss persists after comparable pre-constraint trajectories, shoulder force, and velocity: reproducible matched post-constraint failure supports a plant-aware redesign; absence of such failure redirects back to trajectory acquisition or branch representation; unavailable or non-discriminating evidence remains inconclusive.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. M18 showed that the distinct risk-aware branch selector did not improve the fixed panel: T18 achieved 152/160 and lost T3's one discordant success. This redirects the bounded investigation from that representation route to the unresolved plant-side contribution identified by M10 and M13.",
+        "question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
+        "rationale": "M18 is completed fixed-panel evidence against the tested T18 selector, not against branch-aware methods in general. Its regression and lack of improvement satisfy the I15 redirect condition. The remaining scientific distinction is whether M10/M13's observed shoulder-limit transients are causal in the residual failures or merely correlated with candidate-specific approach errors. A plant-side measurement that matches pre-constraint state and compares post-constraint hold behavior will discriminate these routes before another intervention is trained."
+      },
+      "result": {
+        "action": "reframe",
+        "inquiry_id": "I15",
+        "status": "completed"
+      },
+      "session_id": "S31",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "reframe",
+        "inquiry_id": "I15",
+        "reframe": {
+          "closure_condition": "Close when a matched-state or controlled plant-side diagnostic establishes whether residual hold loss persists after comparable pre-constraint trajectories, shoulder force, and velocity: reproducible matched post-constraint failure supports a plant-aware redesign; absence of such failure redirects back to trajectory acquisition or branch representation; unavailable or non-discriminating evidence remains inconclusive.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. M18 showed that the distinct risk-aware branch selector did not improve the fixed panel: T18 achieved 152/160 and lost T3's one discordant success. This redirects the bounded investigation from that representation route to the unresolved plant-side contribution identified by M10 and M13.",
+          "question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
+          "rationale": "M18 is completed fixed-panel evidence against the tested T18 selector, not against branch-aware methods in general. Its regression and lack of improvement satisfy the I15 redirect condition. The remaining scientific distinction is whether M10/M13's observed shoulder-limit transients are causal in the residual failures or merely correlated with candidate-specific approach errors. A plant-side measurement that matches pre-constraint state and compares post-constraint hold behavior will discriminate these routes before another intervention is trained.",
+          "session_id": "S31"
+        }
+      },
+      "result": {
+        "action": "reframe",
+        "inquiry_id": "I15",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E60",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "reframe",
+        "closure_condition": "Close when a matched-state or controlled plant-side diagnostic establishes whether residual hold loss persists after comparable pre-constraint trajectories, shoulder force, and velocity: reproducible matched post-constraint failure supports a plant-aware redesign; absence of such failure redirects back to trajectory acquisition or branch representation; unavailable or non-discriminating evidence remains inconclusive.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. M18 showed that the distinct risk-aware branch selector did not improve the fixed panel: T18 achieved 152/160 and lost T3's one discordant success. This redirects the bounded investigation from that representation route to the unresolved plant-side contribution identified by M10 and M13.",
+        "question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
+        "rationale": "M18 is completed fixed-panel evidence against the tested T18 selector, not against branch-aware methods in general. Its regression and lack of improvement satisfy the I15 redirect condition. The remaining scientific distinction is whether M10/M13's observed shoulder-limit transients are causal in the residual failures or merely correlated with candidate-specific approach errors. A plant-side measurement that matches pre-constraint state and compares post-constraint hold behavior will discriminate these routes before another intervention is trained."
+      }
+    },
+    "request_fingerprint": "a798cf4b853741155ba2d6b90d93e481fcfedf8fabc9b001e688df8959230277",
+    "session_id": "S31",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T17:checkpoint-65536 is a 152/160 candidate whose discordant regression helped identify the dominant mechanism. Training statistics and development measurements do not establish an official best-known candidate.",
     "completed_operations": [
@@ -29743,7 +29810,8 @@
     "objective": "Advance I15 toward an evidence-supported answer to its scientific question: How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T18",
-      "M18"
+      "M18",
+      "E60"
     ],
     "scientific_parent_commit": "662612ea50255f09fa1d0a74172e17862218e2ef"
   },

@@ -97,3 +97,4 @@
 | E59 | checkpoint | - | checkpointed |
 | T18 | training | I15 | completed |
 | M18 | measurement | I15 | completed |
+| E60 | inquiry | I15 | completed |
