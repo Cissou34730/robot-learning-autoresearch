@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when matched target-panel evidence separates pre-constraint branch or trajectory divergence from post-constraint force/velocity response: reproducible hold loss at matched states linked to active constraint force supports a plant-transient route; successful holds under comparable force or divergence before force activation supports a representation or trajectory route. If the evidence cannot separate these causes, close as inconclusive and preserve the ambiguity explicitly.",
+    "goal_connection": "The human goal requires complete uninterrupted holds, and the strongest development reference remains seven failures short of the 157/160 development threshold. Resolving whether the residual inner negative-angle failures originate in plant response or learned trajectory/branch representation determines whether the next effort should characterize or alter the plant-side control problem, or redesign policy representation and acquisition.",
+    "handoff_conclusion": "M16 observed that T17:checkpoint-65536, implementing hysteretic feasible-branch commitment, target-conditioned lookahead, shoulder-limit acquisition/hold stabilization, and signed constraint-force plus outward joint-velocity damping, achieved 152/160 versus 153/160 for paired T3:checkpoint-120832. The paired comparison had one discordant episode, with T3 winning; the candidate lost one T3 success. The required diagnostics were present and inspected for the discordant episode: at target radius 8.6596 cm and angle -129.7076 degrees, both policies first reached tolerance, but T17 first reached at step 18 versus T3 at step 17, then T17 held only 3 steps with 121 interruptions while T3 completed an uninterrupted 100-step hold. This is a real candidate-specific hold-stability regression in the inner, negative-angle region. M13's constraint-force trajectories and M10's controlled near-limit probe support the existence of shoulder-limit transient interaction, but M14's constant force-feedback rescue, M15's memoryless lookahead rescue, and M16's combined stateful branch-and-limit implementation all failed to improve T3; these are recipe-specific limits, not proof that plant transients or branch-aware control are irrelevant. M16 establishes a limited negative result for the particular combined implementation and redirects the campaign; it does not resolve whether the residual failures are caused primarily by candidate trajectory error, branch/target representation, or a state-dependent plant transient requiring a different intervention.",
+    "handoff_question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+    "handoff_source_session_id": "S27",
+    "id": "I14",
+    "opened_in_session": "S28",
+    "question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+    "rationale": "M16's candidate-side diagnostic now shows the failure mechanism is not established as a plant-authority loss: T17 is already outside tolerance at control step 17 before shoulder constraint activation, then reaches at step 18 with a large negative shoulder constraint force and holds only three steps, whereas matched T3 reaches at step 17 and sustains 100 steps under active constraint. This corrects the inherited emphasis on an unresolved plant transient while retaining it as a possible state-dependent contributor. A matched-state measurement that records branch/trajectory divergence, first reach, hold interruptions, constraint activation, force, and velocity for T3 and T17 without changing policy behavior is therefore the highest-value next decision signal and avoids another uninformative rescue recipe.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -12289,16 +12300,16 @@
     }
   },
   "counters": {
-    "event": 53,
-    "inquiry": 13,
+    "event": 54,
+    "inquiry": 14,
     "measurement": 16,
-    "session": 27,
+    "session": 28,
     "training": 17
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -27081,9 +27092,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T01:35:21Z",
+      "error": null,
+      "id": "E54",
+      "inquiry_id": "I14",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when matched target-panel evidence separates pre-constraint branch or trajectory divergence from post-constraint force/velocity response: reproducible hold loss at matched states linked to active constraint force supports a plant-transient route; successful holds under comparable force or divergence before force activation supports a representation or trajectory route. If the evidence cannot separate these causes, close as inconclusive and preserve the ambiguity explicitly.",
+        "goal_connection": "The human goal requires complete uninterrupted holds, and the strongest development reference remains seven failures short of the 157/160 development threshold. Resolving whether the residual inner negative-angle failures originate in plant response or learned trajectory/branch representation determines whether the next effort should characterize or alter the plant-side control problem, or redesign policy representation and acquisition.",
+        "question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+        "rationale": "M16's candidate-side diagnostic now shows the failure mechanism is not established as a plant-authority loss: T17 is already outside tolerance at control step 17 before shoulder constraint activation, then reaches at step 18 with a large negative shoulder constraint force and holds only three steps, whereas matched T3 reaches at step 17 and sustains 100 steps under active constraint. This corrects the inherited emphasis on an unresolved plant transient while retaining it as a possible state-dependent contributor. A matched-state measurement that records branch/trajectory divergence, first reach, hold interruptions, constraint activation, force, and velocity for T3 and T17 without changing policy behavior is therefore the highest-value next decision signal and avoids another uninformative rescue recipe."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      },
+      "session_id": "S28",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when matched target-panel evidence separates pre-constraint branch or trajectory divergence from post-constraint force/velocity response: reproducible hold loss at matched states linked to active constraint force supports a plant-transient route; successful holds under comparable force or divergence before force activation supports a representation or trajectory route. If the evidence cannot separate these causes, close as inconclusive and preserve the ambiguity explicitly.",
+          "goal_connection": "The human goal requires complete uninterrupted holds, and the strongest development reference remains seven failures short of the 157/160 development threshold. Resolving whether the residual inner negative-angle failures originate in plant response or learned trajectory/branch representation determines whether the next effort should characterize or alter the plant-side control problem, or redesign policy representation and acquisition.",
+          "handoff_conclusion": "M16 observed that T17:checkpoint-65536, implementing hysteretic feasible-branch commitment, target-conditioned lookahead, shoulder-limit acquisition/hold stabilization, and signed constraint-force plus outward joint-velocity damping, achieved 152/160 versus 153/160 for paired T3:checkpoint-120832. The paired comparison had one discordant episode, with T3 winning; the candidate lost one T3 success. The required diagnostics were present and inspected for the discordant episode: at target radius 8.6596 cm and angle -129.7076 degrees, both policies first reached tolerance, but T17 first reached at step 18 versus T3 at step 17, then T17 held only 3 steps with 121 interruptions while T3 completed an uninterrupted 100-step hold. This is a real candidate-specific hold-stability regression in the inner, negative-angle region. M13's constraint-force trajectories and M10's controlled near-limit probe support the existence of shoulder-limit transient interaction, but M14's constant force-feedback rescue, M15's memoryless lookahead rescue, and M16's combined stateful branch-and-limit implementation all failed to improve T3; these are recipe-specific limits, not proof that plant transients or branch-aware control are irrelevant. M16 establishes a limited negative result for the particular combined implementation and redirects the campaign; it does not resolve whether the residual failures are caused primarily by candidate trajectory error, branch/target representation, or a state-dependent plant transient requiring a different intervention.",
+          "handoff_question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+          "handoff_source_session_id": "S27",
+          "id": "I14",
+          "opened_in_session": "S28",
+          "question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+          "rationale": "M16's candidate-side diagnostic now shows the failure mechanism is not established as a plant-authority loss: T17 is already outside tolerance at control step 17 before shoulder constraint activation, then reaches at step 18 with a large negative shoulder constraint force and holds only three steps, whereas matched T3 reaches at step 17 and sustains 100 steps under active constraint. This corrects the inherited emphasis on an unresolved plant transient while retaining it as a possible state-dependent contributor. A matched-state measurement that records branch/trajectory divergence, first reach, hold interruptions, constraint activation, force, and velocity for T3 and T17 without changing policy behavior is therefore the highest-value next decision signal and avoids another uninformative rescue recipe.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E54",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when matched target-panel evidence separates pre-constraint branch or trajectory divergence from post-constraint force/velocity response: reproducible hold loss at matched states linked to active constraint force supports a plant-transient route; successful holds under comparable force or divergence before force activation supports a representation or trajectory route. If the evidence cannot separate these causes, close as inconclusive and preserve the ambiguity explicitly.",
+        "goal_connection": "The human goal requires complete uninterrupted holds, and the strongest development reference remains seven failures short of the 157/160 development threshold. Resolving whether the residual inner negative-angle failures originate in plant response or learned trajectory/branch representation determines whether the next effort should characterize or alter the plant-side control problem, or redesign policy representation and acquisition.",
+        "question": "Which mechanism dominates the residual negative-angle shoulder-limit failures\u2014an active plant transient that reduces hold authority, or candidate-specific branch/trajectory representation error\u2014and what matched-state evidence discriminates between them without conflating the mechanism with a new policy recipe?",
+        "rationale": "M16's candidate-side diagnostic now shows the failure mechanism is not established as a plant-authority loss: T17 is already outside tolerance at control step 17 before shoulder constraint activation, then reaches at step 18 with a large negative shoulder constraint force and holds only three steps, whereas matched T3 reaches at step 17 and sustains 100 steps under active constraint. This corrects the inherited emphasis on an unresolved plant transient while retaining it as a possible state-dependent contributor. A matched-state measurement that records branch/trajectory divergence, first reach, hold interruptions, constraint activation, force, and velocity for T3 and T17 without changing policy behavior is therefore the highest-value next decision signal and avoids another uninformative rescue recipe."
+      }
+    },
+    "request_fingerprint": "d6d627a17342e258be297eecf17c92e53a48983f0da240d710b6ec63192a84dc",
+    "session_id": "S28",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T17:checkpoint-65536 is an evaluated limited-negative candidate at 152/160; its training statistics do not establish a role or development adequacy.",
     "completed_operations": [
@@ -27119,6 +27193,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e655f229-129e-4bbc-bbe0-2d9d6b7329fd",
+    "id": "S28",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E54"
+    ],
+    "scientific_parent_commit": "0b422cdfeda3ca43b5a3f1324712308e806572d3"
+  },
   "terminal_state": null
 }
