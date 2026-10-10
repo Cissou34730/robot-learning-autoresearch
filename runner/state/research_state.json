@@ -13110,7 +13110,7 @@
     }
   },
   "counters": {
-    "event": 62,
+    "event": 63,
     "inquiry": 15,
     "measurement": 20,
     "session": 32,
@@ -13119,7 +13119,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -30261,20 +30261,174 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T02:04:09Z",
+      "error": null,
+      "id": "E63",
+      "inquiry_id": "I15",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
+        "completed_operations": [
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48; I13 with T17, M16, E52; goal review with E54; I14 with M17 and E56; goal review with E58; I15 with T18, M18, E60, M19, M20, and E62. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain for T3 on the fixed 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the inner negative-angle shoulder-limit region. M20 does not remove this policy gap; it shows that the tested plant-side transient is not sufficient to explain matched hold loss.",
+        "current_synthesis": "M17 supports candidate-specific pre-constraint trajectory or branch representation error as the dominant explanation: in seed 4342, T3 entered tolerance before shoulder constraint activation and completed the hold, whereas T17 entered later under active constraint with positive shoulder-directed velocity and then repeatedly interrupted. M18 rejects the tested T18 risk-aware branch selector, not branch-aware methods generally. M10 and M13 establish that shoulder-limit transients exist. M19 was inconclusive because its replay never activated the constraint. M20 corrected that limitation: all six trials activated the official shoulder constraint at control step 6 with exact limited/counterfactual pre-constraint position and velocity agreement through step 5; despite post-constraint force up to 7.12 and transient shoulder velocity, every limited and disabled-limit trial completed the required hold. Thus the plant transient is real but did not produce reproducible matched post-constraint hold loss.",
+        "decision_frontier": "I15 is closed. The plant-side route is not supported as the dominant cause because controlled, matched acquisition through shoulder-limit activation produced complete holds in both the limited and disabled-limit plants. The next scientific decision is how to reduce candidate-specific pre-constraint acquisition or branch representation failures without sacrificing complete uninterrupted holds. Evidence from a new policy or branch intervention must be judged by complete-hold performance on the fixed development panel, including whether it recovers T3's failures without losing its existing successes.",
+        "evidence_references": [
+          "M10",
+          "M13",
+          "M17",
+          "E56",
+          "E58",
+          "T18",
+          "M18",
+          "E60",
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains unmet: success requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3:checkpoint-120832 achieves 153/160 on the fixed development panel, while T18:checkpoint-65536 achieves 152/160 and is not an improvement. The official 200-episode assessment remains unjustified.",
+        "next_direction_or_closure": "I15 is closed and the transition decision is explicit: do not pursue a plant-aware controller on the basis of M20. At the next goal review, consider opening a fresh inquiry on pre-constraint acquisition or branch representation, using M17 as the mechanistic anchor and requiring paired fixed-panel evidence against T3 before official assessment. The seven-failure development gap remains open, and no official assessment has been requested.",
+        "next_question": "Can a policy or branch representation that explicitly improves pre-constraint acquisition in the inner negative-angle shoulder-limit region raise complete uninterrupted success from T3's 153/160 to at least 157/160 on the development panel without losing T3's existing successes?"
+      },
+      "result": {
+        "session_id": "S32",
+        "status": "checkpointed"
+      },
+      "session_id": "S32",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
+        "completed_operations": [
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48; I13 with T17, M16, E52; goal review with E54; I14 with M17 and E56; goal review with E58; I15 with T18, M18, E60, M19, M20, and E62. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain for T3 on the fixed 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the inner negative-angle shoulder-limit region. M20 does not remove this policy gap; it shows that the tested plant-side transient is not sufficient to explain matched hold loss.",
+        "current_synthesis": "M17 supports candidate-specific pre-constraint trajectory or branch representation error as the dominant explanation: in seed 4342, T3 entered tolerance before shoulder constraint activation and completed the hold, whereas T17 entered later under active constraint with positive shoulder-directed velocity and then repeatedly interrupted. M18 rejects the tested T18 risk-aware branch selector, not branch-aware methods generally. M10 and M13 establish that shoulder-limit transients exist. M19 was inconclusive because its replay never activated the constraint. M20 corrected that limitation: all six trials activated the official shoulder constraint at control step 6 with exact limited/counterfactual pre-constraint position and velocity agreement through step 5; despite post-constraint force up to 7.12 and transient shoulder velocity, every limited and disabled-limit trial completed the required hold. Thus the plant transient is real but did not produce reproducible matched post-constraint hold loss.",
+        "decision_frontier": "I15 is closed. The plant-side route is not supported as the dominant cause because controlled, matched acquisition through shoulder-limit activation produced complete holds in both the limited and disabled-limit plants. The next scientific decision is how to reduce candidate-specific pre-constraint acquisition or branch representation failures without sacrificing complete uninterrupted holds. Evidence from a new policy or branch intervention must be judged by complete-hold performance on the fixed development panel, including whether it recovers T3's failures without losing its existing successes.",
+        "evidence_references": [
+          "M10",
+          "M13",
+          "M17",
+          "E56",
+          "E58",
+          "T18",
+          "M18",
+          "E60",
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains unmet: success requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3:checkpoint-120832 achieves 153/160 on the fixed development panel, while T18:checkpoint-65536 achieves 152/160 and is not an improvement. The official 200-episode assessment remains unjustified.",
+        "inquiry_id": "I15",
+        "next_direction_or_closure": "I15 is closed and the transition decision is explicit: do not pursue a plant-aware controller on the basis of M20. At the next goal review, consider opening a fresh inquiry on pre-constraint acquisition or branch representation, using M17 as the mechanistic anchor and requiring paired fixed-panel evidence against T3 before official assessment. The seven-failure development gap remains open, and no official assessment has been requested.",
+        "next_question": "Can a policy or branch representation that explicitly improves pre-constraint acquisition in the inner negative-angle shoulder-limit region raise complete uninterrupted success from T3's 153/160 to at least 157/160 on the development panel without losing T3's existing successes?",
+        "session_id": "S32"
+      },
+      "presentation": {
+        "backend_session_id": "73583c35-4697-418f-af6b-43dcb384ac08",
+        "campaign_id": "339736e0-5583-4bc4-8729-5023fc3077b7",
+        "campaign_usage": "1h33m | 299.19 AIU | prompt 49.4m (86% cached) | output 348.1k",
+        "session_id": "S32",
+        "session_kind": "inquiry",
+        "session_usage": "6m06s | 20.13 AIU | prompt 3.2m (85% cached) | output 24k"
+      },
+      "result": {
+        "session_id": "S32",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6bb63427fa1db06e8622809ecf26874bc68a12a2",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E63",
+    "inquiry_id": "I15",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
+        "completed_operations": [
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48; I13 with T17, M16, E52; goal review with E54; I14 with M17 and E56; goal review with E58; I15 with T18, M18, E60, M19, M20, and E62. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain for T3 on the fixed 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the inner negative-angle shoulder-limit region. M20 does not remove this policy gap; it shows that the tested plant-side transient is not sufficient to explain matched hold loss.",
+        "current_synthesis": "M17 supports candidate-specific pre-constraint trajectory or branch representation error as the dominant explanation: in seed 4342, T3 entered tolerance before shoulder constraint activation and completed the hold, whereas T17 entered later under active constraint with positive shoulder-directed velocity and then repeatedly interrupted. M18 rejects the tested T18 risk-aware branch selector, not branch-aware methods generally. M10 and M13 establish that shoulder-limit transients exist. M19 was inconclusive because its replay never activated the constraint. M20 corrected that limitation: all six trials activated the official shoulder constraint at control step 6 with exact limited/counterfactual pre-constraint position and velocity agreement through step 5; despite post-constraint force up to 7.12 and transient shoulder velocity, every limited and disabled-limit trial completed the required hold. Thus the plant transient is real but did not produce reproducible matched post-constraint hold loss.",
+        "decision_frontier": "I15 is closed. The plant-side route is not supported as the dominant cause because controlled, matched acquisition through shoulder-limit activation produced complete holds in both the limited and disabled-limit plants. The next scientific decision is how to reduce candidate-specific pre-constraint acquisition or branch representation failures without sacrificing complete uninterrupted holds. Evidence from a new policy or branch intervention must be judged by complete-hold performance on the fixed development panel, including whether it recovers T3's failures without losing its existing successes.",
+        "evidence_references": [
+          "M10",
+          "M13",
+          "M17",
+          "E56",
+          "E58",
+          "T18",
+          "M18",
+          "E60",
+          "M19",
+          "M20",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains unmet: success requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3:checkpoint-120832 achieves 153/160 on the fixed development panel, while T18:checkpoint-65536 achieves 152/160 and is not an improvement. The official 200-episode assessment remains unjustified.",
+        "next_direction_or_closure": "I15 is closed and the transition decision is explicit: do not pursue a plant-aware controller on the basis of M20. At the next goal review, consider opening a fresh inquiry on pre-constraint acquisition or branch representation, using M17 as the mechanistic anchor and requiring paired fixed-panel evidence against T3 before official assessment. The seven-failure development gap remains open, and no official assessment has been requested.",
+        "next_question": "Can a policy or branch representation that explicitly improves pre-constraint acquisition in the inner negative-angle shoulder-limit region raise complete uninterrupted success from T3's 153/160 to at least 157/160 on the development panel without losing T3's existing successes?"
+      }
+    },
+    "request_fingerprint": "974a80bbf327c4c535f7ec1d930ad0ac6c3f0d08e918205dc9ce389aa012e483",
+    "session_id": "S32",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
     "completed_operations": [
-      "T18",
-      "M18",
-      "E60"
+      "M19",
+      "M20",
+      "E62"
     ],
-    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48; I13 with T17, M16, E52; goal review with E54; I14 with M17 and E56; goal review with E58; I15 with T18, M18, and E60. No official assessment has been requested.",
-    "current_goal_gap": "Seven failures remain for T3 on the fixed 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the inner negative-angle shoulder-limit region. T18 does not reduce this gap and regresses T3's one discordant success. The official 200-episode assessment remains unmeasured.",
-    "current_synthesis": "M17 supports candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism: in seed 4342, T3 entered tolerance before shoulder constraint activation and completed the hold, whereas T17 entered later under active constraint with positive shoulder-directed velocity and then repeatedly interrupted. T18 tested a distinct risk-aware, reset-anchored branch selector, but M18 measured only 152/160 versus T3's 153/160 with one discordant episode and no candidate win. This is evidence against that tested selector, not against branch-aware methods generally. M10 and M13 still establish that shoulder-limit transients exist, so the plant-side explanation remains unresolved rather than disproven. E60 reframed I15 to test whether post-constraint hold loss persists when pre-constraint acquisition is comparable.",
-    "decision_frontier": "The unresolved distinction is whether residual inner negative-angle hold failures are caused by a plant-side post-constraint transient that persists after comparable pre-constraint trajectory, shoulder force, and velocity, or whether they remain candidate-specific acquisition and representation errors. A matched-state or controlled plant-side diagnostic with comparable pre-constraint conditions will discriminate these routes: reproducible matched post-constraint failure supports a plant-aware controller, while its absence redirects to trajectory acquisition or branch representation.",
+    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48; I13 with T17, M16, E52; goal review with E54; I14 with M17 and E56; goal review with E58; I15 with T18, M18, E60, M19, M20, and E62. No official assessment has been requested.",
+    "current_goal_gap": "Seven failures remain for T3 on the fixed 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the inner negative-angle shoulder-limit region. M20 does not remove this policy gap; it shows that the tested plant-side transient is not sufficient to explain matched hold loss.",
+    "current_synthesis": "M17 supports candidate-specific pre-constraint trajectory or branch representation error as the dominant explanation: in seed 4342, T3 entered tolerance before shoulder constraint activation and completed the hold, whereas T17 entered later under active constraint with positive shoulder-directed velocity and then repeatedly interrupted. M18 rejects the tested T18 risk-aware branch selector, not branch-aware methods generally. M10 and M13 establish that shoulder-limit transients exist. M19 was inconclusive because its replay never activated the constraint. M20 corrected that limitation: all six trials activated the official shoulder constraint at control step 6 with exact limited/counterfactual pre-constraint position and velocity agreement through step 5; despite post-constraint force up to 7.12 and transient shoulder velocity, every limited and disabled-limit trial completed the required hold. Thus the plant transient is real but did not produce reproducible matched post-constraint hold loss.",
+    "decision_frontier": "I15 is closed. The plant-side route is not supported as the dominant cause because controlled, matched acquisition through shoulder-limit activation produced complete holds in both the limited and disabled-limit plants. The next scientific decision is how to reduce candidate-specific pre-constraint acquisition or branch representation failures without sacrificing complete uninterrupted holds. Evidence from a new policy or branch intervention must be judged by complete-hold performance on the fixed development panel, including whether it recovers T3's failures without losing its existing successes.",
     "evidence_references": [
       "M10",
       "M13",
@@ -30283,14 +30437,17 @@
       "E58",
       "T18",
       "M18",
-      "E60"
+      "E60",
+      "M19",
+      "M20",
+      "E62"
     ],
-    "human_goal_connection": "The human goal remains unmet: success requires a complete uninterrupted 100-step hold, with at least 196 of 200 official episodes succeeding. T3:checkpoint-120832 achieves 153/160 on the development panel, and the T18 redesign achieved 152/160, so official assessment is not justified.",
+    "human_goal_connection": "The human goal remains unmet: success requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3:checkpoint-120832 achieves 153/160 on the fixed development panel, while T18:checkpoint-65536 achieves 152/160 and is not an improvement. The official 200-episode assessment remains unjustified.",
     "inquiry_id": "I15",
-    "next_direction_or_closure": "The reframe is complete. In the fresh inquiry session, obtain a matched-state or controlled plant-side diagnostic before training another controller. If it demonstrates reproducible post-constraint loss under comparable pre-constraint conditions, design and test a plant-aware trajectory or hold controller; if not, return to policy representation or trajectory acquisition. Do not request official assessment until the active inquiry's closure condition is met.",
-    "next_question": "Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds?",
-    "scientific_commit": "a9cf1c9cfe627bd514797ea68d8a1d91fe8f019a",
-    "session_id": "S31"
+    "next_direction_or_closure": "I15 is closed and the transition decision is explicit: do not pursue a plant-aware controller on the basis of M20. At the next goal review, consider opening a fresh inquiry on pre-constraint acquisition or branch representation, using M17 as the mechanistic anchor and requiring paired fixed-panel evidence against T3 before official assessment. The seven-failure development gap remains open, and no official assessment has been requested.",
+    "next_question": "Can a policy or branch representation that explicitly improves pre-constraint acquisition in the inner negative-angle shoulder-limit region raise complete uninterrupted success from T3's 153/160 to at least 157/160 on the development panel without losing T3's existing successes?",
+    "scientific_commit": "6bb63427fa1db06e8622809ecf26874bc68a12a2",
+    "session_id": "S32"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -30298,23 +30455,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "73583c35-4697-418f-af6b-43dcb384ac08",
-    "id": "S32",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M19",
-      "M20",
-      "E62"
-    ],
-    "scientific_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
