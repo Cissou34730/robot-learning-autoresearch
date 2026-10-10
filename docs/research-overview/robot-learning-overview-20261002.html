@@ -198,13 +198,13 @@
       <p class="intro">Robot AutoResearch is a harness. It lets an independent AI agent, the Principal Investigator (PI), train a robot.</p>
       <p class="intro">The human owns the goal. The PI owns the science and the training. The Runner is the gatekeeper. It checks and runs every operation.</p>
       <p class="intro">The working example is a two-joint arm that must reach a target and hold still. Work is organized in campaigns. A campaign is split into inquiries. An inquiry is one scientific question.</p>
-      <p class="snapshot">Last updated <time datetime="2026-10-09">2026-10-09</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
+      <p class="snapshot">Last updated <time datetime="2026-10-10">2026-10-10</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status">1 Status</a>
         <a href="#roles">2 Roles</a>
         <a href="#task">3 Task</a>
         <a href="#lifecycle">4 Campaign lifecycle</a>
-        <a href="#issues">5 Open issues</a>
+        <a href="#issues">5 Issue register</a>
         <a href="#changes">6 Recent changes</a>
         <a href="#harness">7 Harness behavior</a>
         <a href="#evidence">8 Evidence and terms</a>
@@ -242,26 +242,26 @@
           <p class="small"><a href="robot-campaign-06656182-final-analysis-20261008.html">Read the final analysis</a></p>
         </article>
         <article class="card">
-          <span class="tag">Open</span>
-          <h3 style="margin-top: 12px">17 issues, OI-001 to OI-017</h3>
+          <span class="tag">Issue register</span>
+          <h3 style="margin-top: 12px">18 issues, OI-001 to OI-018</h3>
           <ul>
-            <li>Active: OI-014.</li>
-            <li>Implemented or revised, awaiting campaign evidence: OI-003, OI-015, OI-016, OI-017.</li>
-            <li>Closed as effective: OI-001, OI-002, OI-004.</li>
-            <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
-            <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
+            <li>Active (1): OI-014.</li>
+            <li>Implemented or revised, awaiting campaign evidence (4): OI-003, OI-015, OI-016, OI-018.</li>
+            <li>Closed as effective (5): OI-001, OI-002, OI-004, OI-011, OI-017.</li>
+            <li>Withdrawn / accepted operational limit (1): OI-013.</li>
+            <li>Postponed, paused, or waiting for a decision (3): OI-005, OI-006, OI-007.</li>
+            <li>Not approved (4): OI-008, OI-009, OI-010, OI-012.</li>
           </ul>
           <p class="small"><a href="#issues">See the full table</a></p>
         </article>
         <article class="card">
           <span class="tag">Changed last</span>
-          <h3 style="margin-top: 12px">9 October 2026</h3>
+          <h3 style="margin-top: 12px">10 October 2026</h3>
           <ul>
-            <li>The comprehensive RCA for campaign <code>79395c88</code> reopened OI-003, extended OI-015, and showed the first OI-016 implementation ineffective.</li>
-            <li>OI-016 now separates a proposed next question from an active inquiry identity and permits correction of inherited interpretation from existing evidence.</li>
-            <li>OI-017 adds an operation-scoped, fingerprint-verified SDK tool for bounded nested artifact discovery and queries.</li>
-            <li>OI-001 is closed as effective. In <code>896c230a</code> the briefing, the first startup action, and the handoff formed one traceable chain.</li>
-            <li>OI-004 remains closed as effective after the earlier <code>58dcd817</code> evidence and is consistent with the final campaign's transfer-learning result.</li>
+            <li>OI-011 is closed implemented/effective: logical JSON Pointers display without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
+            <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed inquiry cap remains.</li>
+            <li>OI-017 is closed effective after campaign evidence showed the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
+            <li>OI-018 adds fair bounded batching with per-query traversal budgets and shared result/output limits.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
@@ -441,7 +441,7 @@
           <h3>Rules for the inquiry cap</h3>
           <p>The cap is 15 inquiries. It is a temporary execution limit.</p>
           <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
-          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. Removing the cap is OI-013.</p>
+          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is closed as a withdrawn removal proposal; the cap remains an accepted operational limit.</p>
         </div>
       </div>
       <details style="margin-top: 16px">
@@ -497,7 +497,7 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Open issues OI-001 to OI-017</h2>
+      <h2 id="issues-heading">Issue register OI-001 to OI-018</h2>
       <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
       <div class="card table-wrap wide">
         <table>
@@ -513,13 +513,14 @@
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
             <tr><td>OI-009</td><td>Clearer handoff for operation submission.</td><td><span class="tag">Unimplemented</span></td></tr>
             <tr><td>OI-010</td><td>Explicit protection of the old protocol log.</td><td><span class="tag">Unimplemented</span></td></tr>
-            <tr><td>OI-011</td><td>Console clarity and more maintainer-file read controls. Phase-specific source-read controls are done.</td><td><span class="tag">Deferred</span></td></tr>
+            <tr><td>OI-011</td><td>Console clarity and maintainer-file read controls. Artifact evidence calls now show operation, action, and logical JSON Pointer detail without resolving the pointer as a filesystem path. Existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue.</td><td><span class="tag">Closed, implemented/effective 2026-10-10</span></td></tr>
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
-            <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. The value is unchanged.</td><td><span class="tag">Pending</span></td></tr>
+            <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. Removal is not planned soon; the checkpointed pause and resume mechanism remain accepted operational limits.</td><td><span class="tag">Closed, withdrawn</span></td></tr>
             <tr><td>OI-014</td><td>Single-change attribution. Campaign <code>79395c88</code> adds seed-confounded observation and rollout-horizon comparisons. Candidate outcomes are valid, but individual causal effects remain unresolved. A conclusion must now preserve that limit and report the result as a property of the compared artifacts; no attribution instrument or matched-seed rule is approved.</td><td><span class="tag">Open</span></td></tr>
             <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Serialized component observability is implemented, and campaign <code>79395c88</code> also treated PPO expert-action reward shaping as evidence about direct controller imitation. A conclusion about an intended method must now state what the operation implemented and leave the unexercised part in the decision frontier.</td><td><span class="tag">Revised, unmeasured</span></td></tr>
             <tr><td>OI-016</td><td>Inquiry and handoff semantics. The first repair was ineffective. The corrective revision permits method-specific bounded inquiries, treats a closed-session next question as a revisable goal-review proposal, preserves exact identity after opening, and passes the goal review's actual synthesis into the fresh inquiry. Two independent fixed-evidence replays of the pre-I13 boundary both declined the inherited question and opened the broader frontier directly.</td><td><span class="tag">Revised, replay-validated</span></td></tr>
-            <tr><td>OI-017</td><td>Nested artifact evidence access. The deferred SDK tool resolves JSON artifacts from completed measurement operations in active Runner state, verifies their recorded fingerprint, discovers wildcard-normalized nested paths, and supports bounded filtering, projection and aggregation. The M30 replay recovered 15 positive and eight nonpositive margins among 23 pre-reach failures without loading the full payload into context.</td><td><span class="tag">Implemented, replay-validated</span></td></tr>
+            <tr><td>OI-017</td><td>Nested artifact evidence access. Campaign <code>339736e0</code> used the operation-scoped, fingerprint-verified tool successfully, and the retrieved evidence changed scientific conclusions. Repetitive query mechanics are tracked separately as OI-018.</td><td><span class="tag">Closed, effective</span></td></tr>
+            <tr><td>OI-018</td><td>Artifact-query ergonomics and context amplification. One invocation can now run up to 16 related path, filter, projection, and aggregation specifications against one resolved and verified artifact, with shared provenance and invocation-wide bounds. Discovery returns at most 200 paths and reports truncation.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -551,7 +552,14 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
-        <h3 style="margin-top: 0">9 October</h3>
+        <h3 style="margin-top: 0">10 October</h3>
+        <ul>
+          <li>OI-011 is closed implemented/effective. Artifact evidence calls display concise logical JSON Pointers without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
+          <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed fifteen-inquiry pause remains an accepted operational limit.</li>
+          <li>OI-017 is closed effective after campaign <code>339736e0</code> showed that the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
+          <li>OI-018 adds bounded batching for related evidence queries. Each specification has its own traversal budget, while result and output-byte budgets remain shared; fair result allocation and explicit truncation or budget-exhaustion states prevent ambiguous starvation.</li>
+        </ul>
+        <h3>9 October</h3>
         <ul>
           <li>Batch 3 implements OI-017 as a deferred, operation-scoped SDK query tool. The PI supplies a completed measurement operation ID, while Runner state supplies the artifact path and mandatory fingerprint. M30 fixed-evidence validation recovered the nested 15 positive and eight nonpositive margins among 23 pre-reach failures.</li>
           <li>OI-016 corrective revision is implemented after campaign <code>79395c88</code> showed the first repair ineffective. Proposed next questions are revisable in goal review, active inquiry identity remains exact, and the fresh inquiry receives the goal review's actual synthesis. Bounded closure and peer instruments are preserved. Two independent fixed-evidence replays at the pre-I13 boundary, run on the historical model specification, both avoided the redundant inquiry.</li>
@@ -636,7 +644,7 @@
             <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
             <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
             <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
-            <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. Removal is OI-013.</td></tr>
+            <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. OI-013 is closed as a withdrawn removal proposal.</td></tr>
             <tr class="group-row"><td colspan="3">Evidence and context</td></tr>
             <tr><td>Artifact inventories and references</td><td>They help the PI find the detailed evidence.</td><td>Implemented <code>f986a2c</code>, <code>97a12ba</code>. Partial reading is still possible (OI-003).</td></tr>
             <tr><td>Compact research brief</td><td>Less repeated text. A replay went from 109,508 to 46,656 bytes (57.39% smaller).</td><td>Implemented <code>3825d2e</code>. Better decisions are not shown.</td></tr>
@@ -747,7 +755,7 @@
           <ul>
             <li>The old runtime blocked goal-review measurements and forced a terminal choice at the cap.</li>
             <li>E19 happened at 4 of 15 inquiries. The cap did not cause it.</li>
-            <li>Now the cap only pauses the launcher. The maintainer plans to remove it later (OI-013).</li>
+            <li>Now the cap only pauses the launcher. OI-013 is closed as a withdrawn removal proposal; the pause remains an accepted operational limit.</li>
           </ul>
         </div>
       </details>
@@ -914,7 +922,7 @@
     </section>
 
     <footer>
-      <p>Snapshot of 2026-10-09, not live status. Implementation status and scientific effect are kept apart.</p>
+      <p>Snapshot of 2026-10-10, not live status. Implementation status and scientific effect are kept apart.</p>
       <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>

@@ -30,6 +30,7 @@ UUID_PATTERN = re.compile(
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
 )
 WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+")
+MAX_CONSOLE_POINTER_LENGTH = 96
 UUID_SUFFIX_PATTERN = re.compile(
     r"(?<!\w)(?:"
     r"[0-9a-fA-F]{1,8}|"
@@ -350,6 +351,17 @@ def full_console_path(target: str) -> str:
     if not path.is_absolute():
         path = ROOT / path
     return str(path.resolve())
+
+
+def compact_json_pointer(pointer: str) -> str:
+    if len(pointer) <= MAX_CONSOLE_POINTER_LENGTH:
+        return pointer
+    tail_length = 24
+    return (
+        pointer[: MAX_CONSOLE_POINTER_LENGTH - tail_length - 3]
+        + "..."
+        + pointer[-tail_length:]
+    )
 
 
 def compact_console_text(text: object) -> str:
@@ -1133,7 +1145,45 @@ class Console:
             self.active_tools[tool_call_id] = (name, arguments)
         detail = ""
         if isinstance(arguments, dict):
-            if name == "powershell":
+            if name == "artifact_evidence_query":
+                operation_id = arguments.get("operation_id")
+                action = arguments.get("action")
+                pointers: list[str] = []
+                if action == "discover":
+                    pointers.append(
+                        compact_json_pointer(str(arguments.get("prefix") or "/"))
+                    )
+                elif action == "batch":
+                    queries = arguments.get("queries")
+                    if isinstance(queries, list):
+                        valid_pointers = [
+                            query["path"]
+                            for query in queries
+                            if isinstance(query, dict)
+                            and isinstance(query.get("path"), str)
+                            and query["path"].startswith("/")
+                        ]
+                        pointers.extend(
+                            compact_json_pointer(pointer)
+                            for pointer in valid_pointers[:3]
+                        )
+                        if len(valid_pointers) > 3:
+                            pointers.append(
+                                f"+{len(valid_pointers) - 3} more"
+                            )
+                elif isinstance(arguments.get("path"), str):
+                    pointers.append(
+                        compact_json_pointer(str(arguments["path"]))
+                    )
+                parts = [
+                    str(value)
+                    for value in (operation_id, action)
+                    if isinstance(value, (str, int)) and str(value)
+                ]
+                if pointers:
+                    parts.append(", ".join(pointers))
+                detail = " | ".join(parts)
+            elif name == "powershell":
                 description = arguments.get("description")
                 command = arguments.get("command")
                 detail = " | ".join(
@@ -1410,8 +1460,14 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
         "artifact_evidence_query",
         description=(
             "Read-only discovery and bounded querying of nested JSON evidence "
-            "recorded by a completed measurement operation in this campaign. "
-            "Provide the operation ID, not a filesystem path."
+            "recorded by one completed measurement operation in this campaign. "
+            "Provide the operation ID, never a filesystem path. For related "
+            "fields, strongly prefer action=batch with up to 16 query "
+            "specifications (each has path and optional where/select/aggregate/"
+            "limit): the artifact is resolved and fingerprint-verified once, "
+            "and provenance is returned once. Use action=query only for a "
+            "single isolated query. Discovery is bounded and reports explicit "
+            "truncation."
         ),
         handler=artifact_evidence_query,
         params_type=ArtifactEvidenceQueryParams,
