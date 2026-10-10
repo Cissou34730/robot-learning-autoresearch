@@ -17,6 +17,7 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+TERMINAL_ACTION_COST_COEFFICIENT = 0.05
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -91,9 +92,16 @@ def reach_reward(
     reward += hold_complete
 
     action_cost = 0.0
+    terminal_action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
+        if current_distance <= success_threshold + OUTSIDE_BAND_WIDTH:
+            terminal_action_cost = -(
+                TERMINAL_ACTION_COST_COEFFICIENT
+                * float(np.sum(np.square(action)))
+            )
     reward += action_cost
+    reward += terminal_action_cost
 
     return RewardResult(
         total=float(reward),
@@ -104,5 +112,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "terminal_action_cost": float(terminal_action_cost),
         },
     )
