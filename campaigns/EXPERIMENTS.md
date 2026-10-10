@@ -13,3 +13,4 @@
 | T2 | training | I1 | completed |
 | M5 | measurement | I1 | completed |
 | E4 | restore_recipe | I1 | restored |
+| T3 | training | I1 | completed |
