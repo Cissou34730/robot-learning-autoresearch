@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign ec7f3d3a — Error-correction report</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--cp-link); }
+    code, .mono { font-family: Consolas, "Courier New", Courier, monospace; }
+    .wrap { width: min(1440px, calc(100% - 32px)); margin: 0 auto; }
+    header {
+      background: var(--cp-bg-elevated);
+      border-bottom: 1px solid var(--cp-border);
+      padding: 36px 0 28px;
+    }
+    .eyebrow { color: var(--cp-accent); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; }
+    h1 { margin: 8px 0 8px; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.05; }
+    h2 { margin-top: 0; font-size: 1.55rem; }
+    h3 { margin-bottom: 6px; }
+    .lede { max-width: 900px; color: var(--cp-text-muted); font-size: 1.08rem; }
+    .grid { display: grid; gap: 16px; }
+    .metrics { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: 22px; }
+    .card, .metric, details {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+    }
+    .metric { padding: 15px; }
+    .metric strong { display: block; font-size: 1.55rem; color: var(--cp-accent); }
+    .metric span { color: var(--cp-text-muted); font-size: .82rem; }
+    nav {
+      position: sticky; top: 0; z-index: 4; background: var(--cp-overlay);
+      border-bottom: 1px solid var(--cp-border); backdrop-filter: blur(8px);
+    }
+    nav .wrap { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; }
+    nav a { white-space: nowrap; text-decoration: none; padding: 6px 10px; border-radius: .625rem; }
+    nav a:hover, nav a:focus { background: var(--cp-accent-soft); color: var(--cp-accent-hover); }
+    main { padding: 28px 0 64px; }
+    section { scroll-margin-top: 64px; margin: 28px 0; }
+    .card { padding: 22px; }
+    .callout { border-left: 4px solid var(--cp-accent); background: var(--cp-accent-soft); padding: 14px 16px; border-radius: .625rem; }
+    .good { color: var(--cp-success); font-weight: 700; }
+    .bad { color: var(--cp-danger); font-weight: 700; }
+    .warn { color: var(--cp-warning); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; font-size: .91rem; }
+    th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--cp-border); }
+    th { color: var(--cp-text-muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; background: var(--cp-surface-soft); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--cp-border); border-radius: .625rem; }
+    .timeline td:first-child { white-space: nowrap; font-family: Consolas, "Courier New", Courier, monospace; color: var(--cp-accent); font-weight: 700; }
+    .timeline td:nth-child(2) { white-space: nowrap; }
+    details { margin: 12px 0; padding: 0; }
+    summary { cursor: pointer; padding: 14px 16px; font-weight: 700; }
+    details > div { padding: 0 16px 16px; }
+    .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bar { height: 12px; background: var(--cp-surface-soft); border-radius: .625rem; overflow: hidden; border: 1px solid var(--cp-border); }
+    .bar i { display: block; height: 100%; background: var(--cp-accent); }
+    .tag { display: inline-block; border: 1px solid var(--cp-border-strong); border-radius: .625rem; padding: 2px 8px; margin: 2px; font-size: .78rem; color: var(--cp-text-muted); }
+    footer { border-top: 1px solid var(--cp-border); padding: 24px 0 48px; color: var(--cp-text-muted); font-size: .86rem; }
+    @media (max-width: 1000px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 680px) { .wrap { width: min(100% - 20px, 1440px); } .metrics, .columns { grid-template-columns: 1fr; } .card { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">Detailed error-correction report · 10 October 2026</div>
+      <h1>Campaign <span class="mono">ec7f3d3a</span></h1>
+      <p class="lede">The most recent completed campaign in <span class="mono">campaigns/results.jsonl</span>. This report separates artifact-supported facts from PI interpretation and report-level assessment. Operational completion and scientific success are both reported, but they are not conflated.</p>
+      <div class="callout"><strong>Final verdict:</strong> operationally complete and scientifically successful against the protected goal. <span class="mono">T9:checkpoint-110592</span> was assigned best-known and passed the official 200-episode assessment at 98.5% (197/200), above the 196/200 threshold. The campaign also corrected several earlier evidence and handoff errors; those harness corrections are not themselves causal proof of the robot result.</div>
+      <div class="grid metrics">
+        <div class="metric"><strong>06:15–07:23Z</strong><span>campaign span</span></div>
+        <div class="metric"><strong>42</strong><span>PI session records</span></div>
+        <div class="metric"><strong>42</strong><span>operation records</span></div>
+        <div class="metric"><strong>9</strong><span>fresh training runs</span></div>
+        <div class="metric"><strong>1,087,488</strong><span>completed training steps</span></div>
+        <div class="metric"><strong>98.5%</strong><span>official result, 197/200</span></div>
+      </div>
+    </div>
+  </header>
+  <nav><div class="wrap">
+    <a href="#identity">Identity</a><a href="#timeline">Timeline</a><a href="#candidates">Candidates</a><a href="#inquiries">Inquiries</a><a href="#corrections">Corrections</a><a href="#outcomes">Outcomes</a><a href="#errors">Error register</a><a href="#verdict">Verdict</a>
+  </div></nav>
+  <main class="wrap">
+    <section id="identity">
+      <div class="card">
+        <h2>1. Campaign identity, provenance, and resource use</h2>
+        <div class="grid columns">
+          <div>
+            <h3>Artifact-supported facts</h3>
+            <ul>
+              <li>Campaign ID: <code>ec7f3d3a-1db0-4ec0-8521-1181b99ade8d</code>.</li>
+              <li>Started <code>2026-10-10T06:15:29.749629Z</code>; final record <code>E22</code> completed <code>2026-10-10T07:23:41Z</code>.</li>
+              <li>Base commit: <code>750df697358f311c6fc98151715d3b2d963e98fe</code>; recipe-source commit: <code>8256c8c7705a5080a722453b26eb13cd85b6e18f</code>.</li>
+              <li>Training provenance records the common code parent <code>492c6b6931cf4966dfe62e9d83d394a22a7a49e3</code>; T1 and descendants use scientific commit <code>dec3cd5204484f5acef319d30e20915515fb0192</code>.</li>
+              <li>All nine training requests were 120,000 steps and completed 120,832 rollout-aligned steps: 1,080,000 requested and 1,087,488 completed.</li>
+              <li>42 usage records, all <code>gpt-5.6-luna</code>: 16,678,352 input tokens, 121,994 output tokens, 15,080,375 cache-read tokens, 375 tool calls, 1,858.851 seconds, 84.746515 AIU.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>PI interpretation</h3>
+            <p>The campaign used a control-first progression: characterize mechanics, train across the official 6–20&nbsp;cm distribution, inspect failures, then test bounded interventions. Restores between interventions preserved the T1 recipe as the comparison anchor. This makes the final T9 result more interpretable than a terminal-checkpoint-only claim, while the different seeds and recipes still prevent a universal causal claim about every component.</p>
+            <h3>Operation counts</h3>
+            <p><span class="tag">measurements 9</span><span class="tag">training 9</span><span class="tag">inquiry records 6</span><span class="tag">checkpoints 7</span><span class="tag">recipe restores 6</span><span class="tag">role/conclusion 2</span><span class="tag">failed 1 (superseded M1)</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline">
+      <div class="card">
+        <h2>2. Complete lifecycle timeline</h2>
+        <p class="lede">Times are UTC from the authoritative operation records. “Inquiry” rows are lifecycle actions; the inquiry analyses below interpret the scientific content.</p>
+        <div class="table-wrap"><table class="timeline">
+          <thead><tr><th>Time</th><th>Op</th><th>Kind / inquiry</th><th>Event and evidence role</th></tr></thead>
+          <tbody>
+            <tr><td>06:20:17</td><td>M1</td><td>measurement</td><td>Failed system characterization because <code>site_xvelp</code> was unavailable; produced no scientific evidence.</td></tr>
+            <tr><td>06:20:28</td><td>M2</td><td>measurement</td><td>Native MuJoCo object-velocity retry completed; 16 matched traces and compiled dynamics artifact.</td></tr>
+            <tr><td>06:23:13</td><td>T1</td><td>training</td><td>Fresh PPO control on the complete official radius range; 120,832 actual steps.</td></tr>
+            <tr><td>06:24:14</td><td>M3</td><td>measurement</td><td>T1 held-out development diagnosis: 150/160, 93.75%.</td></tr>
+            <tr><td>06:25:25</td><td>E1</td><td>checkpoint</td><td>Handoff: dynamic authority supported; residual gap still coverage/branch/hold unresolved.</td></tr>
+            <tr><td>06:26:36</td><td>E2</td><td>inquiry I1</td><td>Opened I1.</td></tr>
+            <tr><td>06:27:42</td><td>E3</td><td>checkpoint</td><td>Checkpointed the I1 starting state.</td></tr>
+            <tr><td>06:29:46</td><td>M4</td><td>measurement I1</td><td>Branch-aware and hold-aware diagnostics for T1.</td></tr>
+            <tr><td>06:33:16</td><td>T2</td><td>training I1</td><td>Branch-residual plus near-target velocity reward.</td></tr>
+            <tr><td>06:35:25</td><td>M5</td><td>measurement I1</td><td>Paired T2/T1 evaluation; T2 underperformed.</td></tr>
+            <tr><td>06:36:20</td><td>E4</td><td>restore I1</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>06:39:31</td><td>T3</td><td>training I1</td><td>Polar target and scalar IK residual observations.</td></tr>
+            <tr><td>06:40:14</td><td>E5</td><td>restore I1</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>06:43:08</td><td>T4</td><td>training I1</td><td>Shoulder-limit action guard.</td></tr>
+            <tr><td>06:43:49</td><td>E6</td><td>restore I1</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>06:44:40</td><td>E7</td><td>inquiry I1</td><td>Closed I1 limited-negative; T2/T3/T4 routes rejected as tested.</td></tr>
+            <tr><td>06:46:05</td><td>E8</td><td>checkpoint I1</td><td>Checkpointed I1 conclusion and frontier.</td></tr>
+            <tr><td>06:47:40</td><td>E9</td><td>inquiry I2</td><td>Opened I2.</td></tr>
+            <tr><td>06:48:34</td><td>E10</td><td>checkpoint</td><td>Checkpointed I2 starting state.</td></tr>
+            <tr><td>06:51:40</td><td>T5</td><td>training I2</td><td>Terminal action-damping reward factor.</td></tr>
+            <tr><td>06:54:17</td><td>M6</td><td>measurement I2</td><td>Paired T5/T1 evaluation; T5 collapsed reach generation.</td></tr>
+            <tr><td>06:55:13</td><td>E11</td><td>inquiry I2</td><td>Closed I2 limited-negative.</td></tr>
+            <tr><td>06:56:06</td><td>E12</td><td>checkpoint I2</td><td>Checkpointed I2 conclusion.</td></tr>
+            <tr><td>06:57:29</td><td>E13</td><td>inquiry I3</td><td>Opened I3.</td></tr>
+            <tr><td>06:58:19</td><td>E14</td><td>checkpoint</td><td>Checkpointed I3 starting state.</td></tr>
+            <tr><td>06:59:37</td><td>E15</td><td>restore I3</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>07:03:00</td><td>T6</td><td>training I3</td><td>50% hold-progress forfeiture on exit.</td></tr>
+            <tr><td>07:04:36</td><td>M7</td><td>measurement I3</td><td>Paired T6/T1 evaluation; T6 underperformed.</td></tr>
+            <tr><td>07:05:24</td><td>E16</td><td>restore I3</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>07:08:33</td><td>T7</td><td>training I3</td><td>Velocity penalty within 3&nbsp;cm.</td></tr>
+            <tr><td>07:09:18</td><td>E17</td><td>restore I3</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>07:12:25</td><td>T8</td><td>training I3</td><td>Low-weight velocity penalty inside 1&nbsp;cm.</td></tr>
+            <tr><td>07:13:58</td><td>M8</td><td>measurement I3</td><td>Paired T8/T1 evaluation; nested evidence was available in the evaluation artifacts.</td></tr>
+            <tr><td>07:14:43</td><td>E18</td><td>restore I3</td><td>Restored T1 recipe.</td></tr>
+            <tr><td>07:18:32</td><td>T9</td><td>training I3</td><td>Added planar end-effector velocity to observations; restored T1 reward.</td></tr>
+            <tr><td>07:19:59</td><td>M9</td><td>measurement I3</td><td>Paired T9/T1 evaluation: 158/160 versus 155/160.</td></tr>
+            <tr><td>07:20:46</td><td>E19</td><td>inquiry I3</td><td>Closed I3 positive; velocity observability supported as the targeted route.</td></tr>
+            <tr><td>07:21:36</td><td>E20</td><td>checkpoint I3</td><td>Checkpointed the positive conclusion.</td></tr>
+            <tr><td>07:22:36</td><td>E21</td><td>model role</td><td>Assigned T9:checkpoint-110592 as best-known using M9 and E19.</td></tr>
+            <tr><td>07:23:41</td><td>E22</td><td>campaign conclusion</td><td>Requested official assessment; result recorded as <span class="good">official_assessment_passed</span>.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="candidates">
+      <div class="card">
+        <h2>3. Candidate performance and paired comparisons</h2>
+        <p><strong>Best-known:</strong> <code>T9:checkpoint-110592</code>. The development panel was 160 episodes with a 98% equivalent threshold of 157/160; the protected official panel was 200 episodes with a threshold of 196/200.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Candidate / route</th><th>Development result</th><th>Paired comparison</th><th>Failure profile / decision</th></tr></thead>
+          <tbody>
+            <tr><td><code>T1:checkpoint-120832</code><br>full distribution control</td><td>M3 150/160 (93.75%); M4 150/160; M5 155/160 (96.875%); M6 154/160 (96.25%); M7 151/160 (94.375%); M8 152/160 (95%); M9 155/160 (96.875%).</td><td>Baseline for M5–M9.</td><td>Mixed non-reaches and hold interruptions. Restored baseline; not best-known after T9.</td></tr>
+            <tr><td><code>T2:checkpoint-115712</code></td><td>131/160 (81.875%)</td><td>−24.375 percentage points vs T1 in M5; T2 wins 3, T1 wins 59.</td><td>28 non-reaches. Reject tested branch-residual/velocity reward recipe.</td></tr>
+            <tr><td><code>T2:checkpoint-120832</code></td><td>130/160 (81.25%)</td><td>−25.625 points vs T1 in M5.</td><td>28 non-reaches. Terminal checkpoint had no privileged status.</td></tr>
+            <tr><td><code>T3</code> / <code>T4</code></td><td>No viable measured candidate reported.</td><td>Not promoted to paired decision evidence.</td><td>Polar/IK observation expansion and shoulder guard failed to produce a viable route; no causal claim beyond recipe rejection.</td></tr>
+            <tr><td><code>T5:checkpoint-120832</code></td><td>98/160 (61.25%)</td><td>−35 points vs T1 in M6; candidate wins 3, T1 wins 59.</td><td>60 non-reaches and 2 hold interruptions; large branch residuals; reject terminal action-damping recipe.</td></tr>
+            <tr><td><code>T6:checkpoint-100352</code></td><td>98/160 (61.25%)</td><td>−33.125 points vs T1 in M7.</td><td>Hold-progress forfeiture did not preserve reach generation; reject tested recipe.</td></tr>
+            <tr><td><code>T8:checkpoint-115712</code></td><td>109/160 (68.125%)</td><td>−26.875 points vs T1 in M8.</td><td>Narrow in-band velocity reward degraded learning; reject tested recipe.</td></tr>
+            <tr><td><code>T9:checkpoint-110592</code></td><td>M9 158/160 (98.75%); official 197/200 (98.5%).</td><td>+1.875 points vs T1; three net paired wins; T1 had no wins in the matched comparison.</td><td>2 development non-reaches, no hold interruptions; observed failures were outer-radius (&gt;17&nbsp;cm). Official threshold met; best-known and passed.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="grid columns" style="margin-top:18px">
+          <div><h3>Development threshold</h3><div class="bar"><i style="width:98.75%"></i></div><p><strong>158/160 = 98.75%</strong>; two successes above the 157/160 equivalent threshold.</p></div>
+          <div><h3>Official threshold</h3><div class="bar"><i style="width:98.5%"></i></div><p><strong>197/200 = 98.5%</strong>; one success above the required 196/200.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="inquiries">
+      <div class="card">
+        <h2>4. Inquiry-by-inquiry analysis</h2>
+        <details open><summary>I1 — branch-aware reach generation and hold stabilization <span class="tag">training + measurement</span></summary><div>
+          <p><strong>Question:</strong> Which residual T1 failures explain the sub-goal result: branch/singularity-adjacent reach generation, approach momentum, or hold interruption?</p>
+          <p><strong>Operations:</strong> M4 added endpoint posture, IK branch residuals, applied actions, joint and end-effector velocity diagnostics. T2 tested branch-residual plus near-target velocity reward; M5 paired T2 against T1. T3 tested polar/IK observations; T4 tested a shoulder-limit guard. Restores E4–E6 preserved the T1 control.</p>
+          <p><strong>Evidence:</strong> T1 was 155/160 in M5; T2 was 131/160 and 130/160, each with 28 non-reaches. T3/T4 did not produce viable candidates.</p>
+          <p><strong>Conclusion:</strong> limited-negative for the tested intervention route. The tested reward/observation/guard recipes degraded learning and did not isolate the broader physical stabilization hypothesis.</p>
+          <p><strong>Decision frontier:</strong> retain the distinction between recipe failure and mechanism failure; determine whether direct velocity observability can improve the policy without changing the reward.</p>
+          <p><strong>Next direction:</strong> I2 tested terminal action damping; after that failed, I3 reframed toward a less confounded observation change.</p>
+        </div></details>
+        <details><summary>I2 — terminal action damping <span class="tag">training + measurement</span></summary><div>
+          <p><strong>Question:</strong> Can a single terminal action-damping reward factor reduce hold interruptions without damaging reach generation?</p>
+          <p><strong>Operations:</strong> T5 fresh PPO; M6 matched T5/T1 evaluation on a fresh 160-episode panel.</p>
+          <p><strong>Evidence:</strong> T5 achieved 98/160 versus T1 154/160. T5 had 60 non-reaches and 2 hold interruptions; T1 had 2 non-reaches and 4 hold interruptions. T5 retained max absolute action 1.0 and large branch residuals.</p>
+          <p><strong>Conclusion:</strong> limited-negative. The tested terminal cost worsened reach generation or optimization; it did not preserve inner-radius performance. It does not reject stabilization as a broader hypothesis.</p>
+          <p><strong>Decision frontier:</strong> reward shaping is confounded with policy degradation; a representation change that exposes motion state is a cleaner next test.</p>
+          <p><strong>Next direction:</strong> I3 tested hold-related recipes, then direct velocity observability.</p>
+        </div></details>
+        <details><summary>I3 — reduce the reach/hold gap by exposing Cartesian velocity <span class="tag">reframe + training + measurement</span></summary><div>
+          <p><strong>Question:</strong> Does adding planar end-effector velocity to the observation close the remaining development gap while preserving inner-radius behavior?</p>
+          <p><strong>Operations:</strong> T6 hold-progress forfeiture; M7 paired evaluation. T7 broad near-target velocity shaping. T8 narrow in-band velocity shaping; M8 paired evaluation. T9 changed only the learned observation by adding planar end-effector velocity while restoring the T1 reward and full target distribution; M9 paired T9/T1 evaluation. E19 closed I3; E21 assigned best-known; E22 requested official assessment.</p>
+          <p><strong>Evidence:</strong> T6 98/160 vs T1 151/160. T8 109/160 vs T1 152/160. T9 158/160 vs T1 155/160, three net paired wins, no T1 wins, no T9 hold interruptions, and no observed inner-radius failures on the matched panel. E22 and the brief record the official result as 197/200 (98.5%).</p>
+          <p><strong>Conclusion:</strong> positive. The completed evidence supports velocity observability as the targeted mechanism in this comparison. The official assessment establishes the human goal for this campaign.</p>
+          <p><strong>Decision frontier:</strong> after the official pass, remaining questions concern robustness beyond the protected panel and causal isolation from seed/implementation context, not whether this campaign met its stated goal.</p>
+          <p><strong>Next direction:</strong> no new OI or scientific inquiry is invented here. Preserve the artifact and treat any follow-up as a separately authorized campaign.</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section id="corrections">
+      <div class="card">
+        <h2>5. Explicit validation of known prior errors</h2>
+        <p class="lede">These checks distinguish the current campaign’s evidence from prior harness post-mortems. A correction can improve interpretation without proving that the harness change caused the robot improvement.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Prior issue</th><th>Correction validated here</th><th>Evidence and limit</th></tr></thead>
+          <tbody>
+            <tr><td><strong>T10 implementation semantics</strong></td><td>Do not describe T10 as direct controller imitation. The recorded T10 route implemented PPO expert-action reward shaping; direct supervised imitation was not exercised.</td><td><code>docs/harness-experiment-log.md</code>, OI-015 entry. This campaign does not contain T10; the correction prevents an invalid causal carry-over.</td></tr>
+            <tr><td><strong>M8 / M30 nested evidence inspection</strong></td><td>Do not infer absent nested diagnostics from a structure-only inventory. The current campaign’s M8 evaluation artifacts contain nested episode diagnostics; prior M30’s inventory listed the array but did not expand array-element fields.</td><td>OI-003 entry and the campaign evaluation artifact manifests. The present report uses operation summaries and does not claim that a schema inventory is a full value inspection.</td></tr>
+            <tr><td><strong>M19 inconclusive constraint activation</strong></td><td>Preserve an inconclusive result when the planned constraint or discriminating evidence was not actually activated; do not convert an unexercised route into a negative scientific result.</td><td>Prior issue record is outside this campaign. No M19 record exists in <code>ec7f3d3a</code>; uncertainty is retained rather than silently resolved.</td></tr>
+            <tr><td><strong>M20 corrected boundary replay</strong></td><td>Use the corrected goal-review boundary and actual handoff state when testing inquiry formation; do not replay a stale inherited question and call it a campaign-level result.</td><td>OI-016 records two independent fixed-evidence replays of the pre-I13 boundary. This is boundary-level replication, not proof of campaign-level causality.</td></tr>
+            <tr><td><strong>OI-016 question reframe / handoff</strong></td><td>I3 was not forced to preserve a stale method-specific question after the review state changed. E19 records a positive closure and E20 hands off the actual frontier before E21/E22 advance T9.</td><td>Results sequence E19 → E20 → E21 → E22 and the OI-016 log entry. Harness effect remains a process-level inference, not an isolated randomized intervention.</td></tr>
+            <tr><td><strong>OI-017 tool use</strong></td><td>Operation-scoped, fingerprint-verified nested artifact access was available for evidence inspection.</td><td>The session-usage artifact records 42 sessions and artifact-evidence-query calls during startup, goal review, and inquiry. OI-017 is marked closed effective 2026-10-10.</td></tr>
+            <tr><td><strong>OI-018 query cost</strong></td><td>Batching and bounded traversal were implemented after the prior 544-call / 32-session cost observation; this report does not claim the campaign measured the new ergonomic effect.</td><td>OI-018 entry explicitly says campaign effect unmeasured. Usage totals are reported as facts, not as proof of a cost reduction.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="outcomes">
+      <div class="grid columns">
+        <div class="card"><h2>6. Scientific outcome</h2><p class="good">Goal achieved.</p><p>T9 passed the official protected assessment at 197/200 (98.5%), exceeding the 196/200 requirement. The campaign moved from a 93.75% T1 development result to a 98.75% T9 development result and then to the official pass. Failure analysis supports outer-radius reach/hold conditioning as the remaining development concern, with no observed T9 hold interruptions on M9.</p></div>
+        <div class="card"><h2>7. Harness outcome</h2><p class="good">Operational completion and handoff corrections held.</p><p>M1 was superseded cleanly by M2. Inquiries closed at declared boundaries, restores preserved the control, E19 handed off an updated conclusion, E21 assigned a role, and E22 requested assessment. The harness log still marks several process effects as unmeasured; successful operation is not proof of causal harness efficacy.</p></div>
+        <div class="card"><h2>8. Cost and context outcome</h2><p class="warn">High context cost; no causal cost claim.</p><p>The campaign used 16.68M input tokens, 121,994 output tokens, 15.08M cache reads, 375 tool calls and 84.75 AIU. OI-018 records the prior query-amplification problem and the bounded batch repair, but explicitly leaves campaign effect unmeasured. Training used the full nine-run allocation.</p></div>
+        <div class="card"><h2>9. Was official assessment justified?</h2><p class="good">Yes, based on the recorded decision frontier.</p><p>M9 exceeded the development threshold, beat paired T1 evidence, removed observed hold interruptions, and preserved inner-radius behavior on the matched panel. E19 explicitly identified the remaining distinction as development generalization versus the protected distribution; E21 assigned best-known; E22 requested the only measurement capable of settling it. The official pass then resolved that distinction.</p></div>
+      </div>
+    </section>
+
+    <section id="errors">
+      <div class="card">
+        <h2>10. Error register</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Claim or failure corrected</th><th>Supporting evidence</th><th>Remaining uncertainty</th></tr></thead>
+          <tbody>
+            <tr><td>M1’s failed diagnostic could be treated as scientific evidence.</td><td>M1 has status failed and is superseded by M2; M2 completed the corrected native API measurement.</td><td>M1’s failure cost remains operational history, not evidence about dynamics.</td></tr>
+            <tr><td>Terminal checkpoints are inherently best.</td><td>M5–M9 compare nominated checkpoints; T9 at 110,592 steps, not the terminal T1 checkpoint, became best-known.</td><td>Checkpoint selection is still recipe- and panel-dependent.</td></tr>
+            <tr><td>Reward-shaping failures prove stabilization is not physical.</td><td>M6, M7 and M8 reject only the tested recipes; E19 explicitly preserves the broader stabilization frontier.</td><td>Causal isolation from seed and other implementation details is incomplete.</td></tr>
+            <tr><td>Nested fields were missing when a structure-only inventory did not show them.</td><td>OI-003 and OI-017 records distinguish inventory limits from artifact absence; M8 artifact manifests contain nested diagnostics.</td><td>This report does not independently recompute every episode-level statistic.</td></tr>
+            <tr><td>I3 had to inherit a stale question after review.</td><td>OI-016 corrected boundary replays and the E19/E20 handoff sequence show the actual updated frontier being used.</td><td>Boundary-level replay is not a controlled campaign comparison.</td></tr>
+            <tr><td>Development success could substitute for official success.</td><td>E22 requested the protected assessment; the brief records the official 197/200 result separately from M9’s 158/160.</td><td>Future robustness outside the protected panel is not established.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="verdict">
+      <div class="card">
+        <h2>11. Final verdict and prioritized implications</h2>
+        <ol>
+          <li><strong>Retain the scientific conclusion:</strong> the official robot goal was achieved by <code>T9:checkpoint-110592</code>; do not downgrade the pass to development-only evidence.</li>
+          <li><strong>Retain the evidence boundary:</strong> the strongest mechanism-level claim is specific to the compared artifacts: adding planar end-effector velocity to the observation, with the restored T1 reward and full distribution, was associated with the M9 improvement.</li>
+          <li><strong>Preserve the corrected handoff pattern:</strong> use actual checkpointed synthesis and question state, not stale inherited inquiry text; keep inconclusive constraints and uninspected nested evidence explicit.</li>
+          <li><strong>Do not invent follow-up IDs:</strong> no new OI is created by this report. Any robustness or causal-isolation study requires a separately recorded campaign and must not rewrite this result.</li>
+          <li><strong>Report costs honestly:</strong> the campaign was expensive in context and training allocation. OI-018’s batch repair is documented, but its scientific or cost effect remains unmeasured.</li>
+        </ol>
+        <p class="callout"><strong>Assessment:</strong> this is a scientifically successful campaign with a justified official assessment, a passed human goal, and a credible but bounded interpretation of why T9 improved. It is not evidence that every prior harness repair was causally responsible, nor that the policy is robust beyond the official panel.</p>
+      </div>
+    </section>
+  </main>
+  <footer><div class="wrap">Sources reconciled read-only: <span class="mono">campaigns/results.jsonl</span>, <span class="mono">runner/state/research_state.json</span>, <span class="mono">campaigns/brief.md</span>, campaign evaluation artifacts, <span class="mono">reports/session_usage/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d.jsonl</span>, <span class="mono">docs/harness-experiment-log.md</span>, and generated campaign history. Report created 2026-10-10; no campaign state or artifact was modified.</div></footer>
+  <script>
+    document.querySelectorAll("a[href^='#']").forEach((link) => {
+      link.addEventListener("click", () => {
+        document.querySelector(link.getAttribute("href"))?.setAttribute("tabindex", "-1");
+      });
+    });
+  </script>
+</body>
+</html>
