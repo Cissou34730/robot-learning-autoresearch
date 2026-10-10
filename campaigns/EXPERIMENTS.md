@@ -28,3 +28,4 @@
 | E13 | inquiry | I3 | completed |
 | E14 | checkpoint | - | checkpointed |
 | E15 | restore_recipe | I3 | restored |
+| T6 | training | I3 | completed |
