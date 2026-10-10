@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close with a positive result if controlled near-limit evidence identifies a remediable loss of authority, rebound, or constraint interaction and a matched candidate comparison against T3 recovers at least four recurring failures without material regression. Close with a limited or negative result if the measured near-limit behavior does not distinguish the failures, or if a behavior-informed intervention is measured with the required complete-hold, acquisition, interruption, terminal-joint, and branch diagnostics and leaves the same plateau or regresses T3.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3 achieves 153 of 160 development successes, leaving four no-first-reach and three interrupted-hold failures. Resolving whether near-limit plant behavior prevents reliable control is necessary before choosing another policy representation or requesting official assessment.",
-    "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5 and M6 matched T3, rejecting only their tested reward recipes. T8/T9 and M7 likewise left the plateau unchanged, so the tested explicit trajectory implementation produced a recipe-specific negative result. T10 collapsed under absolute setpoints; T11 recovered training but M8 measured only 100/160, rejecting that tested residual-setpoint feedback recipe without rejecting feedback control generally. T12 then applied a direct-action branch-aware near-limit governor, but M9 matched T3 at 153/160 with zero discordant episodes and the same four no-first-reach and three interrupted-hold failures. These results correct the inherited proposal that a materially different trajectory or action representation is simply untested: explicit trajectory control and a direct-action near-limit governor have been tested, but only in the recorded implementations. They do not establish whether near-limit constraint forces, rebound, or loss of usable actuator authority cause the persistent failures. E34 opens I9 to obtain that missing mechanistic evidence rather than applying another small guidance variant.",
-    "handoff_question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
-    "handoff_source_session_id": "S18",
-    "id": "I9",
-    "opened_in_session": "S18",
-    "question": "Do near-limit joint dynamics and constraint behavior, rather than the tested policy representations, cause the recurring negative-angle acquisition and interrupted-hold failures, and can a controller using that measured behavior recover them without sacrificing T3's complete-hold baseline?",
-    "rationale": "T3/M4 localized the seven failures to approximately -130 to -151 degree targets at the shoulder limit, with both acquisition and hold failures. M7 showed that the tested explicit trajectory implementation matched T3, and M9 showed that the tested direct-action branch-aware governor also matched T3 with zero discordant episodes. These results rule against treating the broad representation question as untested, but only for those implementations; they do not measure near-limit constraint forces, rebound, or usable actuator authority. M1 established high actuation authority and residual-motion risk away from this specific discriminator, while the physical model identifies a controlled approach/reversal experiment as the evidence that can separate near-limit dynamics from policy action selection.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -9023,7 +9012,7 @@
     }
   },
   "counters": {
-    "event": 35,
+    "event": 36,
     "inquiry": 9,
     "measurement": 11,
     "session": 19,
@@ -18594,9 +18583,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T00:34:32Z",
+      "error": null,
+      "id": "E36",
+      "inquiry_id": "I9",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "limited negative",
+        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation.",
+        "status": "completed"
+      },
+      "session_id": "S19",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "limited negative",
+        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "limited negative",
+        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E36",
+    "inquiry_id": "I9",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation."
+      }
+    },
+    "request_fingerprint": "80e6dabad60f4bbfcaaa405423a3d1e31005b870f8d086928c66eb30c1d9c72c",
+    "session_id": "S19",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -18650,7 +18693,8 @@
     "operation_ids": [
       "M10",
       "T13",
-      "M11"
+      "M11",
+      "E36"
     ],
     "scientific_parent_commit": "9889bd2b4a05f9ec84546ca38db3dd074c75799f"
   },

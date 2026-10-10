@@ -61,3 +61,4 @@
 | M10 | measurement | I9 | completed |
 | T13 | training | I9 | completed |
 | M11 | measurement | I9 | completed |
+| E36 | inquiry | I9 | completed |
