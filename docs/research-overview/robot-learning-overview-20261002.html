@@ -198,7 +198,7 @@
       <p class="intro">Robot AutoResearch is a harness. It lets an independent AI agent, the Principal Investigator (PI), train a robot.</p>
       <p class="intro">The human owns the goal. The PI owns the science and the training. The Runner is the gatekeeper. It checks and runs every operation.</p>
       <p class="intro">The working example is a two-joint arm that must reach a target and hold still. Work is organized in campaigns. A campaign is split into inquiries. An inquiry is one scientific question.</p>
-      <p class="snapshot">Last updated <time datetime="2026-10-10">2026-10-10</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
+      <p class="snapshot">Last updated <time datetime="2026-10-11">2026-10-11</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status">1 Status</a>
         <a href="#roles">2 Roles</a>
@@ -245,8 +245,8 @@
           <span class="tag">Issue register</span>
           <h3 style="margin-top: 12px">21 issues, OI-001 to OI-021</h3>
           <ul>
-            <li>Active or open (8): OI-005, OI-006, OI-008, OI-009, OI-010, OI-014, OI-019, OI-021.</li>
-            <li>Implemented or revised, awaiting campaign evidence (2): OI-015, OI-018.</li>
+            <li>Active or open (7): OI-006, OI-008, OI-009, OI-010, OI-014, OI-019, OI-021.</li>
+            <li>Implemented or revised, awaiting campaign evidence (3): OI-005, OI-015, OI-018.</li>
             <li>Closed as effective (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017.</li>
             <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
             <li>Paused or proposal (2): OI-007, OI-012.</li>
@@ -256,7 +256,7 @@
         </article>
         <article class="card">
           <span class="tag">Changed last</span>
-          <h3 style="margin-top: 12px">10 October 2026</h3>
+          <h3 style="margin-top: 12px">11 October 2026</h3>
           <ul>
             <li>OI-011 is closed implemented/effective: logical JSON Pointers display without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
             <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed inquiry cap remains.</li>
@@ -264,6 +264,7 @@
             <li>OI-018 adds fair bounded batching with per-query traversal budgets and shared result/output limits.</li>
             <li>OI-003 and OI-016 close on campaign <code>ec7f3d3a</code> evidence; no campaign-length replay was required.</li>
             <li>OI-020 is withdrawn as an invalid generalization of campaign-specific evidence. OI-021 records the scenario-specific scientific-model prompt; impact analysis must precede repair.</li>
+            <li>OI-005 now compares terminal assessment with the expected contribution of further bounded work. Independent parent and Opus 5.5/high RCAs cover both early requests and persistent deferral. <a href="../oi005_assessment_decision_rca_20261011.md">Read the reconciled RCA</a>.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
@@ -436,6 +437,7 @@
           <h3>Rules for goal review</h3>
           <p>Closing an inquiry does not mean success.</p>
           <p>A development score above the goal does not force an assessment.</p>
+          <p>The PI compares the strongest candidate's evidence with what further bounded work can credibly add, and records the evidence against the chosen alternative. An unresolved mechanism does not by itself require deferral.</p>
           <p>The PI decides if the evidence justifies an assessment. The Runner checks only the operational contract.</p>
           <p>An official failure ends the campaign. It does not return to another inquiry.</p>
         </div>
@@ -509,7 +511,7 @@
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
             <tr><td>OI-003</td><td>Measurement evidence. Campaign <code>79395c88</code> declared M30 nearest-branch margins missing even though the completed artifact contained them. The synthesis convention now ties a direction-changing conclusion to its supporting operation and artifact field, and states that an uninspected diagnostic is not missing evidence. Campaign <code>ec7f3d3a</code> did not repeat the false-missing interpretation.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The final campaign <code>896c230a</code> confirmed the same progression pattern in the transfer-learning route. The goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
+            <tr><td>OI-005</td><td>Assessment-decision calibration. The dual RCA finds terminal-as-probe requests in <code>58dcd817</code>/<code>896c230a</code> and inherited-gate deferral in <code>79395c88</code>/<code>339736e0</code>. Goal review now compares terminal commitment with useful further work, retains counterevidence and separates best-known from goal certification. No score gate, mandatory repeat or Runner judgment is added. <a href="../oi005_assessment_decision_rca_20261011.md">Reconciled RCA</a>.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
@@ -642,7 +644,7 @@
             <tr><td>Exact conclusion and next question handoff</td><td>The Runner copies the source conclusion and question into the inquiry state.</td><td>Implemented <code>9f81838</code>. It works. The preserved question was too broad (OI-002).</td></tr>
             <tr><td>PI authority sentence in decision guidance</td><td>The PI can inspect, change, or replace PI-owned code before it submits an operation.</td><td>Restored <code>adff08e</code>.</td></tr>
             <tr><td>One owner per instruction (R8)</td><td>Remove repeated text between contracts and launcher.</td><td>Implemented <code>8166e2f</code>.</td></tr>
-            <tr><td>No readiness prompt</td><td>The earlier readiness guidance was withdrawn.</td><td>No replacement exists (OI-005).</td></tr>
+            <tr><td>Symmetric goal-review comparison</td><td>Weigh terminal assessment against what further bounded work can credibly change. The program owns the principle; goal-review prompts route to it.</td><td>OI-005 implemented, unmeasured. The earlier one-sided guidance remains withdrawn.</td></tr>
             <tr class="group-row"><td colspan="3">Phases and operations</td></tr>
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
@@ -772,7 +774,7 @@
             <thead><tr><th scope="col">Revision</th><th scope="col">Note</th></tr></thead>
             <tbody>
               <tr><td>Startup clarification <code>c2ec8f7</code></td><td>Withdrawn. <code>eb1118e</code> restored older wording. The 4 October startup batch later replaced that.</td></tr>
-              <tr><td>Readiness guidance <code>e4736da</code></td><td>Added 3 October. Removed by the maintainer. The rollback is in <code>b275861</code>. Shutdown repair <code>2e897c7</code> stays. No replacement exists.</td></tr>
+              <tr><td>Readiness guidance <code>e4736da</code></td><td>Added 3 October. Removed by the maintainer. The rollback is in <code>b275861</code>. Shutdown repair <code>2e897c7</code> stays. On 11 October OI-005 adopted a different, two-sided goal-review comparison; the old block was not reinstated.</td></tr>
               <tr><td>Closure and handoff prompts <code>b4f1cdf</code>, <code>c0cfcb6</code></td><td>Reverted.</td></tr>
               <tr><td>Startup cue removal <code>371bae1</code></td><td>No improvement seen. Withdrawn in <code>efc3be7</code>.</td></tr>
               <tr><td>R3 inquiry semantics <code>9c5ef61</code></td><td>Discarded. It made the inquiry question too important.</td></tr>

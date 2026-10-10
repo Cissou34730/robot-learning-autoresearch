@@ -12,7 +12,8 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 - **Runner:** operates the lifecycle, enforces mechanical contracts and records
   evidence; it does not make scientific judgments.
 - The assistant may inspect and edit approved maintainer-owned files, but must
-  never launch, resume, reset, train, measure or evaluate a campaign.
+  never launch, resume, reset, train, measure or evaluate a campaign without
+  explicit maintainer authorization for that bounded task.
 - A harness implementation check is not evidence of scientific effectiveness.
 - A campaign observation does not prove causality unless the comparison
   isolates the claimed change.
@@ -28,13 +29,15 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 
 ## Current baseline
 
-**As of 2026-10-10**
+**As of 2026-10-11**
 
 - Latest completed campaign: `ec7f3d3a`.
 - Official result: `197/200` (98.5%), above the `196/200` threshold.
 - Latest harness changes: OI-016 handoff revision, OI-003/OI-015/OI-014
   evidence-fidelity wording, OI-017 nested artifact access, and OI-018 query
-  batching and observability.
+  batching and observability. OI-005 now adds symmetric assessment/further-work
+  comparison and terminality routing in goal review; its campaign effect is
+  unmeasured at publication.
 - No campaign operation is running or authorized by this record.
 - The fifteen-inquiry limit remains a checkpointed operational pause, not a
   scientific-exhaustion result.
@@ -62,7 +65,7 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-002 | Inquiry control and bounded closure | **Closed** | Campaign `1ae27a27` closed positive, negative and limited inquiries without indefinite continuation. | None. |
 | OI-003 | Evidence inspection and interpretation | **Closed** | `current_synthesis` now requires claim-to-artifact references and distinguishes uninspected from absent evidence. Campaign `ec7f3d3a` used nested diagnostic artifacts without repeating the M30 false-missing interpretation. | None. A future distinct interpretation defect requires a new issue. |
 | OI-004 | Checkpoint nomination and progression | **Closed** | Nonterminal candidates and failed probes can inform progression; `896c230a` showed evidence-backed selection. | None. Do not infer causal improvement. |
-| OI-005 | Counterevidence and assessment readiness | **Open / postponed** | Narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. | Design an approved repair before changing prompts. |
+| OI-005 | Counterevidence and assessment-decision calibration | **Implemented / unmeasured** | The reconciled independent RCAs cover both terminal-as-probe requests and inherited-gate deferral. Goal review now compares terminal commitment with the contribution of further bounded work, preserving counterevidence and relative best-known semantics. No readiness gate or Runner judgment was added. | Observe actual decision reasons in the explicitly authorized fresh v3 campaign; pass/fail alone cannot close the issue. |
 | OI-006 | Full startup-budget review | **Open** | The 120,000-step ceiling and its scientific/cost effect have not been reviewed. | Separate maintainer budget analysis from scientific repairs. |
 | OI-007 | Prompt-stack ordering R2 | **Paused** | Scientific context precedes operational options; putting the human goal before the PI persona in ordinary sessions is not approved. | No action unless reopened. |
 | OI-008 | Residual context delivery | **Open / not approved** | Brief compaction was implemented; prompt replay and SDK output handling remain possible causes of flooding. | Do not bundle with another repair. |
@@ -91,7 +94,7 @@ Source: [`campaign_79395c88_comprehensive_rca_20261009.md`](campaign_79395c88_co
 | Intended method differed from implemented experiment | OI-015 | Wording repair exists; semantic realization still needs the planned replay. |
 | Available evidence was carried forward as missing | OI-003 and OI-017 | Closed for the tracked defect: access was fixed under OI-017 and the current campaign did not repeat the false-absence interpretation. |
 | Candidate comparisons were mistaken for causal comparisons | OI-014 | Still open. Artifact results are valid; causal explanations remain bounded hypotheses. |
-| Research preferences became acceptance criteria | OI-005; campaign-specific evidence remains in the RCA | The generic readiness question remains open under OI-005. The radius/panel symptom is not generic harness guidance. |
+| Research preferences became acceptance criteria | OI-005; campaign-specific evidence remains in the RCA | Symmetric assessment/further-work comparison is implemented but unmeasured under OI-005. The radius/panel symptom is not generic harness guidance. |
 | The brief became large and cognitively expensive | OI-008, partly addressed | Brief compaction was implemented, but context-delivery causes and scientific effect remain unmeasured. |
 
 ## RCA validation still outstanding
@@ -128,6 +131,7 @@ operations and must remain separate from campaign execution:
 | 2026-10-10 | OI-020 acceptance-gate and slice-label drift | Withdrawn as an invalid generic issue. The campaign-specific RCA observation remains preserved. |
 | 2026-10-11 | OI-003 and OI-016 closure | Closed from `ec7f3d3a` campaign evidence; no replay or campaign mutation was required. OI-015 remains implemented/unmeasured because its historical semantic mismatch was not exercised. |
 | 2026-10-11 | OI-021 scenario-specific scientific-model prompt | Registered high priority. Direct leakage is confined to the preliminary scientific-model prompt, with downstream influence through its durable output. Impact review precedes repair. |
+| 2026-10-11 | OI-005 reconciled dual RCA and goal-review repair | Implemented/unmeasured. The program owns a two-sided terminal-assessment/further-work comparison; only ordinary goal-review routing and its saved objective change. The maintainer explicitly authorized publication, fresh reset with the v3 recipe and one campaign launch after this repair. No replay, cap, budget, recipe, OI-019 or OI-021 change is bundled. |
 | 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 
 ## Evidence index
@@ -140,6 +144,7 @@ operations and must remain separate from campaign execution:
 | `reports/session_usage/*.jsonl` | AIU, token and tool-call accounting. |
 | `docs/campaign_79395c88_comprehensive_rca_20261009.md` | Full independent RCA and proposed validation. |
 | `docs/oi016_post_campaign_rca_20261009.md` | Earlier OI-016-specific analysis; superseded where the comprehensive RCA differs. |
+| `docs/oi005_assessment_decision_rca_20261011.md` | Reconciled parent and Opus 5.5/high RCAs, evidence, disagreements, bounded repair and campaign-observation criteria. |
 | `docs/research-overview/robot-campaign-ec7f3d3a-20261010-error-correction-report.html` | Detailed report for the latest successful campaign. |
 | `docs/harness-change-narrative.md` | Curated explanation of harness failures, attempted repairs, reversals and current conclusions. |
 | `archive/harness-experiment-log-legacy.md` | Full prior narrative log, retained for historical lookup only. |

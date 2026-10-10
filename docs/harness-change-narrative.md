@@ -156,6 +156,40 @@ campaign RCA rather than becoming generic harness instructions.
 
 Primary tracker ownership: OI-005 and OI-019. OI-020 is withdrawn.
 
+#### OI-005 decision history: from caution to a two-sided comparison
+
+Earlier failures exposed counterevidence loss and narrow development evidence
+being promoted to readiness. The three-sentence block in `e4736da` responded
+with caution about residual failures and favorable scores. The maintainer
+withdrew it in `b275861`; its effect was never established. The withdrawal is
+not evidence that preserving counterevidence was wrong.
+
+Later campaigns showed why caution alone was incomplete. `58dcd817` and
+`896c230a` requested assessment while imagining useful work after failure.
+`79395c88` and `339736e0` never assessed: self-selected development gates,
+relative-role misconceptions and unresolved mechanisms repeatedly justified
+deferral. The latter campaign still produced useful diagnostic evidence.
+Its length therefore cannot establish that continued work was pointless.
+The following success in `ec7f3d3a` did not close both failure directions.
+The older `06656182` reason also contained a partial productivity comparison,
+contrary to the earlier oversimplification that no comparison existed.
+
+On 11 October, independent parent and Opus 5.5/high RCAs were reconciled.
+The adopted repair replaces one-sided readiness caution with a goal-level
+comparison: commit the strongest evidence-backed candidate to a terminal
+assessment, or pursue bounded work whose expected contribution warrants the
+delay. It preserves contrary evidence and relative best-known semantics.
+The program owns the principle and ordinary goal-review prompts route to it.
+There is no new threshold, mandatory measurement, automatic assessment or
+Runner adequacy judgment.
+
+Implementation is not demonstrated effectiveness. The maintainer authorized
+a fresh v3 campaign after publication to observe actual decision reasons.
+OI-005 remains implemented/unmeasured at publication; OI-019 and OI-021 remain
+outside this repair. The
+[reconciled RCA](oi005_assessment_decision_rca_20261011.md) preserves the case
+evidence, differences between the independent analyses and rejected approaches.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query

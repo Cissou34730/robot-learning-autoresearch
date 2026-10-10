@@ -823,11 +823,21 @@ function New-ScientificSessionPrompt {
     }
     else {
         @(
-            "State the unresolved scientific distinction before selecting an operation."
+            if ($session.kind -eq "goal_review") {
+                "Apply contracts/program.md 'Goal review' to compare terminal assessment with further bounded work before choosing the campaign-level outcome."
+            }
+            else {
+                "State the unresolved scientific distinction before selecting an operation."
+            }
             "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
             "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
-            "State which completed evidence supports continuing the current route, changing it, or obtaining missing evidence. Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
+            if ($session.kind -eq "goal_review") {
+                "For a measurement, explain how its possible outcomes would affect the campaign-level choice. Record the chosen assessment or inquiry and its evidence-based reason as contracts/program.md 'Goal review' defines."
+            }
+            else {
+                "State which completed evidence supports continuing the current route, changing it, or obtaining missing evidence. Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
+            }
             "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis, decision_frontier and next_question. Apply those meanings to the current state shown above."
             if ($session.kind -eq "goal_review") {
                 "In goal review, next_question must exactly match the question of the inquiry opened in this session."
@@ -1226,7 +1236,7 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry."
+                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry."
             }
             else {
                 (

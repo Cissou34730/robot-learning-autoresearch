@@ -69,6 +69,30 @@ campaign-level decisions:
 - request the official assessment for the explicit best-known model; or
 - open one bounded inquiry connected directly to the current goal gap.
 
+Compare these alternatives using completed evidence. Weigh the strongest
+evidence-backed candidate's prospect of meeting the protected criterion,
+including residual failures, contrary evidence and measurement uncertainty,
+against what further bounded work can credibly change in candidate capability,
+candidate selection or the commitment decision. Explain why that expected
+contribution warrants delaying assessment, or why the case for assessment is
+stronger. The decision reason preserves the comparison and the evidence that
+weighs against the chosen alternative.
+
+Official assessment is a terminal commitment: its pass or fail result ends
+this campaign. It is not a development probe followed by another inquiry.
+Best-known identifies the strongest evidence-backed candidate, not goal
+certification. Assigning that role does not require the goal to be met or
+commit the campaign to assessment; the role may be assigned while choosing
+further work.
+
+A favorable development score or inquiry closure does not automatically justify
+assessment. Residual uncertainty or an incomplete mechanism explanation does
+not automatically justify deferral. PI-selected development criteria and
+research preferences inform the comparison but do not create additional
+eligibility requirements. The comparison requires neither a numerical
+confidence estimate, repeated measurement nor complete mechanism resolution.
+The PI retains the scientific judgment; the Runner does not judge readiness.
+
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable scientific session record, and a fresh inquiry session continues from
