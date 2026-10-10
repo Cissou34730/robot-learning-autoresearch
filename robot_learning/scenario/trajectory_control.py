@@ -7,11 +7,13 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 JOINT_LIMIT = np.deg2rad(170.0)
 TRAJECTORY_DURATION_STEPS = 20
 REFERENCE_BLEND = 0.45
-LIMIT_BRAKE_BLEND = 0.08
+LIMIT_BRAKE_BLEND = 0.35
 POSITION_GAIN = np.array([1.4, 1.0], dtype=np.float64)
 VELOCITY_GAIN = np.array([0.12, 0.08], dtype=np.float64)
 LIMIT_MARGIN = np.deg2rad(8.0)
 TARGET_LIMIT_MARGIN = np.deg2rad(18.0)
+LIMIT_POSITION_GAIN = 4.0
+LIMIT_VELOCITY_GAIN = 0.25
 ACQUISITION_DISTANCE = 0.025
 ACQUISITION_BLEND = 0.25
 HOLD_BLEND = 0.08
@@ -76,45 +78,61 @@ def _smoothstep(phase: float) -> float:
 
 
 def near_limit_acquisition_action(data, action: np.ndarray) -> np.ndarray:
-    """Preserve direct actions while guarding an admissible limit-near branch."""
+    """Preserve direct actions while compensating the measured soft-limit response."""
     target = select_branch_target(np.asarray(data.mocap_pos[0]))
-    if abs(target[0]) < JOINT_LIMIT - TARGET_LIMIT_MARGIN:
-        return np.clip(np.asarray(action, dtype=np.float64), -1.0, 1.0)
-
     qpos = np.asarray(data.qpos[:2], dtype=np.float64)
     qvel = np.asarray(data.qvel[:2], dtype=np.float64)
-    distance = float(
-        np.linalg.norm(
-            data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
-        )
-    )
-    acquisition_weight = np.clip(
-        (distance - 0.01) / (ACQUISITION_DISTANCE - 0.01),
-        0.0,
-        1.0,
-    )
-    branch_error = np.asarray(
-        [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
-        dtype=np.float64,
-    )
-    reference_action = (
-        NEAR_LIMIT_POSITION_GAIN * branch_error
-        - NEAR_LIMIT_VELOCITY_GAIN * qvel
-    )
-    blend = HOLD_BLEND + (ACQUISITION_BLEND - HOLD_BLEND) * acquisition_weight
-    guided = (1.0 - blend) * np.asarray(action, dtype=np.float64) + blend * np.clip(
-        reference_action,
-        -1.0,
-        1.0,
-    )
+    guided = np.asarray(action, dtype=np.float64).copy()
 
-    near_limit = abs(qpos[0]) >= JOINT_LIMIT - LIMIT_MARGIN
-    moving_outward = qpos[0] * qvel[0] > 0.0
-    if near_limit and moving_outward:
-        guided[0] -= np.sign(qpos[0]) * LIMIT_BRAKE_BLEND * min(
-            abs(qvel[0]),
+    if abs(target[0]) >= JOINT_LIMIT - TARGET_LIMIT_MARGIN:
+        distance = float(
+            np.linalg.norm(
+                data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
+            )
+        )
+        acquisition_weight = np.clip(
+            (distance - 0.01) / (ACQUISITION_DISTANCE - 0.01),
+            0.0,
             1.0,
         )
+        branch_error = np.asarray(
+            [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
+            dtype=np.float64,
+        )
+        reference_action = (
+            NEAR_LIMIT_POSITION_GAIN * branch_error
+            - NEAR_LIMIT_VELOCITY_GAIN * qvel
+        )
+        blend = HOLD_BLEND + (ACQUISITION_BLEND - HOLD_BLEND) * acquisition_weight
+        guided = (1.0 - blend) * guided + blend * np.clip(
+            reference_action, -1.0, 1.0
+        )
+
+    shoulder_sign = np.sign(qpos[0])
+    if shoulder_sign == 0.0:
+        shoulder_sign = np.sign(target[0])
+    near_limit = abs(qpos[0]) >= JOINT_LIMIT - LIMIT_MARGIN
+    if near_limit and shoulder_sign != 0.0:
+        proximity = np.clip(
+            (abs(qpos[0]) - (JOINT_LIMIT - LIMIT_MARGIN)) / LIMIT_MARGIN,
+            0.0,
+            1.0,
+        )
+        outward_velocity = max(shoulder_sign * qvel[0], 0.0)
+        penetration = max(abs(qpos[0]) - JOINT_LIMIT, 0.0)
+        outward_command = max(shoulder_sign * guided[0], 0.0)
+        limit_response = (
+            LIMIT_POSITION_GAIN * penetration
+            + LIMIT_VELOCITY_GAIN * min(outward_velocity, 2.0)
+            + 0.25 * outward_command
+        )
+        limit_response = -shoulder_sign * np.clip(limit_response, 0.0, 1.0)
+        guided[0] = (
+            (1.0 - proximity) * guided[0]
+            + proximity * limit_response
+            - shoulder_sign * LIMIT_BRAKE_BLEND * outward_command
+        )
+
     return np.clip(guided, -1.0, 1.0)
 
 
