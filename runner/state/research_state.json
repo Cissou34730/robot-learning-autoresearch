@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed held-out evidence supports a positive, negative, limited, or inconclusive conclusion about the targeted intervention: the evidence must report fresh success outcomes stratified by inner and outer radius, branch-aware endpoint or residual diagnostics, and reach-versus-hold interruption diagnostics. A positive result requires at least 98% success without an inner-workspace regression; otherwise the remaining mechanism and route toward the goal must be stated explicitly.",
-    "goal_connection": "The current candidate is 93.75% on a held-out full-distribution panel, below the 98% objective. Resolving whether outer-workspace reach generation, branch selection, or uninterrupted stabilization limits performance will determine the next PI-owned intervention and whether a candidate is ready for official assessment.",
-    "handoff_conclusion": "M2 observed modest compiled link masses, gear-5 motors with no force limits, high bounded-action accelerations, and passive settling after release across tested impulse traces. This weakens insufficient actuator authority and persistent free-motion instability as leading explanations, but does not exclude policy-induced approach momentum or oscillation. T1 trained a fresh PPO policy on the complete 6\u201320 cm radius range; its training progress reached 0.58 success at checkpoint-120832, but training statistics do not establish development performance and the terminal checkpoint has no privileged status. M3 measured T1:checkpoint-120832 at 93.75% on 160 held-out episodes. Its detailed diagnostics show both outer non-reach cases and repeated one-step hold interruptions, while most inner-radius episodes hold successfully; therefore the inherited concern that missing inner-radius coverage is the dominant residual gap is weakened for this candidate, not ruled out generally. The evidence still does not establish whether the residual failures arise from branch or singularity-adjacent reach generation, approach momentum and policy-induced hold oscillation, or broader policy capacity/optimization limits, because M3 records no final joint posture, branch residual, action, or velocity. E2 opened I1 rather than requesting official assessment because the candidate is below the goal threshold and the mechanism remains decision-relevant.",
-    "handoff_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?",
-    "rationale": "Do not request official assessment because M3 is development evidence at 93.75% and no candidate has established the required 196 of 200 successes. M2 weakens insufficient actuator authority and persistent passive instability as leading explanations, while M3 records both outer non-reaches and repeated hold interruptions. The inherited interpretation that inner-radius risk is the dominant gap is weakened by the observed failure concentration, but M3 lacks final posture, branch residual, action, and velocity diagnostics, so it cannot choose between branch/approach and stabilization interventions. This inquiry keeps that distinction goal-linked and requires evidence that can preserve or revise the current route.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "750df697358f311c6fc98151715d3b2d963e98fe",
     "id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
@@ -3293,7 +3282,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 5,
     "session": 3,
@@ -3302,7 +3291,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "restored",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5900,9 +5889,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:44:40Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I1 is resolved for the tested intervention route. M4 established the required branch-aware and hold-aware diagnostics on T1:checkpoint-120832. M5 then provided fresh paired held-out evidence: the restored T1 baseline achieved 96.875% (155/160), with four non-reaches ending near shoulder limits and one hold interruption, whereas the branch-residual plus near-target velocity reward intervention achieved only 81.875% for T2:checkpoint-115712 and 81.25% for T2:checkpoint-120832, each with 28 non-reaches. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard also failed to produce viable learned candidates, so they cannot support causal claims beyond rejecting those recipes. The targeted intervention therefore did not eliminate residual failures or reach 98%, and should not be continued as tested. The broader branch/limit and stabilization mechanisms remain unresolved because the valid baseline remains below goal and the unsuccessful recipes confounded mechanism with learning degradation; a future goal review must choose a new route toward the 98% objective."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited_negative",
+        "reason": "I1 is resolved for the tested intervention route. M4 established the required branch-aware and hold-aware diagnostics on T1:checkpoint-120832. M5 then provided fresh paired held-out evidence: the restored T1 baseline achieved 96.875% (155/160), with four non-reaches ending near shoulder limits and one hold interruption, whereas the branch-residual plus near-target velocity reward intervention achieved only 81.875% for T2:checkpoint-115712 and 81.25% for T2:checkpoint-120832, each with 28 non-reaches. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard also failed to produce viable learned candidates, so they cannot support causal claims beyond rejecting those recipes. The targeted intervention therefore did not eliminate residual failures or reach 98%, and should not be continued as tested. The broader branch/limit and stabilization mechanisms remain unresolved because the valid baseline remains below goal and the unsuccessful recipes confounded mechanism with learning degradation; a future goal review must choose a new route toward the 98% objective.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited_negative",
+        "reason": "I1 is resolved for the tested intervention route. M4 established the required branch-aware and hold-aware diagnostics on T1:checkpoint-120832. M5 then provided fresh paired held-out evidence: the restored T1 baseline achieved 96.875% (155/160), with four non-reaches ending near shoulder limits and one hold interruption, whereas the branch-residual plus near-target velocity reward intervention achieved only 81.875% for T2:checkpoint-115712 and 81.25% for T2:checkpoint-120832, each with 28 non-reaches. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard also failed to produce viable learned candidates, so they cannot support causal claims beyond rejecting those recipes. The targeted intervention therefore did not eliminate residual failures or reach 98%, and should not be continued as tested. The broader branch/limit and stabilization mechanisms remain unresolved because the valid baseline remains below goal and the unsuccessful recipes confounded mechanism with learning degradation; a future goal review must choose a new route toward the 98% objective."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited_negative",
+        "reason": "I1 is resolved for the tested intervention route. M4 established the required branch-aware and hold-aware diagnostics on T1:checkpoint-120832. M5 then provided fresh paired held-out evidence: the restored T1 baseline achieved 96.875% (155/160), with four non-reaches ending near shoulder limits and one hold interruption, whereas the branch-residual plus near-target velocity reward intervention achieved only 81.875% for T2:checkpoint-115712 and 81.25% for T2:checkpoint-120832, each with 28 non-reaches. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard also failed to produce viable learned candidates, so they cannot support causal claims beyond rejecting those recipes. The targeted intervention therefore did not eliminate residual failures or reach 98%, and should not be continued as tested. The broader branch/limit and stabilization mechanisms remain unresolved because the valid baseline remains below goal and the unsuccessful recipes confounded mechanism with learning degradation; a future goal review must choose a new route toward the 98% objective.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I1 is resolved for the tested intervention route. M4 established the required branch-aware and hold-aware diagnostics on T1:checkpoint-120832. M5 then provided fresh paired held-out evidence: the restored T1 baseline achieved 96.875% (155/160), with four non-reaches ending near shoulder limits and one hold interruption, whereas the branch-residual plus near-target velocity reward intervention achieved only 81.875% for T2:checkpoint-115712 and 81.25% for T2:checkpoint-120832, each with 28 non-reaches. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard also failed to produce viable learned candidates, so they cannot support causal claims beyond rejecting those recipes. The targeted intervention therefore did not eliminate residual failures or reach 98%, and should not be continued as tested. The broader branch/limit and stabilization mechanisms remain unresolved because the valid baseline remains below goal and the unsuccessful recipes confounded mechanism with learning degradation; a future goal review must choose a new route toward the 98% objective."
+      }
+    },
+    "request_fingerprint": "c44a47e51c01a9b091ea6c2d7645e08468879c28a0f09935beab1983bdb2f351",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest development candidate measured so far, supported by M3 at 93.75%, but no working, best-known, or retained role is assigned. No candidate establishes the official goal.",
     "completed_operations": [
@@ -5950,7 +5993,8 @@
       "T3",
       "E5",
       "T4",
-      "E6"
+      "E6",
+      "E7"
     ],
     "scientific_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192"
   },

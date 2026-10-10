@@ -17,3 +17,4 @@
 | E5 | restore_recipe | I1 | restored |
 | T4 | training | I1 | completed |
 | E6 | restore_recipe | I1 | restored |
+| E7 | inquiry | I1 | completed |
