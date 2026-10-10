@@ -1,0 +1,492 @@
+{
+  "schema_version": 1,
+  "measurement": "compiled_dynamics",
+  "source_xml": "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\robots\\two_joint_arm.xml",
+  "compiled_model": {
+    "timestep_seconds": 0.002,
+    "frame_skip": 10,
+    "control_interval_seconds": 0.02,
+    "body_masses": {
+      "world": 0.0,
+      "base": 0.2010619298297468,
+      "upper_arm": 0.09896016858807849,
+      "forearm": 0.05247716368556391,
+      "target": 0.007238229473870883
+    },
+    "body_inertias": {
+      "world": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "base": [
+        0.00010723302924253161,
+        0.00010723302924253161,
+        0.00016084954386379744
+      ],
+      "upper_arm": [
+        0.0001682676295170863,
+        0.0001682676295170863,
+        1.0814932709982864e-05
+      ],
+      "forearm": [
+        6.109741244031255e-05,
+        6.109741244031255e-05,
+        3.674125280936861e-06
+      ],
+      "target": [
+        4.169220176949629e-07,
+        4.169220176949629e-07,
+        4.169220176949629e-07
+      ]
+    },
+    "joints": [
+      {
+        "name": "shoulder",
+        "limited": true,
+        "range_radians": [
+          -2.9670597283903604,
+          2.9670597283903604
+        ],
+        "damping": 0.5,
+        "armature": 0.01
+      },
+      {
+        "name": "elbow",
+        "limited": true,
+        "range_radians": [
+          -2.9670597283903604,
+          2.9670597283903604
+        ],
+        "damping": 0.5,
+        "armature": 0.01
+      }
+    ],
+    "actuators": [
+      {
+        "name": "0",
+        "gear": [
+          5.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrlrange": [
+          -1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "1",
+        "gear": [
+          5.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ctrlrange": [
+          -1.0,
+          1.0
+        ]
+      }
+    ]
+  },
+  "step_responses": [
+    {
+      "action": [
+        1.0,
+        0.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 9.999967296857262,
+      "peak_abs_acceleration": 478.23364511678824,
+      "drive_end_qpos": [
+        2.9756615034116547,
+        0.00021313364724808833
+      ],
+      "peak_abs_qpos": [
+        3.0412224508575174,
+        0.010047598936672023
+      ],
+      "coast_end_qpos": [
+        2.9670597283903626,
+        0.0001697629551908657
+      ],
+      "coast_end_velocity": [
+        -8.055459242538774e-14,
+        -2.1230423512852164e-30
+      ],
+      "settling_frame_after_drive": 5
+    },
+    {
+      "action": [
+        -1.0,
+        0.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 9.999967296857262,
+      "peak_abs_acceleration": 478.23364511678824,
+      "drive_end_qpos": [
+        -2.9756615034116547,
+        -0.00021313364724808833
+      ],
+      "peak_abs_qpos": [
+        3.0412224508575174,
+        0.010047598936672023
+      ],
+      "coast_end_qpos": [
+        -2.9670597283903626,
+        -0.0001697629551908657
+      ],
+      "coast_end_velocity": [
+        8.055459242538774e-14,
+        2.1230423512852164e-30
+      ],
+      "settling_frame_after_drive": 5
+    },
+    {
+      "action": [
+        0.0,
+        1.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 9.999944518578435,
+      "peak_abs_acceleration": 415.78413133726355,
+      "drive_end_qpos": [
+        -1.26410444233934e-05,
+        2.9771635579060147
+      ],
+      "peak_abs_qpos": [
+        0.008373429049034091,
+        3.040820997176638
+      ],
+      "coast_end_qpos": [
+        -3.0475025071011297e-06,
+        2.967059728390362
+      ],
+      "coast_end_velocity": [
+        6.194423532548644e-31,
+        -7.178824556395243e-14
+      ],
+      "settling_frame_after_drive": 5
+    },
+    {
+      "action": [
+        0.0,
+        -1.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 9.999944518578435,
+      "peak_abs_acceleration": 415.78413133726355,
+      "drive_end_qpos": [
+        1.26410444233934e-05,
+        -2.9771635579060147
+      ],
+      "peak_abs_qpos": [
+        0.008373429049034091,
+        3.040820997176638
+      ],
+      "coast_end_qpos": [
+        3.0475025071011297e-06,
+        -2.967059728390362
+      ],
+      "coast_end_velocity": [
+        -6.194423532548644e-31,
+        7.178824556395243e-14
+      ],
+      "settling_frame_after_drive": 5
+    },
+    {
+      "action": [
+        1.0,
+        1.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 10.180272705078819,
+      "peak_abs_acceleration": 505.84413017465636,
+      "drive_end_qpos": [
+        2.975647856747957,
+        2.9771802129913016
+      ],
+      "peak_abs_qpos": [
+        3.046170519676007,
+        3.0394336191614935
+      ],
+      "coast_end_qpos": [
+        2.967059728390362,
+        2.967059728390362
+      ],
+      "coast_end_velocity": [
+        -6.49149005204723e-14,
+        -7.178156136997559e-14
+      ],
+      "settling_frame_after_drive": 5
+    },
+    {
+      "action": [
+        1.0,
+        -1.0
+      ],
+      "drive_frames": 25,
+      "coast_frames": 100,
+      "peak_abs_velocity": 10.059719421635938,
+      "peak_abs_acceleration": 501.206324359869,
+      "drive_end_qpos": [
+        2.9756406199071352,
+        -2.977159720900454
+      ],
+      "peak_abs_qpos": [
+        3.043365749659286,
+        3.0393473032692264
+      ],
+      "coast_end_qpos": [
+        2.9670597283903626,
+        -2.967059728390362
+      ],
+      "coast_end_velocity": [
+        -7.989215915878297e-14,
+        7.183754302013487e-14
+      ],
+      "settling_frame_after_drive": 5
+    }
+  ],
+  "branch_probes": [
+    {
+      "radius_m": 0.06,
+      "angle_radians": 0.0,
+      "branch": "elbow_folded",
+      "qpos": [
+        0.9817653565786228,
+        -2.619277831783745
+      ],
+      "site_position": [
+        0.059999999999999984,
+        0.0,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.06,
+      "angle_radians": 0.0,
+      "branch": "elbow_open",
+      "qpos": [
+        -0.9817653565786228,
+        2.619277831783745
+      ],
+      "site_position": [
+        0.059999999999999984,
+        0.0,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.06,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_folded",
+      "qpos": [
+        2.5525616833735194,
+        -2.619277831783745
+      ],
+      "site_position": [
+        -1.3877787807814457e-17,
+        0.05999999999999997,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.06,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_open",
+      "qpos": [
+        0.5890309702162737,
+        2.619277831783745
+      ],
+      "site_position": [
+        1.3877787807814457e-17,
+        0.05999999999999997,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.13,
+      "angle_radians": 0.0,
+      "branch": "elbow_folded",
+      "qpos": [
+        0.8193554744895192,
+        -1.8886200307227774
+      ],
+      "site_position": [
+        0.13,
+        0.0,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.13,
+      "angle_radians": 0.0,
+      "branch": "elbow_open",
+      "qpos": [
+        -0.8193554744895192,
+        1.8886200307227774
+      ],
+      "site_position": [
+        0.13,
+        0.0,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.13,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_folded",
+      "qpos": [
+        2.3901518012844156,
+        -1.8886200307227774
+      ],
+      "site_position": [
+        0.0,
+        0.13,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.13,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_open",
+      "qpos": [
+        0.7514408523053774,
+        1.8886200307227774
+      ],
+      "site_position": [
+        1.3877787807814457e-17,
+        0.13,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.2,
+      "angle_radians": 0.0,
+      "branch": "elbow_folded",
+      "qpos": [
+        0.3897607327974747,
+        -0.8632118900695407
+      ],
+      "site_position": [
+        0.20000000000000004,
+        6.938893903907228e-18,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.2,
+      "angle_radians": 0.0,
+      "branch": "elbow_open",
+      "qpos": [
+        -0.3897607327974747,
+        0.8632118900695407
+      ],
+      "site_position": [
+        0.20000000000000004,
+        -6.938893903907228e-18,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.2,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_folded",
+      "qpos": [
+        1.9605570595923711,
+        -0.8632118900695407
+      ],
+      "site_position": [
+        1.3877787807814457e-17,
+        0.2,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    },
+    {
+      "radius_m": 0.2,
+      "angle_radians": 1.5707963267948966,
+      "branch": "elbow_open",
+      "qpos": [
+        1.181035593997422,
+        0.8632118900695407
+      ],
+      "site_position": [
+        -1.3877787807814457e-17,
+        0.2,
+        0.02
+      ],
+      "contact_count": 0,
+      "joint_limit_flags": [
+        true,
+        true
+      ]
+    }
+  ]
+}
