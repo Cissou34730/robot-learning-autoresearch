@@ -1,8 +1,9 @@
-"""Explicit branch-constrained trajectory guidance for the arm."""
+"""Stateful branch-transition guidance for the arm."""
 
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
+from contracts.task_spec import SUCCESS_THRESHOLD
 
 JOINT_LIMIT = np.deg2rad(170.0)
 TRAJECTORY_DURATION_STEPS = 20
@@ -19,6 +20,9 @@ ACQUISITION_BLEND = 0.25
 HOLD_BLEND = 0.08
 NEAR_LIMIT_POSITION_GAIN = np.array([1.0, 0.7], dtype=np.float64)
 NEAR_LIMIT_VELOCITY_GAIN = np.array([0.10, 0.08], dtype=np.float64)
+TRANSITION_DISTANCE = 0.04
+HOLD_EXIT_DISTANCE = 0.015
+STATE_HOLD_BLEND = 0.5
 
 
 def wrap_to_pi(angle: float) -> float:
@@ -77,24 +81,30 @@ def _smoothstep(phase: float) -> float:
     return phase * phase * (3.0 - 2.0 * phase)
 
 
-def near_limit_acquisition_action(data, action: np.ndarray) -> np.ndarray:
-    """Preserve direct actions while compensating the measured soft-limit response."""
+def branch_transition_action(
+    data, action: np.ndarray, state: dict[str, bool]
+) -> np.ndarray:
+    """Latch a branch-consistent hold controller after boundary acquisition."""
     target = select_branch_target(np.asarray(data.mocap_pos[0]))
     qpos = np.asarray(data.qpos[:2], dtype=np.float64)
     qvel = np.asarray(data.qvel[:2], dtype=np.float64)
     guided = np.asarray(action, dtype=np.float64).copy()
 
-    if abs(target[0]) >= JOINT_LIMIT - TARGET_LIMIT_MARGIN:
-        distance = float(
-            np.linalg.norm(
-                data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
-            )
+    if abs(target[0]) < JOINT_LIMIT - TARGET_LIMIT_MARGIN:
+        state["holding"] = False
+        return np.clip(guided, -1.0, 1.0)
+
+    distance = float(
+        np.linalg.norm(
+            data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
         )
-        acquisition_weight = np.clip(
-            (distance - 0.01) / (ACQUISITION_DISTANCE - 0.01),
-            0.0,
-            1.0,
-        )
+    )
+    if state["holding"] and distance > HOLD_EXIT_DISTANCE:
+        state["holding"] = False
+    elif not state["holding"] and distance <= SUCCESS_THRESHOLD:
+        state["holding"] = True
+
+    if distance <= TRANSITION_DISTANCE or state["holding"]:
         branch_error = np.asarray(
             [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
             dtype=np.float64,
@@ -103,34 +113,9 @@ def near_limit_acquisition_action(data, action: np.ndarray) -> np.ndarray:
             NEAR_LIMIT_POSITION_GAIN * branch_error
             - NEAR_LIMIT_VELOCITY_GAIN * qvel
         )
-        blend = HOLD_BLEND + (ACQUISITION_BLEND - HOLD_BLEND) * acquisition_weight
+        blend = STATE_HOLD_BLEND if state["holding"] else ACQUISITION_BLEND
         guided = (1.0 - blend) * guided + blend * np.clip(
             reference_action, -1.0, 1.0
-        )
-
-    shoulder_sign = np.sign(qpos[0])
-    if shoulder_sign == 0.0:
-        shoulder_sign = np.sign(target[0])
-    near_limit = abs(qpos[0]) >= JOINT_LIMIT - LIMIT_MARGIN
-    if near_limit and shoulder_sign != 0.0:
-        proximity = np.clip(
-            (abs(qpos[0]) - (JOINT_LIMIT - LIMIT_MARGIN)) / LIMIT_MARGIN,
-            0.0,
-            1.0,
-        )
-        outward_velocity = max(shoulder_sign * qvel[0], 0.0)
-        penetration = max(abs(qpos[0]) - JOINT_LIMIT, 0.0)
-        outward_command = max(shoulder_sign * guided[0], 0.0)
-        limit_response = (
-            LIMIT_POSITION_GAIN * penetration
-            + LIMIT_VELOCITY_GAIN * min(outward_velocity, 2.0)
-            + 0.25 * outward_command
-        )
-        limit_response = -shoulder_sign * np.clip(limit_response, 0.0, 1.0)
-        guided[0] = (
-            (1.0 - proximity) * guided[0]
-            + proximity * limit_response
-            - shoulder_sign * LIMIT_BRAKE_BLEND * outward_command
         )
 
     return np.clip(guided, -1.0, 1.0)
