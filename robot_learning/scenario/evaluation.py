@@ -20,7 +20,7 @@ from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
 
 
 def evaluate_research_model(
@@ -55,6 +55,7 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        trajectory: list[dict] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -72,6 +73,39 @@ def evaluate_research_model(
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
+            shoulder_position = float(env.data.qpos[0])
+            shoulder_range = env.model.jnt_range[0]
+            trajectory.append(
+                {
+                    "control_step": steps,
+                    "distance_cm": distance_cm,
+                    "held_steps": held_steps,
+                    "action_requested": np.asarray(action, dtype=np.float64).tolist(),
+                    "action_applied": env.data.ctrl.copy().tolist(),
+                    "qpos": env.data.qpos[:2].copy().tolist(),
+                    "qvel": env.data.qvel[:2].copy().tolist(),
+                    "qacc": env.data.qacc[:2].copy().tolist(),
+                    "actuator_force": env.data.actuator_force[:2].copy().tolist(),
+                    "qfrc_actuator": env.data.qfrc_actuator[:2].copy().tolist(),
+                    "qfrc_constraint": env.data.qfrc_constraint[:2].copy().tolist(),
+                    "shoulder_limit_margin_degrees": float(
+                        np.degrees(
+                            min(
+                                shoulder_position - shoulder_range[0],
+                                shoulder_range[1] - shoulder_position,
+                            )
+                        )
+                    ),
+                    "constraints": [
+                        {
+                            "type": int(env.data.efc_type[index]),
+                            "id": int(env.data.efc_id[index]),
+                            "force": float(env.data.efc_force[index]),
+                        }
+                        for index in range(int(env.data.nefc))
+                    ],
+                }
+            )
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -103,6 +137,7 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "trajectory": trajectory,
                 "terminal_joint_positions": [
                     float(value) for value in env.data.qpos[:2]
                 ],

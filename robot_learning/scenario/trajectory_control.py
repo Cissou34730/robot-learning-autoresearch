@@ -15,6 +15,8 @@ LIMIT_MARGIN = np.deg2rad(8.0)
 TARGET_LIMIT_MARGIN = np.deg2rad(18.0)
 LIMIT_POSITION_GAIN = 4.0
 LIMIT_VELOCITY_GAIN = 0.25
+LIMIT_FORCE_FEEDBACK_GAIN = 0.8
+ACTUATOR_FORCE_SCALE = 5.0
 ACQUISITION_DISTANCE = 0.025
 ACQUISITION_BLEND = 0.25
 HOLD_BLEND = 0.08
@@ -118,6 +120,12 @@ def branch_transition_action(
             reference_action, -1.0, 1.0
         )
 
+    constraint_force = float(data.qfrc_constraint[0])
+    guided[0] += LIMIT_FORCE_FEEDBACK_GAIN * np.clip(
+        constraint_force / ACTUATOR_FORCE_SCALE,
+        -1.0,
+        1.0,
+    )
     return np.clip(guided, -1.0, 1.0)
 
 
