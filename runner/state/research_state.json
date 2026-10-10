@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when bounded continuation and diagnostic evidence are sufficient to judge whether hold-focused work can close the development gap without losing inner-radius acquisition: a positive conclusion requires at least 196/200 on a comparable research panel with acquisition preserved; a negative or limited conclusion is justified if interruption-linked failures do not improve, or if residual failures are instead concentrated in a branch or geometry mechanism requiring a different route; an inconclusive conclusion is allowed if the available evidence cannot discriminate these outcomes.",
     "goal_connection": "The strongest evidence-backed candidate, T4:checkpoint-105472, achieved 191/200 on the development panel, below the 196/200 threshold required by the human goal. Resolving whether its remaining failures are reducible hold failures could improve the candidate before the terminal official assessment, while preserving the demonstrated inner-radius acquisition capability.",
-    "handoff_conclusion": "Observed: M1 found active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%; 56 of 64 failures never reached tolerance, exposing the 14-20 cm training distribution as inadequate for official inner radii. Observed: direct full-radius fresh training T2 evaluated at 35.0% in M3 and had 120/200 never-reached episodes, so changing coverage without preserving the learned outer controller is not a viable route. Observed: weighted transfer T3 reached 89.5% in M4, with all 15 never-reached failures at radii 6.6-11.9 cm. Observed: increasing inner-radius exposure to 50% in T4 produced 95.5% in M5; only one episode never reached tolerance, while hold interruptions remained in 20 episodes. Interpretation: staged transfer and targeted inner-radius exposure are causally supported as the route for acquisition, but the remaining development gap is now more consistent with sampled-data hold robustness than reachability. This interpretation is limited to the measured candidates, panels, and recorded diagnostics; M5 is not official assessment evidence, and branch identity, continuous internal-step behavior, and hidden hold-history effects remain unmeasured.",
+    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
     "handoff_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
@@ -3293,7 +3293,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 5,
     "session": 2,
@@ -3302,7 +3302,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5254,26 +5254,163 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T23:43:33Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, and T4, each requested at 120000 steps and completing 120832 steps; total requested training allocation 480000 steps. Completed research measurements: M1 dynamics characterization and M2-M5 four 200-episode development panels. No official assessment requested. Goal-review inquiry boundary E2 opened I1.",
+        "current_goal_gap": "T4:checkpoint-105472 achieved 191/200 (95.5%) on M5, five episodes below the 196/200 campaign target. This is development evidence only and is not official certification. Nine episodes failed; one never reached tolerance, while 20 episodes recorded at least one hold interruption.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
+        "decision_frontier": "The unresolved distinction is whether a hold-focused continuation of the competent T4 policy can reduce the residual failure tail without losing inner-radius acquisition, or whether failures arise from a branch/geometry or representation limitation requiring a different controller. A useful discriminator is comparable follow-on development evidence from a T4-preserving hold-focused continuation, with success, first reach, interruption, radius, angle, and branch/trajectory diagnostics where available. Improvement to at least 196/200 with preserved inner-radius acquisition supports the hold-focused route; unchanged interruption-linked failures or concentration in a specific branch/geometry redirects work toward stabilization or branch-aware representation. The M5 association is not sufficient to choose among these mechanisms, so the inquiry remains goal-relevant.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 is the strongest measured candidate but achieved 191/200 on development evidence, so the campaign opened one bounded inquiry before terminal assessment to determine whether its remaining gap can be closed.",
+        "next_direction_or_closure": "Goal review opened inquiry I1 because the strongest development candidate is below the human-goal threshold and M5 provides a plausible, directly testable but not yet proven hold-robustness gap. This checkpoint ends goal review; the fresh inquiry session must next choose the supported measurement, training, or implementation action that best discriminates hold-focused improvement from branch/representation limitation.",
+        "next_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "1c6e7f9546b823b4340501cd6a44bb80c1d43351",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, and T4, each requested at 120000 steps and completing 120832 steps; total requested training allocation 480000 steps. Completed research measurements: M1 dynamics characterization and M2-M5 four 200-episode development panels. No official assessment requested. Goal-review inquiry boundary E2 opened I1.",
+        "current_goal_gap": "T4:checkpoint-105472 achieved 191/200 (95.5%) on M5, five episodes below the 196/200 campaign target. This is development evidence only and is not official certification. Nine episodes failed; one never reached tolerance, while 20 episodes recorded at least one hold interruption.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
+        "decision_frontier": "The unresolved distinction is whether a hold-focused continuation of the competent T4 policy can reduce the residual failure tail without losing inner-radius acquisition, or whether failures arise from a branch/geometry or representation limitation requiring a different controller. A useful discriminator is comparable follow-on development evidence from a T4-preserving hold-focused continuation, with success, first reach, interruption, radius, angle, and branch/trajectory diagnostics where available. Improvement to at least 196/200 with preserved inner-radius acquisition supports the hold-focused route; unchanged interruption-linked failures or concentration in a specific branch/geometry redirects work toward stabilization or branch-aware representation. The M5 association is not sufficient to choose among these mechanisms, so the inquiry remains goal-relevant.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 is the strongest measured candidate but achieved 191/200 on development evidence, so the campaign opened one bounded inquiry before terminal assessment to determine whether its remaining gap can be closed.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened inquiry I1 because the strongest development candidate is below the human-goal threshold and M5 provides a plausible, directly testable but not yet proven hold-robustness gap. This checkpoint ends goal review; the fresh inquiry session must next choose the supported measurement, training, or implementation action that best discriminates hold-focused improvement from branch/representation limitation.",
+        "next_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "61c115d4-f71c-44d9-ba57-da4ef398e246",
+        "campaign_id": "89a6354a-0e08-43f6-b017-536e7c05229b",
+        "campaign_usage": "12m56s | 23.23 AIU | prompt 4.7m (92% cached) | output 45.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m47s | 3.48 AIU | prompt 399.6k (80% cached) | output 6.8k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "48dc8a6a0c741f774a459e5ff1c4588f8163ecbf",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, and T4, each requested at 120000 steps and completing 120832 steps; total requested training allocation 480000 steps. Completed research measurements: M1 dynamics characterization and M2-M5 four 200-episode development panels. No official assessment requested. Goal-review inquiry boundary E2 opened I1.",
+        "current_goal_gap": "T4:checkpoint-105472 achieved 191/200 (95.5%) on M5, five episodes below the 196/200 campaign target. This is development evidence only and is not official certification. Nine episodes failed; one never reached tolerance, while 20 episodes recorded at least one hold interruption.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
+        "decision_frontier": "The unresolved distinction is whether a hold-focused continuation of the competent T4 policy can reduce the residual failure tail without losing inner-radius acquisition, or whether failures arise from a branch/geometry or representation limitation requiring a different controller. A useful discriminator is comparable follow-on development evidence from a T4-preserving hold-focused continuation, with success, first reach, interruption, radius, angle, and branch/trajectory diagnostics where available. Improvement to at least 196/200 with preserved inner-radius acquisition supports the hold-focused route; unchanged interruption-linked failures or concentration in a specific branch/geometry redirects work toward stabilization or branch-aware representation. The M5 association is not sufficient to choose among these mechanisms, so the inquiry remains goal-relevant.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 is the strongest measured candidate but achieved 191/200 on development evidence, so the campaign opened one bounded inquiry before terminal assessment to determine whether its remaining gap can be closed.",
+        "next_direction_or_closure": "Goal review opened inquiry I1 because the strongest development candidate is below the human-goal threshold and M5 provides a plausible, directly testable but not yet proven hold-robustness gap. This checkpoint ends goal review; the fresh inquiry session must next choose the supported measurement, training, or implementation action that best discriminates hold-focused improvement from branch/representation limitation.",
+        "next_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?"
+      }
+    },
+    "request_fingerprint": "da67d4d0b98a95ea36acf7f9eda97f0f5b8d6cd1d456f6b67f8ed31a487a78b9",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 is the strongest evidence-backed candidate by the completed M5 research evaluation (191/200, 95.5%), but it remains unassigned until goal review compares further bounded work with official assessment.",
+    "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
     "completed_operations": [
-      "M1",
-      "T1",
-      "M2",
-      "T2",
-      "M3",
-      "T3",
-      "M4",
-      "T4",
-      "M5"
+      "E2"
     ],
-    "cumulative_resource_use": "Completed training: T1, T2, T3, and T4, each requested at 120000 steps and completing 120832 steps; total requested training allocation 480000 steps. Completed research measurements: M1 dynamics characterization; M2, M3, M4, and M5 four 200-episode development panels. No official assessment requested.",
-    "current_goal_gap": "T4:checkpoint-105472 achieved 191/200 (95.5%) on research evaluation M5, five episodes short of the 98% threshold used as the campaign target. This is development evidence only and cannot establish official performance. The measured failures are mainly hold robustness failures: only one episode never reached tolerance, while 20 episodes recorded hold interruptions.",
-    "current_synthesis": "Observed: M1 found active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%; 56 of 64 failures never reached tolerance, exposing the 14-20 cm training distribution as inadequate for official inner radii. Observed: direct full-radius fresh training T2 evaluated at 35.0% in M3 and had 120/200 never-reached episodes, so changing coverage without preserving the learned outer controller is not a viable route. Observed: weighted transfer T3 reached 89.5% in M4, with all 15 never-reached failures at radii 6.6-11.9 cm. Observed: increasing inner-radius exposure to 50% in T4 produced 95.5% in M5; only one episode never reached tolerance, while hold interruptions remained in 20 episodes. Interpretation: staged transfer and targeted inner-radius exposure are causally supported as the route for acquisition, but the remaining development gap is now more consistent with sampled-data hold robustness than reachability. This interpretation is limited to the measured candidates, panels, and recorded diagnostics; M5 is not official assessment evidence, and branch identity, continuous internal-step behavior, and hidden hold-history effects remain unmeasured.",
-    "decision_frontier": "The unresolved scientific distinction is whether the remaining five-of-200 development gap is reducible through hold-focused learning on the competent T4 policy, or reflects a representation/branch limitation that requires a different controller. M5 supports the hold-focused explanation because acquisition failure occurred in only one episode while interruptions occurred in 20, but the artifact does not identify the timing, geometry, or branch of those interruptions. Evidence that would discriminate this frontier is a targeted follow-on measurement or training result preserving T4 while reducing interruption frequency, with failure diagnostics stratified by radius and angle. A failure to improve, or concentration at a specific branch/geometry, would redirect the route toward branch-aware representation or stabilization design.",
+    "cumulative_resource_use": "Completed training: T1, T2, T3, and T4, each requested at 120000 steps and completing 120832 steps; total requested training allocation 480000 steps. Completed research measurements: M1 dynamics characterization and M2-M5 four 200-episode development panels. No official assessment requested. Goal-review inquiry boundary E2 opened I1.",
+    "current_goal_gap": "T4:checkpoint-105472 achieved 191/200 (95.5%) on M5, five episodes below the 196/200 campaign target. This is development evidence only and is not official certification. Nine episodes failed; one never reached tolerance, while 20 episodes recorded at least one hold interruption.",
+    "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
+    "decision_frontier": "The unresolved distinction is whether a hold-focused continuation of the competent T4 policy can reduce the residual failure tail without losing inner-radius acquisition, or whether failures arise from a branch/geometry or representation limitation requiring a different controller. A useful discriminator is comparable follow-on development evidence from a T4-preserving hold-focused continuation, with success, first reach, interruption, radius, angle, and branch/trajectory diagnostics where available. Improvement to at least 196/200 with preserved inner-radius acquisition supports the hold-focused route; unchanged interruption-linked failures or concentration in a specific branch/geometry redirects work toward stabilization or branch-aware representation. The M5 association is not sufficient to choose among these mechanisms, so the inquiry remains goal-relevant.",
     "evidence_references": [
       "M1",
       "T1",
@@ -5283,14 +5420,15 @@
       "T3",
       "M4",
       "T4",
-      "M5"
+      "M5",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. The strongest measured candidate is not yet certified, so the checkpoint preserves the evidence-backed route toward closing its remaining development gap.",
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 is the strongest measured candidate but achieved 191/200 on development evidence, so the campaign opened one bounded inquiry before terminal assessment to determine whether its remaining gap can be closed.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup and enter goal review. The evidence supports continuing the staged-transfer route rather than requesting official assessment: the strongest candidate is below the goal threshold, and M5 identifies a plausible, directly measurable hold-interruption gap. Goal review should decide whether to open the proposed bounded inquiry or revise it using the completed evidence.",
+    "next_direction_or_closure": "Goal review opened inquiry I1 because the strongest development candidate is below the human-goal threshold and M5 provides a plausible, directly testable but not yet proven hold-robustness gap. This checkpoint ends goal review; the fresh inquiry session must next choose the supported measurement, training, or implementation action that best discriminates hold-focused improvement from branch/representation limitation.",
     "next_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-    "scientific_commit": "6e4360dd59eba2fa0cce38b2907f744f3b8eac51",
-    "session_id": "S1"
+    "scientific_commit": "48dc8a6a0c741f774a459e5ff1c4588f8163ecbf",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5298,21 +5436,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "61c115d4-f71c-44d9-ba57-da4ef398e246",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "1c6e7f9546b823b4340501cd6a44bb80c1d43351"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
