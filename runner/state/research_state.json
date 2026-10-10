@@ -16441,38 +16441,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited negative",
-        "reason": "M9 measured the T12 branch-aware near-limit acquisition candidate against T3 on the same 160-episode panel. Both achieved 153/160 complete-hold successes with zero discordant episodes. Querying the episode diagnostics showed that T12 failed on exactly the same seven episode seeds as T3: four episodes never first reached tolerance and three first reached tolerance but interrupted the hold. The failures remain concentrated at negative-angle targets with terminal shoulder positions at the joint limit, small selected-branch errors, and large alternate-branch errors. Therefore this specific localized action governor did not recover the plateau failures or change their acquisition-versus-hold composition. This closes I8 with a limited negative result for the tested branch-aware near-limit acquisition implementation; it does not establish that branch-aware control or feedback control generally cannot improve the human-goal policy."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited negative",
-        "reason": "M9 measured the T12 branch-aware near-limit acquisition candidate against T3 on the same 160-episode panel. Both achieved 153/160 complete-hold successes with zero discordant episodes. Querying the episode diagnostics showed that T12 failed on exactly the same seven episode seeds as T3: four episodes never first reached tolerance and three first reached tolerance but interrupted the hold. The failures remain concentrated at negative-angle targets with terminal shoulder positions at the joint limit, small selected-branch errors, and large alternate-branch errors. Therefore this specific localized action governor did not recover the plateau failures or change their acquisition-versus-hold composition. This closes I8 with a limited negative result for the tested branch-aware near-limit acquisition implementation; it does not establish that branch-aware control or feedback control generally cannot improve the human-goal policy.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M9 measured the T12 branch-aware near-limit acquisition candidate against T3 on the same 160-episode panel. Both achieved 153/160 complete-hold successes with zero discordant episodes. Querying the episode diagnostics showed that T12 failed on exactly the same seven episode seeds as T3: four episodes never first reached tolerance and three first reached tolerance but interrupted the hold. The failures remain concentrated at negative-angle targets with terminal shoulder positions at the joint limit, small selected-branch errors, and large alternate-branch errors. Therefore this specific localized action governor did not recover the plateau failures or change their acquisition-versus-hold composition. This closes I8 with a limited negative result for the tested branch-aware near-limit acquisition implementation; it does not establish that branch-aware control or feedback control generally cannot improve the human-goal policy."
-      }
-    },
-    "request_fingerprint": "446f7d4785034a7e4101626aeb8e79531678843594d22c1bf7e2daec9a0bba79",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and campaign reference at 153/160 complete-hold successes. T11:checkpoint-120832 is not assigned a model role because M8 measured it at 100/160 with zero candidate wins and 53 discordant episodes. T9:checkpoint-105472 remains a matched null to T3. No candidate is assigned working, best-known, or retained status in this goal-review session.",
     "completed_operations": [
