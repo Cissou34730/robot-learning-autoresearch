@@ -47,3 +47,4 @@
 | E27 | checkpoint | - | checkpointed |
 | T10 | training | I7 | completed |
 | T11 | training | I7 | completed |
+| M8 | measurement | I7 | completed |
