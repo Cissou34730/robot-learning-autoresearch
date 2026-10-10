@@ -1782,7 +1782,9 @@
     },
     "T3:checkpoint-115712": {
       "artifact": "campaigns/checkpoints/candidates/89a6354a-0e08-43f6-b017-536e7c05229b/t3/checkpoint-115712",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/89a6354a-0e08-43f6-b017-536e7c05229b/evaluation-89a6354a-0e08-43f6-b017-536e7c05229b-m4-T3-checkpoint-115712-200ep-seed300000-604d52985c97.json"
+      ],
       "fingerprint": "e9e2dbe69a800506fe26bd57ca116d3f98f185ad85b6b41a6f9fb554bb23608c",
       "id": "T3:checkpoint-115712",
       "name": "checkpoint-115712",
@@ -2464,7 +2466,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 3,
+    "measurement": 4,
     "session": 1,
     "training": 3
   },
@@ -3761,9 +3763,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T23:33:07Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T3:checkpoint-115712 on a fresh 200-episode research panel with reach, hold, interruption, and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-115712",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "weighted-transfer development diagnostics",
+            "seed": 300000
+          }
+        ],
+        "rationale": "T3 used weighted transfer from T1 with 25% inner-radius targets and reached 97% training success at 115712 steps, while T2 direct full-radius training reached only 35% development success. Training statistics are not development evidence, and the terminal checkpoint is not privileged. This evaluation tests whether weighted transfer produces a robust full-distribution policy and identifies the remaining mechanism. High success with few never-reached episodes supports the staged coverage route; persistent inner-radius acquisition failures or hold interruptions will determine the next targeted change."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-115712",
+            "candidate_id": "T3:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "weighted-transfer development diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/89a6354a-0e08-43f6-b017-536e7c05229b/evaluation-89a6354a-0e08-43f6-b017-536e7c05229b-m4-T3-checkpoint-115712-200ep-seed300000-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "1e801881bf9c1bbbd27390a08797c996479abd493e41eef34f08526cae5731f1",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "e9e2dbe69a800506fe26bd57ca116d3f98f185ad85b6b41a6f9fb554bb23608c",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 300000,
+              "success_percent": 89.5,
+              "successes": 179
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/89a6354a-0e08-43f6-b017-536e7c05229b/t3/checkpoint-115712",
+          "candidate": "T3:checkpoint-115712",
+          "candidate_id": "T3:checkpoint-115712",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "weighted-transfer development diagnostics",
+          "model_fingerprint": "e9e2dbe69a800506fe26bd57ca116d3f98f185ad85b6b41a6f9fb554bb23608c",
+          "seed": 300000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-115712",
+          "candidate_id": "T3:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "weighted-transfer development diagnostics",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/89a6354a-0e08-43f6-b017-536e7c05229b/evaluation-89a6354a-0e08-43f6-b017-536e7c05229b-m4-T3-checkpoint-115712-200ep-seed300000-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "1e801881bf9c1bbbd27390a08797c996479abd493e41eef34f08526cae5731f1",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "e9e2dbe69a800506fe26bd57ca116d3f98f185ad85b6b41a6f9fb554bb23608c",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 300000,
+            "success_percent": 89.5,
+            "successes": 179
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-115712",
+            "candidate_id": "T3:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "weighted-transfer development diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/89a6354a-0e08-43f6-b017-536e7c05229b/evaluation-89a6354a-0e08-43f6-b017-536e7c05229b-m4-T3-checkpoint-115712-200ep-seed300000-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "1e801881bf9c1bbbd27390a08797c996479abd493e41eef34f08526cae5731f1",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "e9e2dbe69a800506fe26bd57ca116d3f98f185ad85b6b41a6f9fb554bb23608c",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 300000,
+              "success_percent": 89.5,
+              "successes": 179
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T3:checkpoint-115712 on a fresh 200-episode research panel with reach, hold, interruption, and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-115712",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "weighted-transfer development diagnostics",
+            "seed": 300000
+          }
+        ],
+        "rationale": "T3 used weighted transfer from T1 with 25% inner-radius targets and reached 97% training success at 115712 steps, while T2 direct full-radius training reached only 35% development success. Training statistics are not development evidence, and the terminal checkpoint is not privileged. This evaluation tests whether weighted transfer produces a robust full-distribution policy and identifies the remaining mechanism. High success with few never-reached episodes supports the staged coverage route; persistent inner-radius acquisition failures or hold interruptions will determine the next targeted change."
+      }
+    },
+    "request_fingerprint": "18a00e98297ef01dca7adfe865e58a1aaf0784cca4b3ef446d4016ab8c3cf790",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -3788,7 +4178,8 @@
       "M2",
       "T2",
       "M3",
-      "T3"
+      "T3",
+      "M4"
     ],
     "scientific_parent_commit": "0be958e1dc670796c559133d41da1c63da5be2ec"
   },

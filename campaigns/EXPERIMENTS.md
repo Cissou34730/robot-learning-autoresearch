@@ -8,3 +8,4 @@
 | T2 | training | - | completed |
 | M3 | measurement | - | completed |
 | T3 | training | - | completed |
+| M4 | measurement | - | completed |
