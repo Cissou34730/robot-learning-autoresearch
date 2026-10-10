@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a completed same-panel trajectory and plant-diagnostic measurement identifies whether the residual failures carry a shoulder-limit transient signature, or shows that they do not; if a limit signature is present, close only after a bounded plant-aware candidate comparison tests recovery against T3's complete-hold baseline, otherwise close with the corresponding redirected policy-development conclusion.",
-    "goal_connection": "The current best development behavior is 153/160 successes, below the 98% objective, with four acquisition failures and three interrupted-hold failures concentrated near negative-angle shoulder-limit targets. Resolving their cause is necessary to choose a plant-aware rescue that can raise success without sacrificing the complete-hold behavior already established by T3.",
-    "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, rescuing both acquisition and hold cases. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5, M6, M7, and M9 matched T3 for their tested branch-limit, braking, explicit-trajectory, and direct-action near-limit recipes; M8 regressed to 100/160 for its tested residual-setpoint feedback recipe. M10 measured a real compiled shoulder-limit interaction, including constraint force and joint-position overshoot, but this supports a plant interaction rather than proving it causes the policy failures. M11 regressed to 147/160 for one state-triggered soft-limit impedance recipe, rejecting that recipe only. M12 then tested a different policy-state and branch-transition implementation: T14 matched T3 at 153/160 with zero discordant episodes, showing that this tested intervention recovered none of the residual failures without rejecting broader plant-aware mechanisms. The active causal distinction is therefore unresolved: the failures may reflect shoulder-limit transients or another unmeasured plant response, or may be specific errors of the development candidate. E42 opened I11 to resolve that distinction.",
-    "handoff_question": "Can trajectory-level plant diagnostics distinguish whether T3's residual negative-angle failures are caused by shoulder-limit transients rather than candidate-specific policy error, and identify a rescue mechanism that preserves T3's complete-hold baseline?",
-    "handoff_source_session_id": "S22",
-    "id": "I11",
-    "opened_in_session": "S22",
-    "question": "Can trajectory-level plant diagnostics distinguish whether T3's residual negative-angle failures are caused by shoulder-limit transients rather than candidate-specific policy error, and identify a rescue mechanism that preserves T3's complete-hold baseline?",
-    "rationale": "M10 measured real shoulder-limit constraint force and joint-position overshoot beyond the declared limit, supporting a plant interaction but not proving it causes policy failures. M12 preserved T3's 153/160 result with zero discordant episodes, rejecting the tested stateful branch-transition recipe but not the broader plant-aware explanation. Its episode diagnostics localize the residual failures but contain no trajectory-level q, qdot, action, or limit-force history, so the causal distinction remains unresolved.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -10662,7 +10651,7 @@
     }
   },
   "counters": {
-    "event": 43,
+    "event": 44,
     "inquiry": 11,
     "measurement": 14,
     "session": 23,
@@ -22886,9 +22875,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T01:05:28Z",
+      "error": null,
+      "id": "E44",
+      "inquiry_id": "I11",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited negative result: M13 identified a shoulder-limit transient signature in T3's residual negative-angle failures, but M14 showed that the tested T15 constant constraint-force feedback rescue preserved neither an improvement nor a regression relative to T3. Both candidates achieved 153/160 with zero discordant episodes, so this recipe recovered none of the residual failures.",
+        "reason": "The closure condition is met because trajectory-level diagnostics distinguished the residual failure region and a bounded plant-aware candidate comparison tested recovery against the T3 complete-hold baseline. M14 rejects this specific force-feedback realization, not the broader shoulder-limit mechanism: the aggregate tie and zero discordance do not establish that the intervention was inactive or that plant transients are irrelevant. The human goal remains unmet, so goal review should select a new policy-specific or otherwise discriminating rescue direction."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I11",
+        "outcome": "Limited negative result: M13 identified a shoulder-limit transient signature in T3's residual negative-angle failures, but M14 showed that the tested T15 constant constraint-force feedback rescue preserved neither an improvement nor a regression relative to T3. Both candidates achieved 153/160 with zero discordant episodes, so this recipe recovered none of the residual failures.",
+        "reason": "The closure condition is met because trajectory-level diagnostics distinguished the residual failure region and a bounded plant-aware candidate comparison tested recovery against the T3 complete-hold baseline. M14 rejects this specific force-feedback realization, not the broader shoulder-limit mechanism: the aggregate tie and zero discordance do not establish that the intervention was inactive or that plant transients are irrelevant. The human goal remains unmet, so goal review should select a new policy-specific or otherwise discriminating rescue direction.",
+        "status": "completed"
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I11",
+        "outcome": "Limited negative result: M13 identified a shoulder-limit transient signature in T3's residual negative-angle failures, but M14 showed that the tested T15 constant constraint-force feedback rescue preserved neither an improvement nor a regression relative to T3. Both candidates achieved 153/160 with zero discordant episodes, so this recipe recovered none of the residual failures.",
+        "reason": "The closure condition is met because trajectory-level diagnostics distinguished the residual failure region and a bounded plant-aware candidate comparison tested recovery against the T3 complete-hold baseline. M14 rejects this specific force-feedback realization, not the broader shoulder-limit mechanism: the aggregate tie and zero discordance do not establish that the intervention was inactive or that plant transients are irrelevant. The human goal remains unmet, so goal review should select a new policy-specific or otherwise discriminating rescue direction."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I11",
+        "outcome": "Limited negative result: M13 identified a shoulder-limit transient signature in T3's residual negative-angle failures, but M14 showed that the tested T15 constant constraint-force feedback rescue preserved neither an improvement nor a regression relative to T3. Both candidates achieved 153/160 with zero discordant episodes, so this recipe recovered none of the residual failures.",
+        "reason": "The closure condition is met because trajectory-level diagnostics distinguished the residual failure region and a bounded plant-aware candidate comparison tested recovery against the T3 complete-hold baseline. M14 rejects this specific force-feedback realization, not the broader shoulder-limit mechanism: the aggregate tie and zero discordance do not establish that the intervention was inactive or that plant transients are irrelevant. The human goal remains unmet, so goal review should select a new policy-specific or otherwise discriminating rescue direction.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E44",
+    "inquiry_id": "I11",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited negative result: M13 identified a shoulder-limit transient signature in T3's residual negative-angle failures, but M14 showed that the tested T15 constant constraint-force feedback rescue preserved neither an improvement nor a regression relative to T3. Both candidates achieved 153/160 with zero discordant episodes, so this recipe recovered none of the residual failures.",
+        "reason": "The closure condition is met because trajectory-level diagnostics distinguished the residual failure region and a bounded plant-aware candidate comparison tested recovery against the T3 complete-hold baseline. M14 rejects this specific force-feedback realization, not the broader shoulder-limit mechanism: the aggregate tie and zero discordance do not establish that the intervention was inactive or that plant transients are irrelevant. The human goal remains unmet, so goal review should select a new policy-specific or otherwise discriminating rescue direction."
+      }
+    },
+    "request_fingerprint": "cf6354d5b715aac35c28485c99d6d1b5617e63fd547963ac2854bc650422a4a3",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160 and the reference for I11. T14:checkpoint-100352 matched T3 at 153/160 in M12 and has no assigned role. T13:checkpoint-115712 regressed to 147/160 in M11 and has no assigned role. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -22942,7 +22985,8 @@
     "operation_ids": [
       "M13",
       "T15",
-      "M14"
+      "M14",
+      "E44"
     ],
     "scientific_parent_commit": "0a04a96fc2d58e33d0d169fa90ef0c442c225556"
   },
