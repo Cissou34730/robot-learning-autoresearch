@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when bounded continuation and diagnostic evidence are sufficient to judge whether hold-focused work can close the development gap without losing inner-radius acquisition: a positive conclusion requires at least 196/200 on a comparable research panel with acquisition preserved; a negative or limited conclusion is justified if interruption-linked failures do not improve, or if residual failures are instead concentrated in a branch or geometry mechanism requiring a different route; an inconclusive conclusion is allowed if the available evidence cannot discriminate these outcomes.",
-    "goal_connection": "The strongest evidence-backed candidate, T4:checkpoint-105472, achieved 191/200 on the development panel, below the 196/200 threshold required by the human goal. Resolving whether its remaining failures are reducible hold failures could improve the candidate before the terminal official assessment, while preserving the demonstrated inner-radius acquisition capability.",
-    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so coverage changes without preserving the outer controller were not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5%; only one episode never reached tolerance, while 20 episodes had hold interruptions. M5 artifact inspection further showed that 8 of its 9 failed episodes had nonzero interruptions, but 12 of the 20 interrupted episodes still succeeded and one failed episode had zero interruptions. Therefore staged transfer plus targeted inner-radius exposure is supported as an acquisition route, and hold robustness is a credible development bottleneck, but interruption counts are associated with most failures rather than established as their sole cause. The remaining competing explanations are sampled-data stabilization failure, hidden hold-history effects, or branch/geometry-specific representation limits. Claims remain limited to the measured candidates, panels, and recorded sampled evaluation semantics; branch identity, continuous internal-step behavior, and hold-history effects remain unmeasured.",
-    "handoff_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-    "rationale": "M5 is below the goal threshold, so immediate official assessment would terminally commit a candidate with a measured five-episode gap. The inherited hold-focused interpretation is supported but must be corrected: M5 contains nine failures, eight with nonzero hold interruptions and one with none, while interruptions occurred in 20 episodes overall, including successful episodes. Thus interruptions are associated with most failures but are not themselves equivalent to failure, and branch, geometry, and hold-history mechanisms remain unresolved. This directly goal-linked uncertainty warrants one bounded inquiry before terminal assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f391b4dc8744425b43561bd5f3d5e69977ffeb98",
     "id": "89a6354a-0e08-43f6-b017-536e7c05229b",
@@ -4112,7 +4101,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 6,
     "session": 3,
@@ -6941,9 +6930,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T23:52:45Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment."
+      }
+    },
+    "request_fingerprint": "f50ca6d7c89889f240a5edc97cdcb25c3d23e320b1ec5c48ab999e0c0c82a474",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
     "completed_operations": [
@@ -6991,7 +7034,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T5",
-      "M6"
+      "M6",
+      "E4"
     ],
     "scientific_parent_commit": "8b38e555429ffabdb868b360819539a4725e273e"
   },
