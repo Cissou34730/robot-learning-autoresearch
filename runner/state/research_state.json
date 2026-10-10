@@ -4101,7 +4101,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 2,
     "measurement": 6,
     "session": 5,
@@ -4110,7 +4110,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7672,31 +7672,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:56:06Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 96.875% on M5 and has no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 61.25% and a reach-dominated failure mix. T2 checkpoints remain rejected for the tested combined reward recipe; T3 and T4 remain rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no candidate is assigned a new formal role.",
+        "completed_operations": [
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "cumulative_resource_use": "Prior use: M2 one candidate-independent characterization measurement with 16 matched traces; T1, T2, T3, T4, and T5 each one fresh 120000-step PPO run with 120832 actual steps; M3, M4, M5, and M6 held-out research measurements; E2 opened I1; E7 closed I1 with a limited-negative outcome; E8 checkpointed I1; E9 opened I2; E10 checkpointed goal review; E11 closed I2 with a limited-negative outcome. M6 used two matched 160-episode evaluations. No official assessment has been requested.",
+        "current_goal_gap": "The best completed development evidence remains 96.875% (155/160), a gap of 1.125 percentage points or five successes relative to the 98% objective. M6's fresh T1 reference was 96.25% (154/160); neither is an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 established that restored T1 failures include saturated non-reaches and a high-velocity hold interruption. M6 directly tested the single-factor terminal action-damping recipe: T5 achieved 98/160 (61.25%) versus T1 at 154/160 (96.25%) on matched seeds, with a paired delta of -35 points. Its failure mix was 60 non-reaches and 2 hold interruptions, versus T1's 2 non-reaches and 4 hold interruptions. T5 non-reaches spanned inner and outer radii, retained saturated actions, and showed large branch residuals. This rejects the tested terminal action-cost implementation as harmful to reach generation or policy optimization, but does not invalidate approach stabilization generally or establish the precise cause of the learning degradation. The prior T2 result remains limited to its confounded branch-residual and near-target-velocity reward recipe; T3 and T4 remain rejected as learning-degrading recipes.",
+        "decision_frontier": "The terminal action-cost route is rejected for the tested implementation. The remaining goal-relevant distinction is whether the five-success T1 gap is concentrated in a controllable failure mechanism such as branch/shoulder-limit reach generation, singularity escape, or hold stabilization, and which intervention can address that mechanism without reproducing the learning degradation of T2, T3, T4, or T5. The next goal-review action should be chosen from fresh evidence or a new PI-owned intervention grounded in the restored T1 baseline, retaining the full 0.06-0.20 m training distribution, unchanged official task semantics, and radius-stratified branch/reach/hold/action diagnostics. A candidate at or above 98% with preserved inner-radius behavior would support official-assessment readiness; otherwise the measured failure mechanism must redirect the route.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "E7",
+          "E9",
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign still needs a policy achieving at least 196 successes in the protected 200-episode official panel. I2 did not produce a qualifying candidate: the restored T1 reference remains the strongest development candidate at 155/160 on M5, while the fresh M6 panel measured T5 at 98/160 and T1 at 154/160. Official assessment is not justified.",
+        "next_direction_or_closure": "I2 is closed with a limited-negative result. This checkpoint ends the inquiry session and returns the campaign to goal review. Goal review should select a new discriminating measurement or intervention from the restored T1 baseline rather than continue the rejected terminal action-cost recipe; official assessment remains deferred.",
+        "next_question": "Which new PI-owned intervention or discriminating measurement can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "87d96386e3ee2d9973bee45126e14542f6a4affc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 96.875% on M5 and has no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 61.25% and a reach-dominated failure mix. T2 checkpoints remain rejected for the tested combined reward recipe; T3 and T4 remain rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no candidate is assigned a new formal role.",
+        "completed_operations": [
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "cumulative_resource_use": "Prior use: M2 one candidate-independent characterization measurement with 16 matched traces; T1, T2, T3, T4, and T5 each one fresh 120000-step PPO run with 120832 actual steps; M3, M4, M5, and M6 held-out research measurements; E2 opened I1; E7 closed I1 with a limited-negative outcome; E8 checkpointed I1; E9 opened I2; E10 checkpointed goal review; E11 closed I2 with a limited-negative outcome. M6 used two matched 160-episode evaluations. No official assessment has been requested.",
+        "current_goal_gap": "The best completed development evidence remains 96.875% (155/160), a gap of 1.125 percentage points or five successes relative to the 98% objective. M6's fresh T1 reference was 96.25% (154/160); neither is an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 established that restored T1 failures include saturated non-reaches and a high-velocity hold interruption. M6 directly tested the single-factor terminal action-damping recipe: T5 achieved 98/160 (61.25%) versus T1 at 154/160 (96.25%) on matched seeds, with a paired delta of -35 points. Its failure mix was 60 non-reaches and 2 hold interruptions, versus T1's 2 non-reaches and 4 hold interruptions. T5 non-reaches spanned inner and outer radii, retained saturated actions, and showed large branch residuals. This rejects the tested terminal action-cost implementation as harmful to reach generation or policy optimization, but does not invalidate approach stabilization generally or establish the precise cause of the learning degradation. The prior T2 result remains limited to its confounded branch-residual and near-target-velocity reward recipe; T3 and T4 remain rejected as learning-degrading recipes.",
+        "decision_frontier": "The terminal action-cost route is rejected for the tested implementation. The remaining goal-relevant distinction is whether the five-success T1 gap is concentrated in a controllable failure mechanism such as branch/shoulder-limit reach generation, singularity escape, or hold stabilization, and which intervention can address that mechanism without reproducing the learning degradation of T2, T3, T4, or T5. The next goal-review action should be chosen from fresh evidence or a new PI-owned intervention grounded in the restored T1 baseline, retaining the full 0.06-0.20 m training distribution, unchanged official task semantics, and radius-stratified branch/reach/hold/action diagnostics. A candidate at or above 98% with preserved inner-radius behavior would support official-assessment readiness; otherwise the measured failure mechanism must redirect the route.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "E7",
+          "E9",
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign still needs a policy achieving at least 196 successes in the protected 200-episode official panel. I2 did not produce a qualifying candidate: the restored T1 reference remains the strongest development candidate at 155/160 on M5, while the fresh M6 panel measured T5 at 98/160 and T1 at 154/160. Official assessment is not justified.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed with a limited-negative result. This checkpoint ends the inquiry session and returns the campaign to goal review. Goal review should select a new discriminating measurement or intervention from the restored T1 baseline rather than continue the rejected terminal action-cost recipe; official assessment remains deferred.",
+        "next_question": "Which new PI-owned intervention or discriminating measurement can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "479ab5b2-6a21-40a3-8919-a4029c37cd9a",
+        "campaign_id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
+        "campaign_usage": "20m25s | 52.66 AIU | prompt 10m (90% cached) | output 82.8k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "3m32s | 11.49 AIU | prompt 2.3m (91% cached) | output 14.7k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "1895b8368b6ea84e000d4c70b632272e1efca9d1",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "8cab3eb601a3e1d10875a4fdf186718294d8302252edf431cfbe4c0118272506",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 96.875% on M5 and has no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 61.25% and a reach-dominated failure mix. T2 checkpoints remain rejected for the tested combined reward recipe; T3 and T4 remain rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no candidate is assigned a new formal role.",
+        "completed_operations": [
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "cumulative_resource_use": "Prior use: M2 one candidate-independent characterization measurement with 16 matched traces; T1, T2, T3, T4, and T5 each one fresh 120000-step PPO run with 120832 actual steps; M3, M4, M5, and M6 held-out research measurements; E2 opened I1; E7 closed I1 with a limited-negative outcome; E8 checkpointed I1; E9 opened I2; E10 checkpointed goal review; E11 closed I2 with a limited-negative outcome. M6 used two matched 160-episode evaluations. No official assessment has been requested.",
+        "current_goal_gap": "The best completed development evidence remains 96.875% (155/160), a gap of 1.125 percentage points or five successes relative to the 98% objective. M6's fresh T1 reference was 96.25% (154/160); neither is an official assessment result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 established that restored T1 failures include saturated non-reaches and a high-velocity hold interruption. M6 directly tested the single-factor terminal action-damping recipe: T5 achieved 98/160 (61.25%) versus T1 at 154/160 (96.25%) on matched seeds, with a paired delta of -35 points. Its failure mix was 60 non-reaches and 2 hold interruptions, versus T1's 2 non-reaches and 4 hold interruptions. T5 non-reaches spanned inner and outer radii, retained saturated actions, and showed large branch residuals. This rejects the tested terminal action-cost implementation as harmful to reach generation or policy optimization, but does not invalidate approach stabilization generally or establish the precise cause of the learning degradation. The prior T2 result remains limited to its confounded branch-residual and near-target-velocity reward recipe; T3 and T4 remain rejected as learning-degrading recipes.",
+        "decision_frontier": "The terminal action-cost route is rejected for the tested implementation. The remaining goal-relevant distinction is whether the five-success T1 gap is concentrated in a controllable failure mechanism such as branch/shoulder-limit reach generation, singularity escape, or hold stabilization, and which intervention can address that mechanism without reproducing the learning degradation of T2, T3, T4, or T5. The next goal-review action should be chosen from fresh evidence or a new PI-owned intervention grounded in the restored T1 baseline, retaining the full 0.06-0.20 m training distribution, unchanged official task semantics, and radius-stratified branch/reach/hold/action diagnostics. A candidate at or above 98% with preserved inner-radius behavior would support official-assessment readiness; otherwise the measured failure mechanism must redirect the route.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "E7",
+          "E9",
+          "T5",
+          "M6",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign still needs a policy achieving at least 196 successes in the protected 200-episode official panel. I2 did not produce a qualifying candidate: the restored T1 reference remains the strongest development candidate at 155/160 on M5, while the fresh M6 panel measured T5 at 98/160 and T1 at 154/160. Official assessment is not justified.",
+        "next_direction_or_closure": "I2 is closed with a limited-negative result. This checkpoint ends the inquiry session and returns the campaign to goal review. Goal review should select a new discriminating measurement or intervention from the restored T1 baseline rather than continue the rejected terminal action-cost recipe; official assessment remains deferred.",
+        "next_question": "Which new PI-owned intervention or discriminating measurement can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?"
+      }
+    },
+    "request_fingerprint": "ccf58f000bbecd8911132087c21808a5701b33485ae5c382b026b1e750e442c5",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and has no formal model role. T2 checkpoints are rejected for the tested combined reward recipe; T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no new candidate is assigned a role in this goal-review checkpoint.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 96.875% on M5 and has no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 61.25% and a reach-dominated failure mix. T2 checkpoints remain rejected for the tested combined reward recipe; T3 and T4 remain rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no candidate is assigned a new formal role.",
     "completed_operations": [
-      "E9"
+      "T5",
+      "M6",
+      "E11"
     ],
-    "cumulative_resource_use": "Prior completed use: M2 one candidate-independent characterization measurement with 16 matched traces; T1 one fresh 120000-step PPO run with 120832 actual steps; M3 one 160-episode evaluation; E2 opened I1; M4 one 160-episode diagnostic evaluation; T2 one fresh 120000-step PPO run with 120832 actual steps; M5 three paired 160-episode evaluations; T3 and T4 each one fresh 120000-step PPO run with 120832 actual steps; E4-E6 recipe restorations; E7 closed I1 with a limited-negative outcome; E8 checkpointed I1. E9 opened I2. No training or measurement allocation was consumed by E9.",
-    "current_goal_gap": "The best completed development evidence is 96.875% (155/160), a gap of 1.125 percentage points or five successes relative to the 98% objective. This is not an official assessment result.",
-    "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 establish that the restored T1 baseline has distinct reach and hold failures: on the M5 paired panel it achieved 155/160, with four non-reaches and one hold interruption. The four non-reaches occurred across 11.14-17.99 cm, remained closest to the open branch with final best-branch residuals of about 0.12-0.19 rad, and reached max_abs_action=1.0; the hold interruption occurred at 17.37 cm with high first-reach end-effector speed. This supports approach-state stabilization as a consequential hypothesis, but does not establish that action damping will improve learning. The prior T2 result is limited to its combined branch-residual and near-target-velocity reward implementation, which degraded learning to 81.875% and 81.25%; it does not invalidate terminal damping as a separate method. I correct the inherited claim that inner-workspace coverage is currently absent: the restored T1 training environment samples the full 0.06-0.20 m official radius range, and the M5 failures do not cluster exclusively below 14 cm. T3 and T4 remain rejected as learning-degrading recipes, without resolving all remaining reach-generation mechanisms.",
-    "decision_frontier": "The unresolved distinction is whether the residual goal gap is primarily caused by high-momentum terminal approach and hold instability, which a narrowly scoped terminal action-damping intervention could reduce, or by policy optimization and saturated reach generation that damping could worsen. The next candidate must retain the restored T1 full-radius distribution, unchanged observations and task semantics, and be evaluated with radius-stratified success, branch residuals, failure class, first-reach velocity, and action diagnostics. Reaching at least 98% without inner-radius degradation supports official-assessment readiness; a lower result or altered failure mix requires revising or rejecting the damping route.",
+    "cumulative_resource_use": "Prior use: M2 one candidate-independent characterization measurement with 16 matched traces; T1, T2, T3, T4, and T5 each one fresh 120000-step PPO run with 120832 actual steps; M3, M4, M5, and M6 held-out research measurements; E2 opened I1; E7 closed I1 with a limited-negative outcome; E8 checkpointed I1; E9 opened I2; E10 checkpointed goal review; E11 closed I2 with a limited-negative outcome. M6 used two matched 160-episode evaluations. No official assessment has been requested.",
+    "current_goal_gap": "The best completed development evidence remains 96.875% (155/160), a gap of 1.125 percentage points or five successes relative to the 98% objective. M6's fresh T1 reference was 96.25% (154/160); neither is an official assessment result.",
+    "current_synthesis": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 established that restored T1 failures include saturated non-reaches and a high-velocity hold interruption. M6 directly tested the single-factor terminal action-damping recipe: T5 achieved 98/160 (61.25%) versus T1 at 154/160 (96.25%) on matched seeds, with a paired delta of -35 points. Its failure mix was 60 non-reaches and 2 hold interruptions, versus T1's 2 non-reaches and 4 hold interruptions. T5 non-reaches spanned inner and outer radii, retained saturated actions, and showed large branch residuals. This rejects the tested terminal action-cost implementation as harmful to reach generation or policy optimization, but does not invalidate approach stabilization generally or establish the precise cause of the learning degradation. The prior T2 result remains limited to its confounded branch-residual and near-target-velocity reward recipe; T3 and T4 remain rejected as learning-degrading recipes.",
+    "decision_frontier": "The terminal action-cost route is rejected for the tested implementation. The remaining goal-relevant distinction is whether the five-success T1 gap is concentrated in a controllable failure mechanism such as branch/shoulder-limit reach generation, singularity escape, or hold stabilization, and which intervention can address that mechanism without reproducing the learning degradation of T2, T3, T4, or T5. The next goal-review action should be chosen from fresh evidence or a new PI-owned intervention grounded in the restored T1 baseline, retaining the full 0.06-0.20 m training distribution, unchanged official task semantics, and radius-stratified branch/reach/hold/action diagnostics. A candidate at or above 98% with preserved inner-radius behavior would support official-assessment readiness; otherwise the measured failure mechanism must redirect the route.",
     "evidence_references": [
       "M2",
       "M4",
       "M5",
       "E7",
-      "E9"
+      "E9",
+      "T5",
+      "M6",
+      "E11"
     ],
-    "human_goal_connection": "The campaign still needs a policy with at least 196 successes in the protected 200-episode official panel. The strongest completed development result remains T1:checkpoint-120832 at 155/160 successes (96.875%), so official assessment is not yet justified. I2 tests whether terminal approach damping can close this gap while preserving the full official radius range.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 has been opened with a bounded goal-linked question and is not yet closed. This checkpoint ends goal review; the fresh inquiry session should implement and evaluate the single-factor terminal action-damping intervention, then decide whether the evidence supports continuing the route, revising it, or closing it with a limited or negative result.",
-    "next_question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-    "scientific_commit": "637396c98d6ceb58b7ce4c8a6f0d98ae4f21738e",
-    "session_id": "S4"
+    "human_goal_connection": "The campaign still needs a policy achieving at least 196 successes in the protected 200-episode official panel. I2 did not produce a qualifying candidate: the restored T1 reference remains the strongest development candidate at 155/160 on M5, while the fresh M6 panel measured T5 at 98/160 and T1 at 154/160. Official assessment is not justified.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed with a limited-negative result. This checkpoint ends the inquiry session and returns the campaign to goal review. Goal review should select a new discriminating measurement or intervention from the restored T1 baseline rather than continue the rejected terminal action-cost recipe; official assessment remains deferred.",
+    "next_question": "Which new PI-owned intervention or discriminating measurement can raise the restored T1 baseline from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware and hold-aware held-out evaluation?",
+    "scientific_commit": "1895b8368b6ea84e000d4c70b632272e1efca9d1",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7704,23 +7862,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "479ab5b2-6a21-40a3-8919-a4029c37cd9a",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T5",
-      "M6",
-      "E11"
-    ],
-    "scientific_parent_commit": "87d96386e3ee2d9973bee45126e14542f6a4affc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
