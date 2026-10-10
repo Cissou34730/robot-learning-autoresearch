@@ -27671,47 +27671,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a redesigned policy representation, branch-selection method, or trajectory-acquisition method is tested on the fixed development panel with complete-hold diagnostics: improvement to at least 157/160 with no loss of T3 successes supports continuation toward official assessment; failure to improve, regression in uninterrupted holds, or evidence of matched post-constraint hold loss despite comparable pre-constraint trajectories redirects or reopens the plant-side route; unavailable or non-discriminating evidence remains inconclusive.",
-          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3:checkpoint-120832 remains below the development threshold at 153/160, with residual failures concentrated in the inner negative-angle shoulder-limit region. M17 supports a candidate-specific pre-constraint branch or trajectory mechanism, so resolving and correcting that mechanism is the most credible route to improve success without sacrificing the 100-step hold.",
-          "handoff_conclusion": "M17 matched T3:checkpoint-120832 and T17:checkpoint-65536 on the same 160-episode panel. In discordant episode seed 4342, T3 was within tolerance at control step 17 with zero shoulder constraint force, then completed 100 uninterrupted hold steps under active constraint. T17 was outside tolerance at step 17 before constraint activation, reached at step 18 with shoulder constraint force 4.6332 and positive shoulder-directed velocity 2.1851, and held only 3 steps with 121 interruptions. This satisfies I14's closure condition and supports candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism. The plant-transient explanation is not eliminated: M10 and M13 establish that shoulder-limit transients exist, and the matched episode does not prove that plant effects never contribute. M14-M16 only show that the tested force-feedback, memoryless anticipatory, and combined stateful recipes did not recover the residual failures; they do not invalidate branch-aware control or establish a universal absence of plant-side effects.",
-          "handoff_question": "How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution?",
-          "handoff_source_session_id": "S29",
-          "id": "I15",
-          "opened_in_session": "S30",
-          "question": "How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution?",
-          "rationale": "M17 matched T3 and T17 on the same 160-episode panel. In the discordant seed 4342 episode, T3 entered tolerance one control step earlier with zero shoulder constraint force and then completed the hold under active constraint, while T17 was outside tolerance before force activation, reached later with active constraint force and positive shoulder-directed velocity, and suffered repeated interruptions. This corrects the prior emphasis on an unresolved plant transient as the primary route, while retaining M10 and M13 as evidence that plant transients exist and could matter if a representation-directed redesign leaves matched post-constraint failures unexplained. M14-M16 were negative results for specific force-feedback, anticipatory, and combined stateful recipes only; they do not reject branch-aware control or trajectory redesign generally. Training trajectories and unmeasured checkpoints can nominate candidates, but they do not establish development performance, so the inquiry must produce fixed-panel evidence before any official assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I15",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E58",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a redesigned policy representation, branch-selection method, or trajectory-acquisition method is tested on the fixed development panel with complete-hold diagnostics: improvement to at least 157/160 with no loss of T3 successes supports continuation toward official assessment; failure to improve, regression in uninterrupted holds, or evidence of matched post-constraint hold loss despite comparable pre-constraint trajectories redirects or reopens the plant-side route; unavailable or non-discriminating evidence remains inconclusive.",
-        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3:checkpoint-120832 remains below the development threshold at 153/160, with residual failures concentrated in the inner negative-angle shoulder-limit region. M17 supports a candidate-specific pre-constraint branch or trajectory mechanism, so resolving and correcting that mechanism is the most credible route to improve success without sacrificing the 100-step hold.",
-        "question": "How can policy representation, branch selection, or trajectory acquisition be redesigned to eliminate the remaining inner negative-angle reach and interrupted-hold failures while preserving complete uninterrupted holds under the official task distribution?",
-        "rationale": "M17 matched T3 and T17 on the same 160-episode panel. In the discordant seed 4342 episode, T3 entered tolerance one control step earlier with zero shoulder constraint force and then completed the hold under active constraint, while T17 was outside tolerance before force activation, reached later with active constraint force and positive shoulder-directed velocity, and suffered repeated interruptions. This corrects the prior emphasis on an unresolved plant transient as the primary route, while retaining M10 and M13 as evidence that plant transients exist and could matter if a representation-directed redesign leaves matched post-constraint failures unexplained. M14-M16 were negative results for specific force-feedback, anticipatory, and combined stateful recipes only; they do not reject branch-aware control or trajectory redesign generally. Training trajectories and unmeasured checkpoints can nominate candidates, but they do not establish development performance, so the inquiry must produce fixed-panel evidence before any official assessment."
-      }
-    },
-    "request_fingerprint": "3185d2b2dda9a0dd3c0695dcb0e394767f488c83ee24ff8f1bdb11c39d5836c9",
-    "session_id": "S30",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160, while T17:checkpoint-65536 is a 152/160 candidate whose discordant regression helped identify the dominant mechanism. Training statistics and these development measurements do not establish an official best-known candidate.",
     "completed_operations": [
