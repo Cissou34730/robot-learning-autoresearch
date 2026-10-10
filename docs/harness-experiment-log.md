@@ -455,7 +455,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-008 | Residual context-delivery work | **Possible work, not approved.** Brief-only compaction is implemented. Prompt replay and SDK output handling remain separate possible causes of context flooding. |
 | OI-009 | Operation-submission handoff clarification | **Unimplemented.** No change is approved. |
 | OI-010 | Explicit protection of the old protocol log | **Unimplemented.** Read-access policy remains a separate decision. |
-| OI-011 | Console clarity and maintainer-file read controls | **Closed implemented/effective 2026-10-10.** `artifact_evidence_query` calls now render the operation ID, action and compact logical JSON Pointer detail. Evidence pointers are no longer misleadingly resolved as filesystem paths, and the existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue. |
+| OI-011 | Console clarity and maintainer-file read controls | **Closed implemented/effective 2026-10-10.** `artifact_evidence_query` calls now render the operation ID, action, compact logical JSON Pointer detail, and query modifiers that expose `where`, `select`, `aggregate` and `limit` usage. Evidence pointers are no longer misleadingly resolved as filesystem paths, and the existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue. |
 | OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Closed withdrawn / accepted operational limit 2026-10-10.** The cap pauses at a checkpointed boundary and does not represent scientific exhaustion. Removal is not planned soon, so the proposal is withdrawn; the value and resume mechanism are unchanged. |
 | OI-014 | Single-change attribution in an intervention | **Open; wording support added 2026-10-09.** An intervention can change several factors at once and then receive a single-cause explanation. Campaign `79395c88` changed training seeds across observation and rollout-horizon variants, so the measured candidates are valid but the individual representation or horizon effects are not isolated. The `current_synthesis` convention now requires a conclusion to preserve that limit and report the result as a property of the compared artifacts when other factors changed with the intended one. This is a reporting requirement only: mandatory matched seeds, repeatable campaigns and attribution instruments remain unapproved, so the issue stays open. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
@@ -3243,6 +3243,12 @@ Addresses OI-003, OI-015 and OI-014 together as Priority 2 of the
   original console/read-control scope is complete. Any future distinct
   maintainer-file control defect requires a new issue. Other tool rendering is
   unchanged.
+- **OI-011 polish:** batch and isolated query summaries now show compact
+  `where`, `select`, `aggregate` and `limit` modifiers, so the console makes
+  narrow versus broad wildcard queries observable without printing evidence
+  values. The PI-facing description now explains the workflow of discovering
+  shape, narrowing wildcard rows, projecting required fields and aggregating
+  when raw rows are unnecessary.
 - **OI-013 disposition:** close withdrawn / accepted operational limit.
   Removal is not planned soon. The fifteen-inquiry cap remains a checkpointed
   launcher pause rather than scientific exhaustion, and its value and resume

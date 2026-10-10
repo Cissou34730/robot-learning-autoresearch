@@ -24,13 +24,17 @@ MISSING = object()
 class ArtifactEvidenceQuerySpec(BaseModel):
     path: str = Field(
         max_length=1024,
-        description="JSON Pointer scope to query; wildcards select array/object rows.",
+        description=(
+            "JSON Pointer scope to query; wildcards select array/object rows. "
+            "Use a wildcard to identify rows, then narrow with where/select "
+            "instead of returning complete objects."
+        ),
     )
     where: dict[str, Any] | None = Field(
         default=None,
         description=(
             'Optional equality filter: {"path": <relative JSON Pointer>, '
-            '"equals": <JSON value>}.'
+            '"equals": <JSON value>}. Apply it to narrow wildcard row matches.'
         ),
     )
     select: str | None = Field(
@@ -38,20 +42,26 @@ class ArtifactEvidenceQuerySpec(BaseModel):
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering."
+            "where filtering; prefer it over returning complete row objects."
         ),
     )
     aggregate: (
         Literal["count", "numeric_summary", "value_counts"] | None
     ) = Field(
         default=None,
-        description="Optional bounded aggregate instead of returning raw matches.",
+        description=(
+            "Optional bounded aggregate instead of returning raw matches: "
+            "count, numeric_summary or value_counts."
+        ),
     )
     limit: int = Field(
         default=MAX_RESULTS,
         ge=1,
         le=MAX_RESULTS,
-        description="Maximum raw matches returned for this specification.",
+        description=(
+            "Maximum raw matches returned for this specification; keep it "
+            "bounded when raw episode rows are required."
+        ),
     )
 
 
@@ -59,7 +69,9 @@ class ArtifactEvidenceQueryParams(BaseModel):
     action: Literal["discover", "query", "batch"] = Field(
         description=(
             "Use discover for bounded path discovery, batch for related queries "
-            "against one artifact, or query for one legacy isolated query."
+            "against one artifact, or query for one legacy isolated query. "
+            "For evidence values, discover shape first, then use batch with "
+            "where/select or an aggregate to minimize returned context."
         ),
     )
     operation_id: str = Field(
@@ -86,7 +98,9 @@ class ArtifactEvidenceQueryParams(BaseModel):
         description=(
             "For batch, 1-16 related query specifications executed against one "
             "resolved and fingerprint-verified artifact. Prefer one batch over "
-            "separate calls for related fields; provenance is returned once."
+            "separate calls for related fields; provenance is returned once. "
+            "Use separate specifications for narrow projections or aggregates, "
+            "not repeated broad wildcard objects."
         ),
     )
     path: str | None = Field(
@@ -94,20 +108,38 @@ class ArtifactEvidenceQueryParams(BaseModel):
         max_length=1024,
         description=(
             "For the legacy single-query action, the JSON Pointer scope. Prefer "
-            "queries with action=batch for related fields."
+            "queries with action=batch for related fields and narrow wildcard "
+            "matches with where/select."
         ),
     )
-    where: dict[str, Any] | None = None
+    where: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Optional equality filter applied to wildcard matches before "
+            "select; use it to avoid returning unrelated rows."
+        ),
+    )
     select: str | None = Field(
         default=None,
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering."
+            "where filtering; prefer it over complete row objects."
         ),
     )
-    aggregate: Literal["count", "numeric_summary", "value_counts"] | None = None
-    limit: int = Field(default=MAX_RESULTS, ge=1, le=MAX_RESULTS)
+    aggregate: Literal["count", "numeric_summary", "value_counts"] | None = Field(
+        default=None,
+        description=(
+            "Optional bounded aggregate instead of raw matches: count, "
+            "numeric_summary or value_counts."
+        ),
+    )
+    limit: int = Field(
+        default=MAX_RESULTS,
+        ge=1,
+        le=MAX_RESULTS,
+        description="Maximum raw matches returned; keep it bounded when needed.",
+    )
 
     @model_validator(mode="after")
     def validate_action_fields(self) -> "ArtifactEvidenceQueryParams":

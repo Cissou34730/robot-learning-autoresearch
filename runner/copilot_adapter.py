@@ -364,6 +364,47 @@ def compact_json_pointer(pointer: str) -> str:
     )
 
 
+def compact_artifact_query_spec(query: object) -> str:
+    if not isinstance(query, dict):
+        return "invalid query"
+    path = query.get("path")
+    rendered_path = (
+        compact_json_pointer(str(path))
+        if isinstance(path, str) and path.startswith("/")
+        else "missing path"
+    )
+    modifiers: list[str] = []
+    where = query.get("where")
+    if isinstance(where, dict):
+        where_path = where.get("path")
+        if isinstance(where_path, str) and where_path.startswith("/"):
+            equals = json.dumps(
+                where.get("equals"),
+                ensure_ascii=True,
+                separators=(",", ":"),
+            )
+            modifiers.append(
+                "where "
+                + compact_json_pointer(where_path)
+                + "="
+                + compact_console_text(equals)
+            )
+        else:
+            modifiers.append("where")
+    select = query.get("select")
+    if isinstance(select, str) and select:
+        modifiers.append("select " + compact_json_pointer(select))
+    aggregate = query.get("aggregate")
+    if isinstance(aggregate, str) and aggregate:
+        modifiers.append("aggregate " + aggregate)
+    limit = query.get("limit")
+    if isinstance(limit, int):
+        modifiers.append(f"limit {limit}")
+    if modifiers:
+        return f"{rendered_path} [{'; '.join(modifiers)}]"
+    return rendered_path
+
+
 def compact_console_text(text: object) -> str:
     value = UUID_PATTERN.sub("<id>", str(text or ""))
     return WINDOWS_PATH_PATTERN.sub(
@@ -1156,25 +1197,18 @@ class Console:
                 elif action == "batch":
                     queries = arguments.get("queries")
                     if isinstance(queries, list):
-                        valid_pointers = [
-                            query["path"]
+                        rendered_queries = [
+                            compact_artifact_query_spec(query)
                             for query in queries
                             if isinstance(query, dict)
                             and isinstance(query.get("path"), str)
                             and query["path"].startswith("/")
                         ]
-                        pointers.extend(
-                            compact_json_pointer(pointer)
-                            for pointer in valid_pointers[:3]
-                        )
-                        if len(valid_pointers) > 3:
-                            pointers.append(
-                                f"+{len(valid_pointers) - 3} more"
-                            )
+                        pointers.extend(rendered_queries[:3])
+                        if len(rendered_queries) > 3:
+                            pointers.append(f"+{len(rendered_queries) - 3} more")
                 elif isinstance(arguments.get("path"), str):
-                    pointers.append(
-                        compact_json_pointer(str(arguments["path"]))
-                    )
+                    pointers.append(compact_artifact_query_spec(arguments))
                 parts = [
                     str(value)
                     for value in (operation_id, action)
@@ -1466,8 +1500,13 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
             "specifications (each has path and optional where/select/aggregate/"
             "limit): the artifact is resolved and fingerprint-verified once, "
             "and provenance is returned once. Use action=query only for a "
-            "single isolated query. Discovery is bounded and reports explicit "
-            "truncation."
+            "single isolated query. Efficient workflow: use discover only to "
+            "learn the artifact shape, use a wildcard path to identify rows, "
+            "then use where to narrow rows and select to return only the "
+            "needed field. Prefer count, numeric_summary or value_counts when "
+            "individual rows are not needed. Avoid returning complete objects "
+            "from broad wildcard paths; keep limit bounded. Discovery is "
+            "bounded and reports explicit truncation."
         ),
         handler=artifact_evidence_query,
         params_type=ArtifactEvidenceQueryParams,
