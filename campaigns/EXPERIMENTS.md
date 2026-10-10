@@ -38,3 +38,4 @@
 | E18 | restore_recipe | I3 | restored |
 | T9 | training | I3 | completed |
 | M9 | measurement | I3 | completed |
+| E19 | inquiry | I3 | completed |
