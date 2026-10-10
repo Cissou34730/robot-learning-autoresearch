@@ -6,3 +6,4 @@
 | T1 | training | - | completed |
 | M2 | measurement | - | completed |
 | T2 | training | - | completed |
+| M3 | measurement | - | completed |
