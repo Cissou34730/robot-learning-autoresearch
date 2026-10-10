@@ -5747,7 +5747,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 3,
     "measurement": 7,
     "session": 7,
@@ -5756,7 +5756,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -10757,9 +10757,113 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T07:09:18Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I3",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "T7's near-target velocity-shaping recipe produced zero training success at every checkpoint and cannot support a development evaluation. Restore the matched T1 baseline before selecting a narrower approach-stabilization intervention; this preserves the distinction between rejecting the tested recipe and rejecting velocity regulation generally."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "status": "restored"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S7"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "dd5f3afc6edbaadfb81d72578a4feeea27744aadb173fffb6a07300b03f12bdd",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "8cab3eb601a3e1d10875a4fdf186718294d8302252edf431cfbe4c0118272506",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "4106189e3beec1893eec3d992b8354b356be02154b3e7cac4dd2a0d108880ac6",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I3",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "T7's near-target velocity-shaping recipe produced zero training success at every checkpoint and cannot support a development evaluation. Restore the matched T1 baseline before selecting a narrower approach-stabilization intervention; this preserves the distinction between rejecting the tested recipe and rejecting velocity regulation generally."
+      }
+    },
+    "request_fingerprint": "7400f7dc0ba4da5c7f41928d5754b48bf486b55a473396e63420e5cb6e39a9b0",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 155/160 on M5, with no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 98/160. T2, T3, and T4 remain rejected for their tested learning-degrading recipes. No candidate establishes the official 98% goal and no candidate is assigned a new formal role.",
     "completed_operations": [
@@ -10809,9 +10913,10 @@
       "T6",
       "M7",
       "E16",
-      "T7"
+      "T7",
+      "E17"
     ],
-    "scientific_parent_commit": "fdd082c5dfedcf15ad85f18ad8ff7d26ea6097e1"
+    "scientific_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192"
   },
   "terminal_state": null
 }
