@@ -7674,38 +7674,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited_negative",
-        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited_negative",
-        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions."
-      }
-    },
-    "request_fingerprint": "a7fc39c68e08062be4e3d77a47b2b3ef33b9dce53c0836475a555b380a722e81",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and has no formal model role. T2 checkpoints are rejected for the tested combined reward recipe; T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no new candidate is assigned a role in this goal-review checkpoint.",
     "completed_operations": [
