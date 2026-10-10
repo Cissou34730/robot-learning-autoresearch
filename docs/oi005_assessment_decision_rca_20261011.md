@@ -258,6 +258,47 @@ from scientific usefulness. One passing campaign cannot close both directions.
 **Disposition at publication:** implemented / unmeasured. Campaign observation
 and any stronger status are recorded separately after execution.
 
+### First authorized campaign: `89a6354a`, operationally blocked
+
+The fresh clean/force reset used the v3 recipe commit
+`8256c8c7705a5080a722453b26eb13cd85b6e18f`. The reset imported no policy,
+measurement or prior designation and left a clean worktree. The campaign
+launched with repository defaults after the repair was committed and pushed.
+
+The launcher exited at the post-I1 checkpoint after two rejected proposals.
+S3's accepted operation identities are `T5`, `M6`, `E4`. The PI first listed
+only `E4`, then changed the list to empty after mistakenly inferring a fresh
+session. Neither matches S3. The existing Runner rejected both and the
+launcher's bounded retry limit raised an error. I1's limited-negative closure
+remains accepted; its session summary has not been accepted. There is no
+official assessment, terminal result, pending operation or new inquiry.
+This is an operation-contract failure, not evidence against the learning
+method or the OI-005 repair.
+
+S2 supplies one limited behavioral observation. E2 explicitly compared
+terminal assessment of T4's 191/200 development result with one bounded
+inquiry targeting potentially reducible residual failures. It recognized
+terminality and corrected an inherited diagnostic claim: interruptions were
+associated with failures but also occurred in successful episodes. E3 correctly
+stated that relative best-known assignment would not certify performance.
+However its frontier still used a development-score target, and the record
+does not establish a mature two-sided comparison or repeated reconsideration.
+No terminal request or prolonged-deferral sequence occurred. **OI-005 remains
+implemented / unmeasured; the isolated observations do not close it.**
+
+Before the block, five training operations, six measurements, two inquiry
+operations and two checkpoints completed. All five training operations
+completed 120,832 steps, totaling 604,160. The recorded launcher interval was
+about 51 minutes. AIU, token and tool-call totals were not available in the
+workspace usage-report path and are not inferred from transcript length.
+All accepted campaign commits were already pushed at `4bc3fdc`.
+
+The rejected exchange request is preserved in the maintainer session artifacts
+as `oi005-rejected-operation-request.json` before removal from the worktree.
+Accepted state, evidence and PI backend session are unchanged. No second
+campaign, reset, automatic resumption or unrelated repair is authorized by
+this record.
+
 ## Limits and preserved boundaries
 
 The sample is small and heterogeneous. Models, seeds, panels, methods and

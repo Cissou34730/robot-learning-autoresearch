@@ -32,12 +32,16 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 **As of 2026-10-11**
 
 - Latest completed campaign: `ec7f3d3a`.
+- Authorized fresh v3 campaign `89a6354a` stopped operationally after I1:
+  the post-closure checkpoint omitted S3 operations `T5`, `M6`, `E4` on two
+  attempts. Accepted evidence is preserved; no official result exists.
 - Official result: `197/200` (98.5%), above the `196/200` threshold.
 - Latest harness changes: OI-016 handoff revision, OI-003/OI-015/OI-014
   evidence-fidelity wording, OI-017 nested artifact access, and OI-018 query
   batching and observability. OI-005 now adds symmetric assessment/further-work
-  comparison and terminality routing in goal review; its campaign effect is
-  unmeasured at publication.
+  comparison and terminality routing in goal review. The blocked campaign
+  recognized terminality in E2, but did not exercise terminal commitment or
+  prolonged deferral; OI-005 remains unmeasured.
 - No campaign operation is running or authorized by this record.
 - The fifteen-inquiry limit remains a checkpointed operational pause, not a
   scientific-exhaustion result.
@@ -65,7 +69,7 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-002 | Inquiry control and bounded closure | **Closed** | Campaign `1ae27a27` closed positive, negative and limited inquiries without indefinite continuation. | None. |
 | OI-003 | Evidence inspection and interpretation | **Closed** | `current_synthesis` now requires claim-to-artifact references and distinguishes uninspected from absent evidence. Campaign `ec7f3d3a` used nested diagnostic artifacts without repeating the M30 false-missing interpretation. | None. A future distinct interpretation defect requires a new issue. |
 | OI-004 | Checkpoint nomination and progression | **Closed** | Nonterminal candidates and failed probes can inform progression; `896c230a` showed evidence-backed selection. | None. Do not infer causal improvement. |
-| OI-005 | Counterevidence and assessment-decision calibration | **Implemented / unmeasured** | The reconciled independent RCAs cover both terminal-as-probe requests and inherited-gate deferral. Goal review now compares terminal commitment with the contribution of further bounded work, preserving counterevidence and relative best-known semantics. No readiness gate or Runner judgment was added. | Observe actual decision reasons in the explicitly authorized fresh v3 campaign; pass/fail alone cannot close the issue. |
+| OI-005 | Counterevidence and assessment-decision calibration | **Implemented / unmeasured** | The reconciled independent RCAs cover both terminal-as-probe requests and inherited-gate deferral. Goal review now compares terminal commitment with further bounded work; no readiness gate or Runner judgment was added. `89a6354a` E2 recognized terminality, but execution stopped at an unrelated invalid checkpoint before either failure direction was adequately exercised. | Maintainer decides continuation at the preserved checkpoint boundary; no automatic reset or resumption. |
 | OI-006 | Full startup-budget review | **Open** | The 120,000-step ceiling and its scientific/cost effect have not been reviewed. | Separate maintainer budget analysis from scientific repairs. |
 | OI-007 | Prompt-stack ordering R2 | **Paused** | Scientific context precedes operational options; putting the human goal before the PI persona in ordinary sessions is not approved. | No action unless reopened. |
 | OI-008 | Residual context delivery | **Open / not approved** | Brief compaction was implemented; prompt replay and SDK output handling remain possible causes of flooding. | Do not bundle with another repair. |
@@ -132,6 +136,7 @@ operations and must remain separate from campaign execution:
 | 2026-10-11 | OI-003 and OI-016 closure | Closed from `ec7f3d3a` campaign evidence; no replay or campaign mutation was required. OI-015 remains implemented/unmeasured because its historical semantic mismatch was not exercised. |
 | 2026-10-11 | OI-021 scenario-specific scientific-model prompt | Registered high priority. Direct leakage is confined to the preliminary scientific-model prompt, with downstream influence through its durable output. Impact review precedes repair. |
 | 2026-10-11 | OI-005 reconciled dual RCA and goal-review repair | Implemented/unmeasured. The program owns a two-sided terminal-assessment/further-work comparison; only ordinary goal-review routing and its saved objective change. The maintainer explicitly authorized publication, fresh reset with the v3 recipe and one campaign launch after this repair. No replay, cap, budget, recipe, OI-019 or OI-021 change is bundled. |
+| 2026-10-11 | Authorized OI-005 campaign observation | `89a6354a` completed five training operations and six measurements, then stopped after two invalid S3 checkpoint proposals. The correct list is `T5`, `M6`, `E4`; the PI submitted `E4` then an empty list. No official result or automatic restart. The rejected exchange request was preserved outside the repository; accepted campaign evidence and backend session remain intact. Details are in the OI-005 RCA. |
 | 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 
 ## Evidence index
