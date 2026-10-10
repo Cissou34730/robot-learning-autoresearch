@@ -92,3 +92,4 @@
 | E55 | checkpoint | - | checkpointed |
 | M17 | measurement | I14 | completed |
 | E56 | inquiry | I14 | completed |
+| E57 | checkpoint | I14 | checkpointed |
