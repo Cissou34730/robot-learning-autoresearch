@@ -25027,47 +25027,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close positive if a fully realized candidate reaches at least 157/160 on the fixed panel and loses none of T3's 153 success episodes; close limited negative if a paired candidate/reference measurement remains tied or regresses while preserving first-reach, hold-interruption, radius, and angle diagnostics; close inconclusive if the intervention or the failure-mode discriminator is not realized. A tied or regressive result redirects the campaign to mechanism-discriminating evidence rather than another policy-specific rescue.",
-          "goal_connection": "The human goal remains unmet at 153/160 development successes, with four acquisition failures and three interrupted holds concentrated near the negative-angle shoulder limit. A positive result reaching at least 157/160 without regression on T3-success episodes would reach the development threshold that justifies continued pursuit of the 98% official objective.",
-          "handoff_conclusion": "M13 observed a shoulder-limit transient signature with persistent constraint-force interaction in T3's residual negative-angle failures. M14 showed that the tested T15 bounded constant shoulder constraint-force feedback recovered none of them: T15 tied T3 at 153/160 with zero discordant episodes. M15 then tested T16's memoryless target-conditioned lookahead braking rescue against T3 on the same panel; it also tied at 153/160 with zero discordant episodes. These are recipe-specific limited negative results: they reject the tested constant force-feedback and anticipatory lookahead realizations as effective rescues, but do not establish that the intervention classes are inactive, that plant transients are irrelevant, or that all branch-selection and stabilization mechanisms fail. T16 training statistics nominated the measured checkpoint but did not establish development performance. The remaining causal alternatives are candidate-specific trajectory error versus a shoulder-limit plant transient requiring a different, untested mechanism.",
-          "handoff_question": "Can a state-dependent branch-and-limit stabilization policy, with hysteretic feasible-branch commitment and joint-velocity/limit-force damping, recover the seven localized T3 failures on the fixed 160-episode development panel without losing any of T3's 153 successes?",
-          "handoff_source_session_id": "S25",
-          "id": "I13",
-          "opened_in_session": "S26",
-          "question": "Can a state-dependent branch-and-limit stabilization policy, with hysteretic feasible-branch commitment and joint-velocity/limit-force damping, recover the seven localized T3 failures on the fixed 160-episode development panel without losing any of T3's 153 successes?",
-          "rationale": "The unresolved distinction is candidate-specific trajectory error versus a shoulder-limit plant transient that needs a different controller. M13 and the near-limit probe show real constraint-force interaction and transient dynamics, but M14's constant force feedback and M15's memoryless target-conditioned lookahead both tied T3 at 153/160 with zero discordant episodes. Those results reject only the tested realizations, not state-dependent branch commitment or stabilization. This inquiry therefore tests a materially different policy mechanism while requiring episode-level separation of first reach from interrupted holding and an exact paired comparison that protects T3's complete-hold baseline.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I13",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E50",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close positive if a fully realized candidate reaches at least 157/160 on the fixed panel and loses none of T3's 153 success episodes; close limited negative if a paired candidate/reference measurement remains tied or regresses while preserving first-reach, hold-interruption, radius, and angle diagnostics; close inconclusive if the intervention or the failure-mode discriminator is not realized. A tied or regressive result redirects the campaign to mechanism-discriminating evidence rather than another policy-specific rescue.",
-        "goal_connection": "The human goal remains unmet at 153/160 development successes, with four acquisition failures and three interrupted holds concentrated near the negative-angle shoulder limit. A positive result reaching at least 157/160 without regression on T3-success episodes would reach the development threshold that justifies continued pursuit of the 98% official objective.",
-        "question": "Can a state-dependent branch-and-limit stabilization policy, with hysteretic feasible-branch commitment and joint-velocity/limit-force damping, recover the seven localized T3 failures on the fixed 160-episode development panel without losing any of T3's 153 successes?",
-        "rationale": "The unresolved distinction is candidate-specific trajectory error versus a shoulder-limit plant transient that needs a different controller. M13 and the near-limit probe show real constraint-force interaction and transient dynamics, but M14's constant force feedback and M15's memoryless target-conditioned lookahead both tied T3 at 153/160 with zero discordant episodes. Those results reject only the tested realizations, not state-dependent branch commitment or stabilization. This inquiry therefore tests a materially different policy mechanism while requiring episode-level separation of first reach from interrupted holding and an exact paired comparison that protects T3's complete-hold baseline."
-      }
-    },
-    "request_fingerprint": "ffb522d04113bc19a0d59cccd07e220f124a9bdaa346ad3d7bc431a8cd169c66",
-    "session_id": "S26",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 was measured at 153/160 with zero discordant episodes against T3 and has no assigned role. T15:checkpoint-86016 also measured 153/160 with no improvement; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
