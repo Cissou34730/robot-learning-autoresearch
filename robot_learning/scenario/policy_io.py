@@ -6,32 +6,11 @@ before export (module-level imports or captured objects, not runtime imports).
 
 from contracts.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
-from robot_learning.scenario.trajectory_control import (
-    stateful_branch_limit_action,
-)
+
+
+def physical_action(action):
+    return action
 
 
 def make_policy_io():
-    latest_data = None
-    controller_state: dict[str, object] = {
-        "branch_index": None,
-        "holding": False,
-    }
-
-    def observe(data):
-        nonlocal latest_data
-        latest_data = data
-        return reach_observation(data)
-
-    def action(value):
-        if latest_data is None:
-            raise RuntimeError("policy action requested before an observation")
-        return stateful_branch_limit_action(latest_data, value, controller_state)
-
-    def reset():
-        nonlocal latest_data
-        latest_data = None
-        controller_state["branch_index"] = None
-        controller_state["holding"] = False
-
-    return PolicyIO(observe=observe, action=action, reset=reset)
+    return PolicyIO(observe=reach_observation, action=physical_action)

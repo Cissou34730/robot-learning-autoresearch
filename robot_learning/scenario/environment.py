@@ -142,21 +142,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        observation = self._observation()
-        target_angle = float(
-            np.arctan2(self.data.mocap_pos[0][1], self.data.mocap_pos[0][0])
-        )
         reward = reach_reward(
             self._previous_distance,
             distance,
             self.success_threshold,
             action,
-            joint_velocity=self.data.qvel[:2].copy(),
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            target_angle=target_angle,
         )
         self._previous_distance = distance
 
@@ -171,7 +165,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
-        return observation, float(reward.total), terminated, truncated, info
+        return self._observation(), float(reward.total), terminated, truncated, info
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
