@@ -6955,38 +6955,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative",
-        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative",
-        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M6 resolves the tested full hold-progress forfeiture continuation but not the broader hold mechanism. On the same fresh 200-episode panel, T5:checkpoint-55296 achieved 184/200 (92.0%) while its T4 parent achieved 187/200 (93.5%); the paired comparison had 8 T5 wins, 11 T4 wins, and 19 discordant episodes. T5 therefore did not reduce the residual failure tail or reach the 196/200 development criterion. Its diagnostics recorded 16 failures and 16 episodes with interruptions, compared with 13 failures and 17 interrupted episodes for T4, so the recipe did not convert interruption exposure into improved completion. This is evidence against this reward-only implementation, not proof that all hold-focused control is ineffective. The bounded inquiry is closed with a limited negative conclusion: further reward-forfeiture continuation is not supported, and the campaign should return to goal review to choose whether to pursue a different stabilization or branch/representation route before official assessment."
-      }
-    },
-    "request_fingerprint": "f50ca6d7c89889f240a5edc97cdcb25c3d23e320b1ec5c48ab999e0c0c82a474",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 (191/200, 95.5%), but assigning a role is not necessary for this transition and would not certify official performance.",
     "completed_operations": [
