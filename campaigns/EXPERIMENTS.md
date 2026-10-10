@@ -49,3 +49,4 @@
 | T11 | training | I7 | completed |
 | M8 | measurement | I7 | completed |
 | E28 | inquiry | I7 | completed |
+| E29 | checkpoint | I7 | checkpointed |
