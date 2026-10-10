@@ -18689,47 +18689,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Evaluate one bounded state-aware or branch-transition intervention against T3 on the shared 160-episode development panel. Continue only if it recovers at least four recurring T3 failures without material loss in complete success, while diagnostics show the change in first reach, hold interruptions, terminal joint positions, and branch errors. Close with a limited negative or redirect if it matches or regresses T3, or if the recovered failures are offset by new failures elsewhere.",
-          "goal_connection": "The established T3 candidate succeeds on 153 of 160 development episodes, leaving seven failures concentrated in negative-angle, shoulder-limit situations. Recovering at least four of those failures without losing complete-hold successes would move the candidate toward the 98% official objective.",
-          "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5, M6, M7, and M9 matched T3 for their tested branch-limit, braking, explicit-trajectory, and direct-action near-limit recipes; M8 regressed to 100/160 for its tested residual-setpoint feedback recipe. These results reject only those recorded implementations, not the broader methods. M10 established that the compiled shoulder limit produces a real plant interaction: outward commands overshot the nominal 2.9671-radian limit, produced opposing generalized constraint force up to about 10.02 against actuator force 5, and reversed with high authority. M11 then tested a state-triggered soft-limit impedance derived from that observation and regressed to 147/160 versus T3 at 153/160, with six discordant episodes all favoring T3. Thus limit interaction is physically real, but this compensation did not show that it is a sufficient or remediable cause of the recurring policy failures. The limited negative result is specific to the tested controller and does not disprove other plant-aware or policy-state mechanisms.",
-          "handoff_question": "Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient?",
-          "handoff_source_session_id": "S19",
-          "id": "I10",
-          "opened_in_session": "S20",
-          "question": "Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient?",
-          "rationale": "M4 localizes the recurring failures to approximately -130 to -151 degree targets near the shoulder limit, but many failures have small selected/open-branch error and large alternate-branch error, so branch choice alone does not establish the cause. M10 establishes real limit interaction, while M11 shows that the tested state-triggered soft-limit impedance regressed from 153/160 to 147/160 and therefore does not support another small limit-governor variant. The remaining decision-relevant distinction is whether policy action selection or transition timing/state use can exploit the controllable plant without sacrificing T3's complete-hold behavior.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I10",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E38",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Evaluate one bounded state-aware or branch-transition intervention against T3 on the shared 160-episode development panel. Continue only if it recovers at least four recurring T3 failures without material loss in complete success, while diagnostics show the change in first reach, hold interruptions, terminal joint positions, and branch errors. Close with a limited negative or redirect if it matches or regresses T3, or if the recovered failures are offset by new failures elsewhere.",
-        "goal_connection": "The established T3 candidate succeeds on 153 of 160 development episodes, leaving seven failures concentrated in negative-angle, shoulder-limit situations. Recovering at least four of those failures without losing complete-hold successes would move the candidate toward the 98% official objective.",
-        "question": "Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient?",
-        "rationale": "M4 localizes the recurring failures to approximately -130 to -151 degree targets near the shoulder limit, but many failures have small selected/open-branch error and large alternate-branch error, so branch choice alone does not establish the cause. M10 establishes real limit interaction, while M11 shows that the tested state-triggered soft-limit impedance regressed from 153/160 to 147/160 and therefore does not support another small limit-governor variant. The remaining decision-relevant distinction is whether policy action selection or transition timing/state use can exploit the controllable plant without sacrificing T3's complete-hold behavior."
-      }
-    },
-    "request_fingerprint": "780327922ebbb840960f4c015e61b6d674ceffff8291668105add9d652787537",
-    "session_id": "S20",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and reference at 153/160. T13:checkpoint-115712 regressed to 147/160 in M11 and is not assigned a role. T12:checkpoint-100352 matched T3 at 153/160 in M9 and is not assigned a role. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
