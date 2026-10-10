@@ -27042,38 +27042,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "limited_negative",
-        "reason": "M16 completed the fully realized I13 candidate/reference measurement with the required same 160-episode panel and diagnostics. T17:checkpoint-65536 achieved 152/160 versus T3:checkpoint-120832 at 153/160, with one discordant episode and a loss of one T3 success, so the positive closure threshold of at least 157/160 with no regression was not met. The failure-mode discriminator is interpretable: the candidate's sole regression is episode 142, an inner-radius 8.6596 cm target at -129.7076 degrees; both policies first reached tolerance, but T17 reached at step 18 versus T3 at step 17, then held for only 3 steps with 121 interruptions versus T3's uninterrupted 100-step hold. M16 artifacts contain first-reach, max-held, hold-interruption, radius, angle, branch, and trajectory diagnostics. This establishes a limited negative result for this combined implementation, not a rejection of branch selection or plant-aware control generally. I13 therefore closes and redirects the campaign to mechanism-discriminating evidence before any further policy-specific rescue."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "limited_negative",
-        "reason": "M16 completed the fully realized I13 candidate/reference measurement with the required same 160-episode panel and diagnostics. T17:checkpoint-65536 achieved 152/160 versus T3:checkpoint-120832 at 153/160, with one discordant episode and a loss of one T3 success, so the positive closure threshold of at least 157/160 with no regression was not met. The failure-mode discriminator is interpretable: the candidate's sole regression is episode 142, an inner-radius 8.6596 cm target at -129.7076 degrees; both policies first reached tolerance, but T17 reached at step 18 versus T3 at step 17, then held for only 3 steps with 121 interruptions versus T3's uninterrupted 100-step hold. M16 artifacts contain first-reach, max-held, hold-interruption, radius, angle, branch, and trajectory diagnostics. This establishes a limited negative result for this combined implementation, not a rejection of branch selection or plant-aware control generally. I13 therefore closes and redirects the campaign to mechanism-discriminating evidence before any further policy-specific rescue.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E52",
-    "inquiry_id": "I13",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "M16 completed the fully realized I13 candidate/reference measurement with the required same 160-episode panel and diagnostics. T17:checkpoint-65536 achieved 152/160 versus T3:checkpoint-120832 at 153/160, with one discordant episode and a loss of one T3 success, so the positive closure threshold of at least 157/160 with no regression was not met. The failure-mode discriminator is interpretable: the candidate's sole regression is episode 142, an inner-radius 8.6596 cm target at -129.7076 degrees; both policies first reached tolerance, but T17 reached at step 18 versus T3 at step 17, then held for only 3 steps with 121 interruptions versus T3's uninterrupted 100-step hold. M16 artifacts contain first-reach, max-held, hold-interruption, radius, angle, branch, and trajectory diagnostics. This establishes a limited negative result for this combined implementation, not a rejection of branch selection or plant-aware control generally. I13 therefore closes and redirects the campaign to mechanism-discriminating evidence before any further policy-specific rescue."
-      }
-    },
-    "request_fingerprint": "a0f4890fdd0e5387753fd978b49bf8f1158a7cef68963c51297824693dd92ae1",
-    "session_id": "S27",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 and T15:checkpoint-86016 tied T3 at 153/160 in their respective paired measurements; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
