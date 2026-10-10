@@ -5256,47 +5256,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when bounded continuation and diagnostic evidence are sufficient to judge whether hold-focused work can close the development gap without losing inner-radius acquisition: a positive conclusion requires at least 196/200 on a comparable research panel with acquisition preserved; a negative or limited conclusion is justified if interruption-linked failures do not improve, or if residual failures are instead concentrated in a branch or geometry mechanism requiring a different route; an inconclusive conclusion is allowed if the available evidence cannot discriminate these outcomes.",
-          "goal_connection": "The strongest evidence-backed candidate, T4:checkpoint-105472, achieved 191/200 on the development panel, below the 196/200 threshold required by the human goal. Resolving whether its remaining failures are reducible hold failures could improve the candidate before the terminal official assessment, while preserving the demonstrated inner-radius acquisition capability.",
-          "handoff_conclusion": "Observed: M1 found active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%; 56 of 64 failures never reached tolerance, exposing the 14-20 cm training distribution as inadequate for official inner radii. Observed: direct full-radius fresh training T2 evaluated at 35.0% in M3 and had 120/200 never-reached episodes, so changing coverage without preserving the learned outer controller is not a viable route. Observed: weighted transfer T3 reached 89.5% in M4, with all 15 never-reached failures at radii 6.6-11.9 cm. Observed: increasing inner-radius exposure to 50% in T4 produced 95.5% in M5; only one episode never reached tolerance, while hold interruptions remained in 20 episodes. Interpretation: staged transfer and targeted inner-radius exposure are causally supported as the route for acquisition, but the remaining development gap is now more consistent with sampled-data hold robustness than reachability. This interpretation is limited to the measured candidates, panels, and recorded diagnostics; M5 is not official assessment evidence, and branch identity, continuous internal-step behavior, and hidden hold-history effects remain unmeasured.",
-          "handoff_question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-          "rationale": "M5 is below the goal threshold, so immediate official assessment would terminally commit a candidate with a measured five-episode gap. The inherited hold-focused interpretation is supported but must be corrected: M5 contains nine failures, eight with nonzero hold interruptions and one with none, while interruptions occurred in 20 episodes overall, including successful episodes. Thus interruptions are associated with most failures but are not themselves equivalent to failure, and branch, geometry, and hold-history mechanisms remain unresolved. This directly goal-linked uncertainty warrants one bounded inquiry before terminal assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when bounded continuation and diagnostic evidence are sufficient to judge whether hold-focused work can close the development gap without losing inner-radius acquisition: a positive conclusion requires at least 196/200 on a comparable research panel with acquisition preserved; a negative or limited conclusion is justified if interruption-linked failures do not improve, or if residual failures are instead concentrated in a branch or geometry mechanism requiring a different route; an inconclusive conclusion is allowed if the available evidence cannot discriminate these outcomes.",
-        "goal_connection": "The strongest evidence-backed candidate, T4:checkpoint-105472, achieved 191/200 on the development panel, below the 196/200 threshold required by the human goal. Resolving whether its remaining failures are reducible hold failures could improve the candidate before the terminal official assessment, while preserving the demonstrated inner-radius acquisition capability.",
-        "question": "Can a hold-focused continuation of the T4 policy reduce the residual interruption tail sufficiently to reach at least 98% robust research performance without sacrificing the now-solved inner-radius acquisition?",
-        "rationale": "M5 is below the goal threshold, so immediate official assessment would terminally commit a candidate with a measured five-episode gap. The inherited hold-focused interpretation is supported but must be corrected: M5 contains nine failures, eight with nonzero hold interruptions and one with none, while interruptions occurred in 20 episodes overall, including successful episodes. Thus interruptions are associated with most failures but are not themselves equivalent to failure, and branch, geometry, and hold-history mechanisms remain unresolved. This directly goal-linked uncertainty warrants one bounded inquiry before terminal assessment."
-      }
-    },
-    "request_fingerprint": "78463769afa82ecea071769e700f6db6033661006577a07d4f9f8cb8adff7d26",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 is the strongest evidence-backed candidate by the completed M5 research evaluation (191/200, 95.5%), but it remains unassigned until goal review compares further bounded work with official assessment.",
     "completed_operations": [
