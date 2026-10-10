@@ -5902,72 +5902,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "candidate_id": "T1:checkpoint-120832",
-        "parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "parent": "dec3cd5204484f5acef319d30e20915515fb0192",
-        "remove_created": [],
-        "restore": [
-          "robot_learning/scenario/environment.py"
-        ],
-        "session_id": "S3"
-      },
-      "pre_restore_manifest": [
-        {
-          "exists": true,
-          "fingerprint": "1529513c0a66b7b97d60a072d109bc4c9dbd61e503a18aaa72fd0d577df06766",
-          "path": "robot_learning/scenario/environment.py"
-        }
-      ],
-      "result": {
-        "candidate": "T1:checkpoint-120832",
-        "restored_paths": [
-          "robot_learning/scenario/environment.py"
-        ],
-        "scientific_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
-        "status": "restored"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": "I1",
-    "kind": "restore_recipe",
-    "progress": "completed",
-    "request": {
-      "restore_recipe": {
-        "candidate": "T1:checkpoint-120832",
-        "reason": "T4 rejects the shoulder-limit action guard as a usable training recipe: terminal training success was only 0.01 with reward 69.90, so the intervention destabilized learning before it could test the limit-trapping hypothesis. Restore the T1 recipe to remove the failed action-layer modification. The hypothesis remains unresolved because T4 provides no valid learned candidate evidence; subsequent work must avoid another unvalidated action transformation and use the restored baseline or a measurement that directly tests the remaining mechanism."
-      }
-    },
-    "request_fingerprint": "139e8a6475c328cd3339e52ed08f456a51791e6b18e3f7701f6c90d17e14dfca",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest development candidate measured so far, supported by M3 at 93.75%, but no working, best-known, or retained role is assigned. No candidate establishes the official goal.",
     "completed_operations": [
