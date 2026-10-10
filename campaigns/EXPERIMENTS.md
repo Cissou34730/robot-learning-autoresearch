@@ -78,3 +78,4 @@
 | E45 | checkpoint | I11 | checkpointed |
 | E46 | inquiry | I12 | completed |
 | E47 | checkpoint | - | checkpointed |
+| T16 | training | I12 | completed |
