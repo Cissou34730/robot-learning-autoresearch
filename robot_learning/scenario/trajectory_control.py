@@ -1,4 +1,4 @@
-"""Target-conditioned anticipatory braking for the arm."""
+"""Target-conditioned branch selection and anticipatory braking for the arm."""
 
 import numpy as np
 
@@ -26,12 +26,13 @@ ANTICIPATORY_LOOKAHEAD_SECONDS = 0.12
 ANTICIPATORY_BRAKING_ACCELERATION = 4.0
 ANTICIPATORY_POSITION_GAIN = np.array([1.0, 0.7], dtype=np.float64)
 ANTICIPATORY_VELOCITY_GAIN = np.array([0.20, 0.16], dtype=np.float64)
-BRANCH_SWITCH_HYSTERESIS = np.deg2rad(6.0)
 LIMIT_FORCE_FEEDBACK_GAIN = 0.8
 ACTUATOR_FORCE_SCALE = 5.0
 TRANSITION_DISTANCE = 0.04
 HOLD_EXIT_DISTANCE = 0.015
 STATE_HOLD_BLEND = 0.5
+BRANCH_TRAVEL_WEIGHT = 1.0
+BRANCH_LIMIT_RISK_WEIGHT = 0.35
 
 
 def wrap_to_pi(angle: float) -> float:
@@ -82,7 +83,12 @@ def select_branch_target(target_position: np.ndarray) -> np.ndarray:
     margins = JOINT_LIMIT - np.max(np.abs(candidates), axis=1)
     valid = margins >= 0.0
     if np.any(valid):
-        return candidates[int(np.argmax(np.where(valid, margins, -np.inf)))].copy()
+        scores = _branch_score(
+            candidates,
+            np.zeros(2, dtype=np.float64),
+            margins,
+        )
+        return candidates[int(np.argmin(np.where(valid, scores, np.inf)))].copy()
     return candidates[int(np.argmax(margins))].copy()
 
 
@@ -99,16 +105,18 @@ def _branch_score(
         ],
         dtype=np.float64,
     )
-    shoulder_margin = JOINT_LIMIT - np.abs(candidates[:, 0])
+    normalized_limit_load = np.abs(candidates) / JOINT_LIMIT
+    limit_risk = np.sum(normalized_limit_load**4, axis=1)
     return (
-        -np.linalg.norm(position_error, axis=1)
-        + 0.25 * shoulder_margin
-        + 0.05 * margins
+        BRANCH_TRAVEL_WEIGHT
+        * np.linalg.norm(position_error * np.asarray([1.0, 0.7]), axis=1)
+        + BRANCH_LIMIT_RISK_WEIGHT * limit_risk
+        - 0.05 * margins / JOINT_LIMIT
     )
 
 
 def hysteretic_branch_target(data, state: dict[str, object]) -> np.ndarray:
-    """Commit to a feasible branch until another is materially better."""
+    """Lock the safest short-path branch for the static target."""
     candidates = branch_joint_targets(np.asarray(data.mocap_pos[0]))
     margins = JOINT_LIMIT - np.max(np.abs(candidates), axis=1)
     valid = margins >= 0.0
@@ -118,15 +126,10 @@ def hysteretic_branch_target(data, state: dict[str, object]) -> np.ndarray:
     committed = state.get("branch_index")
     if not isinstance(committed, int) or not valid[committed]:
         feasible = np.where(valid, margins, -np.inf)
-        committed = int(np.argmax(feasible))
-    else:
-        best = int(np.argmax(np.where(valid, scores, -np.inf)))
-        if (
-            valid[best]
-            and best != committed
-            and scores[best] > scores[committed] + BRANCH_SWITCH_HYSTERESIS
-        ):
-            committed = best
+        if np.any(valid):
+            committed = int(np.argmin(np.where(valid, scores, np.inf)))
+        else:
+            committed = int(np.argmax(feasible))
     state["branch_index"] = committed
     return candidates[committed].copy()
 
