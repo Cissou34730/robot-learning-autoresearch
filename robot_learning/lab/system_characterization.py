@@ -82,7 +82,16 @@ def _sample_state(
     phase: str,
 ) -> dict:
     site_position = np.asarray(data.site_xpos[site_id])
-    site_velocity = np.asarray(data.site_xvelp[site_id])
+    spatial_velocity = np.zeros(6, dtype=np.float64)
+    mujoco.mj_objectVelocity(
+        model,
+        data,
+        mujoco.mjtObj.mjOBJ_SITE,
+        site_id,
+        spatial_velocity,
+        0,
+    )
+    site_velocity = spatial_velocity[3:]
     return {
         "control_step": control_step,
         "phase": phase,
