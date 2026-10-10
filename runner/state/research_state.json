@@ -7383,13 +7383,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal reached; success 98.5%; 200 episodes",
   "model_roles": {
     "best_known": "T9:checkpoint-110592",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9-c720dc389-15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
+    "completed_at": "2026-10-10T07:23:41Z",
+    "fingerprint": "15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
+    "model": "T9:checkpoint-110592",
+    "status": "passed",
+    "summary": "goal reached; success 98.5%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-10T06:20:17Z",
@@ -14430,7 +14437,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-10T07:23:15Z",
+      "completed_at": "2026-10-10T07:23:41Z",
       "error": null,
       "id": "E22",
       "inquiry_id": null,
@@ -14441,7 +14448,7 @@
       },
       "result": {
         "model": "T9:checkpoint-110592",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_passed"
       },
       "session_id": "S8",
       "status": "completed",
@@ -14502,6 +14509,6 @@
   "terminal_state": {
     "model": "T9:checkpoint-110592",
     "reason": "T9:checkpoint-110592 is the explicit best-known candidate, assigned by E21 on the basis of M9 and E19. M9 measured 158/160 successes (98.75%) on a fresh full-distribution panel, three net paired wins over T1, no observed hold interruptions, and no observed inner-radius failures. The remaining unresolved distinction is development generalization versus the protected official distribution; only the required 200-episode official assessment can establish whether T9 reaches at least 196 successes. Request the protected assessment rather than opening another inquiry because the current evidence supports this candidate as the strongest route and no development measurement can substitute for the official result.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_passed"
   }
 }
