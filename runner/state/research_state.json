@@ -6657,7 +6657,7 @@
       "training_steps": 105472
     },
     "T9:checkpoint-110592": {
-      "artifact": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9/checkpoint-110592",
+      "artifact": "campaigns/checkpoints/retained/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9-c720dc389-15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
       "evaluation_artifacts": [
         "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m9-T9-checkpoint-110592-160ep-seed5600-528568fa7d49.json"
       ],
@@ -7374,18 +7374,18 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 3,
     "measurement": 9,
-    "session": 7,
+    "session": 8,
     "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T9:checkpoint-110592",
     "retained": {},
     "working": null
   },
@@ -14399,9 +14399,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T07:22:36Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T9:checkpoint-110592",
+        "evidence": [
+          "M9",
+          "E19"
+        ],
+        "reason": "M9 is the strongest completed development evidence: T9 achieved 158/160 successes (98.75%) on a fresh full-distribution panel versus 155/160 for paired T1, with three net paired wins, no observed hold interruptions, and no observed inner-radius failures. This establishes T9 as best-known without treating development performance as official success."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T9:checkpoint-110592",
+        "evidence": [
+          "M9",
+          "E19"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T9:checkpoint-110592",
+        "evidence": [
+          "M9",
+          "E19"
+        ],
+        "reason": "M9 is the strongest completed development evidence: T9 achieved 158/160 successes (98.75%) on a fresh full-distribution panel versus 155/160 for paired T1, with three net paired wins, no observed hold interruptions, and no observed inner-radius failures. This establishes T9 as best-known without treating development performance as official success."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9-c720dc389-15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
+        "fingerprint": "15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
+        "source": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9/checkpoint-110592"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T9:checkpoint-110592",
+        "evidence": [
+          "M9",
+          "E19"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T9:checkpoint-110592",
+        "evidence": [
+          "M9",
+          "E19"
+        ],
+        "reason": "M9 is the strongest completed development evidence: T9 achieved 158/160 successes (98.75%) on a fresh full-distribution panel versus 155/160 for paired T1, with three net paired wins, no observed hold interruptions, and no observed inner-radius failures. This establishes T9 as best-known without treating development performance as official success."
+      }
+    },
+    "request_fingerprint": "9d39ea8374f511b195f11c7048996e8882907bb5467c3848f4e3d6c089925a01",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
     "completed_operations": [
@@ -14450,6 +14524,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "2bb41a74-c85f-4148-aff4-4e9511e60bf0",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E21"
+    ],
+    "scientific_parent_commit": "265def808dca62438fc68970950b9d2f706bd7a6"
+  },
   "terminal_state": null
 }
