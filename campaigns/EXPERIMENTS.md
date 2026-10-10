@@ -81,3 +81,4 @@
 | T16 | training | I12 | completed |
 | M15 | measurement | I12 | completed |
 | E48 | inquiry | I12 | completed |
+| E49 | checkpoint | I12 | checkpointed |

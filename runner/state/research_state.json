@@ -11470,7 +11470,7 @@
     }
   },
   "counters": {
-    "event": 48,
+    "event": 49,
     "inquiry": 12,
     "measurement": 15,
     "session": 25,
@@ -11479,7 +11479,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -24950,32 +24950,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T01:18:38Z",
+      "error": null,
+      "id": "E49",
+      "inquiry_id": "I12",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 was measured at 153/160 with zero discordant episodes against T3 and has no assigned role. T15:checkpoint-86016 also measured 153/160 with no improvement; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T16",
+          "M15",
+          "E48"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the negative-angle shoulder-limit region. The official 98% success criterion remains unmeasured.",
+        "current_synthesis": "M13 observed a shoulder-limit transient signature with persistent constraint-force interaction in T3's residual negative-angle failures. M14 showed that the tested T15 bounded constant shoulder constraint-force feedback recovered none of them: T15 tied T3 at 153/160 with zero discordant episodes. M15 then tested T16's memoryless target-conditioned lookahead braking rescue against T3 on the same panel; it also tied at 153/160 with zero discordant episodes. These are recipe-specific limited negative results: they reject the tested constant force-feedback and anticipatory lookahead realizations as effective rescues, but do not establish that the intervention classes are inactive, that plant transients are irrelevant, or that all branch-selection and stabilization mechanisms fail. T16 training statistics nominated the measured checkpoint but did not establish development performance. The remaining causal alternatives are candidate-specific trajectory error versus a shoulder-limit plant transient requiring a different, untested mechanism.",
+        "decision_frontier": "The tested anticipatory trajectory and constant force-feedback rescue classes have been closed as limited negative after same-panel ties with T3. The next goal-review decision is whether to obtain mechanism-discriminating evidence or test a materially different policy-specific branch-selection or hold-stabilization mechanism. The decisive evidence must still separate first-reach failure from interrupted holding, preserve target-radius and target-angle localization, and compare any candidate against T3 without sacrificing its complete-hold episodes. A future candidate reaching at least 157/160 with no loss on T3-success episodes would justify continuation; a tied or regressive result would redirect again.",
+        "evidence_references": [
+          "M7",
+          "M12",
+          "M13",
+          "M14",
+          "T16",
+          "M15",
+          "E44",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The human goal remains unmet. T3 and the tested T16 anticipatory rescue each achieved 153/160 complete uninterrupted holds on the development panel, while the official 200-episode assessment remains unmeasured and the 98% criterion is not established.",
+        "next_direction_or_closure": "I12 is closed as a limited negative result by E48. The next goal review should decide whether a materially different branch-selection or hold-stabilization mechanism is scientifically justified, or whether mechanism-discriminating measurement should precede another rescue. It must not treat the tied M15 result as evidence against all plant-aware control.",
+        "next_question": "Can a materially different branch-selection or hold-stabilization policy rescue resolve T3's localized negative-angle acquisition and interrupted-hold failures while preserving its complete-hold baseline, or does mechanism-discriminating evidence redirect the campaign away from policy-specific rescue?"
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "session_id": "S25",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "d6649045ac9d8025de0da3d6176165a235e1c7e8",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 was measured at 153/160 with zero discordant episodes against T3 and has no assigned role. T15:checkpoint-86016 also measured 153/160 with no improvement; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T16",
+          "M15",
+          "E48"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the negative-angle shoulder-limit region. The official 98% success criterion remains unmeasured.",
+        "current_synthesis": "M13 observed a shoulder-limit transient signature with persistent constraint-force interaction in T3's residual negative-angle failures. M14 showed that the tested T15 bounded constant shoulder constraint-force feedback recovered none of them: T15 tied T3 at 153/160 with zero discordant episodes. M15 then tested T16's memoryless target-conditioned lookahead braking rescue against T3 on the same panel; it also tied at 153/160 with zero discordant episodes. These are recipe-specific limited negative results: they reject the tested constant force-feedback and anticipatory lookahead realizations as effective rescues, but do not establish that the intervention classes are inactive, that plant transients are irrelevant, or that all branch-selection and stabilization mechanisms fail. T16 training statistics nominated the measured checkpoint but did not establish development performance. The remaining causal alternatives are candidate-specific trajectory error versus a shoulder-limit plant transient requiring a different, untested mechanism.",
+        "decision_frontier": "The tested anticipatory trajectory and constant force-feedback rescue classes have been closed as limited negative after same-panel ties with T3. The next goal-review decision is whether to obtain mechanism-discriminating evidence or test a materially different policy-specific branch-selection or hold-stabilization mechanism. The decisive evidence must still separate first-reach failure from interrupted holding, preserve target-radius and target-angle localization, and compare any candidate against T3 without sacrificing its complete-hold episodes. A future candidate reaching at least 157/160 with no loss on T3-success episodes would justify continuation; a tied or regressive result would redirect again.",
+        "evidence_references": [
+          "M7",
+          "M12",
+          "M13",
+          "M14",
+          "T16",
+          "M15",
+          "E44",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The human goal remains unmet. T3 and the tested T16 anticipatory rescue each achieved 153/160 complete uninterrupted holds on the development panel, while the official 200-episode assessment remains unmeasured and the 98% criterion is not established.",
+        "inquiry_id": "I12",
+        "next_direction_or_closure": "I12 is closed as a limited negative result by E48. The next goal review should decide whether a materially different branch-selection or hold-stabilization mechanism is scientifically justified, or whether mechanism-discriminating measurement should precede another rescue. It must not treat the tied M15 result as evidence against all plant-aware control.",
+        "next_question": "Can a materially different branch-selection or hold-stabilization policy rescue resolve T3's localized negative-angle acquisition and interrupted-hold failures while preserving its complete-hold baseline, or does mechanism-discriminating evidence redirect the campaign away from policy-specific rescue?",
+        "session_id": "S25"
+      },
+      "presentation": {
+        "backend_session_id": "ffacc907-02b4-4adf-812c-88abc6dc00ad",
+        "campaign_id": "339736e0-5583-4bc4-8729-5023fc3077b7",
+        "campaign_usage": "1h09m | 205.97 AIU | prompt 33.8m (86% cached) | output 262k",
+        "session_id": "S25",
+        "session_kind": "inquiry",
+        "session_usage": "3m13s | 10.39 AIU | prompt 2m (89% cached) | output 12.8k"
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f260663a7e4c2a1707d111f03f76d4e35c8d9654",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E49",
+    "inquiry_id": "I12",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 was measured at 153/160 with zero discordant episodes against T3 and has no assigned role. T15:checkpoint-86016 also measured 153/160 with no improvement; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T16",
+          "M15",
+          "E48"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48. No official assessment has been requested.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the negative-angle shoulder-limit region. The official 98% success criterion remains unmeasured.",
+        "current_synthesis": "M13 observed a shoulder-limit transient signature with persistent constraint-force interaction in T3's residual negative-angle failures. M14 showed that the tested T15 bounded constant shoulder constraint-force feedback recovered none of them: T15 tied T3 at 153/160 with zero discordant episodes. M15 then tested T16's memoryless target-conditioned lookahead braking rescue against T3 on the same panel; it also tied at 153/160 with zero discordant episodes. These are recipe-specific limited negative results: they reject the tested constant force-feedback and anticipatory lookahead realizations as effective rescues, but do not establish that the intervention classes are inactive, that plant transients are irrelevant, or that all branch-selection and stabilization mechanisms fail. T16 training statistics nominated the measured checkpoint but did not establish development performance. The remaining causal alternatives are candidate-specific trajectory error versus a shoulder-limit plant transient requiring a different, untested mechanism.",
+        "decision_frontier": "The tested anticipatory trajectory and constant force-feedback rescue classes have been closed as limited negative after same-panel ties with T3. The next goal-review decision is whether to obtain mechanism-discriminating evidence or test a materially different policy-specific branch-selection or hold-stabilization mechanism. The decisive evidence must still separate first-reach failure from interrupted holding, preserve target-radius and target-angle localization, and compare any candidate against T3 without sacrificing its complete-hold episodes. A future candidate reaching at least 157/160 with no loss on T3-success episodes would justify continuation; a tied or regressive result would redirect again.",
+        "evidence_references": [
+          "M7",
+          "M12",
+          "M13",
+          "M14",
+          "T16",
+          "M15",
+          "E44",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The human goal remains unmet. T3 and the tested T16 anticipatory rescue each achieved 153/160 complete uninterrupted holds on the development panel, while the official 200-episode assessment remains unmeasured and the 98% criterion is not established.",
+        "next_direction_or_closure": "I12 is closed as a limited negative result by E48. The next goal review should decide whether a materially different branch-selection or hold-stabilization mechanism is scientifically justified, or whether mechanism-discriminating measurement should precede another rescue. It must not treat the tied M15 result as evidence against all plant-aware control.",
+        "next_question": "Can a materially different branch-selection or hold-stabilization policy rescue resolve T3's localized negative-angle acquisition and interrupted-hold failures while preserving its complete-hold baseline, or does mechanism-discriminating evidence redirect the campaign away from policy-specific rescue?"
+      }
+    },
+    "request_fingerprint": "9c7cdd3ee7ff7b52268e69af117c8e7b1c4d0a977eaa341ecb167fc226d031d8",
+    "session_id": "S25",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T15:checkpoint-86016 is measured at 153/160 with no improvement and has no assigned role. T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T16:checkpoint-100352 was measured at 153/160 with zero discordant episodes against T3 and has no assigned role. T15:checkpoint-86016 also measured 153/160 with no improvement; T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
-      "E46"
+      "T16",
+      "M15",
+      "E48"
     ],
-    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 opened by E46. No official assessment has been requested.",
-    "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the negative-angle shoulder-limit region. The official 98% criterion remains unmeasured.",
-    "current_synthesis": "Observed evidence shows that T3's residual negative-angle failures carry a shoulder-limit transient signature with persistent constraint-force interaction (M13). The tested T15 bounded constant shoulder constraint-force feedback implementation recovered none of those failures: T15 and T3 both achieved 153/160 with zero discordant episodes (M14). This is a limited negative result for that force-feedback realization, not evidence that the intervention was inactive, that plant transients are irrelevant, or that all plant-aware mechanisms fail. Earlier explicit-trajectory and stateful branch-transition recipes also tied or regressed against T3 (M7, M12), so the inherited broad rescue question is narrowed rather than settled. The unresolved alternatives are candidate-specific trajectory error versus a plant transient that requires anticipatory, target-conditioned braking or branch selection.",
-    "decision_frontier": "The remaining decision is whether an anticipatory, target-conditioned policy-specific trajectory or branch-selection rescue can correct the negative-angle acquisition and hold failures while preserving T3's complete-hold episodes. Same-panel success alone is insufficient: first-reach step, hold interruptions, maximum held steps, and target geometry must discriminate recovery from a tradeoff or a changed failure pattern. Recovery to at least 157/160 with no loss on T3-success episodes would support continuing this route; a tied or regressive comparison would redirect away from this rescue class while retaining the limit that prior negative results are recipe-specific.",
+    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; I6 with T8, T9, M7, and E24; I7 with T10, T11, M8, and E28; I8 with T12, M9, and E32; I9 with M10, T13, M11, and E36; I10 with T14, M12, and E40; I11 with M13, T15, M14, and E44; I12 with T16, M15, E48. No official assessment has been requested.",
+    "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding, concentrated in the negative-angle shoulder-limit region. The official 98% success criterion remains unmeasured.",
+    "current_synthesis": "M13 observed a shoulder-limit transient signature with persistent constraint-force interaction in T3's residual negative-angle failures. M14 showed that the tested T15 bounded constant shoulder constraint-force feedback recovered none of them: T15 tied T3 at 153/160 with zero discordant episodes. M15 then tested T16's memoryless target-conditioned lookahead braking rescue against T3 on the same panel; it also tied at 153/160 with zero discordant episodes. These are recipe-specific limited negative results: they reject the tested constant force-feedback and anticipatory lookahead realizations as effective rescues, but do not establish that the intervention classes are inactive, that plant transients are irrelevant, or that all branch-selection and stabilization mechanisms fail. T16 training statistics nominated the measured checkpoint but did not establish development performance. The remaining causal alternatives are candidate-specific trajectory error versus a shoulder-limit plant transient requiring a different, untested mechanism.",
+    "decision_frontier": "The tested anticipatory trajectory and constant force-feedback rescue classes have been closed as limited negative after same-panel ties with T3. The next goal-review decision is whether to obtain mechanism-discriminating evidence or test a materially different policy-specific branch-selection or hold-stabilization mechanism. The decisive evidence must still separate first-reach failure from interrupted holding, preserve target-radius and target-angle localization, and compare any candidate against T3 without sacrificing its complete-hold episodes. A future candidate reaching at least 157/160 with no loss on T3-success episodes would justify continuation; a tied or regressive result would redirect again.",
     "evidence_references": [
       "M7",
       "M12",
       "M13",
       "M14",
+      "T16",
+      "M15",
       "E44",
-      "E46"
+      "E46",
+      "E48"
     ],
-    "human_goal_connection": "The human goal remains unmet: T3 achieves 153/160 complete uninterrupted holds on the development panel, below the 98% objective, and the official 200-episode assessment has not been measured. I12 is opened to seek a rescue for the seven localized negative-angle failures without sacrificing the established baseline.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session opened I12 and ends at this checkpoint. The fresh I12 inquiry should develop or measure an anticipatory, target-conditioned trajectory or branch-selection rescue, then compare it with T3 on the same development panel using complete success, first reach, hold interruptions, maximum held steps, and target-geometry diagnostics.",
-    "next_question": "Can an anticipatory, target-conditioned policy-specific trajectory or branch-selection rescue eliminate the localized negative-angle acquisition and interrupted-hold failures while preserving T3's complete-hold baseline?",
-    "scientific_commit": "d10e03272607445bbdc82e9d15da7baf91b274c4",
-    "session_id": "S24"
+    "human_goal_connection": "The human goal remains unmet. T3 and the tested T16 anticipatory rescue each achieved 153/160 complete uninterrupted holds on the development panel, while the official 200-episode assessment remains unmeasured and the 98% criterion is not established.",
+    "inquiry_id": "I12",
+    "next_direction_or_closure": "I12 is closed as a limited negative result by E48. The next goal review should decide whether a materially different branch-selection or hold-stabilization mechanism is scientifically justified, or whether mechanism-discriminating measurement should precede another rescue. It must not treat the tied M15 result as evidence against all plant-aware control.",
+    "next_question": "Can a materially different branch-selection or hold-stabilization policy rescue resolve T3's localized negative-angle acquisition and interrupted-hold failures while preserving its complete-hold baseline, or does mechanism-discriminating evidence redirect the campaign away from policy-specific rescue?",
+    "scientific_commit": "f260663a7e4c2a1707d111f03f76d4e35c8d9654",
+    "session_id": "S25"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -24983,23 +25136,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ffacc907-02b4-4adf-812c-88abc6dc00ad",
-    "id": "S25",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "objective": "Advance I12 toward an evidence-supported answer to its scientific question: Can an anticipatory, target-conditioned policy-specific trajectory or branch-selection rescue eliminate the localized negative-angle acquisition and interrupted-hold failures while preserving T3's complete-hold baseline? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T16",
-      "M15",
-      "E48"
-    ],
-    "scientific_parent_commit": "d6649045ac9d8025de0da3d6176165a235e1c7e8"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
