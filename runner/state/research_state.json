@@ -14347,38 +14347,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "positive",
-        "reason": "M9 satisfies I3's closure condition. T9:checkpoint-110592 achieved 158/160 (98.75%) on a fresh full-distribution panel versus 155/160 (96.875%) for paired restored T1:checkpoint-120832, with three net paired wins and no T1 wins. T9 had 158 successes and 2 non-reaches with no hold interruptions; T1 had 155 successes, 4 hold interruptions, and 1 non-reach. The inspected failure episodes for both candidates were all at outer radii above 17 cm, while no failures were observed in the inner-radius portion of the matched panel, so the required inner-radius preservation is supported. The T9 change was explicit planar end-effector velocity in the observation, not reward shaping; therefore the completed evidence supports targeting Cartesian velocity observability for the remaining reach/hold gap and rejects the tested T6/T8 reward recipes without rejecting stabilization as a physical mechanism."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "positive",
-        "reason": "M9 satisfies I3's closure condition. T9:checkpoint-110592 achieved 158/160 (98.75%) on a fresh full-distribution panel versus 155/160 (96.875%) for paired restored T1:checkpoint-120832, with three net paired wins and no T1 wins. T9 had 158 successes and 2 non-reaches with no hold interruptions; T1 had 155 successes, 4 hold interruptions, and 1 non-reach. The inspected failure episodes for both candidates were all at outer radii above 17 cm, while no failures were observed in the inner-radius portion of the matched panel, so the required inner-radius preservation is supported. The T9 change was explicit planar end-effector velocity in the observation, not reward shaping; therefore the completed evidence supports targeting Cartesian velocity observability for the remaining reach/hold gap and rejects the tested T6/T8 reward recipes without rejecting stabilization as a physical mechanism.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E19",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "positive",
-        "reason": "M9 satisfies I3's closure condition. T9:checkpoint-110592 achieved 158/160 (98.75%) on a fresh full-distribution panel versus 155/160 (96.875%) for paired restored T1:checkpoint-120832, with three net paired wins and no T1 wins. T9 had 158 successes and 2 non-reaches with no hold interruptions; T1 had 155 successes, 4 hold interruptions, and 1 non-reach. The inspected failure episodes for both candidates were all at outer radii above 17 cm, while no failures were observed in the inner-radius portion of the matched panel, so the required inner-radius preservation is supported. The T9 change was explicit planar end-effector velocity in the observation, not reward shaping; therefore the completed evidence supports targeting Cartesian velocity observability for the remaining reach/hold gap and rejects the tested T6/T8 reward recipes without rejecting stabilization as a physical mechanism."
-      }
-    },
-    "request_fingerprint": "b4945011b7a683ff6f9196288eadd576aedc190d67e80071e1b3c7d43cac3874",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 155/160 on M5, with no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 98/160. T2, T3, and T4 remain rejected for their tested learning-degrading recipes. No candidate establishes the official 98% goal and no candidate is assigned a new formal role.",
     "completed_operations": [
