@@ -30,6 +30,10 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
 
+SHOULDER_LIMIT_RAD = np.deg2rad(170.0)
+SHOULDER_LIMIT_GUARD_RAD = np.deg2rad(12.0)
+
+
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
@@ -99,6 +103,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
+    def _limit_safe_action(self, action: np.ndarray) -> np.ndarray:
+        safe_action = np.asarray(action, dtype=np.float64).copy()
+        shoulder_position = float(self.data.qpos[0])
+        distance_to_limit = SHOULDER_LIMIT_RAD - abs(shoulder_position)
+        if distance_to_limit < SHOULDER_LIMIT_GUARD_RAD:
+            outward = np.sign(shoulder_position) * safe_action[0]
+            if outward > 0.0:
+                safe_action[0] *= max(
+                    distance_to_limit / SHOULDER_LIMIT_GUARD_RAD, 0.0
+                )
+        return safe_action
+
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
@@ -127,6 +143,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
+        action = self._limit_safe_action(action)
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
