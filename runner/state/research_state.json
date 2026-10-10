@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 3,
     "session": 1,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1477,33 +1477,168 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:25:25Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the strongest development candidate measured so far, but it has no explicit best-known or working role. No candidate is retained. The candidate's 93.75% M3 result is development evidence only.",
+        "completed_operations": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run, 120000 requested steps and 120832 actual rollout-aligned steps, producing archived checkpoints. M3: one 160-episode held-out research evaluation at seed 4200. M1 failed during implementation and produced no evidence.",
+        "current_goal_gap": "M3 measured 93.75% development success (150/160), a 4.25 percentage-point gap to the 98% target. This is development evidence only and does not establish official performance. The ten failures are concentrated toward the outer workspace: seven occur at radii above 16 cm, including non-reaches and repeated hold interruptions; three are inner-workspace non-reaches.",
+        "current_synthesis": "Observation: M2 compiled the model with modest link masses, gear-5 motors without force limits, and measured high bounded-action accelerations; all tested impulse traces passively settle to near-zero velocity after release. Interpretation: insufficient actuator authority and persistent free-motion instability are not the leading initial explanations, although policy-induced overshoot remains possible. Observation: T1 trained a fresh PPO policy on the full 6\u201320 cm radius range, with training progress rising from zero to 0.58 success at checkpoint-120832. Limit: training progress is recipe-specific and does not establish development performance. Observation: M3 evaluated checkpoint-120832 at 93.75% on 160 held-out episodes. Of the ten failures, seven are at radii above 16 cm: five are non-reaches and two show repeated hold interruptions after first entry; three are inner-radius non-reaches. Interpretation: the initial concern that untrained inner radii dominate the gap is weakened for this candidate. The remaining gap is more consistent with outer-workspace approach conditioning, branch selection, singularity-adjacent trajectory generation, or policy-induced hold oscillation. M3 does not record final joint posture, branch residual, action, or velocity, so it cannot distinguish those mechanisms. No candidate role has been assigned and no official assessment has been requested.",
+        "decision_frontier": "Which mechanism causes the residual outer-workspace failures\u2014branch/singularity-adjacent reach generation, approach momentum and hold oscillation, or a broader policy-capacity/optimization limitation\u2014and which PI-owned intervention can raise held-out success from 93.75% to at least 98% without sacrificing inner-radius performance? Discriminating evidence is outer-versus-inner evaluation with final branch residuals and, where possible, action/velocity or hold-interruption diagnostics. A candidate that reaches at least 98% on a fresh held-out panel with no concentrated outer-radius failure supports continuing toward official assessment; persistent outer non-reaches support branch-aware or outer-focused training/control changes; broad hold interruptions support stabilization-oriented reward or policy changes.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The current strongest candidate has 150 successes in a 160-episode held-out development panel, so the learned policy is promising but not ready for official assessment.",
+        "next_direction_or_closure": "End startup and enter goal review with the revised frontier. Prefer opening one bounded inquiry on outer-workspace failure mechanisms and targeted policy improvement rather than requesting official assessment. The next inquiry should first choose between branch-aware diagnostic measurement and a targeted training intervention based on whether the goal review judges the missing branch/velocity evidence necessary for the next decision.",
+        "next_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the strongest development candidate measured so far, but it has no explicit best-known or working role. No candidate is retained. The candidate's 93.75% M3 result is development evidence only.",
+        "completed_operations": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run, 120000 requested steps and 120832 actual rollout-aligned steps, producing archived checkpoints. M3: one 160-episode held-out research evaluation at seed 4200. M1 failed during implementation and produced no evidence.",
+        "current_goal_gap": "M3 measured 93.75% development success (150/160), a 4.25 percentage-point gap to the 98% target. This is development evidence only and does not establish official performance. The ten failures are concentrated toward the outer workspace: seven occur at radii above 16 cm, including non-reaches and repeated hold interruptions; three are inner-workspace non-reaches.",
+        "current_synthesis": "Observation: M2 compiled the model with modest link masses, gear-5 motors without force limits, and measured high bounded-action accelerations; all tested impulse traces passively settle to near-zero velocity after release. Interpretation: insufficient actuator authority and persistent free-motion instability are not the leading initial explanations, although policy-induced overshoot remains possible. Observation: T1 trained a fresh PPO policy on the full 6\u201320 cm radius range, with training progress rising from zero to 0.58 success at checkpoint-120832. Limit: training progress is recipe-specific and does not establish development performance. Observation: M3 evaluated checkpoint-120832 at 93.75% on 160 held-out episodes. Of the ten failures, seven are at radii above 16 cm: five are non-reaches and two show repeated hold interruptions after first entry; three are inner-radius non-reaches. Interpretation: the initial concern that untrained inner radii dominate the gap is weakened for this candidate. The remaining gap is more consistent with outer-workspace approach conditioning, branch selection, singularity-adjacent trajectory generation, or policy-induced hold oscillation. M3 does not record final joint posture, branch residual, action, or velocity, so it cannot distinguish those mechanisms. No candidate role has been assigned and no official assessment has been requested.",
+        "decision_frontier": "Which mechanism causes the residual outer-workspace failures\u2014branch/singularity-adjacent reach generation, approach momentum and hold oscillation, or a broader policy-capacity/optimization limitation\u2014and which PI-owned intervention can raise held-out success from 93.75% to at least 98% without sacrificing inner-radius performance? Discriminating evidence is outer-versus-inner evaluation with final branch residuals and, where possible, action/velocity or hold-interruption diagnostics. A candidate that reaches at least 98% on a fresh held-out panel with no concentrated outer-radius failure supports continuing toward official assessment; persistent outer non-reaches support branch-aware or outer-focused training/control changes; broad hold interruptions support stabilization-oriented reward or policy changes.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The current strongest candidate has 150 successes in a 160-episode held-out development panel, so the learned policy is promising but not ready for official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End startup and enter goal review with the revised frontier. Prefer opening one bounded inquiry on outer-workspace failure mechanisms and targeted policy improvement rather than requesting official assessment. The next inquiry should first choose between branch-aware diagnostic measurement and a targeted training intervention based on whether the goal review judges the missing branch/velocity evidence necessary for the next decision.",
+        "next_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "b77d4663-c683-4d68-8020-590dbe5d9f6e",
+        "campaign_id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
+        "campaign_usage": "5m46s | 11.27 AIU | prompt 1.5m (85% cached) | output 27.1k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "3m29s | 7.96 AIU | prompt 1.2m (87% cached) | output 14.6k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "cb49f40a3eccf656825201bc23b344f21e1776ff",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the strongest development candidate measured so far, but it has no explicit best-known or working role. No candidate is retained. The candidate's 93.75% M3 result is development evidence only.",
+        "completed_operations": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run, 120000 requested steps and 120832 actual rollout-aligned steps, producing archived checkpoints. M3: one 160-episode held-out research evaluation at seed 4200. M1 failed during implementation and produced no evidence.",
+        "current_goal_gap": "M3 measured 93.75% development success (150/160), a 4.25 percentage-point gap to the 98% target. This is development evidence only and does not establish official performance. The ten failures are concentrated toward the outer workspace: seven occur at radii above 16 cm, including non-reaches and repeated hold interruptions; three are inner-workspace non-reaches.",
+        "current_synthesis": "Observation: M2 compiled the model with modest link masses, gear-5 motors without force limits, and measured high bounded-action accelerations; all tested impulse traces passively settle to near-zero velocity after release. Interpretation: insufficient actuator authority and persistent free-motion instability are not the leading initial explanations, although policy-induced overshoot remains possible. Observation: T1 trained a fresh PPO policy on the full 6\u201320 cm radius range, with training progress rising from zero to 0.58 success at checkpoint-120832. Limit: training progress is recipe-specific and does not establish development performance. Observation: M3 evaluated checkpoint-120832 at 93.75% on 160 held-out episodes. Of the ten failures, seven are at radii above 16 cm: five are non-reaches and two show repeated hold interruptions after first entry; three are inner-radius non-reaches. Interpretation: the initial concern that untrained inner radii dominate the gap is weakened for this candidate. The remaining gap is more consistent with outer-workspace approach conditioning, branch selection, singularity-adjacent trajectory generation, or policy-induced hold oscillation. M3 does not record final joint posture, branch residual, action, or velocity, so it cannot distinguish those mechanisms. No candidate role has been assigned and no official assessment has been requested.",
+        "decision_frontier": "Which mechanism causes the residual outer-workspace failures\u2014branch/singularity-adjacent reach generation, approach momentum and hold oscillation, or a broader policy-capacity/optimization limitation\u2014and which PI-owned intervention can raise held-out success from 93.75% to at least 98% without sacrificing inner-radius performance? Discriminating evidence is outer-versus-inner evaluation with final branch residuals and, where possible, action/velocity or hold-interruption diagnostics. A candidate that reaches at least 98% on a fresh held-out panel with no concentrated outer-radius failure supports continuing toward official assessment; persistent outer non-reaches support branch-aware or outer-focused training/control changes; broad hold interruptions support stabilization-oriented reward or policy changes.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The current strongest candidate has 150 successes in a 160-episode held-out development panel, so the learned policy is promising but not ready for official assessment.",
+        "next_direction_or_closure": "End startup and enter goal review with the revised frontier. Prefer opening one bounded inquiry on outer-workspace failure mechanisms and targeted policy improvement rather than requesting official assessment. The next inquiry should first choose between branch-aware diagnostic measurement and a targeted training intervention based on whether the goal review judges the missing branch/velocity evidence necessary for the next decision.",
+        "next_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?"
+      }
+    },
+    "request_fingerprint": "b02a95a21c493d1b3bbbb8fc58d0905caccf91ef42562b715ee8636898d0afeb",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T1:checkpoint-120832 is the strongest development candidate measured so far, but it has no explicit best-known or working role. No candidate is retained. The candidate's 93.75% M3 result is development evidence only.",
+    "completed_operations": [
+      "M2",
+      "T1",
+      "M3"
+    ],
+    "cumulative_resource_use": "M2: one completed candidate-independent characterization measurement with 16 matched traces. T1: one fresh PPO run, 120000 requested steps and 120832 actual rollout-aligned steps, producing archived checkpoints. M3: one 160-episode held-out research evaluation at seed 4200. M1 failed during implementation and produced no evidence.",
+    "current_goal_gap": "M3 measured 93.75% development success (150/160), a 4.25 percentage-point gap to the 98% target. This is development evidence only and does not establish official performance. The ten failures are concentrated toward the outer workspace: seven occur at radii above 16 cm, including non-reaches and repeated hold interruptions; three are inner-workspace non-reaches.",
+    "current_synthesis": "Observation: M2 compiled the model with modest link masses, gear-5 motors without force limits, and measured high bounded-action accelerations; all tested impulse traces passively settle to near-zero velocity after release. Interpretation: insufficient actuator authority and persistent free-motion instability are not the leading initial explanations, although policy-induced overshoot remains possible. Observation: T1 trained a fresh PPO policy on the full 6\u201320 cm radius range, with training progress rising from zero to 0.58 success at checkpoint-120832. Limit: training progress is recipe-specific and does not establish development performance. Observation: M3 evaluated checkpoint-120832 at 93.75% on 160 held-out episodes. Of the ten failures, seven are at radii above 16 cm: five are non-reaches and two show repeated hold interruptions after first entry; three are inner-radius non-reaches. Interpretation: the initial concern that untrained inner radii dominate the gap is weakened for this candidate. The remaining gap is more consistent with outer-workspace approach conditioning, branch selection, singularity-adjacent trajectory generation, or policy-induced hold oscillation. M3 does not record final joint posture, branch residual, action, or velocity, so it cannot distinguish those mechanisms. No candidate role has been assigned and no official assessment has been requested.",
+    "decision_frontier": "Which mechanism causes the residual outer-workspace failures\u2014branch/singularity-adjacent reach generation, approach momentum and hold oscillation, or a broader policy-capacity/optimization limitation\u2014and which PI-owned intervention can raise held-out success from 93.75% to at least 98% without sacrificing inner-radius performance? Discriminating evidence is outer-versus-inner evaluation with final branch residuals and, where possible, action/velocity or hold-interruption diagnostics. A candidate that reaches at least 98% on a fresh held-out panel with no concentrated outer-radius failure supports continuing toward official assessment; persistent outer non-reaches support branch-aware or outer-focused training/control changes; broad hold interruptions support stabilization-oriented reward or policy changes.",
+    "evidence_references": [
+      "M2",
+      "T1",
+      "M3"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The current strongest candidate has 150 successes in a 160-episode held-out development panel, so the learned policy is promising but not ready for official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End startup and enter goal review with the revised frontier. Prefer opening one bounded inquiry on outer-workspace failure mechanisms and targeted policy improvement rather than requesting official assessment. The next inquiry should first choose between branch-aware diagnostic measurement and a targeted training intervention based on whether the goal review judges the missing branch/velocity evidence necessary for the next decision.",
+    "next_question": "Can a targeted outer-workspace and branch/stabilization intervention eliminate the residual failures identified in M3 while preserving inner-workspace success, as shown by branch-aware and hold-aware held-out evaluation?",
+    "scientific_commit": "cb49f40a3eccf656825201bc23b344f21e1776ff",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "2ba18f99f4945f95885cdb0f0cfa31d467bb7edb",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "b77d4663-c683-4d68-8020-590dbe5d9f6e",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M2",
-      "T1",
-      "M3"
-    ],
-    "scientific_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
