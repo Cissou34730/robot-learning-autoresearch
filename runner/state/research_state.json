@@ -4112,16 +4112,16 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 6,
-    "session": 6,
+    "session": 7,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7785,9 +7785,105 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:59:37Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I3",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "Restore the matched T1 baseline before testing a distinct stabilization intervention; the currently active terminal action-cost recipe was rejected by M6 and would confound attribution."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "status": "restored"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S7"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "8cab3eb601a3e1d10875a4fdf186718294d8302252edf431cfbe4c0118272506",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "eb813684f24a48b04ecc3474a3d86ad2c219616f81baf38715b618dfc4e64661",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "dec3cd5204484f5acef319d30e20915515fb0192",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I3",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "Restore the matched T1 baseline before testing a distinct stabilization intervention; the currently active terminal action-cost recipe was rejected by M6 and would confound attribution."
+      }
+    },
+    "request_fingerprint": "369ff5777a443193e87abd811c2a41b6f86131f01550381475325e1c09faace5",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 155/160 on M5, with no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 98/160. T2, T3, and T4 remain rejected for their tested learning-degrading recipes. No candidate establishes the official 98% goal and no candidate is assigned a new formal role.",
     "completed_operations": [
@@ -7821,6 +7917,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e62ad7f8-3b67-4e37-b310-4871edf9e211",
+    "id": "S7",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Which T1 failure mechanism - rare reach-generation or branch errors versus hold stabilization - must be targeted to raise held-out success to at least 98% without degrading performance across the full 0.06-0.20 m task distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E15"
+    ],
+    "scientific_parent_commit": "dec3cd5204484f5acef319d30e20915515fb0192"
+  },
   "terminal_state": null
 }
