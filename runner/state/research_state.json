@@ -13131,14 +13131,14 @@
   "counters": {
     "event": 61,
     "inquiry": 15,
-    "measurement": 18,
-    "session": 31,
+    "measurement": 19,
+    "session": 32,
     "training": 18
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -29771,9 +29771,712 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T01:59:11Z",
+      "error": null,
+      "id": "M19",
+      "inquiry_id": "I15",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a controlled matched-state plant-side replay for inner negative-angle shoulder-limit targets, comparing the official limited model with an otherwise identical counterfactual in which only the shoulder joint limit is disabled. Record pre-constraint trajectory agreement, first constraint activation, joint and end-effector trajectories, constraint and actuator forces, interruptions, and complete-hold outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+            ],
+            "artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json",
+            "instrument": "python_module",
+            "label": "I15 matched post-constraint plant-side replay",
+            "module": "robot_learning.lab.plant_side_probe"
+          }
+        ],
+        "rationale": "I15 remains unresolved because M17 separated candidate acquisition behavior but did not isolate the plant after comparable pre-constraint state, force, and velocity. M10 and M13 establish that shoulder-limit transients exist, while M18 rejects only the tested branch selector and does not discriminate causality. This controlled replay uses identical initial states, targets, and saturated joint-space PD actions in both models, so the pre-constraint prefix is directly comparable. Reproducible loss of a 100-step hold in the official model after shoulder constraint activation, with matched settling in the disabled-limit counterfactual, supports a plant-aware controller redesign; matched post-constraint holds redirects I15 to acquisition or branch representation. The counterfactual is mechanistic evidence, not official task performance."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+            ],
+            "instrument": "python_module",
+            "label": "I15 matched post-constraint plant-side replay",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/python-module-M19-1-I15_plant_side_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/experiment",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/measurement_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "limited",
+                      "preconstraint_comparison",
+                      "target_angle_degrees",
+                      "target_qpos",
+                      "target_radius_cm",
+                      "unlimited_counterfactual"
+                    ],
+                    "path": "/trials",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/integration_timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_interval_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_interval_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/controller",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/counterfactual",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/constraint_force_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited_official",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited_counterfactual",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/dof_damping",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38169db75f9b35fb955141fddfd6233f9edbcacca777203969efe9d00ec7c621"
+            },
+            "module": "robot_learning.lab.plant_side_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            },
+            {
+              "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+              "path": "robot_learning/lab/near_limit_probe.py"
+            },
+            {
+              "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+              "path": "robot_learning/lab/plant_side_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "3dc0034cfcd54c6d9da7a3dd57467c565dc6db41",
+            "fingerprint": "004af99236fb6a2ec697d6e08011f9f03066a1e019d890cddde4d6ac5598f417",
+            "manifest": [
+              {
+                "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+                "path": "robot_learning/lab/dynamics_probe.py"
+              },
+              {
+                "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+                "path": "robot_learning/lab/near_limit_probe.py"
+              },
+              {
+                "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+                "path": "robot_learning/lab/plant_side_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+              "path": "robot_learning/lab/plant_side_probe.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/plant_side_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S32",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+          ],
+          "artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json",
+          "instrument": "python_module",
+          "label": "I15 matched post-constraint plant-side replay",
+          "module": "robot_learning.lab.plant_side_probe"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+            "path": "robot_learning/lab/dynamics_probe.py"
+          },
+          {
+            "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+            "path": "robot_learning/lab/near_limit_probe.py"
+          },
+          {
+            "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+            "path": "robot_learning/lab/plant_side_probe.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "3dc0034cfcd54c6d9da7a3dd57467c565dc6db41",
+          "fingerprint": "004af99236fb6a2ec697d6e08011f9f03066a1e019d890cddde4d6ac5598f417",
+          "manifest": [
+            {
+              "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            },
+            {
+              "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+              "path": "robot_learning/lab/near_limit_probe.py"
+            },
+            {
+              "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+              "path": "robot_learning/lab/plant_side_probe.py"
+            }
+          ]
+        },
+        "code_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+            "path": "robot_learning/lab/plant_side_probe.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/plant_side_probe.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+          ],
+          "instrument": "python_module",
+          "label": "I15 matched post-constraint plant-side replay",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/python-module-M19-1-I15_plant_side_probe.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/experiment",
+                  "type": "string"
+                },
+                {
+                  "entries": 9,
+                  "path": "/measurement_semantics",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/compiled_model",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "field_names": [
+                    "limited",
+                    "preconstraint_comparison",
+                    "target_angle_degrees",
+                    "target_qpos",
+                    "target_radius_cm",
+                    "unlimited_counterfactual"
+                  ],
+                  "path": "/trials",
+                  "type": "array"
+                },
+                {
+                  "path": "/measurement_semantics/integration_timestep_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/control_interval_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/control_interval_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/control_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/success_threshold_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_semantics/controller",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement_semantics/counterfactual",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement_semantics/constraint_force_semantics",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_limited_official",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_limited_counterfactual",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/actuator_gear",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/actuator_ctrlrange",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/dof_armature",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/dof_damping",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "38169db75f9b35fb955141fddfd6233f9edbcacca777203969efe9d00ec7c621"
+          },
+          "module": "robot_learning.lab.plant_side_probe"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+            ],
+            "instrument": "python_module",
+            "label": "I15 matched post-constraint plant-side replay",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/python-module-M19-1-I15_plant_side_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/experiment",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/measurement_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "limited",
+                      "preconstraint_comparison",
+                      "target_angle_degrees",
+                      "target_qpos",
+                      "target_radius_cm",
+                      "unlimited_counterfactual"
+                    ],
+                    "path": "/trials",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/integration_timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_interval_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_interval_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_semantics/controller",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/counterfactual",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/constraint_force_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited_official",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited_counterfactual",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/dof_damping",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38169db75f9b35fb955141fddfd6233f9edbcacca777203969efe9d00ec7c621"
+            },
+            "module": "robot_learning.lab.plant_side_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            },
+            {
+              "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+              "path": "robot_learning/lab/near_limit_probe.py"
+            },
+            {
+              "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+              "path": "robot_learning/lab/plant_side_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "3dc0034cfcd54c6d9da7a3dd57467c565dc6db41",
+            "fingerprint": "004af99236fb6a2ec697d6e08011f9f03066a1e019d890cddde4d6ac5598f417",
+            "manifest": [
+              {
+                "fingerprint": "8152c62831a50da93e9b75c65ae1bc940220112f475e69318ed04fca38b25f55",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "54b51d66b9ba1487f3e93f03031cc84b1af8811f86a7595a9ccdb27eef11b4b8",
+                "path": "robot_learning/lab/dynamics_probe.py"
+              },
+              {
+                "fingerprint": "d76632a8d8dea019c491ed986f563d5d57ad6d836251083ddcc21ffcfb8b2249",
+                "path": "robot_learning/lab/near_limit_probe.py"
+              },
+              {
+                "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+                "path": "robot_learning/lab/plant_side_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8f1e18eb7effd0614e7b323338dbe171233e139881537adf6d2141d97dd20b46",
+              "path": "robot_learning/lab/plant_side_probe.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/plant_side_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M19",
+    "inquiry_id": "I15",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a controlled matched-state plant-side replay for inner negative-angle shoulder-limit targets, comparing the official limited model with an otherwise identical counterfactual in which only the shoulder joint limit is disabled. Record pre-constraint trajectory agreement, first constraint activation, joint and end-effector trajectories, constraint and actuator forces, interruptions, and complete-hold outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json"
+            ],
+            "artifact": "campaigns/evaluations/339736e0-5583-4bc4-8729-5023fc3077b7/I15_plant_side_probe.json",
+            "instrument": "python_module",
+            "label": "I15 matched post-constraint plant-side replay",
+            "module": "robot_learning.lab.plant_side_probe"
+          }
+        ],
+        "rationale": "I15 remains unresolved because M17 separated candidate acquisition behavior but did not isolate the plant after comparable pre-constraint state, force, and velocity. M10 and M13 establish that shoulder-limit transients exist, while M18 rejects only the tested branch selector and does not discriminate causality. This controlled replay uses identical initial states, targets, and saturated joint-space PD actions in both models, so the pre-constraint prefix is directly comparable. Reproducible loss of a 100-step hold in the official model after shoulder constraint activation, with matched settling in the disabled-limit counterfactual, supports a plant-aware controller redesign; matched post-constraint holds redirects I15 to acquisition or branch representation. The counterfactual is mechanistic evidence, not official task performance."
+      }
+    },
+    "request_fingerprint": "bbec3a2a63969cb43e386752b6c5a080e157505e7cd35403b19021296976c35a",
+    "session_id": "S32",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
     "completed_operations": [
@@ -29808,6 +30511,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "73583c35-4697-418f-af6b-43dcb384ac08",
+    "id": "S32",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Do the remaining inner negative-angle failures arise from a plant-side post-constraint transient that persists when pre-constraint acquisition is comparable, and can a plant-aware trajectory or hold controller eliminate them without losing complete uninterrupted holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M19"
+    ],
+    "scientific_parent_commit": "32ffd22a63265fa65252a0da29e543fea432c458"
+  },
   "terminal_state": null
 }
