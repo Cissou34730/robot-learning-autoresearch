@@ -11,22 +11,22 @@ from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 
 FRAME_SKIP = 10
-CONTROL_STEPS = 240
+APPROACH_CONTROL_STEPS = 20
+HOLD_CONTROL_STEPS = 220
 HOLD_STEPS_REQUIRED = 100
 SUCCESS_THRESHOLD = 0.01
 SHOULDER_JOINT_ID = 0
-JOINT_LIMIT = np.deg2rad(170.0)
 POSITION_GAIN = np.asarray([1.2, 0.8], dtype=np.float64)
 VELOCITY_GAIN = np.asarray([0.15, 0.10], dtype=np.float64)
 TARGET_STATES = (
     (-2.80, 2.40),
     (-2.90, 2.40),
-    (-2.96, 2.40),
-    (-JOINT_LIMIT, 2.40),
+    (-2.94, 2.40),
+    (-2.80, 2.60),
     (-2.90, 2.60),
-    (-2.96, 2.60),
-    (-JOINT_LIMIT, 2.60),
+    (-2.94, 2.60),
 )
+INITIAL_SHOULDER = -2.20
 
 
 def parse_args() -> argparse.Namespace:
@@ -82,7 +82,7 @@ def run_trial(
     target_qpos: np.ndarray,
     limited: bool,
 ) -> dict:
-    initial_qpos = target_qpos + np.asarray([0.30, 0.0], dtype=np.float64)
+    initial_qpos = np.asarray([INITIAL_SHOULDER, target_qpos[1]], dtype=np.float64)
     initial_qvel = np.zeros(2, dtype=np.float64)
     target = target_position(target_qpos)
     reset_state(model, data, initial_qpos, initial_qvel, target)
@@ -94,14 +94,21 @@ def run_trial(
     hold_interruptions = 0
     was_in_tolerance = False
     first_constraint_step: int | None = None
-    for control_step in range(1, CONTROL_STEPS + 1):
+    for control_step in range(
+        1, APPROACH_CONTROL_STEPS + HOLD_CONTROL_STEPS + 1
+    ):
         qpos = data.qpos[:2].copy()
         qvel = data.qvel[:2].copy()
-        action = np.clip(
-            POSITION_GAIN * (target_qpos - qpos) - VELOCITY_GAIN * qvel,
-            -1.0,
-            1.0,
-        )
+        if control_step <= APPROACH_CONTROL_STEPS:
+            phase = "approach"
+            action = np.asarray([-1.0, 0.0], dtype=np.float64)
+        else:
+            phase = "hold"
+            action = np.clip(
+                POSITION_GAIN * (target_qpos - qpos) - VELOCITY_GAIN * qvel,
+                -1.0,
+                1.0,
+            )
         data.ctrl[:] = action
         for _ in range(FRAME_SKIP):
             mujoco.mj_step(model, data)
@@ -129,6 +136,7 @@ def run_trial(
         rows.append(
             {
                 "control_step": control_step,
+                "phase": phase,
                 "distance_m": distance,
                 "in_tolerance": in_tolerance,
                 "qpos": data.qpos[:2].copy().tolist(),
@@ -164,7 +172,7 @@ def compare_preconstraint_trajectories(
     unlimited_rows = unlimited_trial["response"]
     constraint_step = limited_trial["first_constraint_step"]
     prefix_length = (
-        CONTROL_STEPS
+        APPROACH_CONTROL_STEPS + HOLD_CONTROL_STEPS
         if constraint_step is None
         else max(int(constraint_step) - 1, 0)
     )
@@ -244,12 +252,14 @@ def collect_measurement() -> dict:
             "control_interval_seconds": float(
                 limited_model.opt.timestep * FRAME_SKIP
             ),
-            "control_steps": CONTROL_STEPS,
+            "approach_control_steps": APPROACH_CONTROL_STEPS,
+            "hold_control_steps": HOLD_CONTROL_STEPS,
+            "total_control_steps": APPROACH_CONTROL_STEPS + HOLD_CONTROL_STEPS,
             "hold_steps_required": HOLD_STEPS_REQUIRED,
             "success_threshold_m": SUCCESS_THRESHOLD,
             "controller": (
-                "identical saturated joint-space PD replay from matched "
-                "near-limit initial states"
+                "identical saturated negative-shoulder approach followed by "
+                "joint-space PD hold from matched interior initial states"
             ),
             "counterfactual": (
                 "same compiled model and target with only the shoulder "
