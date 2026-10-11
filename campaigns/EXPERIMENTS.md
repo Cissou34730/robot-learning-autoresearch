@@ -13,3 +13,4 @@
 | M5 | measurement | I1 | completed |
 | M6 | measurement | I1 | completed |
 | M7 | measurement | I1 | completed |
+| E4 | inquiry | I1 | completed |
