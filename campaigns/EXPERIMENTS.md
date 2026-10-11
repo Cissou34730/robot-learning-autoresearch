@@ -46,3 +46,4 @@
 | M11 | measurement | I6 | completed |
 | E26 | inquiry | I6 | completed |
 | E27 | checkpoint | I6 | checkpointed |
+| E28 | inquiry | I7 | completed |

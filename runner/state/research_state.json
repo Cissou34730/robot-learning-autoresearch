@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close positively if a trained candidate using only the action-rate-limited torque realization reaches at least 157/160 complete uninterrupted successes on the shared development panel, improves or preserves T3's radius-stratified success, and is not weaker than T3 in the paired comparison. Close negatively if the candidate fails to improve T3 or regresses, or if diagnostics show that action-rate limiting does not reduce the residual saturation/high-speed no-entry pattern; in that case carry T3 forward as the strongest candidate and reassess official assessment. A result that improves the aggregate but loses inner- or outer-radius capability is inconclusive for the human goal and redirects the inquiry rather than establishing a general control cause.",
+    "goal_connection": "The best measured artifact, T3:checkpoint-120832, achieves 151/160 (94.375%) and remains 3.625 percentage points below the development target. The inquiry tests whether a control-side intervention can close that gap while preserving the capability T3 acquired across the official radius range.",
+    "handoff_conclusion": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, retained saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands while matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width velocity-and-hold interface and T5:checkpoint-120832 achieved 0/160 with persistent pre-entry saturation, high endpoint and joint speeds, interrupted entries, and zero complete holds; E21 therefore rejected that tested interface realization, not regulation or representation interventions generally. E23 opened I6 to test a T3-compatible endpoint-speed-aware stabilization reward without changing observation fields. E25 restored the T3 recipe, T6 trained the bounded reward intervention, and M11 measured T6:checkpoint-86016 at 83.125% versus T3 at 94.375% on the shared panel with paired wins 0-18. E26 therefore closes I6 negatively at the artifact-and-recipe level: the tested reward intervention did not improve complete uninterrupted success. The available M11 structure confirms the requested trajectory diagnostics exist, but no uninspected diagnostic value is used to infer a causal mechanism; the aggregate regression is sufficient for the negative closure.",
+    "handoff_question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+    "handoff_source_session_id": "S13",
+    "id": "I7",
+    "opened_in_session": "S14",
+    "question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+    "rationale": "M4 established T3 as the strongest measured artifact at 151/160, with the residual failures recorded as saturated, high-speed, no-first-entry episodes. M9 found positive local endpoint authority at representative inner and outer configurations, so absent authority is not the leading explanation at those samples. This supports testing the command realization and transient impulse as a policy-dependent control bottleneck. The intervention is untested, preserves the existing observation and reward, and does not repeat the tested same-width velocity-and-hold interface (E21), near-limit command penalty (E12), or endpoint-speed-aware reward recipe (E26). The result will be judged by complete uninterrupted success and failure diagnostics, not by an intended-cause claim.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -4928,16 +4939,16 @@
     }
   },
   "counters": {
-    "event": 27,
-    "inquiry": 6,
+    "event": 28,
+    "inquiry": 7,
     "measurement": 11,
-    "session": 13,
+    "session": 14,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12256,9 +12267,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:21:59Z",
+      "error": null,
+      "id": "E28",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close positively if a trained candidate using only the action-rate-limited torque realization reaches at least 157/160 complete uninterrupted successes on the shared development panel, improves or preserves T3's radius-stratified success, and is not weaker than T3 in the paired comparison. Close negatively if the candidate fails to improve T3 or regresses, or if diagnostics show that action-rate limiting does not reduce the residual saturation/high-speed no-entry pattern; in that case carry T3 forward as the strongest candidate and reassess official assessment. A result that improves the aggregate but loses inner- or outer-radius capability is inconclusive for the human goal and redirects the inquiry rather than establishing a general control cause.",
+        "goal_connection": "The best measured artifact, T3:checkpoint-120832, achieves 151/160 (94.375%) and remains 3.625 percentage points below the development target. The inquiry tests whether a control-side intervention can close that gap while preserving the capability T3 acquired across the official radius range.",
+        "question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+        "rationale": "M4 established T3 as the strongest measured artifact at 151/160, with the residual failures recorded as saturated, high-speed, no-first-entry episodes. M9 found positive local endpoint authority at representative inner and outer configurations, so absent authority is not the leading explanation at those samples. This supports testing the command realization and transient impulse as a policy-dependent control bottleneck. The intervention is untested, preserves the existing observation and reward, and does not repeat the tested same-width velocity-and-hold interface (E21), near-limit command penalty (E12), or endpoint-speed-aware reward recipe (E26). The result will be judged by complete uninterrupted success and failure diagnostics, not by an intended-cause claim."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      },
+      "session_id": "S14",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close positively if a trained candidate using only the action-rate-limited torque realization reaches at least 157/160 complete uninterrupted successes on the shared development panel, improves or preserves T3's radius-stratified success, and is not weaker than T3 in the paired comparison. Close negatively if the candidate fails to improve T3 or regresses, or if diagnostics show that action-rate limiting does not reduce the residual saturation/high-speed no-entry pattern; in that case carry T3 forward as the strongest candidate and reassess official assessment. A result that improves the aggregate but loses inner- or outer-radius capability is inconclusive for the human goal and redirects the inquiry rather than establishing a general control cause.",
+          "goal_connection": "The best measured artifact, T3:checkpoint-120832, achieves 151/160 (94.375%) and remains 3.625 percentage points below the development target. The inquiry tests whether a control-side intervention can close that gap while preserving the capability T3 acquired across the official radius range.",
+          "handoff_conclusion": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, retained saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands while matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width velocity-and-hold interface and T5:checkpoint-120832 achieved 0/160 with persistent pre-entry saturation, high endpoint and joint speeds, interrupted entries, and zero complete holds; E21 therefore rejected that tested interface realization, not regulation or representation interventions generally. E23 opened I6 to test a T3-compatible endpoint-speed-aware stabilization reward without changing observation fields. E25 restored the T3 recipe, T6 trained the bounded reward intervention, and M11 measured T6:checkpoint-86016 at 83.125% versus T3 at 94.375% on the shared panel with paired wins 0-18. E26 therefore closes I6 negatively at the artifact-and-recipe level: the tested reward intervention did not improve complete uninterrupted success. The available M11 structure confirms the requested trajectory diagnostics exist, but no uninspected diagnostic value is used to infer a causal mechanism; the aggregate regression is sufficient for the negative closure.",
+          "handoff_question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+          "handoff_source_session_id": "S13",
+          "id": "I7",
+          "opened_in_session": "S14",
+          "question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+          "rationale": "M4 established T3 as the strongest measured artifact at 151/160, with the residual failures recorded as saturated, high-speed, no-first-entry episodes. M9 found positive local endpoint authority at representative inner and outer configurations, so absent authority is not the leading explanation at those samples. This supports testing the command realization and transient impulse as a policy-dependent control bottleneck. The intervention is untested, preserves the existing observation and reward, and does not repeat the tested same-width velocity-and-hold interface (E21), near-limit command penalty (E12), or endpoint-speed-aware reward recipe (E26). The result will be judged by complete uninterrupted success and failure diagnostics, not by an intended-cause claim.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E28",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close positively if a trained candidate using only the action-rate-limited torque realization reaches at least 157/160 complete uninterrupted successes on the shared development panel, improves or preserves T3's radius-stratified success, and is not weaker than T3 in the paired comparison. Close negatively if the candidate fails to improve T3 or regresses, or if diagnostics show that action-rate limiting does not reduce the residual saturation/high-speed no-entry pattern; in that case carry T3 forward as the strongest candidate and reassess official assessment. A result that improves the aggregate but loses inner- or outer-radius capability is inconclusive for the human goal and redirects the inquiry rather than establishing a general control cause.",
+        "goal_connection": "The best measured artifact, T3:checkpoint-120832, achieves 151/160 (94.375%) and remains 3.625 percentage points below the development target. The inquiry tests whether a control-side intervention can close that gap while preserving the capability T3 acquired across the official radius range.",
+        "question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
+        "rationale": "M4 established T3 as the strongest measured artifact at 151/160, with the residual failures recorded as saturated, high-speed, no-first-entry episodes. M9 found positive local endpoint authority at representative inner and outer configurations, so absent authority is not the leading explanation at those samples. This supports testing the command realization and transient impulse as a policy-dependent control bottleneck. The intervention is untested, preserves the existing observation and reward, and does not repeat the tested same-width velocity-and-hold interface (E21), near-limit command penalty (E12), or endpoint-speed-aware reward recipe (E26). The result will be judged by complete uninterrupted success and failure diagnostics, not by an intended-cause claim."
+      }
+    },
+    "request_fingerprint": "ab153f307deafb542f9d0fa006a8c4a09a75c73cd2d4bd553b51613f43d399b2",
+    "session_id": "S14",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%). T6:checkpoint-86016 is a tested and rejected reward-intervention artifact at 133/160 (83.125%); T5:checkpoint-120832 remains rejected at 0/160; and T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%). These are artifact-level comparisons and do not establish causal attribution.",
     "completed_operations": [
@@ -12301,6 +12375,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "3f7d8421-bb92-4fb2-b6d8-fc848a08bd90",
+    "id": "S14",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E28"
+    ],
+    "scientific_parent_commit": "e3b99ccb1ff8e704121b73509d458a331189de66"
+  },
   "terminal_state": null
 }
