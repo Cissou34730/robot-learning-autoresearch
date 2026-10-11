@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a bounded characterization at representative inner- and outer-band residual configurations reports runtime-resolved dynamics and effective actuator margins together with trajectory-linked saturation, speed, and endpoint-error evidence, sufficient to conclude that the residual is predominantly authority-limited, predominantly policy-dependent, or inconclusive and to select the next route toward the goal.",
+    "goal_connection": "The strongest measured staged-transfer artifact reaches 151 of 160 development episodes, leaving a 3.625 percentage-point gap to the 98% complete uninterrupted-hold objective. Resolving whether the three residual failure classes are authority-limited or policy-regulation failures determines whether the next goal-directed investment should change control or policy design, characterize or redesign dynamics, or proceed to assessment.",
+    "handoff_conclusion": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+    "handoff_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+    "handoff_source_session_id": "S7",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+    "rationale": "Do not request terminal assessment: the best development artifact is below 98%, and its residual failures include only development evidence, not official certification. The near-limit command-penalty recipe is rejected as an artifact-level regression (149/160 versus 151/160) and did not materially change the saturation signature, but that result does not establish a hard actuator limit. Direct characterization is the highest-value bounded work because the existing evidence already supports staged coverage as a useful route while leaving the authority-versus-regulation distinction consequential to the next intervention.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -3290,16 +3301,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 5,
-    "session": 7,
+    "session": 8,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7220,9 +7231,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:40:33Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a bounded characterization at representative inner- and outer-band residual configurations reports runtime-resolved dynamics and effective actuator margins together with trajectory-linked saturation, speed, and endpoint-error evidence, sufficient to conclude that the residual is predominantly authority-limited, predominantly policy-dependent, or inconclusive and to select the next route toward the goal.",
+        "goal_connection": "The strongest measured staged-transfer artifact reaches 151 of 160 development episodes, leaving a 3.625 percentage-point gap to the 98% complete uninterrupted-hold objective. Resolving whether the three residual failure classes are authority-limited or policy-regulation failures determines whether the next goal-directed investment should change control or policy design, characterize or redesign dynamics, or proceed to assessment.",
+        "question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+        "rationale": "Do not request terminal assessment: the best development artifact is below 98%, and its residual failures include only development evidence, not official certification. The near-limit command-penalty recipe is rejected as an artifact-level regression (149/160 versus 151/160) and did not materially change the saturation signature, but that result does not establish a hard actuator limit. Direct characterization is the highest-value bounded work because the existing evidence already supports staged coverage as a useful route while leaving the authority-versus-regulation distinction consequential to the next intervention."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a bounded characterization at representative inner- and outer-band residual configurations reports runtime-resolved dynamics and effective actuator margins together with trajectory-linked saturation, speed, and endpoint-error evidence, sufficient to conclude that the residual is predominantly authority-limited, predominantly policy-dependent, or inconclusive and to select the next route toward the goal.",
+          "goal_connection": "The strongest measured staged-transfer artifact reaches 151 of 160 development episodes, leaving a 3.625 percentage-point gap to the 98% complete uninterrupted-hold objective. Resolving whether the three residual failure classes are authority-limited or policy-regulation failures determines whether the next goal-directed investment should change control or policy design, characterize or redesign dynamics, or proceed to assessment.",
+          "handoff_conclusion": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+          "handoff_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+          "handoff_source_session_id": "S7",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+          "rationale": "Do not request terminal assessment: the best development artifact is below 98%, and its residual failures include only development evidence, not official certification. The near-limit command-penalty recipe is rejected as an artifact-level regression (149/160 versus 151/160) and did not materially change the saturation signature, but that result does not establish a hard actuator limit. Direct characterization is the highest-value bounded work because the existing evidence already supports staged coverage as a useful route while leaving the authority-versus-regulation distinction consequential to the next intervention.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a bounded characterization at representative inner- and outer-band residual configurations reports runtime-resolved dynamics and effective actuator margins together with trajectory-linked saturation, speed, and endpoint-error evidence, sufficient to conclude that the residual is predominantly authority-limited, predominantly policy-dependent, or inconclusive and to select the next route toward the goal.",
+        "goal_connection": "The strongest measured staged-transfer artifact reaches 151 of 160 development episodes, leaving a 3.625 percentage-point gap to the 98% complete uninterrupted-hold objective. Resolving whether the three residual failure classes are authority-limited or policy-regulation failures determines whether the next goal-directed investment should change control or policy design, characterize or redesign dynamics, or proceed to assessment.",
+        "question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+        "rationale": "Do not request terminal assessment: the best development artifact is below 98%, and its residual failures include only development evidence, not official certification. The near-limit command-penalty recipe is rejected as an artifact-level regression (149/160 versus 151/160) and did not materially change the saturation signature, but that result does not establish a hard actuator limit. Direct characterization is the highest-value bounded work because the existing evidence already supports staged coverage as a useful route while leaving the authority-versus-regulation distinction consequential to the next intervention."
+      }
+    },
+    "request_fingerprint": "f3cc519bfdc4a563c3bc6b5488800ea68c3ac359b58f882c88147a5203199dae",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is fresh full-radius recipe-specific counterevidence at 33.75%. These are candidate-comparison facts only. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -7255,6 +7329,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8deececc-e55b-46a1-8134-e962809f5f64",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "bf4d2dafa111a942045b5fb9d281972eff8f01d2"
+  },
   "terminal_state": null
 }
