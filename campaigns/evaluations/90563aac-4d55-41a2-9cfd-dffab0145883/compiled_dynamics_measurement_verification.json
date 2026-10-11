@@ -1,0 +1,370 @@
+{
+  "checked_scope": [
+    "compiled timestep and control interval",
+    "compiled motor gear and control ranges",
+    "repeated zero reset",
+    "opposite signed isolated response",
+    "zero-order-held updates",
+    "positive-to-negative reversal",
+    "zero-input free decay",
+    "required trace fields and contact counts"
+  ],
+  "checks": [
+    {
+      "expected": 0.002,
+      "name": "compiled timestep",
+      "observed": 0.002,
+      "passed": true
+    },
+    {
+      "expected": 10,
+      "name": "ten integration substeps",
+      "observed": 10,
+      "passed": true
+    },
+    {
+      "expected": 0.02,
+      "name": "twenty millisecond control interval",
+      "observed": 0.02,
+      "passed": true
+    },
+    {
+      "expected": [
+        5.0,
+        5.0
+      ],
+      "name": "exact compiled motor gear",
+      "observed": [
+        5.0,
+        5.0
+      ],
+      "passed": true
+    },
+    {
+      "expected": [
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "name": "exact compiled motor control ranges",
+      "observed": [
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "expected": {
+        "qpos": [
+          0.0,
+          0.0
+        ],
+        "qvel": [
+          0.0,
+          0.0
+        ],
+        "repeats": 3
+      },
+      "name": "deterministic repeated zero reset",
+      "observed": {
+        "qpos": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "qvel": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "negative_sign": "-",
+        "positive_sign": "+"
+      },
+      "name": "opposite signed isolated shoulder response",
+      "observed": {
+        "artifact_negative_qvel_rad_s": -4.12541544650088,
+        "artifact_positive_qvel_rad_s": 4.125541198219369,
+        "independent_negative_qvel_rad_s": -4.12541544650088,
+        "independent_positive_qvel_rad_s": 4.125541198219369
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "artifact_repeated_command": [
+          0.75,
+          0.0
+        ],
+        "state_evolution": true,
+        "substeps_per_update": 10
+      },
+      "name": "zero-order-held repeated updates",
+      "observed": {
+        "artifact_commands": [
+          [
+            0.75,
+            0.0
+          ],
+          [
+            0.75,
+            0.0
+          ],
+          [
+            0.75,
+            0.0
+          ],
+          [
+            0.75,
+            0.0
+          ]
+        ],
+        "independent_state_evolved": true,
+        "independent_substep_commands": [
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ],
+          [
+            0.4,
+            0.0
+          ]
+        ]
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "contains_transition": true
+      },
+      "name": "actual positive to negative reversal transition",
+      "observed": {
+        "commands": [
+          [
+            0.65,
+            0.0
+          ],
+          [
+            0.65,
+            0.0
+          ],
+          [
+            -0.65,
+            0.0
+          ],
+          [
+            -0.65,
+            0.0
+          ],
+          [
+            -0.65,
+            0.0
+          ]
+        ],
+        "transition_indices": [
+          2
+        ]
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "controls_zero": true,
+        "initial_contact_count": 0,
+        "minimum_samples": 2,
+        "non_singular_initial_state": true,
+        "state_evolved": true
+      },
+      "name": "nonempty zero-input free decay evolution",
+      "observed": {
+        "controls_zero": true,
+        "initial_contact_count": 0,
+        "initial_qvel_rad_s": [
+          0.55,
+          -0.35
+        ],
+        "non_singular_initial_state": true,
+        "samples": 9,
+        "state_evolved": true
+      },
+      "passed": true
+    },
+    {
+      "expected": [
+        "actuator_force",
+        "contact_count",
+        "end_effector_position_m",
+        "qacc_rad_s2",
+        "qfrc_actuator_Nm",
+        "qpos_rad",
+        "qvel_rad_s"
+      ],
+      "name": "bounded trace state and contact recording",
+      "observed": [
+        "actuator_force",
+        "contact_count",
+        "end_effector_position_m",
+        "qacc_rad_s2",
+        "qfrc_actuator_Nm",
+        "qpos_rad",
+        "qvel_rad_s"
+      ],
+      "passed": true
+    }
+  ],
+  "executed": true,
+  "failed_checks": [],
+  "schema_version": 1,
+  "unchecked_scope": [
+    "scientific adequacy of the measured dynamics for policy learning",
+    "long-horizon task success and 1 cm hold behavior",
+    "contact behavior outside the fixed measured states",
+    "agreement with hardware or any model other than this compiled MuJoCo plant"
+  ],
+  "verification": "compiled_dynamics_measurement"
+}
