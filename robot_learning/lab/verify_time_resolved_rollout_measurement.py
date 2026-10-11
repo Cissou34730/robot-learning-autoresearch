@@ -39,6 +39,20 @@ EXPECTED_CONTROL_SEEDS = {
     4349,
     4355,
 }
+EXPECTED_NO_FIRST_REACH_FAILURE_SEEDS = {
+    4208,
+    4225,
+    4228,
+    4244,
+    4246,
+    4307,
+    4316,
+}
+EXPECTED_REACH_THEN_INTERRUPT_FAILURE_SEEDS = {
+    4201,
+    4226,
+    4243,
+}
 BRANCH_NEAR_TOLERANCE_RAD = 0.10
 JOINT_LIMIT_TOLERANCE_RAD = 1e-10
 NUMERICAL_TOLERANCE = 2e-7
@@ -148,6 +162,12 @@ def _check_trace(
     interruptions = 0
     first_reach = None
     max_held = 0
+    reference_previous_held = 0
+    reference_first_reach = None
+    reference_interruptions = 0
+    reference_interruption_steps = []
+    reference_in_tolerance_samples = 0
+    observed_reference_in_tolerance_disagreements = 0
     nonzero_discrepancies = 0
     maximum_position_error = 0.0
     maximum_velocity_error = 0.0
@@ -228,6 +248,29 @@ def _check_trace(
             np.linalg.norm(endpoint_velocity - reference_endpoint_velocity),
             "environment/reference endpoint velocity error",
         )
+        distance = float(np.linalg.norm(endpoint - target))
+        _close(record["distance_m"], distance, "distance")
+        _close(record["distance_cm"], 100.0 * distance, "distance in centimeters")
+        in_tolerance = distance <= SUCCESS_THRESHOLD
+        reference_distance = _finite(
+            np.linalg.norm(reference_endpoint - target),
+            "reference distance",
+        )
+        reference_in_tolerance = reference_distance <= SUCCESS_THRESHOLD
+        if reference_in_tolerance:
+            reference_in_tolerance_samples += 1
+            if reference_first_reach is None:
+                reference_first_reach = expected_step
+        if reference_in_tolerance != in_tolerance:
+            observed_reference_in_tolerance_disagreements += 1
+        reference_interruption = (
+            reference_previous_held > 0 and not reference_in_tolerance
+        )
+        if reference_interruption:
+            reference_interruptions += 1
+            reference_interruption_steps.append(expected_step)
+        reference_held = reference_previous_held + 1 if reference_in_tolerance else 0
+        reference_previous_held = reference_held
         maximum_position_error = max(maximum_position_error, position_error)
         maximum_velocity_error = max(maximum_velocity_error, velocity_error)
         if position_error > NUMERICAL_TOLERANCE or velocity_error > NUMERICAL_TOLERANCE:
@@ -243,10 +286,6 @@ def _check_trace(
                     "reference_endpoint_velocity_m_s": reference_endpoint_velocity.tolist(),
                     "velocity_error_m_s": velocity_error,
                 }
-        distance = float(np.linalg.norm(endpoint - target))
-        _close(record["distance_m"], distance, "distance")
-        _close(record["distance_cm"], 100.0 * distance, "distance in centimeters")
-        in_tolerance = distance <= SUCCESS_THRESHOLD
         _require(record["in_tolerance"] is in_tolerance, "tolerance flag disagrees with distance")
         held = int(record["held_steps"])
         expected_held = previous_held + 1 if in_tolerance else 0
@@ -346,8 +385,17 @@ def _check_trace(
     _require(int(summary["maximum_contact_count"]) == max(counts), "contact summary maximum is wrong")
     _require(int(summary["nonzero_contact_samples"]) == sum(count > 0 for count in counts), "contact summary nonzero count is wrong")
     return {
+        "seed": int(rollout["seed"]),
+        "role": rollout["role"],
         "first_reach_step": first_reach,
         "interruptions": interruptions,
+        "reference_first_reach_step": reference_first_reach,
+        "reference_interruptions": reference_interruptions,
+        "reference_interruption_steps": reference_interruption_steps,
+        "reference_in_tolerance_samples": reference_in_tolerance_samples,
+        "observed_reference_in_tolerance_disagreements": (
+            observed_reference_in_tolerance_disagreements
+        ),
         "nonzero_discrepancy_samples": nonzero_discrepancies,
         "maximum_position_error_m": maximum_position_error,
         "maximum_velocity_error_m_s": maximum_velocity_error,
@@ -445,9 +493,91 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
     failures = [item for rollout, item in zip(rollouts, checked, strict=True) if rollout["role"] == "failure"]
     _require(any(item["interruptions"] > 0 for item in failures), "no failure exercises a hold interruption")
     _require(any(item["first_reach_step"] is None for item in failures), "no failure exercises the no-first-reach transition")
+    summaries_by_seed = {item["seed"]: item for item in checked}
+    _require(
+        set(summaries_by_seed) == EXPECTED_FAILURE_SEEDS | EXPECTED_CONTROL_SEEDS,
+        "reference class summaries do not cover every rollout",
+    )
+    observed_no_first_reach = {
+        seed
+        for seed in EXPECTED_FAILURE_SEEDS
+        if summaries_by_seed[seed]["first_reach_step"] is None
+    }
+    observed_reach_then_interrupt = {
+        seed
+        for seed in EXPECTED_FAILURE_SEEDS
+        if summaries_by_seed[seed]["first_reach_step"] is not None
+        and summaries_by_seed[seed]["interruptions"] > 0
+    }
+    _require(
+        observed_no_first_reach == EXPECTED_NO_FIRST_REACH_FAILURE_SEEDS,
+        "observed failure class partition is wrong",
+    )
+    _require(
+        observed_reach_then_interrupt
+        == EXPECTED_REACH_THEN_INTERRUPT_FAILURE_SEEDS,
+        "observed reach-then-interrupt class partition is wrong",
+    )
+    reference_no_first_reach = {
+        seed
+        for seed in EXPECTED_FAILURE_SEEDS
+        if summaries_by_seed[seed]["reference_first_reach_step"] is None
+    }
+    reference_reach_then_interrupt = {
+        seed
+        for seed in EXPECTED_FAILURE_SEEDS
+        if summaries_by_seed[seed]["reference_first_reach_step"] is not None
+        and summaries_by_seed[seed]["reference_interruptions"] > 0
+    }
+    _require(
+        reference_no_first_reach == EXPECTED_NO_FIRST_REACH_FAILURE_SEEDS,
+        "reference no-first-reach class was not preserved",
+    )
+    _require(
+        reference_reach_then_interrupt
+        == EXPECTED_REACH_THEN_INTERRUPT_FAILURE_SEEDS,
+        "reference reach-then-interrupt class was not preserved",
+    )
     return {
         "checked_rollouts": len(rollouts),
         "checked_steps": sum(len(rollout["trace"]) for rollout in rollouts),
+        "reference_failure_class_summary": {
+            "checks_exercised": True,
+            "expected_no_first_reach_seeds": sorted(
+                EXPECTED_NO_FIRST_REACH_FAILURE_SEEDS
+            ),
+            "reference_no_first_reach_seeds": sorted(reference_no_first_reach),
+            "expected_reach_then_interrupt_seeds": sorted(
+                EXPECTED_REACH_THEN_INTERRUPT_FAILURE_SEEDS
+            ),
+            "reference_reach_then_interrupt_seeds": sorted(
+                reference_reach_then_interrupt
+            ),
+        },
+        "reference_transition_summary": [
+            {
+                "seed": item["seed"],
+                "role": item["role"],
+                "observed_first_reach_step": item["first_reach_step"],
+                "observed_interruptions": item["interruptions"],
+                "reference_first_reach_step": item["reference_first_reach_step"],
+                "reference_interruptions": item["reference_interruptions"],
+                "reference_interruption_steps": item[
+                    "reference_interruption_steps"
+                ],
+                "reference_in_tolerance_samples": item[
+                    "reference_in_tolerance_samples"
+                ],
+                "observed_reference_in_tolerance_disagreements": item[
+                    "observed_reference_in_tolerance_disagreements"
+                ],
+            }
+            for item in checked
+        ],
+        "observed_reference_in_tolerance_disagreements": sum(
+            item["observed_reference_in_tolerance_disagreements"]
+            for item in checked
+        ),
         "kinematic_discrepancy": {
             "samples_with_nonzero_discrepancy": sum(
                 item["nonzero_discrepancy_samples"] for item in checked
@@ -490,6 +620,7 @@ def main(argv: list[str] | None = None) -> None:
                 "environment-observed endpoint, distance, and hold semantics",
                 "forward-consistent qpos/qvel kinematic reference and its independent translational Jacobian-times-qvel velocity",
                 "recorded environment/reference position and velocity discrepancy norms, including nonzero discrepancies",
+                "reference distance and hold/interruption transitions, observed/reference tolerance disagreements, and preservation of both expected failure classes",
                 "hold transitions, interruption classes, contacts, and branch IK",
             ],
             "unchecked_scope": [
