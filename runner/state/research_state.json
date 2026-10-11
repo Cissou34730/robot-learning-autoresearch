@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed development evidence supports a bounded conclusion about this policy route: either a measured candidate is sufficiently capable and selected for goal review, or measured failures and mechanism diagnostics identify a consequential limitation or redirect. The evidence must include candidate-level task success and mechanism-relevant diagnostics for the selected artifact, including first reach, uninterrupted hold, target-geometry/branch conditioning, near-tolerance velocity or action, contacts, and internal-step behavior where available; unresolved protected evaluator semantics remain an explicit limitation rather than being treated as settled.",
+    "goal_connection": "The campaign has no learned candidate and therefore no evidence of the capability required for at least 196 successes in the protected 200-episode assessment. This inquiry will produce and measure candidate policies on the official target distribution, distinguishing reach failure, braking/settling failure, branch or geometry effects, contacts, and internal-step tolerance excursions so that progress toward the 98% goal is not inferred from reward or boundary-only success.",
+    "handoff_conclusion": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+    "handoff_question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+    "rationale": "Opening is justified over official assessment because no candidate exists, no best-known role can support commitment, and M1 measured only compiled dynamics and a synthetic internal-step distinction. M1 weakens a generic authority bottleneck but does not test a learned policy, so the highest-value bounded work is to develop and measure the method under the existing torque interface. A candidate that reaches but loses the hold would support policy-control development; systematic target/branch torque-step or contact failures, or inability to settle under a competent route, would redirect the campaign toward the corresponding physical or implementation mechanism. The inquiry does not assume either explanation and will preserve recipe-specific limits.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c21bc3ba8d582a900f077f26746064d3a31ca706",
     "id": "0d39d52c-e9f6-4b27-814c-3b9e21c07b2a",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -496,9 +507,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:17:46Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed development evidence supports a bounded conclusion about this policy route: either a measured candidate is sufficiently capable and selected for goal review, or measured failures and mechanism diagnostics identify a consequential limitation or redirect. The evidence must include candidate-level task success and mechanism-relevant diagnostics for the selected artifact, including first reach, uninterrupted hold, target-geometry/branch conditioning, near-tolerance velocity or action, contacts, and internal-step behavior where available; unresolved protected evaluator semantics remain an explicit limitation rather than being treated as settled.",
+        "goal_connection": "The campaign has no learned candidate and therefore no evidence of the capability required for at least 196 successes in the protected 200-episode assessment. This inquiry will produce and measure candidate policies on the official target distribution, distinguishing reach failure, braking/settling failure, branch or geometry effects, contacts, and internal-step tolerance excursions so that progress toward the 98% goal is not inferred from reward or boundary-only success.",
+        "question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+        "rationale": "Opening is justified over official assessment because no candidate exists, no best-known role can support commitment, and M1 measured only compiled dynamics and a synthetic internal-step distinction. M1 weakens a generic authority bottleneck but does not test a learned policy, so the highest-value bounded work is to develop and measure the method under the existing torque interface. A candidate that reaches but loses the hold would support policy-control development; systematic target/branch torque-step or contact failures, or inability to settle under a competent route, would redirect the campaign toward the corresponding physical or implementation mechanism. The inquiry does not assume either explanation and will preserve recipe-specific limits."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed development evidence supports a bounded conclusion about this policy route: either a measured candidate is sufficiently capable and selected for goal review, or measured failures and mechanism diagnostics identify a consequential limitation or redirect. The evidence must include candidate-level task success and mechanism-relevant diagnostics for the selected artifact, including first reach, uninterrupted hold, target-geometry/branch conditioning, near-tolerance velocity or action, contacts, and internal-step behavior where available; unresolved protected evaluator semantics remain an explicit limitation rather than being treated as settled.",
+          "goal_connection": "The campaign has no learned candidate and therefore no evidence of the capability required for at least 196 successes in the protected 200-episode assessment. This inquiry will produce and measure candidate policies on the official target distribution, distinguishing reach failure, braking/settling failure, branch or geometry effects, contacts, and internal-step tolerance excursions so that progress toward the 98% goal is not inferred from reward or boundary-only success.",
+          "handoff_conclusion": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+          "handoff_question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+          "rationale": "Opening is justified over official assessment because no candidate exists, no best-known role can support commitment, and M1 measured only compiled dynamics and a synthetic internal-step distinction. M1 weakens a generic authority bottleneck but does not test a learned policy, so the highest-value bounded work is to develop and measure the method under the existing torque interface. A candidate that reaches but loses the hold would support policy-control development; systematic target/branch torque-step or contact failures, or inability to settle under a competent route, would redirect the campaign toward the corresponding physical or implementation mechanism. The inquiry does not assume either explanation and will preserve recipe-specific limits.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed development evidence supports a bounded conclusion about this policy route: either a measured candidate is sufficiently capable and selected for goal review, or measured failures and mechanism diagnostics identify a consequential limitation or redirect. The evidence must include candidate-level task success and mechanism-relevant diagnostics for the selected artifact, including first reach, uninterrupted hold, target-geometry/branch conditioning, near-tolerance velocity or action, contacts, and internal-step behavior where available; unresolved protected evaluator semantics remain an explicit limitation rather than being treated as settled.",
+        "goal_connection": "The campaign has no learned candidate and therefore no evidence of the capability required for at least 196 successes in the protected 200-episode assessment. This inquiry will produce and measure candidate policies on the official target distribution, distinguishing reach failure, braking/settling failure, branch or geometry effects, contacts, and internal-step tolerance excursions so that progress toward the 98% goal is not inferred from reward or boundary-only success.",
+        "question": "Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+        "rationale": "Opening is justified over official assessment because no candidate exists, no best-known role can support commitment, and M1 measured only compiled dynamics and a synthetic internal-step distinction. M1 weakens a generic authority bottleneck but does not test a learned policy, so the highest-value bounded work is to develop and measure the method under the existing torque interface. A candidate that reaches but loses the hold would support policy-control development; systematic target/branch torque-step or contact failures, or inability to settle under a competent route, would redirect the campaign toward the corresponding physical or implementation mechanism. The inquiry does not assume either explanation and will preserve recipe-specific limits."
+      }
+    },
+    "request_fingerprint": "3066594cef41bbfd8b62fbc312b6f467f6b6eaa6881b4354dba076a7df9cc2ea",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty.",
     "completed_operations": [
@@ -524,6 +598,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "123b7b7f-6206-4605-924f-0fdc9a5fccca",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "5e5a68897ee07708681e25dc4840320756ff6ae9"
+  },
   "terminal_state": null
 }
