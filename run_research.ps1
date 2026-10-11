@@ -831,6 +831,8 @@ function New-ScientificSessionPrompt {
             }
             "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
+            "Distinguish candidate selection from mechanism testing. Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives. Choose discriminating evidence when that explanation would change the next direction."
+            "Keep an unexplained candidate difference at artifact-comparison level, not as an established cause. Causal questions that cannot change the next decision may remain unresolved. They are not gates to closure or assessment."
             "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
             if ($session.kind -eq "goal_review") {
                 "For a measurement, explain how its possible outcomes would affect the campaign-level choice."

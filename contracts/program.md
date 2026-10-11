@@ -142,6 +142,18 @@ The inquiry question does not require a particular first instrument. Training,
 measurement and implementation remain peer options; select whichever supported
 operation best advances the bounded work.
 
+Match the comparison to the claim that matters for the next decision.
+A candidate comparison asks which complete artifact performs better.
+A mechanism test asks whether an explanation accounts for an observed
+difference. If that explanation would change the next direction, choose a
+comparison or diagnostic that distinguishes it from consequential alternatives.
+
+When factors change together, report the result as a property of the compared
+artifacts, not of the intended factor alone. An unexplained candidate difference
+can guide selection, but it is not an established cause. A causal question
+whose answer would not change the next decision may remain unresolved.
+It is not a gate to inquiry closure or official assessment.
+
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
 action.
@@ -221,13 +233,9 @@ implementation realizes the intended method only in part, the difference and
 its consequence for the claim belong in `current_synthesis`, and the
 unexercised part remains in `decision_frontier`.
 
-When experimental factors changed together with the intended one, the
-conclusion preserves that limit and reports the measured result as a property
-of the compared artifacts rather than of the intended factor alone.
-
 These meanings do not require exhaustive inspection of unrelated artifact
-fields, a fixed diagnostic set, matched conditions for every experiment, or an
-additional operation.
+fields, a fixed diagnostic set, matched conditions for every experiment,
+one-factor changes, repeated training, or an additional operation.
 
 `decision_frontier` records the unresolved scientific distinction or
 method-development question and the evidence that would discriminate or

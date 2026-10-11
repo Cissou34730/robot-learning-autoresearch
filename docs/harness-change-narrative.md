@@ -137,6 +137,35 @@ Preserve separately:
 
 Primary tracker ownership: OI-003, OI-014, OI-015 and OI-017.
 
+#### OI-014: candidate improvement is not mechanism identification
+
+The read-only `89a6354a` RCA found that the selected comparisons could rank
+candidates without distinguishing the causal explanations used to choose the
+next direction. T6 measured 103/200 against T4's 186/200. Comparing the actual
+recipes corrected an earlier interpretation of the changed-file manifest:
+T6's observation values and reward remained equivalent to T4's. Its controller
+combined branch selection, position correction, damping and blending with
+retraining. The measured collapse did not isolate those causes, and the
+artifact lacked branch, correction and trajectory diagnostics.
+
+T7 differed from T4's scientific recipe only by the action filter, but it also
+added training with a different seed and selected a new learned checkpoint.
+Its paired result, 196/200 against 185/200 with eleven wins and no losses,
+establishes candidate improvement, not an isolated filter effect.
+The official pass remains valid.
+
+The approved repair moves attribution guidance from reporting alone to
+comparison design. The program and ordinary scientific prompts distinguish
+candidate selection from mechanism testing. When a causal explanation would
+change the next direction, the PI selects evidence that distinguishes it from
+consequential alternatives. Otherwise, the cause may remain unresolved without
+blocking closure or assessment. Existing instruments already support seeds,
+transfer parents, paired panels, recipe restoration and laboratory measurements.
+No new instrument, compulsory control, one-factor rule, repeated training,
+budget change or Runner adequacy judgment was added.
+The wording is implemented/unmeasured, not scientifically validated.
+No campaign was launched, resumed, reset or mutated.
+
 ### 5. Assessment readiness, model roles and acceptance-gate drift
 
 Cover counterevidence loss, premature readiness conclusions, best-known role
