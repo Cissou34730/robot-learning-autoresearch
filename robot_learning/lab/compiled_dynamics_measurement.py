@@ -255,6 +255,8 @@ def _reset_measurement(
     return {
         "label": "repeated_reset",
         "repeats": RESET_REPEATS,
+        "initial_qpos_rad": [0.0] * model.nq,
+        "initial_qvel_rad_s": [0.0] * model.nv,
         "expected_qpos_rad": [0.0] * model.nq,
         "expected_qvel_rad_s": [0.0] * model.nv,
         "trace": trace,
