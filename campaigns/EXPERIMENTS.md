@@ -50,3 +50,4 @@
 | E29 | checkpoint | - | checkpointed |
 | E30 | restore_recipe | I7 | restored |
 | T7 | training | I7 | failed |
+| T8 | training | I7 | completed |
