@@ -3221,47 +3221,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "After a full-allocation candidate is produced and measured on the matched 160-episode development panel, close positively if it reaches at least 98% complete-hold success. If it remains below 98%, close with a limited conclusion if the trajectory diagnostics establish whether failure-sector success, branch switches, entry velocity, saturation, or uninterrupted hold behavior improved or persisted; otherwise close inconclusively.",
-          "goal_connection": "The current best measured candidate achieves 150/160 complete holds, below the 98% development reference and the 196/200 official requirement. This inquiry targets the remaining angle-conditioned failures by combining branch-consistent acquisition with dynamic hold regulation and removing the known inner-radius training coverage gap.",
-          "handoff_conclusion": "M3 established moderate configuration-dependent inertia and bounded +/-5 nominal torque; saturated impulses produced substantial transient motion but zero-input responses decayed over the measured recovery window, weakening intrinsic damping or torque authority as the first explanation. T1 established that full-radius exposure is useful but insufficient: its strongest measured candidate reached 150/160. M5 and corrected M6 added candidate trajectories and showed that the 10 T1 failures remain concentrated in repeated angular sectors; 9/10 had nearest-analytic-branch switches, several had corrected end-effector speeds up to 0.91 m/s, and failures used 491-498 saturated control steps. Saturation is not alone causal because successful episodes also saturated during acquisition. T2 implemented fixed open-branch progress shaping while retaining full-radius exposure. Its highest-proxy nonterminal candidate T2:checkpoint-115712 reached 149/160 and retained the same representative angular, branch-switch, and saturation signatures. Therefore the evidence supports angle/branch-conditioned acquisition with coupled dynamic-regulation demands, rejects this fixed-branch reward recipe as a demonstrated improvement, and does not isolate one exclusive cause.",
-          "handoff_question": "Can a branch-consistent, velocity-aware acquisition-and-hold policy trained over the full official radius distribution reach at least 98% complete-hold success on matched development evidence while reducing the observed failure-sector branch switches and high-speed entry/regulation signatures?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a branch-consistent, velocity-aware acquisition-and-hold policy trained over the full official radius distribution reach at least 98% complete-hold success on matched development evidence while reducing the observed failure-sector branch switches and high-speed entry/regulation signatures?",
-          "rationale": "Official assessment is not justified by 150/160 development success and unresolved repeated-sector failures. M5/M6 show that the failures are not explained by geometry alone: 9/10 include nearest-branch switches, several have end-effector speeds up to 0.91 m/s, and failures saturate for 491-498 steps, while successful acquisition also saturates. T2 tested fixed open-branch progress shaping with full-radius exposure and fell to 149/160 while retaining those signatures, so repeating reward-only branch shaping is not credible. M3 established moderate configuration-dependent inertia and decaying zero-input responses after saturated impulses, reducing compiled dynamics and intrinsic damping as the first intervention target. The proposed combined candidate can change capability rather than only selection; its matched success and trajectory diagnostics will determine whether branch handling and dynamic regulation improved together or whether this route should be redirected.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "After a full-allocation candidate is produced and measured on the matched 160-episode development panel, close positively if it reaches at least 98% complete-hold success. If it remains below 98%, close with a limited conclusion if the trajectory diagnostics establish whether failure-sector success, branch switches, entry velocity, saturation, or uninterrupted hold behavior improved or persisted; otherwise close inconclusively.",
-        "goal_connection": "The current best measured candidate achieves 150/160 complete holds, below the 98% development reference and the 196/200 official requirement. This inquiry targets the remaining angle-conditioned failures by combining branch-consistent acquisition with dynamic hold regulation and removing the known inner-radius training coverage gap.",
-        "question": "Can a branch-consistent, velocity-aware acquisition-and-hold policy trained over the full official radius distribution reach at least 98% complete-hold success on matched development evidence while reducing the observed failure-sector branch switches and high-speed entry/regulation signatures?",
-        "rationale": "Official assessment is not justified by 150/160 development success and unresolved repeated-sector failures. M5/M6 show that the failures are not explained by geometry alone: 9/10 include nearest-branch switches, several have end-effector speeds up to 0.91 m/s, and failures saturate for 491-498 steps, while successful acquisition also saturates. T2 tested fixed open-branch progress shaping with full-radius exposure and fell to 149/160 while retaining those signatures, so repeating reward-only branch shaping is not credible. M3 established moderate configuration-dependent inertia and decaying zero-input responses after saturated impulses, reducing compiled dynamics and intrinsic damping as the first intervention target. The proposed combined candidate can change capability rather than only selection; its matched success and trajectory diagnostics will determine whether branch handling and dynamic regulation improved together or whether this route should be redirected."
-      }
-    },
-    "request_fingerprint": "b378f36d571a7c44ec77d6047d75e79386b3adf3279bf261937b93e695d9753a",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% (150/160). T2:checkpoint-115712 is a complete artifact from the branch-progress intervention at 93.125% (149/160). Neither candidate is assigned a working, best-known, or retained role, and neither is committed to official assessment.",
     "completed_operations": [
