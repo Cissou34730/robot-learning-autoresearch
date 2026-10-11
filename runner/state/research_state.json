@@ -2480,7 +2480,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 10,
     "session": 7,
@@ -2489,7 +2489,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6311,9 +6311,113 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T21:01:56Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T2:checkpoint-120832",
+        "reason": "M10 established nonzero broad first reach under the restored T1 recipe but cannot separate reward effects from the T2/T3 seed difference. Restoring T2's complete recorded recipe enables a matched-seed replay with seed 2, holding PPO dynamics, runtime, distribution, and exposure fixed while testing whether the changed reward terms are consequential."
+      },
+      "result": {
+        "candidate": "T2:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "ea602e7f5f4eaa19195f2425a54418ae17167fe4",
+        "status": "restored"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T2:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "ea602e7f5f4eaa19195f2425a54418ae17167fe4",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S7"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "6aaf4a55999690f4e2f94e3a415595e43aee643a044a3d056b9d1838c91a3dd2",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "db252119de0e252cec8e4418e8f5d026614f8157bb8fa4d85ebb0ebec037d2aa",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "0156e7f97efa2e5a40785bde0bfc393ed4f74665b6b34f32c6fdcea76f93571d",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T2:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "ea602e7f5f4eaa19195f2425a54418ae17167fe4",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T2:checkpoint-120832",
+        "reason": "M10 established nonzero broad first reach under the restored T1 recipe but cannot separate reward effects from the T2/T3 seed difference. Restoring T2's complete recorded recipe enables a matched-seed replay with seed 2, holding PPO dynamics, runtime, distribution, and exposure fixed while testing whether the changed reward terms are consequential."
+      }
+    },
+    "request_fingerprint": "9f2dbaa4c6516decbd5e46eb8986f339d50f8e1c142d46ee37b3019f5cef873e",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status in this checkpoint. T1:checkpoint-120832 is the strongest evidence-backed comparison candidate at 150/160 and remains below the goal; T2:checkpoint-100352 and T2:checkpoint-120832 are archived negative candidates at 0/160. Training proxies nominate checkpoints but do not establish development performance. No candidate is assessment-ready.",
     "completed_operations": [
@@ -6363,9 +6467,10 @@
     "operation_ids": [
       "E12",
       "T3",
-      "M10"
+      "M10",
+      "E13"
     ],
-    "scientific_parent_commit": "2a08e477941e01cc7c6e6b337f7cc745d238ef92"
+    "scientific_parent_commit": "ea602e7f5f4eaa19195f2425a54418ae17167fe4"
   },
   "terminal_state": null
 }
