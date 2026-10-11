@@ -1,7 +1,8 @@
-"""Bounded, read-only access to completed JSON evidence artifacts."""
+"""Read-only queries and repeatable retrieval of completed JSON artifacts."""
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 from typing import Any, Literal
@@ -18,6 +19,8 @@ MAX_BATCH_QUERIES = 16
 MAX_BATCH_RESULTS = 200
 MAX_ARTIFACTS_PER_OPERATION = 100
 MAX_MATCH_OUTPUT_BYTES = 128 * 1024
+MAX_READ_BYTES = MAX_MATCH_OUTPUT_BYTES // 4 * 3
+HASH_BLOCK_BYTES = 1024 * 1024
 MISSING = object()
 
 
@@ -26,8 +29,7 @@ class ArtifactEvidenceQuerySpec(BaseModel):
         max_length=1024,
         description=(
             "JSON Pointer scope to query; wildcards select array/object rows. "
-            "Use a wildcard to identify rows, then narrow with where/select "
-            "instead of returning complete objects."
+            "Use where/select for a subset, or request complete objects."
         ),
     )
     where: dict[str, Any] | None = Field(
@@ -42,7 +44,7 @@ class ArtifactEvidenceQuerySpec(BaseModel):
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering; prefer it over returning complete row objects."
+            "where filtering. Omit to retrieve complete row objects."
         ),
     )
     aggregate: (
@@ -63,15 +65,28 @@ class ArtifactEvidenceQuerySpec(BaseModel):
             "bounded when raw episode rows are required."
         ),
     )
+    offset: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "Record offset after filtering/projection, or distinct-value offset "
+            "for value_counts. Repeat with next_offset to retrieve remaining "
+            "results. A single oversized object can be retrieved with action=read."
+        ),
+    )
 
 
 class ArtifactEvidenceQueryParams(BaseModel):
-    action: Literal["discover", "query", "batch"] = Field(
+    action: Literal["discover", "query", "batch", "read"] = Field(
         description=(
-            "Use discover for bounded path discovery, batch for related queries "
-            "against one artifact, or query for one legacy isolated query. "
-            "For evidence values, discover shape first, then use batch with "
-            "where/select or an aggregate to minimize returned context."
+            "discover lists paths; query or batch selects, filters, projects or "
+            "aggregates values. read retrieves the entire original artifact in "
+            "readable UTF-8 byte pages (or base64 for other encodings), including "
+            "oversized objects/artifacts. Repeat "
+            "read with next_offset and the verified fingerprint; concatenate "
+            "page content in offset order for exact reconstruction. UTF-8 "
+            "pages never split a character; offsets still count original bytes. "
+            "Selection occurs before query output limits. No implicit summarization."
         ),
     )
     operation_id: str = Field(
@@ -96,11 +111,10 @@ class ArtifactEvidenceQueryParams(BaseModel):
         min_length=1,
         max_length=MAX_BATCH_QUERIES,
         description=(
-            "For batch, 1-16 related query specifications executed against one "
+            "For batch, related query specifications executed against one "
             "resolved and fingerprint-verified artifact. Prefer one batch over "
             "separate calls for related fields; provenance is returned once. "
-            "Use separate specifications for narrow projections or aggregates, "
-            "not repeated broad wildcard objects."
+            "Each specification can select subsets or complete objects."
         ),
     )
     path: str | None = Field(
@@ -109,7 +123,7 @@ class ArtifactEvidenceQueryParams(BaseModel):
         description=(
             "For the legacy single-query action, the JSON Pointer scope. Prefer "
             "queries with action=batch for related fields and narrow wildcard "
-            "matches with where/select."
+            "matches with optional where/select."
         ),
     )
     where: dict[str, Any] | None = Field(
@@ -124,7 +138,7 @@ class ArtifactEvidenceQueryParams(BaseModel):
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering; prefer it over complete row objects."
+            "where filtering. Omit to retrieve complete row objects."
         ),
     )
     aggregate: Literal["count", "numeric_summary", "value_counts"] | None = Field(
@@ -140,6 +154,37 @@ class ArtifactEvidenceQueryParams(BaseModel):
         le=MAX_RESULTS,
         description="Maximum raw matches returned; keep it bounded when needed.",
     )
+    offset: int = Field(
+        default=0,
+        ge=0,
+        description=(
+            "For query, record offset after selection (distinct values for "
+            "value_counts). For read, zero-based original file byte offset. "
+            "Continue with the returned next_offset."
+        ),
+    )
+    max_bytes: int = Field(
+        default=MAX_READ_BYTES,
+        ge=1,
+        le=MAX_READ_BYTES,
+        description="For read, maximum original bytes per page, before transport encoding.",
+    )
+    encoding: Literal["utf-8", "base64"] = Field(
+        default="utf-8",
+        description=(
+            "For read, UTF-8 returns readable exact text on character boundaries; "
+            "base64 returns exact arbitrary bytes with an optional readable UTF-8 "
+            "preview. Use base64 if UTF-8 decoding fails."
+        ),
+    )
+    expected_fingerprint: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{64}$",
+        description=(
+            "For read, SHA256 from the preceding page; required for nonzero "
+            "offsets. Refuses continuation if the verified artifact differs."
+        ),
+    )
 
     @model_validator(mode="after")
     def validate_action_fields(self) -> "ArtifactEvidenceQueryParams":
@@ -147,6 +192,23 @@ class ArtifactEvidenceQueryParams(BaseModel):
             raise ValueError("batch action requires queries")
         if self.action == "query" and not self.path:
             raise ValueError("query action requires path")
+        if self.action == "read" and self.offset and not self.expected_fingerprint:
+            raise ValueError("read continuation requires expected_fingerprint")
+        if self.action == "read" and self.encoding == "utf-8" and self.max_bytes < 4:
+            raise ValueError("UTF-8 read requires max_bytes >= 4")
+        if self.action == "read" and any(
+            field is not None
+            for field in (
+                self.path, self.where, self.select,
+                self.aggregate, self.prefix, self.queries,
+            )
+        ):
+            raise ValueError(
+                "read retrieves the original artifact; "
+                "selection fields require query or batch"
+            )
+        if self.action == "discover" and self.offset:
+            raise ValueError("discover does not accept offsets; narrow prefix or use read")
         return self
 
 
@@ -158,13 +220,24 @@ class ArtifactUnavailableError(Exception):
 
 
 class FingerprintMismatchError(Exception):
-    def __init__(self, provenance: dict[str, Any]):
-        super().__init__("artifact fingerprint differs from the recorded fingerprint")
+    def __init__(
+        self,
+        provenance: dict[str, Any],
+        reason: str = "artifact fingerprint differs from the recorded fingerprint",
+    ):
+        super().__init__(reason)
         self.provenance = provenance
 
 
 class TraversalBudgetExceededError(Exception):
     pass
+
+
+class ArtifactBudgetExceededError(Exception):
+    def __init__(self, provenance: dict[str, Any], total_bytes: int):
+        self.provenance = provenance
+        self.total_bytes = total_bytes
+        super().__init__("artifact exceeds the bounded-query byte safety limit")
 
 
 def _tokens(pointer: str) -> list[str]:
@@ -285,18 +358,130 @@ def _recorded_artifact(
             provenance[key] = selected[key]
     if not path.is_file():
         raise ArtifactUnavailableError("artifact_file_unavailable", provenance)
-    data = path.read_bytes()
-    if len(data) > MAX_BYTES:
-        raise ValueError(f"artifact exceeds the {MAX_BYTES} byte safety limit")
-    fingerprint = hashlib.sha256(data).hexdigest()
+    return path, provenance
+
+
+def _artifact_bytes(
+    path: Any,
+    provenance: dict[str, Any],
+    *,
+    offset: int = 0,
+    max_bytes: int | None = None,
+) -> tuple[bytes, int]:
+    """Hash and capture from one stream without loading large artifacts."""
+    digest = hashlib.sha256()
+    captured = bytearray()
+    total = 0
+    with path.open("rb") as stream:
+        while block := stream.read(HASH_BLOCK_BYTES):
+            digest.update(block)
+            if max_bytes is None:
+                if total + len(block) <= MAX_BYTES:
+                    captured.extend(block)
+            else:
+                start = max(0, offset - total)
+                end = min(len(block), offset + max_bytes - total)
+                if start < end:
+                    captured.extend(block[start:end])
+            total += len(block)
+    fingerprint = digest.hexdigest()
     provenance["verified_artifact_fingerprint"] = fingerprint
-    if selected["recorded_artifact_fingerprint"] != fingerprint:
+    if provenance["recorded_artifact_fingerprint"] != fingerprint:
         raise FingerprintMismatchError(provenance)
+    if max_bytes is None and total > MAX_BYTES:
+        raise ArtifactBudgetExceededError(provenance, total)
+    return bytes(captured), total
+
+
+def _read_artifact(path: Any, provenance: dict[str, Any], args: dict) -> dict:
+    offset = args["offset"]
+    page_limit = (
+        MAX_READ_BYTES if args["encoding"] == "utf-8" else MAX_READ_BYTES // 2
+    )
+    chunk, total = _artifact_bytes(
+        path, provenance, offset=offset, max_bytes=min(args["max_bytes"], page_limit)
+    )
+    expected = args.get("expected_fingerprint")
+    if expected and expected != provenance["verified_artifact_fingerprint"]:
+        provenance["expected_artifact_fingerprint"] = expected
+        raise FingerprintMismatchError(
+            provenance, "artifact differs from the expected continuation fingerprint"
+        )
+    if offset > total:
+        raise ValueError(f"offset exceeds artifact size ({total} bytes)")
+    preview: dict[str, Any] = {}
+    if args["encoding"] == "utf-8":
+        content, chunk = utf8_page(chunk, offset + len(chunk) < total)
+    else:
+        content = base64.b64encode(chunk).decode("ascii")
+        try:
+            text, preview_bytes = utf8_page(
+                chunk, True, MAX_MATCH_OUTPUT_BYTES - len(content) - 64
+            )
+            preview = {
+                "decoded_text": text,
+                "decoded_text_bytes": len(preview_bytes),
+                "decoded_text_complete": len(preview_bytes) == len(chunk),
+            }
+        except ValueError:
+            preview = {
+                "decoded_text": None,
+                "decoded_text_bytes": 0,
+                "decoded_text_complete": False,
+                "decoded_text_reason": "page is not UTF-8 or starts within a character",
+            }
+    end = offset + len(chunk)
+    return {
+        "status": "read",
+        "action": "read",
+        "evidence_state": "inspected",
+        "provenance": provenance,
+        "encoding": args["encoding"],
+        "offset_unit": "original_file_bytes",
+        "content": content,
+        **preview,
+        "offset": offset,
+        "returned_bytes": len(chunk),
+        "total_bytes": total,
+        "remaining_bytes": total - end,
+        "next_offset": end if end < total else None,
+        "output_truncated": end < total,
+        "max_page_bytes": page_limit,
+        "bounded": True,
+    }
+
+
+def utf8_page(
+    chunk: bytes, more_bytes: bool, byte_limit: int = MAX_MATCH_OUTPUT_BYTES
+) -> tuple[str, bytes]:
+    """Return complete UTF-8 characters within a serialized-content byte budget."""
+    try:
+        content = chunk.decode("utf-8")
+    except UnicodeDecodeError as error:
+        if (
+            not more_bytes or error.reason != "unexpected end of data"
+            or error.end != len(chunk)
+        ):
+            raise ValueError(
+                "page is not UTF-8 or offset splits a character; use encoding=base64 "
+                "or a returned next_offset"
+            ) from error
+        content = chunk[:error.start].decode("utf-8")
+    while (
+        len(json.dumps(content, ensure_ascii=False).encode("utf-8"))
+        > byte_limit
+    ):
+        content = content[:len(content) // 2]
+    return content, content.encode("utf-8")
+
+
+def _artifact_value(path: Any, provenance: dict[str, Any]) -> Any:
+    data, _ = _artifact_bytes(path, provenance)
     try:
         value = json.loads(data)
     except json.JSONDecodeError as error:
         raise ValueError("artifact is not valid JSON") from error
-    return value, provenance
+    return value
 
 
 def _visit(
@@ -481,6 +666,7 @@ def _summary(
     result_limit: int,
     byte_limit: int,
     query_limit: int,
+    offset: int = 0,
 ) -> tuple[dict[str, Any] | None, int, int]:
     if aggregate == "count":
         return {"count": len(values)}, 0, 0
@@ -497,7 +683,10 @@ def _summary(
         size = 0
         effective_limit = min(query_limit, result_limit)
         byte_truncated = False
-        for key, count in list(counts.items())[:effective_limit]:
+        if offset > len(counts):
+            raise ValueError("offset exceeds the distinct value count")
+        remaining = len(counts) - offset
+        for key, count in list(counts.items())[offset:offset + effective_limit]:
             item = {"value": decoded[key], "count": count}
             item_size = len(
                 json.dumps(item, separators=(",", ":")).encode("utf-8")
@@ -508,9 +697,9 @@ def _summary(
             output.append(item)
             size += item_size
         truncation_causes: list[str] = []
-        if len(counts) > query_limit:
+        if remaining > query_limit:
             truncation_causes.append("query_limit")
-        if result_limit < query_limit and len(counts) > result_limit:
+        if result_limit < query_limit and remaining > result_limit:
             truncation_causes.append("batch_result_budget")
         if byte_truncated:
             truncation_causes.append("byte_budget")
@@ -519,8 +708,18 @@ def _summary(
                 "counts": output,
                 "distinct_count": len(counts),
                 "returned_distinct": len(output),
+                "offset": offset,
+                "remaining_distinct": remaining - len(output),
+                "next_offset": (
+                    offset + len(output) if len(output) < remaining else None
+                ),
                 "output_truncated": bool(truncation_causes),
                 "truncation_causes": truncation_causes,
+                "recovery": (
+                    "Continue with next_offset. If no distinct value fits, use "
+                    "action=read for the original artifact."
+                    if byte_truncated else None
+                ),
             },
             len(output),
             size,
@@ -566,6 +765,11 @@ def _query(
         max(int(spec.get("limit", MAX_RESULTS)), 1),
         MAX_RESULTS,
     )
+    offset = int(spec.get("offset", 0))
+    if offset < 0:
+        raise ValueError("offset must be nonnegative")
+    if offset and spec.get("aggregate") in {"count", "numeric_summary"}:
+        raise ValueError("offset applies to raw matches or value_counts only")
     path_matches = _matches(value, path, budget)
     filtered_matches = _apply_where(path_matches, spec.get("where"), budget)
     matches = _select(filtered_matches, spec.get("select"), budget)
@@ -576,19 +780,23 @@ def _query(
         result_limit,
         byte_limit,
         query_limit,
+        offset,
     )
     if summary is None:
+        if offset > len(matches):
+            raise ValueError("offset exceeds the selected record count")
+        remaining = len(matches) - offset
         effective_limit = min(query_limit, result_limit)
         bounded_matches, byte_truncated, used_bytes = _bounded_matches(
-            matches,
+            matches[offset:],
             effective_limit,
             byte_limit,
         )
         used_results = len(bounded_matches)
         truncation_causes: list[str] = []
-        if len(matches) > query_limit:
+        if remaining > query_limit:
             truncation_causes.append("query_limit")
-        if result_limit < query_limit and len(matches) > result_limit:
+        if result_limit < query_limit and remaining > result_limit:
             truncation_causes.append("batch_result_budget")
         if byte_truncated:
             truncation_causes.append("byte_budget")
@@ -596,9 +804,19 @@ def _query(
             "matches": bounded_matches,
             "returned": used_results,
             "total_matches": len(matches),
+            "offset": offset,
+            "remaining_matches": remaining - used_results,
+            "next_offset": (
+                offset + used_results if used_results < remaining else None
+            ),
             "output_truncated": bool(truncation_causes),
             "truncation_causes": truncation_causes,
         }
+        if byte_truncated:
+            result["recovery"] = (
+                "Continue with next_offset. If no match fits, use action=read "
+                "to retrieve the original artifact in byte pages."
+            )
     else:
         result = summary
     selected_field_absent = (
@@ -623,7 +841,7 @@ def _query(
 def _query_echo(spec: dict[str, Any]) -> dict[str, Any]:
     return {
         key: spec[key]
-        for key in ("path", "where", "select", "aggregate")
+        for key in ("path", "where", "select", "aggregate", "offset")
         if spec.get(key) is not None
     }
 
@@ -643,21 +861,31 @@ def _budget_exhausted_response(
 
 
 def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
+    provenance: dict[str, Any] = {}
     try:
+        if args.get("action") != "batch":
+            args = ArtifactEvidenceQueryParams.model_validate(args).model_dump()
+        else:
+            artifact_index = int(args.get("artifact_index", 0))
+            if not 0 <= artifact_index < MAX_ARTIFACTS_PER_OPERATION:
+                raise ValueError("artifact_index is outside the supported range")
         state = repository.load_state(allow_missing_artifact=True)
         action = args.get("action")
-        if action not in {"discover", "query", "batch"}:
-            raise ValueError("action must be discover, query or batch")
         operation_id = args.get("operation_id")
         if not isinstance(operation_id, str) or not operation_id.strip():
             raise ValueError("operation_id must be non-empty")
         artifact_index = int(args.get("artifact_index", 0))
-        value, provenance = _recorded_artifact(
+        artifact_path, provenance = _recorded_artifact(
             state,
             campaign_id,
             operation_id.strip(),
             artifact_index,
         )
+        if action == "read":
+            return json.dumps(
+                _read_artifact(artifact_path, provenance, args), ensure_ascii=False
+            )
+        value = _artifact_value(artifact_path, provenance)
         if action == "discover":
             prefix = args.get("prefix") or "/"
             budget = [0]
@@ -693,6 +921,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                         "limit": "max_traversed_nodes",
                         "max_traversed_nodes": MAX_NODES,
                         "error": str(error),
+                        "recovery": "Use action=read for complete raw artifact retrieval.",
                         "bounded": True,
                     }
                 )
@@ -711,6 +940,16 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                     "paths": bounded_paths,
                     "truncated": (
                         len(paths) >= MAX_PATHS or byte_truncated
+                    ),
+                    "remaining_paths": None,
+                    "limits": {
+                        "max_paths": MAX_PATHS,
+                        "max_result_bytes": MAX_MATCH_OUTPUT_BYTES,
+                        "max_traversed_nodes": MAX_NODES,
+                    },
+                    "recovery": (
+                        "Discovery is bounded; remaining path count is unknown. "
+                        "Narrow prefix or use action=read for the entire artifact."
                     ),
                     "bounded": True,
                 }
@@ -735,6 +974,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                         "limit": "max_traversed_nodes",
                         "max_traversed_nodes": MAX_NODES,
                         "error": str(error),
+                        "recovery": "Narrow the path or use action=read for the raw artifact.",
                         "bounded": True,
                     }
                 )
@@ -824,6 +1064,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                         "limit": "max_traversed_nodes_per_query",
                         "max_traversed_nodes": MAX_NODES,
                         "error": str(error),
+                        "recovery": "Narrow the path or use action=read for the raw artifact.",
                     }
                 )
                 failures += 1
@@ -859,6 +1100,18 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                 "bounded": True,
             }
         )
+    except ArtifactBudgetExceededError as error:
+        return json.dumps(
+            {
+                "status": "artifact_budget_exhausted",
+                "evidence_state": "not_inspected",
+                "provenance": error.provenance,
+                "total_bytes": error.total_bytes,
+                "max_query_bytes": MAX_BYTES,
+                "recovery": "Use action=read to retrieve all original bytes in pages.",
+                "bounded": True,
+            }
+        )
     except ArtifactUnavailableError as error:
         return json.dumps(
             {
@@ -882,6 +1135,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
             {
                 "status": "query_failed",
                 "error": str(error),
+                "provenance": provenance,
                 "bounded": True,
             }
         )

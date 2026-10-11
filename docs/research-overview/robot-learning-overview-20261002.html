@@ -216,6 +216,10 @@
     <section class="section" aria-labelledby="status-heading" id="status">
       <p class="section-label">1 / STATUS DASHBOARD</p>
       <h2 id="status-heading">Where the project stands</h2>
+      <div class="note" style="margin-bottom: 16px">
+        <p><strong>Latest attempt:</strong> campaign <code>5de5e4a0</code> stopped in startup after publishing its scientific model. A transport defect falsely rejected two valid training proposals. No training or measurement completed; preparation and startup used 4.893137 AIU.</p>
+        <p>The maintainer approved transport/search repairs, native coding subagents and directly callable evidence/log tools. The campaign remains stopped. Implementation checks do not authorize a restart or establish scientific effectiveness.</p>
+      </div>
       <div class="grid two status-grid">
         <article class="card hot">
           <span class="tag">Latest completed campaign</span>
@@ -225,7 +229,7 @@
             <li>Assessed candidate: <code>T3:checkpoint-120832</code>, measured at 151/160 in development.</li>
             <li>Later measured alternatives did not improve T3. T10 nomination omitted its two 100% proxies and all full-radius-stage checkpoints.</li>
             <li>Nine completed training operations, thirteen completed measurements and nine inquiries; 156.47 AIU and 54m09s PI time.</li>
-            <li>The connected direction/commitment repair is implemented but unmeasured. No new campaign was run for this repair.</li>
+            <li>The connected direction/commitment repair has no completed post-revision assessment. Later attempts stopped on implementation defects.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Failed variants preserved the broader direction, then justified commitment of an unchanged candidate. This is a recorded decision defect, not proof that wording caused the outcome. <a href="../harness-change-narrative.md">Read the comparison and corrective revision</a>.</p>
         </article>
@@ -242,11 +246,11 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">21 issues, OI-001 to OI-021</h3>
+          <h3 style="margin-top: 12px">23 issues, OI-001 to OI-023</h3>
           <ul>
             <li>Active or open (5): OI-006, OI-008, OI-010, OI-019, OI-021.</li>
             <li>Implemented, observed but not closed (1): OI-005.</li>
-            <li>Implemented or revised, awaiting campaign evidence (4): OI-009, OI-014, OI-015, OI-018. The latest OI-005 correction is also unmeasured.</li>
+            <li>Implemented or revised, awaiting campaign evidence (6): OI-009, OI-014, OI-015, OI-018, OI-022, OI-023. The latest OI-005 correction is also unmeasured.</li>
             <li>Original bounded defects closed (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017. OI-004's narrow nomination clarification is unmeasured.</li>
             <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
             <li>Paused or proposal (2): OI-007, OI-012.</li>
@@ -258,6 +262,9 @@
           <span class="tag">Changed last</span>
           <h3 style="margin-top: 12px">11 October 2026</h3>
           <ul>
+            <li>SDK 1.0.19 is the integrated Copilot agent runtime. Native coding subagents replace manually managed coding sessions; engineering instructions and installed scientific API versions remain inside the coding interface. Same-child corrections retain the exact scope within the current bounded context.</li>
+            <li>OI-022 corrects successful process exits contaminated by asynchronous stdin-write output. OI-023 constrains searches before forbidden descendants are read or reported.</li>
+            <li>The PI can request scoped evidence, successive subsets or complete JSON/log content. The existing JSON-query interface remains; the training-log reader is now a custom tool. The unused <code>jello</code> dependency is removed, not recreated.</li>
             <li>OI-011 is closed implemented/effective: logical JSON Pointers display without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
             <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed inquiry cap remains.</li>
             <li>OI-017 is closed effective after campaign evidence showed the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
@@ -315,10 +322,12 @@
       </div>
       <div class="note" style="margin-top: 16px">
         <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
-        <p>Ordinary main PI sessions use <code>scientific_coding</code> for exact-file-scoped source changes. The child has a separate conversation and cannot submit operations or execute checks. The main PI reviews the actual diff and check before asking Runner to execute it.</p>
+        <p>Ordinary main PI sessions use native coding subagents for exact-file-scoped source changes. The child receives a narrow objective and source context, not the PI's campaign conversation. It cannot submit operations or execute checks. The main PI reviews the actual diff and check before asking Runner to execute it.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
         <p>Ordinary Copilot main and coding sessions have no shell tools. Main PI calls <code>submit_operation</code> without file-write tools; preliminary scientific-model publication is unchanged. All Python runs through <code>uv run</code>, with Runner executing scientific checks, training and evaluation. OpenCode retains its legacy file and command-policy interface.</p>
-        <p class="small muted">Both approved steps are implemented but unmeasured. One SDK runtime serves ordinary operations and fresh checkpoint-bounded contexts. Only inert implementation checks ran; no campaign or real SDK session validated this mechanism.</p>
+        <p>Copilot SDK 1.0.19 supplies agent lifecycle, custom tools and native subagents. Runner and scientific functions remain separate. OpenCode is a legacy runtime option, not equivalent custom-tool integration.</p>
+        <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and <code>training_log_query</code>. Large results identify continuation; partial content is never presented as complete.</p>
+        <p class="small muted">The authorized first launch exposed OI-022 and OI-023 before any training. Real harmless SDK-native calls verified coding hooks, scoped permissions and same-child correction; fixture checks cover transport, search and evidence paging. The stopped campaign is preserved. Scientific effect remains unmeasured.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>
@@ -508,7 +517,7 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Issue register OI-001 to OI-021</h2>
+      <h2 id="issues-heading">Issue register OI-001 to OI-023</h2>
       <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
       <div class="card table-wrap wide">
         <table>
@@ -531,10 +540,12 @@
             <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Serialized component observability is implemented, and campaign <code>79395c88</code> treated PPO expert-action reward shaping as evidence about direct controller imitation. The wording now limits claims to what was implemented. Campaign <code>ec7f3d3a</code> did not exercise that historical mismatch, so it remains implemented but unmeasured.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-016</td><td>Inquiry and handoff semantics. The corrective revision permits method-specific bounded inquiries, treats a closed-session next question as a revisable goal-review proposal, preserves exact identity after opening, and passes the goal review's actual synthesis into the fresh inquiry. Campaign <code>ec7f3d3a</code> used bounded multi-operation inquiry work and the E19 → E20 frontier handoff without forcing a stale question; the two boundary replays support the same bounded conclusion.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-017</td><td>Nested artifact evidence access. Campaign <code>339736e0</code> used the operation-scoped, fingerprint-verified tool successfully, and the retrieved evidence changed scientific conclusions. Repetitive query mechanics are tracked separately as OI-018.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-018</td><td>Artifact-query ergonomics and context amplification. One invocation can now run up to 16 related path, filter, projection, and aggregation specifications against one resolved and verified artifact, with shared provenance and invocation-wide bounds. Discovery returns at most 200 paths and reports truncation.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-018</td><td>Artifact-query ergonomics and context amplification. Related filters, projections and aggregates share verified provenance. Scoped requests, successive pages and complete-content retrieval are explicit choices, not mandatory summaries. Training logs have a separate parser-backed custom tool.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-019</td><td>Terminal brief consistency. The generated brief can place a final official pass beside stale pre-assessment checkpoint prose.</td><td><span class="tag">Open, low priority</span></td></tr>
             <tr><td>OI-020</td><td>Self-imposed acceptance gates and slice-label drift. This issue improperly generalized scenario-specific evidence and overlapped the assessment-readiness scope already owned by OI-005. The original observation remains in the <code>79395c88</code> RCA.</td><td><span class="tag">Withdrawn</span></td></tr>
             <tr><td>OI-021</td><td>Scenario-specific scientific-model prompt. The preliminary objective explicitly names reaching, trajectory control, convergence, stabilization and multiple kinematic solutions. The direct wording is confined to fresh-campaign scientific-model generation, but the generated model and synthesis are handed into startup. All 57 recorded scientific-model sessions were exposed; measured policy evidence remains factual, while independent mechanism discovery and robot-generic claims are contaminated.</td><td><span class="tag">Open, high priority</span></td></tr>
+            <tr><td>OI-022</td><td>Valid operation rejected by contaminated process return. The stdin-write completion is discarded and harmless checks require exact scalar success/failure exits. No validator or retry-limit change.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-023</td><td>Readable parent directory exposed forbidden search descendants. Searches enforce the shared phase-aware read policy before reading content or reporting paths. Direct-read controls remain.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -566,7 +577,13 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
-        <h3 style="margin-top: 0">10 October</h3>
+        <h3 style="margin-top: 0">11 October</h3>
+        <ul>
+          <li>The authorized campaign <code>5de5e4a0</code> stopped at startup after two false training rejections. It produced no completed scientific operation. The model publication and stopped state remain intact.</li>
+          <li>The approved integrated revision repairs process return handling and descendant search access, replaces manual coding sessions with native subagents, and exposes complete/scoped evidence and training-log retrieval.</li>
+          <li>Copilot SDK 1.0.19 is the agent runtime. The unused <code>jello</code> dependency is removed. No campaign is launched, resumed or reset as part of this revision.</li>
+        </ul>
+        <h3>10 October</h3>
         <ul>
           <li>OI-011 is closed implemented/effective. Artifact evidence calls display concise logical JSON Pointers without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
           <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed fifteen-inquiry pause remains an accepted operational limit.</li>
@@ -656,7 +673,7 @@
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
             <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
-            <tr><td>Checkpoint boundary and structured submission</td><td>Copilot receives the active session's exact list directly at mandatory checkpoint transitions. Main PI submits structured payloads, not file patches. Ordinary results continue in one context; checkpoints start fresh contexts on the same runtime.</td><td>Both approved SDK steps implemented, unmeasured. No automatic scientific-content correction or retry-limit increase.</td></tr>
+            <tr><td>Checkpoint boundary and structured submission</td><td>Copilot receives the active session's exact list directly at mandatory checkpoint transitions. Main PI submits structured payloads, not file patches. Ordinary results continue in one context; checkpoints start fresh contexts on the same runtime.</td><td>Startup transport failure repaired under OI-022. No automatic scientific-content correction or retry-limit increase; campaign effect unmeasured.</td></tr>
             <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
             <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
             <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. OI-013 is closed as a withdrawn removal proposal.</td></tr>
@@ -664,13 +681,15 @@
             <tr><td>Artifact inventories and references</td><td>They help the PI find the detailed evidence.</td><td>Implemented <code>f986a2c</code>, <code>97a12ba</code>. Partial reading is still possible (OI-003).</td></tr>
             <tr><td>Compact research brief</td><td>Less repeated text. A replay went from 109,508 to 46,656 bytes (57.39% smaller).</td><td>Implemented <code>3825d2e</code>. Better decisions are not shown.</td></tr>
             <tr><td>Candidate-free capability visibility (R5-2)</td><td>The PI can see what it can do without a candidate.</td><td>Implemented.</td></tr>
+            <tr><td>PI-selected evidence scope</td><td>One JSON tool and one training-log tool support selected fields, records, summaries and complete content. Repeated subsets and continuations are explicit.</td><td>Implementation checks only; no forced scientific inspection pattern.</td></tr>
             <tr class="group-row"><td colspan="3">Runner and tool repairs</td></tr>
+            <tr><td>Native coding author and main PI reviewer</td><td>SDK-native coding subagents receive scoped sources, runtime-version instructions and a defect-sensitive check requirement. Main PI reviews actual edits; Runner alone executes checks.</td><td>Manual coding-session plumbing superseded. No new scientific actor or validity certificate.</td></tr>
             <tr><td>Large Git publication and recovery</td><td>Repair publication and recovery of completed operations.</td><td>Implemented <code>b7727d1</code>.</td></tr>
             <tr><td>Runner state ignored in protected checks</td><td>Only registered Runner state is ignored. Dirty protected sources are still rejected.</td><td>Implemented <code>48bffca</code>.</td></tr>
             <tr><td>Style findings do not fail an operation</td><td>Ruff findings no longer use up a scientific operation. Syntax and behavior failures still block.</td><td>Implemented <code>f953039</code>.</td></tr>
             <tr><td>Bounded Copilot shutdown</td><td>Session disconnect and client shutdown cannot hang.</td><td>Implemented <code>2e897c7</code>.</td></tr>
             <tr><td>Copilot adapter without scientific text</td><td>The adapter handles runtime and permissions. Prompts and the program carry the science.</td><td>Implemented <code>7f86168</code>.</td></tr>
-            <tr><td>Phase-specific reserved reads</td><td>The scientific-model phase can read the benchmark code. Later phases cannot. Maintainer files are reserved in all phases.</td><td>Implemented. This is a tool control, not a sandbox.</td></tr>
+            <tr><td>Phase-specific reserved reads and searches</td><td>The preliminary analyst can read scientific source and robot contracts, not protected evaluator code. Maintainer files remain reserved. Searches apply the same policy to descendants before traversal; directory enumeration uses scoped <code>glob</code>, not <code>view</code>.</td><td>OI-023 repairs parent-directory leakage. Tool-level controls, not an operating-system sandbox.</td></tr>
           </tbody>
         </table>
       </div>

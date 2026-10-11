@@ -240,7 +240,7 @@ function Invoke-CooperativeProcess {
                 }
             }
             if ($inputWrite -and $inputWrite.IsCompleted) {
-                $inputWrite.GetAwaiter().GetResult()
+                [void]$inputWrite.GetAwaiter().GetResult()
                 $process.StandardInput.Close()
                 $inputWrite = $null
                 $progress = $true

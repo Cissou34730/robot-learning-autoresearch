@@ -27,7 +27,8 @@ Evidence references must identify completed operations.
 operation identity when completed, and changed state: session identity and kind,
 actual completed-operation list, roles, resource counts, pending/terminal status,
 and required checkpoint transition. Detailed artifacts stay available through
-`artifact_evidence_query`. Ordinary results continue in this same conversation,
+`artifact_evidence_query`; preserved training logs through `training_log_query`.
+Ordinary results continue in this same conversation,
 without a new runtime or replayed phase prompt. Inquiry open/reframe/close makes
 checkpoint the sole next operation. A completed checkpoint or terminal commitment
 ends this context; the launcher creates the next bounded context when permitted.
@@ -64,10 +65,10 @@ A rejected proposal remains available for correction.
 ## Scientific coding interface
 
 Ordinary Copilot main PI sessions expose `scientific_coding` and
-`submit_operation` alongside source readers and `artifact_evidence_query`.
-They have no `apply_patch`, other file-write tools or shell tools.
-The preliminary scientific-model
-session retains its existing publication interface and does not expose coding.
+`submit_operation` alongside source readers, `artifact_evidence_query` and
+`training_log_query`. They have no `apply_patch`, other file-write tools or
+shell tools. The preliminary scientific-model session retains its existing
+publication interface and does not expose coding.
 
 `scientific_coding` accepts:
 
@@ -77,14 +78,30 @@ session retains its existing publication interface and does not expose coding.
 - `source_context`: optional source context selected by the main PI;
 - `verification_path`: a Python module file under `robot_learning/lab/`,
   included in `allowed_paths`;
-- `session_handle`: optional returned child identity for same-change corrections.
+- `session_handle`: optional returned native child identity for same-change
+  corrections within this bounded context.
 
 Protected paths, directories, wildcard scopes, operation requests and arbitrary
-filesystem paths are refused. A resumed child must keep the same writable,
-readable and verification scope. Its separate conversation receives only the
-supplied context and its coding instructions, not main PI conversation history.
-Its tools are scoped `view` and `apply_patch`; it cannot execute code or submit
-campaign operations.
+filesystem paths are refused. A continued child must keep the same writable,
+readable and verification scope. The SDK dispatches the registered native
+coding subagent with the supplied objective and source context, rather than
+creating a separate SDK session or passing the PI's campaign conversation.
+Corrections are sent to that same native child.
+Native handles are context-local, not resumable authority across a runtime
+restart or a fresh scientific context. The handler resolves and validates the
+SDK's model/tool configuration before dispatch; unavailable capabilities are
+reported rather than falling back to manual coding sessions.
+
+The default/main agent excludes file-write tools. The registered coder has
+scoped `view` and `apply_patch` only; it cannot execute code, delegate further
+or submit campaign operations. Hooks and permission callbacks bind its calls
+to the authorized native child and file scope. Native start instructions
+include the installed scientific API versions and dependency restrictions.
+Completion handling challenges an incomplete engineering handoff, not
+scientific adequacy or research direction.
+The stop hook applies to corrections as well as the initial invocation.
+The handler waits for the stop handoff and native task idle state before
+unlocking operation submission.
 
 The result returns the child handle, actual per-invocation changed-file manifest
 and diff, verification module, proposed `python_module` entry and unchecked
@@ -93,7 +110,98 @@ return partial changes when available; cancellation preserves review output.
 The proposed check is not executed by this tool. The main PI reviews the actual
 changed source and executable check before scientific reliance or submission.
 Runner executes the reviewed check through the existing measurement instrument.
-No coding result certifies scientific validity.
+No coding result certifies scientific validity. Native task lifecycle is
+owned by Copilot SDK 1.0.19; operation acceptance and scientific execution
+remain owned by the existing trusted controller and Runner.
+Usage and changes are reported per invocation. SDK native-task lifetime totals
+are labeled separately and must not be added again on each correction.
+
+## Source readers
+
+Copilot `view` reads exact permitted files. Directory enumeration uses `glob`.
+The trusted `rg` and `glob` interfaces apply the same phase-aware read policy
+to descendants before reading content or returning paths. A readable parent
+does not authorize reserved descendants. Linked paths and outside-repository
+aliases are unavailable. Explicitly reserved search roots are rejected;
+reserved descendants of readable roots are pruned.
+
+Both search interfaces accept default, subdirectory or multiple `paths`.
+`glob` selects file paths by pattern. `rg` accepts content, matching-file or
+count output, with pattern, glob, type, context and result-limit selectors.
+Results report output or traversal limits explicitly. A truncated result does
+not establish that unreturned matches are absent. Exact-file reads remain
+available for content that exceeds search-preview limits.
+
+The preliminary analyst retains exact permitted shell file reads, but shell
+traversal and wildcard readers are denied. Coding children have only the
+exact-file `view` and `apply_patch` binding described above, not search tools.
+
+## JSON evidence interface
+
+`artifact_evidence_query` is the single JSON evidence tool. It resolves a
+recorded artifact from a completed measurement operation in the active
+campaign and verifies its recorded fingerprint. The PI supplies operation
+identity, not an arbitrary filesystem path.
+
+The interface supports:
+
+- `discover`: inspect the structure under an optional prefix;
+- `query`: select one path, with optional filtering, projection or aggregation;
+- `batch`: apply related query specifications to the same verified artifact;
+- `read`: retrieve the artifact's complete content through successive pages.
+
+The PI selects the requested scope. A complete artifact is permitted;
+selected fields, summaries and repeated requests for different subsets are
+also permitted. Query output is selected before it enters the conversation.
+The tool does not execute Python query expressions or interpret the science.
+
+Discovery and query output report truncation and exhausted limits explicitly.
+Read and query pages identify their offsets and continuation. Content identity
+must remain stable across a continuation; a mismatched identity is an error,
+not a page from a different artifact. Partial output is not complete evidence
+and does not establish that unreturned fields or records are absent.
+
+For `query` and each `batch` specification, `offset` counts selected records
+after filtering and projection, or distinct values for `value_counts`.
+`limit` controls the page size. The returned `next_offset` retrieves the
+remaining selection. Oversized individual objects remain available through
+`read` even when they cannot fit in a query page.
+
+For `read`, `offset` and `max_bytes` refer to original file bytes.
+`encoding` selects readable UTF-8 or base64 for other byte encodings.
+UTF-8 pages preserve line endings and do not split a character. The returned
+`next_offset` and verified fingerprint identify continuation;
+`expected_fingerprint` is required for a nonzero read offset. Joining pages
+in offset order reconstructs the complete original content. Full retrieval
+does not require parsing the entire artifact within the query budget.
+
+## Training-log interface
+
+`training_log_query` exposes the existing training-record parser as a
+read-only custom tool. It resolves preserved logs using the active campaign
+and training operation identity, not a filesystem path or command.
+
+`records` requests select attempts, timestep bounds and metric fields.
+`raw` requests return preserved log text, including content outside parsed
+training records. Complete logs and successive pages are supported. The PI
+may request different subsets in separate calls without rerunning training.
+The tool reports missing logs, empty selections, available continuation and
+content identities explicitly.
+
+`attempts` selects preserved attempt numbers. `records` uses optional
+`from_step`, `to_step` and `metrics`, with `offset` and `limit` for selected
+row pages. Nonzero row offsets require `expected_log_fingerprints` from the
+previous response. Missing metrics are identified separately from zero.
+The operation's status does not establish each attempt's outcome.
+
+`raw` selects one attempt when multiple logs exist. Its `offset`, `max_bytes`,
+`encoding` and `expected_fingerprint` use the same original-byte continuation
+semantics as JSON `read`. Raw retrieval includes lines the metric parser
+does not recognize and does not require parsing the complete log.
+
+Preserved failure logs describe execution history, not scientific evidence.
+Neither parsed metrics nor raw-log retrieval certifies development
+performance or chooses a candidate. The PI interprets the returned data.
 
 ## Instrument capabilities
 

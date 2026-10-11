@@ -253,6 +253,88 @@ campaign reset or science/runtime service was started. Stopped campaign
 `bfd9e63d` evidence and state remain unchanged. Parent review and publication are
 separate from any subsequently authorized fresh campaign.
 
+#### Startup transport failure and descendant search access
+
+The maintainer subsequently authorized one fresh reset and visible-console
+launch. Campaign `5de5e4a0` published its scientific model, then stopped in S1
+after two valid training proposals were rejected with `OPERATION_VALID:
+training`. No training or measurement completed. Preparation and startup
+consumed 4.893137 AIU; the failure produced no scientific evidence.
+
+The validator was not the cause. The new asynchronous stdin writer returned
+an uncaptured completion value into PowerShell's success stream. The process
+helper therefore returned an array containing that value and exit code zero,
+instead of the intended scalar integer. The controller treated it as failure.
+Earlier inert checks asserted nonzero exits and mocked scalar controller
+responses; they did not verify the successful process return's exact type.
+The correction discards the write completion. Harmless checks now require
+scalar Int32 success and failure exits across empty, small and large stdin,
+both silent capture and live streaming. The existing Unicode, concurrent-pipe
+and error-tail checks remain successful.
+
+The false rejection prompted broad searches for request examples. Root
+searches exposed reserved documentation and Runner-state paths, although
+direct documentation searches were denied. This descendant-access hole
+predated the two SDK commits: approving a readable parent directory did not
+restrict built-in search traversal. A search must apply the shared phase-aware
+read policy before reading files or returning their paths. Redacting results
+after reading forbidden content is not the repair. This distinct defect is
+OI-023; OI-011's original bounded closure remains historical.
+
+#### Approved integrated runtime and evidence revision
+
+The maintainer approved replacing manual coding-session management with native
+Copilot subagents, using SDK 1.0.19. Native lifecycle hooks carry narrow coding
+context, engineering verification instructions and the installed MuJoCo,
+Gymnasium and Stable-Baselines3 API versions. They do not judge scientific
+adequacy. The main PI still reviews the actual source changes and proposed
+executable laboratory check; only Runner executes it.
+
+Corrections use the same native child with an unchanged exact-file binding.
+Handles belong to the current bounded context, not a separately resumable SDK
+session. The stop hook validates the engineering handoff, and the adapter
+confirms native task idle state before unlocking operation submission.
+Timeouts and cancellation preserve actual partial changes for review.
+Usage and diffs are per invocation; native task-lifetime totals are labeled
+separately rather than added again on each correction.
+
+Copilot is the selected agent runtime, not a drop-in model-provider interface.
+Scientific operations, evidence resolution and parsing remain ordinary harness
+functions, exposed through SDK wrappers. OpenCode keeps its legacy interfaces,
+without equivalent native-subagent or custom-tool capabilities.
+
+The evidence decision is one JSON-query interface, retaining the existing
+campaign-scoped, fingerprint-verified `artifact_evidence_query`, plus a
+training-log-specific interface reusing the existing parser. The unused
+`jello` dependency is removed rather than exposing general Python execution or
+recreating that library. The PI may select fields, records, summaries, raw
+content or the complete artifact. Successive subset requests and full-content
+continuation must be explicit. Context economy is a capability, not a
+restriction on what evidence the PI may request.
+
+Trusted search overrides keep the existing `rg` and `glob` names. They prune
+reserved descendants before traversal and give ripgrep only permitted files.
+Directory `view` and preliminary shell traversal are denied; exact permitted
+file reads remain. Linked aliases cannot bypass that boundary. Search previews
+and evidence pages explicitly distinguish partial content from complete retrieval.
+
+Sixty-seven assertions included real, harmless SDK-native reads, freeform
+patches, permission propagation, same-child correction and cancellation.
+Sixty-eight no-model policy checks cover pruning, authority boundaries and
+explicit long-line preview disclosure.
+Nineteen evidence fixture groups cover selected records, original bytes,
+continuation, fingerprint mismatch and error states. These checks establish
+implementation behavior, not scientific effectiveness.
+Five real registered SDK tool dispatches additionally verify JSON/log raw
+access, selection and fingerprint-bound record continuation without model
+inference or Runner execution.
+
+No intermediate campaign was run. Background engineering mechanics belong
+in tool and subagent instructions. Program changes state scientific ownership and
+inspection freedom, not another verification ritual. The stopped campaign,
+its published model and its evidence are preserved. A future reset or launch
+requires separate authorization.
+
 ### 5. Assessment readiness, model roles and acceptance-gate drift
 
 Cover counterevidence loss, premature readiness conclusions, best-known role

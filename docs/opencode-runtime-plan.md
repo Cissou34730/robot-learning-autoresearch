@@ -6,6 +6,12 @@ permission checks pass. Remaining opt-in robustness checks are listed under
 "Verification And Acceptance". The runtime itself is documented in
 [opencode-runtime.md](opencode-runtime.md).
 
+Current integration note (2026-10-11): Copilot uses Python SDK 1.0.19 and
+SDK-specific custom tools and native coding subagents. OpenCode retains its
+legacy interface; selecting it does not provide equivalent SDK tooling.
+The dependency-retention instructions below do not require the removed JSON
+command-line dependency. The fixed scientific Python stack is unchanged.
+
 ## Objective
 
 Add the official OpenCode TypeScript SDK, using OpenCode Go, as a selectable
@@ -45,7 +51,7 @@ Python-to-TypeScript bridge or implement a custom REST/SSE client.
 | [runner/copilot_adapter.py](../runner/copilot_adapter.py) | Runtime lifecycle, command guardrails, console, usage recording | Retain the adapter; use its behavior as the reference for the separate OpenCode adapter |
 | [runner/protocol.py](../runner/protocol.py) | Explicitly protects the Python adapter and dependency metadata | Retain existing protection and additionally protect the OpenCode runtime and its dependency/configuration surface |
 | [tools/campaign_report.py](../tools/campaign_report.py) | Reads per-invocation usage, currently including AIU | Support legacy Copilot and new OpenCode accounting without conflating units |
-| [pyproject.toml](../pyproject.toml) | Researcher group contains Copilot SDK and `jello` | Retain both dependencies and the fixed Python stack; add OpenCode dependencies separately |
+| [pyproject.toml](../pyproject.toml) | Researcher group contains Copilot SDK | Retain the SDK and fixed Python stack; add OpenCode dependencies separately |
 
 The launcher currently executes `Set-Location $PSScriptRoot`. Consequently,
 invoking another checkout's launcher by absolute path changes the target
@@ -259,7 +265,7 @@ tool arguments into that record.
 6. **Document and verify both options.** Retain Copilot tests and add OpenCode
   coverage plus launcher-selection regression checks. Document choosing either
   backend, prerequisites, authentication, worktree use, supported versions,
-  usage differences, and troubleshooting. Keep the Copilot SDK and `jello`;
+  usage differences, and troubleshooting. Keep the Copilot SDK;
   do not remove either adapter or upgrade scientific Python dependencies.
 
 ## Verification And Acceptance

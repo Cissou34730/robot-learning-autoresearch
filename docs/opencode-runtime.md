@@ -2,11 +2,12 @@
 
 An optional second runtime for a bounded PI session.
 
-`runner/copilot_adapter.py` is unchanged and remains the default. The OpenCode
-runtime lives beside it and is selected explicitly, so an existing command
-behaves exactly as it did before. Neither adapter knows about the other: both
-accept the same argument list and produce the same console, and the launcher
-chooses between them.
+Copilot remains the default agent runtime. Its adapter integrates Python SDK
+1.0.19, custom operation/evidence tools and native coding subagents. The
+OpenCode runtime is selected explicitly and retains its legacy request-file,
+scientific-edit and command-policy interfaces. Both use the same scientific
+lifecycle and Runner contracts, but their agent capabilities are not equivalent.
+Neither adapter calls the other.
 
 ## Choosing a runtime
 
@@ -34,7 +35,8 @@ rather than silently substituting `xhigh`.
 
 ## Prerequisites
 
-- **Copilot**: unchanged from the existing setup.
+- **Copilot**: Copilot CLI plus the locked Python SDK 1.0.19, installed with
+  `uv sync --locked --group researcher`.
 - **OpenCode**: Node.js on `PATH` and the `opencode` CLI available. Node 23.6
   and later strip TypeScript types by default; earlier versions (including 22.x)
   are invoked with `--experimental-strip-types`.

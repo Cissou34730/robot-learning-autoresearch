@@ -9,6 +9,11 @@ direction, inquiry design, scientific implementation, tool construction,
 measurement and training design, evidence interpretation, and goal-progress
 assessment belong to that one role.
 
+Coding delegation provides implementation assistance, not another scientific
+actor. The PI retains scientific intent, interpretation and review authority.
+Delegation and evidence-reader mechanics are defined in
+`contracts/instruments.md`, not additional scientific lifecycle phases.
+
 The Runner is not a scientific actor. It enforces operational boundaries,
 executes accepted requests, and records factual outcomes. It does not choose
 scientific questions or methods, interpret evidence, judge adequacy, or decide
@@ -295,6 +300,11 @@ do not require an additional measurement or a prescribed sequence of actions.
 
 Only completed operations and their artifacts form the factual campaign
 record.
+
+The PI selects the evidence it needs, including complete artifacts or logs.
+Scoped queries, summaries and successive subsets are available to reduce
+irrelevant context; they do not restrict scientific inspection. A partial
+tool result does not establish that the unreturned evidence is absent.
 
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,

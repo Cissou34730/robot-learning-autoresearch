@@ -18,7 +18,16 @@ The locked runtime APIs are native `mujoco==3.12.0` (not legacy `mujoco-py`),
 `gymnasium==1.3.0` and `stable-baselines3==2.9.0`. PI-owned integrations
 must target those packages and versions.
 
-`jello` is available through the PI environment for JSON and JSONL artifacts.
+The Copilot agent runtime uses `github-copilot-sdk==1.0.19`. Its native
+subagents, hooks and custom tools are harness integration, not an interchangeable
+model-provider interface. The scientific stack and Runner operations remain
+separate from the SDK. Dependencies remain human-owned.
+
+JSON evidence is read through `artifact_evidence_query`; preserved training
+logs are read through `training_log_query`. Both tools support scoped requests
+and complete retrieval. The PI chooses the requested content and may inspect
+successive subsets. Large results report their continuation explicitly rather
+than silently truncating. No general Python-query execution tool is exposed.
 
 All project Python execution goes through `uv run`. The PI must not execute
 tests or repository validation commands directly; request Runner validation
@@ -31,8 +40,12 @@ The ordinary Copilot main PI session may inspect files and call
 `submit_operation`; it has no file-write tools. The trusted launcher validates
 and executes the structured request through Runner and returns factual results
 and current state to the same conversation. Scientific source edits use the
-`scientific_coding` tool, whose coding child can inspect and edit only the
-explicitly scoped files. Copilot main and coding sessions have no shell tools.
+`scientific_coding` tool, which dispatches a native Copilot coding subagent.
+The main agent's tool set excludes file writes; only the registered coder
+receives scoped `view` and `apply_patch`. Its readable and writable files are
+bound mechanically to the explicit request. Copilot main and coding agents
+have no shell tools. Native start instructions remind the coder of the locked
+scientific API versions above; it cannot install or change dependencies.
 Analysis code is authored in the PI laboratory and executed by Runner.
 The preliminary analyst retains its existing tools and scientific-model
 publication permission; coding delegation is not exposed in that phase.
@@ -112,8 +125,13 @@ A protected path takes precedence over any PI-owned prefix.
 The preliminary phase can inspect scientific sources under `robot_learning/`
 to construct the physical model.
 Later phases reject read/view requests and explicit shell-reader targets
-matched by the shared reserved-script policy. Maintainer documents under
-`docs/`, `tests/`, and harness scripts remain reserved in every phase.
+matched by the shared reserved-script policy. Searches must apply that policy
+to descendants before reading their contents or returning their paths; a
+readable repository root does not authorize all files below it. Copilot
+directory enumeration uses scoped `glob`, not directory `view`. Preliminary
+shell traversal and wildcard readers are denied; exact permitted file reads
+remain available. Maintainer documents under `docs/`, `tests/`, and harness
+scripts remain reserved in every phase.
 `AGENTS.md`, `contracts/`, and `campaigns/` remain readable.
 PI-owned scientific files remain readable, including entry points whose
 direct execution is restricted. Read access does not change write authority.
@@ -141,6 +159,11 @@ no authority over that choice, and no option has standing merely because it
 preserves prior work.
 This is scientific ownership, not direct main-session write permission.
 The coding child cannot write operation requests or campaign/state files.
+Its native handle supports same-change corrections within the current bounded
+context without expanding file scope. A handle from another context is not an
+authorization to attach a coder. Lifecycle hooks and actual change reports
+support main-PI review; they do not certify scientific validity or add a
+scientific decision-maker.
 The Copilot runtime remains alive across operations and bounded contexts.
 Ordinary results continue in the same context; checkpoints end it, and the
 launcher starts a fresh context from durable state. An interrupted or lost
