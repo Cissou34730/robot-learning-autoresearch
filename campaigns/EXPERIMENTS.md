@@ -58,3 +58,4 @@
 | E34 | checkpoint | - | checkpointed |
 | E35 | restore_recipe | I8 | restored |
 | T9 | training | I8 | completed |
+| M13 | measurement | I8 | completed |
