@@ -21,6 +21,14 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+Q2_BRANCH_DEADBAND_RADIANS = 1e-3
+
+
+def classify_elbow_branch(q2: float) -> str:
+    """Classify the signed relative elbow angle using a small zero deadband."""
+    if abs(q2) <= Q2_BRANCH_DEADBAND_RADIANS:
+        return "near_singular"
+    return "open" if q2 > 0.0 else "folded"
 
 
 def _summarize_internal_diagnostics(
@@ -104,6 +112,8 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
+        first_reach_q2: float | None = None
+        first_reach_branch: str | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
@@ -124,12 +134,15 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_reach_q2 = float(env.data.qpos[1])
+                    first_reach_branch = classify_elbow_branch(first_reach_q2)
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
 
+        final_q2 = float(env.data.qpos[1])
         episode_results.append(
             {
                 "episode": episode,
@@ -155,6 +168,10 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "first_reach_q2": first_reach_q2,
+                "first_reach_branch": first_reach_branch,
+                "final_q2": final_q2,
+                "final_branch": classify_elbow_branch(final_q2),
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
@@ -166,7 +183,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 7,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -177,7 +194,11 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "q2": "radians",
+                "time": "control_steps",
+            },
         },
     }
 
