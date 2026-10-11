@@ -1011,7 +1011,8 @@
     "T2:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
       "evaluation_artifacts": [
-        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m9-T2-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m9-T2-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
       ],
       "fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
       "id": "T2:checkpoint-120832",
@@ -1828,7 +1829,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
+      ],
       "fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -2476,7 +2479,7 @@
   "counters": {
     "event": 16,
     "inquiry": 4,
-    "measurement": 17,
+    "measurement": 18,
     "session": 9,
     "training": 3
   },
@@ -7283,9 +7286,2523 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:05:43Z",
+      "error": null,
+      "id": "M18",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Compare the complete T3 targeted-regulation candidate with T2 on identical held-out development seeds and measure T3 time-resolved acquisition, regulation, torque, hold transitions, and live-versus-forward-reference discrepancy on the ten residual seeds plus ten matched controls.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I4 T3 targeted-regulation held-out panel",
+            "seed": 4200
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I4 T2 matched reference panel",
+            "seed": 4200
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--allow-unexpected-outcomes",
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json",
+            "instrument": "python_module",
+            "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T2:checkpoint-120832"
+          }
+        ],
+        "rationale": "This directly tests I4's unresolved distinction. T3 is the complete artifact produced by the verified targeted intervention, while T2 is the strongest prior complete candidate. Identical 160-episode research panels establish candidate capability and paired wins without using training proxies as performance evidence. The 20-rollout time-resolved diagnostic preserves official evaluation semantics and explicitly records live environment state separately from forward-qpos/qvel reference state; its outcome-agnostic mode is necessary because T3's class outcomes are not known in advance. Improvement in no-first-reach or reach-then-interrupt classes would support retaining this targeted direction; no improvement would constrain this recipe-specific intervention; unresolved live/reference disagreements would remain a measurement limitation rather than be conflated with task success."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I4 T3 targeted-regulation held-out panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "95bd751fa2d25ea655568890dbf7f18723dbdd92ac7de28e5745119eb8646491",
+              "evaluation_semantics": "4e874c58d1e9",
+              "model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 0.0,
+              "successes": 0
+            }
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I4 T2 matched reference panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3590181f9b8d2a91f5c7fcc2ee5c04eafb9e8c0178b4a41171711b9dca6bcfc4",
+              "evaluation_semantics": "4e874c58d1e9",
+              "model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--allow-unexpected-outcomes",
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+            ],
+            "instrument": "python_module",
+            "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M18-3-i4-t3-time-resolved-rollout-measurement.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/evaluation_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/requested_rollouts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reset_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 20,
+                    "field_names": [
+                      "contact_summary",
+                      "expected_success",
+                      "initial_state",
+                      "mechanism_diagnostics",
+                      "outcome",
+                      "role",
+                      "seed",
+                      "target",
+                      "trace"
+                    ],
+                    "path": "/rollouts",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluation_semantics/deterministic_prediction",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/environment_factory",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/evaluation_semantics/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/max_control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/reset_each_episode_with_seed",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/runtime_reset_each_episode",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/simulator_substeps_per_action",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/measurement_semantics/environment_observed_fields",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/environment_observed_role",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement_semantics/kinematic_reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement_semantics/outcome_validation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/requested_rollouts/control_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/requested_rollouts/failure_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/requested_rollouts/total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reset_evidence/each_rollout_reset_with_its_seed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reset_evidence/initial_qpos_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reset_evidence/initial_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/reset_evidence/trace_contains_before_and_after_each_update",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/runtime/model_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/model_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_loaded_with",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/control",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance_display",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement_semantics/kinematic_reference/fields",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/kinematic_reference/role",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/kinematic_reference/source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/actual_success_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/allow_unexpected_outcomes",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/historical_role_expectation_retained",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3135750c97ea0ec0adf1c275a1b918118ca3de4162120edb2de26c35a56b7c31"
+            },
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+            "candidate_wins": 0,
+            "discordant_episodes": 150,
+            "episodes": 160,
+            "net_wins": -150,
+            "reference": "T2:checkpoint-120832",
+            "reference_model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+            "reference_wins": 150,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
+            ],
+            "success_delta_percent": -93.75
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "29a30c7995eb7b1b6bdc8920cee0932d98fa97a2",
+            "fingerprint": "3580877bfb8018cb57bca935fecccdade1eb0c607f3d58308ad0e102b4603392",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+                "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/time_resolved_rollout_measurement.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "4e874c58d1e9",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I4 T3 targeted-regulation held-out panel",
+          "model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+          "seed": 4200
+        },
+        {
+          "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I4 T2 matched reference panel",
+          "model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+          "seed": 4200
+        },
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+            "--failure-seeds",
+            "4201",
+            "4208",
+            "4225",
+            "4226",
+            "4228",
+            "4243",
+            "4244",
+            "4246",
+            "4307",
+            "4316",
+            "--control-seeds",
+            "4211",
+            "4214",
+            "4236",
+            "4264",
+            "4286",
+            "4297",
+            "4337",
+            "4347",
+            "4349",
+            "4355",
+            "--max-steps",
+            "500",
+            "--allow-unexpected-outcomes",
+            "--artifact",
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json",
+          "instrument": "python_module",
+          "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+          "module": "robot_learning.lab.time_resolved_rollout_measurement"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+            "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "29a30c7995eb7b1b6bdc8920cee0932d98fa97a2",
+          "fingerprint": "3580877bfb8018cb57bca935fecccdade1eb0c607f3d58308ad0e102b4603392",
+          "manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ]
+        },
+        "code_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/time_resolved_rollout_measurement.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+          "reference": "T2:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+          "shared_episode_seeds": [
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4217,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4226,
+            4227,
+            4228,
+            4229,
+            4230,
+            4231,
+            4232,
+            4233,
+            4234,
+            4235,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4260,
+            4261,
+            4262,
+            4263,
+            4264,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4287,
+            4288,
+            4289,
+            4290,
+            4291,
+            4292,
+            4293,
+            4294,
+            4295,
+            4296,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4305,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4320,
+            4321,
+            4322,
+            4323,
+            4324,
+            4325,
+            4326,
+            4327,
+            4328,
+            4329,
+            4330,
+            4331,
+            4332,
+            4333,
+            4334,
+            4335,
+            4336,
+            4337,
+            4338,
+            4339,
+            4340,
+            4341,
+            4342,
+            4343,
+            4344,
+            4345,
+            4346,
+            4347,
+            4348,
+            4349,
+            4350,
+            4351,
+            4352,
+            4353,
+            4354,
+            4355,
+            4356,
+            4357,
+            4358,
+            4359
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I4 T3 targeted-regulation held-out panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "95bd751fa2d25ea655568890dbf7f18723dbdd92ac7de28e5745119eb8646491",
+            "evaluation_semantics": "4e874c58d1e9",
+            "model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 0.0,
+            "successes": 0
+          }
+        },
+        {
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I4 T2 matched reference panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "3590181f9b8d2a91f5c7fcc2ee5c04eafb9e8c0178b4a41171711b9dca6bcfc4",
+            "evaluation_semantics": "4e874c58d1e9",
+            "model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        },
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+            "--failure-seeds",
+            "4201",
+            "4208",
+            "4225",
+            "4226",
+            "4228",
+            "4243",
+            "4244",
+            "4246",
+            "4307",
+            "4316",
+            "--control-seeds",
+            "4211",
+            "4214",
+            "4236",
+            "4264",
+            "4286",
+            "4297",
+            "4337",
+            "4347",
+            "4349",
+            "4355",
+            "--max-steps",
+            "500",
+            "--allow-unexpected-outcomes",
+            "--artifact",
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+          ],
+          "instrument": "python_module",
+          "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M18-3-i4-t3-time-resolved-rollout-measurement.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 9,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/evaluation_semantics",
+                  "type": "object"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/measurement_semantics",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/requested_rollouts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reset_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 20,
+                  "field_names": [
+                    "contact_summary",
+                    "expected_success",
+                    "initial_state",
+                    "mechanism_diagnostics",
+                    "outcome",
+                    "role",
+                    "seed",
+                    "target",
+                    "trace"
+                  ],
+                  "path": "/rollouts",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/runtime",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 10,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/evaluation_semantics/deterministic_prediction",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluation_semantics/environment_factory",
+                  "type": "string"
+                },
+                {
+                  "path": "/evaluation_semantics/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_semantics/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_semantics/max_control_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_semantics/reset_each_episode_with_seed",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluation_semantics/runtime_reset_each_episode",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluation_semantics/simulator_substeps_per_action",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_semantics/success_threshold_m",
+                  "type": "number"
+                },
+                {
+                  "entries": 10,
+                  "path": "/measurement_semantics/environment_observed_fields",
+                  "type": "array"
+                },
+                {
+                  "path": "/measurement_semantics/environment_observed_role",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/measurement_semantics/kinematic_reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/measurement_semantics/outcome_validation",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/requested_rollouts/control_seeds",
+                  "type": "array"
+                },
+                {
+                  "entries": 10,
+                  "path": "/requested_rollouts/failure_seeds",
+                  "type": "array"
+                },
+                {
+                  "path": "/requested_rollouts/total",
+                  "type": "number"
+                },
+                {
+                  "path": "/reset_evidence/each_rollout_reset_with_its_seed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reset_evidence/initial_qpos_rad",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reset_evidence/initial_qvel_rad_s",
+                  "type": "array"
+                },
+                {
+                  "path": "/reset_evidence/trace_contains_before_and_after_each_update",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/runtime/model_path",
+                  "type": "string"
+                },
+                {
+                  "path": "/runtime/model_sha256",
+                  "type": "string"
+                },
+                {
+                  "path": "/runtime/runtime_loaded_with",
+                  "type": "string"
+                },
+                {
+                  "path": "/runtime/runtime_path",
+                  "type": "string"
+                },
+                {
+                  "path": "/runtime/runtime_sha256",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/control",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/distance_display",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/endpoint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/torque",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/measurement_semantics/kinematic_reference/fields",
+                  "type": "array"
+                },
+                {
+                  "path": "/measurement_semantics/kinematic_reference/role",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement_semantics/kinematic_reference/source",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement_semantics/outcome_validation/actual_success_source",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement_semantics/outcome_validation/allow_unexpected_outcomes",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/measurement_semantics/outcome_validation/historical_role_expectation_retained",
+                  "type": "boolean"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "3135750c97ea0ec0adf1c275a1b918118ca3de4162120edb2de26c35a56b7c31"
+          },
+          "module": "robot_learning.lab.time_resolved_rollout_measurement"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I4 T3 targeted-regulation held-out panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "95bd751fa2d25ea655568890dbf7f18723dbdd92ac7de28e5745119eb8646491",
+              "evaluation_semantics": "4e874c58d1e9",
+              "model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 0.0,
+              "successes": 0
+            }
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I4 T2 matched reference panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3590181f9b8d2a91f5c7fcc2ee5c04eafb9e8c0178b4a41171711b9dca6bcfc4",
+              "evaluation_semantics": "4e874c58d1e9",
+              "model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--allow-unexpected-outcomes",
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+            ],
+            "instrument": "python_module",
+            "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M18-3-i4-t3-time-resolved-rollout-measurement.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/evaluation_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/requested_rollouts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reset_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 20,
+                    "field_names": [
+                      "contact_summary",
+                      "expected_success",
+                      "initial_state",
+                      "mechanism_diagnostics",
+                      "outcome",
+                      "role",
+                      "seed",
+                      "target",
+                      "trace"
+                    ],
+                    "path": "/rollouts",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluation_semantics/deterministic_prediction",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/environment_factory",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/evaluation_semantics/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/max_control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/reset_each_episode_with_seed",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/runtime_reset_each_episode",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluation_semantics/simulator_substeps_per_action",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_semantics/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/measurement_semantics/environment_observed_fields",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/environment_observed_role",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement_semantics/kinematic_reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement_semantics/outcome_validation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/requested_rollouts/control_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/requested_rollouts/failure_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/requested_rollouts/total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reset_evidence/each_rollout_reset_with_its_seed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reset_evidence/initial_qpos_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reset_evidence/initial_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/reset_evidence/trace_contains_before_and_after_each_update",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/runtime/model_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/model_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_loaded_with",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/runtime/runtime_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/control",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance_display",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement_semantics/kinematic_reference/fields",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_semantics/kinematic_reference/role",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/kinematic_reference/source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/actual_success_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/allow_unexpected_outcomes",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement_semantics/outcome_validation/historical_role_expectation_retained",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3135750c97ea0ec0adf1c275a1b918118ca3de4162120edb2de26c35a56b7c31"
+            },
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "d4dff131e2e78d7471b4ed0c40ae8113b9a8afbeda3d7568320838e5b9007370",
+            "candidate_wins": 0,
+            "discordant_episodes": 150,
+            "episodes": 160,
+            "net_wins": -150,
+            "reference": "T2:checkpoint-120832",
+            "reference_model_fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+            "reference_wins": 150,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T3-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m18-T2-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
+            ],
+            "success_delta_percent": -93.75
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "29a30c7995eb7b1b6bdc8920cee0932d98fa97a2",
+            "fingerprint": "3580877bfb8018cb57bca935fecccdade1eb0c607f3d58308ad0e102b4603392",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+                "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/time_resolved_rollout_measurement.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M18",
+    "inquiry_id": "I4",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Compare the complete T3 targeted-regulation candidate with T2 on identical held-out development seeds and measure T3 time-resolved acquisition, regulation, torque, hold transitions, and live-versus-forward-reference discrepancy on the ten residual seeds plus ten matched controls.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I4 T3 targeted-regulation held-out panel",
+            "seed": 4200
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I4 T2 matched reference panel",
+            "seed": 4200
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832/model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--allow-unexpected-outcomes",
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i4-t3-time-resolved-rollout-measurement.json",
+            "instrument": "python_module",
+            "label": "I4 T3 time-resolved candidate diagnostics with preserved live/reference discrepancy",
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T2:checkpoint-120832"
+          }
+        ],
+        "rationale": "This directly tests I4's unresolved distinction. T3 is the complete artifact produced by the verified targeted intervention, while T2 is the strongest prior complete candidate. Identical 160-episode research panels establish candidate capability and paired wins without using training proxies as performance evidence. The 20-rollout time-resolved diagnostic preserves official evaluation semantics and explicitly records live environment state separately from forward-qpos/qvel reference state; its outcome-agnostic mode is necessary because T3's class outcomes are not known in advance. Improvement in no-first-reach or reach-then-interrupt classes would support retaining this targeted direction; no improvement would constrain this recipe-specific intervention; unresolved live/reference disagreements would remain a measurement limitation rather than be conflated with task success."
+      }
+    },
+    "request_fingerprint": "f9e7472afe2cb4deaee5365f0b494df88899afd6d3ae401e05a06dd92f546b97",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known from the completed M9 matched development comparison at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. No candidate is working or retained. Opening I4 does not change candidate roles; a targeted artifact must be completely trained and measured before any role change.",
     "completed_operations": [
@@ -7334,7 +9851,8 @@
     "operation_ids": [
       "M16",
       "T3",
-      "M17"
+      "M17",
+      "M18"
     ],
     "scientific_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a"
   },
