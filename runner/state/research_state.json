@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a full-allocation transfer training run from T2 and matched complete-candidate evaluation against T2 on the same non-protected panel. A positive bounded answer requires the transferred candidate to materially exceed 150/160 while retaining acquisition (no collapse in first-reach success) and reducing reach-then-interrupt failures; a negative answer is warranted if it does not improve T2 or loses acquisition, with the result limited to this transfer/profile implementation. An inconclusive answer is warranted if the required candidate or matched diagnostic evidence is unavailable. In all cases, preserve the residual failure classes and any live-versus-forward-reference discrepancy as limitations rather than changing task semantics.",
-    "goal_connection": "The current best-known T2 achieves 150/160 on the full-radius development panel, below the 98% objective, with reproducible acquisition and post-reach interruption failures. A transfer continuation starts from the only demonstrated full-radius capability instead of asking a fresh policy to acquire and regulate simultaneously; it could therefore improve the residual hold failures without repeating T3's non-acquisition collapse. The comparison will use complete candidates and preserved official evaluation mechanics, and cannot substitute for the protected 200-episode assessment.",
-    "handoff_conclusion": "Observed: M8 verified full 0.06-0.20 m training exposure while preserving official 10-frame action timing, 100-step hold, reset, and success semantics. M9 measured T2 at 150/160 versus T1 at 105/160 on identical seeds, establishing T2 as the strongest complete development artifact but not certification. M15 independently verified T2's ten residual failures: six negative-angle no-first-reach trajectories entered the compiled joint-limit region under persistent saturation and high velocity, one sustained high-speed saturated oscillation, and three reach-then-interrupt trajectories left tolerance after 1, 3, and 3 held steps with nonzero velocity and saturated or near-saturated torque. It found zero contacts and no separating final branch feasibility/occupancy, so branch and contact interventions remain unsupported. The live-environment versus forward-kinematic reference discrepancy is a measurement limitation, not a replacement for task semantics. M16 verified a training-only targeted acquisition/braking and post-reach regulation profile with unchanged default evaluation mechanics. T3 was a fresh 120832-step PPO candidate under that profile; M18 measured 0/160 against T2's 150/160, with T2 winning all 150 discordant episodes, and M18 diagnostics showed 19 no-first-reach and one reach-then-interrupt rollout. Therefore the tested fresh targeted recipe did not improve capability and caused a non-acquiring candidate, but this artifact comparison does not establish whether the cause was the targeted objective, cold-start optimization, or their interaction. The initial physical model's consequential claims are supported in part: the task is a coupled transient-reach plus sustained dynamic-regulation problem under torque saturation and a singular reset, while the observed zero contacts and non-separating branch evidence reduce the priority of contact/branch routes. The remaining competing explanation that can change direction is optimization basin/acquisition retention versus incompatibility of targeted regulation shaping with T2-level acquisition.",
-    "handoff_question": "Can transfer-initialized continuation from T2 under the verified targeted-regulation training profile improve uninterrupted regulation while preserving T2's full-radius acquisition, compared with T2 under unchanged official evaluation semantics?",
-    "handoff_source_session_id": "S10",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can transfer-initialized continuation from T2 under the verified targeted-regulation training profile improve uninterrupted regulation while preserving T2's full-radius acquisition, compared with T2 under unchanged official evaluation semantics?",
-    "rationale": "Assessment is not justified: T2 is below the objective and no protected result exists, while T3 is 0/160. M15 shows six limit/saturation acquisition failures, one saturated oscillation, and three dynamic hold interruptions, so further work can credibly target the coupled acquisition-regulation capability. The exact fresh targeted recipe is rejected by M18, but that result confounds the targeted profile with cold-start learning; it does not test whether the already acquired T2 policy can be refined under transfer. This is a materially different policy-development direction and a consequential comparison because it can distinguish optimization/acquisition collapse from inability of the profile to improve T2. I correct the inherited wording that T2 has a literal 46-success shortfall: 150/160 and the protected 196/200 panel are distinct panels and cannot be subtracted as episode counts; at most, 93.75% is a rough development rate equivalent to 187.5/200, not an official estimate. The correction does not reduce the actual goal gap or justify assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -3296,7 +3285,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 19,
     "session": 11,
@@ -3305,7 +3294,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -9851,9 +9840,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:14:09Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited bounded answer",
+        "reason": "I5's required transfer run and matched complete-candidate evaluation are complete. T4:checkpoint-120832, initialized from T2 under the verified targeted-regulation profile, achieved 153/160 versus T2's 150/160 on identical seeds and won all three discordant episodes without losing a T2 success. Diagnostics show acquisition failures falling from 7 to 3, so transfer preserved and improved acquisition, but reach-then-interrupt failures increased from 3 to 4 rather than decreasing. Therefore this implementation supports a limited capability improvement in the aggregate and acquisition class, but does not support the intended claim of improved uninterrupted regulation; the broader targeted-regulation method and causes of the mixed failure-class shift remain unresolved. The 160-episode development result is not the protected 200-episode certification."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited bounded answer",
+        "reason": "I5's required transfer run and matched complete-candidate evaluation are complete. T4:checkpoint-120832, initialized from T2 under the verified targeted-regulation profile, achieved 153/160 versus T2's 150/160 on identical seeds and won all three discordant episodes without losing a T2 success. Diagnostics show acquisition failures falling from 7 to 3, so transfer preserved and improved acquisition, but reach-then-interrupt failures increased from 3 to 4 rather than decreasing. Therefore this implementation supports a limited capability improvement in the aggregate and acquisition class, but does not support the intended claim of improved uninterrupted regulation; the broader targeted-regulation method and causes of the mixed failure-class shift remain unresolved. The 160-episode development result is not the protected 200-episode certification.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited bounded answer",
+        "reason": "I5's required transfer run and matched complete-candidate evaluation are complete. T4:checkpoint-120832, initialized from T2 under the verified targeted-regulation profile, achieved 153/160 versus T2's 150/160 on identical seeds and won all three discordant episodes without losing a T2 success. Diagnostics show acquisition failures falling from 7 to 3, so transfer preserved and improved acquisition, but reach-then-interrupt failures increased from 3 to 4 rather than decreasing. Therefore this implementation supports a limited capability improvement in the aggregate and acquisition class, but does not support the intended claim of improved uninterrupted regulation; the broader targeted-regulation method and causes of the mixed failure-class shift remain unresolved. The 160-episode development result is not the protected 200-episode certification."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited bounded answer",
+        "reason": "I5's required transfer run and matched complete-candidate evaluation are complete. T4:checkpoint-120832, initialized from T2 under the verified targeted-regulation profile, achieved 153/160 versus T2's 150/160 on identical seeds and won all three discordant episodes without losing a T2 success. Diagnostics show acquisition failures falling from 7 to 3, so transfer preserved and improved acquisition, but reach-then-interrupt failures increased from 3 to 4 rather than decreasing. Therefore this implementation supports a limited capability improvement in the aggregate and acquisition class, but does not support the intended claim of improved uninterrupted regulation; the broader targeted-regulation method and causes of the mixed failure-class shift remain unresolved. The 160-episode development result is not the protected 200-episode certification.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited bounded answer",
+        "reason": "I5's required transfer run and matched complete-candidate evaluation are complete. T4:checkpoint-120832, initialized from T2 under the verified targeted-regulation profile, achieved 153/160 versus T2's 150/160 on identical seeds and won all three discordant episodes without losing a T2 success. Diagnostics show acquisition failures falling from 7 to 3, so transfer preserved and improved acquisition, but reach-then-interrupt failures increased from 3 to 4 rather than decreasing. Therefore this implementation supports a limited capability improvement in the aggregate and acquisition class, but does not support the intended claim of improved uninterrupted regulation; the broader targeted-regulation method and causes of the mixed failure-class shift remain unresolved. The 160-episode development result is not the protected 200-episode certification."
+      }
+    },
+    "request_fingerprint": "ada136740553c511512b106df804bc5399776707a694efdb77d9ef8a90c9fe3a",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M9 and M18 at 150/160; it is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is the fresh targeted-regulation candidate measured at 0/160 in M18 and has no working, best-known, or retained role. No new role assignment is made in this goal-review checkpoint.",
     "completed_operations": [
@@ -9900,7 +9943,8 @@
     "operation_ids": [
       "T4",
       "M19",
-      "E21"
+      "E21",
+      "E22"
     ],
     "scientific_parent_commit": "28122afa1aa23157f826a0de63f7ece2683ec6f4"
   },

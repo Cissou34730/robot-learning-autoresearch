@@ -46,3 +46,4 @@
 | T4 | training | I5 | completed |
 | M19 | measurement | I5 | completed |
 | E21 | model_role | I5 | assigned |
+| E22 | inquiry | I5 | completed |
