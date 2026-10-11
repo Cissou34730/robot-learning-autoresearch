@@ -2,20 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| M1 | measurement | - | failed |
-| M2 | measurement | - | failed |
-| M3 | measurement | - | completed |
-| T1 | training | - | completed |
-| M4 | measurement | - | completed |
-| E1 | checkpoint | - | checkpointed |
-| E2 | inquiry | I1 | completed |
-| E3 | checkpoint | - | checkpointed |
-| M5 | measurement | I1 | completed |
-| M6 | measurement | I1 | completed |
-| T2 | training | I1 | completed |
-| M7 | measurement | I1 | completed |
-| E4 | inquiry | I1 | completed |
-| E5 | checkpoint | I1 | checkpointed |
-| E6 | inquiry | I2 | completed |
-| E7 | checkpoint | - | checkpointed |
-| T3 | training | I2 | completed |
