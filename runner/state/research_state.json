@@ -842,7 +842,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 5,
+    "measurement": 6,
     "session": 3,
     "training": 1
   },
@@ -2325,9 +2325,853 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:33:10Z",
+      "error": null,
+      "id": "M6",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify q2 branch classification and branch-field recording alongside the already checked observational internal diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "branch_and_internal_diagnostics_verification",
+            "module": "robot_learning.lab.verify_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "M5 supplied target geometry and internal mechanism evidence but no actual elbow-branch field, leaving the inquiry closure condition incomplete. This controlled check tests positive, negative, near-singular, and no-reach cases with known q2 consequences, while retaining the matched normal/diagnostic replay, internal-step cardinality, and reset checks."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch_and_internal_diagnostics_verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M6-1-evaluation_diagnostics_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/branch_labels",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/q2_branch_deadband_radians",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/diagnostic_mode_default",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/internal_samples_per_control_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/normal_trace_length",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/trace_cleared_on_reset",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/task_behavior_match",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 6,
+                    "field_names": [
+                      "expected",
+                      "observed",
+                      "q2"
+                    ],
+                    "path": "/observed/branch_classification_cases",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/branch_deadband_radians",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluator_branch_records",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/episodes_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/control_steps_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/internal_samples_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/frame_skip_observed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/reset_trace_lengths",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/task_fields_compared",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/trace_fields_checked",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/branch_labels/positive_q2",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/branch_labels/negative_q2",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/branch_labels/near_zero_q2",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "final_branch",
+                      "final_q2",
+                      "first_reach_branch",
+                      "first_reach_q2"
+                    ],
+                    "path": "/observed/evaluator_branch_records/expected",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "final_branch",
+                      "final_q2",
+                      "first_reach_branch",
+                      "first_reach_q2"
+                    ],
+                    "path": "/observed/evaluator_branch_records/observed",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e91ecc6b31b5638fd284856cffcc62a26ac119c8b76df7879bc580e6e653c4ed"
+            },
+            "module": "robot_learning.lab.verify_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+              "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "826639df001f24822af835d832626e6c7530fecb",
+            "fingerprint": "e725fb5ba817cae706ee2dd32f60bdf4bcd942dabc17ae1de0a05430b6c7e7fd",
+            "manifest": [
+              {
+                "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+                "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+                "path": "robot_learning/lab/verify_training_distribution.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7dd1e0b4dee4a6b86a68d8ff7b0a4f588e7ca18e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+              "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "f1ea3a7e34dfa3c0f5bddd5048aa3e3486a668f3",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "cafd737c5ed1a84c06f34d499b7270d422e7610b096a837e398bd33183eb1d52",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+          ],
+          "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json",
+          "instrument": "python_module",
+          "label": "branch_and_internal_diagnostics_verification",
+          "module": "robot_learning.lab.verify_evaluation_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+            "path": "robot_learning/lab/verify_compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+            "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+            "path": "robot_learning/lab/verify_training_distribution.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "826639df001f24822af835d832626e6c7530fecb",
+          "fingerprint": "e725fb5ba817cae706ee2dd32f60bdf4bcd942dabc17ae1de0a05430b6c7e7fd",
+          "manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+              "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ]
+        },
+        "code_parent_commit": "7dd1e0b4dee4a6b86a68d8ff7b0a4f588e7ca18e",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+            "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_evaluation_diagnostics.py"
+        ],
+        "scientific_commit": "f1ea3a7e34dfa3c0f5bddd5048aa3e3486a668f3",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "cafd737c5ed1a84c06f34d499b7270d422e7610b096a837e398bd33183eb1d52",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+          ],
+          "instrument": "python_module",
+          "label": "branch_and_internal_diagnostics_verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M6-1-evaluation_diagnostics_check.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 6,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "path": "/passed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 10,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected/branch_labels",
+                  "type": "object"
+                },
+                {
+                  "path": "/expected/q2_branch_deadband_radians",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/diagnostic_mode_default",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/internal_samples_per_control_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/normal_trace_length",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/trace_cleared_on_reset",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/task_behavior_match",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 6,
+                  "field_names": [
+                    "expected",
+                    "observed",
+                    "q2"
+                  ],
+                  "path": "/observed/branch_classification_cases",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/branch_deadband_radians",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/evaluator_branch_records",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/episodes_checked",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/control_steps_checked",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/internal_samples_checked",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/frame_skip_observed",
+                  "type": "number"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/reset_trace_lengths",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/task_fields_compared",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/trace_fields_checked",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/branch_labels/positive_q2",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/branch_labels/negative_q2",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/branch_labels/near_zero_q2",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "final_branch",
+                    "final_q2",
+                    "first_reach_branch",
+                    "first_reach_q2"
+                  ],
+                  "path": "/observed/evaluator_branch_records/expected",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "final_branch",
+                    "final_q2",
+                    "first_reach_branch",
+                    "first_reach_q2"
+                  ],
+                  "path": "/observed/evaluator_branch_records/observed",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "e91ecc6b31b5638fd284856cffcc62a26ac119c8b76df7879bc580e6e653c4ed"
+          },
+          "module": "robot_learning.lab.verify_evaluation_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch_and_internal_diagnostics_verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M6-1-evaluation_diagnostics_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/branch_labels",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/q2_branch_deadband_radians",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/diagnostic_mode_default",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/internal_samples_per_control_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/normal_trace_length",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/trace_cleared_on_reset",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/task_behavior_match",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 6,
+                    "field_names": [
+                      "expected",
+                      "observed",
+                      "q2"
+                    ],
+                    "path": "/observed/branch_classification_cases",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/branch_deadband_radians",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluator_branch_records",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/episodes_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/control_steps_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/internal_samples_checked",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/frame_skip_observed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/reset_trace_lengths",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/task_fields_compared",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/trace_fields_checked",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/branch_labels/positive_q2",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/branch_labels/negative_q2",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/branch_labels/near_zero_q2",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "final_branch",
+                      "final_q2",
+                      "first_reach_branch",
+                      "first_reach_q2"
+                    ],
+                    "path": "/observed/evaluator_branch_records/expected",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "final_branch",
+                      "final_q2",
+                      "first_reach_branch",
+                      "first_reach_q2"
+                    ],
+                    "path": "/observed/evaluator_branch_records/observed",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e91ecc6b31b5638fd284856cffcc62a26ac119c8b76df7879bc580e6e653c4ed"
+            },
+            "module": "robot_learning.lab.verify_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+              "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "826639df001f24822af835d832626e6c7530fecb",
+            "fingerprint": "e725fb5ba817cae706ee2dd32f60bdf4bcd942dabc17ae1de0a05430b6c7e7fd",
+            "manifest": [
+              {
+                "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+                "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+                "path": "robot_learning/lab/verify_training_distribution.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7dd1e0b4dee4a6b86a68d8ff7b0a4f588e7ca18e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "56840de5fb17f2919a0df2f9ebb55069bc8d83b1da3e461d7b4132e36cd1bdc9",
+              "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "f1ea3a7e34dfa3c0f5bddd5048aa3e3486a668f3",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "cafd737c5ed1a84c06f34d499b7270d422e7610b096a837e398bd33183eb1d52",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify q2 branch classification and branch-field recording alongside the already checked observational internal diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "branch_and_internal_diagnostics_verification",
+            "module": "robot_learning.lab.verify_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "M5 supplied target geometry and internal mechanism evidence but no actual elbow-branch field, leaving the inquiry closure condition incomplete. This controlled check tests positive, negative, near-singular, and no-reach cases with known q2 consequences, while retaining the matched normal/diagnostic replay, internal-step cardinality, and reset checks."
+      }
+    },
+    "request_fingerprint": "266501f2fc3190a97a5bb84b834a9bbee5f935d39d7bfbea0b6b6d9e67ec9f20",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty. The inquiry will select complete measured artifacts only after development evidence is available; training proxies alone will not establish development performance or official success.",
     "completed_operations": [
@@ -2369,9 +3213,10 @@
       "T1",
       "M3",
       "M4",
-      "M5"
+      "M5",
+      "M6"
     ],
-    "scientific_parent_commit": "7dd1e0b4dee4a6b86a68d8ff7b0a4f588e7ca18e"
+    "scientific_parent_commit": "f1ea3a7e34dfa3c0f5bddd5048aa3e3486a668f3"
   },
   "terminal_state": null
 }
