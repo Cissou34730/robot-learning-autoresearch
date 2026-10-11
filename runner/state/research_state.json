@@ -13602,47 +13602,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a complete candidate from this route is measured on the current f6bf4b99cf62 development panel with per-episode hold diagnostics. A positive bounded answer requires more complete successes than T4 and a corresponding reduction in the observed acquisition or post-reach interruption classes; a negative answer is justified if the candidate fails to improve T4 or loses its acquisition/hold capability. The result will remain development evidence and will not be combined with or substituted for the protected 200-episode official assessment.",
-          "goal_connection": "The human objective requires at least 196/200 complete uninterrupted holds under the official distribution. T4 is the strongest measured candidate at 153/160 on the matched current-source development panel, leaving seven observed failures and no official certification. A direct-torque policy is a materially different development route because it removes the persisted hand-coded residual action composition that was present in T4 and in the rejected T6 scaffold while preserving the fixed plant, observation, action limits, and hold semantics.",
-          "handoff_conclusion": "Observed: M23 evaluated the complete legacy T4:checkpoint-120832 artifact through the current scenario source on all 160 episode seeds beginning at 4200 and measured 153 successes, 3 no-first-reach failures, mean maximum held steps of 95.6625, mean in-tolerance steps of 95.70625, and mean hold interruptions of 0.06875. T4 therefore retained its historical aggregate capability under the current evaluator, with seven total failures and a small residual acquisition/hold tail. Observed: M23 uses evaluator fingerprint f6bf4b99cf62, matching M22's current-source T6 measurements but differing from M19's historical T4 fingerprint 4e874c58d1e9. Interpretation: the exact historical and current scores cannot be treated as directly semantically equivalent, so I8 is a limited comparability result rather than a positive equivalence result. Interpretation: because M23 and M22 share f6bf4b99cf62, the current-source artifact comparison is meaningful: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and does not support continuing that scaffold. It does not establish that residual control or braking methods in general fail, does not identify an individual residual term as causal, and does not certify the official goal. The physical model remains decision-relevant: bounded two-branch IK makes geometric impossibility unlikely; the singular reset, saturated 20 ms torque control and dynamic 100-step hold make acquisition, braking and regulation separable diagnostics; M23's few no-first-reach cases and remaining incomplete holds support judging future candidates by complete trajectories rather than training proxies or first reach alone. The historical-current semantic difference remains a measurement limitation for longitudinal score comparisons, but it does not prevent current-evaluator comparison of T4 with the I7 artifacts.",
-          "handoff_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
-          "handoff_source_session_id": "S17",
-          "id": "I9",
-          "opened_in_session": "S18",
-          "question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
-          "rationale": "Official assessment is not justified by 153/160 development success: the candidate is below the 196/200 objective, the official panel is distinct, and four of the seven current-source failures are complete-hold interruptions. Further work can credibly change capability rather than only selection by testing a policy-development route that does not inherit the residual-torque scaffold. The physical model predicts that direct torque must learn singular escape, braking, and regulation under the same 20 ms saturation; this is a consequential alternative to the scaffold's fixed composition. Existing evidence supports the failure classes but does not identify a residual term as causal, so conclusions will be limited to the complete direct-policy artifact and its matched diagnostics.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I9",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E36",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a complete candidate from this route is measured on the current f6bf4b99cf62 development panel with per-episode hold diagnostics. A positive bounded answer requires more complete successes than T4 and a corresponding reduction in the observed acquisition or post-reach interruption classes; a negative answer is justified if the candidate fails to improve T4 or loses its acquisition/hold capability. The result will remain development evidence and will not be combined with or substituted for the protected 200-episode official assessment.",
-        "goal_connection": "The human objective requires at least 196/200 complete uninterrupted holds under the official distribution. T4 is the strongest measured candidate at 153/160 on the matched current-source development panel, leaving seven observed failures and no official certification. A direct-torque policy is a materially different development route because it removes the persisted hand-coded residual action composition that was present in T4 and in the rejected T6 scaffold while preserving the fixed plant, observation, action limits, and hold semantics.",
-        "question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
-        "rationale": "Official assessment is not justified by 153/160 development success: the candidate is below the 196/200 objective, the official panel is distinct, and four of the seven current-source failures are complete-hold interruptions. Further work can credibly change capability rather than only selection by testing a policy-development route that does not inherit the residual-torque scaffold. The physical model predicts that direct torque must learn singular escape, braking, and regulation under the same 20 ms saturation; this is a consequential alternative to the scaffold's fixed composition. Existing evidence supports the failure classes but does not identify a residual term as causal, so conclusions will be limited to the complete direct-policy artifact and its matched diagnostics."
-      }
-    },
-    "request_fingerprint": "387b38a1e663386b0a8b752b3ca3719e0f20abb654ca285bc68695fc03b7a51b",
-    "session_id": "S18",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains the best-known development candidate based on M23's 153/160 current-source result and M19's historical 153/160 result, with the semantic fingerprint limitation explicitly retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected current-source residual-torque artifacts at 9/160 and 6/160. No candidate has a working or retained role, and no candidate is certified for official assessment.",
     "completed_operations": [
