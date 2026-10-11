@@ -37,3 +37,4 @@
 | E16 | checkpoint | - | checkpointed |
 | M16 | measurement | I4 | completed |
 | T3 | training | I4 | completed |
+| M17 | measurement | I4 | completed |

@@ -1,0 +1,87 @@
+{
+  "checked_scope": [
+    "strict rejection of both unexpected role outcomes",
+    "opt-out recording of a controlled unexpected success without relabeling it",
+    "strict defaults and propagation through the callable and CLI layers",
+    "exact ten failure seeds, exact ten control seeds, and 500-step horizon",
+    "live environment-observed and forward-reference field definitions and roles"
+  ],
+  "observed_vs_expected": {
+    "outcome_mode": {
+      "controlled_actual_success": true,
+      "controlled_seed": 9999,
+      "expected": {
+        "opt_out_recorded_actual_success": true,
+        "strict_rejected_unexpected_control_failure": true,
+        "strict_rejected_unexpected_success": true
+      },
+      "historical_role": "failure",
+      "opt_out_recorded_actual_success": true,
+      "strict_rejected_unexpected_control_failure": true,
+      "strict_rejected_unexpected_success": true
+    },
+    "source_contract": {
+      "forward_reference_fields": [
+        "endpoint_position_m",
+        "endpoint_velocity_m_s",
+        "position_error_m",
+        "velocity_error_m_s"
+      ],
+      "hold_transition_contact_and_termination_source_contract": true,
+      "live_environment_fields": [
+        "endpoint_position_m",
+        "endpoint_velocity_m_s",
+        "distance_m",
+        "distance_cm",
+        "in_tolerance",
+        "previous_held_steps",
+        "held_steps",
+        "hold_counter_transition",
+        "interruption",
+        "cumulative_interruptions"
+      ],
+      "reset_and_repeated_update_source_contract": true,
+      "run_measurement_default_strict": true,
+      "write_measurement_default_strict": true
+    },
+    "strict_seed_and_horizon_requirements": {
+      "control_seeds": [
+        4211,
+        4214,
+        4236,
+        4264,
+        4286,
+        4297,
+        4337,
+        4347,
+        4349,
+        4355
+      ],
+      "failure_seeds": [
+        4201,
+        4208,
+        4225,
+        4226,
+        4228,
+        4243,
+        4244,
+        4246,
+        4307,
+        4316
+      ],
+      "horizon": 500,
+      "invalid_input_rejections": {
+        "altered_control_seed_list": "control seeds must be the exact M9 control seed list",
+        "altered_failure_seed_list": "failure seeds must be the exact M9 failure seed list",
+        "altered_horizon": "max_steps must be the exact 500-step evaluation horizon"
+      }
+    }
+  },
+  "passed": true,
+  "schema_version": 1,
+  "unchecked_scope": [
+    "actual policy rollouts and their scientific outcomes",
+    "MuJoCo transitions, resets, contacts, hold semantics, and discrepancy magnitudes",
+    "scientific validity of interpreting a candidate outcome"
+  ]
+}
