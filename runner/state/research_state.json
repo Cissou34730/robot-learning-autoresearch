@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a fresh candidate implementing the specified velocity-aware braking/hold-margin change is archived and measured on a non-overlapping held-out panel under the official 6\u201320 cm distribution with the established reach/hold, qvel/action, branch, target-geometry, contact, and internal-step diagnostics. A positive conclusion requires at least 157/160 successes (the panel-equivalent 98% threshold), preserved or improved first-reach coverage, and materially reduced hold interruptions/internal excursions without a new concentrated failure class. A limited or negative conclusion is sufficient if success remains below 157/160 or the diagnostics show persistent target-angle/route-conditioned non-reach, torque saturation, or hold instability; that result will determine whether to continue policy/control development or redirect toward route/observability/learning-recipe investigation. Protected official continuous-hold semantics remain unresolved and will not be claimed from development traces.",
+    "goal_connection": "The only measured learned candidate achieved 150/160 = 93.75%, leaving a 4.25 percentage-point development gap to the 98% goal. Seven failures lacked first reach and three reached but failed the hold; the latter had near-tolerance qvel norms of 6.05 and 7.31 rad/s, saturated action magnitude 1.414, and 192/242 internal boundary excursions, while all failures were contact-free. A targeted learned-control intervention could therefore change complete episode capability, and its diagnostic outcome could redirect the campaign if reach remains angle-conditioned or hold remains unstable. The open branch produced all observed reaches, so branch nonuse alone is not treated as a deficit requiring folded-route forcing.",
+    "handoff_conclusion": "M1 established deterministic compiled-plant facts: the analytic kinematics and state invariance checks passed, the model has nq=nv=nu=2 with a 0.002 s internal step and ten internal steps per 20 ms action, torque authority is substantial in the tested traces, and the tested plant traces had no contacts. Those facts weaken a generic authority or contact explanation but do not exclude target- or route-conditioned limits. M2 corrected and verified the training exposure to the full official 6\u201320 cm radial range. T1 trained a fresh PPO policy with the existing observation, reward, and torque interface; its proxy success rose from zero to 0.58 at 120,832 actual steps, which nominated but did not establish the terminal checkpoint. M3, M5, and M7 measured the same frozen T1:checkpoint-120832 on the same 160-episode development panel. The task result was stable at 150/160 = 93.75%. The complete M7 diagnostic record includes first reach, uninterrupted hold, target radius and angle, signed q2 branch, near-tolerance qvel and action, contacts, and internal-step distance behavior. The ten failures comprised seven with no first reach and three that reached but did not complete the hold; all ten had zero contacts. The severe hold failures had 192 and 242 hold interruptions/internal boundary-in-tolerance excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. Across the panel the policy used the open elbow branch at all first reaches and never the folded branch. M5's same-panel aggregate showed boundary-in-tolerance internal excursions in 141/160 episodes, demonstrating that boundary success is not evidence of continuous robustness for this candidate. M4 and M6 verified that the diagnostic instrumentation preserved task behavior and internal-step cardinality and that q2 branch records are controlled and reproducible. Interpretation: for this tested PPO recipe, policy braking/hold timing and incomplete route/branch coverage are consequential mechanisms. The evidence does not establish a generic PPO failure, torque-interface failure, or official continuous-hold failure; it is recipe- and evaluator-semantics-specific.",
+    "handoff_question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+    "rationale": "Official assessment is not justified for a frozen 93.75% candidate whose hold traces are fragile, and failed earlier checkpoints are training proxies rather than evidence that another artifact is better. The compiled dynamics establish a bounded torque plant with substantial tested authority and no contacts, so one bounded method-development inquiry can credibly test whether the observed gap is caused by policy braking and hold timing rather than generic physical infeasibility. The intervention is deliberately evaluated as a complete artifact, while the paired diagnostics discriminate reach versus hold and target-conditioned route effects; no causal claim will be made for branch coverage merely because the baseline used the open branch.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c21bc3ba8d582a900f077f26746064d3a31ca706",
     "id": "0d39d52c-e9f6-4b27-814c-3b9e21c07b2a",
@@ -830,16 +841,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 7,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2817,9 +2828,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:37:01Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a fresh candidate implementing the specified velocity-aware braking/hold-margin change is archived and measured on a non-overlapping held-out panel under the official 6\u201320 cm distribution with the established reach/hold, qvel/action, branch, target-geometry, contact, and internal-step diagnostics. A positive conclusion requires at least 157/160 successes (the panel-equivalent 98% threshold), preserved or improved first-reach coverage, and materially reduced hold interruptions/internal excursions without a new concentrated failure class. A limited or negative conclusion is sufficient if success remains below 157/160 or the diagnostics show persistent target-angle/route-conditioned non-reach, torque saturation, or hold instability; that result will determine whether to continue policy/control development or redirect toward route/observability/learning-recipe investigation. Protected official continuous-hold semantics remain unresolved and will not be claimed from development traces.",
+        "goal_connection": "The only measured learned candidate achieved 150/160 = 93.75%, leaving a 4.25 percentage-point development gap to the 98% goal. Seven failures lacked first reach and three reached but failed the hold; the latter had near-tolerance qvel norms of 6.05 and 7.31 rad/s, saturated action magnitude 1.414, and 192/242 internal boundary excursions, while all failures were contact-free. A targeted learned-control intervention could therefore change complete episode capability, and its diagnostic outcome could redirect the campaign if reach remains angle-conditioned or hold remains unstable. The open branch produced all observed reaches, so branch nonuse alone is not treated as a deficit requiring folded-route forcing.",
+        "question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+        "rationale": "Official assessment is not justified for a frozen 93.75% candidate whose hold traces are fragile, and failed earlier checkpoints are training proxies rather than evidence that another artifact is better. The compiled dynamics establish a bounded torque plant with substantial tested authority and no contacts, so one bounded method-development inquiry can credibly test whether the observed gap is caused by policy braking and hold timing rather than generic physical infeasibility. The intervention is deliberately evaluated as a complete artifact, while the paired diagnostics discriminate reach versus hold and target-conditioned route effects; no causal claim will be made for branch coverage merely because the baseline used the open branch."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a fresh candidate implementing the specified velocity-aware braking/hold-margin change is archived and measured on a non-overlapping held-out panel under the official 6\u201320 cm distribution with the established reach/hold, qvel/action, branch, target-geometry, contact, and internal-step diagnostics. A positive conclusion requires at least 157/160 successes (the panel-equivalent 98% threshold), preserved or improved first-reach coverage, and materially reduced hold interruptions/internal excursions without a new concentrated failure class. A limited or negative conclusion is sufficient if success remains below 157/160 or the diagnostics show persistent target-angle/route-conditioned non-reach, torque saturation, or hold instability; that result will determine whether to continue policy/control development or redirect toward route/observability/learning-recipe investigation. Protected official continuous-hold semantics remain unresolved and will not be claimed from development traces.",
+          "goal_connection": "The only measured learned candidate achieved 150/160 = 93.75%, leaving a 4.25 percentage-point development gap to the 98% goal. Seven failures lacked first reach and three reached but failed the hold; the latter had near-tolerance qvel norms of 6.05 and 7.31 rad/s, saturated action magnitude 1.414, and 192/242 internal boundary excursions, while all failures were contact-free. A targeted learned-control intervention could therefore change complete episode capability, and its diagnostic outcome could redirect the campaign if reach remains angle-conditioned or hold remains unstable. The open branch produced all observed reaches, so branch nonuse alone is not treated as a deficit requiring folded-route forcing.",
+          "handoff_conclusion": "M1 established deterministic compiled-plant facts: the analytic kinematics and state invariance checks passed, the model has nq=nv=nu=2 with a 0.002 s internal step and ten internal steps per 20 ms action, torque authority is substantial in the tested traces, and the tested plant traces had no contacts. Those facts weaken a generic authority or contact explanation but do not exclude target- or route-conditioned limits. M2 corrected and verified the training exposure to the full official 6\u201320 cm radial range. T1 trained a fresh PPO policy with the existing observation, reward, and torque interface; its proxy success rose from zero to 0.58 at 120,832 actual steps, which nominated but did not establish the terminal checkpoint. M3, M5, and M7 measured the same frozen T1:checkpoint-120832 on the same 160-episode development panel. The task result was stable at 150/160 = 93.75%. The complete M7 diagnostic record includes first reach, uninterrupted hold, target radius and angle, signed q2 branch, near-tolerance qvel and action, contacts, and internal-step distance behavior. The ten failures comprised seven with no first reach and three that reached but did not complete the hold; all ten had zero contacts. The severe hold failures had 192 and 242 hold interruptions/internal boundary-in-tolerance excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. Across the panel the policy used the open elbow branch at all first reaches and never the folded branch. M5's same-panel aggregate showed boundary-in-tolerance internal excursions in 141/160 episodes, demonstrating that boundary success is not evidence of continuous robustness for this candidate. M4 and M6 verified that the diagnostic instrumentation preserved task behavior and internal-step cardinality and that q2 branch records are controlled and reproducible. Interpretation: for this tested PPO recipe, policy braking/hold timing and incomplete route/branch coverage are consequential mechanisms. The evidence does not establish a generic PPO failure, torque-interface failure, or official continuous-hold failure; it is recipe- and evaluator-semantics-specific.",
+          "handoff_question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+          "rationale": "Official assessment is not justified for a frozen 93.75% candidate whose hold traces are fragile, and failed earlier checkpoints are training proxies rather than evidence that another artifact is better. The compiled dynamics establish a bounded torque plant with substantial tested authority and no contacts, so one bounded method-development inquiry can credibly test whether the observed gap is caused by policy braking and hold timing rather than generic physical infeasibility. The intervention is deliberately evaluated as a complete artifact, while the paired diagnostics discriminate reach versus hold and target-conditioned route effects; no causal claim will be made for branch coverage merely because the baseline used the open branch.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a fresh candidate implementing the specified velocity-aware braking/hold-margin change is archived and measured on a non-overlapping held-out panel under the official 6\u201320 cm distribution with the established reach/hold, qvel/action, branch, target-geometry, contact, and internal-step diagnostics. A positive conclusion requires at least 157/160 successes (the panel-equivalent 98% threshold), preserved or improved first-reach coverage, and materially reduced hold interruptions/internal excursions without a new concentrated failure class. A limited or negative conclusion is sufficient if success remains below 157/160 or the diagnostics show persistent target-angle/route-conditioned non-reach, torque saturation, or hold instability; that result will determine whether to continue policy/control development or redirect toward route/observability/learning-recipe investigation. Protected official continuous-hold semantics remain unresolved and will not be claimed from development traces.",
+        "goal_connection": "The only measured learned candidate achieved 150/160 = 93.75%, leaving a 4.25 percentage-point development gap to the 98% goal. Seven failures lacked first reach and three reached but failed the hold; the latter had near-tolerance qvel norms of 6.05 and 7.31 rad/s, saturated action magnitude 1.414, and 192/242 internal boundary excursions, while all failures were contact-free. A targeted learned-control intervention could therefore change complete episode capability, and its diagnostic outcome could redirect the campaign if reach remains angle-conditioned or hold remains unstable. The open branch produced all observed reaches, so branch nonuse alone is not treated as a deficit requiring folded-route forcing.",
+        "question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
+        "rationale": "Official assessment is not justified for a frozen 93.75% candidate whose hold traces are fragile, and failed earlier checkpoints are training proxies rather than evidence that another artifact is better. The compiled dynamics establish a bounded torque plant with substantial tested authority and no contacts, so one bounded method-development inquiry can credibly test whether the observed gap is caused by policy braking and hold timing rather than generic physical infeasibility. The intervention is deliberately evaluated as a complete artifact, while the paired diagnostics discriminate reach versus hold and target-conditioned route effects; no causal claim will be made for branch coverage merely because the baseline used the open branch."
+      }
+    },
+    "request_fingerprint": "0385627270ef5cb7b0ebef3e1ada7fa503b7af8f80a37f15bb5bf29da0b40fbb",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 is the only complete learned candidate measured in I1, with M7 as its complete development artifact. No working, best-known, or retained role is assigned. The candidate is not assessment-ready because its measured development success is 93.75% and its internal traces expose substantial hold fragility; its artifact remains available for comparison or transfer in a future inquiry.",
     "completed_operations": [
@@ -2859,6 +2933,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8139212f-3619-462b-8e11-92da00627021",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "7903e359cc257b31259dde88b1c6546a5ea4d73e"
+  },
   "terminal_state": null
 }
