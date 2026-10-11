@@ -200,6 +200,57 @@ def _dynamics_record(
     }
 
 
+def _kinematic_reference(
+    model: mujoco.MjModel,
+    replay_data: mujoco.MjData,
+    site_id: int,
+    qpos_after: np.ndarray,
+    qvel_after: np.ndarray,
+    observed_endpoint: np.ndarray,
+    observed_endpoint_velocity: np.ndarray,
+) -> dict[str, Any]:
+    replay_data.qpos[:] = qpos_after
+    replay_data.qvel[:] = qvel_after
+    mujoco.mj_forward(model, replay_data)
+    reference_endpoint = np.asarray(
+        replay_data.site("end_effector").xpos, dtype=np.float64
+    ).copy()
+    jacobian_position = np.empty((3, model.nv), dtype=np.float64)
+    jacobian_rotation = np.empty((3, model.nv), dtype=np.float64)
+    mujoco.mj_jacSite(
+        model,
+        replay_data,
+        jacobian_position,
+        jacobian_rotation,
+        site_id,
+    )
+    if jacobian_position.shape != (3, model.nv):
+        raise ValueError("replay endpoint Jacobian has an unexpected shape")
+    if not np.all(np.isfinite(jacobian_position)):
+        raise ValueError("replay endpoint Jacobian contains a non-finite value")
+    reference_endpoint_velocity = jacobian_position @ qvel_after
+    if reference_endpoint_velocity.shape != (3,):
+        raise ValueError("replay endpoint velocity has an unexpected shape")
+    return {
+        "endpoint_position_m": _finite_array(
+            reference_endpoint, "kinematic_reference_endpoint_position", (3,)
+        ),
+        "endpoint_velocity_m_s": _finite_array(
+            reference_endpoint_velocity,
+            "kinematic_reference_endpoint_velocity",
+            (3,),
+        ),
+        "position_error_m": _finite_scalar(
+            np.linalg.norm(observed_endpoint - reference_endpoint),
+            "kinematic_reference_position_error",
+        ),
+        "velocity_error_m_s": _finite_scalar(
+            np.linalg.norm(observed_endpoint_velocity - reference_endpoint_velocity),
+            "kinematic_reference_velocity_error",
+        ),
+    }
+
+
 def _rollout(
     env,
     runtime,
@@ -223,6 +274,7 @@ def _rollout(
         initial_qvel, np.zeros(2)
     ):
         raise ValueError("reset did not produce the required zero state")
+    replay_data = mujoco.MjData(model)
     target = np.asarray(env.data.mocap_pos[0], dtype=np.float64).copy()
     target_info = _target_metadata(target)
     trace: list[dict[str, Any]] = []
@@ -275,6 +327,15 @@ def _rollout(
             )
         if not np.all(np.isfinite(endpoint_velocity)):
             raise ValueError("endpoint velocity contains a non-finite value")
+        kinematic_reference = _kinematic_reference(
+            model,
+            replay_data,
+            site_id,
+            qpos_after,
+            qvel_after,
+            endpoint,
+            endpoint_velocity,
+        )
         if env.data.ctrl.shape != (2,):
             raise ValueError("compiled actuator control shape is not two")
         applied_control = np.asarray(env.data.ctrl, dtype=np.float64).copy()
@@ -315,6 +376,7 @@ def _rollout(
                 "target_position_m": _finite_array(target, "target_position", (3,)),
                 "distance_m": _finite_scalar(distance, "distance"),
                 "distance_cm": _finite_scalar(100.0 * distance, "distance_cm"),
+                "kinematic_reference": kinematic_reference,
                 "policy_action": _finite_array(action, "policy_action", (2,)),
                 "applied_clipped_control": _finite_array(
                     applied_control, "applied_control", (2,)
@@ -461,6 +523,40 @@ def run_measurement(
             "success_threshold_m": SUCCESS_THRESHOLD,
             "max_control_steps": MAX_EPISODE_STEPS,
             "environment_factory": "make_evaluation_env(policy_runtime=runtime)",
+        },
+        "measurement_semantics": {
+            "environment_observed_fields": [
+                "endpoint_position_m",
+                "endpoint_velocity_m_s",
+                "distance_m",
+                "distance_cm",
+                "in_tolerance",
+                "previous_held_steps",
+                "held_steps",
+                "hold_counter_transition",
+                "interruption",
+                "cumulative_interruptions",
+            ],
+            "environment_observed_role": (
+                "Endpoint, distance, and hold fields are sampled from the live "
+                "environment after env.step and retain task semantics."
+            ),
+            "kinematic_reference": {
+                "fields": [
+                    "endpoint_position_m",
+                    "endpoint_velocity_m_s",
+                    "position_error_m",
+                    "velocity_error_m_s",
+                ],
+                "source": (
+                    "Separate MuJoCo replay loaded from qpos_after_rad and "
+                    "qvel_after_rad_s, followed by mj_forward and mj_jacSite."
+                ),
+                "role": (
+                    "Forward-consistent reference only; it does not replace "
+                    "environment-observed endpoint, distance, or hold fields."
+                ),
+            },
         },
         "requested_rollouts": {
             "failure_seeds": list(failure_seeds),

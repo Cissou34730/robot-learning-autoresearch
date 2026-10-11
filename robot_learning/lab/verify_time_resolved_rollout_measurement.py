@@ -148,6 +148,10 @@ def _check_trace(
     interruptions = 0
     first_reach = None
     max_held = 0
+    nonzero_discrepancies = 0
+    maximum_position_error = 0.0
+    maximum_velocity_error = 0.0
+    first_nonzero_discrepancy = None
     for expected_step, record in enumerate(trace, start=1):
         _require(record["control_step"] == expected_step, "trace control steps are not consecutive")
         qpos_before = _array(record["qpos_before_rad"], (2,), "qpos_before")
@@ -158,6 +162,27 @@ def _check_trace(
         _close(qvel_before, previous_qvel, "repeated qvel state")
         endpoint = _array(record["endpoint_position_m"], (3,), "endpoint position")
         endpoint_velocity = _array(record["endpoint_velocity_m_s"], (3,), "endpoint velocity")
+        kinematic_reference = record["kinematic_reference"]
+        reference_endpoint = _array(
+            kinematic_reference["endpoint_position_m"],
+            (3,),
+            "kinematic reference endpoint position",
+        )
+        reference_endpoint_velocity = _array(
+            kinematic_reference["endpoint_velocity_m_s"],
+            (3,),
+            "kinematic reference endpoint velocity",
+        )
+        position_error = _finite(
+            kinematic_reference["position_error_m"],
+            "kinematic reference position error",
+        )
+        velocity_error = _finite(
+            kinematic_reference["velocity_error_m_s"],
+            "kinematic reference velocity error",
+        )
+        _require(position_error >= 0.0, "kinematic reference position error is negative")
+        _require(velocity_error >= 0.0, "kinematic reference velocity error is negative")
         _array(record["target_position_m"], (3,), "trace target")
         _close(record["target_position_m"], target, "stable target")
         _array(record["policy_action"], (2,), "policy action")
@@ -170,7 +195,11 @@ def _check_trace(
         data.qpos[:] = qpos_after
         data.qvel[:] = qvel_after
         mujoco.mj_forward(model, data)
-        _close(endpoint, data.site("end_effector").xpos, "endpoint forward kinematics")
+        _close(
+            reference_endpoint,
+            data.site("end_effector").xpos,
+            "kinematic reference forward kinematics",
+        )
         jacobian_position = np.empty((3, model.nv), dtype=np.float64)
         jacobian_rotation = np.empty((3, model.nv), dtype=np.float64)
         mujoco.mj_jacSite(
@@ -185,10 +214,35 @@ def _check_trace(
             "endpoint translational Jacobian contains a non-finite value",
         )
         _close(
-            endpoint_velocity,
+            reference_endpoint_velocity,
             jacobian_position @ qvel_after,
-            "endpoint velocity from translational Jacobian",
+            "kinematic reference velocity from translational Jacobian",
         )
+        _close(
+            position_error,
+            np.linalg.norm(endpoint - reference_endpoint),
+            "environment/reference endpoint position error",
+        )
+        _close(
+            velocity_error,
+            np.linalg.norm(endpoint_velocity - reference_endpoint_velocity),
+            "environment/reference endpoint velocity error",
+        )
+        maximum_position_error = max(maximum_position_error, position_error)
+        maximum_velocity_error = max(maximum_velocity_error, velocity_error)
+        if position_error > NUMERICAL_TOLERANCE or velocity_error > NUMERICAL_TOLERANCE:
+            nonzero_discrepancies += 1
+            if first_nonzero_discrepancy is None:
+                first_nonzero_discrepancy = {
+                    "seed": int(rollout["seed"]),
+                    "control_step": expected_step,
+                    "observed_endpoint_position_m": endpoint.tolist(),
+                    "reference_endpoint_position_m": reference_endpoint.tolist(),
+                    "position_error_m": position_error,
+                    "observed_endpoint_velocity_m_s": endpoint_velocity.tolist(),
+                    "reference_endpoint_velocity_m_s": reference_endpoint_velocity.tolist(),
+                    "velocity_error_m_s": velocity_error,
+                }
         distance = float(np.linalg.norm(endpoint - target))
         _close(record["distance_m"], distance, "distance")
         _close(record["distance_cm"], 100.0 * distance, "distance in centimeters")
@@ -291,7 +345,14 @@ def _check_trace(
     _require(int(summary["samples"]) == len(trace), "contact summary samples are wrong")
     _require(int(summary["maximum_contact_count"]) == max(counts), "contact summary maximum is wrong")
     _require(int(summary["nonzero_contact_samples"]) == sum(count > 0 for count in counts), "contact summary nonzero count is wrong")
-    return {"first_reach_step": first_reach, "interruptions": interruptions}
+    return {
+        "first_reach_step": first_reach,
+        "interruptions": interruptions,
+        "nonzero_discrepancy_samples": nonzero_discrepancies,
+        "maximum_position_error_m": maximum_position_error,
+        "maximum_velocity_error_m_s": maximum_velocity_error,
+        "first_nonzero_discrepancy": first_nonzero_discrepancy,
+    }
 
 
 def verify_artifact(artifact_path: Path) -> dict[str, Any]:
@@ -309,6 +370,57 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
     semantics = artifact["evaluation_semantics"]
     _require(semantics["frame_skip"] == 10 and semantics["simulator_substeps_per_action"] == 10, "substep semantics are missing")
     _require(semantics["hold_steps_required"] == 100 and semantics["max_control_steps"] == 500, "hold or horizon semantics are missing")
+    measurement_semantics = artifact["measurement_semantics"]
+    _require(
+        measurement_semantics["environment_observed_fields"]
+        == [
+            "endpoint_position_m",
+            "endpoint_velocity_m_s",
+            "distance_m",
+            "distance_cm",
+            "in_tolerance",
+            "previous_held_steps",
+            "held_steps",
+            "hold_counter_transition",
+            "interruption",
+            "cumulative_interruptions",
+        ],
+        "environment-observed field metadata is missing or wrong",
+    )
+    _require(
+        measurement_semantics["environment_observed_role"]
+        == (
+            "Endpoint, distance, and hold fields are sampled from the live "
+            "environment after env.step and retain task semantics."
+        ),
+        "environment-observed role metadata is missing or wrong",
+    )
+    _require(
+        measurement_semantics["kinematic_reference"]["fields"]
+        == [
+            "endpoint_position_m",
+            "endpoint_velocity_m_s",
+            "position_error_m",
+            "velocity_error_m_s",
+        ],
+        "kinematic reference field metadata is missing or wrong",
+    )
+    _require(
+        measurement_semantics["kinematic_reference"]["source"]
+        == (
+            "Separate MuJoCo replay loaded from qpos_after_rad and "
+            "qvel_after_rad_s, followed by mj_forward and mj_jacSite."
+        ),
+        "kinematic reference source metadata is missing or wrong",
+    )
+    _require(
+        measurement_semantics["kinematic_reference"]["role"]
+        == (
+            "Forward-consistent reference only; it does not replace "
+            "environment-observed endpoint, distance, or hold fields."
+        ),
+        "kinematic reference role metadata is missing or wrong",
+    )
     _require(bool(artifact["reset_evidence"]["each_rollout_reset_with_its_seed"]), "reset evidence is missing")
     model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
     data = mujoco.MjData(model)
@@ -326,12 +438,35 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
         _require(bool(rollout["expected_success"]) is (expected_role == "control"), "expected role outcome is wrong")
         checked.append(_check_trace(rollout, model, data))
     _require(seen == EXPECTED_FAILURE_SEEDS | EXPECTED_CONTROL_SEEDS, "requested seeds are not all represented")
+    _require(
+        any(item["nonzero_discrepancy_samples"] > 0 for item in checked),
+        "the artifact does not preserve any nonzero environment/reference discrepancy",
+    )
     failures = [item for rollout, item in zip(rollouts, checked, strict=True) if rollout["role"] == "failure"]
     _require(any(item["interruptions"] > 0 for item in failures), "no failure exercises a hold interruption")
     _require(any(item["first_reach_step"] is None for item in failures), "no failure exercises the no-first-reach transition")
     return {
         "checked_rollouts": len(rollouts),
         "checked_steps": sum(len(rollout["trace"]) for rollout in rollouts),
+        "kinematic_discrepancy": {
+            "samples_with_nonzero_discrepancy": sum(
+                item["nonzero_discrepancy_samples"] for item in checked
+            ),
+            "maximum_position_error_m": max(
+                item["maximum_position_error_m"] for item in checked
+            ),
+            "maximum_velocity_error_m_s": max(
+                item["maximum_velocity_error_m_s"] for item in checked
+            ),
+            "first_nonzero_discrepancy": next(
+                (
+                    item["first_nonzero_discrepancy"]
+                    for item in checked
+                    if item["first_nonzero_discrepancy"] is not None
+                ),
+                None,
+            ),
+        },
         "failure_with_interruption": True,
         "failure_without_first_reach": True,
     }
@@ -352,8 +487,9 @@ def main(argv: list[str] | None = None) -> None:
             "checked_scope": [
                 "20 exact M9 seeds and role outcomes",
                 "reset state and repeated qpos/qvel transitions",
-                "forward-kinematics endpoint and geometry distances",
-                "endpoint velocity against an independent translational Jacobian-times-qvel reference",
+                "environment-observed endpoint, distance, and hold semantics",
+                "forward-consistent qpos/qvel kinematic reference and its independent translational Jacobian-times-qvel velocity",
+                "recorded environment/reference position and velocity discrepancy norms, including nonzero discrepancies",
                 "hold transitions, interruption classes, contacts, and branch IK",
             ],
             "unchecked_scope": [
