@@ -10727,49 +10727,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T7:checkpoint-75776",
-        "evidence": [
-          "M8"
-        ],
-        "reason": "T7 is the strongest evidence-backed candidate: on the fresh M8 research panel it achieved 196/200 successes (98.0%), exceeded the paired T4 reference by 11 net wins with no reference wins, and preserved inner-radius acquisition with only two inner-radius failures."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/89a6354a-0e08-43f6-b017-536e7c05229b/t7-c02070fc4-8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
-        "fingerprint": "8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
-        "source": "campaigns/checkpoints/candidates/89a6354a-0e08-43f6-b017-536e7c05229b/t7/checkpoint-75776"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T7:checkpoint-75776",
-        "evidence": [
-          "M8"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T7:checkpoint-75776",
-        "evidence": [
-          "M8"
-        ],
-        "reason": "T7 is the strongest evidence-backed candidate: on the fresh M8 research panel it achieved 196/200 successes (98.0%), exceeded the paired T4 reference by 11 net wins with no reference wins, and preserved inner-radius acquisition with only two inner-radius failures."
-      }
-    },
-    "request_fingerprint": "c148b69545c8b1db997ecdb2d228a621adc90dfd4c623e28e0a19f946f4af696",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
     "completed_operations": [
