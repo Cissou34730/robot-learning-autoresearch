@@ -7,3 +7,4 @@
 | M3 | measurement | - | completed |
 | T1 | training | - | completed |
 | M4 | measurement | - | completed |
+| E1 | checkpoint | - | checkpointed |
