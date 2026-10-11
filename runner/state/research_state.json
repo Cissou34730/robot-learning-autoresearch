@@ -1648,7 +1648,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 7,
     "session": 3,
@@ -1657,7 +1657,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3142,30 +3142,193 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T12:34:14Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% (150/160). T2:checkpoint-115712 is a complete artifact from the branch-progress intervention at 93.125% (149/160). Neither candidate is assigned a working, best-known, or retained role, and neither is committed to official assessment.",
+        "completed_operations": [
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested and 120832 completed rollout steps. M4 and M5: matched 160-episode development evaluations of T1:checkpoint-120832 on seeds 4200-4359, with M5 providing the initial trajectory diagnostic. M6: corrected repeat of the same 160-episode trajectory diagnostic. T2: one fresh PPO run, 120000 requested and 120832 completed rollout steps with full-radius exposure and fixed open-branch progress shaping. M7: one 160-episode development evaluation of T2:checkpoint-115712 on seeds 4200-4359. E2 opened I1; E4 closed I1.",
+        "current_goal_gap": "The strongest measured development candidate remains T1:checkpoint-120832 at 93.75% (150/160), 4.25 percentage points below the 98% development reference, and official success remains unmeasured. T2:checkpoint-115712 achieved 93.125% (149/160), so the tested branch-progress intervention did not close the gap.",
+        "current_synthesis": "M3 established moderate configuration-dependent inertia and bounded +/-5 nominal torque; saturated impulses produced substantial transient motion but zero-input responses decayed over the measured recovery window, weakening intrinsic damping or torque authority as the first explanation. T1 established that full-radius exposure is useful but insufficient: its strongest measured candidate reached 150/160. M5 and corrected M6 added candidate trajectories and showed that the 10 T1 failures remain concentrated in repeated angular sectors; 9/10 had nearest-analytic-branch switches, several had corrected end-effector speeds up to 0.91 m/s, and failures used 491-498 saturated control steps. Saturation is not alone causal because successful episodes also saturated during acquisition. T2 implemented fixed open-branch progress shaping while retaining full-radius exposure. Its highest-proxy nonterminal candidate T2:checkpoint-115712 reached 149/160 and retained the same representative angular, branch-switch, and saturation signatures. Therefore the evidence supports angle/branch-conditioned acquisition with coupled dynamic-regulation demands, rejects this fixed-branch reward recipe as a demonstrated improvement, and does not isolate one exclusive cause.",
+        "decision_frontier": "I1 is closed with the bounded conclusion that the measured failures are angle/branch-conditioned and can involve high-speed dynamic regulation, but fixed open-branch shaping did not improve complete-hold success. The unresolved interaction is whether the next useful route should change acquisition representation or branch handling, directly improve dynamic regulation/observation, or combine them. Evidence that would redirect the next route is a candidate comparison or mechanism test that changes failure-sector success while recording branch switches, entry velocity, saturation, and uninterrupted hold behavior; persistent failures without improved dynamic signatures would limit further reward-only changes.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2",
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. T1:checkpoint-120832 achieved 150/160 development successes, while the T2 fixed open-branch shaping intervention achieved 149/160 on the same panel. No candidate has demonstrated the official requirement.",
+        "next_direction_or_closure": "I1 is closed because completed trajectory evidence distinguished the consequential failure pattern sufficiently to reject or limit the tested fixed open-branch reward intervention. The next goal-review session should choose between a new acquisition/branch representation, a direct stabilization or observation intervention, or a combined design, using the preserved failure-sector and dynamic signatures. Official assessment is not justified by the current development evidence.",
+        "next_question": "Which PI-owned intervention best resolves the coupled angle-conditioned acquisition and dynamic-regulation failures identified by I1, and can a new candidate reach at least 98% complete-hold success on development evidence before official assessment?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "70fbe76cf27bf90ffa6201e7b93ff25371e9e6dd",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% (150/160). T2:checkpoint-115712 is a complete artifact from the branch-progress intervention at 93.125% (149/160). Neither candidate is assigned a working, best-known, or retained role, and neither is committed to official assessment.",
+        "completed_operations": [
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested and 120832 completed rollout steps. M4 and M5: matched 160-episode development evaluations of T1:checkpoint-120832 on seeds 4200-4359, with M5 providing the initial trajectory diagnostic. M6: corrected repeat of the same 160-episode trajectory diagnostic. T2: one fresh PPO run, 120000 requested and 120832 completed rollout steps with full-radius exposure and fixed open-branch progress shaping. M7: one 160-episode development evaluation of T2:checkpoint-115712 on seeds 4200-4359. E2 opened I1; E4 closed I1.",
+        "current_goal_gap": "The strongest measured development candidate remains T1:checkpoint-120832 at 93.75% (150/160), 4.25 percentage points below the 98% development reference, and official success remains unmeasured. T2:checkpoint-115712 achieved 93.125% (149/160), so the tested branch-progress intervention did not close the gap.",
+        "current_synthesis": "M3 established moderate configuration-dependent inertia and bounded +/-5 nominal torque; saturated impulses produced substantial transient motion but zero-input responses decayed over the measured recovery window, weakening intrinsic damping or torque authority as the first explanation. T1 established that full-radius exposure is useful but insufficient: its strongest measured candidate reached 150/160. M5 and corrected M6 added candidate trajectories and showed that the 10 T1 failures remain concentrated in repeated angular sectors; 9/10 had nearest-analytic-branch switches, several had corrected end-effector speeds up to 0.91 m/s, and failures used 491-498 saturated control steps. Saturation is not alone causal because successful episodes also saturated during acquisition. T2 implemented fixed open-branch progress shaping while retaining full-radius exposure. Its highest-proxy nonterminal candidate T2:checkpoint-115712 reached 149/160 and retained the same representative angular, branch-switch, and saturation signatures. Therefore the evidence supports angle/branch-conditioned acquisition with coupled dynamic-regulation demands, rejects this fixed-branch reward recipe as a demonstrated improvement, and does not isolate one exclusive cause.",
+        "decision_frontier": "I1 is closed with the bounded conclusion that the measured failures are angle/branch-conditioned and can involve high-speed dynamic regulation, but fixed open-branch shaping did not improve complete-hold success. The unresolved interaction is whether the next useful route should change acquisition representation or branch handling, directly improve dynamic regulation/observation, or combine them. Evidence that would redirect the next route is a candidate comparison or mechanism test that changes failure-sector success while recording branch switches, entry velocity, saturation, and uninterrupted hold behavior; persistent failures without improved dynamic signatures would limit further reward-only changes.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2",
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. T1:checkpoint-120832 achieved 150/160 development successes, while the T2 fixed open-branch shaping intervention achieved 149/160 on the same panel. No candidate has demonstrated the official requirement.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed because completed trajectory evidence distinguished the consequential failure pattern sufficiently to reject or limit the tested fixed open-branch reward intervention. The next goal-review session should choose between a new acquisition/branch representation, a direct stabilization or observation intervention, or a combined design, using the preserved failure-sector and dynamic signatures. Official assessment is not justified by the current development evidence.",
+        "next_question": "Which PI-owned intervention best resolves the coupled angle-conditioned acquisition and dynamic-regulation failures identified by I1, and can a new candidate reach at least 98% complete-hold success on development evidence before official assessment?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "416f1122-186b-40de-be68-14b113e3da78",
+        "campaign_id": "bfd9e63d-b3d3-4ab8-a56d-027209406cf4",
+        "campaign_usage": "14m11s | 29.31 AIU | prompt 5.1m (89% cached) | output 53.4k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "5m04s | 12.13 AIU | prompt 2.5m (92% cached) | output 20.5k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "44fbf79e5cc55b54c8105f31fd31cad4c7ad2581",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% (150/160). T2:checkpoint-115712 is a complete artifact from the branch-progress intervention at 93.125% (149/160). Neither candidate is assigned a working, best-known, or retained role, and neither is committed to official assessment.",
+        "completed_operations": [
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested and 120832 completed rollout steps. M4 and M5: matched 160-episode development evaluations of T1:checkpoint-120832 on seeds 4200-4359, with M5 providing the initial trajectory diagnostic. M6: corrected repeat of the same 160-episode trajectory diagnostic. T2: one fresh PPO run, 120000 requested and 120832 completed rollout steps with full-radius exposure and fixed open-branch progress shaping. M7: one 160-episode development evaluation of T2:checkpoint-115712 on seeds 4200-4359. E2 opened I1; E4 closed I1.",
+        "current_goal_gap": "The strongest measured development candidate remains T1:checkpoint-120832 at 93.75% (150/160), 4.25 percentage points below the 98% development reference, and official success remains unmeasured. T2:checkpoint-115712 achieved 93.125% (149/160), so the tested branch-progress intervention did not close the gap.",
+        "current_synthesis": "M3 established moderate configuration-dependent inertia and bounded +/-5 nominal torque; saturated impulses produced substantial transient motion but zero-input responses decayed over the measured recovery window, weakening intrinsic damping or torque authority as the first explanation. T1 established that full-radius exposure is useful but insufficient: its strongest measured candidate reached 150/160. M5 and corrected M6 added candidate trajectories and showed that the 10 T1 failures remain concentrated in repeated angular sectors; 9/10 had nearest-analytic-branch switches, several had corrected end-effector speeds up to 0.91 m/s, and failures used 491-498 saturated control steps. Saturation is not alone causal because successful episodes also saturated during acquisition. T2 implemented fixed open-branch progress shaping while retaining full-radius exposure. Its highest-proxy nonterminal candidate T2:checkpoint-115712 reached 149/160 and retained the same representative angular, branch-switch, and saturation signatures. Therefore the evidence supports angle/branch-conditioned acquisition with coupled dynamic-regulation demands, rejects this fixed-branch reward recipe as a demonstrated improvement, and does not isolate one exclusive cause.",
+        "decision_frontier": "I1 is closed with the bounded conclusion that the measured failures are angle/branch-conditioned and can involve high-speed dynamic regulation, but fixed open-branch shaping did not improve complete-hold success. The unresolved interaction is whether the next useful route should change acquisition representation or branch handling, directly improve dynamic regulation/observation, or combine them. Evidence that would redirect the next route is a candidate comparison or mechanism test that changes failure-sector success while recording branch switches, entry velocity, saturation, and uninterrupted hold behavior; persistent failures without improved dynamic signatures would limit further reward-only changes.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2",
+          "M5",
+          "M6",
+          "T2",
+          "M7",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. T1:checkpoint-120832 achieved 150/160 development successes, while the T2 fixed open-branch shaping intervention achieved 149/160 on the same panel. No candidate has demonstrated the official requirement.",
+        "next_direction_or_closure": "I1 is closed because completed trajectory evidence distinguished the consequential failure pattern sufficiently to reject or limit the tested fixed open-branch reward intervention. The next goal-review session should choose between a new acquisition/branch representation, a direct stabilization or observation intervention, or a combined design, using the preserved failure-sector and dynamic signatures. Official assessment is not justified by the current development evidence.",
+        "next_question": "Which PI-owned intervention best resolves the coupled angle-conditioned acquisition and dynamic-regulation failures identified by I1, and can a new candidate reach at least 98% complete-hold success on development evidence before official assessment?"
+      }
+    },
+    "request_fingerprint": "41462c8ff35162dc27e44a399918315b6dd3a2aa7dccc8bd8a38b1b39079e10f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% (150/160). T2:checkpoint-115712 is a complete artifact from the branch-progress intervention at 93.125% (149/160). Neither candidate is assigned a working, best-known, or retained role, and neither is committed to official assessment.",
     "completed_operations": [
-      "E2"
+      "M5",
+      "M6",
+      "T2",
+      "M7",
+      "E4"
     ],
-    "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359. E2: one inquiry-opening decision record; no training or measurement resources consumed.",
-    "current_goal_gap": "T1:checkpoint-120832 achieved 93.75% on the 160-episode development panel, with 10 failures: 7 without reaching tolerance and 3 with intermittent holds. Official success remains unmeasured, and no candidate has demonstrated the 196-of-200 requirement.",
-    "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
-    "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure. A matched candidate evaluation should record target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. Concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes. This evidence can change the intervention direction, whereas the current aggregate score cannot.",
+    "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested and 120832 completed rollout steps. M4 and M5: matched 160-episode development evaluations of T1:checkpoint-120832 on seeds 4200-4359, with M5 providing the initial trajectory diagnostic. M6: corrected repeat of the same 160-episode trajectory diagnostic. T2: one fresh PPO run, 120000 requested and 120832 completed rollout steps with full-radius exposure and fixed open-branch progress shaping. M7: one 160-episode development evaluation of T2:checkpoint-115712 on seeds 4200-4359. E2 opened I1; E4 closed I1.",
+    "current_goal_gap": "The strongest measured development candidate remains T1:checkpoint-120832 at 93.75% (150/160), 4.25 percentage points below the 98% development reference, and official success remains unmeasured. T2:checkpoint-115712 achieved 93.125% (149/160), so the tested branch-progress intervention did not close the gap.",
+    "current_synthesis": "M3 established moderate configuration-dependent inertia and bounded +/-5 nominal torque; saturated impulses produced substantial transient motion but zero-input responses decayed over the measured recovery window, weakening intrinsic damping or torque authority as the first explanation. T1 established that full-radius exposure is useful but insufficient: its strongest measured candidate reached 150/160. M5 and corrected M6 added candidate trajectories and showed that the 10 T1 failures remain concentrated in repeated angular sectors; 9/10 had nearest-analytic-branch switches, several had corrected end-effector speeds up to 0.91 m/s, and failures used 491-498 saturated control steps. Saturation is not alone causal because successful episodes also saturated during acquisition. T2 implemented fixed open-branch progress shaping while retaining full-radius exposure. Its highest-proxy nonterminal candidate T2:checkpoint-115712 reached 149/160 and retained the same representative angular, branch-switch, and saturation signatures. Therefore the evidence supports angle/branch-conditioned acquisition with coupled dynamic-regulation demands, rejects this fixed-branch reward recipe as a demonstrated improvement, and does not isolate one exclusive cause.",
+    "decision_frontier": "I1 is closed with the bounded conclusion that the measured failures are angle/branch-conditioned and can involve high-speed dynamic regulation, but fixed open-branch shaping did not improve complete-hold success. The unresolved interaction is whether the next useful route should change acquisition representation or branch handling, directly improve dynamic regulation/observation, or combine them. Evidence that would redirect the next route is a candidate comparison or mechanism test that changes failure-sector success while recording branch switches, entry velocity, saturation, and uninterrupted hold behavior; persistent failures without improved dynamic signatures would limit further reward-only changes.",
     "evidence_references": [
       "M3",
       "T1",
       "M4",
-      "E2"
+      "E2",
+      "M5",
+      "M6",
+      "T2",
+      "M7",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but remains 4.25 percentage points below the 98% development reference and has not been assessed officially.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review opened I1 because the candidate is below the development target and M4 leaves the causal distinction unresolved. This checkpoint ends S2; the fresh I1 inquiry session should perform the candidate-level trajectory diagnostic that distinguishes angle/branch acquisition from branch-switching transients and dynamic regulation before selecting a PI-owned intervention.",
-    "next_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?",
-    "scientific_commit": "382e8b5dd66ceecc864258b30d773041da8f7e16",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. T1:checkpoint-120832 achieved 150/160 development successes, while the T2 fixed open-branch shaping intervention achieved 149/160 on the same panel. No candidate has demonstrated the official requirement.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed because completed trajectory evidence distinguished the consequential failure pattern sufficiently to reject or limit the tested fixed open-branch reward intervention. The next goal-review session should choose between a new acquisition/branch representation, a direct stabilization or observation intervention, or a combined design, using the preserved failure-sector and dynamic signatures. Official assessment is not justified by the current development evidence.",
+    "next_question": "Which PI-owned intervention best resolves the coupled angle-conditioned acquisition and dynamic-regulation failures identified by I1, and can a new candidate reach at least 98% complete-hold success on development evidence before official assessment?",
+    "scientific_commit": "44fbf79e5cc55b54c8105f31fd31cad4c7ad2581",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3173,25 +3336,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "416f1122-186b-40de-be68-14b113e3da78",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M5",
-      "M6",
-      "T2",
-      "M7",
-      "E4"
-    ],
-    "scientific_parent_commit": "70fbe76cf27bf90ffa6201e7b93ff25371e9e6dd"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
