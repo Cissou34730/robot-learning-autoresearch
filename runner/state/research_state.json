@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Restore T3, implement one state-dependent velocity-damped torque-interface recipe, and train one full-allocation transfer candidate. Measure that complete artifact against T3 on the shared 160-episode development panel with the existing full-radius and hold diagnostics. Close positively only if the candidate reaches at least 157/160 successes, wins the paired comparison, and does not regress the inner or outer radius capability; close negatively if it fails that candidate-selection criterion or loses the paired comparison. A changed saturation or speed phenotype without the required complete-hold improvement is a limited or negative result, not evidence that all action-realization methods are invalid.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted successes out of 200 official episodes. T3 is the strongest measured artifact at 151/160 development successes, but its residual failures are concentrated in saturated, high-speed, no-first-entry episodes. A trajectory-level velocity-damped command interface is a bounded attempt to improve entry and hold without narrowing official radius coverage.",
+    "handoff_conclusion": "M4/E8 established T3 as the strongest artifact-level candidate over T1 while preserving sampled inner- and outer-radius capability, with residual failures characterized as saturated, high-speed, no-first-entry episodes. M9/E16 found positive local endpoint authority at sampled inner and outer configurations, so absent authority is insufficient as an explanation at those samples. E12/E21/E26 remain recipe-specific negative results for other interventions. E30 restored T3, T8 trained the specified observation- and reward-preserving action-rate-limited recipe, and M12 measured T8 against T3 on the shared panel. T8 reached 144/160 and lost the paired comparison 1-8, so this tested recipe did not advance the goal. M12 is an artifact comparison and does not establish that transient command realization cannot matter under another design.",
+    "handoff_question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+    "handoff_source_session_id": "S15",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+    "rationale": "Assessment of T3 is defensible as the strongest current artifact but is unlikely to meet the protected 196/200 criterion given 151/160 on the matched development panel. Further work is warranted because E8 and E16 identify a consistent trajectory-regulation phenotype and rule out absent local authority at sampled residual configurations, while E12, E21, E26, and M12 reject only their tested recipes, including uniform action-rate limiting. The proposed interface directly tests a distinct, state-dependent regulation mechanism and preserves the observation, reward, task distribution, and complete uninterrupted success semantics.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -5747,16 +5758,16 @@
     }
   },
   "counters": {
-    "event": 32,
-    "inquiry": 7,
+    "event": 33,
+    "inquiry": 8,
     "measurement": 12,
-    "session": 15,
+    "session": 16,
     "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14193,9 +14204,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:35:56Z",
+      "error": null,
+      "id": "E33",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Restore T3, implement one state-dependent velocity-damped torque-interface recipe, and train one full-allocation transfer candidate. Measure that complete artifact against T3 on the shared 160-episode development panel with the existing full-radius and hold diagnostics. Close positively only if the candidate reaches at least 157/160 successes, wins the paired comparison, and does not regress the inner or outer radius capability; close negatively if it fails that candidate-selection criterion or loses the paired comparison. A changed saturation or speed phenotype without the required complete-hold improvement is a limited or negative result, not evidence that all action-realization methods are invalid.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted successes out of 200 official episodes. T3 is the strongest measured artifact at 151/160 development successes, but its residual failures are concentrated in saturated, high-speed, no-first-entry episodes. A trajectory-level velocity-damped command interface is a bounded attempt to improve entry and hold without narrowing official radius coverage.",
+        "question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+        "rationale": "Assessment of T3 is defensible as the strongest current artifact but is unlikely to meet the protected 196/200 criterion given 151/160 on the matched development panel. Further work is warranted because E8 and E16 identify a consistent trajectory-regulation phenotype and rule out absent local authority at sampled residual configurations, while E12, E21, E26, and M12 reject only their tested recipes, including uniform action-rate limiting. The proposed interface directly tests a distinct, state-dependent regulation mechanism and preserves the observation, reward, task distribution, and complete uninterrupted success semantics."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Restore T3, implement one state-dependent velocity-damped torque-interface recipe, and train one full-allocation transfer candidate. Measure that complete artifact against T3 on the shared 160-episode development panel with the existing full-radius and hold diagnostics. Close positively only if the candidate reaches at least 157/160 successes, wins the paired comparison, and does not regress the inner or outer radius capability; close negatively if it fails that candidate-selection criterion or loses the paired comparison. A changed saturation or speed phenotype without the required complete-hold improvement is a limited or negative result, not evidence that all action-realization methods are invalid.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted successes out of 200 official episodes. T3 is the strongest measured artifact at 151/160 development successes, but its residual failures are concentrated in saturated, high-speed, no-first-entry episodes. A trajectory-level velocity-damped command interface is a bounded attempt to improve entry and hold without narrowing official radius coverage.",
+          "handoff_conclusion": "M4/E8 established T3 as the strongest artifact-level candidate over T1 while preserving sampled inner- and outer-radius capability, with residual failures characterized as saturated, high-speed, no-first-entry episodes. M9/E16 found positive local endpoint authority at sampled inner and outer configurations, so absent authority is insufficient as an explanation at those samples. E12/E21/E26 remain recipe-specific negative results for other interventions. E30 restored T3, T8 trained the specified observation- and reward-preserving action-rate-limited recipe, and M12 measured T8 against T3 on the shared panel. T8 reached 144/160 and lost the paired comparison 1-8, so this tested recipe did not advance the goal. M12 is an artifact comparison and does not establish that transient command realization cannot matter under another design.",
+          "handoff_question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+          "handoff_source_session_id": "S15",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+          "rationale": "Assessment of T3 is defensible as the strongest current artifact but is unlikely to meet the protected 196/200 criterion given 151/160 on the matched development panel. Further work is warranted because E8 and E16 identify a consistent trajectory-regulation phenotype and rule out absent local authority at sampled residual configurations, while E12, E21, E26, and M12 reject only their tested recipes, including uniform action-rate limiting. The proposed interface directly tests a distinct, state-dependent regulation mechanism and preserves the observation, reward, task distribution, and complete uninterrupted success semantics.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E33",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Restore T3, implement one state-dependent velocity-damped torque-interface recipe, and train one full-allocation transfer candidate. Measure that complete artifact against T3 on the shared 160-episode development panel with the existing full-radius and hold diagnostics. Close positively only if the candidate reaches at least 157/160 successes, wins the paired comparison, and does not regress the inner or outer radius capability; close negatively if it fails that candidate-selection criterion or loses the paired comparison. A changed saturation or speed phenotype without the required complete-hold improvement is a limited or negative result, not evidence that all action-realization methods are invalid.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted successes out of 200 official episodes. T3 is the strongest measured artifact at 151/160 development successes, but its residual failures are concentrated in saturated, high-speed, no-first-entry episodes. A trajectory-level velocity-damped command interface is a bounded attempt to improve entry and hold without narrowing official radius coverage.",
+        "question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
+        "rationale": "Assessment of T3 is defensible as the strongest current artifact but is unlikely to meet the protected 196/200 criterion given 151/160 on the matched development panel. Further work is warranted because E8 and E16 identify a consistent trajectory-regulation phenotype and rule out absent local authority at sampled residual configurations, while E12, E21, E26, and M12 reject only their tested recipes, including uniform action-rate limiting. The proposed interface directly tests a distinct, state-dependent regulation mechanism and preserves the observation, reward, task distribution, and complete uninterrupted success semantics."
+      }
+    },
+    "request_fingerprint": "4b1d8f97ddc91d3017029b5265ca6700c4bbdf244373f5b3df1fb968f3891ec2",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) based on M4 and M12. T8:checkpoint-120832 is a rejected action-rate-limited candidate at 144/160 (90.0%) based on M12. No new working, best-known, or retained role is assigned; these conclusions are artifact-level and do not establish mechanism.",
     "completed_operations": [
@@ -14235,6 +14309,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f5ee1a70-1f46-49ad-9d12-117d1a04dd89",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E33"
+    ],
+    "scientific_parent_commit": "284adc3c6c21425160e96687063cc2846cfc0381"
+  },
   "terminal_state": null
 }

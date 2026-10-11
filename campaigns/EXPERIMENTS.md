@@ -54,3 +54,4 @@
 | M12 | measurement | I7 | completed |
 | E31 | inquiry | I7 | completed |
 | E32 | checkpoint | I7 | checkpointed |
+| E33 | inquiry | I8 | completed |
