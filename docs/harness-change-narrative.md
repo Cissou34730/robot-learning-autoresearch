@@ -335,6 +335,31 @@ inspection freedom, not another verification ritual. The stopped campaign,
 its published model and its evidence are preserved. A future reset or launch
 requires separate authorization.
 
+#### Selected scientific-model context rejected at startup
+
+Campaign `180ced98` tried to create a laboratory characterization tool before
+training. Both coding requests selected the frozen scientific model for
+read-only context. The coding allowlist excluded that file and returned only
+a generic exact-scope error. The PI first changed path separators, then
+incorrectly attributed the rejection to the absent laboratory directory and
+switched to baseline training. Neither coding request dispatched a child.
+
+This restriction and diagnostic originated in `eb04314`, the first coding
+implementation, and survived the native migration. New laboratory files
+were supported; the missing parent was not the cause. Earlier implementation
+checks missed this startup context selection.
+
+The approved repair permits the explicitly selected frozen model as read-only
+coding context, retains protected-write and exact-file boundaries, and names
+the offending path and reason on rejection. The coding interface explicitly
+states that new writable files do not require an existing parent directory.
+Thirty-seven harmless assertions reproduce both actual request representations,
+confirm they fail under the prior allowlist, and verify corrected bindings,
+selected child reads, protected writes and exact rejection feedback. The 68
+existing no-model policy checks also pass; no new model inference was required.
+The maintainer stopped the campaign; the repair does not authorize resumption,
+reset or further scientific execution. Scientific effects remain unmeasured.
+
 ### 5. Assessment readiness, model roles and acceptance-gate drift
 
 Cover counterevidence loss, premature readiness conclusions, best-known role

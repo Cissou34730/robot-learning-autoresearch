@@ -74,15 +74,20 @@ publication interface and does not expose coding.
 
 - `intent`: the bounded scientific change;
 - `allowed_paths`: exact repository-relative writable scientific files;
-- `read_paths`: optional additional relevant scientific or contract files;
+- `read_paths`: optional additional relevant scientific sources, contracts,
+  `AGENTS.md` or the frozen `pi_workspace/scientific_model.md`;
 - `source_context`: optional source context selected by the main PI;
 - `verification_path`: a Python module file under `robot_learning/lab/`,
   included in `allowed_paths`;
 - `session_handle`: optional returned native child identity for same-change
   corrections within this bounded context.
 
-Protected paths, directories, wildcard scopes, operation requests and arbitrary
-filesystem paths are refused. A continued child must keep the same writable,
+Protected writes, directories, wildcard scopes, operation requests and arbitrary
+filesystem paths are refused. New writable files are permitted even when their
+parent directory does not exist. The frozen scientific model remains read-only,
+and only explicitly selected files enter the coding read binding. Rejections
+identify the offending path and reason; a rejected read binding does not imply
+new-file creation is unavailable. A continued child must keep the same writable,
 readable and verification scope. The SDK dispatches the registered native
 coding subagent with the supplied objective and source context, rather than
 creating a separate SDK session or passing the PI's campaign conversation.

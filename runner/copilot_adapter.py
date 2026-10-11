@@ -1717,6 +1717,7 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
     result = set()
     for target in paths:
         path = PureWindowsPath(target)
+        rejection = f"Coding {'write' if writable else 'read'} scope rejected {target!r}: "
         if (
             not target.strip()
             or path.drive
@@ -1724,24 +1725,37 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
             or ".." in path.parts
             or any(character in target for character in "*?[]:")
         ):
-            raise ValueError("Coding scope requires exact repository-relative file paths.")
-        relative = _repository_relative_target(target)
-        if relative is None or (ROOT / relative).is_dir():
-            raise ValueError(CODING_SCOPE_DENIAL)
-        if writable:
-            if (
-                relative == "pi_workspace/operation_request.json"
-                or file_edit_denial(target)
-            ):
-                raise ValueError(CODING_SCOPE_DENIAL)
-        elif (
-            file_read_denial(target)
-            or not (
-                relative.startswith(("robot_learning/", "contracts/"))
-                or relative == "agents.md"
+            raise ValueError(
+                rejection + "use an exact repository-relative file path, "
+                "without absolute paths, parent traversal, wildcards or streams."
             )
-        ):
-            raise ValueError(CODING_SCOPE_DENIAL)
+        relative = _repository_relative_target(target)
+        if relative is None:
+            raise ValueError(rejection + "the path is outside the repository.")
+        if (ROOT / relative).is_dir():
+            raise ValueError(
+                rejection + "directories are not file scopes; select exact files. "
+                "New writable files do not require an existing parent directory."
+            )
+        if writable:
+            if relative == "pi_workspace/operation_request.json":
+                raise ValueError(rejection + "operation requests are Runner exchange, not coding output.")
+            reason = file_edit_denial(target)
+            if reason:
+                raise ValueError(rejection + reason)
+        else:
+            reason = file_read_denial(target)
+            if reason:
+                raise ValueError(rejection + reason)
+            if not (
+                relative.startswith(("robot_learning/", "contracts/"))
+                or relative in {"agents.md", "pi_workspace/scientific_model.md"}
+            ):
+                raise ValueError(
+                    rejection + "read_paths permits scientific sources, contracts, "
+                    "AGENTS.md and the frozen scientific model only; select other "
+                    "relevant context through source_context."
+                )
         result.add(relative)
     return frozenset(result)
 
@@ -1871,7 +1885,12 @@ class ScientificCoding:
                 "scope. Supply scientific intent, exact repository-relative "
                 "allowed_paths, optional relevant read_paths/source_context, and "
                 "a .py verification_path under robot_learning/lab included in "
-                "allowed_paths. Never pass protected or arbitrary filesystem paths. "
+                "allowed_paths. New writable files are permitted even when their "
+                "parent directory does not exist. read_paths may include scientific "
+                "sources, contracts, AGENTS.md and pi_workspace/scientific_model.md "
+                "as read-only selected context. Never request protected writes or "
+                "arbitrary filesystem paths. Scope errors identify the rejected path "
+                "and reason; they do not imply new-file creation is unavailable. "
                 "The child receives only these inputs, not PI conversation history. "
                 "It implements source plus an executable check proposal; it cannot "
                 "submit operations or execute checks. This tool returns actual "
@@ -2096,6 +2115,7 @@ class ScientificCoding:
                     raise ValueError("Only this context's idle native child accepts corrections.")
             before = coding_snapshot(paths)
         except (OSError, ValueError) as error:
+            self.console.line(f"  > scientific_coding: rejected; {error}")
             return json.dumps({"status": "error", "error": str(error)})
 
         if self.closed or self.busy or (
