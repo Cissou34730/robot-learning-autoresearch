@@ -51,3 +51,4 @@
 | E24 | inquiry | I6 | completed |
 | E25 | checkpoint | - | checkpointed |
 | T5 | training | I6 | completed |
+| M20 | measurement | I6 | completed |
