@@ -28,3 +28,4 @@
 | E11 | checkpoint | - | checkpointed |
 | T7 | training | I3 | completed |
 | M8 | measurement | I3 | completed |
+| E12 | inquiry | I3 | completed |

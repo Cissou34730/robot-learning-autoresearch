@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one T4-parent transfer using a single exponential action filter with no hard IK branch selection or joint-space target correction, followed by a non-overlapping 200-episode research evaluation of a selected checkpoint against T4 on the same seeds with radius- and angle-stratified diagnostics. Reaching at least 196/200 with inner-radius acquisition preserved supports continued development or official assessment; failure to improve, loss of inner-radius performance, or evidence of a different geometry-specific mechanism supports a limited negative closure and return to goal review for terminal assessment.",
-    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T4 remains the strongest evidence-backed candidate but measured 191/200 on M5 and 186/200 on the matched M7 panel, so terminal assessment would commit a candidate with a demonstrated development gap. A branch-neutral action filter targets the sampled-data stabilization consequence of 50 Hz control without changing T4's observation, IK branch representation, reward, transfer parent, or inner-radius curriculum.",
-    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
-    "handoff_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "rationale": "M1 measured strong bounded actuation with rapid settling, while the physical model still predicts that 50 Hz zero-order-held commands can create sampled-data hold errors and that branch selection is not required by the task. M5 made hold robustness a credible bottleneck but interruptions also occurred in successful episodes, so they do not establish a sole cause. M6 ruled out the specific full hold-progress forfeiture reward recipe. M7 measured 103/200 for a composite T6 recipe against 186/200 for T4, but T6 changed observations, policy action mapping, and reward-related scientific files together; its aggregate artifact lacks branch identity and trajectories. Therefore M7 redirects the exact hard-branch/damping composite, not all stabilization or representation mechanisms. This inquiry isolates one branch-neutral action-bandwidth mechanism while preserving the acquisition route and avoids treating the composite negative result as evidence against the broader method.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f391b4dc8744425b43561bd5f3d5e69977ffeb98",
     "id": "89a6354a-0e08-43f6-b017-536e7c05229b",
@@ -5750,7 +5739,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 8,
     "session": 7,
@@ -10633,9 +10622,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T00:23:26Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "positive",
+        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "positive",
+        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "positive",
+        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "positive",
+        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "positive",
+        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure."
+      }
+    },
+    "request_fingerprint": "c5b5549e597259b34254fcc39a8e9c1b2285eb0281376a9e5c85436709647568",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
     "completed_operations": [
@@ -10691,7 +10734,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T7",
-      "M8"
+      "M8",
+      "E12"
     ],
     "scientific_parent_commit": "16d7ac36e87925bfcc9e1b6390f45c7f588c6aab"
   },
