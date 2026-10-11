@@ -61,3 +61,4 @@
 | M22 | measurement | I7 | completed |
 | E30 | inquiry | I7 | completed |
 | E31 | checkpoint | I7 | checkpointed |
+| E32 | inquiry | I8 | completed |
