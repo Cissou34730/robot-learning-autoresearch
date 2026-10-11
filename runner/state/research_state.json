@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -91,6 +91,259 @@
       "status": "failed",
       "superseded_by": "M3",
       "supersedes": "M1"
+    },
+    {
+      "completed_at": "2026-10-11T12:10:59Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Compile the protected two-joint MuJoCo model and measure deterministic 20 ms actuator impulse responses from representative elbow configurations.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/compiled_dynamics.json",
+              "--recovery-control-steps",
+              "20"
+            ],
+            "artifact": "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/compiled_dynamics.json",
+            "instrument": "python_module",
+            "label": "initial compiled dynamics and response characterization",
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "rationale": "The initial decision is whether the first goal-directed intervention should address intrinsic torque authority and transient regulation or policy exposure/generalization. No learned candidate exists, so candidate evaluation cannot answer that distinction. This measurement directly records compiled inertial quantities, actuator limits and gear, configuration-dependent joint-space mass, and matched action-to-q/qvel/end-effector responses with one control-period impulses followed by zero input. Strong configuration dependence, large residual velocity, or weak decay would support a dynamics/regulation direction; well-damped, non-saturated responses would shift priority toward full official-radius exposure and later candidate evaluation."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/compiled_dynamics.json",
+              "--recovery-control-steps",
+              "20"
+            ],
+            "instrument": "python_module",
+            "label": "initial compiled dynamics and response characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/python-module-M3-1-compiled_dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/robot_xml",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/response_protocol",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 25,
+                    "field_names": [
+                      "action",
+                      "commanded_torque",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "max_abs_qvel_rad_s",
+                      "max_site_speed_m_s",
+                      "q1_rad",
+                      "q2_rad",
+                      "saturated_action_components",
+                      "trace"
+                    ],
+                    "path": "/responses",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/control_period_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_range_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_inertia_kg_m2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "mass_matrix",
+                      "q1_rad",
+                      "q2_rad"
+                    ],
+                    "path": "/compiled_model/mass_matrix_by_configuration",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/response_protocol/initial_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/response_protocol/impulse_control_periods",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/response_protocol/recovery_control_periods",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/response_protocol/action_space",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "aafe14143fe2a091dabc51809b6f8443fd41d0f16772525910933a234b8230dd"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ffc66bddfbea4aff4e611739c7d987fe20dc7b93",
+            "fingerprint": "e473654e4eb7706617bc5b4c8c5f8f910a6a34bfd2d81a4cd51b2ea26574f43d",
+            "manifest": [
+              {
+                "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "d041fa1c96763013c98c325024745a11bb5f9c35",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M2"
     }
   ],
   "pending_operation": {
@@ -117,7 +370,16 @@
             "path": "robot_learning/lab/compiled_dynamics.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "ffc66bddfbea4aff4e611739c7d987fe20dc7b93",
+          "fingerprint": "e473654e4eb7706617bc5b4c8c5f8f910a6a34bfd2d81a4cd51b2ea26574f43d",
+          "manifest": [
+            {
+              "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ]
+        },
         "code_parent_commit": "d041fa1c96763013c98c325024745a11bb5f9c35",
         "effective_parameters": {
           "algorithm": {
@@ -158,15 +420,401 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/compiled_dynamics.json",
+            "--recovery-control-steps",
+            "20"
+          ],
+          "instrument": "python_module",
+          "label": "initial compiled dynamics and response characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/python-module-M3-1-compiled_dynamics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/robot_xml",
+                  "type": "string"
+                },
+                {
+                  "entries": 16,
+                  "path": "/compiled_model",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/response_protocol",
+                  "type": "object"
+                },
+                {
+                  "entries": 25,
+                  "field_names": [
+                    "action",
+                    "commanded_torque",
+                    "final_qpos_rad",
+                    "final_qvel_rad_s",
+                    "max_abs_qvel_rad_s",
+                    "max_site_speed_m_s",
+                    "q1_rad",
+                    "q2_rad",
+                    "saturated_action_components",
+                    "trace"
+                  ],
+                  "path": "/responses",
+                  "type": "array"
+                },
+                {
+                  "path": "/compiled_model/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/control_period_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/nv",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_names",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_range_rad",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_limited",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_damping",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/joint_armature",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/body_names",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/body_mass_kg",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/body_inertia_kg_m2",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/actuator_ctrlrange",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_model/actuator_gear",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "mass_matrix",
+                    "q1_rad",
+                    "q2_rad"
+                  ],
+                  "path": "/compiled_model/mass_matrix_by_configuration",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/response_protocol/initial_qvel_rad_s",
+                  "type": "array"
+                },
+                {
+                  "path": "/response_protocol/impulse_control_periods",
+                  "type": "number"
+                },
+                {
+                  "path": "/response_protocol/recovery_control_periods",
+                  "type": "number"
+                },
+                {
+                  "path": "/response_protocol/action_space",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "aafe14143fe2a091dabc51809b6f8443fd41d0f16772525910933a234b8230dd"
+          },
+          "module": "robot_learning.lab.compiled_dynamics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/compiled_dynamics.json",
+              "--recovery-control-steps",
+              "20"
+            ],
+            "instrument": "python_module",
+            "label": "initial compiled dynamics and response characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/bfd9e63d-b3d3-4ab8-a56d-027209406cf4/python-module-M3-1-compiled_dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/robot_xml",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/response_protocol",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 25,
+                    "field_names": [
+                      "action",
+                      "commanded_torque",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "max_abs_qvel_rad_s",
+                      "max_site_speed_m_s",
+                      "q1_rad",
+                      "q2_rad",
+                      "saturated_action_components",
+                      "trace"
+                    ],
+                    "path": "/responses",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/control_period_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_range_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_limited",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/joint_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/body_inertia_kg_m2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "mass_matrix",
+                      "q1_rad",
+                      "q2_rad"
+                    ],
+                    "path": "/compiled_model/mass_matrix_by_configuration",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/response_protocol/initial_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/response_protocol/impulse_control_periods",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/response_protocol/recovery_control_periods",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/response_protocol/action_space",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "aafe14143fe2a091dabc51809b6f8443fd41d0f16772525910933a234b8230dd"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ffc66bddfbea4aff4e611739c7d987fe20dc7b93",
+            "fingerprint": "e473654e4eb7706617bc5b4c8c5f8f910a6a34bfd2d81a4cd51b2ea26574f43d",
+            "manifest": [
+              {
+                "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "d041fa1c96763013c98c325024745a11bb5f9c35",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "225a5579422a998b88ae1629e76edf667119b7eaf28eb17a5c8ce3e130a64587",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M3",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Compile the protected two-joint MuJoCo model and measure deterministic 20 ms actuator impulse responses from representative elbow configurations.",
@@ -209,7 +857,9 @@
     "inquiry_id": null,
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M3"
+    ],
     "scientific_parent_commit": "d041fa1c96763013c98c325024745a11bb5f9c35"
   },
   "terminal_state": null
