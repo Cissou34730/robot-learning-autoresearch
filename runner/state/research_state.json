@@ -4103,7 +4103,7 @@
     }
   },
   "counters": {
-    "event": 26,
+    "event": 27,
     "inquiry": 6,
     "measurement": 20,
     "session": 13,
@@ -4112,7 +4112,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -11294,33 +11294,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:21:43Z",
+      "error": null,
+      "id": "E27",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160. T5:checkpoint-100352 is a complete measured regulation-focused continuation candidate at 153/160 but does not supersede T4 and is not assigned a role. T2:checkpoint-120832 remains the 150/160 matched reference. T3 remains rejected as a fresh targeted candidate at 0/160. No candidate is retained, no working role is assigned, and no candidate is certified for the human goal.",
+        "completed_operations": [
+          "T5",
+          "M20",
+          "E26"
+        ],
+        "cumulative_resource_use": "Before I6: M5 compiled-dynamics measurement and verification; T1 fresh PPO; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO; M9 paired evaluation; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4; E16 checkpoint; M16 targeted-regulation implementation verification; T3 fresh targeted PPO; M17 candidate-mode verification; M18 matched T3/T2 evaluation and diagnostics; E17 closure of I4; E18 checkpoint; E19 opening I5; E20 checkpoint; T4 transfer PPO from T2 at the full maintainer allocation; M19 matched T4/T2 development evaluation; E21 best-known role assignment; E22 limited closure of I5; E23 checkpoint; E24 opened I6; E25 checkpoint. I6 added T5 full-allocation transfer continuation from T4, M20 matched evaluation of the selected T5 checkpoint, E26 closure, and this checkpoint. No official assessment has been requested.",
+        "current_goal_gap": "T4 and the measured T5 continuation each achieve 153/160 (95.625%) on the 160-episode development panel. The residual failures remain three no-first-reach episodes and four reach-then-interrupt episodes; the four failed holds first enter tolerance at steps 17-18 and are concentrated at negative target angles. The official 200-episode panel has not been measured, and the official gap cannot be inferred from this development panel; relative to the 196/200 threshold, at least 43 additional successes are required as a count comparison, not as an estimate of official performance.",
+        "current_synthesis": "Observed: M19 measured the complete T4 transfer artifact at 153/160, with three no-first-reach failures at seeds 4208, 4246 and 4307 and four failed reach-then-interrupt episodes at seeds 4201, 4228, 4244 and 4316. The T4 artifact improved over T2 on the matched panel but did not establish that targeted regulation caused the gain. T5 was a full 120,000-step transfer continuation initialized from T4 under the same full-radius targeted-regulation training implementation. Its preserved training trajectory had a sustained proxy peak around 97,280-101,376 steps, so the complete T5:checkpoint-100352 artifact was measured rather than privileging the terminal checkpoint. M20 measured that candidate at 153/160 under unchanged evaluation semantics. Its complete diagnostics retained the same three no-first-reach seeds and the same four failed reach-then-interrupt seeds, although some successful episodes also had an interruption before a later complete hold. Thus this exact PPO transfer continuation preserved T4's acquisition profile but supplied no demonstrated regulation improvement and no total-success improvement. Interpretation is limited to the tested continuation and targeted reward implementation: the proxy peak did not translate into development capability, and more training under this recipe is not supported as a sufficient route to convert the observed T4 gain. This does not disprove targeted regulation as a broader method, an alternative reward/control design, or a different learning algorithm. M16 verifies that the tested targeted profile altered velocity, braking and holding penalties with full-radius exposure; T3's fresh targeted run remains cold-start-confounded; and M15 supports a coupled singular-reset, saturation/limit-excursion and dynamic-regulation interpretation for T2, but neither M19 nor M20 contains time-resolved joint/torque traces that transfer that causal explanation to T4/T5. The live environment remains outcome authority, and the live-versus-forward-kinematic discrepancy remains a measurement limitation rather than a task-semantic change. The physical model still makes official targets geometrically reachable through two bounded posture branches and identifies singular escape, torque timing, saturation and uninterrupted dynamic regulation as consequential possibilities; M20 did not discriminate among them. Therefore the bounded I6 answer is limited/negative for this continuation, while the broader goal and the mechanism remain open.",
+        "decision_frontier": "The consequential next distinction is whether an alternative control-learning or mechanism-informed regulation intervention can exceed T4's 153/160 matched-panel capability while preserving no-first-reach failures at three or fewer, versus whether the transfer gain is not convertible without a different research direction. A candidate comparison under unchanged official semantics can change capability or selection even if cause remains unresolved. A mechanism claim would additionally require time-resolved live joint/torque and endpoint evidence for the T4/T5 residual seeds; the present M20 artifact does not contain it. Goal review must compare that alternative-development route with the case for assessment: the unchanged best-known candidate is far below 196/200 and the development panel is not the protected assessment, so rank and proxy peaks are insufficient for commitment.",
+        "evidence_references": [
+          "E24",
+          "M19",
+          "T4",
+          "T5",
+          "M20",
+          "M16",
+          "M15",
+          "E26"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold within 1 cm. T4:checkpoint-120832 remains the best-known artifact at 153/160 on the matched development panel, and the T5 regulation-focused transfer continuation did not improve that result. The development evidence is below the protected objective and does not justify official assessment or certify 98%.",
+        "next_direction_or_closure": "I6 is closed with a limited/negative answer for the exact PPO transfer continuation and targeted-regulation implementation: the measured candidate failed to increase total success or reduce the four failed holds while preserving the three acquisition failures. Carry the unresolved T4/T5 mechanism and the recipe-specific limit to goal review. Do not request official assessment on the basis of 153/160, and do not continue the same recipe by proxy rank alone. Goal review should decide whether a genuinely alternative control-learning or mechanism-informed development inquiry has sufficient expected contribution.",
+        "next_question": "Can an alternative control-learning method or mechanism-informed regulation intervention exceed T4's 153/160 matched-panel success while preserving its retained full-radius acquisition, toward the official 98% objective?"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "51a187c7f4b99efc044332c56b6afcb438b4bbf0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160. T5:checkpoint-100352 is a complete measured regulation-focused continuation candidate at 153/160 but does not supersede T4 and is not assigned a role. T2:checkpoint-120832 remains the 150/160 matched reference. T3 remains rejected as a fresh targeted candidate at 0/160. No candidate is retained, no working role is assigned, and no candidate is certified for the human goal.",
+        "completed_operations": [
+          "T5",
+          "M20",
+          "E26"
+        ],
+        "cumulative_resource_use": "Before I6: M5 compiled-dynamics measurement and verification; T1 fresh PPO; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO; M9 paired evaluation; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4; E16 checkpoint; M16 targeted-regulation implementation verification; T3 fresh targeted PPO; M17 candidate-mode verification; M18 matched T3/T2 evaluation and diagnostics; E17 closure of I4; E18 checkpoint; E19 opening I5; E20 checkpoint; T4 transfer PPO from T2 at the full maintainer allocation; M19 matched T4/T2 development evaluation; E21 best-known role assignment; E22 limited closure of I5; E23 checkpoint; E24 opened I6; E25 checkpoint. I6 added T5 full-allocation transfer continuation from T4, M20 matched evaluation of the selected T5 checkpoint, E26 closure, and this checkpoint. No official assessment has been requested.",
+        "current_goal_gap": "T4 and the measured T5 continuation each achieve 153/160 (95.625%) on the 160-episode development panel. The residual failures remain three no-first-reach episodes and four reach-then-interrupt episodes; the four failed holds first enter tolerance at steps 17-18 and are concentrated at negative target angles. The official 200-episode panel has not been measured, and the official gap cannot be inferred from this development panel; relative to the 196/200 threshold, at least 43 additional successes are required as a count comparison, not as an estimate of official performance.",
+        "current_synthesis": "Observed: M19 measured the complete T4 transfer artifact at 153/160, with three no-first-reach failures at seeds 4208, 4246 and 4307 and four failed reach-then-interrupt episodes at seeds 4201, 4228, 4244 and 4316. The T4 artifact improved over T2 on the matched panel but did not establish that targeted regulation caused the gain. T5 was a full 120,000-step transfer continuation initialized from T4 under the same full-radius targeted-regulation training implementation. Its preserved training trajectory had a sustained proxy peak around 97,280-101,376 steps, so the complete T5:checkpoint-100352 artifact was measured rather than privileging the terminal checkpoint. M20 measured that candidate at 153/160 under unchanged evaluation semantics. Its complete diagnostics retained the same three no-first-reach seeds and the same four failed reach-then-interrupt seeds, although some successful episodes also had an interruption before a later complete hold. Thus this exact PPO transfer continuation preserved T4's acquisition profile but supplied no demonstrated regulation improvement and no total-success improvement. Interpretation is limited to the tested continuation and targeted reward implementation: the proxy peak did not translate into development capability, and more training under this recipe is not supported as a sufficient route to convert the observed T4 gain. This does not disprove targeted regulation as a broader method, an alternative reward/control design, or a different learning algorithm. M16 verifies that the tested targeted profile altered velocity, braking and holding penalties with full-radius exposure; T3's fresh targeted run remains cold-start-confounded; and M15 supports a coupled singular-reset, saturation/limit-excursion and dynamic-regulation interpretation for T2, but neither M19 nor M20 contains time-resolved joint/torque traces that transfer that causal explanation to T4/T5. The live environment remains outcome authority, and the live-versus-forward-kinematic discrepancy remains a measurement limitation rather than a task-semantic change. The physical model still makes official targets geometrically reachable through two bounded posture branches and identifies singular escape, torque timing, saturation and uninterrupted dynamic regulation as consequential possibilities; M20 did not discriminate among them. Therefore the bounded I6 answer is limited/negative for this continuation, while the broader goal and the mechanism remain open.",
+        "decision_frontier": "The consequential next distinction is whether an alternative control-learning or mechanism-informed regulation intervention can exceed T4's 153/160 matched-panel capability while preserving no-first-reach failures at three or fewer, versus whether the transfer gain is not convertible without a different research direction. A candidate comparison under unchanged official semantics can change capability or selection even if cause remains unresolved. A mechanism claim would additionally require time-resolved live joint/torque and endpoint evidence for the T4/T5 residual seeds; the present M20 artifact does not contain it. Goal review must compare that alternative-development route with the case for assessment: the unchanged best-known candidate is far below 196/200 and the development panel is not the protected assessment, so rank and proxy peaks are insufficient for commitment.",
+        "evidence_references": [
+          "E24",
+          "M19",
+          "T4",
+          "T5",
+          "M20",
+          "M16",
+          "M15",
+          "E26"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold within 1 cm. T4:checkpoint-120832 remains the best-known artifact at 153/160 on the matched development panel, and the T5 regulation-focused transfer continuation did not improve that result. The development evidence is below the protected objective and does not justify official assessment or certify 98%.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "I6 is closed with a limited/negative answer for the exact PPO transfer continuation and targeted-regulation implementation: the measured candidate failed to increase total success or reduce the four failed holds while preserving the three acquisition failures. Carry the unresolved T4/T5 mechanism and the recipe-specific limit to goal review. Do not request official assessment on the basis of 153/160, and do not continue the same recipe by proxy rank alone. Goal review should decide whether a genuinely alternative control-learning or mechanism-informed development inquiry has sufficient expected contribution.",
+        "next_question": "Can an alternative control-learning method or mechanism-informed regulation intervention exceed T4's 153/160 matched-panel success while preserving its retained full-radius acquisition, toward the official 98% objective?",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "240856e9-3530-4cc9-b333-8d8c52899b99",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "40m53s | 106.07 AIU | prompt 18.5m (91% cached) | output 262.5k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f438b62b7174c63e4a5ae2e07feaf1da5f9adee8",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E27",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160. T5:checkpoint-100352 is a complete measured regulation-focused continuation candidate at 153/160 but does not supersede T4 and is not assigned a role. T2:checkpoint-120832 remains the 150/160 matched reference. T3 remains rejected as a fresh targeted candidate at 0/160. No candidate is retained, no working role is assigned, and no candidate is certified for the human goal.",
+        "completed_operations": [
+          "T5",
+          "M20",
+          "E26"
+        ],
+        "cumulative_resource_use": "Before I6: M5 compiled-dynamics measurement and verification; T1 fresh PPO; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO; M9 paired evaluation; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4; E16 checkpoint; M16 targeted-regulation implementation verification; T3 fresh targeted PPO; M17 candidate-mode verification; M18 matched T3/T2 evaluation and diagnostics; E17 closure of I4; E18 checkpoint; E19 opening I5; E20 checkpoint; T4 transfer PPO from T2 at the full maintainer allocation; M19 matched T4/T2 development evaluation; E21 best-known role assignment; E22 limited closure of I5; E23 checkpoint; E24 opened I6; E25 checkpoint. I6 added T5 full-allocation transfer continuation from T4, M20 matched evaluation of the selected T5 checkpoint, E26 closure, and this checkpoint. No official assessment has been requested.",
+        "current_goal_gap": "T4 and the measured T5 continuation each achieve 153/160 (95.625%) on the 160-episode development panel. The residual failures remain three no-first-reach episodes and four reach-then-interrupt episodes; the four failed holds first enter tolerance at steps 17-18 and are concentrated at negative target angles. The official 200-episode panel has not been measured, and the official gap cannot be inferred from this development panel; relative to the 196/200 threshold, at least 43 additional successes are required as a count comparison, not as an estimate of official performance.",
+        "current_synthesis": "Observed: M19 measured the complete T4 transfer artifact at 153/160, with three no-first-reach failures at seeds 4208, 4246 and 4307 and four failed reach-then-interrupt episodes at seeds 4201, 4228, 4244 and 4316. The T4 artifact improved over T2 on the matched panel but did not establish that targeted regulation caused the gain. T5 was a full 120,000-step transfer continuation initialized from T4 under the same full-radius targeted-regulation training implementation. Its preserved training trajectory had a sustained proxy peak around 97,280-101,376 steps, so the complete T5:checkpoint-100352 artifact was measured rather than privileging the terminal checkpoint. M20 measured that candidate at 153/160 under unchanged evaluation semantics. Its complete diagnostics retained the same three no-first-reach seeds and the same four failed reach-then-interrupt seeds, although some successful episodes also had an interruption before a later complete hold. Thus this exact PPO transfer continuation preserved T4's acquisition profile but supplied no demonstrated regulation improvement and no total-success improvement. Interpretation is limited to the tested continuation and targeted reward implementation: the proxy peak did not translate into development capability, and more training under this recipe is not supported as a sufficient route to convert the observed T4 gain. This does not disprove targeted regulation as a broader method, an alternative reward/control design, or a different learning algorithm. M16 verifies that the tested targeted profile altered velocity, braking and holding penalties with full-radius exposure; T3's fresh targeted run remains cold-start-confounded; and M15 supports a coupled singular-reset, saturation/limit-excursion and dynamic-regulation interpretation for T2, but neither M19 nor M20 contains time-resolved joint/torque traces that transfer that causal explanation to T4/T5. The live environment remains outcome authority, and the live-versus-forward-kinematic discrepancy remains a measurement limitation rather than a task-semantic change. The physical model still makes official targets geometrically reachable through two bounded posture branches and identifies singular escape, torque timing, saturation and uninterrupted dynamic regulation as consequential possibilities; M20 did not discriminate among them. Therefore the bounded I6 answer is limited/negative for this continuation, while the broader goal and the mechanism remain open.",
+        "decision_frontier": "The consequential next distinction is whether an alternative control-learning or mechanism-informed regulation intervention can exceed T4's 153/160 matched-panel capability while preserving no-first-reach failures at three or fewer, versus whether the transfer gain is not convertible without a different research direction. A candidate comparison under unchanged official semantics can change capability or selection even if cause remains unresolved. A mechanism claim would additionally require time-resolved live joint/torque and endpoint evidence for the T4/T5 residual seeds; the present M20 artifact does not contain it. Goal review must compare that alternative-development route with the case for assessment: the unchanged best-known candidate is far below 196/200 and the development panel is not the protected assessment, so rank and proxy peaks are insufficient for commitment.",
+        "evidence_references": [
+          "E24",
+          "M19",
+          "T4",
+          "T5",
+          "M20",
+          "M16",
+          "M15",
+          "E26"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold within 1 cm. T4:checkpoint-120832 remains the best-known artifact at 153/160 on the matched development panel, and the T5 regulation-focused transfer continuation did not improve that result. The development evidence is below the protected objective and does not justify official assessment or certify 98%.",
+        "next_direction_or_closure": "I6 is closed with a limited/negative answer for the exact PPO transfer continuation and targeted-regulation implementation: the measured candidate failed to increase total success or reduce the four failed holds while preserving the three acquisition failures. Carry the unresolved T4/T5 mechanism and the recipe-specific limit to goal review. Do not request official assessment on the basis of 153/160, and do not continue the same recipe by proxy rank alone. Goal review should decide whether a genuinely alternative control-learning or mechanism-informed development inquiry has sufficient expected contribution.",
+        "next_question": "Can an alternative control-learning method or mechanism-informed regulation intervention exceed T4's 153/160 matched-panel success while preserving its retained full-radius acquisition, toward the official 98% objective?"
+      }
+    },
+    "request_fingerprint": "9021e5b38f70882c9713b0b4ecce209365ca3ebd29f980ba8901f06a7628b246",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160, with no losses against T2 and three wins on the shared panel. T2:checkpoint-120832 remains the matched 150/160 reference. T3:checkpoint-120832 remains rejected as a fresh targeted candidate at 0/160. No candidate is certified for the human goal, none is retained, and no official assessment has been requested.",
+    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160. T5:checkpoint-100352 is a complete measured regulation-focused continuation candidate at 153/160 but does not supersede T4 and is not assigned a role. T2:checkpoint-120832 remains the 150/160 matched reference. T3 remains rejected as a fresh targeted candidate at 0/160. No candidate is retained, no working role is assigned, and no candidate is certified for the human goal.",
     "completed_operations": [
-      "E24"
+      "T5",
+      "M20",
+      "E26"
     ],
-    "cumulative_resource_use": "Before I5: M5 compiled-dynamics measurement and verification; T1 fresh PPO; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO; M9 paired evaluation; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4; E16 checkpoint; M16 targeted-regulation implementation verification; T3 fresh targeted PPO; M17 candidate-mode verification; M18 matched T3/T2 evaluation and T3 diagnostics; E17 closure of I4; E18 checkpoint; E19 opening I5; E20 checkpoint; T4 transfer PPO from T2 at the full maintainer allocation; M19 matched T4/T2 development evaluation; E21 best-known role assignment; E22 limited closure of I5; E23 checkpoint. Current goal review: E24 opened I6. No operation in I6 has yet run.",
-    "current_goal_gap": "T4 has seven matched-panel failures: three no-first-reach and four reach-then-interrupt, for 95.625% development success. The panel is not the protected 200-episode assessment. The four interruption failures first enter tolerance at steps 17-18 and occur at negative target angles; M19 does not contain joint/torque traces, so their causal mechanism remains unresolved. The official gap is at least 43 successes relative to the 196/200 threshold and cannot be inferred from the 160-episode panel alone.",
-    "current_synthesis": "Observed: M19 measured the complete T4 transfer artifact at 153/160 versus T2 at 150/160 on identical seeds; T4 won all three discordant episodes and lost none. Querying the complete M19 diagnostics shows T4's residuals are three no-first-reach episodes (seeds 4208, 4246, 4307) and four reach-then-interrupt episodes (4201, 4228, 4244, 4316). The interrupt cases reached within tolerance at steps 17-18 but held only 1-2 steps before interruption. This is evidence that T4 is a better artifact on this panel and that acquisition was retained or improved, not evidence that the targeted-regulation profile caused a regulation improvement. M16 verifies that the targeted profile was implemented with full-radius exposure and altered velocity/braking/holding penalties, while T3's fresh targeted run was a cold-start-confounded negative result. M15 supports a coupled singular-reset, saturation/limit-excursion, and dynamic-regulation interpretation for T2 failures, with zero contact and non-separating branch evidence, but M19 lacks the traces needed to transfer that causal explanation to T4. The live environment remains outcome authority; the live-versus-forward-kinematic discrepancy remains a measurement limitation, not a task-semantic change. Competing explanations remain: T4 may be regulation-limited and amenable to a targeted continuation, or transfer may have changed the acquisition/regulation tradeoff in a way that another method must address. E24 corrects the inherited interpretation by limiting the claim to artifact-level improvement and opens a bounded test rather than treating targeted regulation as causally established.",
-    "decision_frontier": "The consequential distinction is whether further regulation-focused development can remove at least one of T4's four reach-then-interrupt failures while keeping no-first-reach failures at three or fewer, versus whether the observed transfer gain is not convertible into uninterrupted holds without changing direction. The discriminating work is a complete T4-based continuation or alternative control-learning candidate, measured under unchanged official semantics on the matched 160-episode panel with failure-class diagnostics; time-resolved joint/torque evidence is needed if the result is to support a mechanism claim. A candidate comparison can change policy capability or selection even if the causal source remains unresolved. A result that does not improve total success while satisfying the acquisition bound will be limited or negative, not evidence against the broader method or official goal.",
+    "cumulative_resource_use": "Before I6: M5 compiled-dynamics measurement and verification; T1 fresh PPO; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO; M9 paired evaluation; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4; E16 checkpoint; M16 targeted-regulation implementation verification; T3 fresh targeted PPO; M17 candidate-mode verification; M18 matched T3/T2 evaluation and diagnostics; E17 closure of I4; E18 checkpoint; E19 opening I5; E20 checkpoint; T4 transfer PPO from T2 at the full maintainer allocation; M19 matched T4/T2 development evaluation; E21 best-known role assignment; E22 limited closure of I5; E23 checkpoint; E24 opened I6; E25 checkpoint. I6 added T5 full-allocation transfer continuation from T4, M20 matched evaluation of the selected T5 checkpoint, E26 closure, and this checkpoint. No official assessment has been requested.",
+    "current_goal_gap": "T4 and the measured T5 continuation each achieve 153/160 (95.625%) on the 160-episode development panel. The residual failures remain three no-first-reach episodes and four reach-then-interrupt episodes; the four failed holds first enter tolerance at steps 17-18 and are concentrated at negative target angles. The official 200-episode panel has not been measured, and the official gap cannot be inferred from this development panel; relative to the 196/200 threshold, at least 43 additional successes are required as a count comparison, not as an estimate of official performance.",
+    "current_synthesis": "Observed: M19 measured the complete T4 transfer artifact at 153/160, with three no-first-reach failures at seeds 4208, 4246 and 4307 and four failed reach-then-interrupt episodes at seeds 4201, 4228, 4244 and 4316. The T4 artifact improved over T2 on the matched panel but did not establish that targeted regulation caused the gain. T5 was a full 120,000-step transfer continuation initialized from T4 under the same full-radius targeted-regulation training implementation. Its preserved training trajectory had a sustained proxy peak around 97,280-101,376 steps, so the complete T5:checkpoint-100352 artifact was measured rather than privileging the terminal checkpoint. M20 measured that candidate at 153/160 under unchanged evaluation semantics. Its complete diagnostics retained the same three no-first-reach seeds and the same four failed reach-then-interrupt seeds, although some successful episodes also had an interruption before a later complete hold. Thus this exact PPO transfer continuation preserved T4's acquisition profile but supplied no demonstrated regulation improvement and no total-success improvement. Interpretation is limited to the tested continuation and targeted reward implementation: the proxy peak did not translate into development capability, and more training under this recipe is not supported as a sufficient route to convert the observed T4 gain. This does not disprove targeted regulation as a broader method, an alternative reward/control design, or a different learning algorithm. M16 verifies that the tested targeted profile altered velocity, braking and holding penalties with full-radius exposure; T3's fresh targeted run remains cold-start-confounded; and M15 supports a coupled singular-reset, saturation/limit-excursion and dynamic-regulation interpretation for T2, but neither M19 nor M20 contains time-resolved joint/torque traces that transfer that causal explanation to T4/T5. The live environment remains outcome authority, and the live-versus-forward-kinematic discrepancy remains a measurement limitation rather than a task-semantic change. The physical model still makes official targets geometrically reachable through two bounded posture branches and identifies singular escape, torque timing, saturation and uninterrupted dynamic regulation as consequential possibilities; M20 did not discriminate among them. Therefore the bounded I6 answer is limited/negative for this continuation, while the broader goal and the mechanism remain open.",
+    "decision_frontier": "The consequential next distinction is whether an alternative control-learning or mechanism-informed regulation intervention can exceed T4's 153/160 matched-panel capability while preserving no-first-reach failures at three or fewer, versus whether the transfer gain is not convertible without a different research direction. A candidate comparison under unchanged official semantics can change capability or selection even if cause remains unresolved. A mechanism claim would additionally require time-resolved live joint/torque and endpoint evidence for the T4/T5 residual seeds; the present M20 artifact does not contain it. Goal review must compare that alternative-development route with the case for assessment: the unchanged best-known candidate is far below 196/200 and the development panel is not the protected assessment, so rank and proxy peaks are insufficient for commitment.",
     "evidence_references": [
       "E24",
       "M19",
       "T4",
-      "M18",
+      "T5",
+      "M20",
       "M16",
       "M15",
-      "E22"
+      "E26"
     ],
-    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold within 1 cm. T4:checkpoint-120832 is below that goal at 153/160 on the matched development panel, so protected assessment is not justified in this session. E24 opens one bounded inquiry to test whether the residual interruptions can be reduced without sacrificing acquisition.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Continue into I6 after the required checkpoint. Develop or compare one bounded regulation-focused continuation or alternative control-learning candidate against the complete T4 artifact. Judge it by unchanged-semantics matched-panel success and failure classes: fewer than four reach-then-interrupt failures, no more than three no-first-reach failures, and a higher total success count than 153/160 are required for a positive bounded answer. If these conditions are not met, close with a limited or negative result and carry the unresolved mechanism and residual gap to goal review rather than requesting assessment by rank alone.",
-    "next_question": "Can a regulation-focused continuation or alternative control-learning method reduce T4's reach-then-interrupt failures while preserving its retained full-radius acquisition, toward at least 98% official-task success?",
-    "scientific_commit": "f4cae7fb179bd85a0083b7b6415d82116f0fca3d",
-    "session_id": "S12"
+    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold within 1 cm. T4:checkpoint-120832 remains the best-known artifact at 153/160 on the matched development panel, and the T5 regulation-focused transfer continuation did not improve that result. The development evidence is below the protected objective and does not justify official assessment or certify 98%.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "I6 is closed with a limited/negative answer for the exact PPO transfer continuation and targeted-regulation implementation: the measured candidate failed to increase total success or reduce the four failed holds while preserving the three acquisition failures. Carry the unresolved T4/T5 mechanism and the recipe-specific limit to goal review. Do not request official assessment on the basis of 153/160, and do not continue the same recipe by proxy rank alone. Goal review should decide whether a genuinely alternative control-learning or mechanism-informed development inquiry has sufficient expected contribution.",
+    "next_question": "Can an alternative control-learning method or mechanism-informed regulation intervention exceed T4's 153/160 matched-panel success while preserving its retained full-radius acquisition, toward the official 98% objective?",
+    "scientific_commit": "f438b62b7174c63e4a5ae2e07feaf1da5f9adee8",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -11328,23 +11476,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "240856e9-3530-4cc9-b333-8d8c52899b99",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can a regulation-focused continuation or alternative control-learning method reduce T4's reach-then-interrupt failures while preserving its retained full-radius acquisition, toward at least 98% official-task success? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T5",
-      "M20",
-      "E26"
-    ],
-    "scientific_parent_commit": "51a187c7f4b99efc044332c56b6afcb438b4bbf0"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
