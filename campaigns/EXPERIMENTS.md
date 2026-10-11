@@ -44,3 +44,4 @@
 | E19 | inquiry | I5 | completed |
 | E20 | checkpoint | - | checkpointed |
 | T4 | training | I5 | completed |
+| M19 | measurement | I5 | completed |
