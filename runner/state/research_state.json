@@ -10325,38 +10325,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "negative",
-        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "negative",
-        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E21",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported."
-      }
-    },
-    "request_fingerprint": "fc09a499eb0220744b96989e6777e76647f2f7fb279cf4cd45c22c61943b3f01",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this goal-review session. T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%, T3:checkpoint-70656 is a secondary measured artifact at 87.5%, T4:checkpoint-20480 is a tested but rejected intervention at 93.125%, T1:checkpoint-120832 is the staged-transfer reference at 68.75%, and T2:checkpoint-120832 is recipe-specific counterevidence at 33.75%. These are complete-artifact comparison facts and do not establish causal explanations.",
     "completed_operations": [
