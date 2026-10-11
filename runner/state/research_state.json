@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train and measure at least one complete candidate derived from T3 using a phase-aware bounded trajectory-regulation interface, with T3 as the paired shared-panel reference and radius-stratified diagnostics. Close positively only if the candidate exceeds 151/160 and does not regress any 6-20 cm radius band; close negatively if it fails to exceed T3 or regresses the radius coverage; otherwise close with a limited or inconclusive artifact-level result and preserve the unresolved distinction.",
+    "goal_connection": "T3 is the strongest measured artifact but is 45/160 successes short of the 98% development proxy and has not been assessed officially. Its residual failures are saturated, high-speed, no-first-entry trajectories despite positive local endpoint authority at sampled configurations, so a command interface that changes approach-to-hold regulation remains a direct route to the human goal.",
+    "handoff_conclusion": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+    "handoff_question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+    "handoff_source_session_id": "S17",
+    "id": "I9",
+    "opened_in_session": "S18",
+    "question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+    "rationale": "Goal review defers terminal assessment because T3 is materially below both the development proxy and the protected 196/200 criterion, while the expected value of one focused route is credible. E8 and E16 support a policy-dependent regulation/command-selection interpretation for the sampled residuals, but M12 and M13 reject only a uniform action-rate limiter and one velocity-damped torque artifact, not the broader class of bounded state- or phase-dependent command interfaces. The inquiry therefore tests a distinct complete artifact rather than treating either negative recipe as causal disproof; saturation or speed changes alone will not count as improvement.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -6566,16 +6577,16 @@
     }
   },
   "counters": {
-    "event": 37,
-    "inquiry": 8,
+    "event": 38,
+    "inquiry": 9,
     "measurement": 13,
-    "session": 17,
+    "session": 18,
     "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -16136,9 +16147,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:47:37Z",
+      "error": null,
+      "id": "E38",
+      "inquiry_id": "I9",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train and measure at least one complete candidate derived from T3 using a phase-aware bounded trajectory-regulation interface, with T3 as the paired shared-panel reference and radius-stratified diagnostics. Close positively only if the candidate exceeds 151/160 and does not regress any 6-20 cm radius band; close negatively if it fails to exceed T3 or regresses the radius coverage; otherwise close with a limited or inconclusive artifact-level result and preserve the unresolved distinction.",
+        "goal_connection": "T3 is the strongest measured artifact but is 45/160 successes short of the 98% development proxy and has not been assessed officially. Its residual failures are saturated, high-speed, no-first-entry trajectories despite positive local endpoint authority at sampled configurations, so a command interface that changes approach-to-hold regulation remains a direct route to the human goal.",
+        "question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+        "rationale": "Goal review defers terminal assessment because T3 is materially below both the development proxy and the protected 196/200 criterion, while the expected value of one focused route is credible. E8 and E16 support a policy-dependent regulation/command-selection interpretation for the sampled residuals, but M12 and M13 reject only a uniform action-rate limiter and one velocity-damped torque artifact, not the broader class of bounded state- or phase-dependent command interfaces. The inquiry therefore tests a distinct complete artifact rather than treating either negative recipe as causal disproof; saturation or speed changes alone will not count as improvement."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I9",
+        "status": "completed"
+      },
+      "session_id": "S18",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train and measure at least one complete candidate derived from T3 using a phase-aware bounded trajectory-regulation interface, with T3 as the paired shared-panel reference and radius-stratified diagnostics. Close positively only if the candidate exceeds 151/160 and does not regress any 6-20 cm radius band; close negatively if it fails to exceed T3 or regresses the radius coverage; otherwise close with a limited or inconclusive artifact-level result and preserve the unresolved distinction.",
+          "goal_connection": "T3 is the strongest measured artifact but is 45/160 successes short of the 98% development proxy and has not been assessed officially. Its residual failures are saturated, high-speed, no-first-entry trajectories despite positive local endpoint authority at sampled configurations, so a command interface that changes approach-to-hold regulation remains a direct route to the human goal.",
+          "handoff_conclusion": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+          "handoff_question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+          "handoff_source_session_id": "S17",
+          "id": "I9",
+          "opened_in_session": "S18",
+          "question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+          "rationale": "Goal review defers terminal assessment because T3 is materially below both the development proxy and the protected 196/200 criterion, while the expected value of one focused route is credible. E8 and E16 support a policy-dependent regulation/command-selection interpretation for the sampled residuals, but M12 and M13 reject only a uniform action-rate limiter and one velocity-damped torque artifact, not the broader class of bounded state- or phase-dependent command interfaces. The inquiry therefore tests a distinct complete artifact rather than treating either negative recipe as causal disproof; saturation or speed changes alone will not count as improvement.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I9",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E38",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train and measure at least one complete candidate derived from T3 using a phase-aware bounded trajectory-regulation interface, with T3 as the paired shared-panel reference and radius-stratified diagnostics. Close positively only if the candidate exceeds 151/160 and does not regress any 6-20 cm radius band; close negatively if it fails to exceed T3 or regresses the radius coverage; otherwise close with a limited or inconclusive artifact-level result and preserve the unresolved distinction.",
+        "goal_connection": "T3 is the strongest measured artifact but is 45/160 successes short of the 98% development proxy and has not been assessed officially. Its residual failures are saturated, high-speed, no-first-entry trajectories despite positive local endpoint authority at sampled configurations, so a command interface that changes approach-to-hold regulation remains a direct route to the human goal.",
+        "question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
+        "rationale": "Goal review defers terminal assessment because T3 is materially below both the development proxy and the protected 196/200 criterion, while the expected value of one focused route is credible. E8 and E16 support a policy-dependent regulation/command-selection interpretation for the sampled residuals, but M12 and M13 reject only a uniform action-rate limiter and one velocity-damped torque artifact, not the broader class of bounded state- or phase-dependent command interfaces. The inquiry therefore tests a distinct complete artifact rather than treating either negative recipe as causal disproof; saturation or speed changes alone will not count as improvement."
+      }
+    },
+    "request_fingerprint": "242e8b01a5c47083578da288c1bcd431335b86f3d77d72812f4b95a2b2ae9c48",
+    "session_id": "S18",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12. T9:checkpoint-105472 is a rejected I8 candidate at 147/160 with paired loss 0-4, supported by M13. T8:checkpoint-120832 remains rejected at 144/160, supported by M12. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -16178,6 +16252,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "d65b27c3-c8f8-4794-8a1c-73af5fa712b9",
+    "id": "S18",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E38"
+    ],
+    "scientific_parent_commit": "52ece2bd7c57e379d21d4f11433615afc25b4eb9"
+  },
   "terminal_state": null
 }
