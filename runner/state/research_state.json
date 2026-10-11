@@ -9941,47 +9941,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a complete T4-based continuation or alternative control-learning candidate is measured under unchanged evaluation semantics on the matched 160-episode panel, with failure-class diagnostics inspected. A positive bounded answer requires fewer than four reach-then-interrupt failures, no more than three no-first-reach failures, and a higher total success count than T4; a negative or limited answer is recorded if the candidate fails these criteria or the comparison is not mechanism-informative. The result will not be treated as official 98% certification.",
-          "goal_connection": "The best candidate is 153/160 on the matched full-radius development panel, below the 196/200 official threshold. Its residuals are three no-first-reach failures and four reach-then-interrupt failures. A bounded development comparison can materially change the route to the goal only if it converts some of the four interruptions without increasing the three acquisition failures; any resulting candidate remains subject to the protected 200-episode assessment.",
-          "handoff_conclusion": "Observed: T4 was a full 120,000-step-allocation PPO continuation initialized from T2:checkpoint-120832 under the M16-verified targeted-regulation training profile, with full 0.06-0.20 m training exposure and unchanged official evaluation semantics. M19 measured T4 at 153/160 versus T2 at 150/160 on identical seeds, with T4 winning all three discordant episodes and losing none. The matched diagnostics show T2's seven no-first-reach failures becoming three for T4, while reach-then-interrupt failures increased from three to four; T4 therefore improved aggregate capability and acquisition retention but did not improve the specified uninterrupted-regulation class. This is evidence about the tested transfer/profile implementation, not a causal proof that targeted regulation is incompatible with T2-level acquisition or that transfer generally succeeds. T3's prior fresh targeted run remained a cold-start-confounded negative result. The physical interpretation remains that singular-reset transient acquisition, torque saturation/limit excursions, and sustained dynamic regulation are coupled; M15's zero-contact and non-separating branch evidence still deprioritizes contact and branch routes. The live environment remains the outcome authority, and the live-versus-forward-kinematic discrepancy remains a measurement limitation rather than a task-semantic change. Unresolved: why transfer converted several acquisition failures into short-lived holds while adding one reach-then-interrupt failure, and whether a different regulation-first method can reduce those interruptions without sacrificing T4's acquisition.",
-          "handoff_question": "Can a regulation-focused continuation or alternative control-learning method reduce T4's reach-then-interrupt failures while preserving its retained full-radius acquisition, toward at least 98% official-task success?",
-          "handoff_source_session_id": "S11",
-          "id": "I6",
-          "opened_in_session": "S12",
-          "question": "Can a regulation-focused continuation or alternative control-learning method reduce T4's reach-then-interrupt failures while preserving its retained full-radius acquisition, toward at least 98% official-task success?",
-          "rationale": "Do not request protected assessment for 153/160. M19 shows T4 is the strongest measured artifact and wins all three discordant episodes against T2, but its aggregate gain is accompanied by four reach-then-interrupt failures and lacks the time-resolved joint/torque diagnostics needed to identify their cause. T3's fresh targeted run is a cold-start-confounded failure, so it does not rule out transfer or another control-learning implementation. The prior model predicts that singular-reset acquisition, saturation/limit excursions, and dynamic regulation can be coupled; M15 supports that direction for T2 but does not establish that it explains T4's new residuals. This bounded inquiry can change capability through a candidate comparison and can redirect the method if regulation-focused work cannot preserve acquisition. It preserves the correction that M19 establishes artifact-level improvement, not a causal proof that targeted regulation itself caused the change.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I6",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E24",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a complete T4-based continuation or alternative control-learning candidate is measured under unchanged evaluation semantics on the matched 160-episode panel, with failure-class diagnostics inspected. A positive bounded answer requires fewer than four reach-then-interrupt failures, no more than three no-first-reach failures, and a higher total success count than T4; a negative or limited answer is recorded if the candidate fails these criteria or the comparison is not mechanism-informative. The result will not be treated as official 98% certification.",
-        "goal_connection": "The best candidate is 153/160 on the matched full-radius development panel, below the 196/200 official threshold. Its residuals are three no-first-reach failures and four reach-then-interrupt failures. A bounded development comparison can materially change the route to the goal only if it converts some of the four interruptions without increasing the three acquisition failures; any resulting candidate remains subject to the protected 200-episode assessment.",
-        "question": "Can a regulation-focused continuation or alternative control-learning method reduce T4's reach-then-interrupt failures while preserving its retained full-radius acquisition, toward at least 98% official-task success?",
-        "rationale": "Do not request protected assessment for 153/160. M19 shows T4 is the strongest measured artifact and wins all three discordant episodes against T2, but its aggregate gain is accompanied by four reach-then-interrupt failures and lacks the time-resolved joint/torque diagnostics needed to identify their cause. T3's fresh targeted run is a cold-start-confounded failure, so it does not rule out transfer or another control-learning implementation. The prior model predicts that singular-reset acquisition, saturation/limit excursions, and dynamic regulation can be coupled; M15 supports that direction for T2 but does not establish that it explains T4's new residuals. This bounded inquiry can change capability through a candidate comparison and can redirect the method if regulation-focused work cannot preserve acquisition. It preserves the correction that M19 establishes artifact-level improvement, not a causal proof that targeted regulation itself caused the change."
-      }
-    },
-    "request_fingerprint": "bb5438345d2d573a4ab21d95fb5891d647de564f34e8bb414297b2f3414555bd",
-    "session_id": "S12",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 is best-known based on M19 at 153/160 and no losses against T2 on the matched panel. T2:checkpoint-120832 remains the prior reference at 150/160. T3:checkpoint-120832 remains a rejected fresh targeted candidate at 0/160. No candidate is certified for the human goal, and no official assessment has been requested.",
     "completed_operations": [
