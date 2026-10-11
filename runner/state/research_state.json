@@ -3303,7 +3303,7 @@
   "counters": {
     "event": 15,
     "inquiry": 4,
-    "measurement": 8,
+    "measurement": 9,
     "session": 9,
     "training": 4
   },
@@ -8090,9 +8090,1138 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:51:37Z",
+      "error": null,
+      "id": "M9",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Rerun the staged-transfer residual authority characterization with isolated dynamics probes and corrected actuator-induced acceleration mapping, preserving runtime margins and trajectory-linked saturation, speed, endpoint error, and complete-hold outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+            ],
+            "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization-m9.json",
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "rationale": "M8 removed the live-state contamination and reproduced the four residual trajectories as 500-step failures with 498, 500, 498, and 500 saturated controls, matching the independent panel evaluator's no-first-entry outcomes and minimum distances. However, M8's reported endpoint authority is invalid because the implementation applied the inverse mass matrix twice: once when converting actuator torque to joint acceleration and again to an already acceleration-valued probe map. The resulting 500-10,000 m/s2 values cannot discriminate hard authority from policy regulation. This corrected run applies the inverse mass matrix exactly once. If realistic authority remains positive with the matched saturated trajectories, I4 will close as predominantly policy-dependent regulation failure; if authority is small at residual states, redirect toward authority or dynamics redesign; if the corrected evidence remains inconsistent, preserve I4 as inconclusive."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+            ],
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/python-module-M9-1-authority-characterization-m9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/experiment",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/panel_evaluation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/runtime_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "actual_actuator_torque",
+                      "actual_endpoint_acceleration_from_jacobian_qacc_m_s2",
+                      "actual_qacc_rad_s2",
+                      "attainable_endpoint_acceleration_map",
+                      "band",
+                      "control",
+                      "control_reserve",
+                      "directional_authority_m_s2",
+                      "endpoint_acceleration_map",
+                      "endpoint_acceleration_singular_values",
+                      "endpoint_error_cm",
+                      "endpoint_error_norm_cm",
+                      "endpoint_jacobian",
+                      "ik_branch",
+                      "ik_qpos_rad",
+                      "jacobian_determinant_m2",
+                      "mass_matrix",
+                      "min_control_reserve",
+                      "qpos_rad",
+                      "qvel_rad_s",
+                      "radial_authority_m_s2",
+                      "tangential_authority_m_s2",
+                      "target_angle_degrees",
+                      "target_position_m",
+                      "target_radius_cm"
+                    ],
+                    "path": "/representative_configurations",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/policy_trajectory_characterization",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/interpretation_inputs",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_evaluation/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_evaluation/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_evaluation/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/panel_evaluation/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/panel_evaluation/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/runtime_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nu",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_inertia",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/dof_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/policy_trajectory_characterization/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/policy_trajectory_characterization/episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "episode_seed",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/policy_trajectory_characterization/episodes",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/interpretation_inputs/residual_target_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/trajectory_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/authority_definition",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/complete_hold_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/panel_evaluation/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/panel_evaluation/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_evaluation/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_evaluation/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "bece1940a4a3c41f43f7fd116e83177cef38d6afbfa979d51fdfb3d87be744e6"
+            },
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+              "path": "robot_learning/lab/authority_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8df2505afb2043f455c5a0101b99ca38d1b5ec5a",
+            "fingerprint": "336ce2645a1920815d5b62b65007a64fa4229e7f1890604bfcef6583f4d1105a",
+            "manifest": [
+              {
+                "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+                "path": "robot_learning/lab/authority_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+              "path": "robot_learning/lab/authority_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/authority_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--output",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+          ],
+          "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization-m9.json",
+          "instrument": "python_module",
+          "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+          "module": "robot_learning.lab.authority_characterization"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+            "path": "robot_learning/lab/authority_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "8df2505afb2043f455c5a0101b99ca38d1b5ec5a",
+          "fingerprint": "336ce2645a1920815d5b62b65007a64fa4229e7f1890604bfcef6583f4d1105a",
+          "manifest": [
+            {
+              "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+              "path": "robot_learning/lab/authority_characterization.py"
+            }
+          ]
+        },
+        "code_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+            "path": "robot_learning/lab/authority_characterization.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/authority_characterization.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--output",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+          ],
+          "instrument": "python_module",
+          "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/python-module-M9-1-authority-characterization-m9.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/experiment",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "path": "/panel_evaluation",
+                  "type": "object"
+                },
+                {
+                  "entries": 12,
+                  "path": "/runtime_model",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "actual_actuator_torque",
+                    "actual_endpoint_acceleration_from_jacobian_qacc_m_s2",
+                    "actual_qacc_rad_s2",
+                    "attainable_endpoint_acceleration_map",
+                    "band",
+                    "control",
+                    "control_reserve",
+                    "directional_authority_m_s2",
+                    "endpoint_acceleration_map",
+                    "endpoint_acceleration_singular_values",
+                    "endpoint_error_cm",
+                    "endpoint_error_norm_cm",
+                    "endpoint_jacobian",
+                    "ik_branch",
+                    "ik_qpos_rad",
+                    "jacobian_determinant_m2",
+                    "mass_matrix",
+                    "min_control_reserve",
+                    "qpos_rad",
+                    "qvel_rad_s",
+                    "radial_authority_m_s2",
+                    "tangential_authority_m_s2",
+                    "target_angle_degrees",
+                    "target_position_m",
+                    "target_radius_cm"
+                  ],
+                  "path": "/representative_configurations",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/policy_trajectory_characterization",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/interpretation_inputs",
+                  "type": "object"
+                },
+                {
+                  "path": "/panel_evaluation/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_evaluation/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_evaluation/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_evaluation/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_evaluation/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/panel_evaluation/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/panel_evaluation/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/panel_evaluation/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "path": "/runtime_model/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/runtime_model/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/runtime_model/nv",
+                  "type": "number"
+                },
+                {
+                  "path": "/runtime_model/nu",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/runtime_model/body_names",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/runtime_model/body_mass_kg",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/runtime_model/body_inertia",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/runtime_model/dof_damping",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/runtime_model/dof_armature",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/runtime_model/actuator_names",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/runtime_model/actuator_gear",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/runtime_model/actuator_ctrlrange",
+                  "type": "array"
+                },
+                {
+                  "path": "/policy_trajectory_characterization/candidate",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/policy_trajectory_characterization/episode_seeds",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "episode_seed",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/policy_trajectory_characterization/episodes",
+                  "type": "array"
+                },
+                {
+                  "path": "/interpretation_inputs/residual_target_source",
+                  "type": "string"
+                },
+                {
+                  "path": "/interpretation_inputs/trajectory_source",
+                  "type": "string"
+                },
+                {
+                  "path": "/interpretation_inputs/authority_definition",
+                  "type": "string"
+                },
+                {
+                  "path": "/interpretation_inputs/complete_hold_semantics",
+                  "type": "string"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_at_first_reach",
+                    "branch_switches",
+                    "control_saturation_steps",
+                    "control_saturation_steps_before_entry",
+                    "elbow_angle_at_first_reach",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "jacobian_det_at_first_reach",
+                    "max_abs_control",
+                    "max_abs_control_before_entry",
+                    "max_abs_jacobian_det",
+                    "max_abs_jacobian_det_before_entry",
+                    "max_endpoint_speed",
+                    "max_endpoint_speed_before_entry",
+                    "max_held_steps",
+                    "max_joint_speed",
+                    "max_joint_speed_before_entry",
+                    "min_distance_branch",
+                    "min_distance_cm",
+                    "min_distance_elbow_angle",
+                    "min_distance_jacobian_det",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/panel_evaluation/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/panel_evaluation/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/panel_evaluation/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_evaluation/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "bece1940a4a3c41f43f7fd116e83177cef38d6afbfa979d51fdfb3d87be744e6"
+          },
+          "module": "robot_learning.lab.authority_characterization"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+            ],
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/python-module-M9-1-authority-characterization-m9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/experiment",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/panel_evaluation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/runtime_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "actual_actuator_torque",
+                      "actual_endpoint_acceleration_from_jacobian_qacc_m_s2",
+                      "actual_qacc_rad_s2",
+                      "attainable_endpoint_acceleration_map",
+                      "band",
+                      "control",
+                      "control_reserve",
+                      "directional_authority_m_s2",
+                      "endpoint_acceleration_map",
+                      "endpoint_acceleration_singular_values",
+                      "endpoint_error_cm",
+                      "endpoint_error_norm_cm",
+                      "endpoint_jacobian",
+                      "ik_branch",
+                      "ik_qpos_rad",
+                      "jacobian_determinant_m2",
+                      "mass_matrix",
+                      "min_control_reserve",
+                      "qpos_rad",
+                      "qvel_rad_s",
+                      "radial_authority_m_s2",
+                      "tangential_authority_m_s2",
+                      "target_angle_degrees",
+                      "target_position_m",
+                      "target_radius_cm"
+                    ],
+                    "path": "/representative_configurations",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/policy_trajectory_characterization",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/interpretation_inputs",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_evaluation/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_evaluation/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_evaluation/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_evaluation/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/panel_evaluation/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/panel_evaluation/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/runtime_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/runtime_model/nu",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/runtime_model/body_inertia",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/dof_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/runtime_model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/policy_trajectory_characterization/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/policy_trajectory_characterization/episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "episode_seed",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/policy_trajectory_characterization/episodes",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/interpretation_inputs/residual_target_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/trajectory_source",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/authority_definition",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation_inputs/complete_hold_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/panel_evaluation/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/panel_evaluation/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_evaluation/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_evaluation/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "bece1940a4a3c41f43f7fd116e83177cef38d6afbfa979d51fdfb3d87be744e6"
+            },
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+              "path": "robot_learning/lab/authority_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8df2505afb2043f455c5a0101b99ca38d1b5ec5a",
+            "fingerprint": "336ce2645a1920815d5b62b65007a64fa4229e7f1890604bfcef6583f4d1105a",
+            "manifest": [
+              {
+                "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+                "path": "robot_learning/lab/authority_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "aa014451386fe94b866a7bb6787e57daabab2367c4f914accad79c9adcd6131a",
+              "path": "robot_learning/lab/authority_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/authority_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I4",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Rerun the staged-transfer residual authority characterization with isolated dynamics probes and corrected actuator-induced acceleration mapping, preserving runtime margins and trajectory-linked saturation, speed, endpoint error, and complete-hold outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m9.json"
+            ],
+            "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization-m9.json",
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization-corrected-acceleration",
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "rationale": "M8 removed the live-state contamination and reproduced the four residual trajectories as 500-step failures with 498, 500, 498, and 500 saturated controls, matching the independent panel evaluator's no-first-entry outcomes and minimum distances. However, M8's reported endpoint authority is invalid because the implementation applied the inverse mass matrix twice: once when converting actuator torque to joint acceleration and again to an already acceleration-valued probe map. The resulting 500-10,000 m/s2 values cannot discriminate hard authority from policy regulation. This corrected run applies the inverse mass matrix exactly once. If realistic authority remains positive with the matched saturated trajectories, I4 will close as predominantly policy-dependent regulation failure; if authority is small at residual states, redirect toward authority or dynamics redesign; if the corrected evidence remains inconsistent, preserve I4 as inconclusive."
+      }
+    },
+    "request_fingerprint": "18a7e92c16abc793d352829a89f79a4dc09d6560439422ecea294b1be943c60d",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this session. Candidate-comparison evidence identifies T3:checkpoint-120832 as the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; and T1:checkpoint-120832 is the staged-transfer reference at 68.75%. T2:checkpoint-120832 remains recipe-specific counterevidence at 33.75%. These facts do not establish causal explanations.",
     "completed_operations": [
@@ -8137,7 +9266,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "M7",
-      "M8"
+      "M8",
+      "M9"
     ],
     "scientific_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c"
   },
