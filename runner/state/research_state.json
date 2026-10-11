@@ -4619,38 +4619,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Limited negative conclusion: the fresh T2 policy trained with velocity-aware braking, inner complete-hold margin reward, and interruption forfeiture achieved 0/160 on the non-overlapping development panel at both measured checkpoints. The candidate never first-reached the target in any episode, so it could not test hold completion; the result is a broad reach-learning collapse rather than evidence of a persistent angle-conditioned hold deficit. I2 is closed without supporting the positive capability claim.",
-        "reason": "M8 verified that the implemented reward intervention has the intended controlled directional effects. M9 then measured T2:checkpoint-100352 and T2:checkpoint-120832 on the same seed-4360 panel: both had 0 successes, all 160 first_reach_step values null, zero in-tolerance steps and hold interruptions, zero contacts, and coverage spanning the full official radius range and target-angle distribution. The paired comparison had no episode wins for either artifact. This resolves the bounded I2 decision: the tested complete reward-and-PPO recipe failed to preserve the baseline's first-reach capability and cannot support assessment. Because the intervention changed multiple reward terms together and no policy-level causal isolation was performed, the result is limited to this implementation, PPO recipe, seed, and allocation; it does not disprove velocity-aware braking or margin shaping as broader methods. The next direction should investigate learning-recipe/observability or reward-scale/singularity interactions before another capability claim."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Limited negative conclusion: the fresh T2 policy trained with velocity-aware braking, inner complete-hold margin reward, and interruption forfeiture achieved 0/160 on the non-overlapping development panel at both measured checkpoints. The candidate never first-reached the target in any episode, so it could not test hold completion; the result is a broad reach-learning collapse rather than evidence of a persistent angle-conditioned hold deficit. I2 is closed without supporting the positive capability claim.",
-        "reason": "M8 verified that the implemented reward intervention has the intended controlled directional effects. M9 then measured T2:checkpoint-100352 and T2:checkpoint-120832 on the same seed-4360 panel: both had 0 successes, all 160 first_reach_step values null, zero in-tolerance steps and hold interruptions, zero contacts, and coverage spanning the full official radius range and target-angle distribution. The paired comparison had no episode wins for either artifact. This resolves the bounded I2 decision: the tested complete reward-and-PPO recipe failed to preserve the baseline's first-reach capability and cannot support assessment. Because the intervention changed multiple reward terms together and no policy-level causal isolation was performed, the result is limited to this implementation, PPO recipe, seed, and allocation; it does not disprove velocity-aware braking or margin shaping as broader methods. The next direction should investigate learning-recipe/observability or reward-scale/singularity interactions before another capability claim.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative conclusion: the fresh T2 policy trained with velocity-aware braking, inner complete-hold margin reward, and interruption forfeiture achieved 0/160 on the non-overlapping development panel at both measured checkpoints. The candidate never first-reached the target in any episode, so it could not test hold completion; the result is a broad reach-learning collapse rather than evidence of a persistent angle-conditioned hold deficit. I2 is closed without supporting the positive capability claim.",
-        "reason": "M8 verified that the implemented reward intervention has the intended controlled directional effects. M9 then measured T2:checkpoint-100352 and T2:checkpoint-120832 on the same seed-4360 panel: both had 0 successes, all 160 first_reach_step values null, zero in-tolerance steps and hold interruptions, zero contacts, and coverage spanning the full official radius range and target-angle distribution. The paired comparison had no episode wins for either artifact. This resolves the bounded I2 decision: the tested complete reward-and-PPO recipe failed to preserve the baseline's first-reach capability and cannot support assessment. Because the intervention changed multiple reward terms together and no policy-level causal isolation was performed, the result is limited to this implementation, PPO recipe, seed, and allocation; it does not disprove velocity-aware braking or margin shaping as broader methods. The next direction should investigate learning-recipe/observability or reward-scale/singularity interactions before another capability claim."
-      }
-    },
-    "request_fingerprint": "f3f7401d6c1adb42c22450532ca8d3254dd936b7c7b2b69f1b1809cd898b62d4",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the only complete learned candidate with development evidence, measured at 150/160 = 93.75%; no working, best-known, or retained role is assigned. Its artifact remains the comparison baseline for I2. Other T1 checkpoints have training proxies only and are not promoted based on proxy rank.",
     "completed_operations": [
