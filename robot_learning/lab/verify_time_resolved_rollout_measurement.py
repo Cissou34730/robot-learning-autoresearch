@@ -133,6 +133,8 @@ def _check_trace(
     _require(isinstance(trace, list) and len(trace) > 0, "rollout has no time-resolved trace")
     initial_qpos = _array(rollout["initial_state"]["qpos_rad"], (2,), "initial qpos")
     initial_qvel = _array(rollout["initial_state"]["qvel_rad_s"], (2,), "initial qvel")
+    site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "end_effector")
+    _require(site_id >= 0, "compiled model has no end_effector site")
     _close(initial_qpos, np.zeros(2), "initial qpos reset", tolerance=0.0)
     _close(initial_qvel, np.zeros(2), "initial qvel reset", tolerance=0.0)
     previous_qpos = initial_qpos
@@ -163,6 +165,24 @@ def _check_trace(
         data.qvel[:] = qvel_after
         mujoco.mj_forward(model, data)
         _close(endpoint, data.site("end_effector").xpos, "endpoint forward kinematics")
+        jacobian_position = np.empty((3, model.nv), dtype=np.float64)
+        jacobian_rotation = np.empty((3, model.nv), dtype=np.float64)
+        mujoco.mj_jacSite(
+            model,
+            data,
+            jacobian_position,
+            jacobian_rotation,
+            site_id,
+        )
+        _require(
+            bool(np.all(np.isfinite(jacobian_position))),
+            "endpoint translational Jacobian contains a non-finite value",
+        )
+        _close(
+            endpoint_velocity,
+            jacobian_position @ qvel_after,
+            "endpoint velocity from translational Jacobian",
+        )
         distance = float(np.linalg.norm(endpoint - target))
         _close(record["distance_m"], distance, "distance")
         _close(record["distance_cm"], 100.0 * distance, "distance in centimeters")
@@ -327,6 +347,7 @@ def main(argv: list[str] | None = None) -> None:
                 "20 exact M9 seeds and role outcomes",
                 "reset state and repeated qpos/qvel transitions",
                 "forward-kinematics endpoint and geometry distances",
+                "endpoint velocity against an independent translational Jacobian-times-qvel reference",
                 "hold transitions, interruption classes, contacts, and branch IK",
             ],
             "unchecked_scope": [

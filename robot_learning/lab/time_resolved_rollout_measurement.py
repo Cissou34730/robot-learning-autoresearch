@@ -253,9 +253,28 @@ def _rollout(
         )
         if site_id < 0:
             raise ValueError("compiled model has no end_effector site")
-        endpoint_velocity = np.asarray(
-            env.data.site_xvelp[site_id], dtype=np.float64
-        ).copy()
+        site_velocity = np.empty(6, dtype=np.float64)
+        mujoco.mj_objectVelocity(
+            model,
+            env.data,
+            mujoco.mjtObj.mjOBJ_SITE,
+            site_id,
+            0,
+            site_velocity,
+        )
+        if site_velocity.shape != (6,):
+            raise ValueError(
+                f"site velocity has shape {site_velocity.shape}, expected (6,)"
+            )
+        if not np.all(np.isfinite(site_velocity)):
+            raise ValueError("site velocity contains a non-finite value")
+        endpoint_velocity = site_velocity[3:6].copy()
+        if endpoint_velocity.shape != (3,):
+            raise ValueError(
+                f"endpoint velocity has shape {endpoint_velocity.shape}, expected (3,)"
+            )
+        if not np.all(np.isfinite(endpoint_velocity)):
+            raise ValueError("endpoint velocity contains a non-finite value")
         if env.data.ctrl.shape != (2,):
             raise ValueError("compiled actuator control shape is not two")
         applied_control = np.asarray(env.data.ctrl, dtype=np.float64).copy()
