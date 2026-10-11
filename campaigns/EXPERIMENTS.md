@@ -48,3 +48,4 @@
 | E21 | model_role | I5 | assigned |
 | E22 | inquiry | I5 | completed |
 | E23 | checkpoint | I5 | checkpointed |
+| E24 | inquiry | I6 | completed |
