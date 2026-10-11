@@ -27,7 +27,11 @@ from contracts.task_spec import (
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
-from robot_learning.training.reward import reach_reward
+from robot_learning.training.reward import (
+    DEFAULT_REWARD_PROFILE,
+    TARGETED_REGULATION_PROFILE,
+    reach_reward,
+)
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -42,12 +46,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        reward_profile: str = DEFAULT_REWARD_PROFILE,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.reward_profile = reward_profile
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -79,6 +85,21 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         return float(
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
+
+    def _endpoint_linear_velocity(self) -> float:
+        jacobian_position = np.zeros((3, self.model.nv), dtype=np.float64)
+        jacobian_rotation = np.zeros((3, self.model.nv), dtype=np.float64)
+        site_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+        )
+        mujoco.mj_jacSite(
+            self.model,
+            self.data,
+            jacobian_position,
+            jacobian_rotation,
+            site_id,
+        )
+        return float(np.linalg.norm(jacobian_position @ self.data.qvel))
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
@@ -142,6 +163,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
+        reward_kwargs = {}
+        if self.reward_profile == TARGETED_REGULATION_PROFILE:
+            reward_kwargs = {
+                "reward_profile": self.reward_profile,
+                "joint_velocity": self.data.qvel[:2].copy(),
+                "endpoint_velocity": self._endpoint_linear_velocity(),
+            }
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -151,6 +179,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            **reward_kwargs,
         )
         self._previous_distance = distance
 

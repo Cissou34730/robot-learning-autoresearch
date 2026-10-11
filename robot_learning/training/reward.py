@@ -24,6 +24,15 @@ OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
 
+DEFAULT_REWARD_PROFILE = "default"
+TARGETED_REGULATION_PROFILE = "targeted_regulation"
+BRAKING_DISTANCE = 0.05
+TARGETED_JOINT_VELOCITY_COEFFICIENT = 0.01
+TARGETED_JOINT_VELOCITY_SCALE = 4.0
+TARGETED_ENDPOINT_VELOCITY_COEFFICIENT = 0.05
+TARGETED_ENDPOINT_VELOCITY_SCALE = 0.25
+TARGETED_ACTION_REGULATION_COEFFICIENT = 0.03
+
 
 @dataclass(frozen=True)
 class RewardResult:
@@ -44,6 +53,20 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _smoothstep(value: float) -> float:
+    value = float(np.clip(value, 0.0, 1.0))
+    return value * value * (3.0 - 2.0 * value)
+
+
+def _bounded_squared_magnitude(
+    value: np.ndarray | float, scale: float
+) -> float:
+    if scale <= 0:
+        raise ValueError("a bounded magnitude scale must be positive")
+    magnitude = float(np.linalg.norm(np.asarray(value, dtype=np.float64)))
+    return float(np.tanh(magnitude / scale) ** 2)
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,7 +76,17 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    *,
+    reward_profile: str = DEFAULT_REWARD_PROFILE,
+    joint_velocity: np.ndarray | None = None,
+    endpoint_velocity: float | None = None,
 ) -> RewardResult:
+    if reward_profile not in {
+        DEFAULT_REWARD_PROFILE,
+        TARGETED_REGULATION_PROFILE,
+    }:
+        raise ValueError(f"unknown reward profile: {reward_profile}")
+
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
@@ -95,14 +128,65 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    components = {
+        "progress": float(progress),
+        "closeness": float(closeness),
+        "hold_progress": float(hold_progress),
+        "outside_band": float(outside_band),
+        "hold_complete": float(hold_complete),
+        "action_cost": float(action_cost),
+    }
+
+    if reward_profile == TARGETED_REGULATION_PROFILE:
+        if joint_velocity is None or endpoint_velocity is None:
+            raise ValueError(
+                "targeted regulation requires joint and endpoint velocity"
+            )
+        if BRAKING_DISTANCE <= success_threshold:
+            raise ValueError("BRAKING_DISTANCE must exceed success_threshold")
+
+        braking_weight = _smoothstep(
+            (BRAKING_DISTANCE - current_distance)
+            / (BRAKING_DISTANCE - success_threshold)
+        )
+        joint_velocity_penalty = -(
+            TARGETED_JOINT_VELOCITY_COEFFICIENT
+            * _bounded_squared_magnitude(
+                joint_velocity, TARGETED_JOINT_VELOCITY_SCALE
+            )
+        )
+        endpoint_velocity_penalty = -(
+            TARGETED_ENDPOINT_VELOCITY_COEFFICIENT
+            * braking_weight
+            * _bounded_squared_magnitude(
+                endpoint_velocity, TARGETED_ENDPOINT_VELOCITY_SCALE
+            )
+        )
+        action_regulation_penalty = -(
+            TARGETED_ACTION_REGULATION_COEFFICIENT
+            * braking_weight
+            * _bounded_squared_magnitude(
+                np.zeros(1, dtype=np.float64)
+                if action is None
+                else action,
+                1.0,
+            )
+        )
+        reward += (
+            joint_velocity_penalty
+            + endpoint_velocity_penalty
+            + action_regulation_penalty
+        )
+        components.update(
+            {
+                "braking_weight": float(braking_weight),
+                "targeted_joint_velocity": float(joint_velocity_penalty),
+                "targeted_endpoint_velocity": float(endpoint_velocity_penalty),
+                "targeted_action_regulation": float(action_regulation_penalty),
+            }
+        )
+
     return RewardResult(
         total=float(reward),
-        components={
-            "progress": float(progress),
-            "closeness": float(closeness),
-            "hold_progress": float(hold_progress),
-            "outside_band": float(outside_band),
-            "hold_complete": float(hold_complete),
-            "action_cost": float(action_cost),
-        },
+        components=components,
     )
