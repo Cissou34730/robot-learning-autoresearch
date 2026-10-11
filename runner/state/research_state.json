@@ -2020,47 +2020,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "After at most the allocated complete training and evaluation work, close when a full-radius candidate has been compared with the baseline on a held-out panel using identical episode seeds and the result establishes one of: meaningful reduction of inner-radius acquisition failures sufficient to continue candidate development; persistent acquisition failures across adequately exposed radii or reproducible angle/branch/contact-linked behavior that redirects to mechanism measurement; or an inconclusive comparison whose limitations are carried into goal review. Training proxies alone do not satisfy closure.",
-          "goal_connection": "The current candidate achieves only 105/160 held-out successes, with 49/55 failures lacking first reach and the no-reach diagnostics spanning both inner and exposed radii. A full-radius candidate can directly improve the dominant capability gap under the unchanged official plant and semantics; its matched diagnostics can determine whether the next credible route remains learning development or must investigate persistent reach-acquisition mechanisms. Neither outcome is an official success claim.",
-          "handoff_conclusion": "M5 established for the exact compiled model the 0.002 s simulator step, ten substeps per 0.020 s control update, gear-5 direct motors with control range [-1,1] and no force limit, finite compiled masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets, symmetric torque response, reversal, free-velocity decay, and no contacts in its tested traces; its independent checks passed. This supports retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified, while leaving long-horizon policy behavior, folded paths, and target-dependent contacts untested. T1 trained the current PPO implementation for the full 120000-step allocation request and archived complete candidates through 120832 actual steps. Its 0.14-0.20 m training exposure and late proxy plateau nominate candidates but do not establish development performance. M6 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out episodes sampled with the research panel. It recorded 105 successes and 55 failures. Forty-eight failures had no first reach; only seven reached tolerance and then failed continuous holding. Forty-four of those 48 no-reach failures were below 14 cm and four were at exposed radii, so the dominant pattern is inner-radius-associated reach acquisition with additional angle/branch dependence, not a pure radius-only effect. This is an artifact-level behavioral result, not proof that PPO, inner-radius exposure, singular escape, branch occupancy, or any other intended factor caused the failures. The evidence does not establish contact involvement, endpoint velocity, or the causal separation between singular escape, learned generalization, trajectory/branch selection, and control timing.",
-          "handoff_question": "Does replacing the baseline 0.14-0.20 m training exposure with full 0.06-0.20 m exposure produce a complete learned policy whose held-out inner-radius reach failures materially decrease, or do failures persist across radius and angle in a pattern that warrants singular-escape, trajectory/braking, branch, or contact diagnostics before further policy development?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Does replacing the baseline 0.14-0.20 m training exposure with full 0.06-0.20 m exposure produce a complete learned policy whose held-out inner-radius reach failures materially decrease, or do failures persist across radius and angle in a pattern that warrants singular-escape, trajectory/braking, branch, or contact diagnostics before further policy development?",
-          "rationale": "Official assessment is unjustified at 105/160 (65.625%), and the artifact-level failure count is worse for acquisition than inherited synthesis stated: 49 diagnostics have null first_reach_step and only 6 reached tolerance before failure. M5 rules out a presently supported source-level actuator/timing/reset repair, while T1's late proxy plateau was produced only on 0.14-0.20 m targets and its terminal checkpoint is not privileged. Full-radius exposure is the least speculative complete-policy intervention that can materially change the dominant inner-band gap under the same plant. Because the exposure change alone cannot establish singular escape, braking, branch, or contact causality, persistent or structured failures will trigger the bounded redirect rather than be overinterpreted as a learning failure.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "After at most the allocated complete training and evaluation work, close when a full-radius candidate has been compared with the baseline on a held-out panel using identical episode seeds and the result establishes one of: meaningful reduction of inner-radius acquisition failures sufficient to continue candidate development; persistent acquisition failures across adequately exposed radii or reproducible angle/branch/contact-linked behavior that redirects to mechanism measurement; or an inconclusive comparison whose limitations are carried into goal review. Training proxies alone do not satisfy closure.",
-        "goal_connection": "The current candidate achieves only 105/160 held-out successes, with 49/55 failures lacking first reach and the no-reach diagnostics spanning both inner and exposed radii. A full-radius candidate can directly improve the dominant capability gap under the unchanged official plant and semantics; its matched diagnostics can determine whether the next credible route remains learning development or must investigate persistent reach-acquisition mechanisms. Neither outcome is an official success claim.",
-        "question": "Does replacing the baseline 0.14-0.20 m training exposure with full 0.06-0.20 m exposure produce a complete learned policy whose held-out inner-radius reach failures materially decrease, or do failures persist across radius and angle in a pattern that warrants singular-escape, trajectory/braking, branch, or contact diagnostics before further policy development?",
-        "rationale": "Official assessment is unjustified at 105/160 (65.625%), and the artifact-level failure count is worse for acquisition than inherited synthesis stated: 49 diagnostics have null first_reach_step and only 6 reached tolerance before failure. M5 rules out a presently supported source-level actuator/timing/reset repair, while T1's late proxy plateau was produced only on 0.14-0.20 m targets and its terminal checkpoint is not privileged. Full-radius exposure is the least speculative complete-policy intervention that can materially change the dominant inner-band gap under the same plant. Because the exposure change alone cannot establish singular escape, braking, branch, or contact causality, persistent or structured failures will trigger the bounded redirect rather than be overinterpreted as a learning failure."
-      }
-    },
-    "request_fingerprint": "069469ef5cd5bb3728e0a0ef81988043411e2385561d4da5bfc9aef72e8579e2",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 archived a complete candidate pool from 5120 through 120832 actual steps. T1:checkpoint-115712 was selected for M6 because it was an archived member of the stable late training-proxy plateau (0.96 success proxy), not merely because it was terminal. M6 is the only completed candidate evaluation and identifies this artifact's capability gap; no working, best-known, or retained role has been assigned. M5 remains compiled-plant evidence and is not a learned candidate.",
     "completed_operations": [
