@@ -157,7 +157,9 @@
     },
     "T1:checkpoint-115712": {
       "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t1/checkpoint-115712",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m6-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json"
+      ],
       "fingerprint": "837741b33a819cd78f7d742db9520bb49cdef26fd9923706d7b3512a50fae4b4",
       "id": "T1:checkpoint-115712",
       "name": "checkpoint-115712",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 5,
+    "measurement": 6,
     "session": 3,
     "training": 1
   },
@@ -1800,9 +1802,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:24:16Z",
+      "error": null,
+      "id": "M6",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the complete T1:checkpoint-115712 candidate on the held-out research panel using the official full target distribution and preserve per-episode target geometry, reach, convergence, hold, interruption, and outcome diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 late-plateau held-out development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "The inquiry has now produced complete archived candidates but no development performance evidence. T1:checkpoint-115712 is selected from the learning trajectory as an archived late-plateau artifact: its training proxy success is 0.96, matching the best archived value, and the surrounding 114,688-116,736 steps are stable; it is not selected merely because it is terminal. A held-out research evaluation is the first operation that can test the closure condition and distinguish whether the tested artifact fails mainly in the unexposed inner-radius band, in reach timing or braking, in uninterrupted hold regulation, or in angle/branch-dependent behavior. The result remains development evidence rather than official certification, and any unexplained difference between this artifact and other checkpoints would remain an artifact-selection fact."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T1 late-plateau held-out development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m6-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5c901ace1a83c67f2681aba5e95b92e63d26ff6c6eb9a0572dc454e121cfce78",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "837741b33a819cd78f7d742db9520bb49cdef26fd9923706d7b3512a50fae4b4",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 65.625,
+              "successes": 105
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t1/checkpoint-115712",
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1 late-plateau held-out development panel",
+          "model_fingerprint": "837741b33a819cd78f7d742db9520bb49cdef26fd9923706d7b3512a50fae4b4",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "T1 late-plateau held-out development panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m6-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "5c901ace1a83c67f2681aba5e95b92e63d26ff6c6eb9a0572dc454e121cfce78",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "837741b33a819cd78f7d742db9520bb49cdef26fd9923706d7b3512a50fae4b4",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 65.625,
+            "successes": 105
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T1 late-plateau held-out development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m6-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5c901ace1a83c67f2681aba5e95b92e63d26ff6c6eb9a0572dc454e121cfce78",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "837741b33a819cd78f7d742db9520bb49cdef26fd9923706d7b3512a50fae4b4",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 65.625,
+              "successes": 105
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the complete T1:checkpoint-115712 candidate on the held-out research panel using the official full target distribution and preserve per-episode target geometry, reach, convergence, hold, interruption, and outcome diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 late-plateau held-out development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "The inquiry has now produced complete archived candidates but no development performance evidence. T1:checkpoint-115712 is selected from the learning trajectory as an archived late-plateau artifact: its training proxy success is 0.96, matching the best archived value, and the surrounding 114,688-116,736 steps are stable; it is not selected merely because it is terminal. A held-out research evaluation is the first operation that can test the closure condition and distinguish whether the tested artifact fails mainly in the unexposed inner-radius band, in reach timing or braking, in uninterrupted hold regulation, or in angle/branch-dependent behavior. The result remains development evidence rather than official certification, and any unexplained difference between this artifact and other checkpoints would remain an artifact-selection fact."
+      }
+    },
+    "request_fingerprint": "ab3433106648910308c0d9acdb84474d399c4fde1243ce52ded356a78461c77c",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
     "completed_operations": [
@@ -1841,7 +2231,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M6"
     ],
     "scientific_parent_commit": "12e747b71992c03fc9c556fd9d31909dd66a0e3a"
   },
