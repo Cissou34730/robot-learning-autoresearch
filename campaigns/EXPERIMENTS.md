@@ -66,3 +66,4 @@
 | M23 | measurement | I8 | completed |
 | E34 | inquiry | I8 | completed |
 | E35 | checkpoint | I8 | checkpointed |
+| E36 | inquiry | I9 | completed |
