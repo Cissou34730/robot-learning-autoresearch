@@ -251,6 +251,20 @@ def _kinematic_reference(
     }
 
 
+def _validate_rollout_outcome(
+    seed: int,
+    role: str,
+    success: bool,
+    allow_unexpected_outcomes: bool,
+) -> bool:
+    expected_success = role == "control"
+    if not allow_unexpected_outcomes and success != expected_success:
+        raise RuntimeError(
+            f"seed {seed} with role {role} had unexpected outcome success={success}"
+        )
+    return success
+
+
 def _rollout(
     env,
     runtime,
@@ -258,6 +272,7 @@ def _rollout(
     seed: int,
     role: str,
     max_steps: int,
+    allow_unexpected_outcomes: bool,
 ) -> dict[str, Any]:
     observation, _ = env.reset(seed=seed)
     runtime.reset()
@@ -408,12 +423,13 @@ def _rollout(
             break
     if not (terminated or truncated):
         raise ValueError(f"seed {seed} exceeded the requested maximum control steps")
-    success = bool(info.get("is_success", False))
+    success = _validate_rollout_outcome(
+        seed,
+        role,
+        bool(info.get("is_success", False)),
+        allow_unexpected_outcomes,
+    )
     expected_success = role == "control"
-    if success != expected_success:
-        raise RuntimeError(
-            f"seed {seed} with role {role} had unexpected outcome success={success}"
-        )
     first_reach_step = next(
         (record["control_step"] for record in trace if record["in_tolerance"]), None
     )
@@ -467,6 +483,7 @@ def run_measurement(
     failure_seeds: Sequence[int],
     control_seeds: Sequence[int],
     max_steps: int,
+    allow_unexpected_outcomes: bool = False,
 ) -> dict[str, Any]:
     if list(failure_seeds) != EXPECTED_FAILURE_SEEDS:
         raise ValueError("failure seeds must be the exact M9 failure seed list")
@@ -490,7 +507,17 @@ def run_measurement(
     rollouts = []
     for role, seeds in (("failure", failure_seeds), ("control", control_seeds)):
         for seed in seeds:
-            rollouts.append(_rollout(env, runtime, model, seed, role, max_steps))
+            rollouts.append(
+                _rollout(
+                    env,
+                    runtime,
+                    model,
+                    seed,
+                    role,
+                    max_steps,
+                    allow_unexpected_outcomes,
+                )
+            )
     return {
         "schema_version": SCHEMA_VERSION,
         "measurement": "time_resolved_rollout_mechanism_discrimination",
@@ -525,6 +552,11 @@ def run_measurement(
             "environment_factory": "make_evaluation_env(policy_runtime=runtime)",
         },
         "measurement_semantics": {
+            "outcome_validation": {
+                "allow_unexpected_outcomes": bool(allow_unexpected_outcomes),
+                "historical_role_expectation_retained": True,
+                "actual_success_source": "environment info['is_success']",
+            },
             "environment_observed_fields": [
                 "endpoint_position_m",
                 "endpoint_velocity_m_s",
@@ -579,8 +611,15 @@ def write_measurement(
     control_seeds: Sequence[int],
     max_steps: int,
     artifact_path: Path,
+    allow_unexpected_outcomes: bool = False,
 ) -> None:
-    result = run_measurement(model_path, failure_seeds, control_seeds, max_steps)
+    result = run_measurement(
+        model_path,
+        failure_seeds,
+        control_seeds,
+        max_steps,
+        allow_unexpected_outcomes,
+    )
     destination = (
         artifact_path if artifact_path.is_absolute() else REPOSITORY_ROOT / artifact_path
     ).resolve()
@@ -599,6 +638,11 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--failure-seeds", required=True, nargs="+")
     parser.add_argument("--control-seeds", required=True, nargs="+")
     parser.add_argument("--max-steps", required=True, type=int)
+    parser.add_argument(
+        "--allow-unexpected-outcomes",
+        action="store_true",
+        help="record actual outcomes without enforcing historical role expectations",
+    )
     parser.add_argument("--artifact", required=True, type=Path)
     args = parser.parse_args(argv)
     failure_seeds = _parse_seeds(args.failure_seeds, "failure seeds")
@@ -609,6 +653,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         control_seeds,
         args.max_steps,
         args.artifact,
+        args.allow_unexpected_outcomes,
     )
 
 
