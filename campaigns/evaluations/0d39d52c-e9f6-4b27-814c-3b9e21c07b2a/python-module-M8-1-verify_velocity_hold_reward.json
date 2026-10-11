@@ -1,0 +1,97 @@
+{
+  "check": "velocity_hold_reward",
+  "status": "passed",
+  "observations": [
+    {
+      "name": "far_high_velocity_has_no_braking_penalty",
+      "observed": -0.0,
+      "expected": "exactly zero outside the smooth near-target gate",
+      "scope": "far transit with high joint velocity"
+    },
+    {
+      "name": "near_target_high_velocity_is_penalized_more",
+      "observed": {
+        "high_velocity_braking": -0.0625,
+        "low_velocity_braking": -0.0006250000000000001
+      },
+      "expected": "high-velocity braking contribution is more negative",
+      "scope": "same near-target transition with two controlled velocities"
+    },
+    {
+      "name": "deeper_inner_hold_margin_is_rewarded",
+      "observed": {
+        "shallow_margin": 0.0,
+        "deep_margin": 0.6
+      },
+      "expected": "deeper in-ball position has a larger margin, while the boundary-skimming point has none",
+      "scope": "boundary-skimming versus inner-margin held step"
+    },
+    {
+      "name": "repeated_inner_hold_updates_remain_finite_and_rewarded",
+      "observed": {
+        "totals": [
+          1.1,
+          1.1,
+          1.1
+        ],
+        "margins": [
+          0.6,
+          0.6,
+          0.6
+        ]
+      },
+      "expected": "all totals are finite and every held step has positive margin",
+      "scope": "three consecutive controlled in-margin hold updates"
+    },
+    {
+      "name": "hold_interruption_forfeits_prior_progress",
+      "observed": -1.5,
+      "expected": "negative hold-progress contribution after exiting the ball",
+      "scope": "in-tolerance hold followed by an outside transition"
+    },
+    {
+      "name": "fresh_sequence_has_no_stale_exit_forfeit",
+      "observed": {
+        "hold_progress": 0.5,
+        "hold_margin": 0.2,
+        "braking": -0.0
+      },
+      "expected": "a fresh held step has positive progress and margin, with no braking",
+      "scope": "reset-equivalent first held update after interruption scenario"
+    },
+    {
+      "name": "new_reward_components_are_attributed",
+      "observed": [
+        "action_cost",
+        "braking",
+        "closeness",
+        "hold_complete",
+        "hold_margin",
+        "hold_progress",
+        "outside_band",
+        "progress"
+      ],
+      "expected": "component attribution includes braking and hold_margin",
+      "scope": "reward result attribution"
+    },
+    {
+      "name": "controlled_reward_outputs_are_finite",
+      "observed": true,
+      "expected": "all checked scalar totals and components are finite",
+      "scope": "representative far, near, hold, interruption, and fresh updates"
+    }
+  ],
+  "checked_scope": [
+    "reward updates during far transit and near-target motion",
+    "repeated in-margin hold updates",
+    "in-tolerance to out-of-tolerance hold interruption",
+    "fresh reset-equivalent hold sequence",
+    "finite scalar totals and braking/hold-margin attribution"
+  ],
+  "unchecked_scope": [
+    "learned-policy behavior and training convergence",
+    "task-level reach or complete-hold rates",
+    "MuJoCo dynamics and evaluator outcomes",
+    "coefficient optimality or causal isolation of the intervention"
+  ]
+}
