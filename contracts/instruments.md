@@ -19,6 +19,13 @@ Measurement identities use `M#`. Training identities use `T#`.
 Other event identities use `E#`.
 Evidence references must identify completed operations.
 
+The Runner replaces an accepted proposal with an acceptance marker.
+The Runner removes that marker after it finalizes the operation.
+The request file can therefore be absent after an accepted operation completes.
+Create the next proposal at the same path when the previous request is absent.
+Do not update or delete a previous request without checking that it exists.
+A rejected proposal remains available for correction.
+
 ## Instrument capabilities
 
 The available interfaces have these capabilities:
@@ -351,6 +358,10 @@ question of the inquiry opened in that session. If the same inquiry continues,
 the checkpoint repeats its current active question.
 `completed_operations` must exactly match the active session's completed
 operation identities.
+Opening, reframing or closing an inquiry does not end the active scientific session.
+The checkpoint transition prompt supplies the session identity and exact operation list.
+The Runner rejects a mismatched list without changing the session.
+Its error reports the session identity, expected list and submitted list.
 Every evidence reference must identify a completed operation.
 Artifact paths are operation outputs, not independent evidence references.
 The accepted scientific session record ends the current scientific session.

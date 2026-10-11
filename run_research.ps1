@@ -833,7 +833,11 @@ function New-ScientificSessionPrompt {
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
             "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
             if ($session.kind -eq "goal_review") {
-                "For a measurement, explain how its possible outcomes would affect the campaign-level choice. Record the chosen assessment or inquiry and its evidence-based reason as contracts/program.md 'Goal review' defines."
+                "For a measurement, explain how its possible outcomes would affect the campaign-level choice."
+                "Record the chosen assessment or inquiry and its evidence-based reason."
+                "Preserve relevant residual failures, counterevidence and uncertainty in the chosen operation's reason."
+                "If requesting official assessment, explain why commitment is justified despite those limitations rather than further bounded work."
+                "Recording a limitation does not require resolving it or requesting another measurement."
             }
             else {
                 "State which completed evidence supports continuing the current route, changing it, or obtaining missing evidence. Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
@@ -854,6 +858,9 @@ function New-ScientificSessionPrompt {
     $legalOperations = if ($transition) {
         @(
             "The sole legal next action is the checkpoint operation that saves the scientific session record."
+            "The current scientific session is $($session.id). It remains active until the Runner accepts this checkpoint."
+            "Opening, reframing or closing an inquiry does not end this scientific session."
+            "Set completed_operations exactly to: $(ConvertTo-Json -InputObject @($session.operation_ids) -Compress)"
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
             if ($session.kind -eq "goal_review") {
                 "Set next_question exactly to the question of the inquiry opened in this session."

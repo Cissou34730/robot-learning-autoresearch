@@ -75,8 +75,7 @@ including residual failures, contrary evidence and measurement uncertainty,
 against what further bounded work can credibly change in candidate capability,
 candidate selection or the commitment decision. Explain why that expected
 contribution warrants delaying assessment, or why the case for assessment is
-stronger. The decision reason preserves the comparison and the evidence that
-weighs against the chosen alternative.
+stronger.
 
 Official assessment is a terminal commitment: its pass or fail result ends
 this campaign. It is not a development probe followed by another inquiry.

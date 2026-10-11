@@ -346,6 +346,86 @@ behavioral observations are all retained. OI-019 and OI-021 remain unchanged.
 There is no authorization here for another reset, campaign, resumption or
 follow-on harness repair.
 
+## Approved post-campaign interface repair: OI-009 and OI-005
+
+The maintainer subsequently approved a bounded repair on 11 October.
+This approval covers code, contract and documentation changes, lightweight
+interface checks, and publication. It does not authorize campaign execution.
+
+### OI-009: session bookkeeping and request consumption
+
+The checkpoint stop is a newly observed failure of an existing interface,
+not an established regression introduced by the OI-005 patch. Git blame dates
+the boundary sentence to `5fef279` on 30 September and the exact-list check
+to `034daed` on 28 September. The OI-005 patch did not alter transition prompts.
+These provenance facts do not prove why the PI first misread the session.
+
+The accepted state at `4bc3fdc` still identified S3 and operations
+`T5`, `M6`, `E4`. The PI submitted only `E4`, then an empty list while explicitly
+claiming a fresh session. The brief builder already displayed the operation
+list, but the direct checkpoint prompt omitted it. The error stated only that
+the list must match. The retry continued the same backend session with that
+generic error, leaving the PI to infer the correction again.
+
+The implemented repair makes these mechanical facts explicit:
+
+- mandatory checkpoint prompts identify the current scientific session and
+  supply its complete operation list as a JSON array;
+- the prompt states that an inquiry boundary does not end that session;
+- mismatch feedback reports the session, expected list and submitted list,
+  and states that the session remains active;
+- the instrument contract explains that the Runner consumes an accepted
+  request, so the next proposal cannot assume that the prior file still exists.
+
+The strict list check, state lifecycle and retry limit are unchanged.
+There is no automatic metadata repair or alteration of PI scientific content.
+The Runner still owns the factual session record and enforces the contract.
+The proposal continues to carry the list under the existing request schema.
+**OI-009 is implemented / unmeasured**, not closed by these changes.
+
+### OI-005: explicit commitment reason in the prompt
+
+The original program-only obligation to preserve evidence against the chosen
+alternative moves to ordinary goal-review decision guidance. The program
+retains the scientific comparison, PI authority and prohibition of additional
+eligibility gates. The prompt directly asks the chosen operation's reason to
+preserve relevant residual failures, counterevidence and uncertainty.
+For assessment, it asks why commitment is justified despite those limitations
+rather than further work. It states that recording a limitation requires
+neither its resolution nor another measurement.
+
+No campaign-specific failure count or example enters the prompt. No Runner
+adequacy judgment, numerical confidence rule or compulsory operation is added.
+Only ordinary goal review receives this instruction, not checkpoint transitions
+or active inquiry work.
+
+Historical evidence is not upgraded: E13 preserved four failures, and S8 read
+the checkpoint, but E15 did not explicitly acknowledge those failures.
+The recorded 196/200 result implies four non-successes, but does not establish
+that the PI deliberately accepted those limitations in its commitment.
+That evidence remains absent from the historical reason. A future assessment
+reason must supply its own evidence-based justification, not merely repeat
+the prompt.
+
+The earlier OI-005 comparison remains observed, not closed. **The direct-reason
+revision is implemented / unmeasured.** No model replay or new campaign tests
+its scientific effect as part of this repair.
+
+### Implementation verification
+
+PowerShell parsing and seven inert before/after prompt contexts passed.
+Only the two ordinary goal reviews and three mandatory checkpoint transitions
+changed. Startup and active inquiry prompts remained identical. Rendering the
+historical S3 state supplied its exact list, `T5`, `M6`, `E4`, including on
+the correction path.
+
+An isolated check executed the actual checkpoint planning function without
+loading the Runner or its lifecycle. It accepted the correct S3 list and
+rejected both historical wrong lists with session-specific expected/submitted
+feedback. Request content and state remained unchanged.
+These are implementation checks, not scientific-effectiveness evidence.
+No human-owned test suite, model replay, training or campaign operation ran.
+
 ## Limits and preserved boundaries
 
 The sample is small and heterogeneous. Models, seeds, panels, methods and

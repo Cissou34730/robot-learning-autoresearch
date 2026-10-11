@@ -244,9 +244,9 @@
           <span class="tag">Issue register</span>
           <h3 style="margin-top: 12px">21 issues, OI-001 to OI-021</h3>
           <ul>
-            <li>Active or open (7): OI-006, OI-008, OI-009, OI-010, OI-014, OI-019, OI-021.</li>
+            <li>Active or open (6): OI-006, OI-008, OI-010, OI-014, OI-019, OI-021.</li>
             <li>Implemented, observed but not closed (1): OI-005.</li>
-            <li>Implemented or revised, awaiting campaign evidence (2): OI-015, OI-018.</li>
+            <li>Implemented or revised, awaiting campaign evidence (3): OI-009, OI-015, OI-018. OI-005's direct-reason revision is also unmeasured.</li>
             <li>Closed as effective (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017.</li>
             <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
             <li>Paused or proposal (2): OI-007, OI-012.</li>
@@ -266,6 +266,7 @@
             <li>OI-020 is withdrawn as an invalid generalization of campaign-specific evidence. OI-021 records the scenario-specific scientific-model prompt; impact analysis must precede repair.</li>
             <li>OI-005 now compares terminal assessment with the expected contribution of further bounded work. Independent parent and Opus 5.5/high RCAs cover both early requests and persistent deferral. <a href="../oi005_assessment_decision_rca_20261011.md">Read the reconciled RCA</a>.</li>
             <li>The authorized fresh v3 campaign <code>89a6354a</code> passed officially at 196/200 after a metadata-only checkpoint correction and same-campaign continuation. OI-005 is observed, not closed; its remaining counterevidence and trigger-wording limits are documented.</li>
+            <li>The approved OI-009 repair exposes checkpoint session/list context and exact mismatch feedback. OI-005 now asks directly for a commitment reason that acknowledges limitations without requiring more measurements. Both revisions remain unmeasured; no new campaign was run.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
@@ -464,7 +465,7 @@
             <table>
               <thead><tr><th scope="col">Situation</th><th scope="col">Response</th></tr></thead>
               <tbody>
-                <tr><td>Invalid request</td><td>The Runner returns the reason. One retry is allowed. Then the launcher stops.</td></tr>
+                <tr><td>Invalid request</td><td>The Runner returns the reason. Checkpoint list errors identify the current session and both expected and submitted lists. One retry is allowed. Then the launcher stops.</td></tr>
                 <tr><td>Error in PI code</td><td>The error goes back to the same PI session. It is execution history, not a scientific result.</td></tr>
                 <tr><td>Publication failure after a run</td><td>The result is kept. The launcher stops for repair. It resumes publication and does not retrain.</td></tr>
                 <tr><td>Maintainer stop</td><td>State is kept. It is not a pass, a fail, or a conclusion.</td></tr>
@@ -512,11 +513,11 @@
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
             <tr><td>OI-003</td><td>Measurement evidence. Campaign <code>79395c88</code> declared M30 nearest-branch margins missing even though the completed artifact contained them. The synthesis convention now ties a direction-changing conclusion to its supporting operation and artifact field, and states that an uninspected diagnostic is not missing evidence. Campaign <code>ec7f3d3a</code> did not repeat the false-missing interpretation.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The final campaign <code>896c230a</code> confirmed the same progression pattern in the transfer-learning route. The goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-005</td><td>Assessment-decision calibration. The dual RCA covers terminal-as-probe requests and inherited-gate deferral. In <code>89a6354a</code>, E15 recognized terminality and compared further work with commitment. E13 still used development-threshold and closure triggers, and E15 omitted four residual failures preserved in that checkpoint. The official pass does not close either historical direction by itself. <a href="../oi005_assessment_decision_rca_20261011.md">Reconciled RCA and observation</a>.</td><td><span class="tag">Implemented, observed; not closed</span></td></tr>
+            <tr><td>OI-005</td><td>Assessment-decision calibration. E15 recognized terminality and compared work with commitment, but omitted four failures preserved in E13. The new ordinary goal-review prompt directly requires acknowledgment of relevant limitations and justification of assessment despite them. Acknowledgment does not require another measurement. This does not retrospectively establish explicit acceptance in E15. <a href="../oi005_assessment_decision_rca_20261011.md">RCA and evidence limits</a>.</td><td><span class="tag">Observed, not closed; direct-reason revision unmeasured</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
-            <tr><td>OI-009</td><td>Clearer handoff for operation submission.</td><td><span class="tag">Unimplemented</span></td></tr>
+            <tr><td>OI-009</td><td>Checkpoint bookkeeping and operation submission. Transition prompts identify the still-active session and exact operation list. Rejection feedback reports expected and submitted values. The contract explains that accepted request files are consumed. Strict validation and retry limits remain unchanged.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-010</td><td>Explicit protection of the old protocol log.</td><td><span class="tag">Unimplemented</span></td></tr>
             <tr><td>OI-011</td><td>Console clarity and maintainer-file read controls. Artifact evidence calls now show operation, action, and logical JSON Pointer detail without resolving the pointer as a filesystem path. Existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue.</td><td><span class="tag">Closed, implemented/effective 2026-10-10</span></td></tr>
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
@@ -645,11 +646,12 @@
             <tr><td>Exact conclusion and next question handoff</td><td>The Runner copies the source conclusion and question into the inquiry state.</td><td>Implemented <code>9f81838</code>. It works. The preserved question was too broad (OI-002).</td></tr>
             <tr><td>PI authority sentence in decision guidance</td><td>The PI can inspect, change, or replace PI-owned code before it submits an operation.</td><td>Restored <code>adff08e</code>.</td></tr>
             <tr><td>One owner per instruction (R8)</td><td>Remove repeated text between contracts and launcher.</td><td>Implemented <code>8166e2f</code>.</td></tr>
-            <tr><td>Symmetric goal-review comparison</td><td>Weigh terminal assessment against what further bounded work can credibly change. The program owns the principle; goal-review prompts route to it.</td><td>OI-005 observed in <code>89a6354a</code>, not closed. The earlier one-sided guidance remains withdrawn.</td></tr>
+            <tr><td>Symmetric goal-review comparison</td><td>The program owns the scientific comparison. Ordinary goal-review prompts directly ask for relevant limitations in the decision reason and why commitment is justified despite them.</td><td>OI-005 comparison observed, not closed. Direct-reason revision unmeasured.</td></tr>
             <tr class="group-row"><td colspan="3">Phases and operations</td></tr>
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
             <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
+            <tr><td>Checkpoint boundary and request consumption</td><td>The PI receives the active session's exact list at mandatory checkpoint transitions. Accepted request files are consumed, not persistent documents for the next proposal.</td><td>OI-009 implemented, unmeasured. No automatic correction or retry-limit increase.</td></tr>
             <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
             <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
             <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. OI-013 is closed as a withdrawn removal proposal.</td></tr>

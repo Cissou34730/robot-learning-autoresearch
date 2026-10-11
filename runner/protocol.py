@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -721,7 +722,10 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
     completed = request["completed_operations"]
     if completed != session["operation_ids"]:
         raise ValueError(
-            "checkpoint completed_operations must exactly match this session"
+            f"checkpoint completed_operations mismatch in session {session['id']}. "
+            f"Expected {json.dumps(session['operation_ids'])}. "
+            f"Submitted {json.dumps(completed)}. "
+            "The session remains active until the Runner accepts its checkpoint."
         )
     return {
         "session_id": session["id"],

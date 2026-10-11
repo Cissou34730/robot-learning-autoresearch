@@ -205,6 +205,13 @@ Recorded campaign use was 77.03 AIU and about 84m32s reset-to-end wall time;
 the interruption and maintainer-assistant metadata correction remain part of that
 history, not hidden from the successful outcome.
 
+The subsequent approved OI-005 revision moves the decision-record obligation
+from the program into ordinary goal-review prompts. The PI must preserve
+relevant limitations in its operation reason and explain commitment despite
+them. Acknowledgment is not a demand to resolve every failure or perform
+another measurement. This revision is unmeasured. The old E15 reason does not
+retrospectively become evidence that the PI explicitly accepted its four failures.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query
@@ -231,6 +238,26 @@ Keep operational correctness separate from scientific effectiveness.
 
 Primary tracker ownership: OI-009, OI-010, OI-012 and OI-013, together with
 closed operational repairs that no longer require OI tracking.
+
+#### OI-009: a newly observed checkpoint failure
+
+Campaign `89a6354a` exposed a concrete handoff failure. The inquiry closed,
+but its scientific session still needed a checkpoint covering training,
+measurement and closure. The PI instead submitted only the closure operation,
+then inferred a fresh session and submitted an empty list. The correct list
+remained in Runner state. Generic rejection feedback did not supply it.
+The campaign needed an external metadata correction before continuing.
+
+The relevant boundary wording and exact-list check predate OI-005.
+This establishes a newly observed failure, not a proven OI-005 regression.
+The bounded repair adds current-session and exact-list context at checkpoint
+transitions, expected/submitted values in rejection feedback, and documentation
+of accepted-request consumption. It preserves strict validation and the retry
+limit. It does not automatically change PI scientific content.
+
+The repair is implemented/unmeasured, with no new campaign or replay.
+The [RCA](oi005_assessment_decision_rca_20261011.md#approved-post-campaign-interface-repair-oi-009-and-oi-005)
+preserves the provenance, failure sequence, approved scope and evidence limits.
 
 ## Entry format for each decision stream
 
