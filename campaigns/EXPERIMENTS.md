@@ -63,3 +63,4 @@
 | E31 | checkpoint | I7 | checkpointed |
 | E32 | inquiry | I8 | completed |
 | E33 | checkpoint | - | checkpointed |
+| M23 | measurement | I8 | completed |

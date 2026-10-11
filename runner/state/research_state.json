@@ -2649,7 +2649,8 @@
     "T4:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
       "evaluation_artifacts": [
-        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m19-T4-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m19-T4-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json",
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m23-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json"
       ],
       "fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
       "id": "T4:checkpoint-120832",
@@ -4936,14 +4937,14 @@
   "counters": {
     "event": 33,
     "inquiry": 8,
-    "measurement": 22,
-    "session": 16,
+    "measurement": 23,
+    "session": 17,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -13382,9 +13383,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:39:06Z",
+      "error": null,
+      "id": "M23",
+      "inquiry_id": "I8",
+      "kind": "measurement",
+      "request": {
+        "description": "Current-source matched-panel control evaluation of legacy T4:checkpoint-120832 across the complete 160-episode research panel beginning at seed 4200, recording binary success, no-first-reach and uninterrupted-hold diagnostics, and the evaluator-semantics fingerprint.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I8 current-source legacy T4 matched-panel control",
+            "seed": 4200
+          }
+        ],
+        "rationale": "I8 remains unresolved because historical T4 achieved 153/160 under evaluator fingerprint 4e874c58d1e9, whereas the I7 residual candidates were measured under f6bf4b99cf62 and no current-source evaluation of T4 exists. This control directly tests the closure condition while preserving the complete-hold criterion: retaining 153/160 with no material semantic discrepancy strengthens the artifact-level negative result for the tested residual-torque implementation and redirects development away from that scaffold; a material score/diagnostic change or semantic discrepancy makes the comparison limited and directs effort to measurement repair or reinterpretation. It is a development comparability test, not a causal decomposition of residual terms and not the protected 200-episode official assessment."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I8 current-source legacy T4 matched-panel control",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m23-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.625,
+              "successes": 153
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "f6bf4b99cf62",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I8 current-source legacy T4 matched-panel control",
+          "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I8 current-source legacy T4 matched-panel control",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m23-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+            "evaluation_semantics": "f6bf4b99cf62",
+            "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 95.625,
+            "successes": 153
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I8 current-source legacy T4 matched-panel control",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m23-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.625,
+              "successes": 153
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M23",
+    "inquiry_id": "I8",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Current-source matched-panel control evaluation of legacy T4:checkpoint-120832 across the complete 160-episode research panel beginning at seed 4200, recording binary success, no-first-reach and uninterrupted-hold diagnostics, and the evaluator-semantics fingerprint.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I8 current-source legacy T4 matched-panel control",
+            "seed": 4200
+          }
+        ],
+        "rationale": "I8 remains unresolved because historical T4 achieved 153/160 under evaluator fingerprint 4e874c58d1e9, whereas the I7 residual candidates were measured under f6bf4b99cf62 and no current-source evaluation of T4 exists. This control directly tests the closure condition while preserving the complete-hold criterion: retaining 153/160 with no material semantic discrepancy strengthens the artifact-level negative result for the tested residual-torque implementation and redirects development away from that scaffold; a material score/diagnostic change or semantic discrepancy makes the comparison limited and directs effort to measurement repair or reinterpretation. It is a development comparability test, not a causal decomposition of residual terms and not the protected 200-episode official assessment."
+      }
+    },
+    "request_fingerprint": "a6dd391764487ed901ed3a197d3b882339692cd0baf8e18403ff4f029e753147",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
     "completed_operations": [
@@ -13414,6 +13803,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8a04dc6c-2620-4184-adc7-f7b65e5c560b",
+    "id": "S17",
+    "inquiry_id": "I8",
+    "kind": "inquiry",
+    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M23"
+    ],
+    "scientific_parent_commit": "ed6a450ac0c4d7c989a5f229d662d781c3ceddd0"
+  },
   "terminal_state": null
 }
