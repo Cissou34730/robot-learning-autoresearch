@@ -8782,38 +8782,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited negative",
-        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited negative",
-        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate."
-      }
-    },
-    "request_fingerprint": "af455a4cdf93e0472077adc1a45e5b8f111b9a5a951c2dc3a3a9ac105a751742",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 at 191/200 and by the matched M6 reference at 187/200; these are development results only.",
     "completed_operations": [
