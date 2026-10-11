@@ -6566,7 +6566,7 @@
     }
   },
   "counters": {
-    "event": 36,
+    "event": 37,
     "inquiry": 8,
     "measurement": 13,
     "session": 17,
@@ -6575,7 +6575,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -16091,39 +16091,201 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:46:36Z",
+      "error": null,
+      "id": "E37",
+      "inquiry_id": "I8",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12. T9:checkpoint-105472 is a rejected I8 candidate at 147/160 with paired loss 0-4, supported by M13. T8:checkpoint-120832 remains rejected at 144/160, supported by M12. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E35",
+          "T9",
+          "M13",
+          "E36"
+        ],
+        "cumulative_resource_use": "This session restored T3 (E35), trained one full 120000-step transfer run (T9, completed at 120832 simulator steps), measured T9 and T3 on the shared 160-episode panel (M13), and closed I8 (E36). Prior campaign use includes T1-T6 and T8 training; M1-M5 and M10-M13 development measurements; M7-M9 authority characterization; and the completed inquiry and checkpoint records E1-E34.",
+        "current_goal_gap": "T3:checkpoint-120832 achieves 151/160 successes (94.375%) on the shared development panel, five below the development proxy, while T9:checkpoint-105472 achieves 147/160 (91.875%) and loses to T3 in paired comparison. No candidate is verified against the official 196/200 criterion.",
+        "current_synthesis": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+        "decision_frontier": "The campaign must choose at the next goal review between protected official assessment of T3 and one new bounded route toward the human goal. The remaining consequential distinction is whether another intervention can raise complete uninterrupted success above T3's 151/160 without sacrificing the 6-20 cm radius range, or whether the evidence-backed case for assessment is stronger despite the development gap. A new candidate must be compared as a complete artifact on the shared panel; changes in saturation or speed alone are insufficient.",
+        "evidence_references": [
+          "E8",
+          "E12",
+          "E16",
+          "E21",
+          "E26",
+          "M4",
+          "M9",
+          "M12",
+          "M13",
+          "T8",
+          "T9",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal is at least 196 complete uninterrupted successes out of 200 official episodes. T3:checkpoint-120832 remains the strongest measured artifact at 151/160 development successes and is below the 157/160 development proxy; it has not been assessed on the protected official panel.",
+        "next_direction_or_closure": "I8 is closed negatively based on M13. This session ends the inquiry work; the fresh goal-review session should compare T3's prospect of meeting the protected 196/200 criterion against the expected value of opening the proposed new question, while treating the T9 result as recipe-specific evidence and not as a general rejection of trajectory-regulation methods.",
+        "next_question": "Can a different bounded trajectory-regulation intervention improve T3's complete uninterrupted success beyond 151/160 across the full 6-20 cm radius range enough to justify delaying official assessment?"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "695ae362f9bced0323ea8283371b40c72e30e156",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12. T9:checkpoint-105472 is a rejected I8 candidate at 147/160 with paired loss 0-4, supported by M13. T8:checkpoint-120832 remains rejected at 144/160, supported by M12. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E35",
+          "T9",
+          "M13",
+          "E36"
+        ],
+        "cumulative_resource_use": "This session restored T3 (E35), trained one full 120000-step transfer run (T9, completed at 120832 simulator steps), measured T9 and T3 on the shared 160-episode panel (M13), and closed I8 (E36). Prior campaign use includes T1-T6 and T8 training; M1-M5 and M10-M13 development measurements; M7-M9 authority characterization; and the completed inquiry and checkpoint records E1-E34.",
+        "current_goal_gap": "T3:checkpoint-120832 achieves 151/160 successes (94.375%) on the shared development panel, five below the development proxy, while T9:checkpoint-105472 achieves 147/160 (91.875%) and loses to T3 in paired comparison. No candidate is verified against the official 196/200 criterion.",
+        "current_synthesis": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+        "decision_frontier": "The campaign must choose at the next goal review between protected official assessment of T3 and one new bounded route toward the human goal. The remaining consequential distinction is whether another intervention can raise complete uninterrupted success above T3's 151/160 without sacrificing the 6-20 cm radius range, or whether the evidence-backed case for assessment is stronger despite the development gap. A new candidate must be compared as a complete artifact on the shared panel; changes in saturation or speed alone are insufficient.",
+        "evidence_references": [
+          "E8",
+          "E12",
+          "E16",
+          "E21",
+          "E26",
+          "M4",
+          "M9",
+          "M12",
+          "M13",
+          "T8",
+          "T9",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal is at least 196 complete uninterrupted successes out of 200 official episodes. T3:checkpoint-120832 remains the strongest measured artifact at 151/160 development successes and is below the 157/160 development proxy; it has not been assessed on the protected official panel.",
+        "inquiry_id": "I8",
+        "next_direction_or_closure": "I8 is closed negatively based on M13. This session ends the inquiry work; the fresh goal-review session should compare T3's prospect of meeting the protected 196/200 criterion against the expected value of opening the proposed new question, while treating the T9 result as recipe-specific evidence and not as a general rejection of trajectory-regulation methods.",
+        "next_question": "Can a different bounded trajectory-regulation intervention improve T3's complete uninterrupted success beyond 151/160 across the full 6-20 cm radius range enough to justify delaying official assessment?",
+        "session_id": "S17"
+      },
+      "presentation": {
+        "backend_session_id": "783d87eb-58e0-4c0d-9c03-49b04720c972",
+        "campaign_id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
+        "campaign_usage": "48m27s | 139.25 AIU | prompt 23.7m (87% cached) | output 179.6k",
+        "session_id": "S17",
+        "session_kind": "inquiry",
+        "session_usage": "2m47s | 8.29 AIU | prompt 1.7m (89% cached) | output 7.1k"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "d0ddca38eb848855bd6f5d7826032eaa1b71af47",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E37",
+    "inquiry_id": "I8",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12. T9:checkpoint-105472 is a rejected I8 candidate at 147/160 with paired loss 0-4, supported by M13. T8:checkpoint-120832 remains rejected at 144/160, supported by M12. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E35",
+          "T9",
+          "M13",
+          "E36"
+        ],
+        "cumulative_resource_use": "This session restored T3 (E35), trained one full 120000-step transfer run (T9, completed at 120832 simulator steps), measured T9 and T3 on the shared 160-episode panel (M13), and closed I8 (E36). Prior campaign use includes T1-T6 and T8 training; M1-M5 and M10-M13 development measurements; M7-M9 authority characterization; and the completed inquiry and checkpoint records E1-E34.",
+        "current_goal_gap": "T3:checkpoint-120832 achieves 151/160 successes (94.375%) on the shared development panel, five below the development proxy, while T9:checkpoint-105472 achieves 147/160 (91.875%) and loses to T3 in paired comparison. No candidate is verified against the official 196/200 criterion.",
+        "current_synthesis": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+        "decision_frontier": "The campaign must choose at the next goal review between protected official assessment of T3 and one new bounded route toward the human goal. The remaining consequential distinction is whether another intervention can raise complete uninterrupted success above T3's 151/160 without sacrificing the 6-20 cm radius range, or whether the evidence-backed case for assessment is stronger despite the development gap. A new candidate must be compared as a complete artifact on the shared panel; changes in saturation or speed alone are insufficient.",
+        "evidence_references": [
+          "E8",
+          "E12",
+          "E16",
+          "E21",
+          "E26",
+          "M4",
+          "M9",
+          "M12",
+          "M13",
+          "T8",
+          "T9",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal is at least 196 complete uninterrupted successes out of 200 official episodes. T3:checkpoint-120832 remains the strongest measured artifact at 151/160 development successes and is below the 157/160 development proxy; it has not been assessed on the protected official panel.",
+        "next_direction_or_closure": "I8 is closed negatively based on M13. This session ends the inquiry work; the fresh goal-review session should compare T3's prospect of meeting the protected 196/200 criterion against the expected value of opening the proposed new question, while treating the T9 result as recipe-specific evidence and not as a general rejection of trajectory-regulation methods.",
+        "next_question": "Can a different bounded trajectory-regulation intervention improve T3's complete uninterrupted success beyond 151/160 across the full 6-20 cm radius range enough to justify delaying official assessment?"
+      }
+    },
+    "request_fingerprint": "ff30921128a6c66d62eab0905403ce1d530696b35c4a70dd541fdcbce8a9d38c",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%), supported by M4 and M12. T8:checkpoint-120832 remains rejected as a tested action-rate-limited candidate at 144/160 (90.0%), supported by M12 and E31. No working, best-known, or retained role is assigned; these are evidence-backed artifact comparisons rather than mechanism claims.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12. T9:checkpoint-105472 is a rejected I8 candidate at 147/160 with paired loss 0-4, supported by M13. T8:checkpoint-120832 remains rejected at 144/160, supported by M12. No working, best-known, or retained role is assigned.",
     "completed_operations": [
-      "E33"
+      "E35",
+      "T9",
+      "M13",
+      "E36"
     ],
-    "cumulative_resource_use": "The goal-review session used no training, measurement, restoration, or model-role allocation. It recorded E33, which opened I8. Prior resource use includes T1-T6 and T8 training, M1-M5 and M10-M12 development measurements, M7-M9 authority characterization, E8, E12, E16, E21, E26, E28, E30, E31, and associated checkpoints.",
-    "current_goal_gap": "T3:checkpoint-120832 achieves 151/160 successes (94.375%), five successes below the 157/160 development proxy, and remains unverified on the protected 200-episode official panel. T8:checkpoint-120832 achieves 144/160 (90.0%) and failed the tested action-rate-limited candidate-selection criterion.",
-    "current_synthesis": "Completed evidence establishes T3 as the strongest artifact-level candidate, with sampled inner- and outer-radius capability and residual failures consistently characterized as saturated, high-speed, no-first-entry episodes (E8). M9/E16 found positive local endpoint authority at representative residual configurations, so absent authority is insufficient as the explanation there; the remaining consequential interpretation is trajectory-level regulation and command selection. E12, E21, E26, and M12 are negative results for their specific tested recipes, not causal disproof of the broader intervention class. M12 showed T8 at 144/160 versus T3 at 151/160 with a paired result of 1-8, so T8 did not advance the goal. The goal-review correction is that the development gap is not merely unexplained: a documented policy-dependent regulation phenotype remains, while its remedy is unresolved. I8 therefore tests a distinct state-dependent, velocity-damped torque interface rather than repeating uniform action-rate limiting.",
-    "decision_frontier": "The campaign must determine whether one bounded, state-dependent command-interface intervention can improve T3's complete uninterrupted success without sacrificing full-radius capability. The discriminating evidence will be a complete transferred candidate measured against T3 on the shared 160-episode development panel, including paired wins, success count, radius-stratified behavior, and saturation/high-speed/no-entry diagnostics. A candidate that reaches at least 157/160, wins the paired comparison, and preserves inner and outer capability would justify replacing T3 as the development route toward official assessment; failure or regression would return the campaign to the assessment choice with T3 as the strongest available artifact. The prior action-rate-limited result remains a recipe-specific negative and does not settle this frontier.",
+    "cumulative_resource_use": "This session restored T3 (E35), trained one full 120000-step transfer run (T9, completed at 120832 simulator steps), measured T9 and T3 on the shared 160-episode panel (M13), and closed I8 (E36). Prior campaign use includes T1-T6 and T8 training; M1-M5 and M10-M13 development measurements; M7-M9 authority characterization; and the completed inquiry and checkpoint records E1-E34.",
+    "current_goal_gap": "T3:checkpoint-120832 achieves 151/160 successes (94.375%) on the shared development panel, five below the development proxy, while T9:checkpoint-105472 achieves 147/160 (91.875%) and loses to T3 in paired comparison. No candidate is verified against the official 196/200 criterion.",
+    "current_synthesis": "E8 and E16 establish a documented residual phenotype in T3: saturated, high-speed, no-first-entry failures, while M9 establishes positive local endpoint authority at representative residual configurations; absent authority is therefore insufficient as the predominant explanation at those sampled states, leaving trajectory-level regulation and command selection as the consequential interpretation. M12 showed that T8's uniform action-rate limiter was inferior to T3 (144/160 versus 151/160, paired 1-8). M13 tested a distinct state-dependent velocity-damped torque interface trained from T3: T9 reached 147/160 and lost the paired comparison 0-4. This is a negative result for that complete artifact and tested recipe, not causal disproof of the broader state-dependent command-interface class. I8 therefore closes negatively because its 157/160, paired-win, and full-radius-preservation criterion was not met. T3 remains the strongest evidence-backed development artifact.",
+    "decision_frontier": "The campaign must choose at the next goal review between protected official assessment of T3 and one new bounded route toward the human goal. The remaining consequential distinction is whether another intervention can raise complete uninterrupted success above T3's 151/160 without sacrificing the 6-20 cm radius range, or whether the evidence-backed case for assessment is stronger despite the development gap. A new candidate must be compared as a complete artifact on the shared panel; changes in saturation or speed alone are insufficient.",
     "evidence_references": [
       "E8",
       "E12",
       "E16",
       "E21",
       "E26",
-      "E28",
-      "E30",
-      "E31",
-      "E33",
       "M4",
       "M9",
       "M12",
-      "T8"
+      "M13",
+      "T8",
+      "T9",
+      "E36"
     ],
-    "human_goal_connection": "The campaign objective remains at least 196 complete uninterrupted successes out of 200 official episodes. T3:checkpoint-120832 is the strongest measured artifact at 151/160 development successes, but it remains below the development proxy and has not undergone protected official assessment. This goal-review session opened I8 to test one bounded intervention before terminal commitment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I8 is opened as one bounded, goal-linked inquiry. Its fresh inquiry session should restore T3, implement and train the specified state-dependent velocity-damped torque-interface recipe, then measure the resulting complete artifact against T3 using the shared development panel and diagnostics. This delays protected official assessment because the current candidate is five successes below the development proxy and the proposed intervention directly addresses the documented residual phenotype while preserving the task, observation, reward, radius coverage, and complete-hold criterion.",
-    "next_question": "Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range?",
-    "scientific_commit": "cf3e17a170cf7963e0b5b45b85a210775d510378",
-    "session_id": "S16"
+    "human_goal_connection": "The human goal is at least 196 complete uninterrupted successes out of 200 official episodes. T3:checkpoint-120832 remains the strongest measured artifact at 151/160 development successes and is below the 157/160 development proxy; it has not been assessed on the protected official panel.",
+    "inquiry_id": "I8",
+    "next_direction_or_closure": "I8 is closed negatively based on M13. This session ends the inquiry work; the fresh goal-review session should compare T3's prospect of meeting the protected 196/200 criterion against the expected value of opening the proposed new question, while treating the T9 result as recipe-specific evidence and not as a general rejection of trajectory-regulation methods.",
+    "next_question": "Can a different bounded trajectory-regulation intervention improve T3's complete uninterrupted success beyond 151/160 across the full 6-20 cm radius range enough to justify delaying official assessment?",
+    "scientific_commit": "d0ddca38eb848855bd6f5d7826032eaa1b71af47",
+    "session_id": "S17"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -16131,24 +16293,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "783d87eb-58e0-4c0d-9c03-49b04720c972",
-    "id": "S17",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "E35",
-      "T9",
-      "M13",
-      "E36"
-    ],
-    "scientific_parent_commit": "695ae362f9bced0323ea8283371b40c72e30e156"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
