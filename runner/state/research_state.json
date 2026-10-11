@@ -5739,7 +5739,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 8,
     "session": 7,
@@ -5748,7 +5748,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -10645,18 +10645,204 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T00:24:29Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
+        "completed_operations": [
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed training: T1 through T7, each requested at 120000 steps and completing 120832 steps; total requested training allocation 840000 steps. Completed research measurements: M1 dynamics characterization and M2 through M8 development evaluations, with M6, M7, and M8 paired 200-episode panels. M8 is the latest paired research evaluation and is not official assessment evidence. No official assessment has been requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, E10 opened I3, and E12 closed I3 positively.",
+        "current_goal_gap": "T7:checkpoint-75776 achieved 196/200 (98.0%) on the non-official M8 research panel, matching the campaign threshold and exceeding its paired T4 reference at 185/200 by 11 wins with no T4 wins. The remaining gap is evidentiary: official performance is unmeasured, and the protected assessment has not been requested.",
+        "current_synthesis": "M1 established active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 through M4 established that the original outer-radius policy required staged transfer and targeted inner-radius exposure: T1 reached 136/200, direct full-radius T2 reached 70/200, weighted transfer T3 reached 179/200, and T4 reached 191/200 on M5 with only one never-reached episode but persistent hold interruptions. M6 showed that full hold-progress reward forfeiture did not improve T4, ruling out that reward-only recipe. M7 showed that the coupled T6 implementation of altered observations, hard episode-start branch selection, near-target joint-space damping, and reward-related changes degraded performance to 103/200 versus 186/200 for T4; because its artifact lacked branch and trajectory fields, this was evidence against that composite implementation, not against all stabilization methods. I3 then restored T4's observation, reward, transfer parent, and 50/50 radius curriculum and changed only the runtime to a branch-neutral exponential action filter with alpha 0.5. T7 training completed, and M8 measured T7 at 196/200 versus T4 at 185/200 on the same 200 seeds, with 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, while the T4 reference had twelve inner-radius and three outer-radius failures, so inner-radius acquisition was preserved. The result supports the tested filter recipe and makes sampled-data command bandwidth a consequential contributor to the measured residual tail, but it does not prove that all action filters work or that sampled-data bandwidth is the sole cause of every hold failure.",
+        "decision_frontier": "I3 is resolved positively for the tested alpha-0.5 branch-neutral exponential action-filter recipe: it reached 196/200 on a fresh research panel and preserved inner-radius acquisition. The remaining decision is terminal rather than mechanistic: whether to request the protected official assessment of T7:checkpoint-75776, the strongest measured candidate, or defer it despite the non-official result. Official assessment is the supported next direction because the development threshold was reached and the bounded inquiry closure condition was satisfied; the official evaluator remains authoritative and may still reveal a distribution or interaction-semantics difference.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10",
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. I3 produced T7:checkpoint-75776, which achieved 196/200 (98.0%) on research evaluation M8 while preserving inner-radius acquisition, so the campaign now has a development candidate at the numerical goal threshold. This remains development evidence and does not establish the protected official result.",
+        "next_direction_or_closure": "I3 is closed with a positive outcome by E12. The single-filter T4-parent transfer and paired research evaluation satisfied the inquiry closure condition, supporting the filtered T7 candidate and the sampled-data bandwidth explanation within the recorded limits. This checkpoint ends the inquiry session. The next goal review should decide whether to request the protected official assessment of T7; no further I3 training or measurement is warranted before that terminal decision.",
+        "next_question": "Should the campaign request the protected official assessment of T7:checkpoint-75776 after its 196/200 development result with preserved inner-radius acquisition?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "16d7ac36e87925bfcc9e1b6390f45c7f588c6aab",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
+        "completed_operations": [
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed training: T1 through T7, each requested at 120000 steps and completing 120832 steps; total requested training allocation 840000 steps. Completed research measurements: M1 dynamics characterization and M2 through M8 development evaluations, with M6, M7, and M8 paired 200-episode panels. M8 is the latest paired research evaluation and is not official assessment evidence. No official assessment has been requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, E10 opened I3, and E12 closed I3 positively.",
+        "current_goal_gap": "T7:checkpoint-75776 achieved 196/200 (98.0%) on the non-official M8 research panel, matching the campaign threshold and exceeding its paired T4 reference at 185/200 by 11 wins with no T4 wins. The remaining gap is evidentiary: official performance is unmeasured, and the protected assessment has not been requested.",
+        "current_synthesis": "M1 established active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 through M4 established that the original outer-radius policy required staged transfer and targeted inner-radius exposure: T1 reached 136/200, direct full-radius T2 reached 70/200, weighted transfer T3 reached 179/200, and T4 reached 191/200 on M5 with only one never-reached episode but persistent hold interruptions. M6 showed that full hold-progress reward forfeiture did not improve T4, ruling out that reward-only recipe. M7 showed that the coupled T6 implementation of altered observations, hard episode-start branch selection, near-target joint-space damping, and reward-related changes degraded performance to 103/200 versus 186/200 for T4; because its artifact lacked branch and trajectory fields, this was evidence against that composite implementation, not against all stabilization methods. I3 then restored T4's observation, reward, transfer parent, and 50/50 radius curriculum and changed only the runtime to a branch-neutral exponential action filter with alpha 0.5. T7 training completed, and M8 measured T7 at 196/200 versus T4 at 185/200 on the same 200 seeds, with 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, while the T4 reference had twelve inner-radius and three outer-radius failures, so inner-radius acquisition was preserved. The result supports the tested filter recipe and makes sampled-data command bandwidth a consequential contributor to the measured residual tail, but it does not prove that all action filters work or that sampled-data bandwidth is the sole cause of every hold failure.",
+        "decision_frontier": "I3 is resolved positively for the tested alpha-0.5 branch-neutral exponential action-filter recipe: it reached 196/200 on a fresh research panel and preserved inner-radius acquisition. The remaining decision is terminal rather than mechanistic: whether to request the protected official assessment of T7:checkpoint-75776, the strongest measured candidate, or defer it despite the non-official result. Official assessment is the supported next direction because the development threshold was reached and the bounded inquiry closure condition was satisfied; the official evaluator remains authoritative and may still reveal a distribution or interaction-semantics difference.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10",
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. I3 produced T7:checkpoint-75776, which achieved 196/200 (98.0%) on research evaluation M8 while preserving inner-radius acquisition, so the campaign now has a development candidate at the numerical goal threshold. This remains development evidence and does not establish the protected official result.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed with a positive outcome by E12. The single-filter T4-parent transfer and paired research evaluation satisfied the inquiry closure condition, supporting the filtered T7 candidate and the sampled-data bandwidth explanation within the recorded limits. This checkpoint ends the inquiry session. The next goal review should decide whether to request the protected official assessment of T7; no further I3 training or measurement is warranted before that terminal decision.",
+        "next_question": "Should the campaign request the protected official assessment of T7:checkpoint-75776 after its 196/200 development result with preserved inner-radius acquisition?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "58bb9651-2d82-44c0-9f52-108a1c0a70ad",
+        "campaign_id": "89a6354a-0e08-43f6-b017-536e7c05229b",
+        "campaign_usage": "27m28s | 73.32 AIU | prompt 14m (90% cached) | output 101k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "3m29s | 14.81 AIU | prompt 3m (89% cached) | output 13.5k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e602632f55ca0e785294c0c0fbf1d9ef112a1221",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
+        "completed_operations": [
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed training: T1 through T7, each requested at 120000 steps and completing 120832 steps; total requested training allocation 840000 steps. Completed research measurements: M1 dynamics characterization and M2 through M8 development evaluations, with M6, M7, and M8 paired 200-episode panels. M8 is the latest paired research evaluation and is not official assessment evidence. No official assessment has been requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, E10 opened I3, and E12 closed I3 positively.",
+        "current_goal_gap": "T7:checkpoint-75776 achieved 196/200 (98.0%) on the non-official M8 research panel, matching the campaign threshold and exceeding its paired T4 reference at 185/200 by 11 wins with no T4 wins. The remaining gap is evidentiary: official performance is unmeasured, and the protected assessment has not been requested.",
+        "current_synthesis": "M1 established active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 through M4 established that the original outer-radius policy required staged transfer and targeted inner-radius exposure: T1 reached 136/200, direct full-radius T2 reached 70/200, weighted transfer T3 reached 179/200, and T4 reached 191/200 on M5 with only one never-reached episode but persistent hold interruptions. M6 showed that full hold-progress reward forfeiture did not improve T4, ruling out that reward-only recipe. M7 showed that the coupled T6 implementation of altered observations, hard episode-start branch selection, near-target joint-space damping, and reward-related changes degraded performance to 103/200 versus 186/200 for T4; because its artifact lacked branch and trajectory fields, this was evidence against that composite implementation, not against all stabilization methods. I3 then restored T4's observation, reward, transfer parent, and 50/50 radius curriculum and changed only the runtime to a branch-neutral exponential action filter with alpha 0.5. T7 training completed, and M8 measured T7 at 196/200 versus T4 at 185/200 on the same 200 seeds, with 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, while the T4 reference had twelve inner-radius and three outer-radius failures, so inner-radius acquisition was preserved. The result supports the tested filter recipe and makes sampled-data command bandwidth a consequential contributor to the measured residual tail, but it does not prove that all action filters work or that sampled-data bandwidth is the sole cause of every hold failure.",
+        "decision_frontier": "I3 is resolved positively for the tested alpha-0.5 branch-neutral exponential action-filter recipe: it reached 196/200 on a fresh research panel and preserved inner-radius acquisition. The remaining decision is terminal rather than mechanistic: whether to request the protected official assessment of T7:checkpoint-75776, the strongest measured candidate, or defer it despite the non-official result. Official assessment is the supported next direction because the development threshold was reached and the bounded inquiry closure condition was satisfied; the official evaluator remains authoritative and may still reveal a distribution or interaction-semantics difference.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10",
+          "T7",
+          "M8",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. I3 produced T7:checkpoint-75776, which achieved 196/200 (98.0%) on research evaluation M8 while preserving inner-radius acquisition, so the campaign now has a development candidate at the numerical goal threshold. This remains development evidence and does not establish the protected official result.",
+        "next_direction_or_closure": "I3 is closed with a positive outcome by E12. The single-filter T4-parent transfer and paired research evaluation satisfied the inquiry closure condition, supporting the filtered T7 candidate and the sampled-data bandwidth explanation within the recorded limits. This checkpoint ends the inquiry session. The next goal review should decide whether to request the protected official assessment of T7; no further I3 training or measurement is warranted before that terminal decision.",
+        "next_question": "Should the campaign request the protected official assessment of T7:checkpoint-75776 after its 196/200 development result with preserved inner-radius acquisition?"
+      }
+    },
+    "request_fingerprint": "63181db82549b8772c375660005cf8f571f381f7f2628d05db9a393d83852190",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
+    "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
     "completed_operations": [
-      "E10"
+      "T7",
+      "M8",
+      "E12"
     ],
-    "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, and E10 opened I3.",
-    "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
-    "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
-    "decision_frontier": "The terminal alternative is official assessment of T4, whose measured development performance remains below target. The bounded alternative is I3: test whether a single branch-neutral exponential action filter can reduce sampled-data hold failures without sacrificing T4's inner-radius acquisition. The filter is scientifically consequential because the physical model predicts 50 Hz zero-order-held commands can produce hold errors, while M1 shows the plant has adequate bounded authority and M7 does not isolate its composite causes. A non-overlapping 200-episode paired evaluation with radius- and angle-stratified diagnostics will discriminate the alternatives: at least 196/200 with preserved inner-radius performance supports continued development or assessment of the improved candidate; failure to improve, loss of acquisition, or a geometry-specific residual mechanism supports limited-negative closure and return to goal review. The prior T6 result redirects only its coupled implementation, not this isolated branch-neutral mechanism.",
+    "cumulative_resource_use": "Completed training: T1 through T7, each requested at 120000 steps and completing 120832 steps; total requested training allocation 840000 steps. Completed research measurements: M1 dynamics characterization and M2 through M8 development evaluations, with M6, M7, and M8 paired 200-episode panels. M8 is the latest paired research evaluation and is not official assessment evidence. No official assessment has been requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, E10 opened I3, and E12 closed I3 positively.",
+    "current_goal_gap": "T7:checkpoint-75776 achieved 196/200 (98.0%) on the non-official M8 research panel, matching the campaign threshold and exceeding its paired T4 reference at 185/200 by 11 wins with no T4 wins. The remaining gap is evidentiary: official performance is unmeasured, and the protected assessment has not been requested.",
+    "current_synthesis": "M1 established active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 through M4 established that the original outer-radius policy required staged transfer and targeted inner-radius exposure: T1 reached 136/200, direct full-radius T2 reached 70/200, weighted transfer T3 reached 179/200, and T4 reached 191/200 on M5 with only one never-reached episode but persistent hold interruptions. M6 showed that full hold-progress reward forfeiture did not improve T4, ruling out that reward-only recipe. M7 showed that the coupled T6 implementation of altered observations, hard episode-start branch selection, near-target joint-space damping, and reward-related changes degraded performance to 103/200 versus 186/200 for T4; because its artifact lacked branch and trajectory fields, this was evidence against that composite implementation, not against all stabilization methods. I3 then restored T4's observation, reward, transfer parent, and 50/50 radius curriculum and changed only the runtime to a branch-neutral exponential action filter with alpha 0.5. T7 training completed, and M8 measured T7 at 196/200 versus T4 at 185/200 on the same 200 seeds, with 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, while the T4 reference had twelve inner-radius and three outer-radius failures, so inner-radius acquisition was preserved. The result supports the tested filter recipe and makes sampled-data command bandwidth a consequential contributor to the measured residual tail, but it does not prove that all action filters work or that sampled-data bandwidth is the sole cause of every hold failure.",
+    "decision_frontier": "I3 is resolved positively for the tested alpha-0.5 branch-neutral exponential action-filter recipe: it reached 196/200 on a fresh research panel and preserved inner-radius acquisition. The remaining decision is terminal rather than mechanistic: whether to request the protected official assessment of T7:checkpoint-75776, the strongest measured candidate, or defer it despite the non-official result. Official assessment is the supported next direction because the development threshold was reached and the bounded inquiry closure condition was satisfied; the official evaluator remains authoritative and may still reveal a distribution or interaction-semantics difference.",
     "evidence_references": [
       "M1",
       "T1",
@@ -10675,14 +10861,17 @@
       "T6",
       "M7",
       "E8",
-      "E10"
+      "E10",
+      "T7",
+      "M8",
+      "E12"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 remains the strongest evidence-backed candidate, but it achieved 191/200 on M5 and 186/200 on the matched M7 panel; neither development result certifies the official goal. Goal review opened I3 instead of requesting terminal assessment because one bounded, T4-preserving stabilization route can still credibly improve the measured gap.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review opened I3 because T4 remains below the human-goal threshold while a distinct, directly testable sampled-data stabilization route remains plausible. This checkpoint ends the goal-review session. The fresh I3 inquiry session must choose the supported training, implementation, or measurement action under its exact active question; it must preserve the distinction between the isolated branch-neutral filter and the composite T6 negative result.",
-    "next_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "scientific_commit": "2fe1dc53a591a0dd3600daa9b3cb94df722bd9d2",
-    "session_id": "S6"
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. I3 produced T7:checkpoint-75776, which achieved 196/200 (98.0%) on research evaluation M8 while preserving inner-radius acquisition, so the campaign now has a development candidate at the numerical goal threshold. This remains development evidence and does not establish the protected official result.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed with a positive outcome by E12. The single-filter T4-parent transfer and paired research evaluation satisfied the inquiry closure condition, supporting the filtered T7 candidate and the sampled-data bandwidth explanation within the recorded limits. This checkpoint ends the inquiry session. The next goal review should decide whether to request the protected official assessment of T7; no further I3 training or measurement is warranted before that terminal decision.",
+    "next_question": "Should the campaign request the protected official assessment of T7:checkpoint-75776 after its 196/200 development result with preserved inner-radius acquisition?",
+    "scientific_commit": "e602632f55ca0e785294c0c0fbf1d9ef112a1221",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -10690,23 +10879,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "58bb9651-2d82-44c0-9f52-108a1c0a70ad",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T7",
-      "M8",
-      "E12"
-    ],
-    "scientific_parent_commit": "16d7ac36e87925bfcc9e1b6390f45c7f588c6aab"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
