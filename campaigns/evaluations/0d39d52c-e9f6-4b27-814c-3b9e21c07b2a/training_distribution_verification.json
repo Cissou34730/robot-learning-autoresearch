@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "observed": {
+    "declared_training_range": [
+      0.06,
+      0.2
+    ],
+    "official_range": [
+      0.06,
+      0.2
+    ],
+    "sample_count": 128,
+    "minimum_sampled_radius": 0.0600436849239405,
+    "maximum_sampled_radius": 0.19891624164034735,
+    "inner_band_count": 78,
+    "outer_band_count": 50,
+    "out_of_bounds_count": 0,
+    "reset_count": 128,
+    "transition_count": 128
+  },
+  "expected": {
+    "training_range_equals_official_range": true,
+    "all_sampled_radii_within_official_range": true,
+    "inner_band_count": "> 0",
+    "outer_band_count": "> 0",
+    "transitions_per_reset": 2
+  },
+  "checked_scope": [
+    "training range declaration versus contracts.task_spec.TARGET_RADIUS_RANGE",
+    "target radii measured from reset environment state",
+    "inner and outer radius bands across controlled seeded resets",
+    "repeated zero-action step/reset transitions",
+    "official lower and upper bounds for every sampled target"
+  ],
+  "unchecked_scope": [
+    "policy learning or policy performance",
+    "evaluation environment mechanics and benchmark evaluation",
+    "target angles, dynamics quality, reward quality, and hold success"
+  ],
+  "failures": []
+}

@@ -22,14 +22,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -561,9 +561,679 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:21:12Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify that the PI-owned training environment exposes the complete official target-radius distribution before producing the first I1 policy candidate.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json",
+            "instrument": "python_module",
+            "label": "official_training_target_distribution_verification",
+            "module": "robot_learning.lab.verify_training_distribution"
+          }
+        ],
+        "rationale": "The active inquiry concerns policy capability under the official 6\u201320 cm distribution. The prior training surface omitted all 6\u201314 cm targets, so training before correcting and checking this would produce an artifact whose exposure cannot answer the inquiry. This measurement tests the exact implementation change and does not claim policy performance."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+            ],
+            "instrument": "python_module",
+            "label": "official_training_target_distribution_verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M2-1-training_distribution_verification.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/declared_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/official_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/minimum_sampled_radius",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/maximum_sampled_radius",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/inner_band_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/outer_band_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/out_of_bounds_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/transition_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/training_range_equals_official_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/all_sampled_radii_within_official_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/inner_band_count",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/outer_band_count",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/transitions_per_reset",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "255a1f6a412e334d085168483767ef6b5655a207772494eb9c32cebcd44b6e46"
+            },
+            "module": "robot_learning.lab.verify_training_distribution"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "808f0535d683225c76ac1a5b19001713d53767e7",
+            "fingerprint": "973597c06d9284b1e55eb70f5de03adf9e07f3ab4e13b12c0b7c815afbd16c89",
+            "manifest": [
+              {
+                "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+                "path": "robot_learning/lab/verify_training_distribution.py"
+              }
+            ]
+          },
+          "code_parent_commit": "efc1cba77d03b9f6ae8d62a3a614d25d7216d51a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_training_distribution.py"
+          ],
+          "scientific_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f8978c90388478b452524340761d5fe9cbbbd9f73ffe7e53e93ec8c59acba16b",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+          ],
+          "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json",
+          "instrument": "python_module",
+          "label": "official_training_target_distribution_verification",
+          "module": "robot_learning.lab.verify_training_distribution"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+            "path": "robot_learning/lab/verify_compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+            "path": "robot_learning/lab/verify_training_distribution.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "808f0535d683225c76ac1a5b19001713d53767e7",
+          "fingerprint": "973597c06d9284b1e55eb70f5de03adf9e07f3ab4e13b12c0b7c815afbd16c89",
+          "manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ]
+        },
+        "code_parent_commit": "efc1cba77d03b9f6ae8d62a3a614d25d7216d51a",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+            "path": "robot_learning/lab/verify_training_distribution.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_training_distribution.py"
+        ],
+        "scientific_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f8978c90388478b452524340761d5fe9cbbbd9f73ffe7e53e93ec8c59acba16b",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+          ],
+          "instrument": "python_module",
+          "label": "official_training_target_distribution_verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M2-1-training_distribution_verification.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/passed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 10,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 0,
+                  "path": "/failures",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/declared_training_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/official_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/sample_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/minimum_sampled_radius",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/maximum_sampled_radius",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/inner_band_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/outer_band_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/out_of_bounds_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reset_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/transition_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/training_range_equals_official_range",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/all_sampled_radii_within_official_range",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/inner_band_count",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/outer_band_count",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/transitions_per_reset",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "255a1f6a412e334d085168483767ef6b5655a207772494eb9c32cebcd44b6e46"
+          },
+          "module": "robot_learning.lab.verify_training_distribution"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+            ],
+            "instrument": "python_module",
+            "label": "official_training_target_distribution_verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/python-module-M2-1-training_distribution_verification.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/declared_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/official_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/minimum_sampled_radius",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/maximum_sampled_radius",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/inner_band_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/outer_band_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/out_of_bounds_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/transition_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/training_range_equals_official_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/all_sampled_radii_within_official_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/inner_band_count",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/outer_band_count",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/transitions_per_reset",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "255a1f6a412e334d085168483767ef6b5655a207772494eb9c32cebcd44b6e46"
+            },
+            "module": "robot_learning.lab.verify_training_distribution"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "808f0535d683225c76ac1a5b19001713d53767e7",
+            "fingerprint": "973597c06d9284b1e55eb70f5de03adf9e07f3ab4e13b12c0b7c815afbd16c89",
+            "manifest": [
+              {
+                "fingerprint": "435da5055cd358cd0f8aeaee810ab1343c7ff402291b92d3c90f6d051be9a9de",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "df323a981ad91941425ee38768e0a14738ea115a53cf66a805334917bc36afb6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+                "path": "robot_learning/lab/verify_training_distribution.py"
+              }
+            ]
+          },
+          "code_parent_commit": "efc1cba77d03b9f6ae8d62a3a614d25d7216d51a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "387b348d3f60b8083b2018f140b27adbc07310ec2db78bdf3917809c401db36c",
+              "path": "robot_learning/lab/verify_training_distribution.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_training_distribution.py"
+          ],
+          "scientific_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f8978c90388478b452524340761d5fe9cbbbd9f73ffe7e53e93ec8c59acba16b",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify that the PI-owned training environment exposes the complete official target-radius distribution before producing the first I1 policy candidate.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/training_distribution_verification.json",
+            "instrument": "python_module",
+            "label": "official_training_target_distribution_verification",
+            "module": "robot_learning.lab.verify_training_distribution"
+          }
+        ],
+        "rationale": "The active inquiry concerns policy capability under the official 6\u201320 cm distribution. The prior training surface omitted all 6\u201314 cm targets, so training before correcting and checking this would produce an artifact whose exposure cannot answer the inquiry. This measurement tests the exact implementation change and does not claim policy performance."
+      }
+    },
+    "request_fingerprint": "b1a54048577c45bc0a3df76c67e2d3faa3269cd18d3990baf3dc26700393bcc8",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty. The inquiry will select complete measured artifacts only after development evidence is available; training proxies alone will not establish development performance or official success.",
     "completed_operations": [
@@ -589,6 +1259,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "1172583c-9a98-4133-a1a7-7c601a5fa962",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline. Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac"
+  },
   "terminal_state": null
 }
