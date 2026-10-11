@@ -58,3 +58,4 @@
 | E29 | checkpoint | - | checkpointed |
 | M21 | measurement | I7 | completed |
 | T6 | training | I7 | completed |
+| M22 | measurement | I7 | completed |
