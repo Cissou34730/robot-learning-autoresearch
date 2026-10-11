@@ -1,9 +1,9 @@
-"""Laboratory check for observational evaluation diagnostics.
+"""Laboratory check for evaluation and observational diagnostics.
 
-This module is intentionally independent of the research evaluator.  It
-replays the same seeded resets and clipped actions in matched diagnostic and
-normal environments, then checks task equivalence and the internal sampling
-invariant.  It writes a JSON result and raises on a failed check.
+This module checks controlled q2 branch records, then replays the same seeded
+resets and clipped actions in matched diagnostic and normal environments to
+check task equivalence and the internal sampling invariant.  It writes a JSON
+result and raises on a failed check.
 """
 
 from __future__ import annotations
@@ -15,6 +15,11 @@ from typing import Any
 
 import numpy as np
 
+import robot_learning.scenario.evaluation as evaluation_module
+from robot_learning.scenario.evaluation import (
+    Q2_BRANCH_DEADBAND_RADIANS,
+    classify_elbow_branch,
+)
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 
@@ -43,7 +48,151 @@ def _assert_equal(left: Any, right: Any, path: str) -> None:
         raise AssertionError(f"{path}: task values differ")
 
 
+class _ControlledRuntime:
+    def reset(self) -> None:
+        return None
+
+    def predict(self, observation: np.ndarray) -> np.ndarray:
+        return np.zeros(2, dtype=np.float32)
+
+
+class _ControlledEvaluationEnv:
+    success_threshold = 0.01
+    frame_skip = 1
+
+    def __init__(self) -> None:
+        self.data = type(
+            "ControlledData",
+            (),
+            {
+                "mocap_pos": np.array([[0.16, 0.0, 0.02]], dtype=np.float64),
+                "qpos": np.zeros(2, dtype=np.float64),
+            },
+        )()
+        self.diagnostic_trace: list[dict[str, Any]] = []
+        self._episode = -1
+        self._step = 0
+
+    def reset(self, *, seed: int) -> tuple[np.ndarray, dict[str, Any]]:
+        self._episode += 1
+        self._step = 0
+        self.data.qpos[:] = 0.0
+        self.diagnostic_trace.clear()
+        return np.zeros(2, dtype=np.float32), {}
+
+    def step(
+        self, action: np.ndarray
+    ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
+        self._step += 1
+        if self._episode == 0:
+            q2_values = (-0.4, 0.2, 0.25)
+            held_steps = (0, 1, 1)
+        else:
+            q2_values = (-0.4, -0.2, -0.3)
+            held_steps = (0, 0, 0)
+        self.data.qpos[1] = q2_values[self._step - 1]
+        self.diagnostic_trace.append(
+            {
+                "control_step": self._step,
+                "distance": 0.005 if held_steps[self._step - 1] else 0.02,
+                "qvel": np.zeros(2, dtype=np.float64),
+                "action_magnitude": 0.0,
+                "contact_count": 0,
+            }
+        )
+        truncated = self._step == len(q2_values)
+        return (
+            np.zeros(2, dtype=np.float32),
+            0.0,
+            False,
+            truncated,
+            {
+                "distance": self.diagnostic_trace[-1]["distance"],
+                "is_success": False,
+                "held_steps": held_steps[self._step - 1],
+                "reward_components": {},
+            },
+        )
+
+
+def _check_evaluator_branch_records() -> dict[str, Any]:
+    controlled_env = _ControlledEvaluationEnv()
+    original_load_runtime = evaluation_module.load_runtime
+    original_make_evaluation_env = evaluation_module.make_evaluation_env
+    evaluation_module.load_runtime = lambda model_path, algorithm: _ControlledRuntime()
+    evaluation_module.make_evaluation_env = lambda policy_runtime: controlled_env
+    try:
+        result = evaluation_module.evaluate_research_model(
+            Path("controlled-model"),
+            episodes=2,
+            seed=11,
+        )
+    finally:
+        evaluation_module.load_runtime = original_load_runtime
+        evaluation_module.make_evaluation_env = original_make_evaluation_env
+
+    diagnostics = result["research_evidence"]["episode_diagnostics"]
+    expected = [
+        {
+            "first_reach_q2": 0.2,
+            "first_reach_branch": "open",
+            "final_q2": 0.25,
+            "final_branch": "open",
+        },
+        {
+            "first_reach_q2": None,
+            "first_reach_branch": None,
+            "final_q2": -0.3,
+            "final_branch": "folded",
+        },
+    ]
+    observed = [
+        {
+            key: diagnostic[key]
+            for key in (
+                "first_reach_q2",
+                "first_reach_branch",
+                "final_q2",
+                "final_branch",
+            )
+        }
+        for diagnostic in diagnostics
+    ]
+    if observed != expected:
+        raise AssertionError(
+            f"controlled evaluator records expected {expected}, got {observed}"
+        )
+    return {"expected": expected, "observed": observed}
+
+
 def _run_check() -> dict[str, Any]:
+    expected_deadband = 1e-3
+    if not np.isclose(
+        Q2_BRANCH_DEADBAND_RADIANS, expected_deadband, rtol=0.0, atol=0.0
+    ):
+        raise AssertionError(
+            "the q2 branch deadband does not match the controlled reference"
+        )
+    branch_cases = (
+        (0.2, "open"),
+        (-0.2, "folded"),
+        (0.0005, "near_singular"),
+        (-0.0005, "near_singular"),
+        (0.0015, "open"),
+        (-0.0015, "folded"),
+    )
+    branch_results = []
+    for q2, expected in branch_cases:
+        observed = classify_elbow_branch(q2)
+        if observed != expected:
+            raise AssertionError(
+                f"q2 branch classification for {q2} expected {expected}, got {observed}"
+            )
+        branch_results.append(
+            {"q2": q2, "expected": expected, "observed": observed}
+        )
+    evaluator_records = _check_evaluator_branch_records()
+
     # A short horizon guarantees a transition to truncation while retaining
     # enough repeated updates to check the per-control-step trace grouping.
     normal = TwoJointArmReachEnv(max_episode_steps=6)
@@ -163,6 +312,9 @@ def _run_check() -> dict[str, Any]:
         reset_trace_lengths.append(len(diagnostic.diagnostic_trace))
 
     return {
+        "branch_classification_cases": branch_results,
+        "branch_deadband_radians": Q2_BRANCH_DEADBAND_RADIANS,
+        "evaluator_branch_records": evaluator_records,
         "episodes_checked": episodes_checked,
         "control_steps_checked": control_steps_checked,
         "internal_samples_checked": internal_samples_checked,
@@ -178,8 +330,10 @@ def main() -> None:
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     artifact: dict[str, Any] = {
-        "check": "matched normal/diagnostic environment replay",
+        "check": "q2 branch records plus matched normal/diagnostic environment replay",
         "checked_scope": [
+            "signed q2 branch classification with positive, negative, and near-zero inputs",
+            "first-reach and episode-end q2 records, including no-reach nulls",
             "seeded reset equivalence",
             "repeated clipped-action transitions",
             "diagnostic trace cardinality and ordering",
@@ -191,6 +345,12 @@ def main() -> None:
             "protected evaluator semantics",
         ],
         "expected": {
+            "branch_labels": {
+                "positive_q2": "open",
+                "negative_q2": "folded",
+                "near_zero_q2": "near_singular",
+            },
+            "q2_branch_deadband_radians": 0.001,
             "diagnostic_mode_default": False,
             "internal_samples_per_control_step": 10,
             "normal_trace_length": 0,
