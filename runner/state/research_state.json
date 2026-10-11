@@ -5566,7 +5566,7 @@
       "training_steps": 70656
     },
     "T7:checkpoint-75776": {
-      "artifact": "campaigns/checkpoints/candidates/89a6354a-0e08-43f6-b017-536e7c05229b/t7/checkpoint-75776",
+      "artifact": "campaigns/checkpoints/retained/89a6354a-0e08-43f6-b017-536e7c05229b/t7-c02070fc4-8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
       "evaluation_artifacts": [
         "campaigns/evaluations/89a6354a-0e08-43f6-b017-536e7c05229b/evaluation-89a6354a-0e08-43f6-b017-536e7c05229b-m8-T7-checkpoint-75776-200ep-seed700000-604d52985c97.json"
       ],
@@ -5739,18 +5739,18 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 8,
-    "session": 7,
+    "session": 8,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T7:checkpoint-75776",
     "retained": {},
     "working": null
   },
@@ -10698,9 +10698,78 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T00:25:48Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T7:checkpoint-75776",
+        "evidence": [
+          "M8"
+        ],
+        "reason": "T7 is the strongest evidence-backed candidate: on the fresh M8 research panel it achieved 196/200 successes (98.0%), exceeded the paired T4 reference by 11 net wins with no reference wins, and preserved inner-radius acquisition with only two inner-radius failures."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T7:checkpoint-75776",
+        "evidence": [
+          "M8"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T7:checkpoint-75776",
+        "evidence": [
+          "M8"
+        ],
+        "reason": "T7 is the strongest evidence-backed candidate: on the fresh M8 research panel it achieved 196/200 successes (98.0%), exceeded the paired T4 reference by 11 net wins with no reference wins, and preserved inner-radius acquisition with only two inner-radius failures."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/89a6354a-0e08-43f6-b017-536e7c05229b/t7-c02070fc4-8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
+        "fingerprint": "8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
+        "source": "campaigns/checkpoints/candidates/89a6354a-0e08-43f6-b017-536e7c05229b/t7/checkpoint-75776"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T7:checkpoint-75776",
+        "evidence": [
+          "M8"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T7:checkpoint-75776",
+        "evidence": [
+          "M8"
+        ],
+        "reason": "T7 is the strongest evidence-backed candidate: on the fresh M8 research panel it achieved 196/200 successes (98.0%), exceeded the paired T4 reference by 11 net wins with no reference wins, and preserved inner-radius acquisition with only two inner-radius failures."
+      }
+    },
+    "request_fingerprint": "c148b69545c8b1db997ecdb2d228a621adc90dfd4c623e28e0a19f946f4af696",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
     "completed_operations": [
@@ -10748,6 +10817,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5e0f57f0-6eb6-4a95-9c52-cbc0e0bc17aa",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "1ca7edd53d7ba01438eed9ed4563bc21c9ceaeb0"
+  },
   "terminal_state": null
 }
