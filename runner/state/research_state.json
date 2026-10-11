@@ -3425,47 +3425,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed same-panel development measurements of a transferred or staged-coverage candidate against T1 establish a bounded answer: improved complete success and first-entry outcomes in 6-14 cm with preserved outer-radius hold success supports continuing coverage acquisition; absent inner-band gain or substantial outer-workspace regression redirects away from this route; or a consistent coupling of residual failures with control saturation, speed, and boundary commands makes control-authority work the next direction. A failed fresh full-radius recipe will remain evidence about that recipe, not a causal rejection of coverage.",
-          "goal_connection": "The strongest measured candidate reaches only 68.75% development success, while the official criterion is 98%. Its 42 no-first-entry failures are concentrated in the 6-14 cm band omitted by the original training distribution, so acquiring that capability while preserving the competent outer-workspace behavior is the most credible route to close the 29.25 percentage-point gap.",
-          "handoff_conclusion": "Observation: M2 found 42 no-first-entry failures for competent T1:checkpoint-120832 with mean target radius 9.82 cm versus 14.36 cm for 118 entries, concentrating the baseline deficit in the 6-14 cm band omitted by baseline training. Observation: those baseline failures reached their minima on the positive elbow branch, with no branch separation sufficient to identify branch choice as primary. Observation: M3 found the fresh full-radius T2 recipe at 33.75% versus 68.75% for T1, with paired wins 16 versus 72; 84 of 97 T2 no-entry failures included pre-entry boundary commands. Interpretation: inner-radius coverage is the leading explanation for the competent baseline's reach deficit, but T2 is a failed fresh recipe rather than a causal rejection of coverage. Interpretation: control authority remains a coupled risk because saturation was common in T2, but the evidence does not isolate actuator limitation from the unlearned T2 policy. The inquiry close E4 therefore selects transfer or curriculum from the competent T1 policy as the next route, while retaining saturation diagnostics.",
-          "handoff_question": "Can a transfer from T1:checkpoint-120832 followed by staged exposure to the official 6-14 cm band acquire inner-radius complete holds without losing outer-radius success, and do trajectory diagnostics indicate saturation-linked failures that require redirecting to control-authority work?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a transfer from T1:checkpoint-120832 followed by staged exposure to the official 6-14 cm band acquire inner-radius complete holds without losing outer-radius success, and do trajectory diagnostics indicate saturation-linked failures that require redirecting to control-authority work?",
-          "rationale": "Official assessment is not justified by a 68.75% best measured result and would terminate the campaign far below 196/200 successes. Further bounded work can credibly change candidate capability because the baseline deficit is radius-concentrated, while M3 only established that the tested fresh full-radius T2 artifact was inadequate: its 33.75% result and 84 pre-entry boundary-command failures do not distinguish an unlearned policy from actuator limitation. The inquiry therefore tests transfer from the competent T1 artifact with radius-stratified complete-hold and first-entry measurements, retaining branch, Jacobian, speed, and saturation diagnostics. The inherited claim is narrowed from coverage being established as the cause to coverage being the leading, still testable explanation; branch-only failure is not the primary explanation in the measured T1 failures.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed same-panel development measurements of a transferred or staged-coverage candidate against T1 establish a bounded answer: improved complete success and first-entry outcomes in 6-14 cm with preserved outer-radius hold success supports continuing coverage acquisition; absent inner-band gain or substantial outer-workspace regression redirects away from this route; or a consistent coupling of residual failures with control saturation, speed, and boundary commands makes control-authority work the next direction. A failed fresh full-radius recipe will remain evidence about that recipe, not a causal rejection of coverage.",
-        "goal_connection": "The strongest measured candidate reaches only 68.75% development success, while the official criterion is 98%. Its 42 no-first-entry failures are concentrated in the 6-14 cm band omitted by the original training distribution, so acquiring that capability while preserving the competent outer-workspace behavior is the most credible route to close the 29.25 percentage-point gap.",
-        "question": "Can a transfer from T1:checkpoint-120832 followed by staged exposure to the official 6-14 cm band acquire inner-radius complete holds without losing outer-radius success, and do trajectory diagnostics indicate saturation-linked failures that require redirecting to control-authority work?",
-        "rationale": "Official assessment is not justified by a 68.75% best measured result and would terminate the campaign far below 196/200 successes. Further bounded work can credibly change candidate capability because the baseline deficit is radius-concentrated, while M3 only established that the tested fresh full-radius T2 artifact was inadequate: its 33.75% result and 84 pre-entry boundary-command failures do not distinguish an unlearned policy from actuator limitation. The inquiry therefore tests transfer from the competent T1 artifact with radius-stratified complete-hold and first-entry measurements, retaining branch, Jacobian, speed, and saturation diagnostics. The inherited claim is narrowed from coverage being established as the cause to coverage being the leading, still testable explanation; branch-only failure is not the primary explanation in the measured T1 failures."
-      }
-    },
-    "request_fingerprint": "b6427d3de6c479a53d5bdb9c8208d82f8a045aa7bbc9cbfaa42459af00c7be49",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the strongest measured development artifact at 68.75%; T2:checkpoint-120832 is weaker at 33.75% and is not evidence that the underlying coverage hypothesis is false.",
     "completed_operations": [
