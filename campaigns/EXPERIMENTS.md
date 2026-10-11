@@ -27,3 +27,4 @@
 | E12 | checkpoint | - | checkpointed |
 | M10 | measurement | I3 | failed |
 | M11 | measurement | I3 | failed |
+| M12 | measurement | I3 | failed |

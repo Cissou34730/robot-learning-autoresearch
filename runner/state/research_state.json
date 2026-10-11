@@ -1660,7 +1660,7 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 12,
+    "measurement": 13,
     "session": 7,
     "training": 2
   },
@@ -4107,6 +4107,75 @@
       "status": "failed",
       "superseded_by": "M12",
       "supersedes": "M10"
+    },
+    {
+      "completed_at": "2026-10-11T22:45:08Z",
+      "error": "robot_learning.lab.verify_time_resolved_rollout_measurement failed:\n\n",
+      "id": "M12",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "I3 time-resolved mechanism test of retained T2 on all ten M9 failure seeds plus ten geometry-matched successful controls, with independent artifact verification.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579\\model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+            "instrument": "python_module",
+            "label": "I3 T2 time-resolved failures and matched controls",
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+              "--output",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json",
+            "instrument": "python_module",
+            "label": "I3 independent time-resolved measurement verification",
+            "module": "robot_learning.lab.verify_time_resolved_rollout_measurement"
+          }
+        ],
+        "rationale": "M9 establishes the residual failure identities and aggregate outcomes but not their mechanism. This measurement reruns the retained T2 runtime under the unchanged official research environment and records complete per-control-step joint state, endpoint position and velocity, distance, actions and torques, hold-counter transitions and interruptions, bounded open/folded IK feasibility and branch occupancy, and compiled contact events. The ten controls are successful M9 episodes selected to overlap the -150 degree acquisition cluster, the approximately -32 degree inner/exposed cases, and the -41/+16 degree hold cases. A reproducible early singular-escape or approach/braking signature would justify targeted trajectory/control work; repeated post-reach exits with nonzero velocity would justify regulation-focused work; branch-linked occupancy or contacts would justify branch/contact investigation; and traces without these structures would redirect toward generic policy development rather than an unsupported targeted intervention. The second module independently checks the measurement against forward kinematics, task geometry, hold semantics, analytic IK, reset invariants, and expected M9 outcome classes, so aggregate-only or incomplete traces fail validation. This is development evidence and does not request official assessment."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_time_resolved_rollout_measurement failed:\n\n",
+        "status": "failed"
+      },
+      "session_id": "S7",
+      "status": "failed",
+      "superseded_by": "M13",
+      "supersedes": "M11"
     }
   ],
   "pending_operation": {
@@ -4181,7 +4250,7 @@
             "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
           },
           {
-            "fingerprint": "a0c7d1e3410111ce9cd836c672e39bc2193c7b3c48fe5ebb0c80ecaf91f6f876",
+            "fingerprint": "6e8c19213a080519c735330f256906f7aa26434734a412a8b626d3ec660f7e96",
             "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
           }
         ],
@@ -4219,7 +4288,7 @@
           },
           {
             "exists": true,
-            "fingerprint": "a0c7d1e3410111ce9cd836c672e39bc2193c7b3c48fe5ebb0c80ecaf91f6f876",
+            "fingerprint": "6e8c19213a080519c735330f256906f7aa26434734a412a8b626d3ec660f7e96",
             "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
           }
         ],
@@ -4237,7 +4306,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M12",
+    "id": "M13",
     "inquiry_id": "I3",
     "kind": "measurement",
     "progress": "accepted",
@@ -4299,7 +4368,7 @@
     },
     "request_fingerprint": "ce053a83209195d63be62ee1bdf6ac2e033e32f4b033bec20bc11b1258f1349d",
     "session_id": "S7",
-    "supersedes": "M11"
+    "supersedes": "M12"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the best-known candidate by the completed M9 matched development comparison and is not an official success claim. T1:checkpoint-115712 is the matched baseline comparator. No candidate is working or retained. E8 assigned the best-known role; this inquiry does not change that role.",

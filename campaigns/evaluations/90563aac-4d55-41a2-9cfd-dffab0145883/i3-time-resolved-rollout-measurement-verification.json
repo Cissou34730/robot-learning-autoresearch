@@ -1,0 +1,10 @@
+{
+  "checked_scope": [],
+  "error": "endpoint forward kinematics disagrees with its independent reference",
+  "observed_vs_expected": {},
+  "passed": false,
+  "schema_version": 1,
+  "unchecked_scope": [
+    "The artifact was not fully checked after this defect."
+  ]
+}
