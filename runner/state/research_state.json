@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 4,
+    "measurement": 5,
     "session": 1,
     "training": 0
   },
@@ -148,6 +148,47 @@
       "status": "failed",
       "superseded_by": "M4",
       "supersedes": "M2"
+    },
+    {
+      "completed_at": "2026-10-11T22:18:38Z",
+      "error": "robot_learning.lab.verify_compiled_dynamics_measurement failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_compiled_dynamics_measurement.py\", line 329, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_compiled_dynamics_measurement.py\", line 318, in main\n    json.dumps(result, indent=2, sort_keys=True) + \"\\n\",\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type bool is not JSON serializable\n",
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the exact compiled two-joint MuJoCo plant and its 20 ms zero-order-held motor interface before interpreting any learned-policy behavior. The operation records compiled dynamics metadata and deterministic isolated torque-step, sign reversal, zero-input free-decay, contact, and reset traces, then runs an independent defect-sensitive verification of the implementation and controlled-input consequences.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/compiled_dynamics_measurement.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/compiled_dynamics_measurement.json",
+            "instrument": "python_module",
+            "label": "compiled plant dynamics and control-interface measurement",
+            "module": "robot_learning.lab.compiled_dynamics_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/compiled_dynamics_measurement_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/compiled_dynamics_measurement_verification.json",
+            "instrument": "python_module",
+            "label": "independent compiled dynamics measurement verification",
+            "module": "robot_learning.lab.verify_compiled_dynamics_measurement"
+          }
+        ],
+        "rationale": "The decisive startup distinction is whether the fixed plant/runtime has materially different actuator authority, integration timing, damping/inertia, reset, or contact behavior from the initial model. If compiled dynamics and interface invariants are sound, the next direction should be a fresh candidate plus official-distribution diagnostics; if they are not, policy learning would confound a correctable physical/runtime bottleneck. This measurement can change that direction without requiring a learned candidate."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_compiled_dynamics_measurement failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_compiled_dynamics_measurement.py\", line 329, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_compiled_dynamics_measurement.py\", line 318, in main\n    json.dumps(result, indent=2, sort_keys=True) + \"\\n\",\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type bool is not JSON serializable\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M5",
+      "supersedes": "M3"
     }
   ],
   "pending_operation": {
@@ -182,7 +223,7 @@
             "path": "robot_learning/lab/compiled_dynamics_measurement.py"
           },
           {
-            "fingerprint": "decc4d7b19ed2cd8210658fc9754dd5f0f491de7a95493004f590edbeb1f3948",
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
             "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
           }
         ],
@@ -220,7 +261,7 @@
           },
           {
             "exists": true,
-            "fingerprint": "decc4d7b19ed2cd8210658fc9754dd5f0f491de7a95493004f590edbeb1f3948",
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
             "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
           }
         ],
@@ -238,7 +279,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M4",
+    "id": "M5",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
@@ -272,7 +313,7 @@
     },
     "request_fingerprint": "e54498068e36ffd2f50980d2f20ef41700c3a189efb92b4afae7fb2f5a3e39dc",
     "session_id": "S1",
-    "supersedes": "M3"
+    "supersedes": "M4"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
