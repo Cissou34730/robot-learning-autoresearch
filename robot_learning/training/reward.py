@@ -23,9 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-ENDPOINT_SPEED_PENALTY_COEFFICIENT = 0.05
-ENDPOINT_SPEED_SCALE = 1.0
-ENDPOINT_SPEED_GATE_SCALE = 0.03
 
 
 @dataclass(frozen=True)
@@ -56,7 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    endpoint_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -99,18 +95,6 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    if endpoint_speed < 0.0:
-        raise ValueError("endpoint_speed must be non-negative")
-    if ENDPOINT_SPEED_SCALE <= 0.0 or ENDPOINT_SPEED_GATE_SCALE <= 0.0:
-        raise ValueError("endpoint speed scales must be positive")
-    speed_gate = float(np.exp(-current_distance / ENDPOINT_SPEED_GATE_SCALE))
-    endpoint_speed_penalty = -(
-        ENDPOINT_SPEED_PENALTY_COEFFICIENT
-        * speed_gate
-        * (endpoint_speed / ENDPOINT_SPEED_SCALE) ** 2
-    )
-    reward += endpoint_speed_penalty
-
     return RewardResult(
         total=float(reward),
         components={
@@ -120,6 +104,5 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
-            "endpoint_speed": float(endpoint_speed_penalty),
         },
     )
