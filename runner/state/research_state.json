@@ -1833,7 +1833,8 @@
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t3/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m4-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json"
+        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m4-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json",
+        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json"
       ],
       "fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
       "id": "T3:checkpoint-120832",
@@ -2720,7 +2721,9 @@
     },
     "T4:checkpoint-20480": {
       "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t4/checkpoint-20480",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json"
+      ],
       "fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
       "id": "T4:checkpoint-20480",
       "name": "checkpoint-20480",
@@ -3300,7 +3303,7 @@
   "counters": {
     "event": 11,
     "inquiry": 3,
-    "measurement": 4,
+    "measurement": 5,
     "session": 7,
     "training": 4
   },
@@ -6666,9 +6669,1494 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:37:53Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the bounded near-limit-penalty transfer candidate T4:checkpoint-20480 against the staged-coverage baseline T3:checkpoint-120832 on the identical 160-episode development panel, including complete success, radius-stratified first entry and hold outcomes, saturation, endpoint and joint speed, branch, and Jacobian diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+            "seed": 4200
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "staged-coverage-baseline-reference-for-T4",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "reference": "T3:checkpoint-120832"
+          }
+        ],
+        "rationale": "I3 remains unresolved between improved policy regulation and a hard actuator or dynamics limit. T4 training statistics nominate checkpoint-20480 as a candidate because it is the later of the tied 0.99 training-success checkpoints, but those statistics do not establish development performance and the terminal T4 checkpoint declined to 0.91. This paired measurement tests the actual intervention while preserving the same staged-transfer baseline and diagnostic semantics. Fewer failures with reduced or better-timed saturation and preserved inner/outer coverage would support continuing control-authority work; unchanged saturated high-speed no-entry failures would support redirecting toward direct authority or dynamics investigation; regression without diagnostic improvement would reject this recipe while leaving the broader control hypothesis unresolved."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "candidate_id": "T4:checkpoint-20480",
+            "instrument": "research_evaluation",
+            "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b573079be36d57dc2dcb20f47f9bb54481b91efb6e5fb2f5bd9188deb570d290",
+              "evaluation_semantics": "7a01f4967181",
+              "model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.125,
+              "successes": 149
+            }
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "staged-coverage-baseline-reference-for-T4",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "42ac7723647ae6ea6a4ca43fc499e4bf02400a98b78c1859c5a0a6a5ef6b6915",
+              "evaluation_semantics": "7a01f4967181",
+              "model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "candidate_model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+            "candidate_wins": 0,
+            "discordant_episodes": 2,
+            "episodes": 160,
+            "net_wins": -2,
+            "reference": "T3:checkpoint-120832",
+            "reference_model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+            "reference_wins": 2,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json",
+              "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json"
+            ],
+            "success_delta_percent": -1.25
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "7a01f4967181",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t4/checkpoint-20480",
+          "candidate": "T4:checkpoint-20480",
+          "candidate_id": "T4:checkpoint-20480",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+          "model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+          "seed": 4200
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "staged-coverage-baseline-reference-for-T4",
+          "model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T4:checkpoint-20480",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+          "reference": "T3:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+          "shared_episode_seeds": [
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4217,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4226,
+            4227,
+            4228,
+            4229,
+            4230,
+            4231,
+            4232,
+            4233,
+            4234,
+            4235,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4260,
+            4261,
+            4262,
+            4263,
+            4264,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4287,
+            4288,
+            4289,
+            4290,
+            4291,
+            4292,
+            4293,
+            4294,
+            4295,
+            4296,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4305,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4320,
+            4321,
+            4322,
+            4323,
+            4324,
+            4325,
+            4326,
+            4327,
+            4328,
+            4329,
+            4330,
+            4331,
+            4332,
+            4333,
+            4334,
+            4335,
+            4336,
+            4337,
+            4338,
+            4339,
+            4340,
+            4341,
+            4342,
+            4343,
+            4344,
+            4345,
+            4346,
+            4347,
+            4348,
+            4349,
+            4350,
+            4351,
+            4352,
+            4353,
+            4354,
+            4355,
+            4356,
+            4357,
+            4358,
+            4359
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T4:checkpoint-20480",
+          "candidate_id": "T4:checkpoint-20480",
+          "instrument": "research_evaluation",
+          "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_at_first_reach",
+                    "branch_switches",
+                    "control_saturation_steps",
+                    "control_saturation_steps_before_entry",
+                    "elbow_angle_at_first_reach",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "jacobian_det_at_first_reach",
+                    "max_abs_control",
+                    "max_abs_control_before_entry",
+                    "max_abs_jacobian_det",
+                    "max_abs_jacobian_det_before_entry",
+                    "max_endpoint_speed",
+                    "max_endpoint_speed_before_entry",
+                    "max_held_steps",
+                    "max_joint_speed",
+                    "max_joint_speed_before_entry",
+                    "min_distance_branch",
+                    "min_distance_cm",
+                    "min_distance_elbow_angle",
+                    "min_distance_jacobian_det",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/jacobian_det",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/control",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b573079be36d57dc2dcb20f47f9bb54481b91efb6e5fb2f5bd9188deb570d290",
+            "evaluation_semantics": "7a01f4967181",
+            "model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 93.125,
+            "successes": 149
+          }
+        },
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "staged-coverage-baseline-reference-for-T4",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_at_first_reach",
+                    "branch_switches",
+                    "control_saturation_steps",
+                    "control_saturation_steps_before_entry",
+                    "elbow_angle_at_first_reach",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "jacobian_det_at_first_reach",
+                    "max_abs_control",
+                    "max_abs_control_before_entry",
+                    "max_abs_jacobian_det",
+                    "max_abs_jacobian_det_before_entry",
+                    "max_endpoint_speed",
+                    "max_endpoint_speed_before_entry",
+                    "max_held_steps",
+                    "max_joint_speed",
+                    "max_joint_speed_before_entry",
+                    "min_distance_branch",
+                    "min_distance_cm",
+                    "min_distance_elbow_angle",
+                    "min_distance_jacobian_det",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/jacobian_det",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/control",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "42ac7723647ae6ea6a4ca43fc499e4bf02400a98b78c1859c5a0a6a5ef6b6915",
+            "evaluation_semantics": "7a01f4967181",
+            "model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 94.375,
+            "successes": 151
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "candidate_id": "T4:checkpoint-20480",
+            "instrument": "research_evaluation",
+            "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b573079be36d57dc2dcb20f47f9bb54481b91efb6e5fb2f5bd9188deb570d290",
+              "evaluation_semantics": "7a01f4967181",
+              "model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.125,
+              "successes": 149
+            }
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "staged-coverage-baseline-reference-for-T4",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "42ac7723647ae6ea6a4ca43fc499e4bf02400a98b78c1859c5a0a6a5ef6b6915",
+              "evaluation_semantics": "7a01f4967181",
+              "model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "candidate_model_fingerprint": "f56fe3ff4d50b1e5c1c366070f4af27b3c05f44ccae15863955d165e95c4d4a5",
+            "candidate_wins": 0,
+            "discordant_episodes": 2,
+            "episodes": 160,
+            "net_wins": -2,
+            "reference": "T3:checkpoint-120832",
+            "reference_model_fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+            "reference_wins": 2,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T4-checkpoint-20480-160ep-seed4200-7a01f4967181.json",
+              "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m5-T3-checkpoint-120832-160ep-seed4200-7a01f4967181.json"
+            ],
+            "success_delta_percent": -1.25
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the bounded near-limit-penalty transfer candidate T4:checkpoint-20480 against the staged-coverage baseline T3:checkpoint-120832 on the identical 160-episode development panel, including complete success, radius-stratified first entry and hold outcomes, saturation, endpoint and joint speed, branch, and Jacobian diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "near-limit-penalty-transfer-20480-mechanism-diagnostics",
+            "seed": 4200
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "staged-coverage-baseline-reference-for-T4",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-20480",
+            "reference": "T3:checkpoint-120832"
+          }
+        ],
+        "rationale": "I3 remains unresolved between improved policy regulation and a hard actuator or dynamics limit. T4 training statistics nominate checkpoint-20480 as a candidate because it is the later of the tied 0.99 training-success checkpoints, but those statistics do not establish development performance and the terminal T4 checkpoint declined to 0.91. This paired measurement tests the actual intervention while preserving the same staged-transfer baseline and diagnostic semantics. Fewer failures with reduced or better-timed saturation and preserved inner/outer coverage would support continuing control-authority work; unchanged saturated high-speed no-entry failures would support redirecting toward direct authority or dynamics investigation; regression without diagnostic improvement would reject this recipe while leaving the broader control hypothesis unresolved."
+      }
+    },
+    "request_fingerprint": "0f1183b5e2a94f9008f6d5b7db0a020c7bb6108865a653c14f78be7e9a44ddb3",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
@@ -6708,7 +8196,8 @@
     "kind": "inquiry",
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "T4"
+      "T4",
+      "M5"
     ],
     "scientific_parent_commit": "926835e3aa45ad85ee262e0d6218d4c19e7a2815"
   },
