@@ -60,3 +60,4 @@
 | T6 | training | I7 | completed |
 | M22 | measurement | I7 | completed |
 | E30 | inquiry | I7 | completed |
+| E31 | checkpoint | I7 | checkpointed |
