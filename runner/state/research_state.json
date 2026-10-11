@@ -3303,8 +3303,8 @@
   "counters": {
     "event": 15,
     "inquiry": 4,
-    "measurement": 5,
-    "session": 8,
+    "measurement": 7,
+    "session": 9,
     "training": 4
   },
   "human_goal": {
@@ -7291,9 +7291,155 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:47:10Z",
+      "error": "robot_learning.lab.authority_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 316, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 281, in main\n    characterize_policy_episode(model, runtime, seed) for seed in RESIDUAL_SEEDS\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 245, in characterize_policy_episode\n    snapshot = dynamics_snapshot(env.model, env.data, target, applied_action)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 96, in dynamics_snapshot\n    mass = full_mass_matrix(model, data)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 76, in full_mass_matrix\n    mujoco.mj_fullM(model, mass, data.qM)\n                                 ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+      "id": "M6",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize runtime-resolved mass, actuator torque, local endpoint-acceleration authority, and control reserve at both IK branches of the four staged-transfer residual targets, while replaying the full development panel and linking the same candidate's four known no-first-entry trajectories to saturation, speed, endpoint error, and local authority.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization.json"
+            ],
+            "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization.json",
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization",
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "rationale": "M4 and E12 establish an artifact-level residual signature but not its cause: the T3 residuals include two inner and two outer targets with 498-500 saturated pre-entry steps, yet runtime-resolved inertial and attainable-acceleration margins were not measured. This bounded characterization uses T3:checkpoint-120832, the strongest measured development artifact, and preserves complete-hold outcomes on the 160-episode panel. Low authority or acceleration reserve at representative configurations, especially when matched to the residual trajectories, would redirect toward actuator or dynamics redesign. Substantial runtime margin with policy-dependent saturation, speed, and endpoint-error trajectories would support a new control or representation intervention. Mixed or poorly separated margins would keep I4 inconclusive rather than treating saturation alone as proof of a hard limit."
+      },
+      "result": {
+        "error": "robot_learning.lab.authority_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 316, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 281, in main\n    characterize_policy_episode(model, runtime, seed) for seed in RESIDUAL_SEEDS\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 245, in characterize_policy_episode\n    snapshot = dynamics_snapshot(env.model, env.data, target, applied_action)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 96, in dynamics_snapshot\n    mass = full_mass_matrix(model, data)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\authority_characterization.py\", line 76, in full_mass_matrix\n    mujoco.mj_fullM(model, mass, data.qM)\n                                 ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+        "status": "failed"
+      },
+      "session_id": "S9",
+      "status": "failed",
+      "superseded_by": "M7",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--output",
+            "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m7.json"
+          ],
+          "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization-m7.json",
+          "instrument": "python_module",
+          "label": "staged-transfer-residual-authority-characterization-corrected",
+          "module": "robot_learning.lab.authority_characterization"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "f396546f07adb3e8a856f2602784e4517c46e89eed6f4a1a376b6ccf9130ae3b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "bd31e8cab459ccbcca46e0aebf584ea7dcc28db4bd7b0444ad0fd0681fdbb6a5",
+            "path": "robot_learning/lab/authority_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "bd31e8cab459ccbcca46e0aebf584ea7dcc28db4bd7b0444ad0fd0681fdbb6a5",
+            "path": "robot_learning/lab/authority_characterization.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/authority_characterization.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I4",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Characterize runtime-resolved mass, actuator torque, local endpoint-acceleration authority, and control reserve at both IK branches of the four staged-transfer residual targets, while replaying the full development panel and linking the same candidate's four known no-first-entry trajectories to saturation, speed, endpoint error, and local authority.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\f917968b-2042-42f8-96b1-d2810f89ba4c\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\evaluations\\f917968b-2042-42f8-96b1-d2810f89ba4c\\authority-characterization-m7.json"
+            ],
+            "artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/authority-characterization-m7.json",
+            "instrument": "python_module",
+            "label": "staged-transfer-residual-authority-characterization-corrected",
+            "module": "robot_learning.lab.authority_characterization"
+          }
+        ],
+        "rationale": "M6 did not produce evidence because its characterization helper used a legacy MuJoCo mass-matrix API and failed before the experiment ran. That execution failure says nothing about actuator authority or the tested method. The corrected bounded characterization preserves the original I4 discriminator: M4 and E12 establish an artifact-level residual signature but not its cause, with two inner and two outer targets showing 498-500 saturated pre-entry steps. This measurement uses T3:checkpoint-120832, the strongest measured development artifact, and preserves complete-hold outcomes on the 160-episode panel. Low authority or acceleration reserve at representative configurations, especially when matched to the residual trajectories, would redirect toward actuator or dynamics redesign. Substantial runtime margin with policy-dependent saturation, speed, and endpoint-error trajectories would support a new control or representation intervention. Mixed or poorly separated margins would keep I4 inconclusive rather than treating saturation alone as proof of a hard limit."
+      }
+    },
+    "request_fingerprint": "0a5e4e1469db61830137cc50697b43bd967fcfbf32df03fa582708156cf558b8",
+    "session_id": "S9",
+    "supersedes": "M6"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this session. Candidate-comparison evidence identifies T3:checkpoint-120832 as the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; and T1:checkpoint-120832 is the staged-transfer reference at 68.75%. T2:checkpoint-120832 remains recipe-specific counterevidence at 33.75%. These facts do not establish causal explanations.",
     "completed_operations": [
@@ -7325,6 +7471,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "7d5e265b-9c65-42f5-9899-30a49e6d27c3",
+    "id": "S9",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c"
+  },
   "terminal_state": null
 }
