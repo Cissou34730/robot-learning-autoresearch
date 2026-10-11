@@ -47,3 +47,4 @@
 | M19 | measurement | I5 | completed |
 | E21 | model_role | I5 | assigned |
 | E22 | inquiry | I5 | completed |
+| E23 | checkpoint | I5 | checkpointed |
