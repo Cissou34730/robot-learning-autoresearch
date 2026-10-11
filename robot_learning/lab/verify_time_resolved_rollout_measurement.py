@@ -67,10 +67,15 @@ def _finite(value: Any, field: str) -> float:
 
 
 def _close(actual: Any, expected: Any, field: str, tolerance: float = NUMERICAL_TOLERANCE) -> None:
-    _require(
-        bool(np.allclose(np.asarray(actual), np.asarray(expected), rtol=tolerance, atol=tolerance)),
-        f"{field} disagrees with its independent reference",
-    )
+    actual_array = np.asarray(actual)
+    expected_array = np.asarray(expected)
+    if not bool(np.allclose(actual_array, expected_array, rtol=tolerance, atol=tolerance)):
+        actual_text = np.array2string(actual_array, precision=8, separator=",")
+        expected_text = np.array2string(expected_array, precision=8, separator=",")
+        raise VerificationError(
+            f"{field} disagrees with its independent reference: "
+            f"actual={actual_text}, expected={expected_text}"
+        )
 
 
 def _wrap(angle: float) -> float:
@@ -161,6 +166,7 @@ def _check_trace(
         _array(record["actuator_force"], (2,), "actuator force")
         _array(record["joint_actuator_torque_Nm"], (2,), "joint actuator torque")
 
+        mujoco.mj_resetData(model, data)
         data.qpos[:] = qpos_after
         data.qvel[:] = qvel_after
         mujoco.mj_forward(model, data)
