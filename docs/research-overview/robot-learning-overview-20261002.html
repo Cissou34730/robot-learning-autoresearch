@@ -219,34 +219,34 @@
       <div class="grid two status-grid">
         <article class="card hot">
           <span class="tag">Completed</span>
-          <h3 style="margin-top: 12px">Campaign <code>58dcd817</code></h3>
+          <h3 style="margin-top: 12px">Campaign <code>89a6354a</code></h3>
           <ul>
-            <li>OI-004 is closed as effective.</li>
-            <li>T2 used non-terminal <code>checkpoint-110592</code> and beat T1 by 153/160 to 150/160.</li>
-            <li>The failed M8 request was treated as no scientific result; corrected M9 completed before closure.</li>
-            <li>Official assessment: 195/200, or 97.5%.</li>
-            <li>The scientific goal remained unmet by one episode.</li>
+            <li>Official pass: 196/200, or 98.0%, at the threshold.</li>
+            <li>Assessed candidate: <code>T7:checkpoint-75776</code>, from the fresh v3 recipe campaign.</li>
+            <li>M8 measured T7 at 196/200 against T4 at 185/200 on paired development seeds.</li>
+            <li>Seven training operations, eight measurements and three inquiries; 77.03 AIU.</li>
+            <li>One checkpoint metadata correction allowed the same campaign to continue; no second reset occurred.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The benchmark failure does not negate the process improvement. <a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">Read the campaign report</a>.</p>
+          <p class="small muted" style="margin-top: 8px">OI-005 is observed, not closed. The terminal reason compared further work with commitment but omitted recorded residual failures. <a href="../oi005_assessment_decision_rca_20261011.md">Read the RCA and campaign observation</a>.</p>
         </article>
         <article class="card">
-          <span class="tag">Latest passing result</span>
-          <h3 style="margin-top: 12px">Campaign <code>06656182</code> passed</h3>
+          <span class="tag">Previous passing result</span>
+          <h3 style="margin-top: 12px">Campaign <code>ec7f3d3a</code> passed</h3>
           <ul>
-            <li>Official assessment: 196 of 200 episodes, which is 98.0%.</li>
-            <li>The goal is 98%. The result is exactly at the threshold.</li>
-            <li>6 training runs, 9 measurements, 5 of 15 inquiries.</li>
-            <li>Assessed checkpoint: <code>T5:checkpoint-120832</code>.</li>
-            <li>It is one run. No repeat run exists.</li>
+            <li>Official assessment: 197 of 200 episodes, which is 98.5%.</li>
+            <li>Nine completed training operations, eight completed measurements and three inquiries.</li>
+            <li>It supported the bounded OI-003 and OI-016 closures.</li>
+            <li>Its pass did not establish OI-005 assessment calibration.</li>
           </ul>
-          <p class="small"><a href="robot-campaign-06656182-final-analysis-20261008.html">Read the final analysis</a></p>
+          <p class="small"><a href="robot-campaign-ec7f3d3a-20261010-error-correction-report.html">Read the campaign report</a></p>
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
           <h3 style="margin-top: 12px">21 issues, OI-001 to OI-021</h3>
           <ul>
             <li>Active or open (7): OI-006, OI-008, OI-009, OI-010, OI-014, OI-019, OI-021.</li>
-            <li>Implemented or revised, awaiting campaign evidence (3): OI-005, OI-015, OI-018.</li>
+            <li>Implemented, observed but not closed (1): OI-005.</li>
+            <li>Implemented or revised, awaiting campaign evidence (2): OI-015, OI-018.</li>
             <li>Closed as effective (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017.</li>
             <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
             <li>Paused or proposal (2): OI-007, OI-012.</li>
@@ -265,7 +265,7 @@
             <li>OI-003 and OI-016 close on campaign <code>ec7f3d3a</code> evidence; no campaign-length replay was required.</li>
             <li>OI-020 is withdrawn as an invalid generalization of campaign-specific evidence. OI-021 records the scenario-specific scientific-model prompt; impact analysis must precede repair.</li>
             <li>OI-005 now compares terminal assessment with the expected contribution of further bounded work. Independent parent and Opus 5.5/high RCAs cover both early requests and persistent deferral. <a href="../oi005_assessment_decision_rca_20261011.md">Read the reconciled RCA</a>.</li>
-            <li>The authorized fresh v3 campaign <code>89a6354a</code> stopped after I1 when two checkpoint proposals omitted accepted session operations. Five training operations and six measurements completed; no official assessment occurred. OI-005 remains unmeasured, and the accepted evidence is preserved.</li>
+            <li>The authorized fresh v3 campaign <code>89a6354a</code> passed officially at 196/200 after a metadata-only checkpoint correction and same-campaign continuation. OI-005 is observed, not closed; its remaining counterevidence and trigger-wording limits are documented.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
@@ -512,7 +512,7 @@
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
             <tr><td>OI-003</td><td>Measurement evidence. Campaign <code>79395c88</code> declared M30 nearest-branch margins missing even though the completed artifact contained them. The synthesis convention now ties a direction-changing conclusion to its supporting operation and artifact field, and states that an uninspected diagnostic is not missing evidence. Campaign <code>ec7f3d3a</code> did not repeat the false-missing interpretation.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The final campaign <code>896c230a</code> confirmed the same progression pattern in the transfer-learning route. The goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-005</td><td>Assessment-decision calibration. The dual RCA finds terminal-as-probe requests in <code>58dcd817</code>/<code>896c230a</code> and inherited-gate deferral in <code>79395c88</code>/<code>339736e0</code>. Goal review now compares terminal commitment with useful further work, retains counterevidence and separates best-known from goal certification. No score gate, mandatory repeat or Runner judgment is added. <a href="../oi005_assessment_decision_rca_20261011.md">Reconciled RCA</a>.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-005</td><td>Assessment-decision calibration. The dual RCA covers terminal-as-probe requests and inherited-gate deferral. In <code>89a6354a</code>, E15 recognized terminality and compared further work with commitment. E13 still used development-threshold and closure triggers, and E15 omitted four residual failures preserved in that checkpoint. The official pass does not close either historical direction by itself. <a href="../oi005_assessment_decision_rca_20261011.md">Reconciled RCA and observation</a>.</td><td><span class="tag">Implemented, observed; not closed</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
@@ -645,7 +645,7 @@
             <tr><td>Exact conclusion and next question handoff</td><td>The Runner copies the source conclusion and question into the inquiry state.</td><td>Implemented <code>9f81838</code>. It works. The preserved question was too broad (OI-002).</td></tr>
             <tr><td>PI authority sentence in decision guidance</td><td>The PI can inspect, change, or replace PI-owned code before it submits an operation.</td><td>Restored <code>adff08e</code>.</td></tr>
             <tr><td>One owner per instruction (R8)</td><td>Remove repeated text between contracts and launcher.</td><td>Implemented <code>8166e2f</code>.</td></tr>
-            <tr><td>Symmetric goal-review comparison</td><td>Weigh terminal assessment against what further bounded work can credibly change. The program owns the principle; goal-review prompts route to it.</td><td>OI-005 implemented, unmeasured. The earlier one-sided guidance remains withdrawn.</td></tr>
+            <tr><td>Symmetric goal-review comparison</td><td>Weigh terminal assessment against what further bounded work can credibly change. The program owns the principle; goal-review prompts route to it.</td><td>OI-005 observed in <code>89a6354a</code>, not closed. The earlier one-sided guidance remains withdrawn.</td></tr>
             <tr class="group-row"><td colspan="3">Phases and operations</td></tr>
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
@@ -724,6 +724,7 @@
         <table>
           <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
           <tbody>
+            <tr><td><code>89a6354a</code></td><td>11 Oct, 01:02 CEST</td><td>Official pass: 196/200 (98.0%) with T7. Fresh v3 campaign; one metadata-only checkpoint correction, no second reset. OI-005 comparison observed with residual limitations; not closed.</td><td><a href="../oi005_assessment_decision_rca_20261011.md">OI-005 RCA and campaign observation</a></td></tr>
             <tr><td><code>58dcd817</code></td><td>9 Oct</td><td>Official fail: 195/200 (97.5%). OI-004 closed as effective after non-terminal checkpoint nomination, explicit missing-evidence repair, and frontier-led progression produced T2 at 153/160 versus T1 at 150/160.</td><td><a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">OI-004 outcome</a></td></tr>
             <tr><td><code>896c230a</code></td><td>9 Oct</td><td>Official fail: 193/200 (96.5%). OI-003 and OI-004 both closed as effective: the campaign preserved reach-versus-hold diagnostics and selected the transfer-learning route using matched mechanism evidence rather than aggregate-only conclusions.</td><td><a href="robot-campaign-896c230a-oi003-oi004-closure-20261009.html">OI-003/OI-004 closure</a></td></tr>
             <tr><td><code>1ae27a27</code></td><td>8 Oct</td><td>Paused at 15 inquiries. T3 reached 153/160. OI-002 produced bounded closure. Inquiry granularity, scientific progression, and the cap interaction remain distinct findings.</td><td><a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Campaign review</a></td></tr>

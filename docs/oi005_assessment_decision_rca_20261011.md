@@ -258,20 +258,21 @@ from scientific usefulness. One passing campaign cannot close both directions.
 **Disposition at publication:** implemented / unmeasured. Campaign observation
 and any stronger status are recorded separately after execution.
 
-### First authorized campaign: `89a6354a`, operationally blocked
+### First authorized campaign: `89a6354a`, checkpoint interruption
 
 The fresh clean/force reset used the v3 recipe commit
 `8256c8c7705a5080a722453b26eb13cd85b6e18f`. The reset imported no policy,
 measurement or prior designation and left a clean worktree. The campaign
 launched with repository defaults after the repair was committed and pushed.
 
-The launcher exited at the post-I1 checkpoint after two rejected proposals.
+The launcher initially exited at the post-I1 checkpoint after two rejected proposals.
 S3's accepted operation identities are `T5`, `M6`, `E4`. The PI first listed
 only `E4`, then changed the list to empty after mistakenly inferring a fresh
 session. Neither matches S3. The existing Runner rejected both and the
-launcher's bounded retry limit raised an error. I1's limited-negative closure
-remains accepted; its session summary has not been accepted. There is no
-official assessment, terminal result, pending operation or new inquiry.
+launcher's bounded retry limit raised an error. At that interruption, I1's
+limited-negative closure remained accepted but its session summary had not
+been accepted. There was no official assessment, terminal result, pending
+operation or new inquiry.
 This is an operation-contract failure, not evidence against the learning
 method or the OI-005 repair.
 
@@ -283,8 +284,8 @@ associated with failures but also occurred in successful episodes. E3 correctly
 stated that relative best-known assignment would not certify performance.
 However its frontier still used a development-score target, and the record
 does not establish a mature two-sided comparison or repeated reconsideration.
-No terminal request or prolonged-deferral sequence occurred. **OI-005 remains
-implemented / unmeasured; the isolated observations do not close it.**
+No terminal request or prolonged-deferral sequence had occurred at that point.
+OI-005 remained implemented / unmeasured at the interruption.
 
 Before the block, five training operations, six measurements, two inquiry
 operations and two checkpoints completed. All five training operations
@@ -293,11 +294,57 @@ about 51 minutes. AIU, token and tool-call totals were not available in the
 workspace usage-report path and are not inferred from transcript length.
 All accepted campaign commits were already pushed at `4bc3fdc`.
 
-The rejected exchange request is preserved in the maintainer session artifacts
-as `oi005-rejected-operation-request.json` before removal from the worktree.
-Accepted state, evidence and PI backend session are unchanged. No second
-campaign, reset, automatic resumption or unrelated repair is authorized by
-this record.
+The rejected exchange request was preserved in the maintainer session artifacts
+as `oi005-rejected-operation-request.json`. Under the original explicit
+autopilot instruction to run the campaign without stopping, the maintainer
+assistant restored it and corrected only `completed_operations` to the exact
+accepted S3 list. A structural comparison verified every scientific field
+was unchanged. No scientific decision, harness code or accepted state was
+edited. The same campaign resumed through the existing launcher, which
+accepted the checkpoint as E5 and returned to goal review. No second reset
+or campaign occurred.
+
+### Completed result and OI-005 assessment
+
+The same campaign finished with an official **196/200 (98.0%) pass**, using
+`T7:checkpoint-75776`. The recorded retained artifact fingerprint is
+`8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120`.
+The official assessment completed at `2026-10-11T00:27:24Z`; the launcher
+reported campaign completion at 02:27:29 local time. No active scientific
+session or pending operation remained. Campaign records were published
+through `c33531e` with a clean worktree.
+
+| Evidence | Observation | Limit |
+|---|---|---|
+| E2/E6, S2/S4 | The PI recognized assessment as terminal and tied deferral to a measured candidate gap and a testable remaining route. It corrected interruption-as-failure reasoning. | Below-goal scores remained prominent, and these reasons did not fully develop the case against further work. |
+| E10/E11, S6 | After T6 degraded to 103/200 against T4's 186/200 on M7, the PI narrowed a composite-method claim and chose a different, branch-neutral action-filter route. | A productive new route is plausible; its rationale does not itself demonstrate a complete assessment-versus-work comparison. |
+| M8/E13 | Filtered T7 measured 196/200 against T4's 185/200, with eleven T7 wins and zero T4 wins on paired seeds. E13 preserved all four candidate failures, two inner and two outer, and limited the mechanism claim. | E13 still described meeting the development threshold and inquiry closure as reasons supporting assessment. That trigger-shaped wording has not disappeared. |
+| E14/E15, S8 | Best-known was explicitly assigned. E15 described terminal commitment and compared additional mechanism refinement with improving capability or candidate selection. It did not imagine another inquiry after failure or demand a complete mechanism explanation. | The terminal reason omitted the four residual failures retained in E13 and made no explicit finite-sample uncertainty case. Full counterevidence preservation at commitment is therefore not demonstrated. |
+| Official result | The protected assessment passed, 196/200. | A pass cannot prove decision calibration or isolate this prompt repair's causal effect. |
+
+**Disposition after completion: implemented / observed, not closed.**
+Terminality and a further-work comparison appeared in the actual commitment.
+The two historical failure directions were not both stress-tested, and
+trigger-shaped handoff wording plus omission of residuals from the terminal
+reason remain limitations. No claim that OI-005 is solved follows from this
+single passing campaign. No additional prompt repair was bundled into the
+observation.
+
+The completed campaign contains thirty accepted operation records: seven
+training, eight measurement, six inquiry, seven checkpoint, one model-role
+and one campaign-conclusion operation. Three inquiries closed. Training
+requested 840,000 steps and completed 845,824. The launcher reported **77.03
+AIU**, **29m01s PI execution time**, about **14.6 million prompt tokens**
+(90% cached) and **105.1 thousand output tokens**. Reset-to-end wall time was
+about **84m32s**, including the checkpoint interruption and continuation.
+The console totals are recorded usage, not estimates from transcript length;
+they do not include this maintainer RCA or the independent Opus RCA.
+An exact campaign tool-call total was not established.
+
+The final outcome, interruption, metadata-only intervention and partial
+behavioral observations are all retained. OI-019 and OI-021 remain unchanged.
+There is no authorization here for another reset, campaign, resumption or
+follow-on harness repair.
 
 ## Limits and preserved boundaries
 

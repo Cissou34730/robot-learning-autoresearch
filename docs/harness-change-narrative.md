@@ -190,6 +190,21 @@ outside this repair. The
 [reconciled RCA](oi005_assessment_decision_rca_20261011.md) preserves the case
 evidence, differences between the independent analyses and rejected approaches.
 
+That authorized campaign, `89a6354a`, passed officially at 196/200 with T7.
+It first stopped after the PI twice omitted accepted S3 operations from its
+session summary. The assistant corrected only that metadata under the original
+autopilot authorization; the scientific content and accepted evidence were
+unchanged, and the same campaign continued without another reset.
+Its final reason recognized terminality and weighed further mechanism work
+against commitment, rather than treating a failed assessment as a route to
+another inquiry. However the preceding handoff still used development-threshold
+and closure wording as triggers, and the final reason omitted four residual
+failures preserved in the checkpoint. OI-005 is therefore implemented/observed,
+not closed. The passing verdict is not a causal validation of the repair.
+Recorded campaign use was 77.03 AIU and about 84m32s reset-to-end wall time;
+the interruption and maintainer-assistant metadata correction remain part of that
+history, not hidden from the successful outcome.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query
