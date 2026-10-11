@@ -1555,47 +1555,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence distinguishes whether first-entry failures are primarily concentrated by target radius, target angle or IK/singular-escape behavior, or control-authority signatures, and selects the corresponding next route; if the evidence cannot discriminate these causes, close with that limitation and the most credible goal-directed intervention supported by the measurements.",
-          "goal_connection": "The strongest complete-artifact measurement is only 68.75% (110/160), while the official objective requires at least 196/200 successes. The dominant observed deficit is before first entry, so identifying its mechanism is the most consequential next step toward improving complete episode success.",
-          "handoff_conclusion": "Observation: T1 training produced a learning trajectory whose recorded training success rose to 0.96, but development evaluation of complete artifacts was only 65.625% and 68.75%; the later artifact won 9 paired episodes versus 4, with 13 discordant episodes. Observation: the two evaluation artifacts sampled target radii from 6.17 to 19.82 cm and recorded first-entry, maximum-hold and interruption diagnostics. Interpretation: the later checkpoint is the stronger complete artifact at the candidate-comparison level, but the difference is not assigned to training duration or any mechanism. Interpretation: the dominant observed failure class is failure to reach tolerance, not failure to sustain the 100-step hold, because no-first-entry episodes account for most failures and entry generally led to a complete hold. This supports the model consequence that official coverage and learned reach basins matter. The radius-specific contribution and the roles of IK branch, reset singularity, and actuator margin remain unresolved because those diagnostics were not recorded in this evaluation.",
-          "handoff_question": "Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%?",
-          "rationale": "Official assessment is not justified by either measured candidate being close to 98%, and no candidate has yet been assigned as best-known. M1 supports the reach-limited observation, but its pooled summary does not establish the radius-specific contribution. The artifacts do record target radius and first-entry diagnostics, so that contribution can be analyzed; branch, singularity, and control-authority diagnostics remain absent. A bounded inquiry can use this evidence and obtain the missing discriminators before selecting a training or control intervention, without treating the later checkpoint's unexplained advantage as a causal effect of training duration.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence distinguishes whether first-entry failures are primarily concentrated by target radius, target angle or IK/singular-escape behavior, or control-authority signatures, and selects the corresponding next route; if the evidence cannot discriminate these causes, close with that limitation and the most credible goal-directed intervention supported by the measurements.",
-        "goal_connection": "The strongest complete-artifact measurement is only 68.75% (110/160), while the official objective requires at least 196/200 successes. The dominant observed deficit is before first entry, so identifying its mechanism is the most consequential next step toward improving complete episode success.",
-        "question": "Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%?",
-        "rationale": "Official assessment is not justified by either measured candidate being close to 98%, and no candidate has yet been assigned as best-known. M1 supports the reach-limited observation, but its pooled summary does not establish the radius-specific contribution. The artifacts do record target radius and first-entry diagnostics, so that contribution can be analyzed; branch, singularity, and control-authority diagnostics remain absent. A bounded inquiry can use this evidence and obtain the missing discriminators before selecting a training or control intervention, without treating the later checkpoint's unexplained advantage as a causal effect of training duration."
-      }
-    },
-    "request_fingerprint": "420f1068642d60bbc400cbf4392e5a233714a8371e7c462503b3e2e405144be5",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T1:checkpoint-120832 is the stronger of the two measured artifacts at the complete-artifact comparison level, but both remain development candidates far below the goal and neither is role-assigned.",
     "completed_operations": [
