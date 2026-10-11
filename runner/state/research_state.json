@@ -740,47 +740,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Train and archive at least one complete learned candidate within the current 120000-step allocation, then evaluate the selected complete artifact on a held-out development panel sampled from the official task distribution while preserving per-episode target radius, target angle, first reach, minimum and final distance, maximum held steps, hold interruptions, and outcome. Close when the resulting candidate comparison and diagnostics identify a capability gap that changes the next direction, or establish that the evidence is limited/inconclusive and preserve the unresolved distinction for goal review; development evidence will not be treated as official certification.",
-          "goal_connection": "The human goal is at least 196 successful episodes out of 200 under the full 0.06-0.20 m radial distribution, with an uninterrupted 100-step hold. No candidate has yet demonstrated any capability under that distribution. A complete candidate evaluation is the first evidence that can distinguish whether progress is limited by singular escape and reach timing, convergence/braking, uninterrupted hold regulation, inner-radius generalization, or branch/contact behavior.",
-          "handoff_conclusion": "Observed in completed M5: the exact compiled model has timestep 0.002 s and the measured control interface uses 10 integration substeps per update, giving 0.020 s; both motors have gear 5 and control range [-1,1] with no force limit; compiled link/body masses and inertias are finite and nonzero for physical bodies; damping and armature are 0.5 and 0.01 for both DOFs; repeated zero resets reproduce qpos=qvel=0 and the endpoint at (0.22,0,0.02); an isolated +0.75 command produces +3.75 Nm and shoulder velocity +4.1255 rad/s after one 20 ms interval, while -0.75 produces -3.75 Nm and -4.1254 rad/s; the reversal trace contains a positive-to-negative command transition and reverses shoulder velocity; zero-input free decay from [0.55,-0.35] rad/s decays to approximately [0.00084,-0.000045] rad/s over eight 20 ms intervals; no contacts occurred in the tested non-singular torque, reversal, free-decay, or reset traces; all independent verification checks passed. Interpretation: the model's basic actuator sign, transmission, timing, reset, damping, and local free-decay assumptions are supported for these controlled states, so a source-level dynamics or action-interface repair is not currently justified. The high measured transient acceleration and reversal response make braking/hold regulation consequential, but M5 does not establish that they prevent task success. Competing explanations remain: (1) a learned policy may fail because of reach timing, singular escape, braking, or 100-step regulation; (2) it may reach the exposed outer radii but fail to generalize to the unexposed 0.06-0.14 m band; (3) final branch occupancy or folded-path contacts may create geometry-dependent failures. M5 is limited to short deterministic probes away from the singular reset during dynamics tests and does not measure policy trajectories, official target panels, long-horizon hold continuity, or both IK branches. These limits prevent a capability conclusion and keep the candidate-behavior distinction open.",
-          "handoff_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-          "rationale": "M5 completed the compiled-plant verification and supports the inherited correction that a source-level dynamics or action-interface repair is not currently justified, but it did not measure policy behavior, the 100-step hold, the official radial range, or branch occupancy. There is no strongest candidate, training trajectory, or unmeasured candidate artifact to support official assessment. The current PPO implementation and 0.14-0.20 m training exposure are only a recipe to test, not scientific authority. One bounded candidate-development and diagnostic-evaluation inquiry can credibly change candidate selection and reveal whether failures concentrate in reach, stabilization, or the unexposed inner band; it cannot by itself certify the 98% objective or prove a causal mechanism for any unexplained artifact difference.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Train and archive at least one complete learned candidate within the current 120000-step allocation, then evaluate the selected complete artifact on a held-out development panel sampled from the official task distribution while preserving per-episode target radius, target angle, first reach, minimum and final distance, maximum held steps, hold interruptions, and outcome. Close when the resulting candidate comparison and diagnostics identify a capability gap that changes the next direction, or establish that the evidence is limited/inconclusive and preserve the unresolved distinction for goal review; development evidence will not be treated as official certification.",
-        "goal_connection": "The human goal is at least 196 successful episodes out of 200 under the full 0.06-0.20 m radial distribution, with an uninterrupted 100-step hold. No candidate has yet demonstrated any capability under that distribution. A complete candidate evaluation is the first evidence that can distinguish whether progress is limited by singular escape and reach timing, convergence/braking, uninterrupted hold regulation, inner-radius generalization, or branch/contact behavior.",
-        "question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-        "rationale": "M5 completed the compiled-plant verification and supports the inherited correction that a source-level dynamics or action-interface repair is not currently justified, but it did not measure policy behavior, the 100-step hold, the official radial range, or branch occupancy. There is no strongest candidate, training trajectory, or unmeasured candidate artifact to support official assessment. The current PPO implementation and 0.14-0.20 m training exposure are only a recipe to test, not scientific authority. One bounded candidate-development and diagnostic-evaluation inquiry can credibly change candidate selection and reveal whether failures concentrate in reach, stabilization, or the unexposed inner band; it cannot by itself certify the 98% objective or prove a causal mechanism for any unexplained artifact difference."
-      }
-    },
-    "request_fingerprint": "7a8159c1761d1fdb7336cd4bde67e638e6ba778ff5db537ced2bb03a92f61234",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained or assigned a role. Working, best-known, and retained roles are empty.",
     "completed_operations": [
