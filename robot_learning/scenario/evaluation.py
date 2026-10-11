@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
+from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
@@ -36,6 +37,7 @@ def evaluate_research_model(
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
+    control_dt = env.model.opt.timestep * env.frame_skip
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
@@ -55,20 +57,90 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        min_distance_jacobian_det = float("nan")
+        min_distance_elbow_angle = float("nan")
+        min_distance_branch: str | None = None
+        max_abs_jacobian_det = 0.0
+        max_abs_jacobian_det_before_entry = 0.0
+        jacobian_det_at_first_reach = float("nan")
+        elbow_angle_at_first_reach = float("nan")
+        branch_at_first_reach: str | None = None
+        max_joint_speed = 0.0
+        max_joint_speed_before_entry = 0.0
+        max_endpoint_speed = 0.0
+        max_endpoint_speed_before_entry = 0.0
+        max_abs_control = 0.0
+        max_abs_control_before_entry = 0.0
+        control_saturation_steps = 0
+        control_saturation_steps_before_entry = 0
+        previous_branch: str | None = None
+        branch_switches = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
+            raw_action = np.asarray(action, dtype=np.float64).reshape(-1)
+            applied_action = np.clip(raw_action, -1.0, 1.0)
+            endpoint_before = env.data.site("end_effector").xpos.copy()
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            endpoint_after = env.data.site("end_effector").xpos.copy()
+            endpoint_speed = float(
+                np.linalg.norm(endpoint_after - endpoint_before) / control_dt
+            )
+            elbow_angle = float(env.data.qpos[1])
+            jacobian_det = UPPER_ARM_LENGTH * FOREARM_LENGTH * np.sin(elbow_angle)
+            abs_jacobian_det = abs(jacobian_det)
+            if abs(elbow_angle) < 1e-3:
+                branch = "singular"
+            elif elbow_angle > 0.0:
+                branch = "positive"
+            else:
+                branch = "negative"
+            joint_speed = float(np.max(np.abs(env.data.qvel[:2])))
+            abs_control = float(np.max(np.abs(applied_action)))
+            saturated = bool(np.any(np.abs(applied_action) >= 1.0 - 1e-6))
+            was_before_entry = first_reach_step is None
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            max_abs_jacobian_det = max(max_abs_jacobian_det, abs_jacobian_det)
+            max_joint_speed = max(max_joint_speed, joint_speed)
+            max_endpoint_speed = max(max_endpoint_speed, endpoint_speed)
+            max_abs_control = max(max_abs_control, abs_control)
+            if was_before_entry:
+                max_abs_jacobian_det_before_entry = max(
+                    max_abs_jacobian_det_before_entry, abs_jacobian_det
+                )
+                max_joint_speed_before_entry = max(
+                    max_joint_speed_before_entry, joint_speed
+                )
+                max_endpoint_speed_before_entry = max(
+                    max_endpoint_speed_before_entry, endpoint_speed
+                )
+                max_abs_control_before_entry = max(
+                    max_abs_control_before_entry, abs_control
+                )
+                if saturated:
+                    control_saturation_steps_before_entry += 1
+            if saturated:
+                control_saturation_steps += 1
+            if distance_cm <= min_distance_cm:
+                min_distance_jacobian_det = jacobian_det
+                min_distance_elbow_angle = elbow_angle
+                min_distance_branch = branch
+            if previous_branch is not None and branch != previous_branch:
+                branch_switches += 1
+            if branch != "singular":
+                previous_branch = branch
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    jacobian_det_at_first_reach = jacobian_det
+                    elbow_angle_at_first_reach = elbow_angle
+                    branch_at_first_reach = branch
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +175,23 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "min_distance_jacobian_det": min_distance_jacobian_det,
+                "min_distance_elbow_angle": min_distance_elbow_angle,
+                "min_distance_branch": min_distance_branch,
+                "max_abs_jacobian_det": max_abs_jacobian_det,
+                "max_abs_jacobian_det_before_entry": max_abs_jacobian_det_before_entry,
+                "jacobian_det_at_first_reach": jacobian_det_at_first_reach,
+                "elbow_angle_at_first_reach": elbow_angle_at_first_reach,
+                "branch_at_first_reach": branch_at_first_reach,
+                "branch_switches": branch_switches,
+                "max_joint_speed": max_joint_speed,
+                "max_joint_speed_before_entry": max_joint_speed_before_entry,
+                "max_endpoint_speed": max_endpoint_speed,
+                "max_endpoint_speed_before_entry": max_endpoint_speed_before_entry,
+                "max_abs_control": max_abs_control,
+                "max_abs_control_before_entry": max_abs_control_before_entry,
+                "control_saturation_steps": control_saturation_steps,
+                "control_saturation_steps_before_entry": control_saturation_steps_before_entry,
             }
         )
         if progress_callback is not None:
@@ -110,7 +199,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +210,15 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "angle": "radians",
+                "endpoint_speed": "m/s",
+                "joint_speed": "rad/s",
+                "jacobian_det": "m^2",
+                "control": "normalized",
+            },
         },
     }
 
