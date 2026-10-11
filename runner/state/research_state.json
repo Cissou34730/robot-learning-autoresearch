@@ -3301,16 +3301,16 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 9,
-    "session": 10,
+    "session": 11,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8597,9 +8597,97 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:57:27Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": "I5",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the strongest measured staged-transfer recipe as the controlled parent before implementing the targeted velocity-and-hold policy-interface intervention; this removes the rejected near-limit penalty from the active source state."
+      },
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S11"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "15cc37cbc6ee449d42f787815e8dba0ac3d1d2a81babffbdde32c9dd0201f7cf",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": "I5",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the strongest measured staged-transfer recipe as the controlled parent before implementing the targeted velocity-and-hold policy-interface intervention; this removes the rejected near-limit penalty from the active source state."
+      }
+    },
+    "request_fingerprint": "bda8754efec6aed1ecde0a717b1809c2e802a72569507493ce794b90a98033b4",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this goal-review session. T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%, T3:checkpoint-70656 is a secondary measured artifact at 87.5%, T4:checkpoint-20480 is a tested but rejected intervention at 93.125%, T1:checkpoint-120832 is the staged-transfer reference at 68.75%, and T2:checkpoint-120832 is recipe-specific counterevidence at 33.75%. These are complete-artifact comparison facts and do not establish causal explanations.",
     "completed_operations": [
@@ -8630,6 +8718,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a8ccc98a-3b7c-4f15-ab1d-5c8724f017d1",
+    "id": "S11",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E20"
+    ],
+    "scientific_parent_commit": "aa1f749a7d033a74054ab74ade55668f06f64392"
+  },
   "terminal_state": null
 }
