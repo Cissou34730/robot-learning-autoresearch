@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 6,
     "session": 3,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1947,28 +1947,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:25:28Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 archived a complete candidate pool from 5120 through 120832 actual steps. T1:checkpoint-115712 was selected for M6 because it was an archived member of the stable late training-proxy plateau (0.96 success proxy), not merely because it was terminal. M6 is the only completed candidate evaluation and identifies this artifact's capability gap; no working, best-known, or retained role has been assigned. M5 remains compiled-plant evidence and is not a learned candidate.",
+        "completed_operations": [
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "cumulative_resource_use": "Prior completed evidence: M5 compiled-dynamics measurement with independent verification and E2 inquiry opening. In I1: one fresh PPO training operation T1 using the full 120000-step allocation request, producing 24 complete archived candidates through 120832 actual steps; one held-out research evaluation M6 of 160 episodes at seed 4200; one inquiry-close operation E4. No official assessment, model-role assignment, or additional mechanism measurement was performed.",
+        "current_goal_gap": "The current learned candidate is far below the 98% objective. Its dominant observed gap is reaching the tolerance region from the reset across the full radial/angular distribution, especially inner targets below 14 cm; uninterrupted regulation is a smaller but nonzero failure class. No candidate has yet been assigned a campaign role or assessed on the protected official panel.",
+        "current_synthesis": "M5 established for the exact compiled model the 0.002 s simulator step, ten substeps per 0.020 s control update, gear-5 direct motors with control range [-1,1] and no force limit, finite compiled masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets, symmetric torque response, reversal, free-velocity decay, and no contacts in its tested traces; its independent checks passed. This supports retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified, while leaving long-horizon policy behavior, folded paths, and target-dependent contacts untested. T1 trained the current PPO implementation for the full 120000-step allocation request and archived complete candidates through 120832 actual steps. Its 0.14-0.20 m training exposure and late proxy plateau nominate candidates but do not establish development performance. M6 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out episodes sampled with the research panel. It recorded 105 successes and 55 failures. Forty-eight failures had no first reach; only seven reached tolerance and then failed continuous holding. Forty-four of those 48 no-reach failures were below 14 cm and four were at exposed radii, so the dominant pattern is inner-radius-associated reach acquisition with additional angle/branch dependence, not a pure radius-only effect. This is an artifact-level behavioral result, not proof that PPO, inner-radius exposure, singular escape, branch occupancy, or any other intended factor caused the failures. The evidence does not establish contact involvement, endpoint velocity, or the causal separation between singular escape, learned generalization, trajectory/branch selection, and control timing.",
+        "decision_frontier": "The resolved bounded distinction is that the selected baseline candidate is primarily reach-limited on the full distribution rather than primarily limited by the 100-step hold. The next consequential distinction is whether explicit exposure to 0.06-0.14 m targets improves the inner-radius reach failures under the same plant, or whether failures persist across adequately exposed radii because of singular escape, approach/braking timing, branch occupancy, or contact geometry. A targeted expanded-radius candidate comparison can test capability and exposure association; time-resolved joint/end-effector velocity, contact, and final-branch diagnostics would discriminate mechanisms if that choice determines the next intervention. Improvement concentrated in the inner band would support continued learning development. Persistent reach failures across radius/angle, high approach velocity or repeated hold exits, or contact/branch-specific structure would redirect toward control or mechanism investigation. M6 cannot certify the official 98% result, and its artifact contains no causal velocity/contact/branch evidence.",
+        "evidence_references": [
+          "M5",
+          "E2",
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-step hold within 1 cm. I1 produced the first held-out capability evidence but did not approach a basis for official assessment: the selected complete artifact achieved 105/160 (65.625%) on a distinct development panel.",
+        "next_direction_or_closure": "I1 is closed. At the next goal review, compare continued learning development with a targeted mechanism measurement. The immediate scientifically credible route is to test a candidate trained with explicit full-radius exposure or otherwise obtain diagnostics that separate inner-radius generalization from singular/trajectory/control persistence, while preserving the official task and evaluation semantics. Do not request official assessment on the current evidence; development performance is 65.625% and no candidate is near a reasoned commitment case.",
+        "next_question": "Which next complete learned candidate or discriminating control/contact measurement most credibly closes the remaining distinction between inner-radius exposure/generalization and persistent reach-acquisition mechanisms, toward a policy achieving at least 98% official episode success?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "12e747b71992c03fc9c556fd9d31909dd66a0e3a",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 archived a complete candidate pool from 5120 through 120832 actual steps. T1:checkpoint-115712 was selected for M6 because it was an archived member of the stable late training-proxy plateau (0.96 success proxy), not merely because it was terminal. M6 is the only completed candidate evaluation and identifies this artifact's capability gap; no working, best-known, or retained role has been assigned. M5 remains compiled-plant evidence and is not a learned candidate.",
+        "completed_operations": [
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "cumulative_resource_use": "Prior completed evidence: M5 compiled-dynamics measurement with independent verification and E2 inquiry opening. In I1: one fresh PPO training operation T1 using the full 120000-step allocation request, producing 24 complete archived candidates through 120832 actual steps; one held-out research evaluation M6 of 160 episodes at seed 4200; one inquiry-close operation E4. No official assessment, model-role assignment, or additional mechanism measurement was performed.",
+        "current_goal_gap": "The current learned candidate is far below the 98% objective. Its dominant observed gap is reaching the tolerance region from the reset across the full radial/angular distribution, especially inner targets below 14 cm; uninterrupted regulation is a smaller but nonzero failure class. No candidate has yet been assigned a campaign role or assessed on the protected official panel.",
+        "current_synthesis": "M5 established for the exact compiled model the 0.002 s simulator step, ten substeps per 0.020 s control update, gear-5 direct motors with control range [-1,1] and no force limit, finite compiled masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets, symmetric torque response, reversal, free-velocity decay, and no contacts in its tested traces; its independent checks passed. This supports retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified, while leaving long-horizon policy behavior, folded paths, and target-dependent contacts untested. T1 trained the current PPO implementation for the full 120000-step allocation request and archived complete candidates through 120832 actual steps. Its 0.14-0.20 m training exposure and late proxy plateau nominate candidates but do not establish development performance. M6 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out episodes sampled with the research panel. It recorded 105 successes and 55 failures. Forty-eight failures had no first reach; only seven reached tolerance and then failed continuous holding. Forty-four of those 48 no-reach failures were below 14 cm and four were at exposed radii, so the dominant pattern is inner-radius-associated reach acquisition with additional angle/branch dependence, not a pure radius-only effect. This is an artifact-level behavioral result, not proof that PPO, inner-radius exposure, singular escape, branch occupancy, or any other intended factor caused the failures. The evidence does not establish contact involvement, endpoint velocity, or the causal separation between singular escape, learned generalization, trajectory/branch selection, and control timing.",
+        "decision_frontier": "The resolved bounded distinction is that the selected baseline candidate is primarily reach-limited on the full distribution rather than primarily limited by the 100-step hold. The next consequential distinction is whether explicit exposure to 0.06-0.14 m targets improves the inner-radius reach failures under the same plant, or whether failures persist across adequately exposed radii because of singular escape, approach/braking timing, branch occupancy, or contact geometry. A targeted expanded-radius candidate comparison can test capability and exposure association; time-resolved joint/end-effector velocity, contact, and final-branch diagnostics would discriminate mechanisms if that choice determines the next intervention. Improvement concentrated in the inner band would support continued learning development. Persistent reach failures across radius/angle, high approach velocity or repeated hold exits, or contact/branch-specific structure would redirect toward control or mechanism investigation. M6 cannot certify the official 98% result, and its artifact contains no causal velocity/contact/branch evidence.",
+        "evidence_references": [
+          "M5",
+          "E2",
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-step hold within 1 cm. I1 produced the first held-out capability evidence but did not approach a basis for official assessment: the selected complete artifact achieved 105/160 (65.625%) on a distinct development panel.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed. At the next goal review, compare continued learning development with a targeted mechanism measurement. The immediate scientifically credible route is to test a candidate trained with explicit full-radius exposure or otherwise obtain diagnostics that separate inner-radius generalization from singular/trajectory/control persistence, while preserving the official task and evaluation semantics. Do not request official assessment on the current evidence; development performance is 65.625% and no candidate is near a reasoned commitment case.",
+        "next_question": "Which next complete learned candidate or discriminating control/contact measurement most credibly closes the remaining distinction between inner-radius exposure/generalization and persistent reach-acquisition mechanisms, toward a policy achieving at least 98% official episode success?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "e917307f-ff67-418c-b540-0a131f9cdf7a",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "9m09s | 21.08 AIU | prompt 3.9m (93% cached) | output 61.7k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "82ff6b908125f3e5cb34a7208d01b54c7be9edc6",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 archived a complete candidate pool from 5120 through 120832 actual steps. T1:checkpoint-115712 was selected for M6 because it was an archived member of the stable late training-proxy plateau (0.96 success proxy), not merely because it was terminal. M6 is the only completed candidate evaluation and identifies this artifact's capability gap; no working, best-known, or retained role has been assigned. M5 remains compiled-plant evidence and is not a learned candidate.",
+        "completed_operations": [
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "cumulative_resource_use": "Prior completed evidence: M5 compiled-dynamics measurement with independent verification and E2 inquiry opening. In I1: one fresh PPO training operation T1 using the full 120000-step allocation request, producing 24 complete archived candidates through 120832 actual steps; one held-out research evaluation M6 of 160 episodes at seed 4200; one inquiry-close operation E4. No official assessment, model-role assignment, or additional mechanism measurement was performed.",
+        "current_goal_gap": "The current learned candidate is far below the 98% objective. Its dominant observed gap is reaching the tolerance region from the reset across the full radial/angular distribution, especially inner targets below 14 cm; uninterrupted regulation is a smaller but nonzero failure class. No candidate has yet been assigned a campaign role or assessed on the protected official panel.",
+        "current_synthesis": "M5 established for the exact compiled model the 0.002 s simulator step, ten substeps per 0.020 s control update, gear-5 direct motors with control range [-1,1] and no force limit, finite compiled masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets, symmetric torque response, reversal, free-velocity decay, and no contacts in its tested traces; its independent checks passed. This supports retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified, while leaving long-horizon policy behavior, folded paths, and target-dependent contacts untested. T1 trained the current PPO implementation for the full 120000-step allocation request and archived complete candidates through 120832 actual steps. Its 0.14-0.20 m training exposure and late proxy plateau nominate candidates but do not establish development performance. M6 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out episodes sampled with the research panel. It recorded 105 successes and 55 failures. Forty-eight failures had no first reach; only seven reached tolerance and then failed continuous holding. Forty-four of those 48 no-reach failures were below 14 cm and four were at exposed radii, so the dominant pattern is inner-radius-associated reach acquisition with additional angle/branch dependence, not a pure radius-only effect. This is an artifact-level behavioral result, not proof that PPO, inner-radius exposure, singular escape, branch occupancy, or any other intended factor caused the failures. The evidence does not establish contact involvement, endpoint velocity, or the causal separation between singular escape, learned generalization, trajectory/branch selection, and control timing.",
+        "decision_frontier": "The resolved bounded distinction is that the selected baseline candidate is primarily reach-limited on the full distribution rather than primarily limited by the 100-step hold. The next consequential distinction is whether explicit exposure to 0.06-0.14 m targets improves the inner-radius reach failures under the same plant, or whether failures persist across adequately exposed radii because of singular escape, approach/braking timing, branch occupancy, or contact geometry. A targeted expanded-radius candidate comparison can test capability and exposure association; time-resolved joint/end-effector velocity, contact, and final-branch diagnostics would discriminate mechanisms if that choice determines the next intervention. Improvement concentrated in the inner band would support continued learning development. Persistent reach failures across radius/angle, high approach velocity or repeated hold exits, or contact/branch-specific structure would redirect toward control or mechanism investigation. M6 cannot certify the official 98% result, and its artifact contains no causal velocity/contact/branch evidence.",
+        "evidence_references": [
+          "M5",
+          "E2",
+          "T1",
+          "M6",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-step hold within 1 cm. I1 produced the first held-out capability evidence but did not approach a basis for official assessment: the selected complete artifact achieved 105/160 (65.625%) on a distinct development panel.",
+        "next_direction_or_closure": "I1 is closed. At the next goal review, compare continued learning development with a targeted mechanism measurement. The immediate scientifically credible route is to test a candidate trained with explicit full-radius exposure or otherwise obtain diagnostics that separate inner-radius generalization from singular/trajectory/control persistence, while preserving the official task and evaluation semantics. Do not request official assessment on the current evidence; development performance is 65.625% and no candidate is near a reasoned commitment case.",
+        "next_question": "Which next complete learned candidate or discriminating control/contact measurement most credibly closes the remaining distinction between inner-radius exposure/generalization and persistent reach-acquisition mechanisms, toward a policy achieving at least 98% official episode success?"
+      }
+    },
+    "request_fingerprint": "3ba512aa8292f46cd543e81d70c9cb30a83d69e5f31b5f41dff0b0768b458c4a",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
+    "candidates_and_roles": "T1 archived a complete candidate pool from 5120 through 120832 actual steps. T1:checkpoint-115712 was selected for M6 because it was an archived member of the stable late training-proxy plateau (0.96 success proxy), not merely because it was terminal. M6 is the only completed candidate evaluation and identifies this artifact's capability gap; no working, best-known, or retained role has been assigned. M5 remains compiled-plant evidence and is not a learned candidate.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M6",
+      "E4"
     ],
-    "cumulative_resource_use": "One completed measurement operation M5 with one independent verification; one completed inquiry-opening operation E2; no training steps, learned candidates, development evaluations, or model-role assignments. The campaign remains within the inquiry allocation of 1/15.",
-    "current_goal_gap": "No complete learned candidate, training trajectory, or development evaluation exists. The unresolved gap is whether a candidate can reach and continuously hold targets across the full official radial and angular distribution, and if not whether the dominant limitation is singular escape/reach timing, convergence and braking, 100-step regulation, inner-radius generalization, or branch/contact behavior.",
-    "current_synthesis": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
-    "decision_frontier": "The next decision is whether to continue learning development, investigate a consequential control/contact mechanism, or reconsider direction after the first complete candidate is measured. Evidence supporting continued learning development would be meaningful success with failures concentrated in the unexposed inner-radius band or another exposure-linked pattern. Evidence redirecting toward control/dynamics or a mechanism inquiry would be systematic reach-time, settling, endpoint-velocity, hold-interruption, or contact/branch failures across adequately exposed targets. Evidence for candidate selection must retain per-episode radius, angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward, training proxy rank, or first entry is insufficient. The planned evidence cannot certify the official 98% result or prove causality for an unexplained recipe difference, and those limitations remain explicit.",
+    "cumulative_resource_use": "Prior completed evidence: M5 compiled-dynamics measurement with independent verification and E2 inquiry opening. In I1: one fresh PPO training operation T1 using the full 120000-step allocation request, producing 24 complete archived candidates through 120832 actual steps; one held-out research evaluation M6 of 160 episodes at seed 4200; one inquiry-close operation E4. No official assessment, model-role assignment, or additional mechanism measurement was performed.",
+    "current_goal_gap": "The current learned candidate is far below the 98% objective. Its dominant observed gap is reaching the tolerance region from the reset across the full radial/angular distribution, especially inner targets below 14 cm; uninterrupted regulation is a smaller but nonzero failure class. No candidate has yet been assigned a campaign role or assessed on the protected official panel.",
+    "current_synthesis": "M5 established for the exact compiled model the 0.002 s simulator step, ten substeps per 0.020 s control update, gear-5 direct motors with control range [-1,1] and no force limit, finite compiled masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets, symmetric torque response, reversal, free-velocity decay, and no contacts in its tested traces; its independent checks passed. This supports retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified, while leaving long-horizon policy behavior, folded paths, and target-dependent contacts untested. T1 trained the current PPO implementation for the full 120000-step allocation request and archived complete candidates through 120832 actual steps. Its 0.14-0.20 m training exposure and late proxy plateau nominate candidates but do not establish development performance. M6 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out episodes sampled with the research panel. It recorded 105 successes and 55 failures. Forty-eight failures had no first reach; only seven reached tolerance and then failed continuous holding. Forty-four of those 48 no-reach failures were below 14 cm and four were at exposed radii, so the dominant pattern is inner-radius-associated reach acquisition with additional angle/branch dependence, not a pure radius-only effect. This is an artifact-level behavioral result, not proof that PPO, inner-radius exposure, singular escape, branch occupancy, or any other intended factor caused the failures. The evidence does not establish contact involvement, endpoint velocity, or the causal separation between singular escape, learned generalization, trajectory/branch selection, and control timing.",
+    "decision_frontier": "The resolved bounded distinction is that the selected baseline candidate is primarily reach-limited on the full distribution rather than primarily limited by the 100-step hold. The next consequential distinction is whether explicit exposure to 0.06-0.14 m targets improves the inner-radius reach failures under the same plant, or whether failures persist across adequately exposed radii because of singular escape, approach/braking timing, branch occupancy, or contact geometry. A targeted expanded-radius candidate comparison can test capability and exposure association; time-resolved joint/end-effector velocity, contact, and final-branch diagnostics would discriminate mechanisms if that choice determines the next intervention. Improvement concentrated in the inner band would support continued learning development. Persistent reach failures across radius/angle, high approach velocity or repeated hold exits, or contact/branch-specific structure would redirect toward control or mechanism investigation. M6 cannot certify the official 98% result, and its artifact contains no causal velocity/contact/branch evidence.",
     "evidence_references": [
       "M5",
-      "E2"
+      "E2",
+      "T1",
+      "M6",
+      "E4"
     ],
-    "human_goal_connection": "The campaign still seeks a learned policy achieving at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-control-step hold within 1 cm. M5 verified the intended compiled plant and timing in controlled states, but no learned candidate has been evaluated, so capability under the full 0.06-0.20 m target distribution remains unmeasured. E2 opens the bounded work needed to obtain that first capability evidence.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Opened bounded inquiry I1 through E2. In the fresh inquiry session, use the current method only as a testable baseline unless evidence warrants a PI-owned change; train within the existing 120000-step allocation and select a complete artifact for held-out research evaluation with the recorded reach/hold and geometry diagnostics. Close the inquiry only after those results identify a direction-changing capability gap or establish a bounded limited/inconclusive conclusion for goal review.",
-    "next_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-    "scientific_commit": "f25748abc6d5abaeb325a2bacb1fa8492d510821",
-    "session_id": "S2"
+    "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-step hold within 1 cm. I1 produced the first held-out capability evidence but did not approach a basis for official assessment: the selected complete artifact achieved 105/160 (65.625%) on a distinct development panel.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed. At the next goal review, compare continued learning development with a targeted mechanism measurement. The immediate scientifically credible route is to test a candidate trained with explicit full-radius exposure or otherwise obtain diagnostics that separate inner-radius generalization from singular/trajectory/control persistence, while preserving the official task and evaluation semantics. Do not request official assessment on the current evidence; development performance is 65.625% and no candidate is near a reasoned commitment case.",
+    "next_question": "Which next complete learned candidate or discriminating control/contact measurement most credibly closes the remaining distinction between inner-radius exposure/generalization and persistent reach-acquisition mechanisms, toward a policy achieving at least 98% official episode success?",
+    "scientific_commit": "82ff6b908125f3e5cb34a7208d01b54c7be9edc6",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1976,23 +2117,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e917307f-ff67-418c-b540-0a131f9cdf7a",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T1",
-      "M6",
-      "E4"
-    ],
-    "scientific_parent_commit": "12e747b71992c03fc9c556fd9d31909dd66a0e3a"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
