@@ -5758,16 +5758,16 @@
     }
   },
   "counters": {
-    "event": 34,
+    "event": 35,
     "inquiry": 8,
     "measurement": 12,
-    "session": 16,
+    "session": 17,
     "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14270,9 +14270,97 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:37:41Z",
+      "error": null,
+      "id": "E35",
+      "inquiry_id": "I8",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the measured T3 staged-coverage baseline before implementing I8. This separates the new state-dependent, velocity-damped command interface from the rejected T8 uniform action-rate limiter and preserves the shared T3 parent and training recipe as the transfer starting point."
+      },
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "session_id": "S17"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "b11a67f5e361fe2cc8d0073802785d5c16662262f4c2c9b7901092fcde8de7f4",
+          "path": "robot_learning/scenario/policy_io.py"
+        }
+      ],
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E35",
+    "inquiry_id": "I8",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the measured T3 staged-coverage baseline before implementing I8. This separates the new state-dependent, velocity-damped command interface from the rejected T8 uniform action-rate limiter and preserves the shared T3 parent and training recipe as the transfer starting point."
+      }
+    },
+    "request_fingerprint": "7b474c28df6578e6fb4cf5d036152553a8610f32614fc54b4cde1ce1294dbdc0",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%), supported by M4 and M12. T8:checkpoint-120832 remains rejected as a tested action-rate-limited candidate at 144/160 (90.0%), supported by M12 and E31. No working, best-known, or retained role is assigned; these are evidence-backed artifact comparisons rather than mechanism claims.",
     "completed_operations": [
@@ -14310,6 +14398,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "783d87eb-58e0-4c0d-9c03-49b04720c972",
+    "id": "S17",
+    "inquiry_id": "I8",
+    "kind": "inquiry",
+    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Can a state-dependent, velocity-damped torque interface trained from T3 reduce the documented saturated, high-speed no-first-entry failures while preserving complete uninterrupted success across the full 6-20 cm radius range? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E35"
+    ],
+    "scientific_parent_commit": "aa1f749a7d033a74054ab74ade55668f06f64392"
+  },
   "terminal_state": null
 }
