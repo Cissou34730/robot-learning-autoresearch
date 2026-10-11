@@ -133,9 +133,7 @@ def dynamics_snapshot(
     endpoint_acceleration_map = endpoint_jacobian @ np.linalg.solve(
         mass[:2, :2], control_torque_map
     )
-    attainable_endpoint_acceleration = endpoint_jacobian @ np.linalg.solve(
-        mass[:2, :2], control_acceleration_map
-    )
+    attainable_endpoint_acceleration = endpoint_jacobian @ control_acceleration_map
     directional_columns = attainable_endpoint_acceleration.T @ error_direction
     directional_authority = float(np.sum(np.abs(directional_columns)))
     reserve = np.maximum(0.0, 1.0 - np.abs(control))
