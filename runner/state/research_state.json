@@ -19031,38 +19031,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E40",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment."
-      }
-    },
-    "request_fingerprint": "e9ea69577ef06fdba38b0edd41dfcd029471214aeab9c041a449385f381a2a4d",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact, supported by M4 and M12/M13 references. T9:checkpoint-105472 and T8:checkpoint-120832 remain rejected relative to T3 by their complete shared-panel results. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
