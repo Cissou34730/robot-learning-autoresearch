@@ -42,12 +42,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        diagnostic_mode: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.diagnostic_mode = diagnostic_mode
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -71,6 +73,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self.diagnostic_trace: list[dict[str, Any]] = []
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -117,6 +120,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self.diagnostic_trace.clear()
         return self._observation(), {}
 
     def step(
@@ -128,8 +132,20 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
-        for _ in range(self.frame_skip):
+        control_step = self._step_count + 1
+        for internal_step in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            if self.diagnostic_mode:
+                self.diagnostic_trace.append(
+                    {
+                        "control_step": control_step,
+                        "internal_step": internal_step + 1,
+                        "distance": self._distance_to_target(),
+                        "qvel": self.data.qvel.copy(),
+                        "contact_count": int(self.data.ncon),
+                        "action_magnitude": float(np.linalg.norm(action)),
+                    }
+                )
 
         distance = self._distance_to_target()
 
@@ -151,6 +167,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            qvel=self.data.qvel,
         )
         self._previous_distance = distance
 
@@ -171,7 +188,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+        target_radius_range=TARGET_RADIUS_RANGE,
+        policy_runtime=policy_runtime,
+        diagnostic_mode=True,
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space

@@ -21,6 +21,67 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+Q2_BRANCH_DEADBAND_RADIANS = 1e-3
+
+
+def classify_elbow_branch(q2: float) -> str:
+    """Classify the signed relative elbow angle using a small zero deadband."""
+    if abs(q2) <= Q2_BRANCH_DEADBAND_RADIANS:
+        return "near_singular"
+    return "open" if q2 > 0.0 else "folded"
+
+
+def _summarize_internal_diagnostics(
+    env, boundary_distances: list[float]
+) -> dict[str, float | int]:
+    """Summarize the opt-in internal samples without exporting the trace."""
+    trace = env.diagnostic_trace
+    distances = np.asarray([sample["distance"] for sample in trace], dtype=np.float64)
+    qvel_norms = np.asarray(
+        [np.linalg.norm(sample["qvel"]) for sample in trace], dtype=np.float64
+    )
+    action_magnitudes = np.asarray(
+        [sample["action_magnitude"] for sample in trace], dtype=np.float64
+    )
+    contact_counts = np.asarray(
+        [sample["contact_count"] for sample in trace], dtype=np.int64
+    )
+
+    outside_tolerance = distances > env.success_threshold
+    # "Near tolerance" is the explicit 0--2 cm band for the default 1 cm
+    # success threshold, rather than an additional task criterion.
+    near_tolerance = distances <= 2.0 * env.success_threshold
+    boundary_excursions = 0
+    for step, boundary_distance in enumerate(boundary_distances, start=1):
+        step_samples = [
+            sample for sample in trace if sample["control_step"] == step
+        ]
+        if (
+            boundary_distance <= env.success_threshold
+            and any(
+                sample["distance"] > env.success_threshold
+                for sample in step_samples
+            )
+        ):
+            boundary_excursions += 1
+
+    return {
+        "max_internal_distance_cm": float(np.max(distances) * 100.0),
+        "internal_samples_outside_tolerance": int(np.count_nonzero(outside_tolerance)),
+        "boundary_in_tolerance_internal_excursions": boundary_excursions,
+        "max_qvel_norm": float(np.max(qvel_norms)),
+        "near_tolerance_qvel_norm": float(
+            np.max(qvel_norms[near_tolerance])
+            if np.any(near_tolerance)
+            else 0.0
+        ),
+        "near_tolerance_action_magnitude": float(
+            np.max(action_magnitudes[near_tolerance])
+            if np.any(near_tolerance)
+            else 0.0
+        ),
+        "max_contact_count": int(np.max(contact_counts)),
+    }
 
 
 def evaluate_research_model(
@@ -51,16 +112,20 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
+        first_reach_q2: float | None = None
+        first_reach_branch: str | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        boundary_distances: list[float] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
+            boundary_distances.append(float(info["distance"]))
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
@@ -69,12 +134,15 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_reach_q2 = float(env.data.qpos[1])
+                    first_reach_branch = classify_elbow_branch(first_reach_q2)
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
 
+        final_q2 = float(env.data.qpos[1])
         episode_results.append(
             {
                 "episode": episode,
@@ -100,9 +168,14 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "first_reach_q2": first_reach_q2,
+                "first_reach_branch": first_reach_branch,
+                "final_q2": final_q2,
+                "final_branch": classify_elbow_branch(final_q2),
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                **_summarize_internal_diagnostics(env, boundary_distances),
             }
         )
         if progress_callback is not None:
@@ -110,7 +183,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 7,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +194,11 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "q2": "radians",
+                "time": "control_steps",
+            },
         },
     }
 
