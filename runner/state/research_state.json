@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed same-panel evidence comparing the staged-transfer baseline with a bounded control-authority intervention provides complete success, first-entry outcomes stratified across the 6-14 cm inner band and outer-radius band, and trajectory diagnostics for control saturation, endpoint and joint speed, Jacobian/branch behavior, and hold completion. A positive conclusion requires fewer residual failures with reduced or better-timed saturation and preserved inner/outer coverage; unchanged saturation-linked failures with actuator-limit signatures support redirecting to a direct authority or dynamics investigation; regression without diagnostic improvement rejects the tested recipe while leaving the broader control hypothesis unresolved.",
-    "goal_connection": "The strongest measured staged-transfer artifact reaches 94.375% development success, leaving a 3.625 percentage-point gap to the 98% objective. Resolving whether the residual no-entry failures are reducible policy regulation failures or reflect a hard actuator limitation can determine whether a control-aware continuation is a credible route to the goal.",
-    "handoff_conclusion": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
-    "handoff_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
-    "rationale": "M4 and E8 establish a substantial artifact-level gain from staged transfer: T3:checkpoint-120832 reached 151/160 successes versus 110/160 for the T1 reference, with four residual no-first-entry failures spanning inner and outer radii. Their 498-500 pre-entry saturation steps and high endpoint speeds motivate the inquiry, but co-occurrence does not establish that policy regulation is the cause or that more authority would help. The current artifact remains below the protected objective, so this bounded discrimination is more decision-relevant than committing it to official assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -3301,7 +3290,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 5,
     "session": 7,
@@ -7170,9 +7159,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:38:47Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
+        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
+        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
+        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
+        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
+        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty."
+      }
+    },
+    "request_fingerprint": "046dfe81df66433ad0d790834ac0d72a6023a2951e5f3982cfabb78408ffa04e",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
@@ -7213,7 +7256,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T4",
-      "M5"
+      "M5",
+      "E12"
     ],
     "scientific_parent_commit": "926835e3aa45ad85ee262e0d6218d4c19e7a2815"
   },
