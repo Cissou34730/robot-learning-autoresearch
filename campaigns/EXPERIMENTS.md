@@ -43,3 +43,4 @@
 | E18 | checkpoint | I4 | checkpointed |
 | E19 | inquiry | I5 | completed |
 | E20 | checkpoint | - | checkpointed |
+| T4 | training | I5 | completed |
