@@ -83,50 +83,48 @@ def dynamics_snapshot(
     target: np.ndarray,
     control: np.ndarray,
 ) -> dict:
-    saved_qpos = data.qpos.copy()
-    saved_qvel = data.qvel.copy()
-    saved_mocap = data.mocap_pos.copy()
-    saved_ctrl = data.ctrl.copy()
+    probe_data = mujoco.MjData(model)
+    probe_data.qpos[:] = data.qpos
+    probe_data.qvel[:] = data.qvel
+    probe_data.mocap_pos[:] = data.mocap_pos
+    probe_data.ctrl[:] = data.ctrl
+    probe_data.time = data.time
 
-    data.mocap_pos[:] = target
-    data.ctrl[:] = np.asarray(control, dtype=np.float64)
-    mujoco.mj_forward(model, data)
-    actual_qacc = data.qacc[:2].copy()
-    actual_torque = data.qfrc_actuator[:2].copy()
-    mass = full_mass_matrix(model, data)
-    endpoint_jacobian = jacobian(model, data)
-    data.ctrl[:] = np.zeros(model.nu, dtype=np.float64)
-    mujoco.mj_forward(model, data)
-    zero_torque = data.qfrc_actuator[:2].copy()
+    probe_data.mocap_pos[:] = target
+    probe_data.ctrl[:] = np.asarray(control, dtype=np.float64)
+    mujoco.mj_forward(model, probe_data)
+    actual_qacc = probe_data.qacc[:2].copy()
+    actual_torque = probe_data.qfrc_actuator[:2].copy()
+    mass = full_mass_matrix(model, probe_data)
+    endpoint_jacobian = jacobian(model, probe_data)
+    probe_data.ctrl[:] = np.zeros(model.nu, dtype=np.float64)
+    mujoco.mj_forward(model, probe_data)
+    zero_torque = probe_data.qfrc_actuator[:2].copy()
     torque_columns = []
     acceleration_columns = []
     for actuator_index in range(model.nu):
         probe = np.zeros(model.nu, dtype=np.float64)
         probe[actuator_index] = 1.0
-        data.ctrl[:] = probe
-        mujoco.mj_forward(model, data)
-        torque_columns.append(data.qfrc_actuator[:2].copy() - zero_torque)
+        probe_data.ctrl[:] = probe
+        mujoco.mj_forward(model, probe_data)
+        torque_columns.append(probe_data.qfrc_actuator[:2].copy() - zero_torque)
         acceleration_columns.append(np.zeros(2, dtype=np.float64))
 
     control_torque_map = np.column_stack(torque_columns)
-    data.ctrl[:] = np.zeros(model.nu, dtype=np.float64)
-    mujoco.mj_forward(model, data)
-    zero_acceleration = data.qacc[:2].copy()
+    probe_data.ctrl[:] = np.zeros(model.nu, dtype=np.float64)
+    mujoco.mj_forward(model, probe_data)
+    zero_acceleration = probe_data.qacc[:2].copy()
     for actuator_index in range(model.nu):
         probe = np.zeros(model.nu, dtype=np.float64)
         probe[actuator_index] = 1.0
-        data.ctrl[:] = probe
-        mujoco.mj_forward(model, data)
-        acceleration_columns[actuator_index] = data.qacc[:2].copy() - zero_acceleration
+        probe_data.ctrl[:] = probe
+        mujoco.mj_forward(model, probe_data)
+        acceleration_columns[actuator_index] = (
+            probe_data.qacc[:2].copy() - zero_acceleration
+        )
     control_acceleration_map = np.column_stack(acceleration_columns)
 
-    data.qpos[:] = saved_qpos
-    data.qvel[:] = saved_qvel
-    data.mocap_pos[:] = saved_mocap
-    data.ctrl[:] = saved_ctrl
-    mujoco.mj_forward(model, data)
-
-    endpoint = data.site("end_effector").xpos[:2].copy()
+    endpoint = probe_data.site("end_effector").xpos[:2].copy()
     error = target[:2] - endpoint
     error_norm = float(np.linalg.norm(error))
     error_direction = error / error_norm if error_norm > 0.0 else np.zeros(2)
@@ -143,8 +141,8 @@ def dynamics_snapshot(
     reserve = np.maximum(0.0, 1.0 - np.abs(control))
 
     return {
-        "qpos_rad": saved_qpos[:2].tolist(),
-        "qvel_rad_s": saved_qvel[:2].tolist(),
+        "qpos_rad": probe_data.qpos[:2].tolist(),
+        "qvel_rad_s": probe_data.qvel[:2].tolist(),
         "endpoint_error_cm": (100.0 * error).tolist(),
         "endpoint_error_norm_cm": 100.0 * error_norm,
         "actual_qacc_rad_s2": actual_qacc.tolist(),
@@ -170,7 +168,7 @@ def dynamics_snapshot(
         "mass_matrix": mass[:2, :2].tolist(),
         "endpoint_jacobian": endpoint_jacobian.tolist(),
         "jacobian_determinant_m2": float(
-            UPPER_ARM_LENGTH * FOREARM_LENGTH * np.sin(saved_qpos[1])
+            UPPER_ARM_LENGTH * FOREARM_LENGTH * np.sin(probe_data.qpos[1])
         ),
     }
 
