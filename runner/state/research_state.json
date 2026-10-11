@@ -2774,38 +2774,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative conclusion: the first full-distribution PPO candidate demonstrates substantial capability but is not assessment-ready. On the held-out 160-episode development panel, T1:checkpoint-120832 achieved 150/160 = 93.75%, below the required 98%. The complete M7 artifact shows 7 failures with no first reach and 3 failures that reached but did not complete the uninterrupted hold; all ten failures had zero contacts. The hold-failure traces include 192 and 242 boundary-in-tolerance internal excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. Across the panel, the candidate used the open elbow branch at every first reach and never the folded branch. Internal excursions were common even when boundary samples appeared in tolerance, so continuous-hold robustness remains a consequential risk.",
-        "reason": "I1's closure condition is met by completed candidate-level evidence and mechanism diagnostics. M2 verified that training covered the official 6\u201320 cm radial range; T1 produced the first complete artifact; M3/M5/M7 measured the same frozen artifact, with M7 preserving first reach, uninterrupted hold, target radius/angle, q2 branch, near-tolerance qvel/action, contacts, and internal-step behavior; M4/M6 verified that the diagnostic instrumentation preserved task behavior and recorded the intended internal updates. The evidence supports redirecting bounded work toward torque-aware braking, hold stabilization, and explicit route/branch coverage rather than treating the result as a physical authority failure. It does not justify official assessment, does not disprove broader PPO or torque-control routes, and does not resolve the protected evaluator's sampled-versus-continuous semantics."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative conclusion: the first full-distribution PPO candidate demonstrates substantial capability but is not assessment-ready. On the held-out 160-episode development panel, T1:checkpoint-120832 achieved 150/160 = 93.75%, below the required 98%. The complete M7 artifact shows 7 failures with no first reach and 3 failures that reached but did not complete the uninterrupted hold; all ten failures had zero contacts. The hold-failure traces include 192 and 242 boundary-in-tolerance internal excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. Across the panel, the candidate used the open elbow branch at every first reach and never the folded branch. Internal excursions were common even when boundary samples appeared in tolerance, so continuous-hold robustness remains a consequential risk.",
-        "reason": "I1's closure condition is met by completed candidate-level evidence and mechanism diagnostics. M2 verified that training covered the official 6\u201320 cm radial range; T1 produced the first complete artifact; M3/M5/M7 measured the same frozen artifact, with M7 preserving first reach, uninterrupted hold, target radius/angle, q2 branch, near-tolerance qvel/action, contacts, and internal-step behavior; M4/M6 verified that the diagnostic instrumentation preserved task behavior and recorded the intended internal updates. The evidence supports redirecting bounded work toward torque-aware braking, hold stabilization, and explicit route/branch coverage rather than treating the result as a physical authority failure. It does not justify official assessment, does not disprove broader PPO or torque-control routes, and does not resolve the protected evaluator's sampled-versus-continuous semantics.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative conclusion: the first full-distribution PPO candidate demonstrates substantial capability but is not assessment-ready. On the held-out 160-episode development panel, T1:checkpoint-120832 achieved 150/160 = 93.75%, below the required 98%. The complete M7 artifact shows 7 failures with no first reach and 3 failures that reached but did not complete the uninterrupted hold; all ten failures had zero contacts. The hold-failure traces include 192 and 242 boundary-in-tolerance internal excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. Across the panel, the candidate used the open elbow branch at every first reach and never the folded branch. Internal excursions were common even when boundary samples appeared in tolerance, so continuous-hold robustness remains a consequential risk.",
-        "reason": "I1's closure condition is met by completed candidate-level evidence and mechanism diagnostics. M2 verified that training covered the official 6\u201320 cm radial range; T1 produced the first complete artifact; M3/M5/M7 measured the same frozen artifact, with M7 preserving first reach, uninterrupted hold, target radius/angle, q2 branch, near-tolerance qvel/action, contacts, and internal-step behavior; M4/M6 verified that the diagnostic instrumentation preserved task behavior and recorded the intended internal updates. The evidence supports redirecting bounded work toward torque-aware braking, hold stabilization, and explicit route/branch coverage rather than treating the result as a physical authority failure. It does not justify official assessment, does not disprove broader PPO or torque-control routes, and does not resolve the protected evaluator's sampled-versus-continuous semantics."
-      }
-    },
-    "request_fingerprint": "1ea20fe8291b660cf4f5a95424798d86622ec34517cb16ef1a6f0043d0c977aa",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty. The inquiry will select complete measured artifacts only after development evidence is available; training proxies alone will not establish development performance or official success.",
     "completed_operations": [
