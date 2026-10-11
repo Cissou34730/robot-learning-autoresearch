@@ -13349,47 +13349,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Evaluate the complete T4:checkpoint-120832 artifact on the current research evaluator using the matched 160-episode panel starting at seed 4200, and inspect the recorded success count, no-first-reach/hold diagnostics, and evaluator-semantics fingerprint. Close with a positive comparability result if the current-source control retains 153/160 with no material semantic discrepancy; close with a limited or negative comparability result if the outcome materially differs or the semantics show that historical and current results are not directly comparable. Either result must preserve that this is a control/comparability test, not a causal test of individual residual terms and not the official 200-episode assessment.",
-          "goal_connection": "The human objective is one frozen learned policy achieving at least 196/200 official episodes, with every success requiring an uninterrupted 100-step hold. T4 is the strongest candidate measured so far at 153/160 on the historical development panel, while both tested I7 residual-torque candidates collapsed to 9/160 and 6/160 under the current evaluator. A current-source control evaluation of T4 can determine whether the best development evidence remains comparable and therefore whether the next effort should redirect away from the tested residual scaffold or first repair the measurement basis; it cannot certify the official goal.",
-          "handoff_conclusion": "Observed: M21 passed an independent implementation check across repeated changed states, negative-angle and near-singular targets, a near-limit state, resets, direct control, legacy runtimes without a marker, training/evaluation profile selection, and checkpoint profile persistence. T6 completed the full allocated fresh run with full official radius exposure; its training proxies reached 0.99-1.00 near the end but did not establish capability. M22 measured both a nonterminal high-proxy checkpoint and the terminal checkpoint under the same current evaluator and matched seed-4200 panel: they achieved 9/160 and 6/160, with 141 and 150 no-first-reach diagnostics. These complete results give a negative bounded answer for the implemented persisted residual-torque PPO policy. Interpretation is limited to this implementation and runtime: high training success proxies did not translate to complete evaluation success, and the residual scaffold failed primarily as an acquisition-capability artifact comparison. The few successful holds show that the current plant and evaluator can still produce complete holds for some targets, but aggregate and episode diagnostics do not establish which scaffold term caused the collapse. Competing explanations remain: the fixed analytic scaffold may create an acquisition basin or branch/limit interaction the learned residual cannot correct; the learned residual/PPO optimization may be poorly conditioned around that scaffold; or the apparent historical comparison may be affected by the evaluator fingerprint change. M15 supports acquisition/braking/regulation mechanisms for T2 but does not causally explain T6. The live time-resolved torque/joint evidence for T4/T5 remains unavailable.",
-          "handoff_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
-          "handoff_source_session_id": "S15",
-          "id": "I8",
-          "opened_in_session": "S16",
-          "question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
-          "rationale": "The inherited negative I7 conclusion is supported for the tested persisted residual-torque PPO implementation: M22 completed matched-panel measurements of both relevant T6 artifacts at 9/160 and 6/160, with 141 and 150 no-first-reach episodes. However, the comparison to historical T4 is not yet clean because M19 used evaluator fingerprint 4e874c58d1e9 and M22 used f6bf4b99cf62 after the PI-owned scenario source changed. M21 verified selected implementation semantics and direct action behavior but did not establish full-trajectory equivalence of legacy T4 under the current source. T4 remains materially below the official 196/200 threshold, so official assessment is not justified; nevertheless, a current-source T4 control can change the campaign-level route by distinguishing a genuine artifact-level failure of the residual intervention from a measurement-limited comparison. The tested residual result will remain limited to that implementation even if T4 reproduces its historical score.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I8",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Evaluate the complete T4:checkpoint-120832 artifact on the current research evaluator using the matched 160-episode panel starting at seed 4200, and inspect the recorded success count, no-first-reach/hold diagnostics, and evaluator-semantics fingerprint. Close with a positive comparability result if the current-source control retains 153/160 with no material semantic discrepancy; close with a limited or negative comparability result if the outcome materially differs or the semantics show that historical and current results are not directly comparable. Either result must preserve that this is a control/comparability test, not a causal test of individual residual terms and not the official 200-episode assessment.",
-        "goal_connection": "The human objective is one frozen learned policy achieving at least 196/200 official episodes, with every success requiring an uninterrupted 100-step hold. T4 is the strongest candidate measured so far at 153/160 on the historical development panel, while both tested I7 residual-torque candidates collapsed to 9/160 and 6/160 under the current evaluator. A current-source control evaluation of T4 can determine whether the best development evidence remains comparable and therefore whether the next effort should redirect away from the tested residual scaffold or first repair the measurement basis; it cannot certify the official goal.",
-        "question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
-        "rationale": "The inherited negative I7 conclusion is supported for the tested persisted residual-torque PPO implementation: M22 completed matched-panel measurements of both relevant T6 artifacts at 9/160 and 6/160, with 141 and 150 no-first-reach episodes. However, the comparison to historical T4 is not yet clean because M19 used evaluator fingerprint 4e874c58d1e9 and M22 used f6bf4b99cf62 after the PI-owned scenario source changed. M21 verified selected implementation semantics and direct action behavior but did not establish full-trajectory equivalence of legacy T4 under the current source. T4 remains materially below the official 196/200 threshold, so official assessment is not justified; nevertheless, a current-source T4 control can change the campaign-level route by distinguishing a genuine artifact-level failure of the residual intervention from a measurement-limited comparison. The tested residual result will remain limited to that implementation even if T4 reproduces its historical score."
-      }
-    },
-    "request_fingerprint": "56931cbdbe5788fc6140a1f79dab5e32035c20a8d5fe29dbc3af5498d0d20406",
-    "session_id": "S16",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160, with the explicit historical evaluator fingerprint 4e874c58d1e9. T5:checkpoint-100352 remains a complete historical continuation at 153/160 based on M20. T6:checkpoint-115712 and T6:checkpoint-120832 are complete but rejected I7 candidates at 9/160 and 6/160 under M22; neither is assigned a role. T2 remains the 150/160 matched reference. No candidate is certified for the human goal, and no working or retained role is assigned.",
     "completed_operations": [
