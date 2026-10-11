@@ -45,3 +45,4 @@
 | E20 | checkpoint | - | checkpointed |
 | T4 | training | I5 | completed |
 | M19 | measurement | I5 | completed |
+| E21 | model_role | I5 | assigned |

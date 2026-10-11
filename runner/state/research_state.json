@@ -2647,7 +2647,7 @@
       "training_steps": 115712
     },
     "T4:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t4/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
       "evaluation_artifacts": [
         "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m19-T4-checkpoint-120832-160ep-seed4200-4e874c58d1e9.json"
       ],
@@ -3296,7 +3296,7 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 5,
     "measurement": 19,
     "session": 11,
@@ -3305,9 +3305,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T2:checkpoint-120832",
+    "best_known": "T4:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -9822,9 +9822,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:13:51Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": "I5",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-120832",
+        "evidence": [
+          "T4",
+          "M19"
+        ],
+        "reason": "T4 is the strongest complete development artifact currently measured: on the matched 160-episode panel it achieves 153/160 versus T2's 150/160, wins all three discordant episodes, and does not lose any T2 success. Its acquisition failures fall from seven to three, although reach-then-interrupt failures rise from three to four, so this role assignment is candidate selection rather than evidence that the 98% objective or uninterrupted-regulation improvement has been achieved."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-120832",
+        "evidence": [
+          "T4",
+          "M19"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T4:checkpoint-120832",
+        "evidence": [
+          "T4",
+          "M19"
+        ],
+        "reason": "T4 is the strongest complete development artifact currently measured: on the matched 160-episode panel it achieves 153/160 versus T2's 150/160, wins all three discordant episodes, and does not lose any T2 success. Its acquisition failures fall from seven to three, although reach-then-interrupt failures rise from three to four, so this role assignment is candidate selection rather than evidence that the 98% objective or uninterrupted-regulation improvement has been achieved."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+        "fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+        "source": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t4/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-120832",
+        "evidence": [
+          "T4",
+          "M19"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": "I5",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-120832",
+        "evidence": [
+          "T4",
+          "M19"
+        ],
+        "reason": "T4 is the strongest complete development artifact currently measured: on the matched 160-episode panel it achieves 153/160 versus T2's 150/160, wins all three discordant episodes, and does not lose any T2 success. Its acquisition failures fall from seven to three, although reach-then-interrupt failures rise from three to four, so this role assignment is candidate selection rather than evidence that the 98% objective or uninterrupted-regulation improvement has been achieved."
+      }
+    },
+    "request_fingerprint": "ec1fde5ed272a771a1e7991bd09280c28618ba5ce96594826d8cb47240f45965",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M9 and M18 at 150/160; it is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is the fresh targeted-regulation candidate measured at 0/160 in M18 and has no working, best-known, or retained role. No new role assignment is made in this goal-review checkpoint.",
     "completed_operations": [
@@ -9870,7 +9944,8 @@
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can transfer-initialized continuation from T2 under the verified targeted-regulation training profile improve uninterrupted regulation while preserving T2's full-radius acquisition, compared with T2 under unchanged official evaluation semantics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T4",
-      "M19"
+      "M19",
+      "E21"
     ],
     "scientific_parent_commit": "28122afa1aa23157f826a0de63f7ece2683ec6f4"
   },
