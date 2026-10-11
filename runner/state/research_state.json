@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train and measure at least one complete candidate derived from T3 using a phase-aware bounded trajectory-regulation interface, with T3 as the paired shared-panel reference and radius-stratified diagnostics. Close positively only if the candidate exceeds 151/160 and does not regress any 6-20 cm radius band; close negatively if it fails to exceed T3 or regresses the radius coverage; otherwise close with a limited or inconclusive artifact-level result and preserve the unresolved distinction.",
-    "goal_connection": "T3 is the strongest measured artifact but is 45/160 successes short of the 98% development proxy and has not been assessed officially. Its residual failures are saturated, high-speed, no-first-entry trajectories despite positive local endpoint authority at sampled configurations, so a command interface that changes approach-to-hold regulation remains a direct route to the human goal.",
-    "handoff_conclusion": "Completed evidence shows that T3's residual failures are saturated, high-speed, no-first-entry trajectories (E8), while corrected authority characterization found positive local endpoint authority at representative residual configurations (E16). This supports a consequential policy-level trajectory-regulation or command-selection interpretation at those sampled states, but does not establish that all targets are authority-unlimited. T8's uniform action-rate limiter and T9's tested state-dependent velocity-damped torque interface both lost to T3 on the complete shared panel (M12, M13). These are negative results for their complete artifacts and recipes, not causal disproof of the broader bounded state- or phase-dependent interface class. The inherited question remains live because no completed result has yet tested a distinct phase-aware interface as a complete artifact. Goal review therefore chose one bounded inquiry rather than official assessment; this is a commitment to obtain discriminating candidate evidence, not a claim that the intervention will work.",
-    "handoff_question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
-    "handoff_source_session_id": "S18",
-    "id": "I9",
-    "opened_in_session": "S18",
-    "question": "Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment?",
-    "rationale": "Goal review defers terminal assessment because T3 is materially below both the development proxy and the protected 196/200 criterion, while the expected value of one focused route is credible. E8 and E16 support a policy-dependent regulation/command-selection interpretation for the sampled residuals, but M12 and M13 reject only a uniform action-rate limiter and one velocity-damped torque artifact, not the broader class of bounded state- or phase-dependent command interfaces. The inquiry therefore tests a distinct complete artifact rather than treating either negative recipe as causal disproof; saturation or speed changes alone will not count as improvement.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -7402,7 +7391,7 @@
     }
   },
   "counters": {
-    "event": 39,
+    "event": 40,
     "inquiry": 9,
     "measurement": 14,
     "session": 19,
@@ -19017,9 +19006,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:59:25Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": "I9",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "negative",
+        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S19",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "negative",
+        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "negative",
+        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": "I9",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "I9 closes negatively for the tested phase-aware bounded trajectory-regulation artifact. On the identical 160-episode development panel, T10:checkpoint-35840 achieved 144/160, T10:checkpoint-40960 achieved 145/160, T10:checkpoint-45056 achieved 141/160, and T10:checkpoint-50176 achieved 142/160, while the paired T3:checkpoint-120832 reference achieved 151/160. Each candidate lost every discordant paired episode to T3 (0-7, 0-6, 0-10, and 0-9), so none exceeded the closure threshold. This is sufficient for the negative branch without attributing the regression to phase awareness alone: the conclusion is limited to this complete T10 recipe, its bounded distance-phase command scaling and velocity damping, and its measured checkpoints. Radius-stratified diagnostics remain useful for characterizing the regression but cannot reverse the decisive failure to exceed T3. The broader bounded state- or phase-dependent interface class remains unresolved, while this inquiry route does not justify delaying official assessment."
+      }
+    },
+    "request_fingerprint": "e9ea69577ef06fdba38b0edd41dfcd029471214aeab9c041a449385f381a2a4d",
+    "session_id": "S19",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact, supported by M4 and M12/M13 references. T9:checkpoint-105472 and T8:checkpoint-120832 remain rejected relative to T3 by their complete shared-panel results. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
@@ -19063,7 +19106,8 @@
     "objective": "Advance I9 toward an evidence-supported answer to its scientific question: Can a distinct phase-aware, bounded trajectory-regulation interface improve T3's complete uninterrupted success beyond 151/160 on the shared development panel while preserving performance across the full 6-20 cm radius range enough to justify delaying official assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T10",
-      "M14"
+      "M14",
+      "E40"
     ],
     "scientific_parent_commit": "1940da32b66d5cbc5830359d6a5b3f785a4f0f29"
   },
