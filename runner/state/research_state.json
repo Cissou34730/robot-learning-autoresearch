@@ -5748,13 +5748,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal reached; success 98.0%; 200 episodes",
   "model_roles": {
     "best_known": "T7:checkpoint-75776",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/89a6354a-0e08-43f6-b017-536e7c05229b/t7-c02070fc4-8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
+    "completed_at": "2026-10-11T00:27:24Z",
+    "fingerprint": "8ea2aa5a389de2ebc7af0b1287bc69b3085d518c588c734aca63b37c1a095120",
+    "model": "T7:checkpoint-75776",
+    "status": "passed",
+    "summary": "goal reached; success 98.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-10T23:10:17Z",
@@ -10727,7 +10734,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-11T00:26:42Z",
+      "completed_at": "2026-10-11T00:27:24Z",
       "error": null,
       "id": "E15",
       "inquiry_id": null,
@@ -10738,7 +10745,7 @@
       },
       "result": {
         "model": "T7:checkpoint-75776",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_passed"
       },
       "session_id": "S8",
       "status": "completed",
@@ -10798,6 +10805,6 @@
   "terminal_state": {
     "model": "T7:checkpoint-75776",
     "reason": "Request the terminal protected assessment for the explicit best-known candidate T7:checkpoint-75776. M8 measured 196/200 successes (98.0%) on a fresh non-official panel, with 11 candidate wins, 0 reference wins, and preserved inner-radius acquisition relative to T4. The remaining gap is official evidence, not a currently decision-changing mechanistic uncertainty: further bounded work could refine the tested filter explanation but has no completed evidence showing it would improve candidate capability or selection more credibly than assessing the strongest measured candidate. The official evaluator is authoritative for the unresolved target distribution and interaction semantics; its pass or fail result directly determines the human-goal outcome.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_passed"
   }
 }
