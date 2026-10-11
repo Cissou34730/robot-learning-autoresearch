@@ -1,0 +1,248 @@
+{
+  "checked_scope": [
+    "fresh full-radius training control profile and retained targeted reward profile",
+    "evaluation default and explicit saved-runtime profile semantics",
+    "independent clipped-action reference across repeated changed states",
+    "repeated resets of qpos, qvel, and hold state",
+    "checkpoint export control-profile persistence",
+    "acquisition, hold/regulation, and interrupted-hold reward consequences"
+  ],
+  "observed_vs_expected": [
+    {
+      "expected": {
+        "control_profile": "direct",
+        "reward_profile": "targeted_regulation"
+      },
+      "label": "fresh_training_route",
+      "observed": {
+        "control_profile": "direct",
+        "reward_profile": "targeted_regulation"
+      }
+    },
+    {
+      "expected": "direct",
+      "label": "evaluation_default_route",
+      "observed": "direct"
+    },
+    {
+      "expected": "residual_torque",
+      "label": "saved_runtime_marker",
+      "observed": "residual_torque"
+    },
+    {
+      "comparison": {
+        "expected": [
+          1.0,
+          -0.8
+        ],
+        "label": "changed_state_one",
+        "max_abs_error": 0.0,
+        "observed": [
+          1.0,
+          -0.8
+        ]
+      },
+      "label": "changed_state_one"
+    },
+    {
+      "comparison": {
+        "expected": [
+          0.3,
+          -1.0
+        ],
+        "label": "changed_state_two",
+        "max_abs_error": 0.0,
+        "observed": [
+          0.3,
+          -1.0
+        ]
+      },
+      "label": "changed_state_two"
+    },
+    {
+      "comparison": {
+        "expected": [
+          -1.0,
+          1.0
+        ],
+        "label": "changed_state_three",
+        "max_abs_error": 0.0,
+        "observed": [
+          -1.0,
+          1.0
+        ]
+      },
+      "label": "changed_state_three"
+    },
+    {
+      "expected": {
+        "each_reset_held_steps": 0,
+        "each_reset_qpos": [
+          0.0,
+          0.0
+        ],
+        "each_reset_qvel": [
+          0.0,
+          0.0
+        ]
+      },
+      "label": "repeated_resets",
+      "observed": [
+        {
+          "held_steps_after_reset": 0,
+          "qpos_after_reset": [
+            0.0,
+            0.0
+          ],
+          "qvel_after_reset": [
+            0.0,
+            0.0
+          ],
+          "seed": 17
+        },
+        {
+          "held_steps_after_reset": 0,
+          "qpos_after_reset": [
+            0.0,
+            0.0
+          ],
+          "qvel_after_reset": [
+            0.0,
+            0.0
+          ],
+          "seed": 18
+        },
+        {
+          "held_steps_after_reset": 0,
+          "qpos_after_reset": [
+            0.0,
+            0.0
+          ],
+          "qvel_after_reset": [
+            0.0,
+            0.0
+          ],
+          "seed": 19
+        },
+        {
+          "held_steps_after_reset": 0,
+          "qpos_after_reset": [
+            0.0,
+            0.0
+          ],
+          "qvel_after_reset": [
+            0.0,
+            0.0
+          ],
+          "seed": 29
+        }
+      ]
+    },
+    {
+      "expected": {
+        "held_steps_per_sequence": [
+          1,
+          2,
+          0,
+          1
+        ],
+        "interruption_is_not_success": true
+      },
+      "label": "repeated_hold_transitions",
+      "observed": [
+        {
+          "held_steps": [
+            1,
+            2,
+            0,
+            1
+          ],
+          "interruption_reward_components": {
+            "action_cost": -0.0,
+            "closeness": -0.9380694880012812,
+            "hold_complete": 0.0,
+            "hold_progress": -0.0,
+            "outside_band": -0.1,
+            "progress": -0.15
+          },
+          "seed": 41
+        },
+        {
+          "held_steps": [
+            1,
+            2,
+            0,
+            1
+          ],
+          "interruption_reward_components": {
+            "action_cost": -0.0,
+            "closeness": -0.9380694880012812,
+            "hold_complete": 0.0,
+            "hold_progress": -0.0,
+            "outside_band": -0.1,
+            "progress": -0.15
+          },
+          "seed": 42
+        }
+      ]
+    },
+    {
+      "expected": "direct",
+      "label": "checkpoint_runtime_profile",
+      "observed": "direct"
+    },
+    {
+      "expected": {
+        "acquisition_has_no_hold_progress": true,
+        "acquisition_has_positive_progress_and_closeness": true,
+        "hold_update_has_hold_progress_and_regulation_penalties": true,
+        "interruption_resets_hold_progress_and_penalizes_outside": true
+      },
+      "label": "acquisition_hold_interruption_reward",
+      "observed": {
+        "acquisition": {
+          "action_cost": -0.0008000000000000001,
+          "braking_weight": 0.15625000000000006,
+          "closeness": 0.9897297844902647,
+          "hold_complete": 0.0,
+          "hold_progress": 0.0,
+          "outside_band": 0.0,
+          "progress": 0.4,
+          "targeted_action_regulation": -0.00035587031841125336,
+          "targeted_endpoint_velocity": -1.248667874548608e-05,
+          "targeted_joint_velocity": -1.2489590707003226e-05
+        },
+        "hold_update": {
+          "action_cost": -0.0008000000000000001,
+          "braking_weight": 1.0,
+          "closeness": 0.0,
+          "hold_complete": 0.0,
+          "hold_progress": 0.5,
+          "outside_band": 0.0,
+          "progress": 0.0,
+          "targeted_action_regulation": -0.002277570037832021,
+          "targeted_endpoint_velocity": -0.04247364620908573,
+          "targeted_joint_velocity": -1.2489590707003226e-05
+        },
+        "interruption": {
+          "action_cost": -0.0008000000000000001,
+          "braking_weight": 0.84375,
+          "closeness": -0.7272949717222881,
+          "hold_complete": 0.0,
+          "hold_progress": -0.0,
+          "outside_band": -0.1,
+          "progress": -0.12,
+          "targeted_action_regulation": -0.0019216997194207676,
+          "targeted_endpoint_velocity": -0.035837138988916085,
+          "targeted_joint_velocity": -1.2489590707003226e-05
+        }
+      }
+    }
+  ],
+  "passed": true,
+  "unchecked_scope": [
+    "long-horizon learning performance and matched-panel capability",
+    "learned-policy performance or official evaluation success",
+    "scientific validity of the reward as a predictor of task success"
+  ]
+}

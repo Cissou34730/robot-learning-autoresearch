@@ -68,3 +68,4 @@
 | E35 | checkpoint | I8 | checkpointed |
 | E36 | inquiry | I9 | completed |
 | E37 | checkpoint | - | checkpointed |
+| M24 | measurement | I9 | completed |
