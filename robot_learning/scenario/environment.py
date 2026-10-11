@@ -57,8 +57,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.data = mujoco.MjData(self.model)
 
         self.success_threshold = success_threshold
-        control_dt = self.model.opt.timestep * self.frame_skip
-        self.hold_steps_required = round(hold_seconds / control_dt)
+        self.control_dt = self.model.opt.timestep * self.frame_skip
+        self.hold_steps_required = round(hold_seconds / self.control_dt)
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(
@@ -76,6 +76,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._held_steps = 0
         self._outside_after_hold = False
         self._previous_branch_error: float | None = None
+        self._previous_end_effector = np.zeros(3, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -127,6 +128,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             if self.branch_target is not None
             else None
         )
+        self._previous_end_effector = self._end_effector_position()
         return self._observation(), {}
 
     def step(
@@ -141,6 +143,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
 
+        end_effector = self._end_effector_position()
+        end_effector_speed = float(
+            np.linalg.norm(
+                (end_effector - self._previous_end_effector) / self.control_dt
+            )
+        )
         distance = self._distance_to_target()
 
         previous_held_steps = self._held_steps
@@ -168,9 +176,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             penalize_outside=self._outside_after_hold,
             previous_branch_error=self._previous_branch_error,
             branch_error=current_branch_error,
+            end_effector_speed=end_effector_speed,
         )
         self._previous_distance = distance
         self._previous_branch_error = current_branch_error
+        self._previous_end_effector = end_effector
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required

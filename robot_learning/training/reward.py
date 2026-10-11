@@ -18,6 +18,9 @@ CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 BRANCH_PROGRESS_COEFFICIENT = 2.0
+VELOCITY_PENALTY_COEFFICIENT = 0.02
+VELOCITY_PENALTY_SCALE_M_S = 0.10
+VELOCITY_PENALTY_RADIUS_M = 0.04
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -56,6 +59,7 @@ def reach_reward(
     penalize_outside: bool = False,
     previous_branch_error: float | None = None,
     branch_error: float | None = None,
+    end_effector_speed: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -71,6 +75,19 @@ def reach_reward(
             previous_branch_error - branch_error
         )
         reward += branch_progress
+
+    velocity_penalty = 0.0
+    if end_effector_speed is not None:
+        proximity = np.clip(
+            (VELOCITY_PENALTY_RADIUS_M - current_distance)
+            / VELOCITY_PENALTY_RADIUS_M,
+            0.0,
+            1.0,
+        )
+        velocity_penalty = -VELOCITY_PENALTY_COEFFICIENT * float(
+            proximity * (end_effector_speed / VELOCITY_PENALTY_SCALE_M_S) ** 2
+        )
+        reward += velocity_penalty
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -111,6 +128,7 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "branch_progress": float(branch_progress),
+            "velocity_penalty": float(velocity_penalty),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
