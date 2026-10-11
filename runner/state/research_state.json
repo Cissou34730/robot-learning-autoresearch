@@ -18,13 +18,830 @@
     "recipe_source_commit": "8256c8c7705a5080a722453b26eb13cd85b6e18f",
     "started_at": "2026-10-11T20:07:21.565052+00:00"
   },
-  "candidates": {},
+  "candidates": {
+    "T1:checkpoint-100352": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-100352",
+      "evaluation_artifacts": [],
+      "fingerprint": "b99ca62d94f5a85d71426db79d5a65bc1860dd615c5fb1bb96c5f6da70cfa8e3",
+      "id": "T1:checkpoint-100352",
+      "name": "checkpoint-100352",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 100352
+    },
+    "T1:checkpoint-10240": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-10240",
+      "evaluation_artifacts": [],
+      "fingerprint": "c25cb7972b39951d382a8d17781afddc59b396576d2f2c76e2bf513eec6a5529",
+      "id": "T1:checkpoint-10240",
+      "name": "checkpoint-10240",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 10240
+    },
+    "T1:checkpoint-105472": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-105472",
+      "evaluation_artifacts": [],
+      "fingerprint": "ebfd7e1126b4e93d7c61f4855fc36633c323f390f021a535748e3ad8f4fdcb63",
+      "id": "T1:checkpoint-105472",
+      "name": "checkpoint-105472",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 105472
+    },
+    "T1:checkpoint-110592": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-110592",
+      "evaluation_artifacts": [],
+      "fingerprint": "e2a154dc6d552da82d24e0fdcfc2a1347cdd5a9c37c618dc503d4ef3dc1efab1",
+      "id": "T1:checkpoint-110592",
+      "name": "checkpoint-110592",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 110592
+    },
+    "T1:checkpoint-115712": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-115712",
+      "evaluation_artifacts": [],
+      "fingerprint": "35580156db3618f34fb63b4431c5b7142ce63fb70da1b263b5315e6a5c2d5e2d",
+      "id": "T1:checkpoint-115712",
+      "name": "checkpoint-115712",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 115712
+    },
+    "T1:checkpoint-120832": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-120832",
+      "evaluation_artifacts": [],
+      "fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+      "id": "T1:checkpoint-120832",
+      "name": "checkpoint-120832",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 120832
+    },
+    "T1:checkpoint-15360": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-15360",
+      "evaluation_artifacts": [],
+      "fingerprint": "36bf5bfcbabc906c4577b92da077abb020863420bb2e6e727e82de9b05655b47",
+      "id": "T1:checkpoint-15360",
+      "name": "checkpoint-15360",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 15360
+    },
+    "T1:checkpoint-20480": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-20480",
+      "evaluation_artifacts": [],
+      "fingerprint": "84e828ead817ccfe28cbb8c0f0eb8b8fbf97f001908b3d7ac7b4a9c63c93c9cc",
+      "id": "T1:checkpoint-20480",
+      "name": "checkpoint-20480",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 20480
+    },
+    "T1:checkpoint-25600": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-25600",
+      "evaluation_artifacts": [],
+      "fingerprint": "e7d79a4077430e17df180da9c0ae0f7b71ab40941a77fb288e6d176ca6617556",
+      "id": "T1:checkpoint-25600",
+      "name": "checkpoint-25600",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 25600
+    },
+    "T1:checkpoint-30720": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-30720",
+      "evaluation_artifacts": [],
+      "fingerprint": "b9890019e26356ddf4833847053aa9f13e5c6a13d8f6f3fb9ed93a4604deb391",
+      "id": "T1:checkpoint-30720",
+      "name": "checkpoint-30720",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 30720
+    },
+    "T1:checkpoint-35840": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-35840",
+      "evaluation_artifacts": [],
+      "fingerprint": "5b476e5cf9985a1daa555ca8971858704b20f33ce2ae4c05e5347bdcad26c72e",
+      "id": "T1:checkpoint-35840",
+      "name": "checkpoint-35840",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 35840
+    },
+    "T1:checkpoint-40960": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-40960",
+      "evaluation_artifacts": [],
+      "fingerprint": "e4b30740ee8129cedfe2592644a863a9c9bb55d758c68357b614769b39f724d5",
+      "id": "T1:checkpoint-40960",
+      "name": "checkpoint-40960",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 40960
+    },
+    "T1:checkpoint-45056": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-45056",
+      "evaluation_artifacts": [],
+      "fingerprint": "fcb1b60ff81f5f51b9d26eac564f7243547570ffd4f2271acce5d8f13018afb0",
+      "id": "T1:checkpoint-45056",
+      "name": "checkpoint-45056",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 45056
+    },
+    "T1:checkpoint-50176": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-50176",
+      "evaluation_artifacts": [],
+      "fingerprint": "a29aa67e1ec156e10d004c42cd2edc84cd9426f77ec16afd38b233fb9489f418",
+      "id": "T1:checkpoint-50176",
+      "name": "checkpoint-50176",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 50176
+    },
+    "T1:checkpoint-5120": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-5120",
+      "evaluation_artifacts": [],
+      "fingerprint": "35b56e2afabff99ad3e7286881e44f2ce03d008e2f67f519e40dfb902adbeb6d",
+      "id": "T1:checkpoint-5120",
+      "name": "checkpoint-5120",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 5120
+    },
+    "T1:checkpoint-55296": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-55296",
+      "evaluation_artifacts": [],
+      "fingerprint": "2b6e6a00a7b342f2f98bb17cd6116544c63b29c983dd32af98c6a8d7ca2b55d5",
+      "id": "T1:checkpoint-55296",
+      "name": "checkpoint-55296",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 55296
+    },
+    "T1:checkpoint-60416": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-60416",
+      "evaluation_artifacts": [],
+      "fingerprint": "00a41b743f15eaebb8be9eddd7e1777e31856fd8a0d7f4d951cfebda85c6a4f9",
+      "id": "T1:checkpoint-60416",
+      "name": "checkpoint-60416",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 60416
+    },
+    "T1:checkpoint-65536": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-65536",
+      "evaluation_artifacts": [],
+      "fingerprint": "51743e1bd2825229928155f0096ba4633fe1834643b8d40e5eeefec287b40992",
+      "id": "T1:checkpoint-65536",
+      "name": "checkpoint-65536",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 65536
+    },
+    "T1:checkpoint-70656": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-70656",
+      "evaluation_artifacts": [],
+      "fingerprint": "cee21ad6320a5d4efe7c2a068b4e322eafbf7bd68bf892800a5d61bbe659d2fe",
+      "id": "T1:checkpoint-70656",
+      "name": "checkpoint-70656",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 70656
+    },
+    "T1:checkpoint-75776": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-75776",
+      "evaluation_artifacts": [],
+      "fingerprint": "7dca57d88dc6073f534aa605b1bfaeb7df25a683a7a438306a991435ebcdc0cc",
+      "id": "T1:checkpoint-75776",
+      "name": "checkpoint-75776",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 75776
+    },
+    "T1:checkpoint-80896": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-80896",
+      "evaluation_artifacts": [],
+      "fingerprint": "3724c4f5e65e61770760e485a7c08cc6dc30d9bcb06ce7296a5aee8fdb5c4371",
+      "id": "T1:checkpoint-80896",
+      "name": "checkpoint-80896",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 80896
+    },
+    "T1:checkpoint-86016": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-86016",
+      "evaluation_artifacts": [],
+      "fingerprint": "a317a526ed8fce1bbc74d50444a48c49352aed4dcb1a87e68816a4ab24d2388a",
+      "id": "T1:checkpoint-86016",
+      "name": "checkpoint-86016",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 86016
+    },
+    "T1:checkpoint-90112": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-90112",
+      "evaluation_artifacts": [],
+      "fingerprint": "5ceb533ecb040000a293a9247322566957e08370c08e4fa91af0b4fe01835d47",
+      "id": "T1:checkpoint-90112",
+      "name": "checkpoint-90112",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 90112
+    },
+    "T1:checkpoint-95232": {
+      "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-95232",
+      "evaluation_artifacts": [],
+      "fingerprint": "c076af026d56cf5a350269c7cdac0ed481e7504cf0ee522259e3d466eb1c9c54",
+      "id": "T1:checkpoint-95232",
+      "name": "checkpoint-95232",
+      "origin_operation": "T1",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "training_steps": 95232
+    }
+  },
   "counters": {
     "event": 3,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
-    "training": 0
+    "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -789,9 +1606,661 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:24:41Z",
+      "error": null,
+      "id": "T1",
+      "inquiry_id": "I1",
+      "kind": "training",
+      "request": {
+        "description": "Train a fresh PPO policy with the current torque-control recipe after aligning training target radii to the complete official 6\u201320 cm distribution.",
+        "initialization": "fresh",
+        "rationale": "M1 established bounded compiled-plant authority but no learned-policy capability, and M2 verified that the training environment now exposes the official radial range. A full-allocation fresh run is the highest-value next development action because it produces the first complete policy artifact whose later measurement can distinguish non-reaching, braking/settling, branch/geometry, and hold failures. This run is a recipe-specific development result; training proxies will not be treated as task success or as a privileged terminal checkpoint.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "candidates": [
+          "T1:checkpoint-100352",
+          "T1:checkpoint-10240",
+          "T1:checkpoint-105472",
+          "T1:checkpoint-110592",
+          "T1:checkpoint-115712",
+          "T1:checkpoint-120832",
+          "T1:checkpoint-15360",
+          "T1:checkpoint-20480",
+          "T1:checkpoint-25600",
+          "T1:checkpoint-30720",
+          "T1:checkpoint-35840",
+          "T1:checkpoint-40960",
+          "T1:checkpoint-45056",
+          "T1:checkpoint-50176",
+          "T1:checkpoint-5120",
+          "T1:checkpoint-55296",
+          "T1:checkpoint-60416",
+          "T1:checkpoint-65536",
+          "T1:checkpoint-70656",
+          "T1:checkpoint-75776",
+          "T1:checkpoint-80896",
+          "T1:checkpoint-86016",
+          "T1:checkpoint-90112",
+          "T1:checkpoint-95232"
+        ],
+        "completed_steps": 120832,
+        "initialization": "fresh",
+        "learning_dynamics": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "ep_rew_mean": 96.17695528,
+            "training_steps": 100352,
+            "training_success": 0.46
+          },
+          {
+            "candidate": "T1:checkpoint-10240",
+            "ep_rew_mean": -13.0763937,
+            "training_steps": 10240,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-105472",
+            "ep_rew_mean": 101.00777899999999,
+            "training_steps": 105472,
+            "training_success": 0.53
+          },
+          {
+            "candidate": "T1:checkpoint-110592",
+            "ep_rew_mean": 97.14635316,
+            "training_steps": 110592,
+            "training_success": 0.52
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "ep_rew_mean": 102.92741714,
+            "training_steps": 115712,
+            "training_success": 0.54
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "ep_rew_mean": 117.34900729,
+            "training_steps": 120832,
+            "training_success": 0.58
+          },
+          {
+            "candidate": "T1:checkpoint-15360",
+            "ep_rew_mean": -10.474023866666666,
+            "training_steps": 15360,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-20480",
+            "ep_rew_mean": -5.454772475,
+            "training_steps": 20480,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-25600",
+            "ep_rew_mean": -3.6457305490196075,
+            "training_steps": 25600,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-30720",
+            "ep_rew_mean": 6.347158491803278,
+            "training_steps": 30720,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-35840",
+            "ep_rew_mean": 20.845610070422534,
+            "training_steps": 35840,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-40960",
+            "ep_rew_mean": 29.907181308641977,
+            "training_steps": 40960,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-45056",
+            "ep_rew_mean": 32.46935582222223,
+            "training_steps": 45056,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-50176",
+            "ep_rew_mean": 43.78316445,
+            "training_steps": 50176,
+            "training_success": 0.01
+          },
+          {
+            "candidate": "T1:checkpoint-5120",
+            "ep_rew_mean": -11.3119584,
+            "training_steps": 5120,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-55296",
+            "ep_rew_mean": 61.167392060000005,
+            "training_steps": 55296,
+            "training_success": 0.04
+          },
+          {
+            "candidate": "T1:checkpoint-60416",
+            "ep_rew_mean": 73.39657507,
+            "training_steps": 60416,
+            "training_success": 0.07
+          },
+          {
+            "candidate": "T1:checkpoint-65536",
+            "ep_rew_mean": 86.92929142000001,
+            "training_steps": 65536,
+            "training_success": 0.14
+          },
+          {
+            "candidate": "T1:checkpoint-70656",
+            "ep_rew_mean": 97.35082612000001,
+            "training_steps": 70656,
+            "training_success": 0.16
+          },
+          {
+            "candidate": "T1:checkpoint-75776",
+            "ep_rew_mean": 102.61337944,
+            "training_steps": 75776,
+            "training_success": 0.21
+          },
+          {
+            "candidate": "T1:checkpoint-80896",
+            "ep_rew_mean": 104.62059248999999,
+            "training_steps": 80896,
+            "training_success": 0.29
+          },
+          {
+            "candidate": "T1:checkpoint-86016",
+            "ep_rew_mean": 98.82487232,
+            "training_steps": 86016,
+            "training_success": 0.4
+          },
+          {
+            "candidate": "T1:checkpoint-90112",
+            "ep_rew_mean": 92.67150363,
+            "training_steps": 90112,
+            "training_success": 0.43
+          },
+          {
+            "candidate": "T1:checkpoint-95232",
+            "ep_rew_mean": 94.30435757,
+            "training_steps": 95232,
+            "training_success": 0.44
+          }
+        ],
+        "mechanical_provenance": {
+          "changed_files": [],
+          "code_parent_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac"
+        },
+        "parent": null,
+        "requested_steps": 120000,
+        "saved_component_comparisons": {
+          "comparisons": [],
+          "current_context": {
+            "parent": null,
+            "requested_steps": 120000,
+            "seed": 0
+          },
+          "schema_version": 1,
+          "scope": "exact_serialized_components"
+        },
+        "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+        "seed": 0,
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-100352",
+          "ep_rew_mean": 96.17695528,
+          "fingerprint": "b99ca62d94f5a85d71426db79d5a65bc1860dd615c5fb1bb96c5f6da70cfa8e3",
+          "name": "checkpoint-100352",
+          "timesteps": 100352,
+          "training_success": 0.46
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-10240",
+          "ep_rew_mean": -13.0763937,
+          "fingerprint": "c25cb7972b39951d382a8d17781afddc59b396576d2f2c76e2bf513eec6a5529",
+          "name": "checkpoint-10240",
+          "timesteps": 10240,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-105472",
+          "ep_rew_mean": 101.00777899999999,
+          "fingerprint": "ebfd7e1126b4e93d7c61f4855fc36633c323f390f021a535748e3ad8f4fdcb63",
+          "name": "checkpoint-105472",
+          "timesteps": 105472,
+          "training_success": 0.53
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-110592",
+          "ep_rew_mean": 97.14635316,
+          "fingerprint": "e2a154dc6d552da82d24e0fdcfc2a1347cdd5a9c37c618dc503d4ef3dc1efab1",
+          "name": "checkpoint-110592",
+          "timesteps": 110592,
+          "training_success": 0.52
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-115712",
+          "ep_rew_mean": 102.92741714,
+          "fingerprint": "35580156db3618f34fb63b4431c5b7142ce63fb70da1b263b5315e6a5c2d5e2d",
+          "name": "checkpoint-115712",
+          "timesteps": 115712,
+          "training_success": 0.54
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-120832",
+          "ep_rew_mean": 117.34900729,
+          "fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+          "name": "checkpoint-120832",
+          "timesteps": 120832,
+          "training_success": 0.58
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-15360",
+          "ep_rew_mean": -10.474023866666666,
+          "fingerprint": "36bf5bfcbabc906c4577b92da077abb020863420bb2e6e727e82de9b05655b47",
+          "name": "checkpoint-15360",
+          "timesteps": 15360,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-20480",
+          "ep_rew_mean": -5.454772475,
+          "fingerprint": "84e828ead817ccfe28cbb8c0f0eb8b8fbf97f001908b3d7ac7b4a9c63c93c9cc",
+          "name": "checkpoint-20480",
+          "timesteps": 20480,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-25600",
+          "ep_rew_mean": -3.6457305490196075,
+          "fingerprint": "e7d79a4077430e17df180da9c0ae0f7b71ab40941a77fb288e6d176ca6617556",
+          "name": "checkpoint-25600",
+          "timesteps": 25600,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-30720",
+          "ep_rew_mean": 6.347158491803278,
+          "fingerprint": "b9890019e26356ddf4833847053aa9f13e5c6a13d8f6f3fb9ed93a4604deb391",
+          "name": "checkpoint-30720",
+          "timesteps": 30720,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-35840",
+          "ep_rew_mean": 20.845610070422534,
+          "fingerprint": "5b476e5cf9985a1daa555ca8971858704b20f33ce2ae4c05e5347bdcad26c72e",
+          "name": "checkpoint-35840",
+          "timesteps": 35840,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-40960",
+          "ep_rew_mean": 29.907181308641977,
+          "fingerprint": "e4b30740ee8129cedfe2592644a863a9c9bb55d758c68357b614769b39f724d5",
+          "name": "checkpoint-40960",
+          "timesteps": 40960,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-45056",
+          "ep_rew_mean": 32.46935582222223,
+          "fingerprint": "fcb1b60ff81f5f51b9d26eac564f7243547570ffd4f2271acce5d8f13018afb0",
+          "name": "checkpoint-45056",
+          "timesteps": 45056,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-50176",
+          "ep_rew_mean": 43.78316445,
+          "fingerprint": "a29aa67e1ec156e10d004c42cd2edc84cd9426f77ec16afd38b233fb9489f418",
+          "name": "checkpoint-50176",
+          "timesteps": 50176,
+          "training_success": 0.01
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-5120",
+          "ep_rew_mean": -11.3119584,
+          "fingerprint": "35b56e2afabff99ad3e7286881e44f2ce03d008e2f67f519e40dfb902adbeb6d",
+          "name": "checkpoint-5120",
+          "timesteps": 5120,
+          "training_success": 0.0
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-55296",
+          "ep_rew_mean": 61.167392060000005,
+          "fingerprint": "2b6e6a00a7b342f2f98bb17cd6116544c63b29c983dd32af98c6a8d7ca2b55d5",
+          "name": "checkpoint-55296",
+          "timesteps": 55296,
+          "training_success": 0.04
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-60416",
+          "ep_rew_mean": 73.39657507,
+          "fingerprint": "00a41b743f15eaebb8be9eddd7e1777e31856fd8a0d7f4d951cfebda85c6a4f9",
+          "name": "checkpoint-60416",
+          "timesteps": 60416,
+          "training_success": 0.07
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-65536",
+          "ep_rew_mean": 86.92929142000001,
+          "fingerprint": "51743e1bd2825229928155f0096ba4633fe1834643b8d40e5eeefec287b40992",
+          "name": "checkpoint-65536",
+          "timesteps": 65536,
+          "training_success": 0.14
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-70656",
+          "ep_rew_mean": 97.35082612000001,
+          "fingerprint": "cee21ad6320a5d4efe7c2a068b4e322eafbf7bd68bf892800a5d61bbe659d2fe",
+          "name": "checkpoint-70656",
+          "timesteps": 70656,
+          "training_success": 0.16
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-75776",
+          "ep_rew_mean": 102.61337944,
+          "fingerprint": "7dca57d88dc6073f534aa605b1bfaeb7df25a683a7a438306a991435ebcdc0cc",
+          "name": "checkpoint-75776",
+          "timesteps": 75776,
+          "training_success": 0.21
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-80896",
+          "ep_rew_mean": 104.62059248999999,
+          "fingerprint": "3724c4f5e65e61770760e485a7c08cc6dc30d9bcb06ce7296a5aee8fdb5c4371",
+          "name": "checkpoint-80896",
+          "timesteps": 80896,
+          "training_success": 0.29
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-86016",
+          "ep_rew_mean": 98.82487232,
+          "fingerprint": "a317a526ed8fce1bbc74d50444a48c49352aed4dcb1a87e68816a4ab24d2388a",
+          "name": "checkpoint-86016",
+          "timesteps": 86016,
+          "training_success": 0.4
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-90112",
+          "ep_rew_mean": 92.67150363,
+          "fingerprint": "5ceb533ecb040000a293a9247322566957e08370c08e4fa91af0b4fe01835d47",
+          "name": "checkpoint-90112",
+          "timesteps": 90112,
+          "training_success": 0.43
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-95232",
+          "ep_rew_mean": 94.30435757,
+          "fingerprint": "c076af026d56cf5a350269c7cdac0ed481e7504cf0ee522259e3d466eb1c9c54",
+          "name": "checkpoint-95232",
+          "timesteps": 95232,
+          "training_success": 0.44
+        }
+      ],
+      "candidate_dir": "models/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1",
+      "code_parent_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": null,
+      "result": {
+        "candidates": [
+          "T1:checkpoint-100352",
+          "T1:checkpoint-10240",
+          "T1:checkpoint-105472",
+          "T1:checkpoint-110592",
+          "T1:checkpoint-115712",
+          "T1:checkpoint-120832",
+          "T1:checkpoint-15360",
+          "T1:checkpoint-20480",
+          "T1:checkpoint-25600",
+          "T1:checkpoint-30720",
+          "T1:checkpoint-35840",
+          "T1:checkpoint-40960",
+          "T1:checkpoint-45056",
+          "T1:checkpoint-50176",
+          "T1:checkpoint-5120",
+          "T1:checkpoint-55296",
+          "T1:checkpoint-60416",
+          "T1:checkpoint-65536",
+          "T1:checkpoint-70656",
+          "T1:checkpoint-75776",
+          "T1:checkpoint-80896",
+          "T1:checkpoint-86016",
+          "T1:checkpoint-90112",
+          "T1:checkpoint-95232"
+        ],
+        "completed_steps": 120832,
+        "initialization": "fresh",
+        "learning_dynamics": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "ep_rew_mean": 96.17695528,
+            "training_steps": 100352,
+            "training_success": 0.46
+          },
+          {
+            "candidate": "T1:checkpoint-10240",
+            "ep_rew_mean": -13.0763937,
+            "training_steps": 10240,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-105472",
+            "ep_rew_mean": 101.00777899999999,
+            "training_steps": 105472,
+            "training_success": 0.53
+          },
+          {
+            "candidate": "T1:checkpoint-110592",
+            "ep_rew_mean": 97.14635316,
+            "training_steps": 110592,
+            "training_success": 0.52
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "ep_rew_mean": 102.92741714,
+            "training_steps": 115712,
+            "training_success": 0.54
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "ep_rew_mean": 117.34900729,
+            "training_steps": 120832,
+            "training_success": 0.58
+          },
+          {
+            "candidate": "T1:checkpoint-15360",
+            "ep_rew_mean": -10.474023866666666,
+            "training_steps": 15360,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-20480",
+            "ep_rew_mean": -5.454772475,
+            "training_steps": 20480,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-25600",
+            "ep_rew_mean": -3.6457305490196075,
+            "training_steps": 25600,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-30720",
+            "ep_rew_mean": 6.347158491803278,
+            "training_steps": 30720,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-35840",
+            "ep_rew_mean": 20.845610070422534,
+            "training_steps": 35840,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-40960",
+            "ep_rew_mean": 29.907181308641977,
+            "training_steps": 40960,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-45056",
+            "ep_rew_mean": 32.46935582222223,
+            "training_steps": 45056,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-50176",
+            "ep_rew_mean": 43.78316445,
+            "training_steps": 50176,
+            "training_success": 0.01
+          },
+          {
+            "candidate": "T1:checkpoint-5120",
+            "ep_rew_mean": -11.3119584,
+            "training_steps": 5120,
+            "training_success": 0.0
+          },
+          {
+            "candidate": "T1:checkpoint-55296",
+            "ep_rew_mean": 61.167392060000005,
+            "training_steps": 55296,
+            "training_success": 0.04
+          },
+          {
+            "candidate": "T1:checkpoint-60416",
+            "ep_rew_mean": 73.39657507,
+            "training_steps": 60416,
+            "training_success": 0.07
+          },
+          {
+            "candidate": "T1:checkpoint-65536",
+            "ep_rew_mean": 86.92929142000001,
+            "training_steps": 65536,
+            "training_success": 0.14
+          },
+          {
+            "candidate": "T1:checkpoint-70656",
+            "ep_rew_mean": 97.35082612000001,
+            "training_steps": 70656,
+            "training_success": 0.16
+          },
+          {
+            "candidate": "T1:checkpoint-75776",
+            "ep_rew_mean": 102.61337944,
+            "training_steps": 75776,
+            "training_success": 0.21
+          },
+          {
+            "candidate": "T1:checkpoint-80896",
+            "ep_rew_mean": 104.62059248999999,
+            "training_steps": 80896,
+            "training_success": 0.29
+          },
+          {
+            "candidate": "T1:checkpoint-86016",
+            "ep_rew_mean": 98.82487232,
+            "training_steps": 86016,
+            "training_success": 0.4
+          },
+          {
+            "candidate": "T1:checkpoint-90112",
+            "ep_rew_mean": 92.67150363,
+            "training_steps": 90112,
+            "training_success": 0.43
+          },
+          {
+            "candidate": "T1:checkpoint-95232",
+            "ep_rew_mean": 94.30435757,
+            "training_steps": 95232,
+            "training_success": 0.44
+          }
+        ],
+        "mechanical_provenance": {
+          "changed_files": [],
+          "code_parent_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac"
+        },
+        "parent": null,
+        "requested_steps": 120000,
+        "saved_component_comparisons": {
+          "comparisons": [],
+          "current_context": {
+            "parent": null,
+            "requested_steps": 120000,
+            "seed": 0
+          },
+          "schema_version": 1,
+          "scope": "exact_serialized_components"
+        },
+        "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+        "seed": 0,
+        "status": "completed"
+      },
+      "scientific_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "T1",
+    "inquiry_id": "I1",
+    "kind": "training",
+    "progress": "completed",
+    "request": {
+      "training": {
+        "description": "Train a fresh PPO policy with the current torque-control recipe after aligning training target radii to the complete official 6\u201320 cm distribution.",
+        "initialization": "fresh",
+        "rationale": "M1 established bounded compiled-plant authority but no learned-policy capability, and M2 verified that the training environment now exposes the official radial range. A full-allocation fresh run is the highest-value next development action because it produces the first complete policy artifact whose later measurement can distinguish non-reaching, braking/settling, branch/geometry, and hold failures. This run is a recipe-specific development result; training proxies will not be treated as task success or as a privileged terminal checkpoint.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "89217d61aceb6925974f450caa2960b00ed8c1caabb66cb97de48432da2233d0",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty. The inquiry will select complete measured artifacts only after development evidence is available; training proxies alone will not establish development performance or official success.",
     "completed_operations": [
@@ -829,9 +2298,10 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Develop and measure a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline. Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M2"
+      "M2",
+      "T1"
     ],
-    "scientific_parent_commit": "16b6e33f5cc0c8c94bbb992a793d763bff91daac"
+    "scientific_parent_commit": "fef612fdcb6412137041a73e7f54263fc072f9b3"
   },
   "terminal_state": null
 }
