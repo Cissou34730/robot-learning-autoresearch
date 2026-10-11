@@ -4943,7 +4943,7 @@
     "inquiry": 7,
     "measurement": 11,
     "session": 15,
-    "training": 6
+    "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -12352,9 +12352,135 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:26:31Z",
+      "error": "pytest failed:\n..................F                                                      [100%]\n================================== FAILURES ===================================\n_______ test_real_sb3_checkpoint_preserves_normalization_and_prediction _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B495295180>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_real_sb3_checkpoint_prese0')\n\n    def test_real_sb3_checkpoint_preserves_normalization_and_prediction(\n        monkeypatch, tmp_path\n    ):\n        from stable_baselines3 import PPO\n        from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize\n    \n        from robot_learning.scenario import observations\n        from robot_learning.scenario.environment import make_evaluation_env\n        from robot_learning.training.checkpoint import save_checkpoint\n        from robot_learning.training.environment import make_training_env\n    \n>       venv = VecNormalize(DummyVecEnv([make_training_env]), norm_reward=False)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests\\autoresearch\\test_policy_runtime.py:349: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\dummy_vec_env.py:31: in __init__\n    self.envs = [_patch_env(fn()) for fn in env_fns]\n                            ^^^^\nrobot_learning\\training\\environment.py:49: in make_training_env\n    return StagedCoverageEnv()\n           ^^^^^^^^^^^^^^^^^^^\nrobot_learning\\training\\environment.py:28: in __init__\n    super().__init__(target_radius_range=STAGED_RADIUS_RANGES[0], **kwargs)\nrobot_learning\\scenario\\environment.py:50: in __init__\n    self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()\n                                                              ^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\n    def make_policy_io():\n>       previous_action = np.zeros(2, dtype=np.float64)\n                          ^^\nE       NameError: name 'np' is not defined\n\nrobot_learning\\scenario\\policy_io.py:18: NameError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_real_sb3_checkpoint_preserves_normalization_and_prediction\n1 failed, 18 passed in 4.66s\n\n",
+      "id": "T7",
+      "inquiry_id": "I7",
+      "kind": "training",
+      "request": {
+        "description": "Train a T3 transfer candidate with a stateful per-policy-step action-rate-limited normalized torque realization.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "I7 tests whether limiting successive physical torque-command changes reduces T3's saturated, high-speed no-first-entry failures while preserving the existing observation and reward. The intervention is isolated to PolicyIO action realization, resets to zero at each episode boundary, clips commands to the valid normalized torque range, and uses the full inquiry allocation so the policy can adapt to the altered transient dynamics. Development measurement against T3 will decide whether complete success and both radius bands improve or whether the route should close negatively.",
+        "seed": 7,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n..................F                                                      [100%]\n================================== FAILURES ===================================\n_______ test_real_sb3_checkpoint_preserves_normalization_and_prediction _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002B495295180>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_real_sb3_checkpoint_prese0')\n\n    def test_real_sb3_checkpoint_preserves_normalization_and_prediction(\n        monkeypatch, tmp_path\n    ):\n        from stable_baselines3 import PPO\n        from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize\n    \n        from robot_learning.scenario import observations\n        from robot_learning.scenario.environment import make_evaluation_env\n        from robot_learning.training.checkpoint import save_checkpoint\n        from robot_learning.training.environment import make_training_env\n    \n>       venv = VecNormalize(DummyVecEnv([make_training_env]), norm_reward=False)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests\\autoresearch\\test_policy_runtime.py:349: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\dummy_vec_env.py:31: in __init__\n    self.envs = [_patch_env(fn()) for fn in env_fns]\n                            ^^^^\nrobot_learning\\training\\environment.py:49: in make_training_env\n    return StagedCoverageEnv()\n           ^^^^^^^^^^^^^^^^^^^\nrobot_learning\\training\\environment.py:28: in __init__\n    super().__init__(target_radius_range=STAGED_RADIUS_RANGES[0], **kwargs)\nrobot_learning\\scenario\\environment.py:50: in __init__\n    self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()\n                                                              ^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\n    def make_policy_io():\n>       previous_action = np.zeros(2, dtype=np.float64)\n                          ^^\nE       NameError: name 'np' is not defined\n\nrobot_learning\\scenario\\policy_io.py:18: NameError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_real_sb3_checkpoint_preserves_normalization_and_prediction\n1 failed, 18 passed in 4.66s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "T8",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t3/checkpoint-120832",
+        "fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "6aaf4a55999690f4e2f94e3a415595e43aee643a044a3d056b9d1838c91a3dd2",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "b11a67f5e361fe2cc8d0073802785d5c16662262f4c2c9b7901092fcde8de7f4",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "0156e7f97efa2e5a40785bde0bfc393ed4f74665b6b34f32c6fdcea76f93571d",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/training/reward.py",
+        "robot_learning/scenario/policy_io.py"
+      ]
+    },
+    "failure": null,
+    "id": "T8",
+    "inquiry_id": "I7",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Retry T3 transfer training with the repaired stateful per-policy-step action-rate-limited normalized torque realization.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "T7 failed during environment construction because the intervention omitted its NumPy import; that execution failure provides no scientific evidence. The repaired intervention still tests whether limiting successive physical torque-command changes reduces T3's saturated, high-speed no-first-entry failures while preserving the existing observation and reward. The full inquiry allocation is retained so the policy can adapt to the altered transient dynamics.",
+        "seed": 7,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "fc0f0016b328009dda86fd06ecb0edfebb4ce529ce58d30c983c4639d5d60a90",
+    "session_id": "S15",
+    "supersedes": "T7"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned in this session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) based on M4. T6:checkpoint-86016 remains rejected at 133/160 (83.125%) based on M11. These roles and comparisons are artifact-level and do not establish mechanism.",
     "completed_operations": [

@@ -49,3 +49,4 @@
 | E28 | inquiry | I7 | completed |
 | E29 | checkpoint | - | checkpointed |
 | E30 | restore_recipe | I7 | restored |
+| T7 | training | I7 | failed |
