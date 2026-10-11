@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a bounded characterization at representative inner- and outer-band residual configurations reports runtime-resolved dynamics and effective actuator margins together with trajectory-linked saturation, speed, and endpoint-error evidence, sufficient to conclude that the residual is predominantly authority-limited, predominantly policy-dependent, or inconclusive and to select the next route toward the goal.",
-    "goal_connection": "The strongest measured staged-transfer artifact reaches 151 of 160 development episodes, leaving a 3.625 percentage-point gap to the 98% complete uninterrupted-hold objective. Resolving whether the three residual failure classes are authority-limited or policy-regulation failures determines whether the next goal-directed investment should change control or policy design, characterize or redesign dynamics, or proceed to assessment.",
-    "handoff_conclusion": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 residual no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained the saturation and speed signature in the remaining no-entry failures and added hold-related losses. E12 therefore rejects that recipe as an artifact-level route to the goal without proving a hard actuator limit or disproving policy-dependent regulation. E14 opened I4 to resolve that consequential distinction through direct characterization.",
-    "handoff_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
-    "handoff_source_session_id": "S8",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
-    "rationale": "Do not request terminal assessment: the best development artifact is below 98%, and its residual failures include only development evidence, not official certification. The near-limit command-penalty recipe is rejected as an artifact-level regression (149/160 versus 151/160) and did not materially change the saturation signature, but that result does not establish a hard actuator limit. Direct characterization is the highest-value bounded work because the existing evidence already supports staged coverage as a useful route while leaving the authority-versus-regulation distinction consequential to the next intervention.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -3301,7 +3290,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 9,
     "session": 9,
@@ -8471,9 +8460,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:52:30Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I4 closes with a predominantly policy-dependent regulation conclusion. M9 provides runtime-resolved mass and actuator data and corrected endpoint-acceleration authority at both IK branches of representative inner and outer residual targets. Representative directional authority is approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest reported endpoint-acceleration singular value remains positive (approximately 2.1-29.4 m/s2). In the same corrected run, all four matched residual episodes remain 500-step failures with no first entry, 498, 500, 498, and 500 saturated controls, zero or near-zero control reserve, and panel-consistent minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The residual is therefore not explained predominantly by absent local actuator authority at the sampled configurations: the policy repeatedly drives into saturation while failing to regulate or select a trajectory that enters the tolerance disk. This does not prove every official target is authority-unlimited, but it is sufficient for I4's bounded distinction and next-route selection.",
+        "reason": "M4 and E12 established saturation- and speed-linked residual failures but left hard authority versus policy regulation unresolved. M7 and M8 were implementation-invalid for interpretation: M7 contaminated replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. M9 corrected both issues. Its independent panel evaluator preserves T3:checkpoint-120832 at 94.375%, and the four residual seeds agree with the panel evaluator on no first entry and minimum distances while trajectory-linked probes report persistent saturation and positive local authority. The decision is to reject authority or dynamics redesign as the first next route and invest in a different control or representation intervention that reduces command saturation, improves velocity-aware approach, and preserves complete holds across inner and outer bands. The failed M6 request and invalid M7/M8 interpretations are execution or implementation limits, not scientific evidence."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a predominantly policy-dependent regulation conclusion. M9 provides runtime-resolved mass and actuator data and corrected endpoint-acceleration authority at both IK branches of representative inner and outer residual targets. Representative directional authority is approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest reported endpoint-acceleration singular value remains positive (approximately 2.1-29.4 m/s2). In the same corrected run, all four matched residual episodes remain 500-step failures with no first entry, 498, 500, 498, and 500 saturated controls, zero or near-zero control reserve, and panel-consistent minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The residual is therefore not explained predominantly by absent local actuator authority at the sampled configurations: the policy repeatedly drives into saturation while failing to regulate or select a trajectory that enters the tolerance disk. This does not prove every official target is authority-unlimited, but it is sufficient for I4's bounded distinction and next-route selection.",
+        "reason": "M4 and E12 established saturation- and speed-linked residual failures but left hard authority versus policy regulation unresolved. M7 and M8 were implementation-invalid for interpretation: M7 contaminated replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. M9 corrected both issues. Its independent panel evaluator preserves T3:checkpoint-120832 at 94.375%, and the four residual seeds agree with the panel evaluator on no first entry and minimum distances while trajectory-linked probes report persistent saturation and positive local authority. The decision is to reject authority or dynamics redesign as the first next route and invest in a different control or representation intervention that reduces command saturation, improves velocity-aware approach, and preserves complete holds across inner and outer bands. The failed M6 request and invalid M7/M8 interpretations are execution or implementation limits, not scientific evidence.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a predominantly policy-dependent regulation conclusion. M9 provides runtime-resolved mass and actuator data and corrected endpoint-acceleration authority at both IK branches of representative inner and outer residual targets. Representative directional authority is approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest reported endpoint-acceleration singular value remains positive (approximately 2.1-29.4 m/s2). In the same corrected run, all four matched residual episodes remain 500-step failures with no first entry, 498, 500, 498, and 500 saturated controls, zero or near-zero control reserve, and panel-consistent minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The residual is therefore not explained predominantly by absent local actuator authority at the sampled configurations: the policy repeatedly drives into saturation while failing to regulate or select a trajectory that enters the tolerance disk. This does not prove every official target is authority-unlimited, but it is sufficient for I4's bounded distinction and next-route selection.",
+        "reason": "M4 and E12 established saturation- and speed-linked residual failures but left hard authority versus policy regulation unresolved. M7 and M8 were implementation-invalid for interpretation: M7 contaminated replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. M9 corrected both issues. Its independent panel evaluator preserves T3:checkpoint-120832 at 94.375%, and the four residual seeds agree with the panel evaluator on no first entry and minimum distances while trajectory-linked probes report persistent saturation and positive local authority. The decision is to reject authority or dynamics redesign as the first next route and invest in a different control or representation intervention that reduces command saturation, improves velocity-aware approach, and preserves complete holds across inner and outer bands. The failed M6 request and invalid M7/M8 interpretations are execution or implementation limits, not scientific evidence."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a predominantly policy-dependent regulation conclusion. M9 provides runtime-resolved mass and actuator data and corrected endpoint-acceleration authority at both IK branches of representative inner and outer residual targets. Representative directional authority is approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest reported endpoint-acceleration singular value remains positive (approximately 2.1-29.4 m/s2). In the same corrected run, all four matched residual episodes remain 500-step failures with no first entry, 498, 500, 498, and 500 saturated controls, zero or near-zero control reserve, and panel-consistent minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The residual is therefore not explained predominantly by absent local actuator authority at the sampled configurations: the policy repeatedly drives into saturation while failing to regulate or select a trajectory that enters the tolerance disk. This does not prove every official target is authority-unlimited, but it is sufficient for I4's bounded distinction and next-route selection.",
+        "reason": "M4 and E12 established saturation- and speed-linked residual failures but left hard authority versus policy regulation unresolved. M7 and M8 were implementation-invalid for interpretation: M7 contaminated replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. M9 corrected both issues. Its independent panel evaluator preserves T3:checkpoint-120832 at 94.375%, and the four residual seeds agree with the panel evaluator on no first entry and minimum distances while trajectory-linked probes report persistent saturation and positive local authority. The decision is to reject authority or dynamics redesign as the first next route and invest in a different control or representation intervention that reduces command saturation, improves velocity-aware approach, and preserves complete holds across inner and outer bands. The failed M6 request and invalid M7/M8 interpretations are execution or implementation limits, not scientific evidence.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I4 closes with a predominantly policy-dependent regulation conclusion. M9 provides runtime-resolved mass and actuator data and corrected endpoint-acceleration authority at both IK branches of representative inner and outer residual targets. Representative directional authority is approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest reported endpoint-acceleration singular value remains positive (approximately 2.1-29.4 m/s2). In the same corrected run, all four matched residual episodes remain 500-step failures with no first entry, 498, 500, 498, and 500 saturated controls, zero or near-zero control reserve, and panel-consistent minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The residual is therefore not explained predominantly by absent local actuator authority at the sampled configurations: the policy repeatedly drives into saturation while failing to regulate or select a trajectory that enters the tolerance disk. This does not prove every official target is authority-unlimited, but it is sufficient for I4's bounded distinction and next-route selection.",
+        "reason": "M4 and E12 established saturation- and speed-linked residual failures but left hard authority versus policy regulation unresolved. M7 and M8 were implementation-invalid for interpretation: M7 contaminated replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. M9 corrected both issues. Its independent panel evaluator preserves T3:checkpoint-120832 at 94.375%, and the four residual seeds agree with the panel evaluator on no first entry and minimum distances while trajectory-linked probes report persistent saturation and positive local authority. The decision is to reject authority or dynamics redesign as the first next route and invest in a different control or representation intervention that reduces command saturation, improves velocity-aware approach, and preserves complete holds across inner and outer bands. The failed M6 request and invalid M7/M8 interpretations are execution or implementation limits, not scientific evidence."
+      }
+    },
+    "request_fingerprint": "2a72e70c81c1f296646a09fd4055db4a3ebcefec8a9aa53f120e8372b35549ae",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this session. Candidate-comparison evidence identifies T3:checkpoint-120832 as the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; and T1:checkpoint-120832 is the staged-transfer reference at 68.75%. T2:checkpoint-120832 remains recipe-specific counterevidence at 33.75%. These facts do not establish causal explanations.",
     "completed_operations": [
@@ -8519,7 +8562,8 @@
     "operation_ids": [
       "M7",
       "M8",
-      "M9"
+      "M9",
+      "E16"
     ],
     "scientific_parent_commit": "5d98acbd5550938e148fcc0efde38cb7fe932f3c"
   },
