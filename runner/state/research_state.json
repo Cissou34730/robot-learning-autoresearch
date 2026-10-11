@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close positively if a trained candidate using only the action-rate-limited torque realization reaches at least 157/160 complete uninterrupted successes on the shared development panel, improves or preserves T3's radius-stratified success, and is not weaker than T3 in the paired comparison. Close negatively if the candidate fails to improve T3 or regresses, or if diagnostics show that action-rate limiting does not reduce the residual saturation/high-speed no-entry pattern; in that case carry T3 forward as the strongest candidate and reassess official assessment. A result that improves the aggregate but loses inner- or outer-radius capability is inconclusive for the human goal and redirects the inquiry rather than establishing a general control cause.",
-    "goal_connection": "The best measured artifact, T3:checkpoint-120832, achieves 151/160 (94.375%) and remains 3.625 percentage points below the development target. The inquiry tests whether a control-side intervention can close that gap while preserving the capability T3 acquired across the official radius range.",
-    "handoff_conclusion": "Completed evidence supports T3 as the strongest candidate at the artifact-comparison level, not as a certified or causally explained solution. M4/E8 established a staged-transfer gain over T1 while preserving sampled inner- and outer-radius capability, with T3's residual failures characterized as saturated, high-speed, no-first-entry episodes. M9/E16 found positive local endpoint authority at sampled inner and outer configurations, making absent authority an insufficient explanation for those residuals while leaving unsampled configurations unresolved. E12/E21/E26 reject the tested near-limit command-penalty, same-width velocity-and-hold interface, and endpoint-speed-aware reward recipes respectively; each conclusion remains recipe-specific. The goal-review transition therefore does not claim that control-side action realization is causal. It opens I7 to test one untried, T3-compatible action-rate-limited torque intervention that preserves the observation and reward, because the observed saturation/high-speed pattern makes transient command realization a consequential alternative explanation. If that intervention fails, T3 remains the strongest artifact for assessment consideration.",
-    "handoff_question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
-    "handoff_source_session_id": "S14",
-    "id": "I7",
-    "opened_in_session": "S14",
-    "question": "Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability?",
-    "rationale": "M4 established T3 as the strongest measured artifact at 151/160, with the residual failures recorded as saturated, high-speed, no-first-entry episodes. M9 found positive local endpoint authority at representative inner and outer configurations, so absent authority is not the leading explanation at those samples. This supports testing the command realization and transient impulse as a policy-dependent control bottleneck. The intervention is untested, preserves the existing observation and reward, and does not repeat the tested same-width velocity-and-hold interface (E21), near-limit command penalty (E12), or endpoint-speed-aware reward recipe (E26). The result will be judged by complete uninterrupted success and failure diagnostics, not by an intended-cause claim.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -5758,7 +5747,7 @@
     }
   },
   "counters": {
-    "event": 30,
+    "event": 31,
     "inquiry": 7,
     "measurement": 12,
     "session": 15,
@@ -14136,9 +14125,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:33:54Z",
+      "error": null,
+      "id": "E31",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M12 tested the trained T8 action-rate-limited candidate against T3 on the shared 160-episode development panel. T8 achieved 144/160 successes (90.0%), below T3's 151/160 (94.375%) and below the 157/160 closure threshold; the paired comparison favored T3 8 episodes to 1, with net wins -7. Therefore this tested observation- and reward-preserving action-rate-limited recipe did not improve the goal-directed artifact and I7 closes negatively. The result is an artifact comparison and does not establish that transient command realization cannot matter in another controller design. Carry T3 forward as the strongest measured candidate for goal review and official-assessment consideration."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "negative",
+        "reason": "M12 tested the trained T8 action-rate-limited candidate against T3 on the shared 160-episode development panel. T8 achieved 144/160 successes (90.0%), below T3's 151/160 (94.375%) and below the 157/160 closure threshold; the paired comparison favored T3 8 episodes to 1, with net wins -7. Therefore this tested observation- and reward-preserving action-rate-limited recipe did not improve the goal-directed artifact and I7 closes negatively. The result is an artifact comparison and does not establish that transient command realization cannot matter in another controller design. Carry T3 forward as the strongest measured candidate for goal review and official-assessment consideration.",
+        "status": "completed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "negative",
+        "reason": "M12 tested the trained T8 action-rate-limited candidate against T3 on the shared 160-episode development panel. T8 achieved 144/160 successes (90.0%), below T3's 151/160 (94.375%) and below the 157/160 closure threshold; the paired comparison favored T3 8 episodes to 1, with net wins -7. Therefore this tested observation- and reward-preserving action-rate-limited recipe did not improve the goal-directed artifact and I7 closes negatively. The result is an artifact comparison and does not establish that transient command realization cannot matter in another controller design. Carry T3 forward as the strongest measured candidate for goal review and official-assessment consideration."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "negative",
+        "reason": "M12 tested the trained T8 action-rate-limited candidate against T3 on the shared 160-episode development panel. T8 achieved 144/160 successes (90.0%), below T3's 151/160 (94.375%) and below the 157/160 closure threshold; the paired comparison favored T3 8 episodes to 1, with net wins -7. Therefore this tested observation- and reward-preserving action-rate-limited recipe did not improve the goal-directed artifact and I7 closes negatively. The result is an artifact comparison and does not establish that transient command realization cannot matter in another controller design. Carry T3 forward as the strongest measured candidate for goal review and official-assessment consideration.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E31",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M12 tested the trained T8 action-rate-limited candidate against T3 on the shared 160-episode development panel. T8 achieved 144/160 successes (90.0%), below T3's 151/160 (94.375%) and below the 157/160 closure threshold; the paired comparison favored T3 8 episodes to 1, with net wins -7. Therefore this tested observation- and reward-preserving action-rate-limited recipe did not improve the goal-directed artifact and I7 closes negatively. The result is an artifact comparison and does not establish that transient command realization cannot matter in another controller design. Carry T3 forward as the strongest measured candidate for goal review and official-assessment consideration."
+      }
+    },
+    "request_fingerprint": "a049fe32457fbc2071e3417fc09b98dbc9b22fec0a2fcfb1cf2180034c445bd4",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned in this session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) based on M4. T6:checkpoint-86016 remains rejected at 133/160 (83.125%) based on M11. These roles and comparisons are artifact-level and do not establish mechanism.",
     "completed_operations": [
@@ -14185,7 +14228,8 @@
     "operation_ids": [
       "E30",
       "T8",
-      "M12"
+      "M12",
+      "E31"
     ],
     "scientific_parent_commit": "c704195b7274401e81188a81d5c3d78b1c554ef9"
   },

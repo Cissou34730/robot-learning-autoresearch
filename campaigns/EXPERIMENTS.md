@@ -52,3 +52,4 @@
 | T7 | training | I7 | failed |
 | T8 | training | I7 | completed |
 | M12 | measurement | I7 | completed |
+| E31 | inquiry | I7 | completed |
