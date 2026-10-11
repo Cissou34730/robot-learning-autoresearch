@@ -259,8 +259,8 @@ def _rollout(
             env.data,
             mujoco.mjtObj.mjOBJ_SITE,
             site_id,
-            0,
             site_velocity,
+            0,
         )
         if site_velocity.shape != (6,):
             raise ValueError(
