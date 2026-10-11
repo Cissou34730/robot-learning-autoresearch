@@ -10647,38 +10647,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "positive",
-        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "positive",
-        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "positive",
-        "reason": "M8 satisfies the I3 closure condition for the tested recipe. T7:checkpoint-75776, trained from T4 with only the branch-neutral exponential action filter while preserving T4's observation, reward, and 50/50 radius curriculum, achieved 196/200 successes (98.0%) on a fresh 200-episode panel. Its paired T4 reference achieved 185/200; the comparison recorded 11 T7 wins, 0 T4 wins, and 11 discordant episodes. The four T7 failures included two inner-radius and two outer-radius episodes, whereas the T4 reference failures included twelve inner-radius and three outer-radius episodes on the same panel, so the filter did not sacrifice inner-radius acquisition and materially reduced the acquisition-linked tail. This supports continuing with the selected filtered candidate toward official assessment and supports sampled-data command bandwidth as a consequential contributor to the measured residual failures. The evidence is bounded: M8 uses research-evaluation semantics rather than the protected official panel, and it establishes this single alpha-0.5 T4-parent recipe, not all action filters or a sole universal cause of hold failure."
-      }
-    },
-    "request_fingerprint": "c5b5549e597259b34254fcc39a8e9c1b2285eb0281376a9e5c85436709647568",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
     "completed_operations": [
