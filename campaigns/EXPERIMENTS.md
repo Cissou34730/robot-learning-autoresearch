@@ -21,3 +21,4 @@
 | T2 | training | I2 | completed |
 | M9 | measurement | I2 | completed |
 | E8 | model_role | I2 | assigned |
+| E9 | inquiry | I2 | completed |
