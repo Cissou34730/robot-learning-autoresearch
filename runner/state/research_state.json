@@ -1009,7 +1009,7 @@
       "training_steps": 115712
     },
     "T2:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t2/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
       "evaluation_artifacts": [
         "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m9-T2-checkpoint-120832-160ep-seed4200-604d52985c97.json"
       ],
@@ -1658,7 +1658,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 9,
     "session": 5,
@@ -1667,9 +1667,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T2:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -3816,9 +3816,78 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:33:52Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M9"
+        ],
+        "reason": "M9 is a matched held-out development comparison under identical seeds and evaluation semantics: T2 achieves 150/160 (93.75%) versus T1's 105/160 (65.625%), with 7 versus 49 no-first-reach diagnostics. The inner-radius no-first-reach count falls from 45 to 3 in this panel, satisfying I2's positive closure condition and making T2 the strongest evidence-backed candidate, while remaining below the official goal and retaining residual exposed-radius and hold failures."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M9"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T2:checkpoint-120832",
+        "evidence": [
+          "M9"
+        ],
+        "reason": "M9 is a matched held-out development comparison under identical seeds and evaluation semantics: T2 achieves 150/160 (93.75%) versus T1's 105/160 (65.625%), with 7 versus 49 no-first-reach diagnostics. The inner-radius no-first-reach count falls from 45 to 3 in this panel, satisfying I2's positive closure condition and making T2 the strongest evidence-backed candidate, while remaining below the official goal and retaining residual exposed-radius and hold failures."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+        "fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
+        "source": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t2/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M9"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M9"
+        ],
+        "reason": "M9 is a matched held-out development comparison under identical seeds and evaluation semantics: T2 achieves 150/160 (93.75%) versus T1's 105/160 (65.625%), with 7 versus 49 no-first-reach diagnostics. The inner-radius no-first-reach count falls from 45 to 3 in this panel, satisfying I2's positive closure condition and making T2 the strongest evidence-backed candidate, while remaining below the official goal and retaining residual exposed-radius and hold failures."
+      }
+    },
+    "request_fingerprint": "81ff96d723998216a3eb8a8320858f16648bf610daced3ff447f8a11d26de2da",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-115712 is the only candidate with completed development evaluation and is the baseline comparator for I2; its late training-proxy rank is not treated as a capability or official-goal claim. T1:checkpoint-120832 and the other archived T1 checkpoints remain unmeasured and are not selected solely by terminal status or proxy rank.",
     "completed_operations": [
@@ -3862,7 +3931,8 @@
     "operation_ids": [
       "M8",
       "T2",
-      "M9"
+      "M9",
+      "E8"
     ],
     "scientific_parent_commit": "5b4165f28780996343e1e519042e7ddf2a2b34e5"
   },
