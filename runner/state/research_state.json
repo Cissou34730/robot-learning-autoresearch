@@ -4939,16 +4939,16 @@
     }
   },
   "counters": {
-    "event": 29,
+    "event": 30,
     "inquiry": 7,
     "measurement": 11,
-    "session": 14,
+    "session": 15,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12328,9 +12328,105 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:24:24Z",
+      "error": null,
+      "id": "E30",
+      "inquiry_id": "I7",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the strongest measured T3 staged-transfer recipe, including its unchanged observation and reward implementations, before adding the untried action-rate-limited torque realization."
+      },
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S15"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "aa034141471418d874494535b10de4edb7c07e51de1b705ed89c230a9b4998f4",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "60a0b4a5d0a79aa12832a4aec540beda6713a2eb20fe9698c5808d58504f4ff9",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "aa1f749a7d033a74054ab74ade55668f06f64392",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E30",
+    "inquiry_id": "I7",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the strongest measured T3 staged-transfer recipe, including its unchanged observation and reward implementations, before adding the untried action-rate-limited torque realization."
+      }
+    },
+    "request_fingerprint": "f0bcb266ee41bc95c748b07c497885d039597c451dca8026aee273f4c502ebf9",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned in this session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) based on M4. T6:checkpoint-86016 remains rejected at 133/160 (83.125%) based on M11. These roles and comparisons are artifact-level and do not establish mechanism.",
     "completed_operations": [
@@ -12363,6 +12459,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "65845d10-b5a5-4b70-a112-9860adcbf36f",
+    "id": "S15",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can a T3-compatible, observation- and reward-preserving action-rate-limited torque controller reduce T3's saturated, high-speed no-first-entry failures enough to reach at least 98% complete uninterrupted success without degrading its acquired inner- and outer-radius capability? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E30"
+    ],
+    "scientific_parent_commit": "aa1f749a7d033a74054ab74ade55668f06f64392"
+  },
   "terminal_state": null
 }
