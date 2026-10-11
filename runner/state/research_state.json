@@ -841,8 +841,8 @@
   "counters": {
     "event": 7,
     "inquiry": 2,
-    "measurement": 6,
-    "session": 4,
+    "measurement": 8,
+    "session": 5,
     "training": 1
   },
   "human_goal": {
@@ -2053,9 +2053,146 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:29:25Z",
+      "error": "robot_learning.lab.verify_full_radius_training_exposure failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 209, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 197, in main\n    _run_check(observed)\n    ~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 130, in _run_check\n    _require(\n    ~~~~~~~~^\n        penultimate_transition[4][\"held_steps\"] == EXPECTED_HOLD_STEPS - 1\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        and not penultimate_transition[2],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"hold terminated before 100 uninterrupted control steps\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 41, in _require\n    raise RuntimeError(message)\nRuntimeError: hold terminated before 100 uninterrupted control steps\n",
+      "id": "M7",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the I2 full-radius training exposure change and preservation of official hold semantics before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json",
+            "instrument": "python_module",
+            "label": "I2 full-radius exposure construction verification",
+            "module": "robot_learning.lab.verify_full_radius_training_exposure"
+          }
+        ],
+        "rationale": "This check must establish that the intended training intervention is actually constructed as the full 0.06-0.20 m radius range, while the official scenario defaults and uninterrupted 100-step hold behavior remain unchanged. It is a construction/regression check, not evidence of policy capability; passing it makes the subsequent full-allocation training result interpretable as a candidate comparison under the unchanged evaluation contract."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_full_radius_training_exposure failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 209, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 197, in main\n    _run_check(observed)\n    ~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 130, in _run_check\n    _require(\n    ~~~~~~~~^\n        penultimate_transition[4][\"held_steps\"] == EXPECTED_HOLD_STEPS - 1\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        and not penultimate_transition[2],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"hold terminated before 100 uninterrupted control steps\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_training_exposure.py\", line 41, in _require\n    raise RuntimeError(message)\nRuntimeError: hold terminated before 100 uninterrupted control steps\n",
+        "status": "failed"
+      },
+      "session_id": "S5",
+      "status": "failed",
+      "superseded_by": "M8",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json",
+          "instrument": "python_module",
+          "label": "I2 full-radius exposure construction verification",
+          "module": "robot_learning.lab.verify_full_radius_training_exposure"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "f6f0c5cdd6bbda72a93af96d7bb0c55b2f832672",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_full_radius_training_exposure.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "b89761832333489bc94c964a4dbb233ad5ec1163798b3d3c500c72ebe2507067",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M8",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Verify the I2 full-radius training exposure change and preservation of official hold semantics before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_full_radius_training_exposure.json",
+            "instrument": "python_module",
+            "label": "I2 full-radius exposure construction verification",
+            "module": "robot_learning.lab.verify_full_radius_training_exposure"
+          }
+        ],
+        "rationale": "This check must establish that the intended training intervention is actually constructed as the full 0.06-0.20 m radius range, while the official scenario defaults and uninterrupted 100-step hold behavior remain unchanged. It is a construction/regression check, not evidence of policy capability; passing it makes the subsequent full-allocation training result interpretable as a candidate comparison under the unchanged evaluation contract."
+      }
+    },
+    "request_fingerprint": "5dd5e1fb2a253756b9885409506d71e7b78dd44dc9d7f0b153897bb9b1947293",
+    "session_id": "S5",
+    "supersedes": "M7"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-115712 is the only candidate with completed development evaluation and is the baseline comparator for I2; its late training-proxy rank is not treated as a capability or official-goal claim. T1:checkpoint-120832 and the other archived T1 checkpoints remain unmeasured and are not selected solely by terminal status or proxy rank.",
     "completed_operations": [
@@ -2085,6 +2222,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8a234787-a4ea-4b2a-8f58-81472febe6ed",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does replacing the baseline 0.14-0.20 m training exposure with full 0.06-0.20 m exposure produce a complete learned policy whose held-out inner-radius reach failures materially decrease, or do failures persist across radius and angle in a pattern that warrants singular-escape, trajectory/braking, branch, or contact diagnostics before further policy development? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "f6f0c5cdd6bbda72a93af96d7bb0c55b2f832672"
+  },
   "terminal_state": null
 }

@@ -1,0 +1,59 @@
+{
+  "checked_scope": [
+    "training constant and constructed environment radius range",
+    "repeated training resets, sampled radii, and Gymnasium transitions",
+    "official default radius range and hold configuration",
+    "official contiguous hold completion and interruption reset"
+  ],
+  "error": "RuntimeError: hold terminated before 100 uninterrupted control steps",
+  "expected": {
+    "frame_skip": 10,
+    "hold_steps": 100,
+    "official_radius_range": [
+      0.06,
+      0.2
+    ],
+    "success_threshold": 0.01,
+    "training_radius_range": [
+      0.06,
+      0.2
+    ]
+  },
+  "observed": {
+    "official_default_range": [
+      0.06,
+      0.2
+    ],
+    "official_frame_skip": 10,
+    "official_hold_steps_required": 100,
+    "official_success_threshold": 0.01,
+    "training_constant": [
+      0.06,
+      0.2
+    ],
+    "training_constructed_range": [
+      0.06,
+      0.2
+    ],
+    "training_reset_samples": [
+      {
+        "sampled_radius": 0.12989890074161609,
+        "seed": 11
+      },
+      {
+        "sampled_radius": 0.1498041509229523,
+        "seed": 23
+      },
+      {
+        "sampled_radius": 0.1526336209123464,
+        "seed": 37
+      }
+    ]
+  },
+  "status": "failed",
+  "unchecked_scope": [
+    "whether full-radius exposure improves acquisition or official success",
+    "PPO settings, policy architecture, and learned behavior",
+    "compiled dynamics beyond the transitions exercised by this check"
+  ]
+}
