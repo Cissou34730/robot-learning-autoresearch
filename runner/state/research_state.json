@@ -10746,41 +10746,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T7:checkpoint-75776",
-        "reason": "Request the terminal protected assessment for the explicit best-known candidate T7:checkpoint-75776. M8 measured 196/200 successes (98.0%) on a fresh non-official panel, with 11 candidate wins, 0 reference wins, and preserved inner-radius acquisition relative to T4. The remaining gap is official evidence, not a currently decision-changing mechanistic uncertainty: further bounded work could refine the tested filter explanation but has no completed evidence showing it would improve candidate capability or selection more credibly than assessing the strongest measured candidate. The official evaluator is authoritative for the unresolved target distribution and interaction semantics; its pass or fail result directly determines the human-goal outcome.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "5e0f57f0-6eb6-4a95-9c52-cbc0e0bc17aa",
-        "campaign_id": "89a6354a-0e08-43f6-b017-536e7c05229b",
-        "campaign_usage": "29m01s | 77.03 AIU | prompt 14.6m (90% cached) | output 105.1k",
-        "session_id": "S8",
-        "session_kind": "goal_review",
-        "session_usage": "1m33s | 3.71 AIU | prompt 588.4k (85% cached) | output 4.1k"
-      },
-      "result": {
-        "model": "T7:checkpoint-75776",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "Request the terminal protected assessment for the explicit best-known candidate T7:checkpoint-75776. M8 measured 196/200 successes (98.0%) on a fresh non-official panel, with 11 candidate wins, 0 reference wins, and preserved inner-radius acquisition relative to T4. The remaining gap is official evidence, not a currently decision-changing mechanistic uncertainty: further bounded work could refine the tested filter explanation but has no completed evidence showing it would improve candidate capability or selection more credibly than assessing the strongest measured candidate. The official evaluator is authoritative for the unresolved target distribution and interaction semantics; its pass or fail result directly determines the human-goal outcome."
-      }
-    },
-    "request_fingerprint": "b246ba2905d782f476e309fc5d5d1df61a743bad0ca79a8b9dfa107f54389399",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal working, best-known, or retained role has been assigned. T7:checkpoint-75776 is the strongest development candidate by M8 at 196/200 and is the proposed candidate for official assessment. T4:checkpoint-105472 remains the paired reference, and T6:checkpoint-120832 remains evidence about the rejected composite controller implementation rather than a viable replacement.",
     "completed_operations": [
