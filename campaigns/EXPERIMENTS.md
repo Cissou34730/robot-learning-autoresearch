@@ -28,3 +28,4 @@
 | M10 | measurement | I3 | failed |
 | M11 | measurement | I3 | failed |
 | M12 | measurement | I3 | failed |
+| M13 | measurement | I3 | failed |

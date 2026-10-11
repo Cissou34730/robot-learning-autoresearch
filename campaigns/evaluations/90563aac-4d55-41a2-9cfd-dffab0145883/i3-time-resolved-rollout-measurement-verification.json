@@ -1,6 +1,6 @@
 {
   "checked_scope": [],
-  "error": "endpoint forward kinematics disagrees with its independent reference",
+  "error": "endpoint forward kinematics disagrees with its independent reference: actual=[ 0.21914418,-0.01815731, 0.02      ], expected=[ 0.21878123,-0.02166416, 0.02      ]",
   "observed_vs_expected": {},
   "passed": false,
   "schema_version": 1,
