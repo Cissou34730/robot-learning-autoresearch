@@ -5402,38 +5402,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Positive bounded answer: M15's independently verified time-resolved traces identify a reproducible acquisition and dynamic-regulation signature for the residual T2 failures. The seven no-first-reach failures split into six negative-angle trajectories that drive the shoulder into the compiled +/-170-degree joint-limit region with persistent saturated torque and high velocity, plus one approximately -32-degree trajectory with sustained high-speed saturated oscillation. The three reach-then-interrupt failures cross the observed 1 cm boundary with nonzero endpoint/joint velocity and saturated or near-saturated torque; their first reach and interruption class is preserved under forward-consistent qpos/qvel reconstruction. All 6119 samples have zero contact events, and final branch feasibility/occupancy does not separate failures from matched successful controls. The justified next intervention is therefore targeted acquisition/braking and post-reach regulation work that avoids joint-limit/saturation excursions, not a branch or contact intervention. This is a mechanism-supported direction, not evidence that the 98% goal has been met or that the intervention will close the gap.",
-        "reason": "The closure condition is met by M15: all ten M9 failure seeds and ten geometry-matched controls were measured with the required joint, endpoint, action/torque, hold, IK/branch, contact, radius and angle traces; the independent verifier passed 20 rollouts and 6119 steps; and it explicitly preserved the seven no-first-reach and three reach-then-interrupt classes under forward-replayed kinematics. The systematic live-endpoint versus qpos discrepancy is consequential\u201456 observed/reference tolerance disagreements and maxima of 5.918 mm position and 0.158 m/s velocity error\u2014so exact interruption timing and the environment's endpoint-cache semantics remain an explicit limitation for the next goal decision. It does not erase the class-level evidence: the forward reference preserves the failure classes, and the failures show velocity/saturation signatures absent from a branch/contact explanation. I3 can therefore close with a targeted control/regulation direction while carrying the semantic discrepancy forward rather than claiming it was disproved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Positive bounded answer: M15's independently verified time-resolved traces identify a reproducible acquisition and dynamic-regulation signature for the residual T2 failures. The seven no-first-reach failures split into six negative-angle trajectories that drive the shoulder into the compiled +/-170-degree joint-limit region with persistent saturated torque and high velocity, plus one approximately -32-degree trajectory with sustained high-speed saturated oscillation. The three reach-then-interrupt failures cross the observed 1 cm boundary with nonzero endpoint/joint velocity and saturated or near-saturated torque; their first reach and interruption class is preserved under forward-consistent qpos/qvel reconstruction. All 6119 samples have zero contact events, and final branch feasibility/occupancy does not separate failures from matched successful controls. The justified next intervention is therefore targeted acquisition/braking and post-reach regulation work that avoids joint-limit/saturation excursions, not a branch or contact intervention. This is a mechanism-supported direction, not evidence that the 98% goal has been met or that the intervention will close the gap.",
-        "reason": "The closure condition is met by M15: all ten M9 failure seeds and ten geometry-matched controls were measured with the required joint, endpoint, action/torque, hold, IK/branch, contact, radius and angle traces; the independent verifier passed 20 rollouts and 6119 steps; and it explicitly preserved the seven no-first-reach and three reach-then-interrupt classes under forward-replayed kinematics. The systematic live-endpoint versus qpos discrepancy is consequential\u201456 observed/reference tolerance disagreements and maxima of 5.918 mm position and 0.158 m/s velocity error\u2014so exact interruption timing and the environment's endpoint-cache semantics remain an explicit limitation for the next goal decision. It does not erase the class-level evidence: the forward reference preserves the failure classes, and the failures show velocity/saturation signatures absent from a branch/contact explanation. I3 can therefore close with a targeted control/regulation direction while carrying the semantic discrepancy forward rather than claiming it was disproved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Positive bounded answer: M15's independently verified time-resolved traces identify a reproducible acquisition and dynamic-regulation signature for the residual T2 failures. The seven no-first-reach failures split into six negative-angle trajectories that drive the shoulder into the compiled +/-170-degree joint-limit region with persistent saturated torque and high velocity, plus one approximately -32-degree trajectory with sustained high-speed saturated oscillation. The three reach-then-interrupt failures cross the observed 1 cm boundary with nonzero endpoint/joint velocity and saturated or near-saturated torque; their first reach and interruption class is preserved under forward-consistent qpos/qvel reconstruction. All 6119 samples have zero contact events, and final branch feasibility/occupancy does not separate failures from matched successful controls. The justified next intervention is therefore targeted acquisition/braking and post-reach regulation work that avoids joint-limit/saturation excursions, not a branch or contact intervention. This is a mechanism-supported direction, not evidence that the 98% goal has been met or that the intervention will close the gap.",
-        "reason": "The closure condition is met by M15: all ten M9 failure seeds and ten geometry-matched controls were measured with the required joint, endpoint, action/torque, hold, IK/branch, contact, radius and angle traces; the independent verifier passed 20 rollouts and 6119 steps; and it explicitly preserved the seven no-first-reach and three reach-then-interrupt classes under forward-replayed kinematics. The systematic live-endpoint versus qpos discrepancy is consequential\u201456 observed/reference tolerance disagreements and maxima of 5.918 mm position and 0.158 m/s velocity error\u2014so exact interruption timing and the environment's endpoint-cache semantics remain an explicit limitation for the next goal decision. It does not erase the class-level evidence: the forward reference preserves the failure classes, and the failures show velocity/saturation signatures absent from a branch/contact explanation. I3 can therefore close with a targeted control/regulation direction while carrying the semantic discrepancy forward rather than claiming it was disproved."
-      }
-    },
-    "request_fingerprint": "7bda2cda20557b1b28f43959132d3f022c7e4bc811cc10b5b8a283fb5461bb7b",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the best-known candidate by the completed M9 matched development comparison and is not an official success claim. T1:checkpoint-115712 is the matched baseline comparator. No candidate is working or retained. E8 assigned the best-known role; this inquiry does not change that role.",
     "completed_operations": [
