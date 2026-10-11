@@ -72,13 +72,20 @@ def _model_metadata(model: mujoco.MjModel) -> dict[str, Any]:
     joints = []
     for joint_id in range(model.njnt):
         joint = model.joint(joint_id)
+        dof_id = int(model.jnt_dofadr[joint_id])
+        if dof_id < 0 or dof_id >= model.nv:
+            raise ValueError(
+                f"joint {joint_id} has invalid DOF address {dof_id} "
+                f"for nv={model.nv}"
+            )
         joints.append(
             {
                 "id": joint_id,
                 "name": joint.name,
                 "type": _enum_metadata(model.jnt_type[joint_id]),
-                "damping_Nm_s": float(model.jnt_damping[joint_id]),
-                "armature_kg_m2": float(model.jnt_armature[joint_id]),
+                "dof_id": dof_id,
+                "damping_Nm_s": float(model.dof_damping[dof_id]),
+                "armature_kg_m2": float(model.dof_armature[dof_id]),
                 "range_rad": _finite_values(model.jnt_range[joint_id], "joint_range"),
                 "limited": bool(model.jnt_limited[joint_id]),
             }
