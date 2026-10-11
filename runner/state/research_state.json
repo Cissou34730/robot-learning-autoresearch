@@ -3290,7 +3290,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 5,
     "session": 7,
@@ -3299,7 +3299,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7182,29 +7182,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:39:39Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is fresh full-radius recipe-specific counterevidence at 33.75%. These are candidate-comparison facts only. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10, T4, M5, E12. T1, T2, T3 and T4 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832 and T4 transferred from T3:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes; M5 paired T4:checkpoint-20480 and T3:checkpoint-120832 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375% (151/160), 3.625 percentage points below the 98% objective. The tested intervention T4:checkpoint-20480 achieved 93.125% (149/160) and is not a stronger candidate. Neither result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+        "decision_frontier": "The tested near-limit penalty is rejected because it regressed complete success without materially changing the saturation-linked trajectory signature. The broader unresolved distinction is now whether direct simulator/actuator characterization will reveal insufficient authority or configuration-dependent dynamics at the residual targets, versus whether a different policy or control design could regulate those states. Evidence that required torques or attainable accelerations are insufficient at the observed configurations would redirect away from reward-only interventions toward authority/dynamics redesign; measurable authority margin with policy-dependent trajectories would support a new control or representation intervention. Any continuation must still preserve inner-band and outer-band complete holds and be judged by the official 98% objective.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10",
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted episode success under the official 6-20 cm task distribution. The strongest measured development artifact remains below that threshold, and the completed I3 inquiry tested whether a bounded control-authority intervention could close the remaining gap.",
+        "next_direction_or_closure": "I3 is closed with a recipe-level negative result and an explicit unresolved causal distinction. The next goal review should decide whether to open the proposed direct authority/dynamics inquiry and select a characterization operation before committing further learning resources. No official assessment is requested because the strongest measured development artifact remains below 98%.",
+        "next_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "926835e3aa45ad85ee262e0d6218d4c19e7a2815",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is fresh full-radius recipe-specific counterevidence at 33.75%. These are candidate-comparison facts only. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10, T4, M5, E12. T1, T2, T3 and T4 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832 and T4 transferred from T3:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes; M5 paired T4:checkpoint-20480 and T3:checkpoint-120832 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375% (151/160), 3.625 percentage points below the 98% objective. The tested intervention T4:checkpoint-20480 achieved 93.125% (149/160) and is not a stronger candidate. Neither result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+        "decision_frontier": "The tested near-limit penalty is rejected because it regressed complete success without materially changing the saturation-linked trajectory signature. The broader unresolved distinction is now whether direct simulator/actuator characterization will reveal insufficient authority or configuration-dependent dynamics at the residual targets, versus whether a different policy or control design could regulate those states. Evidence that required torques or attainable accelerations are insufficient at the observed configurations would redirect away from reward-only interventions toward authority/dynamics redesign; measurable authority margin with policy-dependent trajectories would support a new control or representation intervention. Any continuation must still preserve inner-band and outer-band complete holds and be judged by the official 98% objective.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10",
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted episode success under the official 6-20 cm task distribution. The strongest measured development artifact remains below that threshold, and the completed I3 inquiry tested whether a bounded control-authority intervention could close the remaining gap.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed with a recipe-level negative result and an explicit unresolved causal distinction. The next goal review should decide whether to open the proposed direct authority/dynamics inquiry and select a characterization operation before committing further learning resources. No official assessment is requested because the strongest measured development artifact remains below 98%.",
+        "next_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "772977fc-5f90-42f2-af1a-86bbbacf46dc",
+        "campaign_id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
+        "campaign_usage": "19m17s | 49.15 AIU | prompt 7.6m (86% cached) | output 78.4k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "2m53s | 7.15 AIU | prompt 1.1m (86% cached) | output 11.2k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a2b454c70f8433f9fd37b9802a95469079e2314e",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is fresh full-radius recipe-specific counterevidence at 33.75%. These are candidate-comparison facts only. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10, T4, M5, E12. T1, T2, T3 and T4 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832 and T4 transferred from T3:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes; M5 paired T4:checkpoint-20480 and T3:checkpoint-120832 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375% (151/160), 3.625 percentage points below the 98% objective. The tested intervention T4:checkpoint-20480 achieved 93.125% (149/160) and is not a stronger candidate. Neither result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+        "decision_frontier": "The tested near-limit penalty is rejected because it regressed complete success without materially changing the saturation-linked trajectory signature. The broader unresolved distinction is now whether direct simulator/actuator characterization will reveal insufficient authority or configuration-dependent dynamics at the residual targets, versus whether a different policy or control design could regulate those states. Evidence that required torques or attainable accelerations are insufficient at the observed configurations would redirect away from reward-only interventions toward authority/dynamics redesign; measurable authority margin with policy-dependent trajectories would support a new control or representation intervention. Any continuation must still preserve inner-band and outer-band complete holds and be judged by the official 98% objective.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10",
+          "T4",
+          "M5",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted episode success under the official 6-20 cm task distribution. The strongest measured development artifact remains below that threshold, and the completed I3 inquiry tested whether a bounded control-authority intervention could close the remaining gap.",
+        "next_direction_or_closure": "I3 is closed with a recipe-level negative result and an explicit unresolved causal distinction. The next goal review should decide whether to open the proposed direct authority/dynamics inquiry and select a characterization operation before committing further learning resources. No official assessment is requested because the strongest measured development artifact remains below 98%.",
+        "next_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?"
+      }
+    },
+    "request_fingerprint": "73931a93697ad2f885def3378708a7915c1a6d63374feeac23f6aebd381b3686",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is fresh full-radius recipe-specific counterevidence at 33.75%. These are candidate-comparison facts only. No working, best-known, or retained role is assigned.",
     "completed_operations": [
-      "E10"
+      "T4",
+      "M5",
+      "E12"
     ],
-    "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10. T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. No official assessment has been requested.",
-    "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 failures and a 3.625 percentage-point gap to the 98% objective. This development artifact is not official assessment evidence.",
-    "current_synthesis": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
-    "decision_frontier": "Determine whether a bounded control-authority intervention applied to the staged-transfer route can reduce saturation- and speed-linked first-entry failures while preserving complete holds across the official 6-14 cm inner band and the outer-radius band. The competing explanations are improved policy regulation versus a hard actuator or dynamics limit. Same-panel complete success, radius-stratified first entry, and trajectory evidence covering saturation, endpoint/joint speed, branch, Jacobian, and hold behavior will discriminate the next direction. Fewer failures with reduced or better-timed saturation and preserved coverage supports continuing control-authority work; unchanged failures with actuator-limit signatures supports a direct authority/dynamics investigation; regression without diagnostic improvement rejects the tested recipe but not the broader control hypothesis.",
+    "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10, T4, M5, E12. T1, T2, T3 and T4 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832 and T4 transferred from T3:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes; M5 paired T4:checkpoint-20480 and T3:checkpoint-120832 over 160 shared-seed episodes. No official assessment has been requested.",
+    "current_goal_gap": "T3:checkpoint-120832 remains the strongest measured development artifact at 94.375% (151/160), 3.625 percentage points below the 98% objective. The tested intervention T4:checkpoint-20480 achieved 93.125% (149/160) and is not a stronger candidate. Neither result is official assessment evidence.",
+    "current_synthesis": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel, with paired wins of 31-1 and 41-0. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. The four T3 no-first-entry failures spanned inner and outer radii and showed 498-500 pre-entry saturation steps with high endpoint and joint speeds. M5 tested a near-limit command penalty transferred from T3:checkpoint-120832: T4:checkpoint-20480 fell to 93.125% with paired wins 0-2, reduced no-entry failures from four to three, but retained 498-500 saturated pre-entry steps, maximum control 1.0, and essentially unchanged speed signatures in the remaining no-entry failures, while adding hold-related losses. E12 therefore closes I3 by rejecting this recipe without proving whether the residual mechanism is avoidable policy regulation or a hard actuator/dynamics limit.",
+    "decision_frontier": "The tested near-limit penalty is rejected because it regressed complete success without materially changing the saturation-linked trajectory signature. The broader unresolved distinction is now whether direct simulator/actuator characterization will reveal insufficient authority or configuration-dependent dynamics at the residual targets, versus whether a different policy or control design could regulate those states. Evidence that required torques or attainable accelerations are insufficient at the observed configurations would redirect away from reward-only interventions toward authority/dynamics redesign; measurable authority margin with policy-dependent trajectories would support a new control or representation intervention. Any continuation must still preserve inner-band and outer-band complete holds and be judged by the official 98% objective.",
     "evidence_references": [
       "M4",
       "E8",
-      "E10"
+      "E10",
+      "T4",
+      "M5",
+      "E12"
     ],
-    "human_goal_connection": "The human goal requires at least 98% complete episode success under the official task distribution. I3 is opened because the strongest measured development artifact, T3:checkpoint-120832, reached 94.375% (151/160), leaving a 3.625 percentage-point gap, and its residual failures may be actionable control problems.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is open and this goal-review session is complete. The fresh inquiry session should select the most decision-relevant bounded scientific action for distinguishing policy regulation from hard actuator limitation while preserving the staged policy's acquired coverage and complete holds.",
-    "next_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
-    "scientific_commit": "23cdfc1e5b3274448d15b9c97be3594662a490d2",
-    "session_id": "S6"
+    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted episode success under the official 6-20 cm task distribution. The strongest measured development artifact remains below that threshold, and the completed I3 inquiry tested whether a bounded control-authority intervention could close the remaining gap.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed with a recipe-level negative result and an explicit unresolved causal distinction. The next goal review should decide whether to open the proposed direct authority/dynamics inquiry and select a characterization operation before committing further learning resources. No official assessment is requested because the strongest measured development artifact remains below 98%.",
+    "next_question": "What actuator-authority and configuration-dependent dynamics margins are available at the staged-transfer residual target configurations, and do they distinguish a hard reachability limit from a policy-dependent regulation failure sufficiently to select the next route toward 98% complete episode success?",
+    "scientific_commit": "a2b454c70f8433f9fd37b9802a95469079e2314e",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7212,23 +7356,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "772977fc-5f90-42f2-af1a-86bbbacf46dc",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T4",
-      "M5",
-      "E12"
-    ],
-    "scientific_parent_commit": "926835e3aa45ad85ee262e0d6218d4c19e7a2815"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
