@@ -73,7 +73,7 @@ def jacobian(model: mujoco.MjModel, data: mujoco.MjData) -> np.ndarray:
 
 def full_mass_matrix(model: mujoco.MjModel, data: mujoco.MjData) -> np.ndarray:
     mass = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, mass, data.qM)
+    mujoco.mj_fullM(model, data, mass)
     return mass
 
 
