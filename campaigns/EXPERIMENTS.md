@@ -31,3 +31,4 @@
 | M13 | measurement | I3 | failed |
 | M14 | measurement | I3 | completed |
 | M15 | measurement | I3 | completed |
+| E13 | inquiry | I3 | completed |
