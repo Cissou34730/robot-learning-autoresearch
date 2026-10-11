@@ -14,3 +14,4 @@
 | M6 | measurement | I1 | completed |
 | E4 | inquiry | I1 | completed |
 | E5 | checkpoint | I1 | checkpointed |
+| E6 | inquiry | I2 | completed |
