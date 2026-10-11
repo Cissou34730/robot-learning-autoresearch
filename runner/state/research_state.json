@@ -4116,14 +4116,14 @@
   "counters": {
     "event": 29,
     "inquiry": 7,
-    "measurement": 20,
-    "session": 14,
+    "measurement": 21,
+    "session": 15,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -11407,9 +11407,658 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:27:52Z",
+      "error": null,
+      "id": "M21",
+      "inquiry_id": "I7",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the I7 residual-torque control profile, its artifact persistence, and legacy direct-control compatibility before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json",
+            "instrument": "python_module",
+            "label": "I7 residual torque implementation verification",
+            "module": "robot_learning.lab.verify_residual_torque_policy"
+          }
+        ],
+        "rationale": "The active distinction is capability of a genuinely different mechanism-informed controller, not another proxy-ranked continuation. This check must establish that the intended singular-escape, branch-aware attraction, boundary regulation, joint-limit avoidance, and learned residual are actually applied in repeated state transitions, while unchanged direct-action semantics remain available for legacy candidates. A failed check is an implementation limitation and should block training evidence."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+            ],
+            "instrument": "python_module",
+            "label": "I7 residual torque implementation verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M21-1-verify_residual_torque_policy.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 11,
+                    "field_names": [
+                      "branch_index",
+                      "comparison",
+                      "expected",
+                      "label",
+                      "observed",
+                      "selected_branch",
+                      "terms"
+                    ],
+                    "path": "/observed_vs_expected",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c90b8e62f621f75f667a867c6775fa7bf70c30c7473667f6d824297b8ae8381d"
+            },
+            "module": "robot_learning.lab.verify_residual_torque_policy"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+              "path": "robot_learning/lab/verify_residual_torque_policy.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "0f56b17aad1205f5a50d00bf3d782d0830dcd88a",
+            "fingerprint": "b8e6f6fc466258de9dc3f46d2bd307e36c0aada5201f6040ef562b6555feadfb",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+                "path": "robot_learning/lab/verify_residual_torque_policy.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+                "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1665256f8a0e54a1fec6cc50d6a7a697c2178207",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+              "path": "robot_learning/lab/verify_residual_torque_policy.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_residual_torque_policy.py"
+          ],
+          "scientific_commit": "fd438b687a2db10e92a560ffe8281418aea30c67",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "3c64bfe346124da0ad1c14eb0b755703523be992d4d891664db25c53fe5ac21b",
+              "path": "robot_learning/scenario/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "e5a546b89b298560cb7e5e7bc019976835b052762b2bca7d66578d718d828012",
+              "path": "robot_learning/scenario/policy_io.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "ef1de57c7246c17f448a6279e40cd577ac3feae77850e9b9b89d5a9572e57a84",
+              "path": "robot_learning/training/checkpoint.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "16f85fb2dd67baa6c739bbb4af6672e8f9f70c289d018a77e7cc9b621546965d",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/environment.py",
+            "robot_learning/scenario/policy_io.py",
+            "robot_learning/training/checkpoint.py",
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json",
+          "instrument": "python_module",
+          "label": "I7 residual torque implementation verification",
+          "module": "robot_learning.lab.verify_residual_torque_policy"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+            "path": "robot_learning/lab/verify_residual_torque_policy.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+            "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "0f56b17aad1205f5a50d00bf3d782d0830dcd88a",
+          "fingerprint": "b8e6f6fc466258de9dc3f46d2bd307e36c0aada5201f6040ef562b6555feadfb",
+          "manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+              "path": "robot_learning/lab/verify_residual_torque_policy.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ]
+        },
+        "code_parent_commit": "1665256f8a0e54a1fec6cc50d6a7a697c2178207",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+            "path": "robot_learning/lab/verify_residual_torque_policy.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_residual_torque_policy.py"
+        ],
+        "scientific_commit": "fd438b687a2db10e92a560ffe8281418aea30c67",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "3c64bfe346124da0ad1c14eb0b755703523be992d4d891664db25c53fe5ac21b",
+            "path": "robot_learning/scenario/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "e5a546b89b298560cb7e5e7bc019976835b052762b2bca7d66578d718d828012",
+            "path": "robot_learning/scenario/policy_io.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "ef1de57c7246c17f448a6279e40cd577ac3feae77850e9b9b89d5a9572e57a84",
+            "path": "robot_learning/training/checkpoint.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "16f85fb2dd67baa6c739bbb4af6672e8f9f70c289d018a77e7cc9b621546965d",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/checkpoint.py",
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+          ],
+          "instrument": "python_module",
+          "label": "I7 residual torque implementation verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M21-1-verify_residual_torque_policy.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 4,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 11,
+                  "field_names": [
+                    "branch_index",
+                    "comparison",
+                    "expected",
+                    "label",
+                    "observed",
+                    "selected_branch",
+                    "terms"
+                  ],
+                  "path": "/observed_vs_expected",
+                  "type": "array"
+                },
+                {
+                  "path": "/passed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "c90b8e62f621f75f667a867c6775fa7bf70c30c7473667f6d824297b8ae8381d"
+          },
+          "module": "robot_learning.lab.verify_residual_torque_policy"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+            ],
+            "instrument": "python_module",
+            "label": "I7 residual torque implementation verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M21-1-verify_residual_torque_policy.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 11,
+                    "field_names": [
+                      "branch_index",
+                      "comparison",
+                      "expected",
+                      "label",
+                      "observed",
+                      "selected_branch",
+                      "terms"
+                    ],
+                    "path": "/observed_vs_expected",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c90b8e62f621f75f667a867c6775fa7bf70c30c7473667f6d824297b8ae8381d"
+            },
+            "module": "robot_learning.lab.verify_residual_torque_policy"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+              "path": "robot_learning/lab/verify_residual_torque_policy.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+              "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "0f56b17aad1205f5a50d00bf3d782d0830dcd88a",
+            "fingerprint": "b8e6f6fc466258de9dc3f46d2bd307e36c0aada5201f6040ef562b6555feadfb",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+                "path": "robot_learning/lab/verify_residual_torque_policy.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+                "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1665256f8a0e54a1fec6cc50d6a7a697c2178207",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+              "path": "robot_learning/lab/verify_residual_torque_policy.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_residual_torque_policy.py"
+          ],
+          "scientific_commit": "fd438b687a2db10e92a560ffe8281418aea30c67",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "3c64bfe346124da0ad1c14eb0b755703523be992d4d891664db25c53fe5ac21b",
+              "path": "robot_learning/scenario/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "e5a546b89b298560cb7e5e7bc019976835b052762b2bca7d66578d718d828012",
+              "path": "robot_learning/scenario/policy_io.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "ef1de57c7246c17f448a6279e40cd577ac3feae77850e9b9b89d5a9572e57a84",
+              "path": "robot_learning/training/checkpoint.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "16f85fb2dd67baa6c739bbb4af6672e8f9f70c289d018a77e7cc9b621546965d",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/environment.py",
+            "robot_learning/scenario/policy_io.py",
+            "robot_learning/training/checkpoint.py",
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M21",
+    "inquiry_id": "I7",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify the I7 residual-torque control profile, its artifact persistence, and legacy direct-control compatibility before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/verify_residual_torque_policy.json",
+            "instrument": "python_module",
+            "label": "I7 residual torque implementation verification",
+            "module": "robot_learning.lab.verify_residual_torque_policy"
+          }
+        ],
+        "rationale": "The active distinction is capability of a genuinely different mechanism-informed controller, not another proxy-ranked continuation. This check must establish that the intended singular-escape, branch-aware attraction, boundary regulation, joint-limit avoidance, and learned residual are actually applied in repeated state transitions, while unchanged direct-action semantics remain available for legacy candidates. A failed check is an implementation limitation and should block training evidence."
+      }
+    },
+    "request_fingerprint": "eba0bfed4d16aabddb8965a883b0e79fd9652c426e025cae9e75c86e9be096a8",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known on M19 at 153/160. T5:checkpoint-100352 is a complete measured continuation candidate at 153/160 and does not supersede T4. T2:checkpoint-120832 is the 150/160 matched reference. T3 is rejected at 0/160. No candidate is assigned a working or retained role, and no candidate is certified for the human goal.",
     "completed_operations": [
@@ -11443,6 +12092,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f7a9db18-b531-4302-af8c-d14a99cec9cb",
+    "id": "S15",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can a mechanism-informed residual torque policy, trained on the full official radius range with explicit singular-escape, joint-limit-avoidance, and boundary-aware hold regulation, exceed T4's 153/160 matched-panel success while retaining no-first-reach failures at three or fewer? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M21"
+    ],
+    "scientific_parent_commit": "fd438b687a2db10e92a560ffe8281418aea30c67"
+  },
   "terminal_state": null
 }

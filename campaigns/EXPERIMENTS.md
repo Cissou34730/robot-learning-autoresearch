@@ -56,3 +56,4 @@
 | E27 | checkpoint | I6 | checkpointed |
 | E28 | inquiry | I7 | completed |
 | E29 | checkpoint | - | checkpointed |
+| M21 | measurement | I7 | completed |
