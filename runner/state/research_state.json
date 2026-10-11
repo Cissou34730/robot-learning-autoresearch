@@ -1650,7 +1650,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 9,
     "session": 5,
@@ -1659,7 +1659,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4617,18 +4617,190 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:50:45Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with demonstrated development capability, measured at 150/160 = 93.75%, and is the comparison baseline but has no assigned working, best-known, or retained role. T2:checkpoint-100352 and T2:checkpoint-120832 are archived fresh candidates measured at 0/160; neither is promoted. No candidate is assessment-ready or assigned a model role in this checkpoint.",
+        "completed_operations": [
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "cumulative_resource_use": "Campaign has used two inquiries of the available fifteen. Before I2: M1/M2 compiled and distribution measurements, one fresh 120,000-step PPO run T1 completing 120,832 actual steps, baseline development measurements M3/M5/M7, diagnostic verifications M4/M6, and inquiry/goal-review checkpoints E1\u2013E7. I2 used M8 controlled reward verification, one fresh 120,000-step requested PPO run T2 completing 120,832 actual steps, and M9 two 160-episode paired development evaluations on seeds 4360\u20134519. No official assessment has been requested; protected evaluator semantics remain unresolved.",
+        "current_goal_gap": "The best measured capability remains T1 at 150/160 = 93.75%, seven episodes short of the 157/160 development threshold and below the official 196/200 requirement. The I2 intervention did not reduce this gap: both T2:checkpoint-100352 and T2:checkpoint-120832 achieved 0/160 on a non-overlapping panel, with all 160 episodes lacking first reach. The protected evaluator's exact continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1 verified the compiled two-joint plant, 0.002 s internal integration, ten internal steps per 20 ms action, and substantial torque authority in tested traces; those traces had no contacts. M2 verified exposure to the full official 6\u201320 cm radial range. T1 completed the 120,000-step PPO allocation and its terminal artifact reached 150/160 on the seed-4200 panel; M7 identified seven non-reach failures and three reached-but-unstable hold failures, with the hold failures showing high near-tolerance qvel, saturated action, repeated interruptions, and internal excursions. The baseline used only the open elbow branch, but that branch succeeded in 150 episodes, so folded-branch forcing remains unsupported. M8 verified the implemented I2 reward code under controlled repeated updates: braking is gated away from far transit, high near-target velocity is penalized more, deeper inner margin is rewarded, repeated hold updates remain finite, and interruption forfeits prior hold progress. T2 was a fresh full-allocation PPO run with that reward implementation and unchanged task exposure/interface; its training proxy success was zero at every checkpoint. M9 measured two T2 artifacts on the same non-overlapping seed-4360 panel: both scored 0/160, every first_reach_step was null, all held-step and interruption counts were zero, contacts were zero, and the panel covered the full radius and angle distribution. The paired comparison produced no episode wins for either artifact. Interpretation: I2 does not support the intended positive capability claim. The tested complete reward-and-PPO recipe caused a broad reach-learning collapse, not a hold-only or narrowly target-angle-conditioned deficit. This is consistent with a reward-scale, learning-dynamics, singular-start, or observation-use interaction, but M9 cannot identify which because the intervention changed multiple reward terms together and no policy-level causal isolation was performed. The earlier baseline timing/hold interpretation remains supported for T1, but it is not rescued by T2. Claims are limited to the tested PPO recipe, seed, allocation, implementation, interface, and measured panels; the result does not disprove velocity-aware braking or margin shaping as broader methods, and internal-step excursions still do not certify protected continuous-hold failure.",
+        "decision_frontier": "The active I2 distinction is resolved negatively for its tested artifact: the intervention did not preserve first reach, so further hold-margin optimization on this recipe is not the supported next action. The consequential unresolved distinction for goal review is whether T2's zero-reach collapse arose from the changed reward scale/terms, an interaction with the PPO learning dynamics and singular start, or inadequate policy use of the available state/target features. A discriminating next direction should first recover or test first-reach competence under the full target distribution, using candidate comparisons or controlled reward/recipe ablations that preserve the established reach/hold diagnostics. Evidence that a revised recipe restores nonzero broad first reach would support continued policy/control development; persistent zero reach across reward-preserving controls would redirect toward observation/runtime or simulator-interface investigation. Protected official continuous-hold semantics remain unavailable and are not a reason to claim success.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "E4",
+          "E6",
+          "E7",
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains a learned torque policy with at least 196/200 official episodes succeeding through first reach and a complete uninterrupted 2 s hold. T1:checkpoint-120832 remains below that goal at 150/160 on its development panel, while the fresh I2 T2 artifacts failed to reach at all; no official assessment is justified by the current evidence.",
+        "next_direction_or_closure": "Close inquiry I2 with a limited negative conclusion. The specified fresh candidate and diagnostics were archived and measured, satisfying the inquiry closure condition for a negative result. Do not request official assessment. Return to goal review to decide whether to investigate reward/learning-recipe/observation-use mechanisms with a discriminating first-reach test or choose another supported direction; preserve the fact that this negative result is recipe-specific and does not itself disprove the broader method.",
+        "next_question": "Can a revised learning recipe recover broad first-reach competence across the full official target distribution after the I2 zero-reach collapse, and which of reward scaling/terms, PPO learning dynamics, singular-start handling, or observation use is consequential before hold shaping is revisited?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ea602e7f5f4eaa19195f2425a54418ae17167fe4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with demonstrated development capability, measured at 150/160 = 93.75%, and is the comparison baseline but has no assigned working, best-known, or retained role. T2:checkpoint-100352 and T2:checkpoint-120832 are archived fresh candidates measured at 0/160; neither is promoted. No candidate is assessment-ready or assigned a model role in this checkpoint.",
+        "completed_operations": [
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "cumulative_resource_use": "Campaign has used two inquiries of the available fifteen. Before I2: M1/M2 compiled and distribution measurements, one fresh 120,000-step PPO run T1 completing 120,832 actual steps, baseline development measurements M3/M5/M7, diagnostic verifications M4/M6, and inquiry/goal-review checkpoints E1\u2013E7. I2 used M8 controlled reward verification, one fresh 120,000-step requested PPO run T2 completing 120,832 actual steps, and M9 two 160-episode paired development evaluations on seeds 4360\u20134519. No official assessment has been requested; protected evaluator semantics remain unresolved.",
+        "current_goal_gap": "The best measured capability remains T1 at 150/160 = 93.75%, seven episodes short of the 157/160 development threshold and below the official 196/200 requirement. The I2 intervention did not reduce this gap: both T2:checkpoint-100352 and T2:checkpoint-120832 achieved 0/160 on a non-overlapping panel, with all 160 episodes lacking first reach. The protected evaluator's exact continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1 verified the compiled two-joint plant, 0.002 s internal integration, ten internal steps per 20 ms action, and substantial torque authority in tested traces; those traces had no contacts. M2 verified exposure to the full official 6\u201320 cm radial range. T1 completed the 120,000-step PPO allocation and its terminal artifact reached 150/160 on the seed-4200 panel; M7 identified seven non-reach failures and three reached-but-unstable hold failures, with the hold failures showing high near-tolerance qvel, saturated action, repeated interruptions, and internal excursions. The baseline used only the open elbow branch, but that branch succeeded in 150 episodes, so folded-branch forcing remains unsupported. M8 verified the implemented I2 reward code under controlled repeated updates: braking is gated away from far transit, high near-target velocity is penalized more, deeper inner margin is rewarded, repeated hold updates remain finite, and interruption forfeits prior hold progress. T2 was a fresh full-allocation PPO run with that reward implementation and unchanged task exposure/interface; its training proxy success was zero at every checkpoint. M9 measured two T2 artifacts on the same non-overlapping seed-4360 panel: both scored 0/160, every first_reach_step was null, all held-step and interruption counts were zero, contacts were zero, and the panel covered the full radius and angle distribution. The paired comparison produced no episode wins for either artifact. Interpretation: I2 does not support the intended positive capability claim. The tested complete reward-and-PPO recipe caused a broad reach-learning collapse, not a hold-only or narrowly target-angle-conditioned deficit. This is consistent with a reward-scale, learning-dynamics, singular-start, or observation-use interaction, but M9 cannot identify which because the intervention changed multiple reward terms together and no policy-level causal isolation was performed. The earlier baseline timing/hold interpretation remains supported for T1, but it is not rescued by T2. Claims are limited to the tested PPO recipe, seed, allocation, implementation, interface, and measured panels; the result does not disprove velocity-aware braking or margin shaping as broader methods, and internal-step excursions still do not certify protected continuous-hold failure.",
+        "decision_frontier": "The active I2 distinction is resolved negatively for its tested artifact: the intervention did not preserve first reach, so further hold-margin optimization on this recipe is not the supported next action. The consequential unresolved distinction for goal review is whether T2's zero-reach collapse arose from the changed reward scale/terms, an interaction with the PPO learning dynamics and singular start, or inadequate policy use of the available state/target features. A discriminating next direction should first recover or test first-reach competence under the full target distribution, using candidate comparisons or controlled reward/recipe ablations that preserve the established reach/hold diagnostics. Evidence that a revised recipe restores nonzero broad first reach would support continued policy/control development; persistent zero reach across reward-preserving controls would redirect toward observation/runtime or simulator-interface investigation. Protected official continuous-hold semantics remain unavailable and are not a reason to claim success.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "E4",
+          "E6",
+          "E7",
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains a learned torque policy with at least 196/200 official episodes succeeding through first reach and a complete uninterrupted 2 s hold. T1:checkpoint-120832 remains below that goal at 150/160 on its development panel, while the fresh I2 T2 artifacts failed to reach at all; no official assessment is justified by the current evidence.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "Close inquiry I2 with a limited negative conclusion. The specified fresh candidate and diagnostics were archived and measured, satisfying the inquiry closure condition for a negative result. Do not request official assessment. Return to goal review to decide whether to investigate reward/learning-recipe/observation-use mechanisms with a discriminating first-reach test or choose another supported direction; preserve the fact that this negative result is recipe-specific and does not itself disprove the broader method.",
+        "next_question": "Can a revised learning recipe recover broad first-reach competence across the full official target distribution after the I2 zero-reach collapse, and which of reward scaling/terms, PPO learning dynamics, singular-start handling, or observation use is consequential before hold shaping is revisited?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "91be29eb-3664-4d6c-b6f3-8c6ad2fb6186",
+        "campaign_id": "0d39d52c-e9f6-4b27-814c-3b9e21c07b2a",
+        "campaign_usage": "18m23s | 30.65 AIU | prompt 3.6m (87% cached) | output 105.2k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "1m31s | 2.02 AIU | prompt 88.7k (72% cached) | output 10.6k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7be32feacbda1ab66cd0f092b04a2bc56c5540ae",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with demonstrated development capability, measured at 150/160 = 93.75%, and is the comparison baseline but has no assigned working, best-known, or retained role. T2:checkpoint-100352 and T2:checkpoint-120832 are archived fresh candidates measured at 0/160; neither is promoted. No candidate is assessment-ready or assigned a model role in this checkpoint.",
+        "completed_operations": [
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "cumulative_resource_use": "Campaign has used two inquiries of the available fifteen. Before I2: M1/M2 compiled and distribution measurements, one fresh 120,000-step PPO run T1 completing 120,832 actual steps, baseline development measurements M3/M5/M7, diagnostic verifications M4/M6, and inquiry/goal-review checkpoints E1\u2013E7. I2 used M8 controlled reward verification, one fresh 120,000-step requested PPO run T2 completing 120,832 actual steps, and M9 two 160-episode paired development evaluations on seeds 4360\u20134519. No official assessment has been requested; protected evaluator semantics remain unresolved.",
+        "current_goal_gap": "The best measured capability remains T1 at 150/160 = 93.75%, seven episodes short of the 157/160 development threshold and below the official 196/200 requirement. The I2 intervention did not reduce this gap: both T2:checkpoint-100352 and T2:checkpoint-120832 achieved 0/160 on a non-overlapping panel, with all 160 episodes lacking first reach. The protected evaluator's exact continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1 verified the compiled two-joint plant, 0.002 s internal integration, ten internal steps per 20 ms action, and substantial torque authority in tested traces; those traces had no contacts. M2 verified exposure to the full official 6\u201320 cm radial range. T1 completed the 120,000-step PPO allocation and its terminal artifact reached 150/160 on the seed-4200 panel; M7 identified seven non-reach failures and three reached-but-unstable hold failures, with the hold failures showing high near-tolerance qvel, saturated action, repeated interruptions, and internal excursions. The baseline used only the open elbow branch, but that branch succeeded in 150 episodes, so folded-branch forcing remains unsupported. M8 verified the implemented I2 reward code under controlled repeated updates: braking is gated away from far transit, high near-target velocity is penalized more, deeper inner margin is rewarded, repeated hold updates remain finite, and interruption forfeits prior hold progress. T2 was a fresh full-allocation PPO run with that reward implementation and unchanged task exposure/interface; its training proxy success was zero at every checkpoint. M9 measured two T2 artifacts on the same non-overlapping seed-4360 panel: both scored 0/160, every first_reach_step was null, all held-step and interruption counts were zero, contacts were zero, and the panel covered the full radius and angle distribution. The paired comparison produced no episode wins for either artifact. Interpretation: I2 does not support the intended positive capability claim. The tested complete reward-and-PPO recipe caused a broad reach-learning collapse, not a hold-only or narrowly target-angle-conditioned deficit. This is consistent with a reward-scale, learning-dynamics, singular-start, or observation-use interaction, but M9 cannot identify which because the intervention changed multiple reward terms together and no policy-level causal isolation was performed. The earlier baseline timing/hold interpretation remains supported for T1, but it is not rescued by T2. Claims are limited to the tested PPO recipe, seed, allocation, implementation, interface, and measured panels; the result does not disprove velocity-aware braking or margin shaping as broader methods, and internal-step excursions still do not certify protected continuous-hold failure.",
+        "decision_frontier": "The active I2 distinction is resolved negatively for its tested artifact: the intervention did not preserve first reach, so further hold-margin optimization on this recipe is not the supported next action. The consequential unresolved distinction for goal review is whether T2's zero-reach collapse arose from the changed reward scale/terms, an interaction with the PPO learning dynamics and singular start, or inadequate policy use of the available state/target features. A discriminating next direction should first recover or test first-reach competence under the full target distribution, using candidate comparisons or controlled reward/recipe ablations that preserve the established reach/hold diagnostics. Evidence that a revised recipe restores nonzero broad first reach would support continued policy/control development; persistent zero reach across reward-preserving controls would redirect toward observation/runtime or simulator-interface investigation. Protected official continuous-hold semantics remain unavailable and are not a reason to claim success.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "E4",
+          "E6",
+          "E7",
+          "M8",
+          "T2",
+          "M9",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains a learned torque policy with at least 196/200 official episodes succeeding through first reach and a complete uninterrupted 2 s hold. T1:checkpoint-120832 remains below that goal at 150/160 on its development panel, while the fresh I2 T2 artifacts failed to reach at all; no official assessment is justified by the current evidence.",
+        "next_direction_or_closure": "Close inquiry I2 with a limited negative conclusion. The specified fresh candidate and diagnostics were archived and measured, satisfying the inquiry closure condition for a negative result. Do not request official assessment. Return to goal review to decide whether to investigate reward/learning-recipe/observation-use mechanisms with a discriminating first-reach test or choose another supported direction; preserve the fact that this negative result is recipe-specific and does not itself disprove the broader method.",
+        "next_question": "Can a revised learning recipe recover broad first-reach competence across the full official target distribution after the I2 zero-reach collapse, and which of reward scaling/terms, PPO learning dynamics, singular-start handling, or observation use is consequential before hold shaping is revisited?"
+      }
+    },
+    "request_fingerprint": "a60f2bd0d0178c59c69cf3cdec5884204670c261720514417d088634e6c6c67c",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the only complete learned candidate with development evidence, measured at 150/160 = 93.75%; no working, best-known, or retained role is assigned. Its artifact remains the comparison baseline for I2. Other T1 checkpoints have training proxies only and are not promoted based on proxy rank.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with demonstrated development capability, measured at 150/160 = 93.75%, and is the comparison baseline but has no assigned working, best-known, or retained role. T2:checkpoint-100352 and T2:checkpoint-120832 are archived fresh candidates measured at 0/160; neither is promoted. No candidate is assessment-ready or assigned a model role in this checkpoint.",
     "completed_operations": [
-      "E6"
+      "M8",
+      "T2",
+      "M9",
+      "E8"
     ],
-    "cumulative_resource_use": "Before I2: M1 compiled-dynamics work, E2/I1 opening, M2 implementation verification, one fresh 120,000-step requested PPO run T1 completing 120,832 actual steps, M3/M5/M7 candidate evaluations and M4/M6 diagnostic verifications, E4 inquiry closure, and E5 checkpoint. Current goal review used completed evidence and opened I2 as E6; no new training or development evaluation has been allocated in this session. Campaign inquiry count is 2 of the available 15.",
-    "current_goal_gap": "T1:checkpoint-120832 achieved 150/160 = 93.75% on a held-out development panel, versus the panel-equivalent 98% threshold of 157/160 and the official requirement of 196/200. Seven failures lacked first reach and three reached but did not complete the hold. The hold failures had 192 and 242 boundary-in-tolerance internal excursions, near-tolerance qvel norms of 6.05 and 7.31 rad/s, and saturated action magnitude 1.414. All ten failures had zero contacts. The protected evaluator's exact continuous-versus-sampled hold semantics remain unavailable.",
-    "current_synthesis": "Established observations: M1 verified the compiled two-joint plant, 0.002 s internal integration, ten internal steps per 20 ms action, and substantial torque authority in tested traces; those traces had no contacts. M2 verified exposure to the full official 6\u201320 cm radial range. T1's training proxy improved through 120,832 actual steps, but proxies and terminal status do not establish development performance. M3, M5, and M7 measured the frozen terminal artifact on the same 160-episode panel at 150/160. M7 records seven non-reach failures and three reached-but-unstable hold failures; the latter combine high near-tolerance velocity, saturated action, repeated interruptions, and internal excursions. The policy reached only the open elbow branch, yet it succeeded in 150 episodes, so branch nonuse is not evidence that folded-branch coverage is required.\\n\\nInterpretation: the tested PPO artifact has a consequential policy-timing/braking and complete-hold limitation, with a separate reach limitation in seven episodes. The zero-contact result and M1 authority traces weaken generic contact and generic insufficient-authority explanations, but do not exclude target-angle-, singularity-, route-, or saturation-conditioned failures. The model's torque-control and singular-start consequences make velocity-aware braking and margin-aware hold behavior physically credible targets. Internal excursions demonstrate development fragility, not an official continuous-hold failure, because protected evaluator semantics are unresolved.\\n\\nCorrection to the inherited direction: I do not retain explicit folded-branch coverage as a primary intervention. The evidence establishes no folded-route comparison and shows the open route can succeed; forcing a second branch could add an untested failure mode without addressing the observed gap. I retain route/target-conditioned diagnostics as a discriminator: persistent angle-conditioned non-reach or saturation would redirect the next direction, whereas lower velocity and interruption rates with preserved reach would support continued policy/control development. Claims remain limited to this PPO recipe, interface, and measured panel.",
-    "decision_frontier": "Can a fresh learned torque policy with explicit velocity-aware braking and a complete-hold margin objective raise complete development success to at least 157/160 while preserving first reach, or do target-angle/route-conditioned non-reach and saturation persist? Evidence that hold interruptions, near-tolerance qvel/action, and internal excursions fall while reach is preserved supports continuing learned policy/control development. Reach improvement without hold improvement isolates stabilization as the remaining bottleneck. Persistent angle-conditioned non-reach with saturation, or a new route-conditioned deficit, redirects toward route/observability or learning-recipe investigation. Because official continuous-hold semantics are unavailable, internal-step excursions remain a conservative robustness discriminator and cannot alone certify or reject the official goal.",
+    "cumulative_resource_use": "Campaign has used two inquiries of the available fifteen. Before I2: M1/M2 compiled and distribution measurements, one fresh 120,000-step PPO run T1 completing 120,832 actual steps, baseline development measurements M3/M5/M7, diagnostic verifications M4/M6, and inquiry/goal-review checkpoints E1\u2013E7. I2 used M8 controlled reward verification, one fresh 120,000-step requested PPO run T2 completing 120,832 actual steps, and M9 two 160-episode paired development evaluations on seeds 4360\u20134519. No official assessment has been requested; protected evaluator semantics remain unresolved.",
+    "current_goal_gap": "The best measured capability remains T1 at 150/160 = 93.75%, seven episodes short of the 157/160 development threshold and below the official 196/200 requirement. The I2 intervention did not reduce this gap: both T2:checkpoint-100352 and T2:checkpoint-120832 achieved 0/160 on a non-overlapping panel, with all 160 episodes lacking first reach. The protected evaluator's exact continuous-hold semantics remain unresolved.",
+    "current_synthesis": "Established observations: M1 verified the compiled two-joint plant, 0.002 s internal integration, ten internal steps per 20 ms action, and substantial torque authority in tested traces; those traces had no contacts. M2 verified exposure to the full official 6\u201320 cm radial range. T1 completed the 120,000-step PPO allocation and its terminal artifact reached 150/160 on the seed-4200 panel; M7 identified seven non-reach failures and three reached-but-unstable hold failures, with the hold failures showing high near-tolerance qvel, saturated action, repeated interruptions, and internal excursions. The baseline used only the open elbow branch, but that branch succeeded in 150 episodes, so folded-branch forcing remains unsupported. M8 verified the implemented I2 reward code under controlled repeated updates: braking is gated away from far transit, high near-target velocity is penalized more, deeper inner margin is rewarded, repeated hold updates remain finite, and interruption forfeits prior hold progress. T2 was a fresh full-allocation PPO run with that reward implementation and unchanged task exposure/interface; its training proxy success was zero at every checkpoint. M9 measured two T2 artifacts on the same non-overlapping seed-4360 panel: both scored 0/160, every first_reach_step was null, all held-step and interruption counts were zero, contacts were zero, and the panel covered the full radius and angle distribution. The paired comparison produced no episode wins for either artifact. Interpretation: I2 does not support the intended positive capability claim. The tested complete reward-and-PPO recipe caused a broad reach-learning collapse, not a hold-only or narrowly target-angle-conditioned deficit. This is consistent with a reward-scale, learning-dynamics, singular-start, or observation-use interaction, but M9 cannot identify which because the intervention changed multiple reward terms together and no policy-level causal isolation was performed. The earlier baseline timing/hold interpretation remains supported for T1, but it is not rescued by T2. Claims are limited to the tested PPO recipe, seed, allocation, implementation, interface, and measured panels; the result does not disprove velocity-aware braking or margin shaping as broader methods, and internal-step excursions still do not certify protected continuous-hold failure.",
+    "decision_frontier": "The active I2 distinction is resolved negatively for its tested artifact: the intervention did not preserve first reach, so further hold-margin optimization on this recipe is not the supported next action. The consequential unresolved distinction for goal review is whether T2's zero-reach collapse arose from the changed reward scale/terms, an interaction with the PPO learning dynamics and singular start, or inadequate policy use of the available state/target features. A discriminating next direction should first recover or test first-reach competence under the full target distribution, using candidate comparisons or controlled reward/recipe ablations that preserve the established reach/hold diagnostics. Evidence that a revised recipe restores nonzero broad first reach would support continued policy/control development; persistent zero reach across reward-preserving controls would redirect toward observation/runtime or simulator-interface investigation. Protected official continuous-hold semantics remain unavailable and are not a reason to claim success.",
     "evidence_references": [
       "M1",
       "M2",
@@ -4639,14 +4811,19 @@
       "M6",
       "M7",
       "E4",
-      "E6"
+      "E6",
+      "E7",
+      "M8",
+      "T2",
+      "M9",
+      "E8"
     ],
-    "human_goal_connection": "The immutable goal is a learned policy with at least 196 successes in the protected 200-episode official assessment, where each success includes entry into the 1 cm target ball and an uninterrupted 2 s hold. The current strongest measured candidate is below that threshold, so the campaign will pursue one bounded capability-development inquiry before any terminal assessment decision.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open inquiry I2 and, in its fresh session, implement and test the bounded velocity-aware braking and complete-hold margin direction using the full available inquiry training allocation, then measure the resulting complete artifact with the established M7 diagnostics. The inquiry will close after the specified candidate and diagnostic evidence either support a positive capability result or show that the remaining failures are better explained by target-conditioned route/authority/observability or recipe limitations. Official assessment is deferred because the unchanged candidate is measurably below the goal and its hold robustness is poor; this is a capability-based decision, not merely uncertainty aversion.",
-    "next_question": "Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation?",
-    "scientific_commit": "5f47f258f98f31d12fe7b0fa396ab73f62cfc0a3",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal remains a learned torque policy with at least 196/200 official episodes succeeding through first reach and a complete uninterrupted 2 s hold. T1:checkpoint-120832 remains below that goal at 150/160 on its development panel, while the fresh I2 T2 artifacts failed to reach at all; no official assessment is justified by the current evidence.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "Close inquiry I2 with a limited negative conclusion. The specified fresh candidate and diagnostics were archived and measured, satisfying the inquiry closure condition for a negative result. Do not request official assessment. Return to goal review to decide whether to investigate reward/learning-recipe/observation-use mechanisms with a discriminating first-reach test or choose another supported direction; preserve the fact that this negative result is recipe-specific and does not itself disprove the broader method.",
+    "next_question": "Can a revised learning recipe recover broad first-reach competence across the full official target distribution after the I2 zero-reach collapse, and which of reward scaling/terms, PPO learning dynamics, singular-start handling, or observation use is consequential before hold shaping is revisited?",
+    "scientific_commit": "7be32feacbda1ab66cd0f092b04a2bc56c5540ae",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4654,24 +4831,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "91be29eb-3664-4d6c-b6f3-8c6ad2fb6186",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a learned torque policy trained with explicit velocity-aware braking and a complete-hold margin objective improve first reach and uninterrupted hold across the full official target distribution, while diagnostics distinguish a correctable policy-timing failure from a target-angle/route-conditioned limitation? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M8",
-      "T2",
-      "M9",
-      "E8"
-    ],
-    "scientific_parent_commit": "ea602e7f5f4eaa19195f2425a54418ae17167fe4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
