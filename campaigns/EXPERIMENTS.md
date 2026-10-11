@@ -26,3 +26,4 @@
 | E11 | checkpoint | - | checkpointed |
 | E12 | restore_recipe | I3 | restored |
 | T3 | training | I3 | completed |
+| M10 | measurement | I3 | completed |

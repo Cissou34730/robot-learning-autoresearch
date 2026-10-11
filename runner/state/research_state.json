@@ -194,7 +194,8 @@
       "evaluation_artifacts": [
         "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
         "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m5-T1-checkpoint-120832-160ep-seed4200-7c2c059bcd8b.json",
-        "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m7-T1-checkpoint-120832-160ep-seed4200-c516232db90a.json"
+        "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m7-T1-checkpoint-120832-160ep-seed4200-c516232db90a.json",
+        "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json"
       ],
       "fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
       "id": "T1:checkpoint-120832",
@@ -1831,7 +1832,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json"
+      ],
       "fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -2479,7 +2482,7 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 9,
+    "measurement": 10,
     "session": 7,
     "training": 3
   },
@@ -5881,9 +5884,1272 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T21:01:05Z",
+      "error": null,
+      "id": "M10",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Fresh full-distribution development evaluation of T3:checkpoint-120832 and the T1:checkpoint-120832 reference, with complete reach, branch, geometry, dynamics, action, contact, and hold diagnostics on matched episode seeds.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+            "seed": 4520
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3 matched T1 reference full-distribution evaluation",
+            "seed": 4520
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "T3 is the reward-preserving control selected from its late learning trajectory: unlike T2, it learned nonzero training success, but proxy metrics do not establish development first reach. Measuring T3 on a new panel tests whether first reach returns across the full official radius/angle distribution and whether it is competitive with the strongest prior artifact. A paired T1 reference separates candidate capability from panel difficulty; first_reach_step, target geometry, q/qvel/action, branch, contacts, and hold fields preserve the distinction between recovered reach and complete uninterrupted hold. The comparison remains artifact-level because T3 uses a new seed, so reward causality versus stochastic PPO variation remains unresolved."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "634fa64848d6d2572772779cd95fea2854dad6f50bfeb77ae36a0c219804c4d0",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4520,
+              "success_percent": 71.25,
+              "successes": 114
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3 matched T1 reference full-distribution evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "4a30878eb62dc832be4354cf3c23b6f8c2af2d303248f7e048fa9417759fb6ab",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4520,
+              "success_percent": 96.25,
+              "successes": 154
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+            "candidate_wins": 3,
+            "discordant_episodes": 46,
+            "episodes": 160,
+            "net_wins": -40,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+            "reference_wins": 43,
+            "shared_episode_seeds": [
+              4520,
+              4521,
+              4522,
+              4523,
+              4524,
+              4525,
+              4526,
+              4527,
+              4528,
+              4529,
+              4530,
+              4531,
+              4532,
+              4533,
+              4534,
+              4535,
+              4536,
+              4537,
+              4538,
+              4539,
+              4540,
+              4541,
+              4542,
+              4543,
+              4544,
+              4545,
+              4546,
+              4547,
+              4548,
+              4549,
+              4550,
+              4551,
+              4552,
+              4553,
+              4554,
+              4555,
+              4556,
+              4557,
+              4558,
+              4559,
+              4560,
+              4561,
+              4562,
+              4563,
+              4564,
+              4565,
+              4566,
+              4567,
+              4568,
+              4569,
+              4570,
+              4571,
+              4572,
+              4573,
+              4574,
+              4575,
+              4576,
+              4577,
+              4578,
+              4579,
+              4580,
+              4581,
+              4582,
+              4583,
+              4584,
+              4585,
+              4586,
+              4587,
+              4588,
+              4589,
+              4590,
+              4591,
+              4592,
+              4593,
+              4594,
+              4595,
+              4596,
+              4597,
+              4598,
+              4599,
+              4600,
+              4601,
+              4602,
+              4603,
+              4604,
+              4605,
+              4606,
+              4607,
+              4608,
+              4609,
+              4610,
+              4611,
+              4612,
+              4613,
+              4614,
+              4615,
+              4616,
+              4617,
+              4618,
+              4619,
+              4620,
+              4621,
+              4622,
+              4623,
+              4624,
+              4625,
+              4626,
+              4627,
+              4628,
+              4629,
+              4630,
+              4631,
+              4632,
+              4633,
+              4634,
+              4635,
+              4636,
+              4637,
+              4638,
+              4639,
+              4640,
+              4641,
+              4642,
+              4643,
+              4644,
+              4645,
+              4646,
+              4647,
+              4648,
+              4649,
+              4650,
+              4651,
+              4652,
+              4653,
+              4654,
+              4655,
+              4656,
+              4657,
+              4658,
+              4659,
+              4660,
+              4661,
+              4662,
+              4663,
+              4664,
+              4665,
+              4666,
+              4667,
+              4668,
+              4669,
+              4670,
+              4671,
+              4672,
+              4673,
+              4674,
+              4675,
+              4676,
+              4677,
+              4678,
+              4679
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json"
+            ],
+            "success_delta_percent": -25.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+          "model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+          "seed": 4520
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I3 matched T1 reference full-distribution evaluation",
+          "model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+          "seed": 4520
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+          "reference": "T1:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+          "shared_episode_seeds": [
+            4520,
+            4521,
+            4522,
+            4523,
+            4524,
+            4525,
+            4526,
+            4527,
+            4528,
+            4529,
+            4530,
+            4531,
+            4532,
+            4533,
+            4534,
+            4535,
+            4536,
+            4537,
+            4538,
+            4539,
+            4540,
+            4541,
+            4542,
+            4543,
+            4544,
+            4545,
+            4546,
+            4547,
+            4548,
+            4549,
+            4550,
+            4551,
+            4552,
+            4553,
+            4554,
+            4555,
+            4556,
+            4557,
+            4558,
+            4559,
+            4560,
+            4561,
+            4562,
+            4563,
+            4564,
+            4565,
+            4566,
+            4567,
+            4568,
+            4569,
+            4570,
+            4571,
+            4572,
+            4573,
+            4574,
+            4575,
+            4576,
+            4577,
+            4578,
+            4579,
+            4580,
+            4581,
+            4582,
+            4583,
+            4584,
+            4585,
+            4586,
+            4587,
+            4588,
+            4589,
+            4590,
+            4591,
+            4592,
+            4593,
+            4594,
+            4595,
+            4596,
+            4597,
+            4598,
+            4599,
+            4600,
+            4601,
+            4602,
+            4603,
+            4604,
+            4605,
+            4606,
+            4607,
+            4608,
+            4609,
+            4610,
+            4611,
+            4612,
+            4613,
+            4614,
+            4615,
+            4616,
+            4617,
+            4618,
+            4619,
+            4620,
+            4621,
+            4622,
+            4623,
+            4624,
+            4625,
+            4626,
+            4627,
+            4628,
+            4629,
+            4630,
+            4631,
+            4632,
+            4633,
+            4634,
+            4635,
+            4636,
+            4637,
+            4638,
+            4639,
+            4640,
+            4641,
+            4642,
+            4643,
+            4644,
+            4645,
+            4646,
+            4647,
+            4648,
+            4649,
+            4650,
+            4651,
+            4652,
+            4653,
+            4654,
+            4655,
+            4656,
+            4657,
+            4658,
+            4659,
+            4660,
+            4661,
+            4662,
+            4663,
+            4664,
+            4665,
+            4666,
+            4667,
+            4668,
+            4669,
+            4670,
+            4671,
+            4672,
+            4673,
+            4674,
+            4675,
+            4676,
+            4677,
+            4678,
+            4679
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "634fa64848d6d2572772779cd95fea2854dad6f50bfeb77ae36a0c219804c4d0",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4520,
+            "success_percent": 71.25,
+            "successes": 114
+          }
+        },
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I3 matched T1 reference full-distribution evaluation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "4a30878eb62dc832be4354cf3c23b6f8c2af2d303248f7e048fa9417759fb6ab",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4520,
+            "success_percent": 96.25,
+            "successes": 154
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "634fa64848d6d2572772779cd95fea2854dad6f50bfeb77ae36a0c219804c4d0",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4520,
+              "success_percent": 71.25,
+              "successes": 114
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3 matched T1 reference full-distribution evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "4a30878eb62dc832be4354cf3c23b6f8c2af2d303248f7e048fa9417759fb6ab",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4520,
+              "success_percent": 96.25,
+              "successes": 154
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "c34e822391a525388d9e2f9aa6c4cac90bf40594f46704ed56a26c5cdb910fde",
+            "candidate_wins": 3,
+            "discordant_episodes": 46,
+            "episodes": 160,
+            "net_wins": -40,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "b3dc75da5317646df0510aa1c9ab2a54d3c054bf4e3899e89721e4396144aca7",
+            "reference_wins": 43,
+            "shared_episode_seeds": [
+              4520,
+              4521,
+              4522,
+              4523,
+              4524,
+              4525,
+              4526,
+              4527,
+              4528,
+              4529,
+              4530,
+              4531,
+              4532,
+              4533,
+              4534,
+              4535,
+              4536,
+              4537,
+              4538,
+              4539,
+              4540,
+              4541,
+              4542,
+              4543,
+              4544,
+              4545,
+              4546,
+              4547,
+              4548,
+              4549,
+              4550,
+              4551,
+              4552,
+              4553,
+              4554,
+              4555,
+              4556,
+              4557,
+              4558,
+              4559,
+              4560,
+              4561,
+              4562,
+              4563,
+              4564,
+              4565,
+              4566,
+              4567,
+              4568,
+              4569,
+              4570,
+              4571,
+              4572,
+              4573,
+              4574,
+              4575,
+              4576,
+              4577,
+              4578,
+              4579,
+              4580,
+              4581,
+              4582,
+              4583,
+              4584,
+              4585,
+              4586,
+              4587,
+              4588,
+              4589,
+              4590,
+              4591,
+              4592,
+              4593,
+              4594,
+              4595,
+              4596,
+              4597,
+              4598,
+              4599,
+              4600,
+              4601,
+              4602,
+              4603,
+              4604,
+              4605,
+              4606,
+              4607,
+              4608,
+              4609,
+              4610,
+              4611,
+              4612,
+              4613,
+              4614,
+              4615,
+              4616,
+              4617,
+              4618,
+              4619,
+              4620,
+              4621,
+              4622,
+              4623,
+              4624,
+              4625,
+              4626,
+              4627,
+              4628,
+              4629,
+              4630,
+              4631,
+              4632,
+              4633,
+              4634,
+              4635,
+              4636,
+              4637,
+              4638,
+              4639,
+              4640,
+              4641,
+              4642,
+              4643,
+              4644,
+              4645,
+              4646,
+              4647,
+              4648,
+              4649,
+              4650,
+              4651,
+              4652,
+              4653,
+              4654,
+              4655,
+              4656,
+              4657,
+              4658,
+              4659,
+              4660,
+              4661,
+              4662,
+              4663,
+              4664,
+              4665,
+              4666,
+              4667,
+              4668,
+              4669,
+              4670,
+              4671,
+              4672,
+              4673,
+              4674,
+              4675,
+              4676,
+              4677,
+              4678,
+              4679
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json",
+              "campaigns/evaluations/0d39d52c-e9f6-4b27-814c-3b9e21c07b2a/evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json"
+            ],
+            "success_delta_percent": -25.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M10",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Fresh full-distribution development evaluation of T3:checkpoint-120832 and the T1:checkpoint-120832 reference, with complete reach, branch, geometry, dynamics, action, contact, and hold diagnostics on matched episode seeds.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3 reward-preserving T3 terminal full-distribution evaluation",
+            "seed": 4520
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3 matched T1 reference full-distribution evaluation",
+            "seed": 4520
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "T3 is the reward-preserving control selected from its late learning trajectory: unlike T2, it learned nonzero training success, but proxy metrics do not establish development first reach. Measuring T3 on a new panel tests whether first reach returns across the full official radius/angle distribution and whether it is competitive with the strongest prior artifact. A paired T1 reference separates candidate capability from panel difficulty; first_reach_step, target geometry, q/qvel/action, branch, contacts, and hold fields preserve the distinction between recovered reach and complete uninterrupted hold. The comparison remains artifact-level because T3 uses a new seed, so reward causality versus stochastic PPO variation remains unresolved."
+      }
+    },
+    "request_fingerprint": "639d210d479fb7f89db2723ae4c06032a3c4b699c1c26ee18748f0a06464c0a6",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status in this checkpoint. T1:checkpoint-120832 is the strongest evidence-backed comparison candidate at 150/160 and remains below the goal; T2:checkpoint-100352 and T2:checkpoint-120832 are archived negative candidates at 0/160. Training proxies nominate checkpoints but do not establish development performance. No candidate is assessment-ready.",
     "completed_operations": [
@@ -5932,7 +7198,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a revised learning recipe recover broad first-reach competence across the full official target distribution after the I2 zero-reach collapse, and which of reward scaling/terms, PPO learning dynamics, singular-start handling, or observation use is consequential before hold shaping is revisited? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "E12",
-      "T3"
+      "T3",
+      "M10"
     ],
     "scientific_parent_commit": "2a08e477941e01cc7c6e6b337f7cc745d238ef92"
   },
