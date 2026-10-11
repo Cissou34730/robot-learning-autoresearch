@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Within the current inquiry allocation, implement and execute one bounded intervention that targets acquisition/braking and post-reach regulation while preserving the official target distribution, 10-frame action timing, 100-step hold, reset, and success semantics. Evaluate the resulting complete candidate against T2 on a held-out development panel with the same seeds and inspect failure-class counts plus time-resolved acquisition, velocity, action/torque, hold-transition, and endpoint-reference discrepancy diagnostics. Close positively only if the complete artifact shows a materially credible reduction of the residual failure classes toward the 196/200 objective; close negatively or inconclusively if the intervention does not improve those classes or if semantic discrepancies prevent a trustworthy comparison, preserving the unresolved limits. No branch/contact mechanism claim is required or accepted unless new evidence separates it from the targeted alternatives.",
-    "goal_connection": "The human goal is one learned policy achieving at least 196 successes in the protected 200-episode panel, with an uninterrupted 100-step hold. T2 is the strongest complete candidate but has only 150/160 development successes and ten reproducible residual failures. M15 identifies acquisition saturation/joint-limit and post-reach high-velocity interruption signatures that a bounded intervention could plausibly change; the work cannot certify the official goal until a frozen candidate is submitted to the protected assessment.",
-    "handoff_conclusion": "Observed: M8 verified that T2's construction sampled the full 0.06-0.20 m radius range while preserving the official 0.06-0.20 m default, 10-frame action timing, 100-step hold requirement, and interruption reset. T2 was a fresh 120832-step PPO artifact whose training proxy only nominated checkpoints. M9 evaluated T2 and T1 on identical 160 seeds and semantics: T2 achieved 150/160 and T1 105/160, with 48 T2 wins versus 3 T1 wins. M14 and M15 measured all ten T2 failure seeds plus ten geometry-matched controls with time-resolved joint state, endpoint state and velocity, distance, action/torque, hold transitions, bounded IK/branch diagnostics, and contacts; M15 independently verified 20 rollouts and 6119 steps. Six negative-angle no-first-reach failures enter the compiled +/-170-degree joint-limit region with persistent saturated torque and high velocity, one approximately -32-degree no-reach failure shows sustained high-speed saturated oscillation, and the three reach-then-interrupt failures leave tolerance after only 1, 3, and 3 observed held steps while velocity and saturated or near-saturated torque remain high. Forward qpos/qvel replay preserves the seven no-first-reach and three reach-then-interrupt classes. All 6119 samples have zero contacts, and final branch feasibility/occupancy does not separate failures from matched controls, so branch/contact intervention is not supported. Correction to the inherited direction: the 5.918 mm position discrepancy, 0.158 m/s velocity discrepancy, and 56 tolerance disagreements are an unresolved measurement/endpoint-semantic limitation; they must be quantified and preserved rather than silently treated as synchronized physical state or as a reason to alter official semantics. The evidence supports testing a targeted acquisition/braking and post-reach regulation intervention, but it does not establish that radius exposure alone caused T2's improvement, prove a unique singularity cause, establish branch/contact causality, or establish the 98% objective.",
-    "handoff_question": "Can a bounded targeted acquisition/braking and post-reach regulation intervention, with the official task semantics preserved and the live-environment versus forward-qpos endpoint discrepancy explicitly measured rather than conflated with task state, improve T2 toward at least 196/200 without relying on a branch or contact explanation?",
-    "handoff_source_session_id": "S8",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can a bounded targeted acquisition/braking and post-reach regulation intervention, with the official task semantics preserved and the live-environment versus forward-qpos endpoint discrepancy explicitly measured rather than conflated with task state, improve T2 toward at least 196/200 without relying on a branch or contact explanation?",
-    "rationale": "Official assessment is unjustified: T2's 150/160 development result is 46 successes short of the 196/200 criterion, and M9, M14, and M15 are not protected certification. Further bounded work remains worthwhile because M15 independently verified all ten residual failure seeds plus matched controls and found a reproducible acquisition/regulation signature: six negative-angle no-first-reach trajectories enter the compiled joint-limit region with persistent saturated torque and high velocity, one no-reach trajectory oscillates at high speed under saturation, and the three reach-then-interrupt failures lose tolerance after only 1, 3, and 3 held steps while velocity and torque remain high. Zero contacts and non-separating final branch diagnostics make branch/contact intervention unsupported. The inherited proposed question is corrected by treating the 5.918 mm position, 0.158 m/s velocity, and 56 tolerance disagreements as a measurement/semantic limitation that must be preserved and quantified, not silently corrected or used to synchronize forward-qpos state with the live task. A targeted candidate intervention can change capability; a matched evaluation can change candidate selection and determine whether the observed signature is actionable, while a negative result would constrain this recipe-specific intervention rather than disprove full-radius learning generally.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -2477,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 18,
     "session": 9,
@@ -8130,9 +8119,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:06:34Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative bounded answer",
+        "reason": "M16 completed implementation verification for the training-only targeted acquisition/braking and post-reach regulation profile, including preserved 0.06-0.20 m target sampling, default evaluation profile, 10-frame action timing, 100-step hold, reset/interruption semantics, and velocity-sensitive shaping. T3 then completed a fresh 120832-step run under that recipe. M18 evaluated T3 and T2 on the identical 160-seed held-out panel: T3 achieved 0/160, T2 achieved 150/160, and T2 won all 150 discordant episodes. T3's time-resolved M18 diagnostic on the exact ten residual seeds plus ten matched controls recorded 19 no-first-reach rollouts and one reach-then-interrupt rollout with only two in-tolerance samples; hold transitions were 9997 outside, one entered, one continued, and one interrupted over 10000 samples. All contact counts were zero. The diagnostic retained live environment fields separately from forward-qpos/qvel reference fields; its maximum position and velocity discrepancies were 0.005497 m and 0.119706 m/s, so the known semantic limitation remains quantified rather than conflated with task state. This closes I4 negatively for the tested fresh targeted reward recipe: it did not improve capability toward 196/200 and instead produced a non-acquiring candidate. The result does not establish that all braking/regulation methods fail, does not identify a unique causal mechanism for T3's collapse, does not support branch/contact targeting, and does not certify or refute the human goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative bounded answer",
+        "reason": "M16 completed implementation verification for the training-only targeted acquisition/braking and post-reach regulation profile, including preserved 0.06-0.20 m target sampling, default evaluation profile, 10-frame action timing, 100-step hold, reset/interruption semantics, and velocity-sensitive shaping. T3 then completed a fresh 120832-step run under that recipe. M18 evaluated T3 and T2 on the identical 160-seed held-out panel: T3 achieved 0/160, T2 achieved 150/160, and T2 won all 150 discordant episodes. T3's time-resolved M18 diagnostic on the exact ten residual seeds plus ten matched controls recorded 19 no-first-reach rollouts and one reach-then-interrupt rollout with only two in-tolerance samples; hold transitions were 9997 outside, one entered, one continued, and one interrupted over 10000 samples. All contact counts were zero. The diagnostic retained live environment fields separately from forward-qpos/qvel reference fields; its maximum position and velocity discrepancies were 0.005497 m and 0.119706 m/s, so the known semantic limitation remains quantified rather than conflated with task state. This closes I4 negatively for the tested fresh targeted reward recipe: it did not improve capability toward 196/200 and instead produced a non-acquiring candidate. The result does not establish that all braking/regulation methods fail, does not identify a unique causal mechanism for T3's collapse, does not support branch/contact targeting, and does not certify or refute the human goal.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative bounded answer",
+        "reason": "M16 completed implementation verification for the training-only targeted acquisition/braking and post-reach regulation profile, including preserved 0.06-0.20 m target sampling, default evaluation profile, 10-frame action timing, 100-step hold, reset/interruption semantics, and velocity-sensitive shaping. T3 then completed a fresh 120832-step run under that recipe. M18 evaluated T3 and T2 on the identical 160-seed held-out panel: T3 achieved 0/160, T2 achieved 150/160, and T2 won all 150 discordant episodes. T3's time-resolved M18 diagnostic on the exact ten residual seeds plus ten matched controls recorded 19 no-first-reach rollouts and one reach-then-interrupt rollout with only two in-tolerance samples; hold transitions were 9997 outside, one entered, one continued, and one interrupted over 10000 samples. All contact counts were zero. The diagnostic retained live environment fields separately from forward-qpos/qvel reference fields; its maximum position and velocity discrepancies were 0.005497 m and 0.119706 m/s, so the known semantic limitation remains quantified rather than conflated with task state. This closes I4 negatively for the tested fresh targeted reward recipe: it did not improve capability toward 196/200 and instead produced a non-acquiring candidate. The result does not establish that all braking/regulation methods fail, does not identify a unique causal mechanism for T3's collapse, does not support branch/contact targeting, and does not certify or refute the human goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative bounded answer",
+        "reason": "M16 completed implementation verification for the training-only targeted acquisition/braking and post-reach regulation profile, including preserved 0.06-0.20 m target sampling, default evaluation profile, 10-frame action timing, 100-step hold, reset/interruption semantics, and velocity-sensitive shaping. T3 then completed a fresh 120832-step run under that recipe. M18 evaluated T3 and T2 on the identical 160-seed held-out panel: T3 achieved 0/160, T2 achieved 150/160, and T2 won all 150 discordant episodes. T3's time-resolved M18 diagnostic on the exact ten residual seeds plus ten matched controls recorded 19 no-first-reach rollouts and one reach-then-interrupt rollout with only two in-tolerance samples; hold transitions were 9997 outside, one entered, one continued, and one interrupted over 10000 samples. All contact counts were zero. The diagnostic retained live environment fields separately from forward-qpos/qvel reference fields; its maximum position and velocity discrepancies were 0.005497 m and 0.119706 m/s, so the known semantic limitation remains quantified rather than conflated with task state. This closes I4 negatively for the tested fresh targeted reward recipe: it did not improve capability toward 196/200 and instead produced a non-acquiring candidate. The result does not establish that all braking/regulation methods fail, does not identify a unique causal mechanism for T3's collapse, does not support branch/contact targeting, and does not certify or refute the human goal.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative bounded answer",
+        "reason": "M16 completed implementation verification for the training-only targeted acquisition/braking and post-reach regulation profile, including preserved 0.06-0.20 m target sampling, default evaluation profile, 10-frame action timing, 100-step hold, reset/interruption semantics, and velocity-sensitive shaping. T3 then completed a fresh 120832-step run under that recipe. M18 evaluated T3 and T2 on the identical 160-seed held-out panel: T3 achieved 0/160, T2 achieved 150/160, and T2 won all 150 discordant episodes. T3's time-resolved M18 diagnostic on the exact ten residual seeds plus ten matched controls recorded 19 no-first-reach rollouts and one reach-then-interrupt rollout with only two in-tolerance samples; hold transitions were 9997 outside, one entered, one continued, and one interrupted over 10000 samples. All contact counts were zero. The diagnostic retained live environment fields separately from forward-qpos/qvel reference fields; its maximum position and velocity discrepancies were 0.005497 m and 0.119706 m/s, so the known semantic limitation remains quantified rather than conflated with task state. This closes I4 negatively for the tested fresh targeted reward recipe: it did not improve capability toward 196/200 and instead produced a non-acquiring candidate. The result does not establish that all braking/regulation methods fail, does not identify a unique causal mechanism for T3's collapse, does not support branch/contact targeting, and does not certify or refute the human goal."
+      }
+    },
+    "request_fingerprint": "c098f9e30cc99f01cfb69aa0e80057d9536e9a2b824d2f79a0e20390cdc6502a",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known from the completed M9 matched development comparison at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. No candidate is working or retained. Opening I4 does not change candidate roles; a targeted artifact must be completely trained and measured before any role change.",
     "completed_operations": [
@@ -8182,7 +8225,8 @@
       "M16",
       "T3",
       "M17",
-      "M18"
+      "M18",
+      "E17"
     ],
     "scientific_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a"
   },
