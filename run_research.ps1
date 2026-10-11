@@ -139,17 +139,48 @@ function Test-CampaignStopRequested {
     return $false
 }
 
+function Write-CooperativeProcessOutput {
+    param([string]$Text, [bool]$ErrorStream)
+    if ($ErrorStream) {
+        [Console]::Error.Write($Text)
+    }
+    else {
+        [Console]::Out.Write($Text)
+    }
+}
+
 function Invoke-CooperativeProcess {
     param(
         [Parameter(Mandatory)][string]$FilePath,
         [Parameter(Mandatory)][string[]]$ArgumentList,
-        [Parameter(Mandatory)][string]$Operation
+        [Parameter(Mandatory)][string]$Operation,
+        [string]$InputText,
+        [switch]$CaptureOutput,
+        [switch]$StreamOutput
     )
 
+    if ($CaptureOutput -and $StreamOutput) {
+        throw "Choose silent capture or live streaming, not both."
+    }
+    $redirectOutput = $CaptureOutput -or $StreamOutput
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $FilePath
     $startInfo.WorkingDirectory = $PSScriptRoot
     $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardInput = $PSBoundParameters.ContainsKey("InputText")
+    $startInfo.RedirectStandardOutput = $redirectOutput
+    $startInfo.RedirectStandardError = $redirectOutput
+    if ($startInfo.RedirectStandardInput) {
+        $startInfo.StandardInputEncoding = [System.Text.UTF8Encoding]::new($false)
+    }
+    if ($redirectOutput) {
+        $startInfo.StandardOutputEncoding = [System.Text.UTF8Encoding]::new($false)
+        $startInfo.StandardErrorEncoding = [System.Text.UTF8Encoding]::new($false)
+        $startInfo.Environment["PYTHONIOENCODING"] = "utf-8"
+        if ($StreamOutput) {
+            $startInfo.Environment["PYTHONUNBUFFERED"] = "1"
+        }
+    }
     foreach ($argument in $ArgumentList) {
         [void]$startInfo.ArgumentList.Add($argument)
     }
@@ -166,19 +197,79 @@ function Invoke-CooperativeProcess {
         if (-not $process.Start()) {
             throw "Could not start $Operation."
         }
-        while (-not $process.WaitForExit(100)) {
+        $pipes = @()
+        if ($redirectOutput) {
+            foreach ($reader in @($process.StandardOutput, $process.StandardError)) {
+                $pipe = [pscustomobject]@{
+                    Reader = $reader
+                    Buffer = [char[]]::new(4096)
+                    Read = $null
+                    Closed = $false
+                    ErrorStream = ($pipes.Count -eq 1)
+                    Text = [System.Text.StringBuilder]::new()
+                }
+                $pipe.Read = $reader.ReadAsync($pipe.Buffer, 0, $pipe.Buffer.Length)
+                $pipes += $pipe
+            }
+        }
+        $inputWrite = $null
+        if ($startInfo.RedirectStandardInput) {
+            $process.StandardInput.AutoFlush = $true
+            $inputWrite = $process.StandardInput.WriteAsync($InputText)
+        }
+        do {
+            $progress = $false
+            foreach ($pipe in $pipes) {
+                # Drain both pipes concurrently, including unterminated progress lines.
+                for ($batch = 0; $batch -lt 8 -and -not $pipe.Closed -and $pipe.Read.IsCompleted; $batch++) {
+                    $count = $pipe.Read.GetAwaiter().GetResult()
+                    if ($count -eq 0) {
+                        $pipe.Closed = $true
+                        break
+                    }
+                    $text = [string]::new($pipe.Buffer, 0, $count)
+                    if ($StreamOutput) {
+                        Write-CooperativeProcessOutput -Text $text -ErrorStream $pipe.ErrorStream
+                    }
+                    [void]$pipe.Text.Append($text)
+                    if ($StreamOutput -and $pipe.Text.Length -gt 16384) {
+                        [void]$pipe.Text.Remove(0, $pipe.Text.Length - 16384)
+                    }
+                    $pipe.Read = $pipe.Reader.ReadAsync($pipe.Buffer, 0, $pipe.Buffer.Length)
+                    $progress = $true
+                }
+            }
+            if ($inputWrite -and $inputWrite.IsCompleted) {
+                $inputWrite.GetAwaiter().GetResult()
+                $process.StandardInput.Close()
+                $inputWrite = $null
+                $progress = $true
+            }
+            $exited = $process.WaitForExit($(if ($progress) { 0 } else { 100 }))
             if (
                 (Test-CampaignStopRequested) -and
                 [DateTime]::UtcNow -ge $script:StopDeadline
             ) {
                 $script:StopDeadlineExceeded = $true
+                if (-not $exited) {
+                    $process.Kill($true)
+                }
+                $process.WaitForExit()
                 throw (
                     "The cooperative stop deadline expired while waiting for " +
                     "$Operation (PID $($process.Id))."
                 )
             }
-        }
+        } while (
+            -not $exited -or $inputWrite -or
+            @($pipes | Where-Object { -not $_.Closed }).Count -gt 0
+        )
         $process.WaitForExit()
+        if ($redirectOutput) {
+            $script:ProcessStdout = $pipes[0].Text.ToString()
+            $script:ProcessStderr = $pipes[1].Text.ToString()
+            $script:ProcessOutput = $script:ProcessStdout + $script:ProcessStderr
+        }
         [void](Test-CampaignStopRequested)
         return [int]$process.ExitCode
     }
@@ -195,7 +286,12 @@ function Enter-TrustedMutableInvocation {
 }
 
 function Invoke-Runner {
-    param([string[]]$Arguments = @())
+    param(
+        [string[]]$Arguments = @(),
+        [string]$InputText,
+        [switch]$CaptureOutput,
+        [switch]$StreamOutput
+    )
 
     Enter-TrustedMutableInvocation
     $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
@@ -204,8 +300,13 @@ function Invoke-Runner {
         "run", "python", "runner/run_experiment.py", "--timesteps", "$Timesteps"
     )
     $runnerArguments += $Arguments
+    $processOptions = @{}
+    if ($PSBoundParameters.ContainsKey("InputText")) {
+        $processOptions.InputText = $InputText
+    }
     $exitCode = Invoke-CooperativeProcess -FilePath $uv.Source `
-        -ArgumentList $runnerArguments -Operation "research runner"
+        -ArgumentList $runnerArguments -Operation "research runner" `
+        -CaptureOutput:$CaptureOutput -StreamOutput:$StreamOutput @processOptions
     $script:PITrustSnapshot = New-PITrustSnapshot `
         -Preliminary:$script:PITrustPreliminary
     return $exitCode
@@ -382,6 +483,7 @@ function Assert-ResearchRuntime {
 
 Assert-ResearchRuntime
 . "$PSScriptRoot\researcher_session.ps1"
+. "$PSScriptRoot\runner\copilot_controller.ps1"
 
 function Invoke-PISession {
     param(
@@ -466,16 +568,9 @@ function Invoke-PISession {
             -Operation "OpenCode PI"
     }
     else {
-        $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
-            Select-Object -First 1
-        $copilotArgs = @(
-            "run", "--group", "researcher", "python", "runner/copilot_adapter.py"
-        )
-        $copilotArgs += $sessionArgs
-        $copilotArgs += $Prompt
-        $script:PIExitCode = Invoke-CooperativeProcess `
-            -FilePath $uv.Source -ArgumentList $copilotArgs `
-            -Operation "Copilot PI"
+        $script:PIExitCode = Invoke-PersistentCopilotSession `
+            -SessionArguments $sessionArgs -Prompt $Prompt -State $state `
+            -Preliminary:$Preliminary
     }
 }
 
@@ -923,6 +1018,9 @@ function New-ScientificSessionPrompt {
     else {
         "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
     }
+    if ($PIBackend -eq "copilot") {
+        $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Do not write the internal exchange file. Continue within this context until checkpoint or terminal commitment ends it."
+    }
 
     $sections = @(
         $piPersona
@@ -1049,6 +1147,32 @@ function Invoke-PendingOperation {
     param([Parameter(Mandatory)]$State)
 
     $pending = $State.pending_operation
+    if ($PIBackend -eq "copilot") {
+        Stop-OnPublicationFailure -State $State
+    }
+    if ($PIBackend -eq "copilot" -and $pending.failure) {
+        Update-ResearchBrief
+        if (
+            -not $State.scientific_session -or
+            $State.scientific_session.id -ne $pending.session_id
+        ) {
+            throw "The failed operation has no matching active scientific session."
+        }
+        $script:PISessionStateId = $State.scientific_session.id
+        $script:PISessionId = [string]$State.scientific_session.backend_session_id
+        $script:PISessionInvocation = 0
+        $repairPrompt = @(
+            (New-ScientificSessionPrompt -State $State)
+            "The requested action $($pending.id) failed: $($pending.failure)"
+            "This is execution history, not scientific evidence. Diagnose and correct the scientific implementation or choose another action. Call submit_operation with request=null to reaccept the corrected pending action, or supply a replacement request."
+        ) -join "`n`n"
+        Invoke-PISession -Prompt $repairPrompt -Phase $State.scientific_session.kind
+        if (Test-StopAfterOperation $script:PIExitCode "PI session") {
+            return 130
+        }
+        Assert-CopilotSessionOutcome
+        return 0
+    }
     if ($pending.failure) {
         Update-ResearchBrief
         if (
@@ -1320,6 +1444,10 @@ try {
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
             break
         }
+        if ($PIBackend -eq "copilot") {
+            Assert-CopilotSessionOutcome
+            continue
+        }
 
         if (-not (Test-OperationRequest)) {
             $retryPrompt = New-ScientificSessionPrompt -State $state `
@@ -1363,7 +1491,12 @@ catch {
 }
 finally {
     try {
-        Stop-OpenCodeCampaignServer
+        try {
+            Stop-PersistentCopilotRuntime
+        }
+        finally {
+            Stop-OpenCodeCampaignServer
+        }
     }
     finally {
         $loopMutex.ReleaseMutex()

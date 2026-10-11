@@ -205,11 +205,53 @@ Step 1 is implemented but scientifically unmeasured. Inert maintainer checks
 do not establish that PI review will catch future faulty measurements. No
 scenario-specific safeguard, reviewer agent, validity certificate, new
 lifecycle phase, schema migration or scientific acceptance gate was added.
-The request-file handoff and per-invocation SDK runtime lifecycle remain intact.
+At step 1, the request-file handoff and per-invocation SDK runtime lifecycle remained intact.
 Structured operation submission and persistent runtime belong to the separately
 approved step 2, after review and publication of this change. Engineering
 instructions stay in the coding tool and child, not the program or repeated
 scientific prompts.
+
+#### Structured submission and persistent runtime: approved second step
+
+Step 2 removes request-file authoring from ordinary Copilot main sessions.
+`submit_operation` accepts the existing instrument envelope; it does not expose
+Runner arguments or arbitrary exchange paths. The mutex-owning PowerShell
+launcher authenticates one local channel and checks campaign/session binding,
+trusted mutable snapshots, stopped/terminal state and the existing transaction
+before submission. Runner's existing schema-6 validator checks stdin without
+changing the exchange file; only a validated request reaches the established
+acceptance, publication, execution and finalization path.
+
+The handler waits for Runner without model polls. Compact factual results,
+exact errors and changed state return directly into that same SDK conversation,
+including the actual operation list and mandatory checkpoint transitions.
+Rejected requests retain one retry. Failed PI implementations retain source
+repair/replacement authority. Publication failure stops rather than reaccepting
+an already executed operation. Live repeated tool-call identities return their
+cached response; channel loss stops submission. A resumed controller recovers
+existing pending/completed state, and SDK resume disables automatic pending-work
+replay in both main resume paths. The existing resume prompt supplies actual
+durable Runner metadata, so an unfinished old call is not the next action.
+Validation capture stays silent; execution stdout/stderr stream live through
+concurrent asynchronous UTF-8 reads, with bounded error tails and no repeated
+log dump at completion. No new scientific lifecycle, state migration, fingerprint scheme,
+automatic scientific-content repair or validity judgment was introduced.
+
+One launcher-owned SDK process/client remains alive, including across preliminary
+publication and checkpoint-bounded contexts. Each checkpoint ends the current
+context; the existing launcher starts a fresh UUID-bound context from durable
+state, not a campaign-long conversation. Ordinary operation results do not replay
+the full phase prompt. Usage is recorded once per logical bounded invocation:
+Runner waiting and separately charged coding time are excluded from PI active
+duration. Scoped coding and preliminary publication permissions remain.
+OpenCode explicitly retains its legacy interface, not a second tool protocol.
+
+This implementation is scientifically unmeasured. Only inert fake SDK/controller,
+an output-only harmless pipe-process fixture, AST/import and whitespace checks
+were run; no SDK/model session, Runner operation,
+campaign reset or science/runtime service was started. Stopped campaign
+`bfd9e63d` evidence and state remain unchanged. Parent review and publication are
+separate from any subsequently authorized fresh campaign.
 
 ### 5. Assessment readiness, model roles and acceptance-gate drift
 

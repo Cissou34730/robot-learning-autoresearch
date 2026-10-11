@@ -317,8 +317,8 @@
         <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
         <p>Ordinary main PI sessions use <code>scientific_coding</code> for exact-file-scoped source changes. The child has a separate conversation and cannot submit operations or execute checks. The main PI reviews the actual diff and check before asking Runner to execute it.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
-        <p>Ordinary main and coding sessions have no shell tools. The main PI still writes operation requests; preliminary scientific-model publication is unchanged. All Python runs through <code>uv run</code>, with Runner executing scientific checks, training and evaluation.</p>
-        <p class="small muted">Coding separation is implemented but unmeasured. Structured submission and persistent runtime are reserved for approved step 2. No campaign was run to validate this mechanism.</p>
+        <p>Ordinary Copilot main and coding sessions have no shell tools. Main PI calls <code>submit_operation</code> without file-write tools; preliminary scientific-model publication is unchanged. All Python runs through <code>uv run</code>, with Runner executing scientific checks, training and evaluation. OpenCode retains its legacy file and command-policy interface.</p>
+        <p class="small muted">Both approved steps are implemented but unmeasured. One SDK runtime serves ordinary operations and fresh checkpoint-bounded contexts. Only inert implementation checks ran; no campaign or real SDK session validated this mechanism.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>
@@ -458,20 +458,21 @@
         <summary>From a PI request to a recorded result</summary>
         <div class="details-body">
           <ol class="steps-list">
-            <li>The PI picks an action and writes one request to <code>pi_workspace\operation_request.json</code>.</li>
+            <li>The Copilot PI picks an action and calls <code>submit_operation</code> with the existing instrument payload. The exchange file stays internal to the trusted controller and Runner.</li>
             <li>The Runner checks the shape, the phase, the file ownership, and the allocation.</li>
             <li>The Runner accepts the request and gives it an id. M# is a measurement, T# is training, E# is another event.</li>
             <li>The Runner runs it and saves the result, the files, and the history.</li>
-            <li>The launcher rebuilds the brief and resumes the PI.</li>
+            <li>The launcher rebuilds the brief and returns compact factual result/errors and changed state directly to the same conversation. A checkpoint ends that context; the next bounded context is fresh, on the same SDK runtime.</li>
           </ol>
           <p class="small muted" style="margin-top: 8px">Only completed operations count as evidence. A valid request is not a scientific endorsement.</p>
           <div class="table-wrap" style="margin-top: 12px">
             <table>
               <thead><tr><th scope="col">Situation</th><th scope="col">Response</th></tr></thead>
               <tbody>
-                <tr><td>Invalid request</td><td>The Runner returns the reason. Checkpoint list errors identify the current session and both expected and submitted lists. One retry is allowed. Then the launcher stops.</td></tr>
+                <tr><td>Invalid request</td><td>The Runner returns the exact reason directly. Checkpoint list errors identify the current session and both expected and submitted lists. One retry is allowed. Then the launcher stops.</td></tr>
                 <tr><td>Error in PI code</td><td>The error goes back to the same PI session. It is execution history, not a scientific result.</td></tr>
-                <tr><td>Publication failure after a run</td><td>The result is kept. The launcher stops for repair. It resumes publication and does not retrain.</td></tr>
+                <tr><td>Publication failure after a run</td><td>The result and transaction are kept. The launcher stops for repair; it does not automatically reaccept or retrain.</td></tr>
+                <tr><td>Lost response</td><td>Submission stops. On resume, the controller recovers existing pending/completed Runner state instead of blindly replaying the tool call.</td></tr>
                 <tr><td>Maintainer stop</td><td>State is kept. It is not a pass, a fail, or a conclusion.</td></tr>
               </tbody>
             </table>
@@ -521,7 +522,7 @@
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
-            <tr><td>OI-009</td><td>Checkpoint bookkeeping and operation submission. Transition prompts identify the still-active session and exact operation list. Rejection feedback reports expected and submitted values. The contract explains that accepted request files are consumed. Strict validation and retry limits remain unchanged.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-009</td><td>Checkpoint bookkeeping and operation submission. Copilot tool results identify the still-active session and exact operation list. Rejection feedback reports expected and submitted values. Structured submission keeps the consumed request file internal; OpenCode retains its legacy interface. Strict validation and retry limits remain unchanged.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-010</td><td>Explicit protection of the old protocol log.</td><td><span class="tag">Unimplemented</span></td></tr>
             <tr><td>OI-011</td><td>Console clarity and maintainer-file read controls. Artifact evidence calls now show operation, action, and logical JSON Pointer detail without resolving the pointer as a filesystem path. Existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue.</td><td><span class="tag">Closed, implemented/effective 2026-10-10</span></td></tr>
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
@@ -655,7 +656,7 @@
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
             <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
-            <tr><td>Checkpoint boundary and request consumption</td><td>The PI receives the active session's exact list at mandatory checkpoint transitions. Accepted request files are consumed, not persistent documents for the next proposal.</td><td>OI-009 implemented, unmeasured. No automatic correction or retry-limit increase.</td></tr>
+            <tr><td>Checkpoint boundary and structured submission</td><td>Copilot receives the active session's exact list directly at mandatory checkpoint transitions. Main PI submits structured payloads, not file patches. Ordinary results continue in one context; checkpoints start fresh contexts on the same runtime.</td><td>Both approved SDK steps implemented, unmeasured. No automatic scientific-content correction or retry-limit increase.</td></tr>
             <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
             <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
             <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. OI-013 is closed as a withdrawn removal proposal.</td></tr>

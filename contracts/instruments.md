@@ -7,7 +7,11 @@ It does not tell the PI when or whether to use an instrument.
 
 ## Operation request envelope
 
-Write one JSON object to `pi_workspace/operation_request.json`.
+In ordinary Copilot sessions, call `submit_operation` with a `request` containing
+one JSON operation object. The payload formats below are unchanged. The trusted
+launcher binds the call to the active campaign and bounded session, validates
+with Runner's existing schema-6 acceptance checks, and executes through Runner.
+No model-supplied Runner arguments or exchange paths are accepted.
 The object must contain exactly one top-level operation kind:
 
 ```text
@@ -19,7 +23,38 @@ Measurement identities use `M#`. Training identities use `T#`.
 Other event identities use `E#`.
 Evidence references must identify completed operations.
 
-The Runner replaces an accepted proposal with an acceptance marker.
+`submit_operation` returns a compact factual result or the exact rejection/error,
+operation identity when completed, and changed state: session identity and kind,
+actual completed-operation list, roles, resource counts, pending/terminal status,
+and required checkpoint transition. Detailed artifacts stay available through
+`artifact_evidence_query`. Ordinary results continue in this same conversation,
+without a new runtime or replayed phase prompt. Inquiry open/reframe/close makes
+checkpoint the sole next operation. A completed checkpoint or terminal commitment
+ends this context; the launcher creates the next bounded context when permitted.
+The SDK process/client remains alive across those contexts.
+
+Correct a rejected request in this conversation. Two rejected submissions stop
+the bounded session, preserving the existing one-retry limit. Implementation
+errors retain the PI's repair authority: diagnose, use `scientific_coding` for
+source repair, review actual changes, and submit a replacement envelope or
+`{"request": null}` to reaccept the failed pending operation after repair.
+An execution failure is history, not scientific evidence. Publication failures,
+interruption, terminality and recovery-required results prohibit further
+submission in that context. The controller recovers existing accepted/completed
+transactions after channel loss; it does not blindly replay a tool call or
+fabricate checkpoint content. Main SDK resumes explicitly disable automatic
+unfinished-work continuation; the existing resume prompt includes current
+durable Runner metadata. Validation capture is silent. Execution stdout/stderr
+stream live, without a second log dump; only bounded tails are retained for
+useful error feedback. Runner waiting uses no model polls and is excluded
+from PI active duration; coding usage remains separate.
+Stop requests remain cooperative. If the launcher deadline expires, it stops
+only its owned process tree and preserves the existing transaction for recovery.
+
+Copilot main PI sessions never author the exchange file.
+The optional OpenCode backend retains its existing file-based interface:
+write one operation object to `pi_workspace/operation_request.json`.
+For this legacy interface, the Runner replaces an accepted proposal with an acceptance marker.
 The Runner removes that marker after it finalizes the operation.
 The request file can therefore be absent after an accepted operation completes.
 Create the next proposal at the same path when the previous request is absent.
@@ -28,9 +63,10 @@ A rejected proposal remains available for correction.
 
 ## Scientific coding interface
 
-Ordinary main PI sessions expose `scientific_coding` alongside source readers
-and `artifact_evidence_query`. They retain `apply_patch` only for the operation
-request file; they have no shell tools. The preliminary scientific-model
+Ordinary Copilot main PI sessions expose `scientific_coding` and
+`submit_operation` alongside source readers and `artifact_evidence_query`.
+They have no `apply_patch`, other file-write tools or shell tools.
+The preliminary scientific-model
 session retains its existing publication interface and does not expose coding.
 
 `scientific_coding` accepts:

@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import shutil
+import sys
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -1885,13 +1886,22 @@ def execute_pending_operation() -> int:
     return exit_code
 
 
-def check_operation() -> int:
+def check_operation(*, from_stdin: bool = False) -> int:
     try:
-        request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
+        request = json.loads(
+            sys.stdin.read() if from_stdin
+            else paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")
+        )
         state = repository.load_state(allow_missing_artifact=True)
         working = copy.deepcopy(state)
         existing = working["pending_operation"]
-        if isinstance(existing, dict):
+        if from_stdin and request is None:
+            if not isinstance(existing, dict) or not existing.get("failure"):
+                raise ValueError("there is no failed operation to reaccept")
+            request = copy.deepcopy(existing["request"])
+            pending, _failed_event = _prepare_failed_replacement(request, working)
+            kind = str(pending["kind"])
+        elif isinstance(existing, dict):
             if (
                 existing["request_fingerprint"] == _canonical_fingerprint(request)
                 and existing["request"] == request
@@ -2088,6 +2098,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     parser.add_argument("--check-operation", action="store_true")
+    parser.add_argument("--check-operation-input", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
     parser.add_argument(
         "--start-session", choices=("startup", "goal_review", "inquiry"), default=None
@@ -2217,8 +2228,8 @@ def main() -> int:
                 console.usage_summary(repository.current_campaign_id(state)),
             )
         return 0
-    if args.check_operation:
-        return check_operation()
+    if args.check_operation or args.check_operation_input:
+        return check_operation(from_stdin=args.check_operation_input)
     repository.synchronize_operation_log()
     state = repository.load_state(allow_missing_artifact=True)
     finalization = _recover_interrupted_finalization(state)

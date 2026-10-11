@@ -1,4 +1,4 @@
-"""One bounded Principal Investigator session through the GitHub Copilot SDK.
+"""Bounded PI contexts on a launcher-owned persistent GitHub Copilot SDK runtime.
 
 The launcher owns the research protocol and decides whether a phase is complete;
 this adapter owns only the Copilot runtime: session identity, the tool profile,
@@ -26,7 +26,7 @@ from pathlib import Path, PureWindowsPath
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from runner.stop_control import stop_requested, wait_for_stop_request
+from runner.stop_control import stop_request_path, stop_requested, wait_for_stop_request
 
 ROOT = Path(__file__).resolve().parent.parent
 UUID_PATTERN = re.compile(
@@ -115,10 +115,10 @@ RESEARCH_TOOLS = [
     "stop_powershell",
     "list_powershell",
 ]
-MAIN_PI_TOOLS = ["view", "rg", "glob", "apply_patch"]
+MAIN_PI_TOOLS = ["view", "rg", "glob"]
 CODING_TOOLS = ["view", "apply_patch"]
 MAIN_WRITE_DENIAL = (
-    "Ordinary PI sessions write only pi_workspace/operation_request.json. "
+    "Ordinary PI sessions have no file-write tools. Use submit_operation for actions. "
     "Use scientific_coding for bounded scientific source changes."
 )
 CODING_SCOPE_DENIAL = "This action is outside this coding session's exact file scope."
@@ -484,8 +484,6 @@ def scoped_edit_denial(
         return None
     if preliminary:
         return file_edit_denial(target, preliminary=True)
-    if relative == "pi_workspace/operation_request.json":
-        return None
     return MAIN_WRITE_DENIAL
 
 
@@ -493,6 +491,7 @@ def scoped_tool_hook(
     *,
     coding_paths: frozenset[str] | None = None,
     read_paths: frozenset[str] = frozenset(),
+    operations=None,
 ):
     """Check every patch target, including moves, before a built-in runs."""
 
@@ -503,10 +502,15 @@ def scoped_tool_hook(
         allowed = (
             CODING_TOOLS
             if coding_paths is not None
-            else [*MAIN_PI_TOOLS, "artifact_evidence_query", "scientific_coding"]
+            else [
+                *MAIN_PI_TOOLS, "artifact_evidence_query", "scientific_coding",
+                "submit_operation",
+            ]
         )
         reason = None
-        if name not in allowed:
+        if operations is not None and (operations.busy or operations.closed):
+            reason = "Runner is executing or this bounded session has ended."
+        elif name not in allowed:
             reason = CODING_SCOPE_DENIAL if coding_paths is not None else SHELL_DENIAL
         elif name == "apply_patch":
             patch = (
@@ -1144,6 +1148,7 @@ class Console:
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
         self.coding_duration_seconds = 0.0
+        self.runner_wait_seconds = 0.0
 
     def tagged(self, text: str) -> str:
         return f"[{self.label}] {text}" if self.label else text
@@ -1478,6 +1483,7 @@ def build_handlers(
     preliminary: bool = False,
     coding_paths: frozenset[str] | None = None,
     read_paths: frozenset[str] = frozenset(),
+    operations=None,
 ):
     from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
     from copilot.session_events import (
@@ -1555,6 +1561,10 @@ def build_handlers(
 
     def on_permission_request(request, invocation):
         del invocation
+        if operations is not None and (operations.busy or operations.closed):
+            return PermissionDecisionReject(
+                feedback="Runner is executing or this bounded session has ended."
+            )
         if isinstance(request, PermissionRequestRead):
             reason = (
                 CODING_SCOPE_DENIAL
@@ -1743,6 +1753,7 @@ class ScientificCoding:
         self.active_tasks: set[asyncio.Task] = set()
         self.busy = False
         self.closed = False
+        self.operations = None
 
     def tool(self):
         from copilot import define_tool
@@ -1823,7 +1834,10 @@ class ScientificCoding:
         }
 
     async def invoke(self, params: ScientificCodingParams) -> str:
-        if self.closed or self.busy:
+        if self.closed or self.busy or (
+            self.operations is not None
+            and (self.operations.busy or self.operations.closed)
+        ):
             return json.dumps({
                 "status": "error", "error": "Coding is closed or already active."
             })
@@ -2029,8 +2043,176 @@ class ScientificCoding:
             await asyncio.gather(*tasks, return_exceptions=True)
 
 
+class OperationSubmissionParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    request: dict[str, object] | None = Field(
+        description=(
+            "One existing contracts/instruments.md operation envelope. "
+            "Use null only to reaccept a failed pending operation after repair."
+        )
+    )
+
+
+class ControllerChannel:
+    def __init__(self, reader, writer) -> None:
+        self.reader = reader
+        self.writer = writer
+
+    async def send(self, message: dict) -> None:
+        self.writer.write((json.dumps(message, ensure_ascii=False) + "\n").encode("utf-8"))
+        await self.writer.drain()
+
+    async def receive(self) -> dict:
+        line = await self.reader.readline()
+        if not line:
+            raise ConnectionError(
+                "Launcher channel closed; recover durable Runner state, never resubmit blindly."
+            )
+        message = json.loads(line)
+        if not isinstance(message, dict):
+            raise ValueError("Controller message must be an object.")
+        return message
+
+
+class OperationSubmission:
+    def __init__(self, channel, binding: dict, console: Console, coding) -> None:
+        self.channel = channel
+        self.binding = binding
+        self.console = console
+        self.coding = coding
+        self.state = binding["state"]
+        self.busy = False
+        self.closed = False
+        self.status = None
+        self.error = None
+        self.wait_started = None
+        self.responses: dict[str, str] = {}
+        self.rejections = 0
+        self.active_tasks: set[asyncio.Task] = set()
+        self.closing = False
+
+    def tool(self):
+        from copilot import define_tool
+
+        return define_tool(
+            "submit_operation",
+            description=(
+                "Submit one existing typed operation envelope from contracts/instruments.md "
+                "in request. Do not write pi_workspace/operation_request.json; it is internal "
+                "Runner exchange. The trusted controller validates and executes it using "
+                "existing Runner permissions and allocation, then returns compact factual "
+                "result/errors and current state directly to this conversation. Detailed "
+                "evidence remains available through artifact_evidence_query. Continue here "
+                "after ordinary results or implementation errors; the latter are execution "
+                "history, not scientific evidence. Correct source through scientific_coding "
+                "and review actual changes before submitting a replacement request, or "
+                "request=null to reaccept a failed pending action after repair. Inquiry "
+                "open/reframe/close requires checkpoint next. Use actual completed_operations "
+                "metadata, not invented IDs; preserve your scientific content. Checkpoint "
+                "or terminal commitment ends this bounded context. Do not submit again after "
+                "session_ended, publication_fatal, recovery_required or interruption. "
+                "No submission result certifies scientific validity."
+            ),
+            handler=self.invoke,
+            params_type=OperationSubmissionParams,
+            defer="never",
+        )
+
+    def request_stop(self) -> None:
+        path = stop_request_path()
+        if path is not None:
+            path.write_text("Copilot operation wait interrupted.\n", encoding="utf-8")
+
+    async def invoke(self, params: OperationSubmissionParams, invocation) -> str:
+        if invocation.session_id != self.binding["session_id"] or not invocation.tool_call_id:
+            return json.dumps({"status": "rejected", "error": "Invalid SDK session binding."})
+        call_id = invocation.tool_call_id
+        if call_id in self.responses:
+            return self.responses[call_id]
+        if self.busy or self.closed or (self.coding is not None and self.coding.busy):
+            return json.dumps({
+                "status": "rejected",
+                "error": "Another operation/coding call is active or this session has ended.",
+            })
+        self.busy = True
+        task = asyncio.current_task()
+        self.active_tasks.add(task)
+        self.wait_started = time.monotonic()
+        try:
+            await self.channel.send({
+                "type": "operation",
+                "invocation_id": self.binding["invocation_id"],
+                "session_id": self.binding["session_id"],
+                "campaign_id": self.binding["campaign_id"],
+                "event_count": self.state["operation_event_count"],
+                "call_id": call_id,
+                "request": params.request,
+            })
+            response = await self.channel.receive()
+            if (
+                response.get("type") != "operation_result"
+                or response.get("invocation_id") != self.binding["invocation_id"]
+                or response.get("call_id") != call_id
+            ):
+                raise ValueError("Operation response binding does not match this submission.")
+            self.status = response["status"]
+            self.error = response.get("error")
+            if isinstance(response.get("state"), dict):
+                self.state = response["state"]
+            self.closed = self.closing or self.status not in {
+                "completed", "rejected", "implementation_error"
+            }
+            if self.status == "rejected":
+                self.rejections += 1
+                if self.rejections >= 2:
+                    self.closed = True
+                    self.status = "validation_fatal"
+                    response["status"] = self.status
+            else:
+                self.rejections = 0
+            result = {key: value for key, value in response.items() if key not in {
+                "type", "invocation_id", "call_id"
+            }}
+            encoded = json.dumps(result, ensure_ascii=False)
+            self.responses[call_id] = encoded
+            self.console.line(f"  > submit_operation: {self.status}")
+            return encoded
+        except asyncio.CancelledError:
+            self.closed = True
+            self.status = "interrupted"
+            self.request_stop()
+            raise
+        except (OSError, ValueError) as error:
+            self.closed = True
+            self.status = "recovery_required"
+            self.error = str(error)
+            self.request_stop()
+            return json.dumps({"status": self.status, "error": self.error})
+        finally:
+            self.console.runner_wait_seconds += time.monotonic() - self.wait_started
+            self.wait_started = None
+            self.busy = False
+            self.active_tasks.discard(task)
+
+    def current_wait_seconds(self) -> float:
+        return self.console.runner_wait_seconds + (
+            time.monotonic() - self.wait_started if self.wait_started is not None else 0.0
+        )
+
+    async def close(self) -> None:
+        self.closing = True
+        self.closed = True
+        tasks = list(self.active_tasks)
+        if tasks:
+            self.request_stop()
+            # Runner owns the cooperative-stop deadline and durable transaction.
+            # Consume its response before the shared channel receives another command.
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+
 def session_options(
-    args, console: Console, finished: asyncio.Event, coding=None
+    args, console: Console, finished: asyncio.Event, coding=None, operations=None
 ) -> dict:
     from copilot import ToolSet, define_tool
     from runner.artifact_evidence_query import (
@@ -2068,7 +2250,7 @@ def session_options(
     )
 
     on_event, on_permission_request = build_handlers(
-        console, finished, preliminary=args.preliminary
+        console, finished, preliminary=args.preliminary, operations=operations
     )
     tools = [artifact_evidence_tool]
     available = (
@@ -2079,6 +2261,9 @@ def session_options(
     if not args.preliminary and coding is not None:
         tools.append(coding.tool())
         available.add_custom("scientific_coding")
+    if not args.preliminary and operations is not None:
+        tools.append(operations.tool())
+        available.add_custom("submit_operation")
     options = {
         "model": normalize_model(args.model),
         "reasoning_effort": args.reasoning,
@@ -2101,7 +2286,8 @@ def session_options(
         },
     }
     if not args.preliminary:
-        options["hooks"] = {"on_pre_tool_use": scoped_tool_hook()}
+        options["include_sub_agent_streaming_events"] = False
+        options["hooks"] = {"on_pre_tool_use": scoped_tool_hook(operations=operations)}
         options["enable_file_hooks"] = False
         options["enable_host_git_operations"] = False
         options["request_extensions"] = False
@@ -2109,9 +2295,14 @@ def session_options(
 
 
 async def open_session(client, args, options: dict):
+    args.resumed_session = bool(args.resume)
     if args.resume:
         try:
-            return await client.resume_session(args.session_id, **options)
+            # The new controller has no prior tool-response cache. Never replay
+            # unfinished SDK work against already advanced durable Runner state.
+            return await client.resume_session(
+                args.session_id, continue_pending_work=False, **options
+            )
         except Exception as error:
             raise RuntimeError(
                 "could not resume the persisted researcher session "
@@ -2120,7 +2311,10 @@ async def open_session(client, args, options: dict):
     if args.resume_or_create:
         metadata = await client.get_session_metadata(args.session_id)
         if metadata is not None:
-            return await client.resume_session(args.session_id, **options)
+            args.resumed_session = True
+            return await client.resume_session(
+                args.session_id, continue_pending_work=False, **options
+            )
         return await client.create_session(session_id=args.session_id, **options)
     return await client.create_session(session_id=args.session_id, **options)
 
@@ -2167,7 +2361,7 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
         raise interruption
 
 
-async def run(args) -> int:
+async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
     console = getattr(args, "usage_console", None) or Console()
@@ -2177,22 +2371,33 @@ async def run(args) -> int:
     if stop_requested():
         return EXIT_INTERRUPTED
 
-    client = CopilotClient(working_directory=str(ROOT))
+    owned_client = client is None
+    if not args.preliminary and channel is None:
+        raise ValueError("Ordinary Copilot PI sessions require the trusted launcher controller.")
+    client = client or CopilotClient(working_directory=str(ROOT))
     coding = ScientificCoding(client, args, console) if not args.preliminary else None
+    operations = (
+        OperationSubmission(channel, binding, console, coding)
+        if not args.preliminary else None
+    )
+    if coding is not None:
+        coding.operations = operations
+    args.operation_submission = operations
     session = None
     abort_session = False
     try:
-        await client.start()
-        status = await client.get_auth_status()
-        if not getattr(status, "isAuthenticated", False):
+        if owned_client:
+            await client.start()
+        status = await client.get_auth_status() if owned_client else None
+        if owned_client and not getattr(status, "isAuthenticated", False):
             print(
                 "Copilot is not authenticated. Run `copilot` once and sign in.",
                 file=sys.stderr,
             )
             return EXIT_NOT_AUTHENTICATED
 
-        available = [entry.id for entry in await client.list_models()]
-        if model not in available:
+        available = [entry.id for entry in await client.list_models()] if owned_client else []
+        if owned_client and model not in available:
             print(
                 f"Model '{model}' is not available to this Copilot account. "
                 f"Available: {', '.join(available)}",
@@ -2201,25 +2406,56 @@ async def run(args) -> int:
             return EXIT_MODEL_UNAVAILABLE
 
         session = await open_session(
-            client, args, session_options(args, console, finished, coding)
+            client, args, session_options(args, console, finished, coding, operations)
         )
         before = worktree_status()
         before_offload = offload_snapshot()
         started = time.monotonic()
         finished_task = asyncio.create_task(finished.wait())
         stop_task = asyncio.create_task(wait_for_stop_request())
+        async def active_timeout() -> None:
+            while True:
+                waited = operations.current_wait_seconds() if operations is not None else 0.0
+                if time.monotonic() - started - waited >= args.timeout:
+                    return
+                await asyncio.sleep(0.25)
+
+        timeout_task = asyncio.create_task(active_timeout())
         try:
-            await session.send(args.prompt)
-            done, _ = await asyncio.wait(
-                (finished_task, stop_task),
-                timeout=args.timeout,
-                return_when=asyncio.FIRST_COMPLETED,
-            )
+            prompt = args.prompt
+            if operations is not None and args.resumed_session:
+                prompt += (
+                    "\n\nRecovered current Runner state (factual metadata, not new "
+                    "scientific evidence). Automatic pending-work replay is disabled; "
+                    "continue from this durable state, not an unfinished old tool call:\n"
+                    + json.dumps(operations.state, ensure_ascii=False)
+                )
+            await session.send(prompt)
+            for attempt in range(2):
+                done, _ = await asyncio.wait(
+                    (finished_task, stop_task, timeout_task),
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if (
+                    stop_task in done or timeout_task in done
+                    or args.preliminary or console.session_error
+                    or (operations is not None and operations.closed)
+                ):
+                    break
+                if attempt == 0:
+                    finished.clear()
+                    finished_task = asyncio.create_task(finished.wait())
+                    await session.send(
+                        "This bounded session is still active. Continue from the actual "
+                        "operation results in this conversation. Submit the next supported "
+                        "action or the scientific checkpoint through submit_operation. "
+                        "Current factual state: " + json.dumps(operations.state)
+                    )
             if stop_task in done:
                 abort_session = True
                 console.line("  ! session interrupted")
                 return EXIT_INTERRUPTED
-            if finished_task not in done:
+            if timeout_task in done:
                 abort_session = True
                 console.line(f"  ! session timed out after {args.timeout}s")
                 console.summary(
@@ -2249,7 +2485,10 @@ async def run(args) -> int:
         finally:
             finished_task.cancel()
             stop_task.cancel()
-            await asyncio.gather(finished_task, stop_task, return_exceptions=True)
+            timeout_task.cancel()
+            await asyncio.gather(
+                finished_task, stop_task, timeout_task, return_exceptions=True
+            )
 
         console.summary(
             session.session_id,
@@ -2257,19 +2496,30 @@ async def run(args) -> int:
             offloaded_since(before_offload),
             elapsed_seconds=time.monotonic() - started,
         )
+        if operations is not None and operations.status != "session_ended":
+            return EXIT_SESSION_ERROR
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
     finally:
         try:
+            if operations is not None:
+                await operations.close()
             if coding is not None:
                 await coding.close()
         finally:
-            await shutdown_runtime(client, session, console, abort=abort_session)
+            if owned_client:
+                await shutdown_runtime(client, session, console, abort=abort_session)
+            elif session is not None:
+                if abort_session:
+                    await asyncio.wait_for(session.abort(), SHUTDOWN_TIMEOUT_SECONDS)
+                await asyncio.wait_for(session.disconnect(), SHUTDOWN_TIMEOUT_SECONDS)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("prompt")
-    parser.add_argument("--session-id", required=True)
+    parser.add_argument("prompt", nargs="?")
+    parser.add_argument("--session-id")
+    parser.add_argument("--controller-port", type=int)
+    parser.add_argument("--controller-token")
     parser.add_argument("--model", default="gpt-5.6-luna")
     parser.add_argument(
         "--reasoning", default="high", choices=["low", "medium", "high", "xhigh", "max"]
@@ -2285,7 +2535,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--phase")
     parser.add_argument("--preliminary", action="store_true")
     parser.add_argument("--attempt", type=int, default=1)
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.controller_port:
+        if not args.controller_token or args.session_id or args.prompt:
+            parser.error("controller mode requires a token and no direct session/prompt")
+    elif not args.session_id or args.prompt is None:
+        parser.error("a bounded invocation requires session-id and prompt")
+    return args
 
 
 def console_label(args) -> str:
@@ -2322,9 +2578,13 @@ def record_usage(
         "reasoning": args.reasoning,
         # Child time is reported in its own row, not again in the PI row.
         "duration_seconds": round(
-            max(0.0, elapsed - console.coding_duration_seconds), 3
+            max(
+                0.0,
+                elapsed - console.coding_duration_seconds - console.runner_wait_seconds,
+            ), 3
         ),
         "wall_duration_seconds": round(elapsed, 3),
+        "runner_wait_seconds": round(console.runner_wait_seconds, 3),
         "exit_code": exit_code,
         "input_tokens": console.prompt_tokens
         if "input_tokens" in console.reported_usage
@@ -2346,13 +2606,85 @@ def record_usage(
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+async def serve(args) -> int:
+    from copilot import CopilotClient
+
+    reader, writer = await asyncio.open_connection(
+        "127.0.0.1", args.controller_port, limit=4 * 1024 * 1024
+    )
+    channel = ControllerChannel(reader, writer)
+    client = CopilotClient(working_directory=str(ROOT))
+    console = Console()
+    try:
+        await client.start()
+        status = await client.get_auth_status()
+        if not getattr(status, "isAuthenticated", False):
+            raise RuntimeError("Copilot is not authenticated.")
+        available = [entry.id for entry in await client.list_models()]
+        if normalize_model(args.model) not in available:
+            raise RuntimeError(f"Configured model {args.model!r} is unavailable.")
+        await channel.send({"type": "ready", "token": args.controller_token})
+        while not stop_requested():
+            command = await channel.receive()
+            if command.get("type") == "shutdown":
+                break
+            if command.get("type") != "session":
+                raise ValueError("Unexpected controller command.")
+            invocation_args = parse_args(command["arguments"])
+            if (
+                invocation_args.session_id != command["session_id"]
+                or invocation_args.campaign_id != command["campaign_id"]
+                or normalize_model(invocation_args.model) != normalize_model(args.model)
+                or invocation_args.reasoning != args.reasoning
+            ):
+                raise ValueError("Controller invocation binding/configuration mismatch.")
+            invocation_args.usage_console = Console(console_label(invocation_args))
+            started = time.monotonic()
+            exit_code = EXIT_RUNTIME_FAILURE
+            error = None
+            try:
+                exit_code = await run(
+                    invocation_args, client=client, channel=channel, binding=command
+                )
+            except Exception as exc:  # noqa: BLE001 - preserve bounded runtime failure
+                error = f"{type(exc).__name__}: {exc}"
+            finally:
+                try:
+                    record_usage(
+                        invocation_args, invocation_args.usage_console,
+                        time.monotonic() - started, exit_code,
+                    )
+                except (OSError, ValueError) as exc:
+                    print(f"Session usage could not be recorded: {exc}", file=sys.stderr)
+            operations = getattr(invocation_args, "operation_submission", None)
+            await channel.send({
+                "type": "session_result",
+                "invocation_id": command["invocation_id"],
+                "exit_code": exit_code,
+                "status": operations.status if operations is not None else "preliminary",
+                "error": error or (
+                    operations.error if operations is not None else
+                    invocation_args.usage_console.session_error
+                ),
+            })
+            if exit_code not in {EXIT_OK, EXIT_SESSION_ERROR}:
+                break
+        return EXIT_OK
+    finally:
+        try:
+            await shutdown_runtime(client, None, console, abort=False)
+        finally:
+            writer.close()
+            await writer.wait_closed()
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     args.usage_console = Console(console_label(args))
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     try:
-        exit_code = asyncio.run(run(args))
+        exit_code = asyncio.run(serve(args) if args.controller_port else run(args))
     except KeyboardInterrupt:
         exit_code = EXIT_INTERRUPTED
     except Exception as error:  # noqa: BLE001 - the launcher needs a code, not a traceback
