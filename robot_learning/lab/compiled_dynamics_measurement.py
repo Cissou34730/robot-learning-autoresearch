@@ -49,11 +49,11 @@ def _model_metadata(model: mujoco.MjModel) -> dict[str, Any]:
         "tolerance": float(option.tolerance),
         "ls_tolerance": float(option.ls_tolerance),
         "noslip_tolerance": float(option.noslip_tolerance),
-        "mpr_tolerance": float(option.mpr_tolerance),
+        "ccd_tolerance": float(option.ccd_tolerance),
         "iterations": int(option.iterations),
         "ls_iterations": int(option.ls_iterations),
         "noslip_iterations": int(option.noslip_iterations),
-        "mpr_iterations": int(option.mpr_iterations),
+        "sdf_iterations": int(option.sdf_iterations),
     }
     bodies = []
     for body_id in range(model.nbody):
