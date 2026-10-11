@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a complete-artifact development comparison against T3:checkpoint-120832. The conclusion must use complete episode success as the primary criterion and report whether the intervention changes pre-entry saturation, velocity-linked reach behavior, and hold interruptions across inner and outer target bands. A positive route requires at least 98% development success without a material hold-regression pattern; otherwise preserve the best artifact-level result and the unresolved mechanism limits.",
-    "goal_connection": "The strongest measured staged-transfer artifact achieves 151/160 (94.375%), leaving a 3.625 percentage-point gap to the 98% human goal. Closing that gap requires complete uninterrupted holds, and the four matched residual failures are no-first-entry trajectories with 498-500 saturated controls and high endpoint and joint speeds.",
-    "handoff_conclusion": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result is recipe-specific and does not reject regulation or representation interventions generally. M9 corrected the authority characterization defects and found positive local endpoint authority at both IK branches and both inner and outer representative bands, while the four matched T3 residual episodes remained 500-step no-first-entry failures with 498-500 saturated controls, high endpoint and joint speeds, and zero or near-zero control reserve. This supports a predominantly policy-dependent regulation or learnability failure at the sampled residual configurations, boundedly rather than universally. The initial model's consequences about coupled reaching and stabilization, hidden hold progress, and velocity-aware regulation remain decision-relevant; the observed residual pattern strengthens the case that the policy must learn a low-speed trajectory and complete hold, not merely reach. The next intervention must therefore be judged by complete success and by whether saturation, velocity-linked reach failure, and hold interruptions improve across both radius bands.",
-    "handoff_question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
-    "handoff_source_session_id": "S10",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
-    "rationale": "M9 corrected the authority characterization and found positive local endpoint authority at both branches and both radius bands while the residual policy saturated and failed to enter, so authority redesign is not the leading next route. E12 rejects the tested near-limit command-penalty recipe and its hold regression, but that recipe-specific negative result does not reject regulation or representation interventions generally. The current observation contains joint velocity but no explicit endpoint-velocity or hold-phase signal, making a targeted policy-interface change a consequential alternative that can directly test whether learnability of low-speed regulation, rather than absent authority, limits the staged-transfer artifact. Further bounded work is justified because 94.375% development success is below the goal and the residual pattern identifies a measurable mechanism-level discriminator.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -4120,7 +4109,7 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 5,
     "measurement": 10,
     "session": 11,
@@ -10311,9 +10300,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:07:15Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "negative",
+        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "negative",
+        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "negative",
+        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M10 closes I5 negatively for the tested velocity-and-hold policy-interface realization. On the identical 160-episode panel, T5:checkpoint-120832 achieved 0/160 complete successes and lost the paired comparison 0-151 to T3:checkpoint-120832 at 151/160. The inspected diagnostics show the T5 artifact repeatedly saturating with high endpoint and joint speeds before entry in both inner and outer target examples; it produced only brief interrupted entries and no complete hold. T3 completed holds in both radius bands with substantially lower endpoint-speed behavior and fewer pre-entry saturation steps. Thus this tested interface change did not reduce saturation, velocity-linked reach failure, or hold interruption and cannot close the 98% gap. The result rejects this intervention realization, not all representation or regulation methods; the artifact-level staged-transfer gain and bounded positive-authority interpretation remain supported."
+      }
+    },
+    "request_fingerprint": "fc09a499eb0220744b96989e6777e76647f2f7fb279cf4cd45c22c61943b3f01",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this goal-review session. T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%, T3:checkpoint-70656 is a secondary measured artifact at 87.5%, T4:checkpoint-20480 is a tested but rejected intervention at 93.125%, T1:checkpoint-120832 is the staged-transfer reference at 68.75%, and T2:checkpoint-120832 is recipe-specific counterevidence at 33.75%. These are complete-artifact comparison facts and do not establish causal explanations.",
     "completed_operations": [
@@ -10358,7 +10401,8 @@
     "operation_ids": [
       "E20",
       "T5",
-      "M10"
+      "M10",
+      "E21"
     ],
     "scientific_parent_commit": "4b39b9ca84d6d608077bcaabf7baf59b20584b87"
   },

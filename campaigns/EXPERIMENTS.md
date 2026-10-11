@@ -37,3 +37,4 @@
 | E20 | restore_recipe | I5 | restored |
 | T5 | training | I5 | completed |
 | M10 | measurement | I5 | completed |
+| E21 | inquiry | I5 | completed |
