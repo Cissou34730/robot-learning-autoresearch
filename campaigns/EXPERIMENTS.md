@@ -64,3 +64,4 @@
 | E38 | inquiry | I9 | completed |
 | E39 | checkpoint | - | checkpointed |
 | T10 | training | I9 | completed |
+| M14 | measurement | I9 | completed |
