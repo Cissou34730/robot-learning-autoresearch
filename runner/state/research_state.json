@@ -194,7 +194,8 @@
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t1/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m2-T1-checkpoint-120832-160ep-seed4200-fe915617203e.json"
       ],
       "fingerprint": "ebb28d633cdba59f174a8a25e36bb125cb350a8763afd755de30281402b04a18",
       "id": "T1:checkpoint-120832",
@@ -843,14 +844,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1586,9 +1587,508 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:04:25Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Mechanism diagnostic evaluation of the strongest measured baseline checkpoint with branch, singularity, speed, and control-authority evidence.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline-120832-mechanism-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M1 established that most failures occur before first entry but its artifact records no elbow branch, Jacobian, velocity, or control-clipping signatures. Evaluating T1:checkpoint-120832 on the same 160-seed panel preserves the existing candidate comparison while adding the measurements needed to distinguish inner-radius coverage from target-angle or singular-escape basins and bounded control authority. Radius- and angle-stratified first-entry outcomes, branch and Jacobian measures, and pre-entry speed and saturation measures will determine whether the next route should be coverage-focused training, branch-aware control, or simulator/control characterization."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline-120832-mechanism-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m2-T1-checkpoint-120832-160ep-seed4200-fe915617203e.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8654ec9cb865a1c13e6ce511fa609668e2def4ef3caf0d5e4d87d269676c55fd",
+              "evaluation_semantics": "fe915617203e",
+              "model_fingerprint": "ebb28d633cdba59f174a8a25e36bb125cb350a8763afd755de30281402b04a18",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "fe915617203e",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "baseline-120832-mechanism-diagnostics",
+          "model_fingerprint": "ebb28d633cdba59f174a8a25e36bb125cb350a8763afd755de30281402b04a18",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "baseline-120832-mechanism-diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m2-T1-checkpoint-120832-160ep-seed4200-fe915617203e.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_at_first_reach",
+                    "branch_switches",
+                    "control_saturation_steps",
+                    "control_saturation_steps_before_entry",
+                    "elbow_angle_at_first_reach",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "jacobian_det_at_first_reach",
+                    "max_abs_control",
+                    "max_abs_control_before_entry",
+                    "max_abs_jacobian_det",
+                    "max_abs_jacobian_det_before_entry",
+                    "max_endpoint_speed",
+                    "max_endpoint_speed_before_entry",
+                    "max_held_steps",
+                    "max_joint_speed",
+                    "max_joint_speed_before_entry",
+                    "min_distance_branch",
+                    "min_distance_cm",
+                    "min_distance_elbow_angle",
+                    "min_distance_jacobian_det",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/jacobian_det",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/control",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "8654ec9cb865a1c13e6ce511fa609668e2def4ef3caf0d5e4d87d269676c55fd",
+            "evaluation_semantics": "fe915617203e",
+            "model_fingerprint": "ebb28d633cdba59f174a8a25e36bb125cb350a8763afd755de30281402b04a18",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 68.75,
+            "successes": 110
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline-120832-mechanism-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/f917968b-2042-42f8-96b1-d2810f89ba4c/evaluation-f917968b-2042-42f8-96b1-d2810f89ba4c-m2-T1-checkpoint-120832-160ep-seed4200-fe915617203e.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_at_first_reach",
+                      "branch_switches",
+                      "control_saturation_steps",
+                      "control_saturation_steps_before_entry",
+                      "elbow_angle_at_first_reach",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "jacobian_det_at_first_reach",
+                      "max_abs_control",
+                      "max_abs_control_before_entry",
+                      "max_abs_jacobian_det",
+                      "max_abs_jacobian_det_before_entry",
+                      "max_endpoint_speed",
+                      "max_endpoint_speed_before_entry",
+                      "max_held_steps",
+                      "max_joint_speed",
+                      "max_joint_speed_before_entry",
+                      "min_distance_branch",
+                      "min_distance_cm",
+                      "min_distance_elbow_angle",
+                      "min_distance_jacobian_det",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_det",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/control",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8654ec9cb865a1c13e6ce511fa609668e2def4ef3caf0d5e4d87d269676c55fd",
+              "evaluation_semantics": "fe915617203e",
+              "model_fingerprint": "ebb28d633cdba59f174a8a25e36bb125cb350a8763afd755de30281402b04a18",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Mechanism diagnostic evaluation of the strongest measured baseline checkpoint with branch, singularity, speed, and control-authority evidence.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline-120832-mechanism-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M1 established that most failures occur before first entry but its artifact records no elbow branch, Jacobian, velocity, or control-clipping signatures. Evaluating T1:checkpoint-120832 on the same 160-seed panel preserves the existing candidate comparison while adding the measurements needed to distinguish inner-radius coverage from target-angle or singular-escape basins and bounded control authority. Radius- and angle-stratified first-entry outcomes, branch and Jacobian measures, and pre-entry speed and saturation measures will determine whether the next route should be coverage-focused training, branch-aware control, or simulator/control characterization."
+      }
+    },
+    "request_fingerprint": "2541496cde57b7ce59e077d6c53659cbb47c0a949d590dc94e93b628520fda41",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T1:checkpoint-120832 remains the stronger measured artifact only at the complete-artifact comparison level, with no causal attribution and no evidence near the official 98% criterion.",
     "completed_operations": [
@@ -1616,6 +2116,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "856c66af-ca2c-420c-b06f-ef3c9d942366",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "d4fe78d10fe9c1328d543a9e2f04e2610d4891d7"
+  },
   "terminal_state": null
 }
