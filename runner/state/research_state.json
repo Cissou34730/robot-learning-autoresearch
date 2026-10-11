@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Train and archive at least one complete learned candidate within the current 120000-step allocation, then evaluate the selected complete artifact on a held-out development panel sampled from the official task distribution while preserving per-episode target radius, target angle, first reach, minimum and final distance, maximum held steps, hold interruptions, and outcome. Close when the resulting candidate comparison and diagnostics identify a capability gap that changes the next direction, or establish that the evidence is limited/inconclusive and preserve the unresolved distinction for goal review; development evidence will not be treated as official certification.",
     "goal_connection": "The human goal is at least 196 successful episodes out of 200 under the full 0.06-0.20 m radial distribution, with an uninterrupted 100-step hold. No candidate has yet demonstrated any capability under that distribution. A complete candidate evaluation is the first evidence that can distinguish whether progress is limited by singular escape and reach timing, convergence/braking, uninterrupted hold regulation, inner-radius generalization, or branch/contact behavior.",
-    "handoff_conclusion": "Observed in completed M5: the exact compiled model has timestep 0.002 s and the measured control interface uses 10 integration substeps per update, giving 0.020 s; both motors have gear 5 and control range [-1,1] with no force limit; compiled link/body masses and inertias are finite and nonzero for physical bodies; damping and armature are 0.5 and 0.01 for both DOFs; repeated zero resets reproduce qpos=qvel=0 and the endpoint at (0.22,0,0.02); an isolated +0.75 command produces +3.75 Nm and shoulder velocity +4.1255 rad/s after one 20 ms interval, while -0.75 produces -3.75 Nm and -4.1254 rad/s; the reversal trace contains a positive-to-negative command transition and reverses shoulder velocity; zero-input free decay from [0.55,-0.35] rad/s decays to approximately [0.00084,-0.000045] rad/s over eight 20 ms intervals; no contacts occurred in the tested non-singular torque, reversal, free-decay, or reset traces; all independent verification checks passed. Interpretation: the model's basic actuator sign, transmission, timing, reset, damping, and local free-decay assumptions are supported for these controlled states, so a source-level dynamics or action-interface repair is not currently justified. The high measured transient acceleration and reversal response make braking/hold regulation consequential, but M5 does not establish that they prevent task success. Competing explanations remain: (1) a learned policy may fail because of reach timing, singular escape, braking, or 100-step regulation; (2) it may reach the exposed outer radii but fail to generalize to the unexposed 0.06-0.14 m band; (3) final branch occupancy or folded-path contacts may create geometry-dependent failures. M5 is limited to short deterministic probes away from the singular reset during dynamics tests and does not measure policy trajectories, official target panels, long-horizon hold continuity, or both IK branches. These limits prevent a capability conclusion and keep the candidate-behavior distinction open.",
+    "handoff_conclusion": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
     "handoff_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 5,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -738,27 +738,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:20:49Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation M5 with one independent verification; one completed inquiry-opening operation E2; no training steps, learned candidates, development evaluations, or model-role assignments. The campaign remains within the inquiry allocation of 1/15.",
+        "current_goal_gap": "No complete learned candidate, training trajectory, or development evaluation exists. The unresolved gap is whether a candidate can reach and continuously hold targets across the full official radial and angular distribution, and if not whether the dominant limitation is singular escape/reach timing, convergence and braking, 100-step regulation, inner-radius generalization, or branch/contact behavior.",
+        "current_synthesis": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
+        "decision_frontier": "The next decision is whether to continue learning development, investigate a consequential control/contact mechanism, or reconsider direction after the first complete candidate is measured. Evidence supporting continued learning development would be meaningful success with failures concentrated in the unexposed inner-radius band or another exposure-linked pattern. Evidence redirecting toward control/dynamics or a mechanism inquiry would be systematic reach-time, settling, endpoint-velocity, hold-interruption, or contact/branch failures across adequately exposed targets. Evidence for candidate selection must retain per-episode radius, angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward, training proxy rank, or first entry is insufficient. The planned evidence cannot certify the official 98% result or prove causality for an unexplained recipe difference, and those limitations remain explicit.",
+        "evidence_references": [
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still seeks a learned policy achieving at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-control-step hold within 1 cm. M5 verified the intended compiled plant and timing in controlled states, but no learned candidate has been evaluated, so capability under the full 0.06-0.20 m target distribution remains unmeasured. E2 opens the bounded work needed to obtain that first capability evidence.",
+        "next_direction_or_closure": "Opened bounded inquiry I1 through E2. In the fresh inquiry session, use the current method only as a testable baseline unless evidence warrants a PI-owned change; train within the existing 120000-step allocation and select a complete artifact for held-out research evaluation with the recorded reach/hold and geometry diagnostics. Close the inquiry only after those results identify a direction-changing capability gap or establish a bounded limited/inconclusive conclusion for goal review.",
+        "next_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has been trained or assigned a role. Working, best-known, and retained roles are empty.",
-    "completed_operations": [
-      "M5"
-    ],
-    "cumulative_resource_use": "One completed startup measurement operation M5 containing one compiled-dynamics experiment and one independent verification module; no training steps, candidate artifacts, or model-role assignments. Three accepted execution attempts failed before completion due to implementation/API issues and are execution history, not evidence; the completed M5 artifacts are the sole scientific evidence from this session.",
-    "current_goal_gap": "No learned candidate or development success evidence exists. The remaining gap is actual policy capability under the full 0.06-0.20 m official radial distribution: whether failures arise during singular escape/reach, convergence and braking, uninterrupted hold regulation, inner-radius generalization, or branch/contact behavior.",
-    "current_synthesis": "Observed in completed M5: the exact compiled model has timestep 0.002 s and the measured control interface uses 10 integration substeps per update, giving 0.020 s; both motors have gear 5 and control range [-1,1] with no force limit; compiled link/body masses and inertias are finite and nonzero for physical bodies; damping and armature are 0.5 and 0.01 for both DOFs; repeated zero resets reproduce qpos=qvel=0 and the endpoint at (0.22,0,0.02); an isolated +0.75 command produces +3.75 Nm and shoulder velocity +4.1255 rad/s after one 20 ms interval, while -0.75 produces -3.75 Nm and -4.1254 rad/s; the reversal trace contains a positive-to-negative command transition and reverses shoulder velocity; zero-input free decay from [0.55,-0.35] rad/s decays to approximately [0.00084,-0.000045] rad/s over eight 20 ms intervals; no contacts occurred in the tested non-singular torque, reversal, free-decay, or reset traces; all independent verification checks passed. Interpretation: the model's basic actuator sign, transmission, timing, reset, damping, and local free-decay assumptions are supported for these controlled states, so a source-level dynamics or action-interface repair is not currently justified. The high measured transient acceleration and reversal response make braking/hold regulation consequential, but M5 does not establish that they prevent task success. Competing explanations remain: (1) a learned policy may fail because of reach timing, singular escape, braking, or 100-step regulation; (2) it may reach the exposed outer radii but fail to generalize to the unexposed 0.06-0.14 m band; (3) final branch occupancy or folded-path contacts may create geometry-dependent failures. M5 is limited to short deterministic probes away from the singular reset during dynamics tests and does not measure policy trajectories, official target panels, long-horizon hold continuity, or both IK branches. These limits prevent a capability conclusion and keep the candidate-behavior distinction open.",
-    "decision_frontier": "The next decision is candidate development versus a control/dynamics intervention. Evidence that would redirect to control or dynamics is a complete-policy diagnostic showing systematic reach-time/settling/hold failures despite adequate task exposure, or a newly observed contact/branch-specific obstruction. Evidence that would support continued learning development is a complete candidate with meaningful success and failures concentrated in the unexposed inner-radius band or identifiable hold/reach phases. The decisive measurement must preserve per-episode target radius/angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward or first entry is insufficient.",
-    "evidence_references": [
-      "M5"
-    ],
-    "human_goal_connection": "The human goal is a learned policy with at least 196 successes in the fixed 200-episode official panel, where each success requires an uninterrupted 100-control-step hold inside 1 cm. M5 advances this goal by verifying that the compiled plant and action timing are the intended control problem before attributing future failures to learning or regulation.",
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "4f36882936388c6e183964dc2fda29194f70cc0f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation M5 with one independent verification; one completed inquiry-opening operation E2; no training steps, learned candidates, development evaluations, or model-role assignments. The campaign remains within the inquiry allocation of 1/15.",
+        "current_goal_gap": "No complete learned candidate, training trajectory, or development evaluation exists. The unresolved gap is whether a candidate can reach and continuously hold targets across the full official radial and angular distribution, and if not whether the dominant limitation is singular escape/reach timing, convergence and braking, 100-step regulation, inner-radius generalization, or branch/contact behavior.",
+        "current_synthesis": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
+        "decision_frontier": "The next decision is whether to continue learning development, investigate a consequential control/contact mechanism, or reconsider direction after the first complete candidate is measured. Evidence supporting continued learning development would be meaningful success with failures concentrated in the unexposed inner-radius band or another exposure-linked pattern. Evidence redirecting toward control/dynamics or a mechanism inquiry would be systematic reach-time, settling, endpoint-velocity, hold-interruption, or contact/branch failures across adequately exposed targets. Evidence for candidate selection must retain per-episode radius, angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward, training proxy rank, or first entry is insufficient. The planned evidence cannot certify the official 98% result or prove causality for an unexplained recipe difference, and those limitations remain explicit.",
+        "evidence_references": [
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still seeks a learned policy achieving at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-control-step hold within 1 cm. M5 verified the intended compiled plant and timing in controlled states, but no learned candidate has been evaluated, so capability under the full 0.06-0.20 m target distribution remains unmeasured. E2 opens the bounded work needed to obtain that first capability evidence.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Opened bounded inquiry I1 through E2. In the fresh inquiry session, use the current method only as a testable baseline unless evidence warrants a PI-owned change; train within the existing 120000-step allocation and select a complete artifact for held-out research evaluation with the recorded reach/hold and geometry diagnostics. Close the inquiry only after those results identify a direction-changing capability gap or establish a bounded limited/inconclusive conclusion for goal review.",
+        "next_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "a0cffb33-02d7-4359-8835-6d83f41fda95",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "8m25s | 19.29 AIU | prompt 3.7m (94% cached) | output 57.6k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f25748abc6d5abaeb325a2bacb1fa8492d510821",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
     "inquiry_id": null,
-    "next_direction_or_closure": "Startup direction: use goal review to open a bounded inquiry focused on first-candidate capability under the official distribution, then train a fresh candidate within the 120000-step ceiling and measure it with complete reach/hold diagnostics, explicitly inspecting the 0.06-0.14 m inner-radius band. Do not change the plant or runtime based on M5 alone; preserve folded-branch/contact uncertainty for candidate diagnostics or a later mechanism test if it becomes outcome-relevant.",
-    "next_question": "Which complete learned candidate, evaluated under the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-    "scientific_commit": "7105ec9c65b595060b5840414a79f129c443621e",
-    "session_id": "S1"
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation M5 with one independent verification; one completed inquiry-opening operation E2; no training steps, learned candidates, development evaluations, or model-role assignments. The campaign remains within the inquiry allocation of 1/15.",
+        "current_goal_gap": "No complete learned candidate, training trajectory, or development evaluation exists. The unresolved gap is whether a candidate can reach and continuously hold targets across the full official radial and angular distribution, and if not whether the dominant limitation is singular escape/reach timing, convergence and braking, 100-step regulation, inner-radius generalization, or branch/contact behavior.",
+        "current_synthesis": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
+        "decision_frontier": "The next decision is whether to continue learning development, investigate a consequential control/contact mechanism, or reconsider direction after the first complete candidate is measured. Evidence supporting continued learning development would be meaningful success with failures concentrated in the unexposed inner-radius band or another exposure-linked pattern. Evidence redirecting toward control/dynamics or a mechanism inquiry would be systematic reach-time, settling, endpoint-velocity, hold-interruption, or contact/branch failures across adequately exposed targets. Evidence for candidate selection must retain per-episode radius, angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward, training proxy rank, or first entry is insufficient. The planned evidence cannot certify the official 98% result or prove causality for an unexplained recipe difference, and those limitations remain explicit.",
+        "evidence_references": [
+          "M5",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still seeks a learned policy achieving at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-control-step hold within 1 cm. M5 verified the intended compiled plant and timing in controlled states, but no learned candidate has been evaluated, so capability under the full 0.06-0.20 m target distribution remains unmeasured. E2 opens the bounded work needed to obtain that first capability evidence.",
+        "next_direction_or_closure": "Opened bounded inquiry I1 through E2. In the fresh inquiry session, use the current method only as a testable baseline unless evidence warrants a PI-owned change; train within the existing 120000-step allocation and select a complete artifact for held-out research evaluation with the recorded reach/hold and geometry diagnostics. Close the inquiry only after those results identify a direction-changing capability gap or establish a bounded limited/inconclusive conclusion for goal review.",
+        "next_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?"
+      }
+    },
+    "request_fingerprint": "258cc96fe73fef8ad37e1c3234351036e4c34b9173cc6b032302f6f1340343f4",
+    "session_id": "S2",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "One completed measurement operation M5 with one independent verification; one completed inquiry-opening operation E2; no training steps, learned candidates, development evaluations, or model-role assignments. The campaign remains within the inquiry allocation of 1/15.",
+    "current_goal_gap": "No complete learned candidate, training trajectory, or development evaluation exists. The unresolved gap is whether a candidate can reach and continuously hold targets across the full official radial and angular distribution, and if not whether the dominant limitation is singular escape/reach timing, convergence and braking, 100-step regulation, inner-radius generalization, or branch/contact behavior.",
+    "current_synthesis": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
+    "decision_frontier": "The next decision is whether to continue learning development, investigate a consequential control/contact mechanism, or reconsider direction after the first complete candidate is measured. Evidence supporting continued learning development would be meaningful success with failures concentrated in the unexposed inner-radius band or another exposure-linked pattern. Evidence redirecting toward control/dynamics or a mechanism inquiry would be systematic reach-time, settling, endpoint-velocity, hold-interruption, or contact/branch failures across adequately exposed targets. Evidence for candidate selection must retain per-episode radius, angle, first reach, minimum/final distance, maximum held steps, interruptions, and outcome; pooled reward, training proxy rank, or first entry is insufficient. The planned evidence cannot certify the official 98% result or prove causality for an unexplained recipe difference, and those limitations remain explicit.",
+    "evidence_references": [
+      "M5",
+      "E2"
+    ],
+    "human_goal_connection": "The campaign still seeks a learned policy achieving at least 196 successes in the protected 200-episode official panel, where each success is an uninterrupted 100-control-step hold within 1 cm. M5 verified the intended compiled plant and timing in controlled states, but no learned candidate has been evaluated, so capability under the full 0.06-0.20 m target distribution remains unmeasured. E2 opens the bounded work needed to obtain that first capability evidence.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Opened bounded inquiry I1 through E2. In the fresh inquiry session, use the current method only as a testable baseline unless evidence warrants a PI-owned change; train within the existing 120000-step allocation and select a complete artifact for held-out research evaluation with the recorded reach/hold and geometry diagnostics. Close the inquiry only after those results identify a direction-changing capability gap or establish a bounded limited/inconclusive conclusion for goal review.",
+    "next_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
+    "scientific_commit": "f25748abc6d5abaeb325a2bacb1fa8492d510821",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -766,21 +888,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a0cffb33-02d7-4359-8835-6d83f41fda95",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "4f36882936388c6e183964dc2fda29194f70cc0f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
