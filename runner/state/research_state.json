@@ -12210,38 +12210,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "I6 closes negatively for the tested endpoint-speed-aware stabilization reward recipe. On the shared 160-episode development panel, T6:checkpoint-86016 achieved 83.125% success (133/160), below T3:checkpoint-120832 at 94.375% (151/160), so the candidate did not improve complete uninterrupted-hold success. This rejects the tested reward implementation as a route to the goal at the measured checkpoint; it does not reject endpoint-speed-aware reward shaping or other T3-compatible policy interventions generally. The M11 artifact records the requested trajectory diagnostics, but this closure does not infer their values or causal meaning because the aggregate success regression is already sufficient for the negative branch.",
-        "reason": "M11 completed the required same-panel candidate comparison and the primary closure criterion failed by 18 episodes, a 11.25 percentage-point regression. The negative result is an artifact-level conclusion about T6:checkpoint-86016 and its recorded reward recipe, not proof that the residual mechanism is a hard actuator limit or that all policy-side stabilization routes are ineffective. I6 therefore supplies a bounded negative answer while preserving T3:checkpoint-120832 as the strongest measured development artifact; the campaign should return to goal review to decide whether another evidence-backed route warrants delaying official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "I6 closes negatively for the tested endpoint-speed-aware stabilization reward recipe. On the shared 160-episode development panel, T6:checkpoint-86016 achieved 83.125% success (133/160), below T3:checkpoint-120832 at 94.375% (151/160), so the candidate did not improve complete uninterrupted-hold success. This rejects the tested reward implementation as a route to the goal at the measured checkpoint; it does not reject endpoint-speed-aware reward shaping or other T3-compatible policy interventions generally. The M11 artifact records the requested trajectory diagnostics, but this closure does not infer their values or causal meaning because the aggregate success regression is already sufficient for the negative branch.",
-        "reason": "M11 completed the required same-panel candidate comparison and the primary closure criterion failed by 18 episodes, a 11.25 percentage-point regression. The negative result is an artifact-level conclusion about T6:checkpoint-86016 and its recorded reward recipe, not proof that the residual mechanism is a hard actuator limit or that all policy-side stabilization routes are ineffective. I6 therefore supplies a bounded negative answer while preserving T3:checkpoint-120832 as the strongest measured development artifact; the campaign should return to goal review to decide whether another evidence-backed route warrants delaying official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E26",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I6 closes negatively for the tested endpoint-speed-aware stabilization reward recipe. On the shared 160-episode development panel, T6:checkpoint-86016 achieved 83.125% success (133/160), below T3:checkpoint-120832 at 94.375% (151/160), so the candidate did not improve complete uninterrupted-hold success. This rejects the tested reward implementation as a route to the goal at the measured checkpoint; it does not reject endpoint-speed-aware reward shaping or other T3-compatible policy interventions generally. The M11 artifact records the requested trajectory diagnostics, but this closure does not infer their values or causal meaning because the aggregate success regression is already sufficient for the negative branch.",
-        "reason": "M11 completed the required same-panel candidate comparison and the primary closure criterion failed by 18 episodes, a 11.25 percentage-point regression. The negative result is an artifact-level conclusion about T6:checkpoint-86016 and its recorded reward recipe, not proof that the residual mechanism is a hard actuator limit or that all policy-side stabilization routes are ineffective. I6 therefore supplies a bounded negative answer while preserving T3:checkpoint-120832 as the strongest measured development artifact; the campaign should return to goal review to decide whether another evidence-backed route warrants delaying official assessment."
-      }
-    },
-    "request_fingerprint": "e67aaaa7232807f7ea8e3e9a77d88102699a62e7ec78cf08b99b950cecab5ac8",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned in this goal-review session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) and is preserved as the reference candidate for I6. T5:checkpoint-120832 remains rejected at 0/160. T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%). These are artifact-level comparisons and do not establish causal attribution to any intended method.",
     "completed_operations": [
