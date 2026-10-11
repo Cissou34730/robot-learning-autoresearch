@@ -2466,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 18,
     "session": 9,
@@ -2475,7 +2475,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -8142,36 +8142,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:07:08Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known from M9 at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is a completed fresh candidate from the I4 targeted-regulation recipe, measured at 0/160 in M18, and is not assigned a working, best-known, or retained role. No new role assignment is warranted.",
+        "completed_operations": [
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "cumulative_resource_use": "Before I4: M5 compiled-dynamics measurement and verification; T1 fresh PPO training at 120832 steps; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO training at 120832 steps; M9 paired 160-episode evaluations; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4 and E16 checkpoint. In I4: M16 implementation verification; T3 fresh PPO training at 120832 actual steps; M17 candidate-mode diagnostic verification; M18 matched T3/T2 160-episode evaluations plus T3 time-resolved 20-rollout measurement; E17 I4 closure. No official assessment has occurred.",
+        "current_goal_gap": "T2 achieved 150/160 (93.75%) on the held-out full-distribution development panel, leaving ten reproducible residual failures and a 46-success shortfall when compared with the 196/200 objective as a development reference. The fresh targeted-regulation candidate T3 achieved 0/160 on the identical panel, so it does not reduce the gap. No protected official result exists.",
+        "current_synthesis": "Observed: M8 verified that T2 training sampled the full 0.06-0.20 m radius range while preserving the official 10-frame action timing, 100-step hold, reset, and success semantics. M9 showed T2 at 150/160 versus T1 at 105/160 on identical seeds. M15 independently verified the ten T2 residual failures plus ten matched controls and found six negative-angle no-first-reach trajectories entering the compiled joint-limit region under persistent saturation and high velocity, one sustained high-speed saturated oscillation, and three reach-then-interrupt failures leaving tolerance after 1, 3, and 3 held steps with nonzero velocity and saturated or near-saturated torque. It found zero contacts and no separating final branch feasibility/occupancy, so branch/contact intervention remains unsupported. The live-environment versus forward-qpos/qvel discrepancy is a measurement limitation, not a task-semantic replacement: M15 reported maximum position error 0.005918 m, velocity error 0.157954 m/s, and 56 tolerance disagreements. M16 verified a bounded training-only targeted profile with global light joint-speed damping, smooth endpoint-speed and action regulation from a 0.05 m braking band into the 0.01 m boundary, and unchanged default evaluation mechanics. T3 was a fresh 120832-step PPO artifact under that profile, but M18 measured 0/160 against T2's 150/160 with T2 winning all 150 discordant episodes. M18's T3 time-resolved panel recorded 19 no-first-reach and one reach-then-interrupt rollout, 9997 outside transitions, zero contacts over 10000 samples, and preserved live/reference discrepancies of at most 0.005497 m position and 0.119706 m/s velocity. Interpretation: I4 is answered negatively for this fresh targeted reward implementation; the implementation was active and semantics were preserved, but the learned candidate largely failed to acquire. This constrains the tested recipe and does not disprove other braking/regulation designs, transfer initialization, or broader policy-development directions. The negative result does not establish a unique cause for T3's collapse, does not support branch/contact targeting, and does not establish or refute the official 98% goal.",
+        "decision_frontier": "The targeted fresh reward intervention did not improve capability and produced a non-acquiring candidate, so continuing that exact recipe is not supported. The next goal-review distinction is whether a materially different policy-development direction can credibly improve T2's acquisition and uninterrupted regulation failures toward 196/200, versus whether the current evidence is insufficient to justify further development and a commitment decision. The evidence that would discriminate a new direction must again compare complete artifacts under preserved official semantics; any live-versus-forward-reference disagreement must be reported as a limitation, not used to redefine task success. T2 remains below the objective, so official assessment is not currently justified.",
+        "evidence_references": [
+          "M8",
+          "M9",
+          "M15",
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, where every success is an uninterrupted 100-control-step hold within 1 cm under the official 0.06-0.20 m target distribution. No official assessment was requested or completed. T2:checkpoint-120832 remains the strongest complete development candidate, but its 150/160 result is below the objective and is not certification.",
+        "next_direction_or_closure": "I4 is closed with a negative bounded answer based on M16, T3, M17, and M18. The tested fresh targeted acquisition/braking and post-reach regulation reward recipe is not retained as the active direction because its complete candidate collapsed to 0/160. Return to goal review with T2 unchanged as best-known; do not request protected assessment on current development evidence. The next question above is proposed for goal review, where a new direction may be opened only if it has a credible contribution beyond this failed recipe.",
+        "next_question": "What materially different policy-development direction, if any, can improve T2's reproducible acquisition and uninterrupted-regulation failures toward at least 196/200 after the tested targeted reward recipe failed?"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known from M9 at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is a completed fresh candidate from the I4 targeted-regulation recipe, measured at 0/160 in M18, and is not assigned a working, best-known, or retained role. No new role assignment is warranted.",
+        "completed_operations": [
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "cumulative_resource_use": "Before I4: M5 compiled-dynamics measurement and verification; T1 fresh PPO training at 120832 steps; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO training at 120832 steps; M9 paired 160-episode evaluations; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4 and E16 checkpoint. In I4: M16 implementation verification; T3 fresh PPO training at 120832 actual steps; M17 candidate-mode diagnostic verification; M18 matched T3/T2 160-episode evaluations plus T3 time-resolved 20-rollout measurement; E17 I4 closure. No official assessment has occurred.",
+        "current_goal_gap": "T2 achieved 150/160 (93.75%) on the held-out full-distribution development panel, leaving ten reproducible residual failures and a 46-success shortfall when compared with the 196/200 objective as a development reference. The fresh targeted-regulation candidate T3 achieved 0/160 on the identical panel, so it does not reduce the gap. No protected official result exists.",
+        "current_synthesis": "Observed: M8 verified that T2 training sampled the full 0.06-0.20 m radius range while preserving the official 10-frame action timing, 100-step hold, reset, and success semantics. M9 showed T2 at 150/160 versus T1 at 105/160 on identical seeds. M15 independently verified the ten T2 residual failures plus ten matched controls and found six negative-angle no-first-reach trajectories entering the compiled joint-limit region under persistent saturation and high velocity, one sustained high-speed saturated oscillation, and three reach-then-interrupt failures leaving tolerance after 1, 3, and 3 held steps with nonzero velocity and saturated or near-saturated torque. It found zero contacts and no separating final branch feasibility/occupancy, so branch/contact intervention remains unsupported. The live-environment versus forward-qpos/qvel discrepancy is a measurement limitation, not a task-semantic replacement: M15 reported maximum position error 0.005918 m, velocity error 0.157954 m/s, and 56 tolerance disagreements. M16 verified a bounded training-only targeted profile with global light joint-speed damping, smooth endpoint-speed and action regulation from a 0.05 m braking band into the 0.01 m boundary, and unchanged default evaluation mechanics. T3 was a fresh 120832-step PPO artifact under that profile, but M18 measured 0/160 against T2's 150/160 with T2 winning all 150 discordant episodes. M18's T3 time-resolved panel recorded 19 no-first-reach and one reach-then-interrupt rollout, 9997 outside transitions, zero contacts over 10000 samples, and preserved live/reference discrepancies of at most 0.005497 m position and 0.119706 m/s velocity. Interpretation: I4 is answered negatively for this fresh targeted reward implementation; the implementation was active and semantics were preserved, but the learned candidate largely failed to acquire. This constrains the tested recipe and does not disprove other braking/regulation designs, transfer initialization, or broader policy-development directions. The negative result does not establish a unique cause for T3's collapse, does not support branch/contact targeting, and does not establish or refute the official 98% goal.",
+        "decision_frontier": "The targeted fresh reward intervention did not improve capability and produced a non-acquiring candidate, so continuing that exact recipe is not supported. The next goal-review distinction is whether a materially different policy-development direction can credibly improve T2's acquisition and uninterrupted regulation failures toward 196/200, versus whether the current evidence is insufficient to justify further development and a commitment decision. The evidence that would discriminate a new direction must again compare complete artifacts under preserved official semantics; any live-versus-forward-reference disagreement must be reported as a limitation, not used to redefine task success. T2 remains below the objective, so official assessment is not currently justified.",
+        "evidence_references": [
+          "M8",
+          "M9",
+          "M15",
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, where every success is an uninterrupted 100-control-step hold within 1 cm under the official 0.06-0.20 m target distribution. No official assessment was requested or completed. T2:checkpoint-120832 remains the strongest complete development candidate, but its 150/160 result is below the objective and is not certification.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "I4 is closed with a negative bounded answer based on M16, T3, M17, and M18. The tested fresh targeted acquisition/braking and post-reach regulation reward recipe is not retained as the active direction because its complete candidate collapsed to 0/160. Return to goal review with T2 unchanged as best-known; do not request protected assessment on current development evidence. The next question above is proposed for goal review, where a new direction may be opened only if it has a credible contribution beyond this failed recipe.",
+        "next_question": "What materially different policy-development direction, if any, can improve T2's reproducible acquisition and uninterrupted-regulation failures toward at least 196/200 after the tested targeted reward recipe failed?",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "4fa15c6a-a62e-4e73-9433-b244c188edff",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "34m32s | 83.30 AIU | prompt 14.3m (92% cached) | output 228k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "4m34s | 7.53 AIU | prompt 755k (89% cached) | output 33.7k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "94f1d15ef7477e9ea5f9fb6fe89f7c8d291542aa",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known from M9 at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is a completed fresh candidate from the I4 targeted-regulation recipe, measured at 0/160 in M18, and is not assigned a working, best-known, or retained role. No new role assignment is warranted.",
+        "completed_operations": [
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "cumulative_resource_use": "Before I4: M5 compiled-dynamics measurement and verification; T1 fresh PPO training at 120832 steps; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO training at 120832 steps; M9 paired 160-episode evaluations; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4 and E16 checkpoint. In I4: M16 implementation verification; T3 fresh PPO training at 120832 actual steps; M17 candidate-mode diagnostic verification; M18 matched T3/T2 160-episode evaluations plus T3 time-resolved 20-rollout measurement; E17 I4 closure. No official assessment has occurred.",
+        "current_goal_gap": "T2 achieved 150/160 (93.75%) on the held-out full-distribution development panel, leaving ten reproducible residual failures and a 46-success shortfall when compared with the 196/200 objective as a development reference. The fresh targeted-regulation candidate T3 achieved 0/160 on the identical panel, so it does not reduce the gap. No protected official result exists.",
+        "current_synthesis": "Observed: M8 verified that T2 training sampled the full 0.06-0.20 m radius range while preserving the official 10-frame action timing, 100-step hold, reset, and success semantics. M9 showed T2 at 150/160 versus T1 at 105/160 on identical seeds. M15 independently verified the ten T2 residual failures plus ten matched controls and found six negative-angle no-first-reach trajectories entering the compiled joint-limit region under persistent saturation and high velocity, one sustained high-speed saturated oscillation, and three reach-then-interrupt failures leaving tolerance after 1, 3, and 3 held steps with nonzero velocity and saturated or near-saturated torque. It found zero contacts and no separating final branch feasibility/occupancy, so branch/contact intervention remains unsupported. The live-environment versus forward-qpos/qvel discrepancy is a measurement limitation, not a task-semantic replacement: M15 reported maximum position error 0.005918 m, velocity error 0.157954 m/s, and 56 tolerance disagreements. M16 verified a bounded training-only targeted profile with global light joint-speed damping, smooth endpoint-speed and action regulation from a 0.05 m braking band into the 0.01 m boundary, and unchanged default evaluation mechanics. T3 was a fresh 120832-step PPO artifact under that profile, but M18 measured 0/160 against T2's 150/160 with T2 winning all 150 discordant episodes. M18's T3 time-resolved panel recorded 19 no-first-reach and one reach-then-interrupt rollout, 9997 outside transitions, zero contacts over 10000 samples, and preserved live/reference discrepancies of at most 0.005497 m position and 0.119706 m/s velocity. Interpretation: I4 is answered negatively for this fresh targeted reward implementation; the implementation was active and semantics were preserved, but the learned candidate largely failed to acquire. This constrains the tested recipe and does not disprove other braking/regulation designs, transfer initialization, or broader policy-development directions. The negative result does not establish a unique cause for T3's collapse, does not support branch/contact targeting, and does not establish or refute the official 98% goal.",
+        "decision_frontier": "The targeted fresh reward intervention did not improve capability and produced a non-acquiring candidate, so continuing that exact recipe is not supported. The next goal-review distinction is whether a materially different policy-development direction can credibly improve T2's acquisition and uninterrupted regulation failures toward 196/200, versus whether the current evidence is insufficient to justify further development and a commitment decision. The evidence that would discriminate a new direction must again compare complete artifacts under preserved official semantics; any live-versus-forward-reference disagreement must be reported as a limitation, not used to redefine task success. T2 remains below the objective, so official assessment is not currently justified.",
+        "evidence_references": [
+          "M8",
+          "M9",
+          "M15",
+          "M16",
+          "T3",
+          "M17",
+          "M18",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, where every success is an uninterrupted 100-control-step hold within 1 cm under the official 0.06-0.20 m target distribution. No official assessment was requested or completed. T2:checkpoint-120832 remains the strongest complete development candidate, but its 150/160 result is below the objective and is not certification.",
+        "next_direction_or_closure": "I4 is closed with a negative bounded answer based on M16, T3, M17, and M18. The tested fresh targeted acquisition/braking and post-reach regulation reward recipe is not retained as the active direction because its complete candidate collapsed to 0/160. Return to goal review with T2 unchanged as best-known; do not request protected assessment on current development evidence. The next question above is proposed for goal review, where a new direction may be opened only if it has a credible contribution beyond this failed recipe.",
+        "next_question": "What materially different policy-development direction, if any, can improve T2's reproducible acquisition and uninterrupted-regulation failures toward at least 196/200 after the tested targeted reward recipe failed?"
+      }
+    },
+    "request_fingerprint": "e7b09efb2f5976db9a7f2c01239fd53f791f18923e36f95734f276ae05618e5e",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 remains best-known from the completed M9 matched development comparison at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. No candidate is working or retained. Opening I4 does not change candidate roles; a targeted artifact must be completely trained and measured before any role change.",
+    "candidates_and_roles": "T2:checkpoint-120832 remains best-known from M9 at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. T3:checkpoint-120832 is a completed fresh candidate from the I4 targeted-regulation recipe, measured at 0/160 in M18, and is not assigned a working, best-known, or retained role. No new role assignment is warranted.",
     "completed_operations": [
-      "E15"
+      "M16",
+      "T3",
+      "M17",
+      "M18",
+      "E17"
     ],
-    "cumulative_resource_use": "Before this goal review: M5 compiled-dynamics measurement and verification; T1 fresh PPO training at 120832 actual steps; M6 evaluation; E4 closure of I1; M8 full-radius construction verification; T2 fresh PPO training at 120832 actual steps; M9 paired 160-episode evaluations; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3. This goal-review session opened I4 as E15 and used no training or measurement allocation. No official assessment has occurred.",
-    "current_goal_gap": "Relative to the 196/200 threshold, T2's 150/160 development result is 46 successes short when used only as a development reference; no protected official result exists. The residual development failures comprise seven no-first-reach episodes and three reach-then-interrupt episodes. Their exact live task timing remains limited by a nonzero environment-observed versus forward-qpos endpoint discrepancy, with maximum reported position error 5.918 mm, velocity error 0.158 m/s, and 56 tolerance disagreements in M15.",
-    "current_synthesis": "Observed: M8 verified that T2's construction sampled the full 0.06-0.20 m radius range while preserving the official 0.06-0.20 m default, 10-frame action timing, 100-step hold requirement, and interruption reset. T2 was a fresh 120832-step PPO artifact whose training proxy only nominated checkpoints. M9 evaluated T2 and T1 on identical 160 seeds and semantics: T2 achieved 150/160 and T1 105/160, with 48 T2 wins versus 3 T1 wins. M14 and M15 measured all ten T2 failure seeds plus ten geometry-matched controls with time-resolved joint state, endpoint state and velocity, distance, action/torque, hold transitions, bounded IK/branch diagnostics, and contacts; M15 independently verified 20 rollouts and 6119 steps. Six negative-angle no-first-reach failures enter the compiled +/-170-degree joint-limit region with persistent saturated torque and high velocity, one approximately -32-degree no-reach failure shows sustained high-speed saturated oscillation, and the three reach-then-interrupt failures leave tolerance after only 1, 3, and 3 observed held steps while velocity and saturated or near-saturated torque remain high. Forward qpos/qvel replay preserves the seven no-first-reach and three reach-then-interrupt classes. All 6119 samples have zero contacts, and final branch feasibility/occupancy does not separate failures from matched controls, so branch/contact intervention is not supported. Correction to the inherited direction: the 5.918 mm position discrepancy, 0.158 m/s velocity discrepancy, and 56 tolerance disagreements are an unresolved measurement/endpoint-semantic limitation; they must be quantified and preserved rather than silently treated as synchronized physical state or as a reason to alter official semantics. The evidence supports testing a targeted acquisition/braking and post-reach regulation intervention, but it does not establish that radius exposure alone caused T2's improvement, prove a unique singularity cause, establish branch/contact causality, or establish the 98% objective.",
-    "decision_frontier": "The active bounded distinction is whether targeted acquisition/braking and post-reach regulation can materially improve complete-policy capability toward 196/200, versus whether the intervention fails or cannot be interpreted because endpoint-cache/live-environment semantics obscure exact hold timing. The discriminating evidence is one bounded implementation and complete-candidate comparison against T2 on identical held-out seeds, preserving official target sampling, 10-frame action timing, reset, 100-step hold, and success semantics, with time-resolved acquisition, joint/endpoint velocity, distance, action/torque, hold transitions, and live-versus-forward-reference discrepancy. Improvement in the residual failure classes would justify retaining targeted policy development; no improvement would constrain this recipe-specific intervention and support a different policy direction; unresolved semantic disagreement would require carrying the limitation rather than claiming a mechanism result. M15's zero-contact panel and non-separating branch diagnostics make branch/contact targeting unsupported unless new evidence changes that result.",
+    "cumulative_resource_use": "Before I4: M5 compiled-dynamics measurement and verification; T1 fresh PPO training at 120832 steps; M6 evaluation; E4 closure of I1; M8 full-radius exposure verification; T2 fresh PPO training at 120832 steps; M9 paired 160-episode evaluations; E8 role assignment; E9 closure of I2; E11 opening I3; M14 and M15 time-resolved measurements with independent verification; E13 closure of I3; E15 opening I4 and E16 checkpoint. In I4: M16 implementation verification; T3 fresh PPO training at 120832 actual steps; M17 candidate-mode diagnostic verification; M18 matched T3/T2 160-episode evaluations plus T3 time-resolved 20-rollout measurement; E17 I4 closure. No official assessment has occurred.",
+    "current_goal_gap": "T2 achieved 150/160 (93.75%) on the held-out full-distribution development panel, leaving ten reproducible residual failures and a 46-success shortfall when compared with the 196/200 objective as a development reference. The fresh targeted-regulation candidate T3 achieved 0/160 on the identical panel, so it does not reduce the gap. No protected official result exists.",
+    "current_synthesis": "Observed: M8 verified that T2 training sampled the full 0.06-0.20 m radius range while preserving the official 10-frame action timing, 100-step hold, reset, and success semantics. M9 showed T2 at 150/160 versus T1 at 105/160 on identical seeds. M15 independently verified the ten T2 residual failures plus ten matched controls and found six negative-angle no-first-reach trajectories entering the compiled joint-limit region under persistent saturation and high velocity, one sustained high-speed saturated oscillation, and three reach-then-interrupt failures leaving tolerance after 1, 3, and 3 held steps with nonzero velocity and saturated or near-saturated torque. It found zero contacts and no separating final branch feasibility/occupancy, so branch/contact intervention remains unsupported. The live-environment versus forward-qpos/qvel discrepancy is a measurement limitation, not a task-semantic replacement: M15 reported maximum position error 0.005918 m, velocity error 0.157954 m/s, and 56 tolerance disagreements. M16 verified a bounded training-only targeted profile with global light joint-speed damping, smooth endpoint-speed and action regulation from a 0.05 m braking band into the 0.01 m boundary, and unchanged default evaluation mechanics. T3 was a fresh 120832-step PPO artifact under that profile, but M18 measured 0/160 against T2's 150/160 with T2 winning all 150 discordant episodes. M18's T3 time-resolved panel recorded 19 no-first-reach and one reach-then-interrupt rollout, 9997 outside transitions, zero contacts over 10000 samples, and preserved live/reference discrepancies of at most 0.005497 m position and 0.119706 m/s velocity. Interpretation: I4 is answered negatively for this fresh targeted reward implementation; the implementation was active and semantics were preserved, but the learned candidate largely failed to acquire. This constrains the tested recipe and does not disprove other braking/regulation designs, transfer initialization, or broader policy-development directions. The negative result does not establish a unique cause for T3's collapse, does not support branch/contact targeting, and does not establish or refute the official 98% goal.",
+    "decision_frontier": "The targeted fresh reward intervention did not improve capability and produced a non-acquiring candidate, so continuing that exact recipe is not supported. The next goal-review distinction is whether a materially different policy-development direction can credibly improve T2's acquisition and uninterrupted regulation failures toward 196/200, versus whether the current evidence is insufficient to justify further development and a commitment decision. The evidence that would discriminate a new direction must again compare complete artifacts under preserved official semantics; any live-versus-forward-reference disagreement must be reported as a limitation, not used to redefine task success. T2 remains below the objective, so official assessment is not currently justified.",
     "evidence_references": [
       "M8",
-      "T2",
       "M9",
-      "E8",
-      "E9",
-      "E11",
-      "M14",
       "M15",
-      "E13",
-      "E15"
+      "M16",
+      "T3",
+      "M17",
+      "M18",
+      "E17"
     ],
-    "human_goal_connection": "The human goal remains a learned policy achieving at least 196 successes in the protected 200-episode assessment, where each success is an uninterrupted 100-control-step hold within 1 cm. T2:checkpoint-120832 is the strongest complete development candidate at 150/160 (93.75%) on M9, but this is not official certification. M15 makes a bounded targeted intervention scientifically worthwhile by identifying actionable acquisition/braking and post-reach regulation signatures in the ten residual T2 failures.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review declines official assessment because the best-known candidate is 150/160 on development evidence, below the 196/200 objective, with ten structured residual failures and unresolved exact timing semantics. I4 is opened with a positive but bounded targeted direction: implement and evaluate one acquisition/braking and post-reach regulation intervention under preserved official semantics, explicitly recording the endpoint discrepancy. The inquiry closes only after the complete-candidate comparison establishes meaningful capability improvement, a negative/inconclusive targeted result, or a semantic limitation that prevents a trustworthy comparison; none of those outcomes alone certifies the human goal.",
-    "next_question": "Can a bounded targeted acquisition/braking and post-reach regulation intervention, with the official task semantics preserved and the live-environment versus forward-qpos endpoint discrepancy explicitly measured rather than conflated with task state, improve T2 toward at least 196/200 without relying on a branch or contact explanation?",
-    "scientific_commit": "7e8f8e17187700642229c61de85c64b1b15c81f9",
-    "session_id": "S8"
+    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, where every success is an uninterrupted 100-control-step hold within 1 cm under the official 0.06-0.20 m target distribution. No official assessment was requested or completed. T2:checkpoint-120832 remains the strongest complete development candidate, but its 150/160 result is below the objective and is not certification.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "I4 is closed with a negative bounded answer based on M16, T3, M17, and M18. The tested fresh targeted acquisition/braking and post-reach regulation reward recipe is not retained as the active direction because its complete candidate collapsed to 0/160. Return to goal review with T2 unchanged as best-known; do not request protected assessment on current development evidence. The next question above is proposed for goal review, where a new direction may be opened only if it has a credible contribution beyond this failed recipe.",
+    "next_question": "What materially different policy-development direction, if any, can improve T2's reproducible acquisition and uninterrupted-regulation failures toward at least 196/200 after the tested targeted reward recipe failed?",
+    "scientific_commit": "94f1d15ef7477e9ea5f9fb6fe89f7c8d291542aa",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -8179,25 +8332,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4fa15c6a-a62e-4e73-9433-b244c188edff",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can a bounded targeted acquisition/braking and post-reach regulation intervention, with the official task semantics preserved and the live-environment versus forward-qpos endpoint discrepancy explicitly measured rather than conflated with task state, improve T2 toward at least 196/200 without relying on a branch or contact explanation? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M16",
-      "T3",
-      "M17",
-      "M18",
-      "E17"
-    ],
-    "scientific_parent_commit": "f78b1a3d13c8b5ed14dd22f772382a74b78e2c7a"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
