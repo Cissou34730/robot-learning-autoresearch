@@ -780,13 +780,18 @@ def plan_model_role(request: dict, state: dict) -> dict:
     return plan
 
 
-def plan_recipe_paths(commit: str) -> dict:
+def plan_recipe_paths(commit: str, selected_paths: list[str] | None = None) -> dict:
     repository.require_resolvable_commit(commit)
-    changed = [
-        path
-        for path in repository.scientific_delta(commit)
-        if is_researcher_owned(path) or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
-    ]
+    changed = (
+        selected_paths
+        if selected_paths is not None
+        else [
+            path
+            for path in repository.scientific_delta(commit)
+            if is_researcher_owned(path)
+            or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
+        ]
+    )
     restore: list[str] = []
     remove_created: list[str] = []
     for relative in changed:
@@ -803,13 +808,48 @@ def plan_recipe_paths(commit: str) -> dict:
 
 def plan_recipe_restore(request: dict, state: dict) -> dict:
     session = require_active_session(state)
-    if set(request) != {"candidate", "reason"}:
-        raise ValueError("restore_recipe requires exactly candidate and reason")
+    if set(request) != {"candidate", "reason", "paths"}:
+        raise ValueError(
+            "restore_recipe requires candidate, reason and explicit paths; "
+            "unselected measurement sources are preserved"
+        )
     candidate = resolve_candidate(
         state, _nonempty(request, "candidate", "restore candidate")
     )
     _nonempty(request, "reason", "restore reason")
-    plan = plan_recipe_paths(candidate["scientific_commit"])
+    requested_paths = request["paths"]
+    if not isinstance(requested_paths, list) or not requested_paths:
+        raise ValueError("restore_recipe paths must be a nonempty exact-file list")
+    selected = []
+    for path in requested_paths:
+        if not isinstance(path, str):
+            raise TypeError("restore_recipe paths must be strings")
+        relative = repository.canonical_repo_path(path)
+        if (
+            not is_researcher_owned(relative)
+            or is_campaign_lab(relative)
+            or relative == "pi_workspace/operation_request.json"
+        ):
+            raise ValueError(
+                f"restore_recipe path is not a learning-recipe source: {relative}"
+            )
+        current = repository.resolve_repo_path(relative)
+        historical = repository.tracked_at_commit(
+            candidate["scientific_commit"], relative
+        )
+        if current.is_dir() or (not historical and not current.is_file()):
+            raise ValueError(
+                f"restore_recipe requires an existing or recorded file: {relative}"
+            )
+        if relative in selected:
+            raise ValueError(f"restore_recipe paths contains duplicate: {relative}")
+        selected.append(relative)
+    if "robot_learning/training/current_params.json" not in selected:
+        raise ValueError(
+            "restore_recipe paths must include robot_learning/training/current_params.json "
+            "to restore the candidate's recorded parameters"
+        )
+    plan = plan_recipe_paths(candidate["scientific_commit"], selected)
     return {
         **plan,
         "candidate_id": candidate["id"],

@@ -26,7 +26,8 @@ Evidence references must identify completed operations.
 `submit_operation` returns a compact factual result or the exact rejection/error,
 operation identity when completed, and changed state: session identity and kind,
 actual completed-operation list, roles, resource counts, pending/terminal status,
-and required checkpoint transition. Detailed artifacts stay available through
+and required checkpoint transition. Full artifact inventories and logs are not
+attached to each completion. Detailed artifacts stay available through
 `artifact_evidence_query`; preserved training logs through `training_log_query`.
 Ordinary results continue in this same conversation,
 without a new runtime or replayed phase prompt. Inquiry open/reframe/close makes
@@ -172,6 +173,18 @@ after filtering and projection, or distinct values for `value_counts`.
 remaining selection. Oversized individual objects remain available through
 `read` even when they cannot fit in a query page.
 
+Filtering uses a typed object with required `path` and `equals` fields.
+`path` is relative to each selected row; `equals` can be null.
+An array selected for filtering, projection or aggregation is expanded into
+rows, with the expansion reported in the response. An explicit wildcard also
+selects rows. A missing filter field is reported as `filter_field_absent`, not
+as a valid zero-match result. Missing selected fields include bounded direct-field
+hints. These hints are not a complete inventory.
+
+Ordinary query pages default to small row and byte limits. `limit` selects the
+row page size; `max_bytes` controls the selected-value budget shared by a batch.
+Explicit larger pages and complete original reads remain available.
+
 For `read`, `offset` and `max_bytes` refer to original file bytes.
 `encoding` selects readable UTF-8 or base64 for other byte encodings.
 UTF-8 pages preserve line endings and do not split a character. The returned
@@ -186,6 +199,8 @@ does not require parsing the entire artifact within the query budget.
 read-only custom tool. It resolves preserved logs using the active campaign
 and training operation identity, not a filesystem path or command.
 
+`discover` returns attempt identities, timestep coverage and available metric
+names without metric record values. Omitting `action` selects this metadata mode.
 `records` requests select attempts, timestep bounds and metric fields.
 `raw` requests return preserved log text, including content outside parsed
 training records. Complete logs and successive pages are supported. The PI
@@ -194,10 +209,14 @@ The tool reports missing logs, empty selections, available continuation and
 content identities explicitly.
 
 `attempts` selects preserved attempt numbers. `records` uses optional
-`from_step`, `to_step` and `metrics`, with `offset` and `limit` for selected
+`from_step` and `to_step`, with `offset` and `limit` for selected
 row pages. Nonzero row offsets require `expected_log_fingerprints` from the
 previous response. Missing metrics are identified separately from zero.
 The operation's status does not establish each attempt's outcome.
+Record requests require either explicit `metrics` or `all_metrics: true`, not
+both. Default row and byte pages are small. `max_bytes` bounds selected record
+values as well as raw pages; the PI can explicitly increase it and continue.
+Console output identifies operation, action and supplied selectors.
 
 `raw` selects one attempt when multiple logs exist. Its `offset`, `max_bytes`,
 `encoding` and `expected_fingerprint` use the same original-byte continuation
@@ -583,15 +602,23 @@ Each action updates only the requested role.
 {
   "restore_recipe": {
     "candidate": {"type": "string"},
-    "reason": {"type": "string"}
+    "reason": {"type": "string"},
+    "paths": {"type": "array", "items": {"type": "string"}}
   }
 }
 ```
 
-Both fields are required and must be non-empty.
-The operation restores the PI-owned scientific files and parameters from the
-candidate's recorded recipe.
-It removes PI-owned files that are absent from that recipe.
+All fields are required. Candidate and reason must be non-empty. `paths` is a
+non-empty list of distinct exact repository-relative scientific files, including
+`robot_learning/training/current_params.json` for the recorded parameters.
+The operation restores only those files from the candidate's recorded recipe.
+It removes a selected file when absent from that recipe.
+Unselected source files remain unchanged; campaign laboratory tools cannot
+be selected. Directory and wildcard scopes are refused.
+The Runner does not infer which code implements learning versus measurement.
+When one source file contains both, restoring the whole file also restores both;
+the PI uses scoped scientific coding to carry forward the intended measurement
+capability before relying on it. There is no automatic whole-recipe rollback.
 It verifies the result.
 It does not assign a model role.
 

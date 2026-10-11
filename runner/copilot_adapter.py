@@ -1361,6 +1361,24 @@ class Console:
                 if pointers:
                     parts.append(", ".join(pointers))
                 detail = " | ".join(parts)
+            elif name == "training_log_query":
+                parts = [
+                    str(arguments.get("operation_id") or ""),
+                    str(arguments.get("action") or "discover"),
+                ]
+                for key in (
+                    "attempts",
+                    "from_step",
+                    "to_step",
+                    "metrics",
+                    "all_metrics",
+                    "offset",
+                    "limit",
+                    "max_bytes",
+                ):
+                    if key in arguments:
+                        parts.append(f"{key}={arguments[key]}")
+                detail = " | ".join(part for part in parts if part)
             elif name == "scientific_coding":
                 detail = "bounded coding / PI source review required"
             elif name == "powershell":
@@ -2430,28 +2448,34 @@ class OperationSubmission:
         self.active_tasks.add(task)
         self.wait_started = time.monotonic()
         try:
-            await self.channel.send({
-                "type": "operation",
-                "invocation_id": self.binding["invocation_id"],
-                "session_id": self.binding["session_id"],
-                "campaign_id": self.binding["campaign_id"],
-                "event_count": self.state["operation_event_count"],
-                "call_id": call_id,
-                "request": params.request,
-            })
+            await self.channel.send(
+                {
+                    "type": "operation",
+                    "invocation_id": self.binding["invocation_id"],
+                    "session_id": self.binding["session_id"],
+                    "campaign_id": self.binding["campaign_id"],
+                    "event_count": self.state["operation_event_count"],
+                    "call_id": call_id,
+                    "request": params.request,
+                }
+            )
             response = await self.channel.receive()
             if (
                 response.get("type") != "operation_result"
                 or response.get("invocation_id") != self.binding["invocation_id"]
                 or response.get("call_id") != call_id
             ):
-                raise ValueError("Operation response binding does not match this submission.")
+                raise ValueError(
+                    "Operation response binding does not match this submission."
+                )
             self.status = response["status"]
             self.error = response.get("error")
             if isinstance(response.get("state"), dict):
                 self.state = response["state"]
             self.closed = self.closing or self.status not in {
-                "completed", "rejected", "implementation_error"
+                "completed",
+                "rejected",
+                "implementation_error",
             }
             if self.status == "rejected":
                 self.rejections += 1
@@ -2461,16 +2485,12 @@ class OperationSubmission:
                     response["status"] = self.status
             else:
                 self.rejections = 0
-            result = {key: value for key, value in response.items() if key not in {
-                "type", "invocation_id", "call_id"
-            }}
-            result["detail_access"] = (
-                "Full or selected JSON evidence is available through artifact_evidence_query. "
-                "After training, preserved raw/detailed logs and selected attempt/step/metric "
-                "pages are available through training_log_query using the operation identity; "
-                "full training logs are not embedded here. Failed logs are execution history."
-            )
-            encoded = json.dumps(result, ensure_ascii=False)
+            result = {
+                key: value
+                for key, value in response.items()
+                if key not in {"type", "invocation_id", "call_id"}
+            }
+            encoded = json.dumps(result, ensure_ascii=False, separators=(",", ":"))
             self.responses[call_id] = encoded
             self.console.line(f"  > submit_operation: {self.status}")
             return encoded
@@ -2508,7 +2528,11 @@ class OperationSubmission:
 
 
 def session_options(
-    args, console: Console, finished: asyncio.Event, coding=None, operations=None,
+    args,
+    console: Console,
+    finished: asyncio.Event,
+    coding=None,
+    operations=None,
     client=None,
 ) -> dict:
     from copilot import ToolSet, define_tool
@@ -2531,7 +2555,7 @@ def session_options(
     def artifact_evidence_query(params, invocation) -> str:
         authorize_reader(invocation)
         return query_artifact(
-            params.model_dump(exclude_none=True),
+            params.model_dump(),
             campaign_id=str(args.campaign_id or ""),
         )
 
@@ -2542,7 +2566,10 @@ def session_options(
             "not a filesystem path. YOU choose full original content (action=read) "
             "or any selected subsets (query/batch path/where/select), including "
             "several distinct subsets; no summary or projection is compulsory. "
-            "discover helps learn shape; aggregates are optional. Filtering occurs "
+            "discover helps learn shape; aggregates are optional. Array paths expand "
+            "to rows when selecting/filtering/aggregating. Missing filter fields are "
+            "reported separately from zero matches. Page limits are small by default; "
+            "increase limit/max_bytes explicitly for broader retrieval. Filtering occurs "
             "before data enters PI context. Full reads use byte offset/max_bytes, "
             "UTF-8 content or explicit base64, and fingerprint-bound continuation. "
             "query/batch raw and value_counts use offset paging after selection. "
@@ -2554,6 +2581,7 @@ def session_options(
         defer="auto",
         skip_permission=True,
     )
+
     def training_log_query(params, invocation) -> str:
         authorize_reader(invocation)
         return query_training_log(
@@ -2564,17 +2592,23 @@ def session_options(
         "training_log_query",
         description=(
             "Read-only training execution logs by operation_id in this campaign. "
+            "Omitting action discovers attempt/step/metric metadata without log values. "
             "YOU choose detailed records, any attempt/time-step/metric subsets "
             "(action=records, attempts/from_step/to_step/metrics), or full original "
             "logs (action=raw); request several distinct subsets if useful. No "
-            "forced summary. Filtering occurs before data enters PI context. "
+            "forced summary. Records require exact metrics or explicit all_metrics=true; "
+            "small row/byte pages are the default, not full trajectories. Filtering "
+            "occurs before data enters PI context. "
             "Records have offset/limit with expected_log_fingerprints on continuation; "
             "raw pages have byte offset/max_bytes/expected_fingerprint, readable "
             "UTF-8 by default or explicit base64. Follow provenance and continuation, "
             "and report limits rather than claim incomplete transport is complete. "
             "Failed/pending-failure logs are execution history, NOT scientific evidence."
-        ), handler=training_log_query, params_type=TrainingLogQueryParams,
-        defer="auto", skip_permission=True,
+        ),
+        handler=training_log_query,
+        params_type=TrainingLogQueryParams,
+        defer="auto",
+        skip_permission=True,
     )
     # The pinned SDK exposes the actual spawned runtime connection. Locate its
     # bundled rg, rather than invoking a model-controlled shell or directory search.

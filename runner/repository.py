@@ -894,7 +894,7 @@ def _validate_operation_request_shape(kind: str, request: object) -> None:
         if request.get("action") == "retain":
             fields.add("label")
     elif kind == "restore_recipe":
-        fields = {"candidate", "reason"}
+        fields = {"candidate", "reason", "paths"}
     else:
         fields = {"action", "reason"}
     _require_exact_fields(request, fields, f"{kind} request")

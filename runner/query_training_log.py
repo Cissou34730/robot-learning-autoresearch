@@ -21,15 +21,18 @@ MAX_PARSE_BYTES = 32 * 1024 * 1024
 MAX_OUTPUT_BYTES = 128 * 1024
 MAX_READ_BYTES = MAX_OUTPUT_BYTES // 4 * 3
 MAX_RECORDS = 200
+DEFAULT_RECORDS = 20
+DEFAULT_PAGE_BYTES = 16 * 1024
 HASH_BLOCK_BYTES = 1024 * 1024
 
 
 class TrainingLogQueryParams(BaseModel):
     model_config = {"extra": "forbid"}
 
-    action: Literal["records", "raw"] = Field(
-        default="records",
+    action: Literal["discover", "records", "raw"] = Field(
+        default="discover",
         description=(
+            "discover returns attempt, timestep and metric names without record values. "
             "records parses preserved metric snapshots, filters timesteps and "
             "projects metrics before paging. raw retrieves original log bytes "
             "in readable UTF-8 pages (or base64 for arbitrary bytes), without "
@@ -70,9 +73,13 @@ class TrainingLogQueryParams(BaseModel):
         min_length=1,
         max_length=100,
         description=(
-            "Metric names to project in records mode; omit for all parsed "
-            "metrics. Missing metrics are null and explicitly listed, not zero."
+            "Exact metric names to project in records mode. Discover names first "
+            "when unknown. Missing metrics are null and explicitly listed, not zero."
         ),
+    )
+    all_metrics: bool = Field(
+        default=False,
+        description="Explicitly request all metric columns in records mode instead of metrics.",
     )
     offset: int = Field(
         default=0,
@@ -83,16 +90,16 @@ class TrainingLogQueryParams(BaseModel):
         ),
     )
     limit: int = Field(
-        default=MAX_RECORDS,
+        default=DEFAULT_RECORDS,
         ge=1,
         le=MAX_RECORDS,
         description="Maximum selected records per page; repeat for remaining rows.",
     )
     max_bytes: int = Field(
-        default=MAX_READ_BYTES,
+        default=DEFAULT_PAGE_BYTES,
         ge=1,
         le=MAX_READ_BYTES,
-        description="Maximum original log bytes per raw page, before transport encoding.",
+        description="Page budget for selected record values or original raw bytes.",
     )
     encoding: Literal["utf-8", "base64"] = Field(
         default="utf-8",
@@ -134,7 +141,12 @@ class TrainingLogQueryParams(BaseModel):
         ):
             raise ValueError("metrics must contain distinct non-empty metric names")
         if self.action == "raw":
-            if self.metrics is not None or self.from_step or self.to_step is not None:
+            if (
+                self.metrics is not None
+                or self.all_metrics
+                or self.from_step
+                or self.to_step is not None
+            ):
                 raise ValueError(
                     "raw byte ranges do not accept timestep or metric filters"
                 )
@@ -142,7 +154,22 @@ class TrainingLogQueryParams(BaseModel):
                 raise ValueError("raw continuation requires expected_fingerprint")
             if self.encoding == "utf-8" and self.max_bytes < 4:
                 raise ValueError("UTF-8 raw retrieval requires max_bytes >= 4")
-        elif self.offset and not self.expected_log_fingerprints:
+        elif self.action == "discover":
+            if self.metrics is not None or self.all_metrics or self.offset:
+                raise ValueError(
+                    "discover returns metadata; selection requires records"
+                )
+        elif self.metrics is None and not self.all_metrics:
+            raise ValueError(
+                "records requires metrics or explicit all_metrics=true; use discover for names"
+            )
+        elif self.metrics is not None and self.all_metrics:
+            raise ValueError("records accepts metrics or all_metrics, not both")
+        if (
+            self.action == "records"
+            and self.offset
+            and not self.expected_log_fingerprints
+        ):
             raise ValueError("record continuation requires expected_log_fingerprints")
         if self.expected_log_fingerprints is not None and any(
             attempt < 1 or re.fullmatch(r"[0-9a-f]{64}", fingerprint) is None
@@ -293,11 +320,13 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
         if params.attempts is not None:
             missing = sorted(set(params.attempts) - set(available_attempts))
             if missing:
-                return json.dumps({
-                    "status": "logs_unavailable",
-                    "missing_attempts": missing,
-                    "provenance": provenance,
-                })
+                return json.dumps(
+                    {
+                        "status": "logs_unavailable",
+                        "missing_attempts": missing,
+                        "provenance": provenance,
+                    }
+                )
             logs = [item for item in logs if item[0] in params.attempts]
         if not logs:
             return json.dumps({"status": "no_logs", "provenance": provenance})
@@ -316,15 +345,17 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
                 params.expected_fingerprint
                 and params.expected_fingerprint != identity["content_fingerprint"]
             ):
-                return json.dumps({
-                    "status": "fingerprint_mismatch",
-                    "provenance": provenance,
-                    "expected_fingerprint": params.expected_fingerprint,
-                    "recovery": (
-                        "Restart at offset zero; do not join pages "
-                        "from different fingerprints."
-                    ),
-                })
+                return json.dumps(
+                    {
+                        "status": "fingerprint_mismatch",
+                        "provenance": provenance,
+                        "expected_fingerprint": params.expected_fingerprint,
+                        "recovery": (
+                            "Restart at offset zero; do not join pages "
+                            "from different fingerprints."
+                        ),
+                    }
+                )
             total = identity["total_bytes"]
             if params.offset > total:
                 raise ValueError(f"offset exceeds log size ({total} bytes)")
@@ -354,22 +385,25 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
                         ),
                     }
             end = params.offset + len(content)
-            return json.dumps({
-                "status": "read",
-                "action": "raw",
-                "provenance": provenance,
-                "encoding": params.encoding,
-                "offset_unit": "original_file_bytes",
-                "content": page,
-                **preview,
-                "offset": params.offset,
-                "returned_bytes": len(content),
-                "total_bytes": total,
-                "remaining_bytes": total - end,
-                "next_offset": end if end < total else None,
-                "output_truncated": end < total,
-                "max_page_bytes": page_limit,
-            }, ensure_ascii=False)
+            return json.dumps(
+                {
+                    "status": "read",
+                    "action": "raw",
+                    "provenance": provenance,
+                    "encoding": params.encoding,
+                    "offset_unit": "original_file_bytes",
+                    "content": page,
+                    **preview,
+                    "offset": params.offset,
+                    "returned_bytes": len(content),
+                    "total_bytes": total,
+                    "remaining_bytes": total - end,
+                    "next_offset": end if end < total else None,
+                    "output_truncated": end < total,
+                    "max_page_bytes": page_limit,
+                },
+                ensure_ascii=False,
+            )
         texts: dict[int, str] = {}
         provenance["logs"] = []
         total_bytes = 0
@@ -378,12 +412,14 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
             provenance["logs"].append({"attempt": attempt, **identity})
             total_bytes += identity["total_bytes"]
             if total_bytes > MAX_PARSE_BYTES:
-                return json.dumps({
-                    "status": "parse_budget_exhausted",
-                    "provenance": provenance,
-                    "max_parse_bytes": MAX_PARSE_BYTES,
-                    "recovery": "Select fewer attempts or use raw byte pages for complete logs.",
-                })
+                return json.dumps(
+                    {
+                        "status": "parse_budget_exhausted",
+                        "provenance": provenance,
+                        "max_parse_bytes": MAX_PARSE_BYTES,
+                        "recovery": "Select fewer attempts or use raw byte pages for complete logs.",
+                    }
+                )
             texts[attempt] = content.decode("utf-8")
         fingerprints = {
             log["attempt"]: log["content_fingerprint"] for log in provenance["logs"]
@@ -392,22 +428,31 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
             params.expected_log_fingerprints is not None
             and params.expected_log_fingerprints != fingerprints
         ):
-            return json.dumps({
-                "status": "fingerprint_mismatch",
-                "provenance": provenance,
-                "expected_log_fingerprints": params.expected_log_fingerprints,
-                "recovery": "Restart at offset zero; do not combine rows from changed logs.",
-            })
+            return json.dumps(
+                {
+                    "status": "fingerprint_mismatch",
+                    "provenance": provenance,
+                    "expected_log_fingerprints": params.expected_log_fingerprints,
+                    "recovery": "Restart at offset zero; do not combine rows from changed logs.",
+                }
+            )
         records = selected_records(
-            params.operation_id, params.from_step, params.to_step,
-            logs=logs, texts=texts,
+            params.operation_id,
+            params.from_step,
+            params.to_step,
+            logs=logs,
+            texts=texts,
         )
         if params.offset > len(records):
             raise ValueError("offset exceeds the selected record count")
-        available_metrics = sorted({
-            metric for _, record in records for metric in record
-            if metric != "total_timesteps"
-        })
+        available_metrics = sorted(
+            {
+                metric
+                for _, record in records
+                for metric in record
+                if metric != "total_timesteps"
+            }
+        )
         metric_page = []
         metric_bytes = 0
         for metric in available_metrics[:MAX_RECORDS]:
@@ -415,13 +460,34 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
             if metric_bytes > MAX_OUTPUT_BYTES:
                 break
             metric_page.append(metric)
+        if params.action == "discover":
+            return json.dumps(
+                {
+                    "status": "discovered",
+                    "action": "discover",
+                    "provenance": provenance,
+                    "available_metrics": metric_page,
+                    "available_metric_count": len(available_metrics),
+                    "available_metrics_output_truncated": len(metric_page)
+                    < len(available_metrics),
+                    "total_records": len(records),
+                    "first_step": min(
+                        (row["total_timesteps"] for _, row in records), default=None
+                    ),
+                    "last_step": max(
+                        (row["total_timesteps"] for _, row in records), default=None
+                    ),
+                },
+                separators=(",", ":"),
+            )
         output = []
         size = 0
         byte_truncated = False
-        for attempt, record in records[params.offset:params.offset + params.limit]:
+        for attempt, record in records[params.offset : params.offset + params.limit]:
             metric_names = (
                 [metric for metric in record if metric != "total_timesteps"]
-                if params.metrics is None else params.metrics
+                if params.metrics is None
+                else params.metrics
             )
             row = {
                 "attempt": attempt,
@@ -432,65 +498,78 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
                 ],
             }
             row_bytes = len(json.dumps(row).encode("utf-8"))
-            if size + row_bytes > MAX_OUTPUT_BYTES:
+            if size + row_bytes > params.max_bytes:
                 byte_truncated = True
                 break
             output.append(row)
             size += row_bytes
         end = params.offset + len(output)
-        return json.dumps({
-            "status": "queried" if records else "no_matching_rows",
-            "action": "records",
-            "provenance": provenance,
-            "from_step": params.from_step,
-            "to_step": params.to_step,
-            "available_metrics": metric_page,
-            "available_metric_count": len(available_metrics),
-            "available_metrics_output_truncated": (
-                len(metric_page) < len(available_metrics)
-            ),
-            "metric_discovery_recovery": (
-                "Retrieve raw logs for the complete metric names."
-                if len(metric_page) < len(available_metrics) else None
-            ),
-            "absent_metrics": (
-                [] if params.metrics is None or not records else sorted(
-                    set(params.metrics) - set(available_metrics) - {"total_timesteps"}
-                )
-            ),
-            "records": output,
-            "offset": params.offset,
-            "returned": len(output),
-            "total_records": len(records),
-            "remaining_records": len(records) - end,
-            "next_offset": end if end < len(records) else None,
-            "output_truncated": end < len(records),
-            "truncation_causes": (
-                (["byte_budget"] if byte_truncated else [])
-                + (
-                    ["record_limit"]
-                    if len(records) - params.offset > params.limit else []
-                )
-            ),
-            "limits": {
-                "max_records": MAX_RECORDS, "max_result_bytes": MAX_OUTPUT_BYTES
-            },
-            "recovery": (
-                "Continue with next_offset and log fingerprints. If no row "
-                "fits, select fewer metrics or use raw for complete logs."
-                if byte_truncated else None
-            ),
-        })
+        return json.dumps(
+            {
+                "status": "queried" if records else "no_matching_rows",
+                "action": "records",
+                "provenance": provenance,
+                "from_step": params.from_step,
+                "to_step": params.to_step,
+                "available_metrics": metric_page,
+                "available_metric_count": len(available_metrics),
+                "available_metrics_output_truncated": (
+                    len(metric_page) < len(available_metrics)
+                ),
+                "metric_discovery_recovery": (
+                    "Retrieve raw logs for the complete metric names."
+                    if len(metric_page) < len(available_metrics)
+                    else None
+                ),
+                "absent_metrics": (
+                    []
+                    if params.metrics is None or not records
+                    else sorted(
+                        set(params.metrics)
+                        - set(available_metrics)
+                        - {"total_timesteps"}
+                    )
+                ),
+                "records": output,
+                "offset": params.offset,
+                "returned": len(output),
+                "total_records": len(records),
+                "remaining_records": len(records) - end,
+                "next_offset": end if end < len(records) else None,
+                "output_truncated": end < len(records),
+                "truncation_causes": (
+                    (["byte_budget"] if byte_truncated else [])
+                    + (
+                        ["record_limit"]
+                        if len(records) - params.offset > params.limit
+                        else []
+                    )
+                ),
+                "limits": {
+                    "max_records": MAX_RECORDS,
+                    "max_result_bytes": params.max_bytes,
+                },
+                "recovery": (
+                    "Continue with next_offset and log fingerprints. If no row "
+                    "fits, select fewer metrics or use raw for complete logs."
+                    if byte_truncated
+                    else None
+                ),
+            }
+        )
     except (OSError, RuntimeError, TypeError, ValueError) as error:
-        return json.dumps({
-            "status": "query_failed",
-            "error": str(error),
-            "provenance": provenance,
-            "recovery": (
-                "Use raw with encoding=base64 for logs that cannot be decoded as UTF-8."
-                if isinstance(error, UnicodeError) else None
-            ),
-        })
+        return json.dumps(
+            {
+                "status": "query_failed",
+                "error": str(error),
+                "provenance": provenance,
+                "recovery": (
+                    "Use raw with encoding=base64 for logs that cannot be decoded as UTF-8."
+                    if isinstance(error, UnicodeError)
+                    else None
+                ),
+            }
+        )
 
 
 def render_markdown(records: list[tuple[int, dict[str, float]]]) -> str:

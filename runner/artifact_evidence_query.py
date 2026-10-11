@@ -22,17 +22,34 @@ MAX_MATCH_OUTPUT_BYTES = 128 * 1024
 MAX_READ_BYTES = MAX_MATCH_OUTPUT_BYTES // 4 * 3
 HASH_BLOCK_BYTES = 1024 * 1024
 MISSING = object()
+DEFAULT_RESULTS = 20
+DEFAULT_PAGE_BYTES = 16 * 1024
+
+
+class EvidenceFilter(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    path: str = Field(
+        min_length=1,
+        max_length=1024,
+        pattern=r"^/",
+        description="JSON Pointer relative to each row. A missing field is not a non-match.",
+    )
+    equals: Any = Field(description="Required equality value; null is a valid value.")
 
 
 class ArtifactEvidenceQuerySpec(BaseModel):
+    model_config = {"extra": "forbid"}
+
     path: str = Field(
         max_length=1024,
         description=(
             "JSON Pointer scope to query; wildcards select array/object rows. "
+            "A selected array is expanded to rows for filtering, projection or aggregation. "
             "Use where/select for a subset, or request complete objects."
         ),
     )
-    where: dict[str, Any] | None = Field(
+    where: EvidenceFilter | None = Field(
         default=None,
         description=(
             'Optional equality filter: {"path": <relative JSON Pointer>, '
@@ -57,7 +74,7 @@ class ArtifactEvidenceQuerySpec(BaseModel):
         ),
     )
     limit: int = Field(
-        default=MAX_RESULTS,
+        default=DEFAULT_RESULTS,
         ge=1,
         le=MAX_RESULTS,
         description=(
@@ -77,6 +94,8 @@ class ArtifactEvidenceQuerySpec(BaseModel):
 
 
 class ArtifactEvidenceQueryParams(BaseModel):
+    model_config = {"extra": "forbid"}
+
     action: Literal["discover", "query", "batch", "read"] = Field(
         description=(
             "discover lists paths; query or batch selects, filters, projects or "
@@ -126,7 +145,7 @@ class ArtifactEvidenceQueryParams(BaseModel):
             "matches with optional where/select."
         ),
     )
-    where: dict[str, Any] | None = Field(
+    where: EvidenceFilter | None = Field(
         default=None,
         description=(
             "Optional equality filter applied to wildcard matches before "
@@ -149,7 +168,7 @@ class ArtifactEvidenceQueryParams(BaseModel):
         ),
     )
     limit: int = Field(
-        default=MAX_RESULTS,
+        default=DEFAULT_RESULTS,
         ge=1,
         le=MAX_RESULTS,
         description="Maximum raw matches returned; keep it bounded when needed.",
@@ -164,10 +183,13 @@ class ArtifactEvidenceQueryParams(BaseModel):
         ),
     )
     max_bytes: int = Field(
-        default=MAX_READ_BYTES,
+        default=DEFAULT_PAGE_BYTES,
         ge=1,
         le=MAX_READ_BYTES,
-        description="For read, maximum original bytes per page, before transport encoding.",
+        description=(
+            "Page byte budget: selected query/batch values, or original bytes for read. "
+            "Increase explicitly for broader retrieval; follow reported continuation."
+        ),
     )
     encoding: Literal["utf-8", "base64"] = Field(
         default="utf-8",
@@ -592,6 +614,23 @@ def _apply_where(
     ]
 
 
+def _available_fields(matches: list[tuple[str, Any]]) -> list[str]:
+    fields: set[str] = set()
+    for _, value in matches:
+        if isinstance(value, dict):
+            fields.update(
+                "/" + key.replace("~", "~0").replace("/", "~1") for key in value
+            )
+    output = []
+    size = 0
+    for field in sorted(fields)[:MAX_PATHS]:
+        size += len(json.dumps(field).encode("utf-8"))
+        if size > DEFAULT_PAGE_BYTES:
+            break
+        output.append(field)
+    return output
+
+
 def _join_pointer(base: str, relative: str) -> str:
     if relative == "/":
         return base
@@ -762,7 +801,7 @@ def _query(
     if not isinstance(path, str) or not path:
         raise ValueError("query requires path")
     query_limit = min(
-        max(int(spec.get("limit", MAX_RESULTS)), 1),
+        max(int(spec.get("limit", DEFAULT_RESULTS)), 1),
         MAX_RESULTS,
     )
     offset = int(spec.get("offset", 0))
@@ -771,7 +810,51 @@ def _query(
     if offset and spec.get("aggregate") in {"count", "numeric_summary"}:
         raise ValueError("offset applies to raw matches or value_counts only")
     path_matches = _matches(value, path, budget)
-    filtered_matches = _apply_where(path_matches, spec.get("where"), budget)
+    expanded_arrays = 0
+    if any(spec.get(key) is not None for key in ("where", "select", "aggregate")):
+        row_matches = []
+        for base, item in path_matches:
+            if isinstance(item, list):
+                expanded_arrays += 1
+                budget[0] += len(item)
+                if budget[0] > MAX_NODES:
+                    raise TraversalBudgetExceededError(
+                        "array row selection exceeded the node safety limit"
+                    )
+                row_matches.extend(
+                    (f"{base.rstrip('/')}/{index}", row)
+                    for index, row in enumerate(item)
+                )
+            else:
+                row_matches.append((base, item))
+        path_matches = row_matches
+    where = spec.get("where")
+    if where is not None:
+        where = EvidenceFilter.model_validate(where).model_dump()
+        present = [
+            match
+            for match in path_matches
+            if _relative_value(match[1], where["path"], budget) is not MISSING
+        ]
+        if path_matches and not present:
+            return (
+                {
+                    "status": "filter_field_absent",
+                    "evidence_state": "absent",
+                    "path": path,
+                    "filter_path": where["path"],
+                    "available_fields": _available_fields(path_matches),
+                    "available_fields_scope": "bounded direct-field hints, not exhaustive discovery",
+                    "recovery": "Select a filter field present in these rows; no match count was established.",
+                    "result": None,
+                },
+                0,
+                0,
+            )
+        missing_filter_fields = len(path_matches) - len(present)
+    else:
+        missing_filter_fields = 0
+    filtered_matches = _apply_where(path_matches, where, budget)
     matches = _select(filtered_matches, spec.get("select"), budget)
     values = [match[1] for match in matches]
     summary, used_results, used_bytes = _summary(
@@ -824,17 +907,26 @@ def _query(
         and spec.get("select") is not None
         and not matches
     )
-    field_absent = not path_matches or selected_field_absent
+    field_absent = (not path_matches and not expanded_arrays) or selected_field_absent
     response: dict[str, Any] = {
         "status": "field_absent" if field_absent else "queried",
         "evidence_state": "absent" if field_absent else "inspected",
         "path": path,
         "result": result,
     }
-    if not path_matches:
+    if expanded_arrays:
+        response["array_rows_expanded"] = expanded_arrays
+    if missing_filter_fields:
+        response["rows_missing_filter_field"] = missing_filter_fields
+    if not path_matches and not expanded_arrays:
         response["absence_reason"] = "path_absent"
     elif selected_field_absent:
         response["absence_reason"] = "selected_field_absent"
+        response["available_fields"] = _available_fields(filtered_matches)
+        response["available_fields_scope"] = (
+            "bounded direct-field hints, not exhaustive discovery"
+        )
+        response["recovery"] = "Select a field present in these rows."
     return response, used_results, used_bytes
 
 
@@ -928,19 +1020,13 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
             bounded_paths, byte_truncated = _bounded_strings(paths)
             return json.dumps(
                 {
-                    "status": (
-                        "discovered" if roots else "field_absent"
-                    ),
+                    "status": ("discovered" if roots else "field_absent"),
                     "action": "discover",
-                    "evidence_state": (
-                        "present_not_inspected" if roots else "absent"
-                    ),
+                    "evidence_state": ("present_not_inspected" if roots else "absent"),
                     "provenance": provenance,
                     "prefix": prefix,
                     "paths": bounded_paths,
-                    "truncated": (
-                        len(paths) >= MAX_PATHS or byte_truncated
-                    ),
+                    "truncated": (len(paths) >= MAX_PATHS or byte_truncated),
                     "remaining_paths": None,
                     "limits": {
                         "max_paths": MAX_PATHS,
@@ -961,7 +1047,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                     args,
                     [0],
                     MAX_RESULTS,
-                    MAX_MATCH_OUTPUT_BYTES,
+                    int(args.get("max_bytes", DEFAULT_PAGE_BYTES)),
                 )
             except TraversalBudgetExceededError as error:
                 return json.dumps(
@@ -998,7 +1084,10 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                 f"batch exceeds the {MAX_BATCH_QUERIES} query safety limit"
             )
         remaining_results = MAX_BATCH_RESULTS
-        remaining_bytes = MAX_MATCH_OUTPUT_BYTES
+        page_bytes = int(args.get("max_bytes", DEFAULT_PAGE_BYTES))
+        if not 1 <= page_bytes <= MAX_READ_BYTES:
+            raise ValueError("max_bytes is outside the supported page range")
+        remaining_bytes = page_bytes
         responses: list[dict[str, Any]] = []
         failures = 0
         for index, spec in enumerate(queries):
@@ -1028,15 +1117,15 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                 failures += 1
                 continue
             try:
+                spec = ArtifactEvidenceQuerySpec.model_validate(spec).model_dump()
                 query_limit = min(
-                    max(int(spec.get("limit", MAX_RESULTS)), 1),
+                    max(int(spec.get("limit", DEFAULT_RESULTS)), 1),
                     MAX_RESULTS,
                 )
                 remaining_specs = len(queries) - index
                 fair_result_share = min(
                     query_limit,
-                    (remaining_results + remaining_specs - 1)
-                    // remaining_specs,
+                    (remaining_results + remaining_specs - 1) // remaining_specs,
                 )
                 response, used_results, used_bytes = _query(
                     value,
@@ -1080,9 +1169,7 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
         return json.dumps(
             {
                 "status": (
-                    "batch_completed_with_failures"
-                    if failures
-                    else "batch_queried"
+                    "batch_completed_with_failures" if failures else "batch_queried"
                 ),
                 "action": "batch",
                 "provenance": provenance,
@@ -1092,10 +1179,8 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
                     "max_queries": MAX_BATCH_QUERIES,
                     "max_returned_results": MAX_BATCH_RESULTS,
                     "max_traversed_nodes_per_query": MAX_NODES,
-                    "max_total_traversed_nodes": (
-                        MAX_BATCH_QUERIES * MAX_NODES
-                    ),
-                    "max_result_bytes": MAX_MATCH_OUTPUT_BYTES,
+                    "max_total_traversed_nodes": (MAX_BATCH_QUERIES * MAX_NODES),
+                    "max_result_bytes": page_bytes,
                 },
                 "bounded": True,
             }

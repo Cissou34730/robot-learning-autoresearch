@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A frozen maintainer review of the stopped robot-learning campaign 0d39d52c: scientific evidence, AI usage, tooling, evidence fidelity, and limits on causal conclusions.">
+  <title>Stopped robot campaign · 0d39d52c · Tooling review</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    :root {
+      --cp-card-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    a { color: var(--cp-link); text-underline-offset: 0.2em; }
+    a:hover { text-decoration-thickness: 2px; }
+    button, input, select { font: inherit; }
+    button, select, input {
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 0.5rem 0.75rem;
+    }
+    button { cursor: pointer; }
+    button:hover { background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; }
+    .skip-link {
+      position: absolute; left: 1rem; top: -8rem; z-index: 10;
+      background: var(--cp-surface); padding: 0.75rem;
+    }
+    .skip-link:focus { top: 1rem; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.035em; margin: 0.75rem 0; }
+    h2 { font-size: 1.625rem; margin: 0 0 1rem; }
+    h3 { font-size: 1.125rem; margin: 0 0 0.5rem; }
+    p { margin: 0.5rem 0 1rem; }
+    ul, ol { padding-left: 1.5rem; }
+    li + li { margin-top: 0.5rem; }
+    code, .mono {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+    .wrap { width: min(1120px, calc(100% - 3rem)); margin-inline: auto; }
+    .hero { padding-block: 2.5rem 1.5rem; }
+    .eyebrow { color: var(--cp-text-muted); font-size: 0.875rem; letter-spacing: 0.04em; }
+    .hero-top { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+    .badge {
+      display: inline-block; border: 1px solid var(--cp-border);
+      border-radius: 0.625rem; padding: 0.125rem 0.5rem; font-size: 0.8rem;
+      background: var(--cp-surface-soft); color: var(--cp-text-muted);
+    }
+    .badge.stopped { border-color: var(--cp-warning); color: var(--cp-text); }
+    .badge.observed { border-color: var(--cp-border-strong); color: var(--cp-text); }
+    .badge.limit { background: var(--cp-accent-soft); color: var(--cp-accent); }
+    .lead { max-width: 860px; font-size: 1.125rem; }
+    .muted { color: var(--cp-text-muted); }
+    .small { font-size: 0.875rem; }
+    .notice {
+      padding: 1rem 1.25rem; border-left: 4px solid var(--cp-accent);
+      background: var(--cp-accent-soft); border-radius: 0 0.625rem 0.625rem 0;
+    }
+    .notice p:last-child { margin-bottom: 0; }
+    .nav-shell {
+      position: sticky; top: 0; z-index: 5;
+      border-block: 1px solid var(--cp-border); background: var(--cp-bg-elevated);
+    }
+    nav { display: flex; gap: 0.25rem; overflow-x: auto; padding-block: 0.5rem; }
+    nav a {
+      color: var(--cp-text-muted); text-decoration: none; white-space: nowrap;
+      padding: 0.5rem 0.75rem; border-radius: 0.625rem; font-size: 0.875rem;
+    }
+    nav a:hover, nav a[aria-current="location"] {
+      color: var(--cp-accent); background: var(--cp-accent-soft);
+    }
+    main { padding-bottom: 2rem; }
+    section { padding-top: 2.5rem; }
+    .section-intro { max-width: 900px; }
+    .grid { display: grid; gap: 1rem; }
+    .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.25rem 0; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card {
+      padding: 1.25rem; background: var(--cp-surface); border: 1px solid var(--cp-border);
+      border-radius: 16px; box-shadow: var(--cp-card-shadow);
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .metric-value { display: block; font-size: 1.75rem; font-weight: 650; line-height: 1.25; }
+    .metric-label { display: block; margin-top: 0.375rem; color: var(--cp-text-muted); font-size: 0.875rem; }
+    .table-wrap {
+      margin-block: 1rem; overflow-x: auto;
+      border: 1px solid var(--cp-border); border-radius: 0.625rem;
+      background: var(--cp-surface);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.925rem; }
+    caption { text-align: left; padding: 1rem; font-weight: 600; }
+    th, td { text-align: left; vertical-align: top; padding: 0.75rem 1rem; border-top: 1px solid var(--cp-border); }
+    thead { background: var(--cp-surface-soft); }
+    th { font-weight: 600; }
+    .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .highlight-row { background: var(--cp-accent-soft); }
+    .excluded-row { color: var(--cp-text-muted); }
+    details {
+      background: var(--cp-surface); border: 1px solid var(--cp-border);
+      border-radius: 0.625rem; margin-top: 1rem;
+    }
+    summary { padding: 0.875rem 1rem; cursor: pointer; font-weight: 600; }
+    summary:hover { color: var(--cp-accent); }
+    details[open] > summary { border-bottom: 1px solid var(--cp-border); }
+    .detail-body { padding: 1rem; }
+    .detail-body > :first-child { margin-top: 0; }
+    .detail-body > :last-child { margin-bottom: 0; }
+    .controls {
+      display: flex; flex-wrap: wrap; align-items: end; gap: 1rem;
+      padding: 1rem; background: var(--cp-surface-soft); border-radius: 0.625rem; margin-block: 1rem;
+    }
+    .field { display: grid; gap: 0.25rem; }
+    .field.search { flex: 1 1 260px; }
+    .field label { font-weight: 600; font-size: 0.875rem; }
+    .field select { min-width: 160px; }
+    .operation-list { display: grid; gap: 0.75rem; }
+    .operation {
+      padding: 1rem 1.25rem; border: 1px solid var(--cp-border);
+      background: var(--cp-surface); border-radius: 0.625rem;
+    }
+    .operation h3 { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .operation p { margin-bottom: 0; }
+    .operation .op-ref { margin-top: 0.5rem; color: var(--cp-text-muted); font-size: 0.8rem; }
+    [hidden] { display: none !important; }
+    .filter-count { margin: 0.5rem 0; }
+    .stack {
+      display: flex; overflow: hidden; height: 1rem; border-radius: 0.625rem;
+      background: var(--cp-surface-soft); margin: 0.75rem 0;
+    }
+    .stack .primary { background: var(--cp-accent); }
+    .stack .secondary { background: var(--cp-border-strong); }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.875rem; }
+    .legend span::before {
+      content: ""; display: inline-block; width: 0.75rem; height: 0.75rem;
+      border-radius: 0.125rem; margin-right: 0.5rem; background: var(--cp-accent);
+    }
+    .legend span.secondary::before { background: var(--cp-border-strong); }
+    .topic { color: var(--cp-accent); font-family: Consolas, "Courier New", Courier, monospace; }
+    .source-list li { overflow-wrap: anywhere; }
+    footer { border-top: 1px solid var(--cp-border); padding-block: 1.5rem; color: var(--cp-text-muted); }
+    .actions { display: flex; gap: 0.5rem; }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 2rem); }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two { grid-template-columns: 1fr; }
+      .hero { padding-top: 1.5rem; }
+      th, td { padding: 0.625rem 0.75rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      .nav-shell, .actions, .controls, .no-print { display: none !important; }
+      .wrap { width: 100%; }
+      body { background: var(--cp-surface); }
+      section { padding-top: 1.25rem; }
+      .card { box-shadow: none; }
+      .table-wrap { overflow: visible; }
+      details { break-inside: avoid; }
+      h2, h3 { break-after: avoid; }
+      .operation { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#overview">Skip to report</a>
+  <header class="hero wrap">
+    <div class="hero-top">
+      <div class="eyebrow">MAINTAINER REVIEW · 11 OCTOBER 2026</div>
+      <div class="actions">
+        <button id="theme-toggle" type="button" aria-label="Switch color theme">Switch theme</button>
+        <button id="evidence-toggle" type="button" aria-expanded="false">Expand evidence</button>
+      </div>
+    </div>
+    <h1>A stopped campaign, not a final verdict</h1>
+    <p class="lead">What campaign <strong class="mono">0d39d52c</strong> established about learned robot control, what its tooling cost, and where the evidence stopped.</p>
+    <p class="muted small"><span class="badge stopped">Maintainer-stopped during M11</span> About 23:08 CEST, 11 October 2026 · Usage recorded through 23:08:52 CEST · Native SDK 1.0.19 / CLI 1.0.95</p>
+    <p class="mono small">Campaign: 0d39d52c-e9f6-4b27-814c-3b9e21c07b2a</p>
+    <div class="notice">
+      <strong>No terminal verdict. No official assessment.</strong>
+      <p>M11 was interrupted with <strong>zero sealed partial results</strong>. Its planned T4/T3 comparison cannot support a scientific conclusion. Harness corrections being developed separately are not evidence of better policy performance or cheaper future campaigns.</p>
+    </div>
+  </header>
+
+  <div class="nav-shell">
+    <nav class="wrap" aria-label="Report sections">
+      <a href="#overview">Overview</a>
+      <a href="#science">Science</a>
+      <a href="#timeline">Operation trail</a>
+      <a href="#cost">AI usage</a>
+      <a href="#tools">Tooling</a>
+      <a href="#fidelity">Evidence fidelity</a>
+      <a href="#followup">Repair boundary</a>
+      <a href="#sources">Sources &amp; limits</a>
+    </nav>
+  </div>
+
+  <main class="wrap">
+    <section id="overview" aria-labelledby="overview-title">
+      <h2 id="overview-title">The short assessment</h2>
+      <div class="grid metrics">
+        <div class="card"><span class="metric-value num">4</span><span class="metric-label">Completed trainings<br>483,328 actual steps in total</span></div>
+        <div class="card"><span class="metric-value num">10</span><span class="metric-label">Completed measurements<br>M11 not included</span></div>
+        <div class="card"><span class="metric-value num">3 / 7</span><span class="metric-label">Distinct inquiries / PI contexts<br>Preparation reported separately</span></div>
+        <div class="card"><span class="metric-value num">44.938901</span><span class="metric-label">Total recorded AIU<br>PI, preparation, and coders</span></div>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <h3>There was real scientific evidence</h3>
+          <p>The first learned policy completed 150 of 160 development episodes. Expanded diagnostics separated seven non-reach failures from three reached-but-failed-hold episodes. A changed reward recipe then produced two measured checkpoints with zero successes and zero first reaches.</p>
+          <p>A later same-panel comparison measured T3 at 114/160 and the unchanged T1 reference at 154/160. Those are development results, not official task certification.</p>
+        </article>
+        <article class="card">
+          <h3>There was also avoidable-looking evidence work</h3>
+          <p>The PI repeatedly measured the same frozen candidate and panel while expanding diagnostics, retried malformed queries, reread T1 logs, and retrieved two full M9 diagnostic arrays. These are observed patterns, not a measured attribution of the campaign's extra cost.</p>
+          <p>Recipe restoration also rolled back measurement capability. The next measurement completed without several diagnostics it had requested.</p>
+        </article>
+      </div>
+      <p class="small muted">Reading rule: <span class="badge observed">Observation</span> means recorded behavior or a count. <span class="badge limit">Limit / interpretation</span> marks what that observation cannot establish. Root-cause analysis remains deferred.</p>
+    </section>
+
+    <section id="science" aria-labelledby="science-title">
+      <h2 id="science-title">What the science says, and does not say</h2>
+      <p class="section-intro">The goal is a learned policy with at least 98% episode success under the official task distribution: reaching the 1 cm target region and completing an uninterrupted 2-second hold. On a 160-episode development panel, the corresponding count threshold is 157 successes. No protected official assessment was completed.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Completed development evidence — panel identity matters</caption>
+          <thead><tr><th scope="col">Measurement / candidate</th><th scope="col">Panel seed</th><th scope="col">Successes</th><th scope="col">First reaches</th><th scope="col">What this supports</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">M3 / M5 / M7 · T1 terminal</th><td class="num">4200</td><td class="num">150/160 · 93.75%</td><td class="num">153/160 in M7</td><td>The same candidate and panel, with progressively richer diagnostics; not three independent performance replications.</td></tr>
+            <tr><th scope="row">M9 · T2 checkpoint 100,352</th><td class="num">4360</td><td class="num">0/160 · 0%</td><td class="num">0/160</td><td>A negative result for this checkpoint, recipe, and tested panel.</td></tr>
+            <tr><th scope="row">M9 · T2 terminal 120,832</th><td class="num">4360</td><td class="num">0/160 · 0%</td><td class="num">0/160</td><td>The terminal artifact did not recover reach on this panel.</td></tr>
+            <tr><th scope="row">M10 · T3 terminal 120,832</th><td class="num">4520</td><td class="num">114/160 · 71.25%</td><td class="num">121/160</td><td>Restored T1 recipe, newly trained with seed 2; fewer successes than the paired T1 reference.</td></tr>
+            <tr class="highlight-row"><th scope="row">M10 · unchanged T1 terminal</th><td class="num">4520</td><td class="num">154/160 · 96.25%</td><td class="num">156/160</td><td>A reference result on a different panel. The increase from 150 to 154 is not policy improvement.</td></tr>
+            <tr><th scope="row">M11 · planned T4 / T3 comparison</th><td class="num">4680</td><td>Not completed</td><td>Not available</td><td>Zero sealed partials. No paired comparison or outcome can be inferred.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Reach and hold were different failure classes</h3>
+          <p><strong>M7: seven non-reaches, three failed holds after reaching.</strong> Its 153 first reaches used the open branch where branch was defined. Open-branch use does not prove that a folded route is necessary, nor that route choice caused failure.</p>
+          <p>High near-target velocity, saturated action, and repeated internal excursions make braking and stabilization plausible investigative targets. They do not isolate a cause.</p>
+        </article>
+        <article class="card">
+          <h3>The reward intervention had a bounded negative result</h3>
+          <p>M8 checked implementation of the new braking/margin reward, not learned policy behavior. T2 combined the new reward with training seed 1; both measured checkpoints failed to reach on the M9 panel.</p>
+          <p>I2 closed with a negative result. This does not disprove the broader method or uniquely attribute the result to reward design rather than training seed or other recipe effects.</p>
+        </article>
+      </div>
+      <details data-evidence>
+        <summary>Evidence panel · M7 mechanism variables and semantic limits</summary>
+        <div class="detail-body">
+          <div class="table-wrap">
+            <table>
+              <caption>Two distinct counters — do not substitute one for the other</caption>
+              <thead><tr><th scope="col">Episode</th><th scope="col">Hold interruptions</th><th scope="col">Boundary-in-tolerance internal excursions</th><th scope="col">Near-tolerance velocity norm</th><th scope="col">Action magnitude</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">26</th><td class="num">192</td><td class="num">193</td><td class="num">6.0492 rad/s</td><td class="num">1.4142</td></tr>
+                <tr><th scope="row">43</th><td class="num">242</td><td class="num">242</td><td class="num">7.3082 rad/s</td><td class="num">1.4142</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>All ten M7 failure episodes had zero recorded contacts. This weakens a generic contact explanation within those traces; it does not eliminate all dynamic, route, angle, or saturation-conditioned explanations.</p>
+          <p>M1 established 0.002-second internal integration and ten internal steps per 20-millisecond action. Internal excursions are a conservative robustness diagnostic. They do not establish how the unavailable protected evaluator implements continuous hold.</p>
+          <p class="small muted">Source: M7 artifact, <code>/research_evidence/episode_diagnostics/*</code>; M1 compiled dynamics. See <a href="#sources">source register</a>.</p>
+        </div>
+      </details>
+      <details data-evidence>
+        <summary>Evidence panel · Restoration changed the measurement surface</summary>
+        <div class="detail-body">
+          <p><strong>E12 restored the entire T1 recipe, including the old evaluator.</strong> The restored paths were <code>robot_learning\scenario\environment.py</code>, <code>robot_learning\scenario\evaluation.py</code>, and <code>robot_learning\training\reward.py</code>.</p>
+          <p>M10 requested rich diagnostics but delivered only episode/seed, target radius/angle, minimum/final distance, first reach, maximum held steps, in-tolerance steps, and hold interruptions. Velocity, action, contact, branch, and internal-step diagnostics were absent.</p>
+          <p>This is an observed <strong>request-versus-output scope mismatch</strong>, tracked as OI15. The success and first-reach counts remain evidence; absent mechanism variables cannot support the more detailed comparisons the PI requested.</p>
+          <p>E13 then restored the T2 recipe. T4 used seed 2, matching T3's training seed, and reported a training proxy of zero. The planned M11 paired measurement was interrupted, so the proxy cannot stand in for that result.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="timeline" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">The substantive operation trail</h2>
+      <p class="section-intro">A compact trail of the scientific work, not a transcript or a full lifecycle-event ledger. Repeated diagnostic expansion is visible here. The three distinct inquiries were I1, I2, and I3.</p>
+      <div class="controls" id="operation-controls" hidden>
+        <div class="field search"><label for="operation-search">Find an operation or concept</label><input id="operation-search" type="search" placeholder="Try M7, restore, reward, or seed" autocomplete="off"></div>
+        <div class="field"><label for="operation-kind">Operation type</label><select id="operation-kind"><option value="all">All types</option><option value="measurement">Measurement</option><option value="training">Training</option><option value="restore">Recipe restoration</option></select></div>
+        <div class="field"><label for="operation-status">Completion</label><select id="operation-status"><option value="all">All states</option><option value="completed">Completed</option><option value="interrupted">Interrupted</option></select></div>
+        <button id="operation-clear" type="button">Clear filters</button>
+      </div>
+      <p id="operation-count" class="filter-count small muted" role="status" aria-live="polite">17 substantive operations shown.</p>
+      <div class="operation-list" id="operation-list">
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M1 · Startup physics and verification <span class="badge">Measurement</span></h3>
+          <p>Compiled the robot physics and ran verification at startup. Established the physical and timing basis before learned-policy comparisons.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M2 · Training exposure <span class="badge">Measurement</span></h3>
+          <p>Checked exposure to the full 6–20 cm radial training distribution.</p>
+        </article>
+        <article class="operation" data-kind="training" data-status="completed">
+          <h3>T1 · First learned candidate <span class="badge">Training</span></h3>
+          <p>Seed 0. Requested 120,000 steps and completed 120,832 actual steps. Its terminal artifact became the development reference.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M3 · First development panel <span class="badge">Measurement</span></h3>
+          <p>T1 terminal: 150/160 successes on panel seed 4200.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M4 · Observational equivalence check <span class="badge">Measurement</span></h3>
+          <p>Checked observational equivalence around diagnostic changes. This was verification, not evidence of improved learned behavior.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M5 · Expanded diagnostics <span class="badge">Measurement</span></h3>
+          <p>The same T1 terminal and seed-4200 panel again returned 150/160. Its earlier eight/two failure split was corrected by M7 to seven/three.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M6 · Further equivalence check <span class="badge">Measurement</span></h3>
+          <p>Checked observational equivalence as diagnostics expanded again.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M7 · Branch and internal-step diagnostics <span class="badge">Measurement</span></h3>
+          <p>The same T1 terminal and panel returned 150/160, with 153 first reaches: seven non-reaches and three failed holds. Open branch where defined.</p>
+          <p class="op-ref">I1 evidence · repeated panel, richer measurement · OI24 / OI25</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M8 · Braking/margin reward check <span class="badge">Measurement</span></h3>
+          <p>Verified the new reward implementation for I2. Did not test a learned policy's performance.</p>
+        </article>
+        <article class="operation" data-kind="training" data-status="completed">
+          <h3>T2 · New reward recipe <span class="badge">Training</span></h3>
+          <p>Seed 1, 120,832 actual steps. Its request at about 22:41 CEST defines the cost-comparison boundary used below.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M9 · Two T2 checkpoints <span class="badge">Measurement</span></h3>
+          <p>Checkpoints 100,352 and 120,832 each returned 0/160 successes and no first reach on seed 4360. I2 closed negative for the tested intervention.</p>
+        </article>
+        <article class="operation" data-kind="restore" data-status="completed">
+          <h3>E12 · Restore T1 recipe <span class="badge">Recipe restoration</span></h3>
+          <p>I3 restored the entire recipe, including the old evaluator. Richer measurement capability was lost along with the reward/environment changes.</p>
+          <p class="op-ref">OI15 · restoration scope versus requested measurement scope</p>
+        </article>
+        <article class="operation" data-kind="training" data-status="completed">
+          <h3>T3 · New seed, restored recipe <span class="badge">Training</span></h3>
+          <p>T1 recipe, seed 2, 120,832 actual steps. A new learned artifact, not a modification of the original T1 policy.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="completed">
+          <h3>M10 · Matched T3 / T1 panel <span class="badge">Measurement</span></h3>
+          <p>Seed 4520: T3 returned 114/160 successes and 121 first reaches; unchanged T1 returned 154/160 and 156 first reaches. Requested mechanism diagnostics were incomplete.</p>
+        </article>
+        <article class="operation" data-kind="restore" data-status="completed">
+          <h3>E13 · Restore T2 recipe <span class="badge">Recipe restoration</span></h3>
+          <p>Prepared the corresponding seed-2 run under the T2 recipe.</p>
+        </article>
+        <article class="operation" data-kind="training" data-status="completed">
+          <h3>T4 · T2 recipe with seed 2 <span class="badge">Training</span></h3>
+          <p>120,832 actual steps. Training proxy zero. Matching T3's seed set up a planned comparison; it did not produce a completed development comparison.</p>
+        </article>
+        <article class="operation" data-kind="measurement" data-status="interrupted">
+          <h3>M11 · Planned paired measurement <span class="badge stopped">Interrupted</span></h3>
+          <p>T4/T3 panel seed 4680. Maintainer stopped the campaign during this operation. Zero sealed partials; no scientific conclusion.</p>
+        </article>
+      </div>
+      <p id="operation-empty" class="notice" hidden>No operations match these filters. Clear filters to show the full trail.</p>
+    </section>
+
+    <section id="cost" aria-labelledby="cost-title">
+      <h2 id="cost-title">AI usage: use a matched progress boundary</h2>
+      <p class="section-intro">AIU is the recorded AI accounting unit, not a currency amount. This campaign used <strong>44.938901 AIU</strong> through the stop. Comparing that whole stopped-campaign total with historical complete-campaign totals would not be a fair progress comparison.</p>
+      <div class="grid two">
+        <article class="card">
+          <h3>Whole stopped-campaign accounting</h3>
+          <p><strong class="num">32.845532 AIU</strong> PI + preparation<br><strong class="num">12.093369 AIU</strong> scientific coders</p>
+          <div class="stack" aria-hidden="true"><span class="primary" style="width:73.09%"></span><span class="secondary" style="width:26.91%"></span></div>
+          <div class="legend"><span>PI + preparation · 73.09%</span><span class="secondary">Coders · 26.91%</span></div>
+          <p class="small muted">Five coding children. Their metered share is not automatically incremental delegation overhead.</p>
+        </article>
+        <article class="card">
+          <h3>At the T2 request boundary</h3>
+          <p><strong class="num">33.638433 AIU</strong> current campaign<br><strong class="num">21.113303 AIU</strong> mean of five comparable prior campaigns</p>
+          <p><strong class="num">+59.3%</strong> recorded usage at that stage.</p>
+          <p class="small muted">A descriptive difference, not a controlled estimate of the SDK, custom tool, coder, or any one workflow's causal cost.</p>
+        </article>
+      </div>
+      <div class="table-wrap">
+        <table id="cost-comparison">
+          <caption>Previous seven campaigns — only five reached the second-training request stage</caption>
+          <thead><tr><th scope="col">Campaign prefix</th><th scope="col">Recorded AIU</th><th scope="col">At comparable stage?</th><th scope="col">Included in mean?</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><th scope="row"><code>0d39d52c</code> · current</th><td class="num">33.638433</td><td>Yes · T2 request, 22:41 CEST</td><td>Current comparator</td></tr>
+            <tr class="excluded-row" data-not-comparable><th scope="row"><code>180ced98</code></th><td class="num">5.816518</td><td>No · stage not reached</td><td>No</td></tr>
+            <tr class="excluded-row" data-not-comparable><th scope="row"><code>5de5e4a0</code></th><td class="num">4.893137</td><td>No · stage not reached</td><td>No</td></tr>
+            <tr><th scope="row"><code>bfd9e63d</code></th><td class="num">26.108647</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row"><code>f917968b</code></th><td class="num">18.904759</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row"><code>89a6354a</code></th><td class="num">13.465179</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row"><code>ec7f3d3a</code></th><td class="num">24.396131</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row"><code>339736e0</code></th><td class="num">22.691797</td><td>Yes</td><td>Yes</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Comparable-five mean</th><td class="num">21.113303</td><td colspan="2">Excludes the two campaigns that never reached this stage</td></tr></tfoot>
+        </table>
+      </div>
+      <button id="comparable-toggle" class="no-print" type="button" aria-pressed="false" hidden>Hide campaigns that did not reach the stage</button>
+      <p class="small muted">The boundary is the second-training request, not equal wall time, equal measurements, or equal scientific work. The current campaign had eight completed measurement operations before that boundary; the five historical comparators had two to six. Comparable progress does not make workload identical.</p>
+      <details data-evidence>
+        <summary>Evidence panel · Why the coder share is not an overhead estimate</summary>
+        <div class="detail-body">
+          <ul>
+            <li>All <strong>12.093369 coder AIU</strong> had already been recorded by the T2 request.</li>
+            <li>The later <strong>11.300468 AIU</strong> was all PI spending; there were no new coders after that boundary.</li>
+            <li>Earlier inline coding was not separately metered. It lived inside earlier PI costs. Subtracting the new coder total from the current total would not isolate a like-for-like counterfactual.</li>
+            <li>Repeated measurements, log rereads, large artifact retrievals, handoffs, and review all coexist in this campaign. Their individual incremental costs have not been experimentally isolated.</li>
+          </ul>
+          <p>The recorded difference is worth investigating. It is not evidence that native coding alone caused the increase, nor that eliminating the custom evidence tool would remove it.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="tools" aria-labelledby="tools-title">
+      <h2 id="tools-title">What the tools actually returned</h2>
+      <p class="section-intro">Explicit evidence queries returned <strong class="num">538,987 bytes</strong> across multiple PI contexts. This is the sum of responses, including repetition; it is not simultaneous unique context, a token count, or all information the PI read.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Observed tool response volume</caption>
+          <thead><tr><th scope="col">Interface</th><th scope="col">Calls</th><th scope="col">Response bytes</th><th scope="col">Meaning</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><code>artifact_evidence_query</code></th><td class="num">19</td><td class="num">389,052</td><td>JSON evidence query responses, including failed and repeated requests.</td></tr>
+            <tr><th scope="row"><code>training_log_query</code></th><td class="num">4</td><td class="num">149,935</td><td>Preserved training-record query responses.</td></tr>
+            <tr class="highlight-row"><th scope="row">Explicit evidence queries combined</th><td class="num">23</td><td class="num">538,987</td><td>Sum across contexts; not a unique retained-context measure.</td></tr>
+            <tr><th scope="row"><code>submit_operation</code></th><td class="num">28</td><td class="num">68,281</td><td>Summaries, current state, and structural artifact inventories; not live console logs or full evidence arrays.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Training logs: projection without row targeting</h3>
+          <p>The first two log calls selected metrics but each returned all 118 rows. Later, at 22:53 CEST, T1 and T2 were requested without metric or step filters, returning <strong>108,800 bytes</strong> together.</p>
+          <p>The later T1 request was its third log read. This establishes rereading and weak targeting, not the amount of attention or incremental AIU consumed by those reads.</p>
+        </article>
+        <article class="card">
+          <h3>JSON evidence: retries and full arrays</h3>
+          <p>M7 queries used a malformed <code>where</code> and omitted the array wildcard, then corrected the query and joined failure episodes explicitly. Fresh I3 queries repeated the missing-wildcard error.</p>
+          <p>The two full M9 diagnostic arrays alone returned <strong>239,791 bytes</strong>. Aggregate queries were also made; the campaign did not rely only on summaries.</p>
+        </article>
+      </div>
+      <details data-evidence>
+        <summary>Evidence panel · Public query metadata, with no transcript dump</summary>
+        <div class="detail-body">
+          <div class="table-wrap">
+            <table>
+              <caption>Selected query episodes · all times CEST, 11 October 2026</caption>
+              <thead><tr><th scope="col">Time</th><th scope="col">Request pattern</th><th scope="col">Returned bytes</th><th scope="col">Observed issue or limit</th></tr></thead>
+              <tbody>
+                <tr><th scope="row" class="num">22:25:01</th><td>T1 logs, selected metrics, limit 200</td><td class="num">19,127</td><td>All 118 rows; metric selection is not step filtering.</td></tr>
+                <tr><th scope="row" class="num">22:36:32</th><td>M7 diagnostic queries without <code>/*</code>; malformed <code>where</code></td><td class="num">2,906</td><td>Array/item confusion and invalid filtering request.</td></tr>
+                <tr><th scope="row" class="num">22:36:32</th><td>T1 logs, selected metrics, limit 200</td><td class="num">22,008</td><td>Second T1 log read, again all rows.</td></tr>
+                <tr><th scope="row" class="num">22:36:35–42</th><td>Correct wildcard, then failed-episode selection and diagnostic join</td><td>Several responses</td><td>Recovery required additional requests.</td></tr>
+                <tr><th scope="row" class="num">22:49:46</th><td>M9 checkpoint 100,352, full diagnostic array</td><td class="num">119,911</td><td>Complete per-episode retrieval, not just an aggregate.</td></tr>
+                <tr><th scope="row" class="num">22:49:46</th><td>M9 terminal checkpoint, full diagnostic array</td><td class="num">119,880</td><td>Together: 239,791 bytes.</td></tr>
+                <tr><th scope="row" class="num">22:53:29</th><td>T1 logs without metric/step filters</td><td class="num">54,224</td><td>Third T1 log read.</td></tr>
+                <tr><th scope="row" class="num">22:53:29</th><td>T2 logs without metric/step filters</td><td class="num">54,576</td><td>T1 + T2 together: 108,800 bytes.</td></tr>
+                <tr><th scope="row" class="num">22:53:29</th><td>Fresh I3 queries to M7/M9 diagnostic arrays without <code>/*</code></td><td>Multiple responses</td><td>The earlier wildcard mistake recurred across the context boundary.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>A filter on a diagnostics row cannot recover a success flag that is present only in another episode array. Reliable selection must use the actual artifact schema and an explicit episode relationship, rather than assume every array carries the same fields.</p>
+          <p class="small muted">Sources: public tool request/result metadata summarized in the frozen analysis snapshots. No private reasoning or conversation content is embedded here.</p>
+        </div>
+      </details>
+      <details data-evidence>
+        <summary>Evidence panel · Context size and coding review</summary>
+        <div class="detail-body">
+          <p>S7's shutdown metric recorded <strong>123,500 current tokens</strong>, including <strong>116,578 conversation tokens</strong>. This is an SDK context metric, distinct from response bytes and cumulative billed input tokens.</p>
+          <p>All five coder changes had actual diff/source review by the main PI, approximately <strong>7–14 seconds</strong> each, followed by Runner checks. It would be inaccurate to say the PI never reviewed the changes.</p>
+          <p>Conversely, short review intervals and mechanical Runner checks do not establish exhaustive review or scientific validity. The record supports a timing observation, not a reliable measure of review depth.</p>
+          <p class="small muted">Tracking: OI8 (context delivery), OI26 (coding review/cost). Neither large context nor fast review by itself explains a specific scientific error.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="fidelity" aria-labelledby="fidelity-title">
+      <h2 id="fidelity-title">Evidence fidelity: keep the claims smaller than the record</h2>
+      <p class="section-intro">The observed discrepancies matter because later scientific choices depend on durable summaries. They do not, by themselves, identify whether the cause was a query interface, context handoff, interpretation, or review.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Specific discrepancies and the defensible correction</caption>
+          <thead><tr><th scope="col">Record or claim</th><th scope="col">Evidence</th><th scope="col">Correction / limit</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Earlier M5 failure classification</th><td>Earlier eight non-reaches / two failed holds; M7 supports seven / three.</td><td>Use the corrected seven/three split. Do not continue the earlier count.</td></tr>
+            <tr><th scope="row">Public I1 statement at 22:34:50: all 160 first reached</th><td>M7 contains only 153 first reaches.</td><td>The explicit all-160 statement is wrong. Seven episodes never reached.</td></tr>
+            <tr><th scope="row">E4 branch statement</th><td>E4 said every first reach used the open branch; it did not explicitly say there were 160 first reaches.</td><td>Do not attribute the explicit all-160 claim to E4. All observed first reaches and all episodes are different denominators.</td></tr>
+            <tr><th scope="row">E4 conflated interruption/excursion counts</th><td>Episode 26: 192 hold interruptions versus 193 internal excursions. Episode 43: both 242.</td><td>Keep the counters distinct even when one episode's values happen to match.</td></tr>
+            <tr><th scope="row">T1 performance apparently increased from 150 to 154</th><td>The policy artifact was unchanged; panel seed changed from 4200 to 4520.</td><td>Report a new-panel result, not a learned-policy improvement.</td></tr>
+            <tr><th scope="row">M10 richer mechanism comparison</th><td>Requested qvel/action/contact/branch/internal-step fields were absent after E12 restoration.</td><td>Retain the available success/reach evidence; do not fill in missing mechanism evidence.</td></tr>
+            <tr><th scope="row">Interrupted M11 comparison</th><td>Zero sealed partials; no completed T4/T3 panel result.</td><td>No scientific outcome, even though T4 training completed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice">
+        <strong>Observation is not causation.</strong>
+        <p>The report identifies concrete fidelity problems and workflow patterns. It does not assign them to one harness component, prove a repair would have prevented them, or claim that a single changed reward caused T2's failure. Existing causal-claim concerns are tracked under OI14; root-cause analysis is deferred.</p>
+      </div>
+    </section>
+
+    <section id="followup" aria-labelledby="followup-title">
+      <h2 id="followup-title">Subsequent harness repairs: implemented, effectiveness unmeasured</h2>
+      <p class="section-intro">Update at 00:03 CEST, 12 October 2026: the parent maintainer reports that the approved OI18, OI8, and OI15 corrections are implemented, with validation and publication being finished. These changes occurred after the campaign stopped. They do not change its scientific evidence or demonstrate better policy performance, lower campaign cost, or end-to-end campaign effectiveness.</p>
+      <p class="small muted">Implementation and check results below are maintainer-reported, not an independent review of harness code by this reporting child. Same-session lifecycle behavior is unchanged. Tracking remains in <code>docs\harness-experiment-log.md</code>.</p>
+      <div class="grid two">
+        <article class="card">
+          <h3><span class="topic">OI18</span> · Custom query tool retained</h3>
+          <p>Filters now require typed <code>path</code> and <code>equals</code> fields; <code>null</code> is supported. Selecting an array for filtering, projection, or aggregation explicitly expands its rows. A missing filter field is reported distinctly from zero matches.</p>
+          <p>Default selected-value pages are bounded to 20 rows / 16 KiB. Full retrieval remains permitted through explicit paging. The tool is retained, not replaced with <code>jello</code>.</p>
+          <p>Training-log queries default to metadata discovery without values. Record retrieval requires selected <code>metrics</code> or explicit <code>all_metrics</code>; console output prints selectors.</p>
+        </article>
+        <article class="card">
+          <h3><span class="topic">OI8</span> · Leaner automatic delivery</h3>
+          <p>Responses no longer repeatedly solicit detail access. Automatic completion summaries no longer embed a full artifact inventory or a full repeated paired-seed list.</p>
+          <p>Public facts, current state, and source pointers are retained. This reduces repeated automatic material; it does not establish a measured reduction in context errors or campaign AIU.</p>
+        </article>
+        <article class="card">
+          <h3><span class="topic">OI15</span> · Explicit restoration scope</h3>
+          <p><code>restore_recipe</code> now requires an exact, nonempty <code>paths</code> list including <code>robot_learning\training\current_params.json</code>. Unselected files are preserved; campaign laboratory files cannot be selected.</p>
+          <p>This prevents accidental blanket rollback through explicit source selection. It does not automatically preserve instrumentation inside an arbitrarily selected mixed-purpose file.</p>
+          <p>If learning and instrumentation share a selected file, the PI must carry measurement capability forward through scientific coding. The contract states this explicitly; there is no automatic guessing or AST merge of scientific code.</p>
+        </article>
+        <article class="card">
+          <h3><span class="topic">OI24</span> · No measurement-strategy repair bundled</h3>
+          <p>M3/M5/M7 repeated the same policy/panel while adding diagnostics; M4/M6 checked equivalence. Some added information was useful. This was not three independent success replications.</p>
+          <p>No algorithm repair for fragmented or repeated measurement is included in these corrections.</p>
+        </article>
+        <article class="card">
+          <h3><span class="topic">OI25</span> · Fidelity remains a separate concern</h3>
+          <p>Preserve denominators, distinct counters, panel identity, and explicit missing fields when evidence is summarized. The concrete discrepancies above are the basis for this topic.</p>
+          <p>No evidence-fidelity algorithm repair is bundled, and the interface changes do not prove those discrepancies will not recur.</p>
+        </article>
+        <article class="card">
+          <h3><span class="topic">OI26 / OI14</span> · Cost and causation remain unmeasured</h3>
+          <p>Measure coder and main-PI review work without treating all coder AIU as added overhead. Keep causal conclusions separate from descriptive comparisons and bundled interventions.</p>
+          <p>No coding-review/cost algorithm repair is bundled. Root-cause attribution and scientific effectiveness remain unmeasured.</p>
+        </article>
+      </div>
+      <details data-evidence>
+        <summary>Evidence panel · Reported checks and what remains unmeasured</summary>
+        <div class="detail-body">
+          <p>The parent reports that harmless checks with <strong>134 assertions</strong> and registered SDK dispatch checks with <strong>8 calls</strong> pass. This reporting child did not review or independently test the harness code.</p>
+          <ul>
+            <li><strong>Checked implementation behavior:</strong> the reported checks support only the query, delivery, restoration, and dispatch behaviors they exercise. They are not an end-to-end scientific campaign result.</li>
+            <li><strong>Workflow behavior:</strong> later completed campaign evidence is needed to determine whether retries, redundant reads, missing diagnostics, or handoff errors recur.</li>
+            <li><strong>Scientific effectiveness:</strong> better learned control requires new completed, appropriately compared policy measurements. It does not follow from a successful harness check.</li>
+            <li><strong>Cost effectiveness:</strong> lower usage requires a comparable accounting boundary and workload. The present +59.3% observation is not a measured repair effect.</li>
+          </ul>
+          <p>Explicit restoration scope is prevention of accidental blanket rollback, not automatic instrumentation repair. Preserving mixed-file measurement capability remains a scientific-coding responsibility.</p>
+          <p>The parent plans to publish the report and corrections together before an authorized reset and one new campaign. Those future operations are not evidence in this stopped-campaign report. This reporting child changed only this HTML section and did not reset, resume, or execute a campaign.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">Source register and frozen-snapshot limits</h2>
+      <p class="section-intro">All essential numbers and qualifications are embedded in this self-contained file. It does not load campaign data, scripts, fonts, or assets from elsewhere. The source paths below identify the records used; they are not live data dependencies and may be moved or replaced during a later reset.</p>
+      <div class="card">
+        <h3>Evidence hierarchy</h3>
+        <ol>
+          <li><strong>Completed operation records and detailed artifacts:</strong> authoritative for what completed and what was measured.</li>
+          <li><strong>Usage ledger and public tool request/result metadata:</strong> authoritative for recorded usage, calls, payload sizes, and timing observations.</li>
+          <li><strong>Briefs, experiment summaries, and inquiry/checkpoint statements:</strong> interpretations and handoffs, checked against underlying evidence where discrepancies arose.</li>
+          <li><strong>Maintainer tracking:</strong> follow-up topics, not retrospective scientific results or a final assessment.</li>
+        </ol>
+      </div>
+      <details data-evidence>
+        <summary>Source paths · Campaign records and usage</summary>
+        <div class="detail-body">
+          <ul class="source-list">
+            <li><code>campaigns\results.jsonl</code> — campaign-matched completed operations, requested/completed training steps, restoration paths, and artifact references.</li>
+            <li><code>campaigns\brief.md</code> and <code>campaigns\EXPERIMENTS.md</code> — durable campaign summaries and lifecycle context, not independent measurements.</li>
+            <li><code>reports\session_usage\0d39d52c-e9f6-4b27-814c-3b9e21c07b2a.jsonl</code> — campaign usage accounting.</li>
+            <li><code>campaigns\evaluations\0d39d52c-e9f6-4b27-814c-3b9e21c07b2a\</code> — detailed completed measurement artifacts.</li>
+            <li><code>docs\harness-experiment-log.md</code> — OI18, OI8, OI15, OI24, OI25, OI26, and OI14. Repair statuses are intentionally not copied as live claims.</li>
+          </ul>
+          <p class="small muted">Usage cutoff: <time datetime="2026-10-11T21:08:52.420058Z">2026-10-11 21:08:52.420058 UTC</time>, equivalent to 23:08:52 CEST. The campaign stop is described approximately; the usage timestamp is not asserted to be the exact interrupt time.</p>
+        </div>
+      </details>
+      <details data-evidence>
+        <summary>Source paths · Exact scientific artifacts used in this report</summary>
+        <div class="detail-body">
+          <p>All filenames below are under <code>campaigns\evaluations\0d39d52c-e9f6-4b27-814c-3b9e21c07b2a\</code>.</p>
+          <ul class="source-list">
+            <li>M1 verification: <code>python-module-M1-1-compiled_dynamics_verification.json</code></li>
+            <li>M1 physics: <code>python-module-M1-2-compiled_dynamics_measurement.json</code></li>
+            <li>M3: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json</code></li>
+            <li>M7: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m7-T1-checkpoint-120832-160ep-seed4200-c516232db90a.json</code></li>
+            <li>M9 late: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m9-T2-checkpoint-100352-160ep-seed4360-67fa7476bc2d.json</code></li>
+            <li>M9 terminal: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m9-T2-checkpoint-120832-160ep-seed4360-67fa7476bc2d.json</code></li>
+            <li>M10 T3: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T3-checkpoint-120832-160ep-seed4520-604d52985c97.json</code></li>
+            <li>M10 T1: <code>evaluation-0d39d52c-e9f6-4b27-814c-3b9e21c07b2a-m10-T1-checkpoint-120832-160ep-seed4520-604d52985c97.json</code></li>
+          </ul>
+        </div>
+      </details>
+      <details data-evidence>
+        <summary>Source paths · Maintainer analysis snapshots and comparison scope</summary>
+        <div class="detail-body">
+          <p>Session-only analysis snapshots used for public metadata and historical comparison:</p>
+          <ul class="source-list">
+            <li><code>C:\Users\cyril.beurier\.copilot\session-state\05fbf6f3-7a73-4c09-98d2-ab51274d107a\files\stopped-campaign-assessment.json</code></li>
+            <li><code>C:\Users\cyril.beurier\.copilot\session-state\05fbf6f3-7a73-4c09-98d2-ab51274d107a\files\campaign-tools-cost-assessment.json</code></li>
+            <li><code>C:\Users\cyril.beurier\.copilot\session-state\05fbf6f3-7a73-4c09-98d2-ab51274d107a\files\campaign-quality-historical-records.json</code></li>
+          </ul>
+          <p>The historical figures use the second-training request boundary. Two of the previous seven campaigns never reached it and are excluded from the mean. Historical ledger alignment and different measurement workloads mean this is a descriptive stage comparison, not a controlled experiment.</p>
+          <p>Counts and public metadata are summarized here; raw conversation content and private reasoning are not reproduced. Seven refers to PI contexts, three to distinct inquiries; lifecycle transition operation counts are not those same denominators.</p>
+        </div>
+      </details>
+      <p class="small muted">Reporting scope: one new HTML file only. This report does not claim to certify code quality, official task success, a terminal scientific verdict, or the effectiveness of subsequent harness repairs.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <strong>Frozen stopped-campaign review · 11 October 2026</strong>
+      <p class="small">Read the observations with their panel, artifact, and completion boundaries intact. Future harness changes belong to a separate record. <a href="#overview">Back to overview</a></p>
+    </div>
+  </footer>
+  <noscript><p class="wrap notice">JavaScript is disabled. The full report and native evidence panels remain readable; filtering, theme switching, and expand-all controls are unavailable.</p></noscript>
+  <script>
+    (() => {
+      "use strict";
+
+      const html = document.documentElement;
+      const themeButton = document.getElementById("theme-toggle");
+      const requestedTheme = new URLSearchParams(window.location.search).get("scoutTheme");
+      if (requestedTheme === "light" || requestedTheme === "dark") {
+        html.setAttribute("data-theme", requestedTheme);
+      }
+      const updateThemeButton = () => {
+        const isDark = html.getAttribute("data-theme") === "dark";
+        themeButton.textContent = isDark ? "Light theme" : "Dark theme";
+        themeButton.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+      };
+      updateThemeButton();
+      themeButton.addEventListener("click", () => {
+        html.setAttribute("data-theme", html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+        updateThemeButton();
+      });
+
+      const evidencePanels = Array.from(document.querySelectorAll("details[data-evidence]"));
+      const evidenceButton = document.getElementById("evidence-toggle");
+      const updateEvidenceButton = () => {
+        const allOpen = evidencePanels.every((panel) => panel.open);
+        evidenceButton.textContent = allOpen ? "Collapse evidence" : "Expand evidence";
+        evidenceButton.setAttribute("aria-expanded", String(allOpen));
+      };
+      evidenceButton.addEventListener("click", () => {
+        const shouldOpen = !evidencePanels.every((panel) => panel.open);
+        evidencePanels.forEach((panel) => { panel.open = shouldOpen; });
+        updateEvidenceButton();
+      });
+      evidencePanels.forEach((panel) => panel.addEventListener("toggle", updateEvidenceButton));
+
+      const operations = Array.from(document.querySelectorAll("#operation-list .operation"));
+      const search = document.getElementById("operation-search");
+      const kind = document.getElementById("operation-kind");
+      const completion = document.getElementById("operation-status");
+      const operationCount = document.getElementById("operation-count");
+      const emptyState = document.getElementById("operation-empty");
+      const filterOperations = () => {
+        const terms = search.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+        let shown = 0;
+        operations.forEach((operation) => {
+          const text = operation.textContent.toLocaleLowerCase();
+          const matches = terms.every((term) => text.includes(term))
+            && (kind.value === "all" || kind.value === operation.dataset.kind)
+            && (completion.value === "all" || completion.value === operation.dataset.status);
+          operation.hidden = !matches;
+          if (matches) shown += 1;
+        });
+        operationCount.textContent = `${shown} of ${operations.length} substantive operations shown.`;
+        emptyState.hidden = shown !== 0;
+      };
+      document.getElementById("operation-controls").hidden = false;
+      search.addEventListener("input", filterOperations);
+      kind.addEventListener("change", filterOperations);
+      completion.addEventListener("change", filterOperations);
+      document.getElementById("operation-clear").addEventListener("click", () => {
+        search.value = "";
+        kind.value = "all";
+        completion.value = "all";
+        filterOperations();
+        search.focus();
+      });
+      filterOperations();
+
+      const comparisonToggle = document.getElementById("comparable-toggle");
+      const excludedRows = Array.from(document.querySelectorAll("[data-not-comparable]"));
+      comparisonToggle.hidden = false;
+      comparisonToggle.addEventListener("click", () => {
+        const hideExcluded = comparisonToggle.getAttribute("aria-pressed") !== "true";
+        excludedRows.forEach((row) => { row.hidden = hideExcluded; });
+        comparisonToggle.setAttribute("aria-pressed", String(hideExcluded));
+        comparisonToggle.textContent = hideExcluded
+          ? "Show campaigns that did not reach the stage"
+          : "Hide campaigns that did not reach the stage";
+      });
+
+      const navLinks = Array.from(document.querySelectorAll("nav a"));
+      const updateNavigation = () => {
+        let current = document.querySelector("main section");
+        document.querySelectorAll("main section").forEach((section) => {
+          if (section.getBoundingClientRect().top <= 120) current = section;
+        });
+        navLinks.forEach((link) => {
+          if (link.hash === `#${current.id}`) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      };
+      let navigationQueued = false;
+      window.addEventListener("scroll", () => {
+        if (navigationQueued) return;
+        navigationQueued = true;
+        window.requestAnimationFrame(() => {
+          updateNavigation();
+          navigationQueued = false;
+        });
+      }, { passive: true });
+      updateNavigation();
+
+      let printState = null;
+      window.addEventListener("beforeprint", () => {
+        printState = {
+          panels: evidencePanels.map((panel) => panel.open),
+          operations: operations.map((operation) => operation.hidden),
+          excluded: excludedRows.map((row) => row.hidden)
+        };
+        evidencePanels.forEach((panel) => { panel.open = true; });
+        operations.forEach((operation) => { operation.hidden = false; });
+        excludedRows.forEach((row) => { row.hidden = false; });
+        operationCount.hidden = true;
+        emptyState.hidden = true;
+      });
+      window.addEventListener("afterprint", () => {
+        if (!printState) return;
+        evidencePanels.forEach((panel, index) => { panel.open = printState.panels[index]; });
+        operations.forEach((operation, index) => { operation.hidden = printState.operations[index]; });
+        excludedRows.forEach((row, index) => { row.hidden = printState.excluded[index]; });
+        printState = null;
+        operationCount.hidden = false;
+        filterOperations();
+        updateEvidenceButton();
+      });
+    })();
+  </script>
+</body>
+</html>

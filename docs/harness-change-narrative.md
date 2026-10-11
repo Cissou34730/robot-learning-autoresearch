@@ -335,6 +335,48 @@ inspection freedom, not another verification ritual. The stopped campaign,
 its published model and its evidence are preserved. A future reset or launch
 requires separate authorization.
 
+#### Observed query/context failures and scoped restoration correction
+
+The stopped `0d39d52c` campaign demonstrated working evidence access without
+reliable ergonomics. The PI repeated array-selector mistakes in fresh contexts,
+retrieved complete parsed learning trajectories and large episode arrays, and
+accumulated 123,500 current SDK tokens in its last context. These observations
+support OI-018/OI-008 correction; they do not isolate the causal cost of any
+single tool or instruction. The maintainer chose to keep the custom engine,
+not reopen a parallel jello interface.
+
+The approved repair makes equality filters typed, preserves null comparisons,
+expands selected arrays into rows with explicit reporting, and distinguishes
+missing filter fields from valid zero matches. Small default row and byte pages
+retain explicit complete retrieval. Training-log discovery returns identities,
+coverage and metric names without record values; record queries require metric
+selection or explicit all-metrics access. Console lines expose the selectors.
+
+Operation completions no longer repeat evidence-access invitations or include
+full artifact inventories and complete paired-seed arrays. Factual outcomes,
+comparison counts, provenance pointers and state-transition metadata remain.
+Detailed data is still returned when the PI explicitly requests it. The
+persistent client and checkpoint-bounded conversation lifecycle are unchanged.
+
+E12 also exposed a restoration-scope defect: restoring T1's complete recipe
+rolled back the environment and evaluator, removing diagnostics subsequently
+requested by M10. There is no robot-independent way for Runner to infer and
+merge the scientific meaning of intertwined environment code. Restoration
+therefore now requires an exact file selection, including the recorded
+configuration. Unselected files remain intact, and campaign laboratory files
+cannot be restored as a learning recipe. If the PI selects a shared
+learning/instrumentation file, it carries the intended measurement capability
+forward through scientific coding rather than relying on an automatic merge.
+This prevents implicit blanket rollback; it does not certify diagnostic
+completeness or prohibit intentional scientific redesign.
+
+Targeted harmless fixtures and registered SDK tool dispatch verify these
+mechanics, including null filters and preserved unselected measurement bytes.
+The campaign report preserves the stopped observation separately from this
+implemented/unmeasured revision. The maintainer authorized publication followed
+by one fresh v3 recipe reset and visible-console campaign; that authorization
+does not establish scientific improvement or authorize unrelated issue repairs.
+
 #### Selected scientific-model context rejected at startup
 
 Campaign `180ced98` tried to create a laboratory characterization tool before

@@ -29,6 +29,13 @@ and complete retrieval. The PI chooses the requested content and may inspect
 successive subsets. Large results report their continuation explicitly rather
 than silently truncating. No general Python-query execution tool is exposed.
 
+Training-log discovery returns metadata, not the full trajectory. Records
+require selected metric names or an explicit all-metrics request. JSON and log
+pages are small by default; complete retrieval remains available through
+explicit pages. Completion replies do not attach complete artifact inventories.
+Recipe restoration requires exact selected source paths and preserves all
+unselected files; campaign laboratory tools are never restored as a recipe.
+
 All project Python execution goes through `uv run`. The PI must not execute
 tests or repository validation commands directly; request Runner validation
 through the contracts in `contracts/instruments.md`. Never invoke system

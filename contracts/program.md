@@ -305,6 +305,15 @@ The PI selects the evidence it needs, including complete artifacts or logs.
 Scoped queries, summaries and successive subsets are available to reduce
 irrelevant context; they do not restrict scientific inspection. A partial
 tool result does not establish that the unreturned evidence is absent.
+Use the completed result and already inspected evidence to identify the data
+needed for the next decision before retrieving more. Tool availability does
+not require inspecting training logs or repeating an earlier retrieval.
+
+Recipe restoration is an explicit source selection, not a rollback of the
+campaign's measurement capability. Preserve the current measurement sources
+when restoring learning changes. Where learning and instrumentation share a
+file, carry forward the required instrumentation through scientific coding
+and verify that the selected measurement still records its intended evidence.
 
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,

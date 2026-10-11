@@ -636,32 +636,18 @@ function Get-LatestSessionResult {
                 } |
                 ForEach-Object { $facts[$_.Name] = $_.Value }
             $renderedFacts = $facts | ConvertTo-Json -Compress -Depth 100
-            $contents = $metrics.evaluation_artifact_contents
-            $inventory = if ($null -eq $contents) {
-                "no inventory recorded; contents remain in the referenced artifact"
-            }
-            else {
-                if (
-                    $contents -isnot [pscustomobject] -and
-                    $contents -isnot [System.Collections.IDictionary]
-                ) {
-                    throw "Measurement artifact contents must be an object."
-                }
-                $scope = if ($contents.truncated) {
-                    "limited structure-only inventory"
-                }
-                else {
-                    "structure-only inventory; no measurement values"
-                }
-                "$scope`: $($contents | ConvertTo-Json -Compress -Depth 100)"
-            }
             (
                 "$($_.label): artifact=$artifact; " +
-                "result summary (not the complete artifact)=$renderedFacts; " +
-                "artifact contents=$inventory"
+                "result summary (not the complete artifact)=$renderedFacts"
             )
         })
-        $comparisons = @($result.paired_comparisons)
+        $comparisons = @($result.paired_comparisons | ForEach-Object {
+            $comparison = [ordered]@{}
+            $_.PSObject.Properties |
+                Where-Object { $_.Name -ne "shared_episode_seeds" } |
+                ForEach-Object { $comparison[$_.Name] = $_.Value }
+            $comparison
+        })
         $comparisonFact = if ($comparisons.Count -gt 0) {
             ($comparisons | ConvertTo-Json -Compress -Depth 100)
         }
