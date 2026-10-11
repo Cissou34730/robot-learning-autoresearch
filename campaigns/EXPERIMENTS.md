@@ -28,3 +28,4 @@
 | E15 | checkpoint | - | checkpointed |
 | M6 | measurement | I4 | failed |
 | M7 | measurement | I4 | completed |
+| M8 | measurement | I4 | completed |
