@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a T4-preserving branch-aware controller has been developed and measured on a non-overlapping 200-episode research panel with radius- and angle-stratified diagnostics. Improvement to at least 196/200 with no reappearance of the inner-radius acquisition failures supports the route; failure to improve, or failures concentrated in a branch or geometry despite preserved acquisition, redirects the campaign to goal review.",
-    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T4 remains below that threshold, and M5/M6 show that acquisition is largely solved while a small residual failure tail remains. A controller that represents and stabilizes the selected inverse-kinematic branch could improve that tail without discarding the staged-transfer and inner-radius coverage that produced T4.",
-    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward after tolerance exit while preserving T4's coverage and transfer parent. On matched M6 seeds, T5 achieved 184/200 versus 187/200 for T4, with 8 T5 wins, 11 T4 wins, and 19 discordant episodes. This rules out improvement for that specific reward-forfeiture recipe, not for controller, temporal-memory, branch-aware, or representation changes generally. Branch identity, continuous internal-step behavior, and hidden hold-history effects remain unmeasured. The goal-review correction is to narrow the next inquiry to an explicitly branch-aware stabilization controller: current evidence does not establish that branch behavior is causal, but it remains a consequential, testable explanation consistent with the physical model and not settled by M6.",
-    "handoff_question": "Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "rationale": "Requesting the official assessment now would terminally commit a candidate measured at 191/200 on M5 and 187/200 on the matched M6 panel, both below the 196/200 target. M5 shows that 8 of 9 failures had interruptions but interruptions also occurred in successful episodes, so hold interruption is an association rather than an established sole cause. M6 rules out improvement from the specific full hold-progress forfeiture continuation, not from controller or representation changes. The remaining branch-specific mechanism is consequential, consistent with the physical model, and can be tested while preserving T4's demonstrated inner-radius acquisition route.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f391b4dc8744425b43561bd5f3d5e69977ffeb98",
     "id": "89a6354a-0e08-43f6-b017-536e7c05229b",
@@ -4931,7 +4920,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 7,
     "session": 5,
@@ -8768,9 +8757,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T00:10:18Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited negative",
+        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited negative",
+        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited negative",
+        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M7 provides the bounded answer needed to redirect I2. The explicitly tested T6 branch-aware controller, which fixed an episode-start IK branch and blended near-target joint-space velocity damping while preserving T4's training curriculum and zero hold-exit forfeiture, achieved 103/200 successes (51.5%) on a fresh research panel. Its T4 parent achieved 186/200 (93.0%) on the same seeds; the paired comparison recorded 4 T6 wins, 87 T4 wins, and 91 discordant episodes, a -41.5 percentage-point result for T6. This is strong evidence against continuing this controller implementation and it fails the 196/200 closure criterion. Because M7's aggregate result does not establish which radius or angle caused the degradation, it does not prove that branch-aware control as a broader method is ineffective, nor does it establish a general acquisition mechanism. I2 is therefore closed with a limited negative conclusion: this branch-selection and damping realization did not reduce T4's failure tail, and the campaign should return to goal review to decide whether to pursue another representation/stabilization route or request the protected assessment for the strongest available candidate."
+      }
+    },
+    "request_fingerprint": "af455a4cdf93e0472077adc1a45e5b8f111b9a5a951c2dc3a3a9ac105a751742",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by M5 at 191/200 and by the matched M6 reference at 187/200; these are development results only.",
     "completed_operations": [
@@ -8822,7 +8865,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T6",
-      "M7"
+      "M7",
+      "E8"
     ],
     "scientific_parent_commit": "6719153b8a6fbc806e4d15800975de20fb9b8842"
   },
