@@ -29,7 +29,7 @@ def _rounded(values: np.ndarray | list[float], digits: int = 10) -> list[float]:
 
 def _mass_matrix(model: mujoco.MjModel, data: mujoco.MjData) -> list[list[float]]:
     full_mass = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, full_mass, data.M)
+    mujoco.mj_fullM(model, data, full_mass)
     return np.round(full_mass, 10).tolist()
 
 
