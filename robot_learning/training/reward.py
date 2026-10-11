@@ -19,10 +19,14 @@ CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 0.0
+HOLD_EXIT_FORFEIT_FRACTION = 1.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+BRAKING_PENALTY_COEFFICIENT = 0.05
+BRAKING_PROXIMITY_WIDTH = 0.02
+INNER_HOLD_MARGIN = 0.005
+HOLD_MARGIN_BONUS = 1.0
 
 
 @dataclass(frozen=True)
@@ -44,6 +48,36 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _smooth_proximity_weight(
+    distance: float, success_threshold: float
+) -> float:
+    if BRAKING_PROXIMITY_WIDTH <= 0:
+        raise ValueError("BRAKING_PROXIMITY_WIDTH must be positive")
+    if distance <= success_threshold:
+        return 1.0
+    if distance >= success_threshold + BRAKING_PROXIMITY_WIDTH:
+        return 0.0
+    normalized = (
+        success_threshold + BRAKING_PROXIMITY_WIDTH - distance
+    ) / BRAKING_PROXIMITY_WIDTH
+    return float(normalized**2 * (3.0 - 2.0 * normalized))
+
+
+def _hold_margin_potential(
+    distance: float, success_threshold: float, held_steps: int
+) -> float:
+    if INNER_HOLD_MARGIN <= 0:
+        raise ValueError("INNER_HOLD_MARGIN must be positive")
+    if held_steps <= 0 or distance > success_threshold:
+        return 0.0
+    margin_fraction = np.clip(
+        (INNER_HOLD_MARGIN - distance) / INNER_HOLD_MARGIN,
+        0.0,
+        1.0,
+    )
+    return HOLD_MARGIN_BONUS * float(margin_fraction)
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,6 +87,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    qvel: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -74,6 +109,25 @@ def reach_reward(
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
 
+    velocity = (
+        np.zeros(0, dtype=np.float64)
+        if qvel is None
+        else np.asarray(qvel, dtype=np.float64)
+    )
+    if not np.all(np.isfinite(velocity)):
+        raise ValueError("qvel must contain only finite values")
+    braking = -(
+        BRAKING_PENALTY_COEFFICIENT
+        * _smooth_proximity_weight(current_distance, success_threshold)
+        * float(np.sum(np.square(velocity)))
+    )
+    reward += braking
+
+    hold_margin = _hold_margin_potential(
+        current_distance, success_threshold, held_steps
+    )
+    reward += hold_margin
+
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
         if OUTSIDE_BAND_WIDTH <= 0:
@@ -94,6 +148,8 @@ def reach_reward(
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
+    if not np.isfinite(reward):
+        raise ValueError("reward must be finite")
 
     return RewardResult(
         total=float(reward),
@@ -101,6 +157,8 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
+            "braking": float(braking),
+            "hold_margin": float(hold_margin),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
