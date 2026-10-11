@@ -55,3 +55,4 @@
 | E26 | inquiry | I6 | completed |
 | E27 | checkpoint | I6 | checkpointed |
 | E28 | inquiry | I7 | completed |
+| E29 | checkpoint | - | checkpointed |
