@@ -17,3 +17,4 @@
 | E6 | inquiry | I2 | completed |
 | E7 | checkpoint | - | checkpointed |
 | M7 | measurement | I2 | failed |
+| M8 | measurement | I2 | completed |

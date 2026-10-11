@@ -5,7 +5,6 @@
     "official default radius range and hold configuration",
     "official contiguous hold completion and interruption reset"
   ],
-  "error": "RuntimeError: hold terminated before 100 uninterrupted control steps",
   "expected": {
     "frame_skip": 10,
     "hold_steps": 100,
@@ -26,6 +25,12 @@
     ],
     "official_frame_skip": 10,
     "official_hold_steps_required": 100,
+    "official_hold_trace": {
+      "final_held_steps": 100,
+      "first_held_steps": 1,
+      "interrupted_held_steps": 0,
+      "penultimate_held_steps": 99
+    },
     "official_success_threshold": 0.01,
     "training_constant": [
       0.06,
@@ -50,7 +55,7 @@
       }
     ]
   },
-  "status": "failed",
+  "status": "passed",
   "unchecked_scope": [
     "whether full-radius exposure improves acquisition or official success",
     "PPO settings, policy architecture, and learned behavior",
