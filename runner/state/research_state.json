@@ -1660,14 +1660,14 @@
   "counters": {
     "event": 16,
     "inquiry": 4,
-    "measurement": 15,
-    "session": 8,
+    "measurement": 16,
+    "session": 9,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -5515,9 +5515,1108 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:58:41Z",
+      "error": null,
+      "id": "M16",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the bounded training-only targeted acquisition/braking and post-reach regulation implementation before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json",
+            "instrument": "python_module",
+            "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+            "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+          }
+        ],
+        "rationale": "The active I4 frontier requires an intervention that targets the M15 high-velocity acquisition and post-reach interruption signatures while preserving official target sampling, action timing, hold/reset semantics, and evaluation behavior. This controlled check must establish those implementation invariants before a 120000-step learned-policy experiment is scientifically interpretable."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+            ],
+            "instrument": "python_module",
+            "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M16-1-targeted_regulation_intervention.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/velocity_sensitivity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed/braking_and_holding",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/default_path_and_profiles",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/reset_and_hold_transitions",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/high_velocity_is_more_punitive",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/smooth_braking_reaches_full_weight_at_success_boundary",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/targeted_penalties_remain_active_during_holding",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/evaluation_uses_default_and_training_uses_targeted_profile",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reset_and_interruption_semantics_are_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_joint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_joint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_endpoint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_endpoint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/distances",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/observed_braking_weights",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/expected_braking_weights",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/endpoint_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/action_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/braking_and_holding/held_endpoint_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/braking_and_holding/held_action_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/default_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/baseline_reference_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/evaluation_profile",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/training_profile",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/evaluation_target_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/training_target_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/sampled_radius_bounds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/sampled_angle_bounds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/initial_training_endpoint_velocity",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/reset_and_hold_transitions/held_sequences",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/reset_and_hold_transitions/outside_band_components",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/reset_and_hold_transitions/reset_state",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/reset_and_hold_transitions/reset_state/qpos",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/reset_and_hold_transitions/reset_state/qvel",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/reset_state/held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/reset_state/outside_after_hold",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "731ccb4088b6c7e6c0f78e0a9bac0b1c7a4b6fbdedc97617cb33618f5faf1e5c"
+            },
+            "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ec5e2f951e54679022d7830187f7cb45368af033",
+            "fingerprint": "4004dba23e965a6a75b96a3ecd229f6415cc20abfd44a27685b3156c0e1094b7",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f47ff3e8a0d12f3dae0aa76727c4f6fbd5bfc2ee",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          ],
+          "scientific_commit": "8bbe3d6871192bf245608363cbf678734f1fc31f",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f31455c814318ca1fc70ec5007d31ef10b05a7c1347247fdd7e9ff8a74fd9d71",
+              "path": "robot_learning/scenario/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "0ce838f6c07fb2745c5e7174bc73f044bb1e36a67c9c80fa9b01f9f7fc83dd9b",
+              "path": "robot_learning/training/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "e5aae40fbaa918b831af71f21fc8effd49e53342b357de7b4793e9de100fbc7b",
+              "path": "robot_learning/training/reward.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/environment.py",
+            "robot_learning/training/environment.py",
+            "robot_learning/training/reward.py"
+          ]
+        }
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json",
+          "instrument": "python_module",
+          "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+          "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "ec5e2f951e54679022d7830187f7cb45368af033",
+          "fingerprint": "4004dba23e965a6a75b96a3ecd229f6415cc20abfd44a27685b3156c0e1094b7",
+          "manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ]
+        },
+        "code_parent_commit": "f47ff3e8a0d12f3dae0aa76727c4f6fbd5bfc2ee",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_targeted_regulation_intervention.py"
+        ],
+        "scientific_commit": "8bbe3d6871192bf245608363cbf678734f1fc31f",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f31455c814318ca1fc70ec5007d31ef10b05a7c1347247fdd7e9ff8a74fd9d71",
+            "path": "robot_learning/scenario/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "0ce838f6c07fb2745c5e7174bc73f044bb1e36a67c9c80fa9b01f9f7fc83dd9b",
+            "path": "robot_learning/training/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "e5aae40fbaa918b831af71f21fc8effd49e53342b357de7b4793e9de100fbc7b",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+          ],
+          "instrument": "python_module",
+          "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M16-1-targeted_regulation_intervention.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/passed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/velocity_sensitivity",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/observed/braking_and_holding",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/default_path_and_profiles",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/reset_and_hold_transitions",
+                  "type": "object"
+                },
+                {
+                  "path": "/expected/high_velocity_is_more_punitive",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/smooth_braking_reaches_full_weight_at_success_boundary",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/targeted_penalties_remain_active_during_holding",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/evaluation_uses_default_and_training_uses_targeted_profile",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/reset_and_interruption_semantics_are_unchanged",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/low_total",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/high_total",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/low_joint_penalty",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/high_joint_penalty",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/low_endpoint_penalty",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/velocity_sensitivity/high_endpoint_penalty",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/braking_and_holding/distances",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/braking_and_holding/observed_braking_weights",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/braking_and_holding/expected_braking_weights",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/braking_and_holding/endpoint_penalties",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/braking_and_holding/action_penalties",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/braking_and_holding/held_endpoint_penalties",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/braking_and_holding/held_action_penalties",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/default_path_and_profiles/default_total",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/default_path_and_profiles/baseline_reference_total",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/default_path_and_profiles/evaluation_profile",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/default_path_and_profiles/training_profile",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/default_path_and_profiles/evaluation_target_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/default_path_and_profiles/training_target_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/default_path_and_profiles/sampled_radius_bounds",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/default_path_and_profiles/sampled_angle_bounds",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/default_path_and_profiles/initial_training_endpoint_velocity",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reset_and_hold_transitions/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/reset_and_hold_transitions/held_sequences",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/reset_and_hold_transitions/outside_band_components",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/reset_and_hold_transitions/reset_state",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/reset_and_hold_transitions/reset_state/qpos",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/reset_and_hold_transitions/reset_state/qvel",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/reset_and_hold_transitions/reset_state/held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reset_and_hold_transitions/reset_state/outside_after_hold",
+                  "type": "boolean"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "731ccb4088b6c7e6c0f78e0a9bac0b1c7a4b6fbdedc97617cb33618f5faf1e5c"
+          },
+          "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+            ],
+            "instrument": "python_module",
+            "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/python-module-M16-1-targeted_regulation_intervention.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/velocity_sensitivity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed/braking_and_holding",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/default_path_and_profiles",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/reset_and_hold_transitions",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/high_velocity_is_more_punitive",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/smooth_braking_reaches_full_weight_at_success_boundary",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/targeted_penalties_remain_active_during_holding",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/evaluation_uses_default_and_training_uses_targeted_profile",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reset_and_interruption_semantics_are_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_joint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_joint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/low_endpoint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/velocity_sensitivity/high_endpoint_penalty",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/distances",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/observed_braking_weights",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/expected_braking_weights",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/endpoint_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/braking_and_holding/action_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/braking_and_holding/held_endpoint_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/braking_and_holding/held_action_penalties",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/default_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/baseline_reference_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/evaluation_profile",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/training_profile",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/evaluation_target_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/training_target_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/sampled_radius_bounds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/default_path_and_profiles/sampled_angle_bounds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/default_path_and_profiles/initial_training_endpoint_velocity",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/reset_and_hold_transitions/held_sequences",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/reset_and_hold_transitions/outside_band_components",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/reset_and_hold_transitions/reset_state",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/reset_and_hold_transitions/reset_state/qpos",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/reset_and_hold_transitions/reset_state/qvel",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/reset_state/held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reset_and_hold_transitions/reset_state/outside_after_hold",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "731ccb4088b6c7e6c0f78e0a9bac0b1c7a4b6fbdedc97617cb33618f5faf1e5c"
+            },
+            "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+              "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+              "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+            },
+            {
+              "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+              "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+            },
+            {
+              "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+              "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+            },
+            {
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            },
+            {
+              "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+              "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ec5e2f951e54679022d7830187f7cb45368af033",
+            "fingerprint": "4004dba23e965a6a75b96a3ecd229f6415cc20abfd44a27685b3156c0e1094b7",
+            "manifest": [
+              {
+                "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+                "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "c018ca38a72925506b8630e85b237ecb520b5d86099ebd8d24b3bee053821b3e",
+                "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+              },
+              {
+                "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+                "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+              },
+              {
+                "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+                "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+              },
+              {
+                "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+                "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+              },
+              {
+                "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+                "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f47ff3e8a0d12f3dae0aa76727c4f6fbd5bfc2ee",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+              "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          ],
+          "scientific_commit": "8bbe3d6871192bf245608363cbf678734f1fc31f",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f31455c814318ca1fc70ec5007d31ef10b05a7c1347247fdd7e9ff8a74fd9d71",
+              "path": "robot_learning/scenario/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "0ce838f6c07fb2745c5e7174bc73f044bb1e36a67c9c80fa9b01f9f7fc83dd9b",
+              "path": "robot_learning/training/environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "e5aae40fbaa918b831af71f21fc8effd49e53342b357de7b4793e9de100fbc7b",
+              "path": "robot_learning/training/reward.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/environment.py",
+            "robot_learning/training/environment.py",
+            "robot_learning/training/reward.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M16",
+    "inquiry_id": "I4",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify the bounded training-only targeted acquisition/braking and post-reach regulation implementation before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/targeted_regulation_intervention.json",
+            "instrument": "python_module",
+            "label": "I4 implementation verification for targeted acquisition braking and post-reach regulation",
+            "module": "robot_learning.lab.verify_targeted_regulation_intervention"
+          }
+        ],
+        "rationale": "The active I4 frontier requires an intervention that targets the M15 high-velocity acquisition and post-reach interruption signatures while preserving official target sampling, action timing, hold/reset semantics, and evaluation behavior. This controlled check must establish those implementation invariants before a 120000-step learned-policy experiment is scientifically interpretable."
+      }
+    },
+    "request_fingerprint": "fda85e1dc2b381baa3cc7fd7505c4124d80ca84ab3a8653e57943a9e47da4d11",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known from the completed M9 matched development comparison at 150/160 and is not an official success claim. T1:checkpoint-115712 remains the matched baseline comparator. No candidate is working or retained. Opening I4 does not change candidate roles; a targeted artifact must be completely trained and measured before any role change.",
     "completed_operations": [
@@ -5552,6 +6651,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4fa15c6a-a62e-4e73-9433-b244c188edff",
+    "id": "S9",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can a bounded targeted acquisition/braking and post-reach regulation intervention, with the official task semantics preserved and the live-environment versus forward-qpos endpoint discrepancy explicitly measured rather than conflated with task state, improve T2 toward at least 196/200 without relying on a branch or contact explanation? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M16"
+    ],
+    "scientific_parent_commit": "8bbe3d6871192bf245608363cbf678734f1fc31f"
+  },
   "terminal_state": null
 }
