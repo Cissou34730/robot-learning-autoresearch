@@ -11,6 +11,30 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 OBSERVATION_SIZE = 11
 
 
+def branch_error_norms(data) -> dict[str, float]:
+    target_x = float(data.mocap_pos[0][0])
+    target_y = float(data.mocap_pos[0][1])
+    cos_elbow = (
+        target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+    target_angle = float(np.arctan2(target_y, target_x))
+    norms = {}
+    for branch, elbow in (("open", elbow_open), ("folded", -elbow_open)):
+        shoulder = target_angle - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+        )
+        shoulder_error = float(
+            (shoulder - float(data.qpos[0]) + np.pi) % (2.0 * np.pi) - np.pi
+        )
+        elbow_error = float(
+            (elbow - float(data.qpos[1]) + np.pi) % (2.0 * np.pi) - np.pi
+        )
+        norms[branch] = float(np.hypot(shoulder_error, elbow_error))
+    return norms
+
+
 def reach_observation(data) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
