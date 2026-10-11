@@ -230,8 +230,10 @@ def verify_measurement() -> dict[str, Any]:
     free_controls_zero = all(
         record["input_command"] == [0.0, 0.0] for record in free_trace[1:]
     )
-    free_non_singular = abs(np.sin(free_decay["initial_qpos_rad"][1])) > 1e-12
-    free_initially_noncontact = free_trace[0]["contact_count"] == 0
+    free_non_singular = bool(
+        abs(np.sin(free_decay["initial_qpos_rad"][1])) > 1e-12
+    )
+    free_initially_noncontact = bool(free_trace[0]["contact_count"] == 0)
     free_state_evolved = any(
         free_trace[index]["qpos_rad"] != free_trace[0]["qpos_rad"]
         or free_trace[index]["qvel_rad_s"] != free_trace[0]["qvel_rad_s"]
