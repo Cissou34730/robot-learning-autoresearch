@@ -67,3 +67,4 @@
 | M14 | measurement | I9 | completed |
 | E40 | inquiry | I9 | completed |
 | E41 | checkpoint | I9 | checkpointed |
+| E42 | model_role | - | assigned |
