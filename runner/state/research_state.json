@@ -19107,64 +19107,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4",
-          "M5",
-          "M12",
-          "M13",
-          "M14"
-        ],
-        "reason": "T3:checkpoint-120832 is the strongest complete candidate artifact measured on the shared 160-episode development panel, with 151/160 successes (94.375%). It decisively exceeded the baseline in M4 and remained ahead of the tested alternatives: T4 reached 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and all four T10 checkpoints were 141-145/160 in M14 with no discordant win over T3. T3 still has four recorded residual failures in M4 and remains five successes below the development proxy; this role therefore denotes best evidence-backed candidate, not goal certification."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/f917968b-2042-42f8-96b1-d2810f89ba4c/t3-c8cf701d5-5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
-        "fingerprint": "5965072655a80724fec496b3114869a092bd9d646015e92245647ec846e051a7",
-        "source": "campaigns/checkpoints/candidates/f917968b-2042-42f8-96b1-d2810f89ba4c/t3/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4",
-          "M5",
-          "M12",
-          "M13",
-          "M14"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E42",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4",
-          "M5",
-          "M12",
-          "M13",
-          "M14"
-        ],
-        "reason": "T3:checkpoint-120832 is the strongest complete candidate artifact measured on the shared 160-episode development panel, with 151/160 successes (94.375%). It decisively exceeded the baseline in M4 and remained ahead of the tested alternatives: T4 reached 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and all four T10 checkpoints were 141-145/160 in M14 with no discordant win over T3. T3 still has four recorded residual failures in M4 and remains five successes below the development proxy; this role therefore denotes best evidence-backed candidate, not goal certification."
-      }
-    },
-    "request_fingerprint": "9e4619c00bb29c6f72d23d88cd75e54122c16d8789862c55fadc5fdffc7d68de",
-    "session_id": "S20",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12/M13 references. The T10 checkpoints measured in M14 are rejected relative to T3 for this inquiry. No working, best-known, or retained role is assigned in this session; role assignment remains a goal-review decision.",
     "completed_operations": [
