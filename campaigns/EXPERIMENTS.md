@@ -45,3 +45,4 @@
 | T6 | training | I6 | completed |
 | M11 | measurement | I6 | completed |
 | E26 | inquiry | I6 | completed |
+| E27 | checkpoint | I6 | checkpointed |
