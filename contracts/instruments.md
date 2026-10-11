@@ -26,6 +26,39 @@ Create the next proposal at the same path when the previous request is absent.
 Do not update or delete a previous request without checking that it exists.
 A rejected proposal remains available for correction.
 
+## Scientific coding interface
+
+Ordinary main PI sessions expose `scientific_coding` alongside source readers
+and `artifact_evidence_query`. They retain `apply_patch` only for the operation
+request file; they have no shell tools. The preliminary scientific-model
+session retains its existing publication interface and does not expose coding.
+
+`scientific_coding` accepts:
+
+- `intent`: the bounded scientific change;
+- `allowed_paths`: exact repository-relative writable scientific files;
+- `read_paths`: optional additional relevant scientific or contract files;
+- `source_context`: optional source context selected by the main PI;
+- `verification_path`: a Python module file under `robot_learning/lab/`,
+  included in `allowed_paths`;
+- `session_handle`: optional returned child identity for same-change corrections.
+
+Protected paths, directories, wildcard scopes, operation requests and arbitrary
+filesystem paths are refused. A resumed child must keep the same writable,
+readable and verification scope. Its separate conversation receives only the
+supplied context and its coding instructions, not main PI conversation history.
+Its tools are scoped `view` and `apply_patch`; it cannot execute code or submit
+campaign operations.
+
+The result returns the child handle, actual per-invocation changed-file manifest
+and diff, verification module, proposed `python_module` entry and unchecked
+scope. Large review output is offloaded with a file pointer. Errors and timeouts
+return partial changes when available; cancellation preserves review output.
+The proposed check is not executed by this tool. The main PI reviews the actual
+changed source and executable check before scientific reliance or submission.
+Runner executes the reviewed check through the existing measurement instrument.
+No coding result certifies scientific validity.
+
 ## Instrument capabilities
 
 The available interfaces have these capabilities:

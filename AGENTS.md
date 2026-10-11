@@ -27,9 +27,15 @@ through the contracts in `contracts/instruments.md`. Never invoke system
 
 ## Command authority
 
-The PI session may inspect files and, when the current bounded objective
-requires understanding code state or a code delta, use read-only Git. It may
-edit its owned surface and run lightweight analysis. It may not inspect,
+The ordinary main PI session may inspect files and write only
+`pi_workspace/operation_request.json`. Scientific source edits use the
+`scientific_coding` tool, whose coding child can inspect and edit only the
+explicitly scoped files. Ordinary main and coding sessions have no shell tools.
+Analysis code is authored in the PI laboratory and executed by Runner.
+The preliminary analyst retains its existing tools and scientific-model
+publication permission; coding delegation is not exposed in that phase.
+Read-only Git remains permitted when the bounded objective requires code
+provenance or a delta, not as routine discovery. No PI session may inspect,
 modify, or directly execute the human-owned test suite; install dependencies;
 execute training or protected evaluation directly; open the viewer; or use
 mutating Git commands. Runner validation and heavy scientific operations are
@@ -126,6 +132,8 @@ rewrite, combine, replace, or remove PI-owned implementations and tools
 according to the scientific question and the evidence. Existing structure has
 no authority over that choice, and no option has standing merely because it
 preserves prior work.
+This is scientific ownership, not direct main-session write permission.
+The coding child cannot write operation requests or campaign/state files.
 
 Tests are not part of the PI-owned surface. The PI does not
 inspect, create, modify, maintain, or directly execute test files. Any path

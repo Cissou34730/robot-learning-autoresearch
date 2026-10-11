@@ -374,7 +374,10 @@ def _usage_rows(campaign_id: str, session_id: str | None = None) -> list[dict]:
             row = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if session_id is None or row.get("session_id") == session_id:
+        if (
+            session_id is None or row.get("session_id") == session_id
+            or row.get("parent_session_id") == session_id
+        ):
             rows.append(row)
     return rows
 

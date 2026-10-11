@@ -289,7 +289,7 @@
         <article class="card role pi">
           <h3>Principal Investigator (PI)</h3>
           <p>Chooses questions, methods, and tools.</p>
-          <p>Changes PI-owned research code.</p>
+          <p>Defines bounded code changes and reviews the coding child's actual source and executable check.</p>
           <p>Interprets completed evidence.</p>
           <p>Decides whether to request the official assessment.</p>
         </article>
@@ -315,8 +315,10 @@
       </div>
       <div class="note" style="margin-top: 16px">
         <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
+        <p>Ordinary main PI sessions use <code>scientific_coding</code> for exact-file-scoped source changes. The child has a separate conversation and cannot submit operations or execute checks. The main PI reviews the actual diff and check before asking Runner to execute it.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
-        <p>All Python runs through <code>uv run</code>. The PI asks the Runner for training and protected evaluation.</p>
+        <p>Ordinary main and coding sessions have no shell tools. The main PI still writes operation requests; preliminary scientific-model publication is unchanged. All Python runs through <code>uv run</code>, with Runner executing scientific checks, training and evaluation.</p>
+        <p class="small muted">Coding separation is implemented but unmeasured. Structured submission and persistent runtime are reserved for approved step 2. No campaign was run to validate this mechanism.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>

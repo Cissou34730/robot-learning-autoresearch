@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import difflib
 import fnmatch
 import json
 import ntpath
@@ -19,8 +20,11 @@ import shutil
 import subprocess
 import sys
 import time
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from runner.stop_control import stop_requested, wait_for_stop_request
 
@@ -100,8 +104,7 @@ def format_console_line(text: str) -> str:
     return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
 
-# Measured: this profile drops the runtime from 15 tools to 8 and roughly a
-# third of the per-turn context, by removing tools no robotics experiment uses.
+# The preliminary analyst retains its existing publication/tool contract.
 RESEARCH_TOOLS = [
     "view",
     "rg",
@@ -112,6 +115,14 @@ RESEARCH_TOOLS = [
     "stop_powershell",
     "list_powershell",
 ]
+MAIN_PI_TOOLS = ["view", "rg", "glob", "apply_patch"]
+CODING_TOOLS = ["view", "apply_patch"]
+MAIN_WRITE_DENIAL = (
+    "Ordinary PI sessions write only pi_workspace/operation_request.json. "
+    "Use scientific_coding for bounded scientific source changes."
+)
+CODING_SCOPE_DENIAL = "This action is outside this coding session's exact file scope."
+SHELL_DENIAL = "Shell tools are unavailable in this session; Runner executes checks."
 
 READ_ONLY_GIT = frozenset(
     {
@@ -458,6 +469,88 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
     if is_pi_writable_path(target, preliminary=preliminary):
         return None
     return FILE_EDIT_DENIAL
+
+
+def scoped_edit_denial(
+    target: str,
+    *,
+    preliminary: bool = False,
+    coding_paths: frozenset[str] | None = None,
+) -> str | None:
+    relative = _repository_relative_target(target)
+    if coding_paths is not None:
+        if relative not in coding_paths or file_edit_denial(target):
+            return CODING_SCOPE_DENIAL
+        return None
+    if preliminary:
+        return file_edit_denial(target, preliminary=True)
+    if relative == "pi_workspace/operation_request.json":
+        return None
+    return MAIN_WRITE_DENIAL
+
+
+def scoped_tool_hook(
+    *,
+    coding_paths: frozenset[str] | None = None,
+    read_paths: frozenset[str] = frozenset(),
+):
+    """Check every patch target, including moves, before a built-in runs."""
+
+    def on_pre_tool_use(request, invocation):
+        del invocation
+        name = request.get("toolName")
+        arguments = request.get("toolArgs")
+        allowed = (
+            CODING_TOOLS
+            if coding_paths is not None
+            else [*MAIN_PI_TOOLS, "artifact_evidence_query", "scientific_coding"]
+        )
+        reason = None
+        if name not in allowed:
+            reason = CODING_SCOPE_DENIAL if coding_paths is not None else SHELL_DENIAL
+        elif name == "apply_patch":
+            patch = (
+                arguments.get("input") or arguments.get("patch")
+                if isinstance(arguments, dict)
+                else arguments
+            )
+            prefixes = (
+                "*** Add File: ",
+                "*** Update File: ",
+                "*** Delete File: ",
+                "*** Move to: ",
+            )
+            targets = (
+                [
+                    line.split(": ", 1)[1]
+                    for line in patch.splitlines()
+                    if line.startswith(prefixes)
+                ]
+                if isinstance(patch, str)
+                else []
+            )
+            if not targets:
+                reason = (
+                    CODING_SCOPE_DENIAL
+                    if coding_paths is not None
+                    else MAIN_WRITE_DENIAL
+                )
+            for target in targets:
+                reason = scoped_edit_denial(target, coding_paths=coding_paths)
+                if reason:
+                    break
+        elif coding_paths is not None and name == "view":
+            target = arguments.get("path") if isinstance(arguments, dict) else None
+            if (
+                not isinstance(target, str)
+                or _repository_relative_target(target) not in read_paths
+            ):
+                reason = CODING_SCOPE_DENIAL
+        if reason:
+            return {"permissionDecision": "deny", "permissionDecisionReason": reason}
+        return None
+
+    return on_pre_tool_use
 
 
 def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
@@ -1050,6 +1143,7 @@ class Console:
         self.tool_counts: dict[str, int] = {}
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
+        self.coding_duration_seconds = 0.0
 
     def tagged(self, text: str) -> str:
         return f"[{self.label}] {text}" if self.label else text
@@ -1217,6 +1311,8 @@ class Console:
                 if pointers:
                     parts.append(", ".join(pointers))
                 detail = " | ".join(parts)
+            elif name == "scientific_coding":
+                detail = "bounded coding / PI source review required"
             elif name == "powershell":
                 description = arguments.get("description")
                 command = arguments.get("command")
@@ -1376,7 +1472,12 @@ class Console:
 
 
 def build_handlers(
-    console: Console, finished: asyncio.Event, *, preliminary: bool = False
+    console: Console,
+    finished: asyncio.Event,
+    *,
+    preliminary: bool = False,
+    coding_paths: frozenset[str] | None = None,
+    read_paths: frozenset[str] = frozenset(),
 ):
     from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
     from copilot.session_events import (
@@ -1423,7 +1524,9 @@ def build_handlers(
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):
-            for name in ("input_tokens", "cache_read_tokens", "output_tokens"):
+            for name in (
+                "input_tokens", "cache_read_tokens", "cache_write_tokens", "output_tokens"
+            ):
                 if getattr(data, name, None) is not None:
                     console.reported_usage.add(name)
             console.prompt_tokens += data.input_tokens or 0
@@ -1453,21 +1556,29 @@ def build_handlers(
     def on_permission_request(request, invocation):
         del invocation
         if isinstance(request, PermissionRequestRead):
-            reason = file_read_denial(request.path, preliminary=preliminary)
+            reason = (
+                CODING_SCOPE_DENIAL
+                if coding_paths is not None
+                and _repository_relative_target(request.path) not in read_paths
+                else file_read_denial(request.path, preliminary=preliminary)
+            )
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
         elif isinstance(request, PermissionRequestWrite):
-            reason = file_edit_denial(
+            reason = scoped_edit_denial(
                 request.file_name,
                 preliminary=preliminary,
+                coding_paths=coding_paths,
             )
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
         elif isinstance(request, PermissionRequestShell):
-            reason = command_denial(
-                shell_command_text(request), preliminary=preliminary
+            reason = (
+                command_denial(shell_command_text(request), preliminary=True)
+                if preliminary
+                else SHELL_DENIAL
             )
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
@@ -1477,7 +1588,450 @@ def build_handlers(
     return on_event, on_permission_request
 
 
-def session_options(args, console: Console, finished: asyncio.Event) -> dict:
+class ScientificCodingParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    intent: str = Field(min_length=1, max_length=16_000)
+    allowed_paths: list[str] = Field(min_length=1, max_length=64)
+    read_paths: list[str] = Field(default_factory=list, max_length=64)
+    source_context: str = Field(default="", max_length=32_000)
+    verification_path: str
+    session_handle: str | None = None
+
+
+class CodingReport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    summary: str
+    check_args: list[str]
+    artifact_filename: str
+    check_description: str = Field(min_length=1)
+    unchecked_scope: list[str] = Field(min_length=1)
+
+
+class CodingConsole(Console):
+    """Collect child accounting without printing its conversation or diffs."""
+
+    def line(self, text: str) -> None:
+        pass
+
+    def delta(self, text: str) -> None:
+        pass
+
+    def message(self, text: str) -> None:
+        pass
+
+
+def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
+    result = set()
+    for target in paths:
+        path = PureWindowsPath(target)
+        if (
+            not target.strip()
+            or path.drive
+            or path.root
+            or ".." in path.parts
+            or any(character in target for character in "*?[]:")
+        ):
+            raise ValueError("Coding scope requires exact repository-relative file paths.")
+        relative = _repository_relative_target(target)
+        if relative is None or (ROOT / relative).is_dir():
+            raise ValueError(CODING_SCOPE_DENIAL)
+        if writable:
+            if (
+                relative == "pi_workspace/operation_request.json"
+                or file_edit_denial(target)
+            ):
+                raise ValueError(CODING_SCOPE_DENIAL)
+        elif (
+            file_read_denial(target)
+            or not (
+                relative.startswith(("robot_learning/", "contracts/"))
+                or relative == "agents.md"
+            )
+        ):
+            raise ValueError(CODING_SCOPE_DENIAL)
+        result.add(relative)
+    return frozenset(result)
+
+
+def coding_snapshot(paths: frozenset[str]) -> dict[str, bytes | None]:
+    return {
+        path: (ROOT / path).read_bytes() if (ROOT / path).is_file() else None
+        for path in paths
+    }
+
+
+def coding_changes(before: dict[str, bytes | None]) -> tuple[list[dict], str]:
+    """Compare the invocation's actual bytes, including already-dirty files."""
+    manifest = []
+    diffs = []
+    for path, previous in sorted(before.items()):
+        current = (ROOT / path).read_bytes() if (ROOT / path).is_file() else None
+        if previous == current:
+            continue
+        change = {
+            "path": path,
+            "change": (
+                "created" if previous is None
+                else "deleted" if current is None
+                else "modified"
+            ),
+            "before_bytes": len(previous) if previous is not None else None,
+            "after_bytes": len(current) if current is not None else None,
+        }
+        manifest.append(change)
+        try:
+            old_lines = (previous or b"").decode("utf-8").splitlines(keepends=True)
+            new_lines = (current or b"").decode("utf-8").splitlines(keepends=True)
+        except UnicodeDecodeError:
+            change["text_diff_available"] = False
+            diffs.append(f"Binary/non-UTF-8 file differs: {path}\n")
+            continue
+        change["text_diff_available"] = True
+        for line in difflib.unified_diff(
+            old_lines, new_lines, fromfile=f"before/{path}", tofile=f"after/{path}",
+        ):
+            diffs.append(
+                line if line.endswith("\n")
+                else line + "\n\\ No newline at end of file\n"
+            )
+    return manifest, "".join(diffs)
+
+
+CODING_INSTRUCTIONS = """
+You are a narrow scientific coding author, not the campaign PI or Runner.
+Implement only the supplied intent within the exact writable file list.
+The separate read list and supplied source context are your only background.
+Do not retrieve campaign history, memory, other sessions, or unrelated files.
+Do not delegate, submit operations, edit request files, campaign evidence/state,
+human tests, contracts, harness, dependencies, or protected package initializers.
+Use apply_patch for changes and view for scoped source inspection. Shell tools
+are unavailable. Do not run code, tests, training, measurements, evaluation,
+the viewer, or SDK sessions. Runner alone executes scientific checks.
+Do not ask the user for confirmation or expand the supplied scope.
+Target the installed APIs: native mujoco==3.12.0 (not mujoco-py),
+gymnasium==1.3.0 and stable-baselines3==2.9.0. Python execution, when later
+requested by the PI through Runner, uses uv run; never install dependencies.
+Make the smallest complete change, preserve unrelated behavior, and do not add
+adjacent fixes, generic verification infrastructure, or scenario-specific gates.
+Author a proportionate executable verification module at verification_path.
+It must exercise the intended behavior and directly affected regression risks,
+using an independent reference, justified invariant, or controlled inputs with
+known consequences. The check must fail for the relevant defect, not restate
+the implementation. Exercise affected repeated updates, transitions, and resets.
+For repairs, cover all related uses of the affected state or assumptions and
+demonstrate that both the original defect and an incomplete repair are detected.
+Emit a JSON artifact through a supplied output argument with observed versus
+expected results and their checked scope, plus what remains unchecked. Use the
+existing python_module instrument; do not add a framework or execute it yourself.
+Explain the proposed checks; never certify scientific validity.
+Finish with one JSON object, no markdown fences, containing exactly:
+summary (string), check_args (list of strings, use {artifact} as the output
+path placeholder), artifact_filename (simple .json basename), check_description
+(nonempty string), unchecked_scope (nonempty list of strings). Include that
+the check has not been executed. The main PI will inspect actual source and
+diffs, review the executable check, and decide what Runner should execute.
+"""
+
+
+class ScientificCoding:
+    def __init__(self, client, args, console: Console) -> None:
+        self.client = client
+        self.args = args
+        self.console = console
+        self.active_tasks: set[asyncio.Task] = set()
+        self.busy = False
+        self.closed = False
+
+    def tool(self):
+        from copilot import define_tool
+
+        return define_tool(
+            "scientific_coding",
+            description=(
+                "Create an isolated narrow coding session, or resume its returned "
+                "session_handle for corrections to the SAME change and identical "
+                "scope. Supply scientific intent, exact repository-relative "
+                "allowed_paths, optional relevant read_paths/source_context, and "
+                "a .py verification_path under robot_learning/lab included in "
+                "allowed_paths. Never pass protected or arbitrary filesystem paths. "
+                "The child receives only these inputs, not PI conversation history. "
+                "It implements source plus an executable check proposal; it cannot "
+                "submit operations or execute checks. This tool returns actual "
+                "per-invocation changed-file manifest/diff, a check proposal and "
+                "unchecked scope, including partial edits on failure. You MUST "
+                "inspect actual changed source and the verification module, not "
+                "just the coder's report, before relying on the change. Only Runner "
+                "may execute the reviewed check through existing instruments. "
+                "Require proportionate verification against an independent reference, "
+                "justified invariant, or controlled inputs with known consequences, "
+                "not a restatement of implementation. It must fail for the relevant "
+                "defect and exercise affected repeated updates, transitions and resets. "
+                "For repairs, cover all related uses of affected state or assumptions "
+                "and demonstrate detection of the original defect and an incomplete "
+                "repair. Review observed versus expected results and checked scope "
+                "after Runner execution, and report what remains unchecked. "
+                "No result is a scientific-validity certificate."
+            ),
+            handler=self.invoke,
+            params_type=ScientificCodingParams,
+            defer="auto",
+        )
+
+    def child_options(
+        self, paths: frozenset[str], reads: frozenset[str], console
+    ) -> dict:
+        from copilot import ToolSet
+
+        on_event, permission = build_handlers(
+            console, asyncio.Event(), coding_paths=paths, read_paths=reads
+        )
+        return {
+            "model": normalize_model(self.args.model),
+            "reasoning_effort": self.args.reasoning,
+            "on_event": on_event,
+            "on_permission_request": permission,
+            "hooks": {
+                "on_pre_tool_use": scoped_tool_hook(coding_paths=paths, read_paths=reads)
+            },
+            "system_message": {"mode": "replace", "content": CODING_INSTRUCTIONS},
+            "working_directory": str(ROOT),
+            "available_tools": ToolSet().add_builtin(CODING_TOOLS),
+            "tools": [],
+            "streaming": False,
+            "include_sub_agent_streaming_events": False,
+            "enable_file_change_tracking": True,
+            "skip_custom_instructions": True,
+            "enable_config_discovery": False,
+            "enable_on_demand_instruction_discovery": False,
+            "enable_file_hooks": False,
+            "enable_host_git_operations": False,
+            "enable_skills": False,
+            "enable_session_store": False,
+            "skip_embedding_retrieval": True,
+            "memory": {"enabled": False},
+            "mcp_servers": {},
+            "custom_agents": [],
+            "request_extensions": False,
+            "enable_mcp_apps": False,
+            "large_output": {
+                "enabled": True,
+                "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
+                "output_directory": str(LARGE_OUTPUT_DIR),
+            },
+        }
+
+    async def invoke(self, params: ScientificCodingParams) -> str:
+        if self.closed or self.busy:
+            return json.dumps({
+                "status": "error", "error": "Coding is closed or already active."
+            })
+        try:
+            if self.args.preliminary:
+                raise ValueError("Coding is unavailable during preliminary publication.")
+            if not self.args.campaign_id:
+                raise ValueError("Coding requires an explicit campaign identity.")
+            uuid.UUID(self.args.campaign_id)
+            paths = coding_file_scope(params.allowed_paths, writable=True)
+            reads = paths | coding_file_scope(params.read_paths, writable=False)
+            verification = next(iter(
+                coding_file_scope([params.verification_path], writable=True)
+            ))
+            if (
+                verification not in paths
+                or not verification.startswith("robot_learning/lab/")
+                or not verification.endswith(".py")
+                or any(not part.isidentifier() for part in verification[:-3].split("/"))
+            ):
+                raise ValueError(
+                    "verification_path must be a scoped robot_learning/lab Python module."
+                )
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", self.args.session_id):
+                raise ValueError("Invalid parent session identity.")
+            handle = (
+                str(uuid.UUID(params.session_handle))
+                if params.session_handle
+                else str(uuid.uuid4())
+            )
+            directory = ROOT / ".copilot" / "scientific-coding" / self.args.session_id
+            registry = directory / f"{handle}.json"
+            binding = {
+                "parent_session_id": self.args.session_id,
+                "campaign_id": self.args.campaign_id,
+                "allowed_paths": sorted(paths),
+                "read_paths": sorted(reads),
+                "verification_path": verification,
+            }
+            if params.session_handle:
+                if (
+                    not registry.is_file()
+                    or json.loads(registry.read_text(encoding="utf-8")) != binding
+                ):
+                    raise ValueError("Unknown coding handle or changed scope; refusing resume.")
+            before = coding_snapshot(paths)
+        except (OSError, ValueError) as error:
+            return json.dumps({"status": "error", "error": str(error)})
+
+        self.busy = True
+        task = asyncio.current_task()
+        self.active_tasks.add(task)
+        started = time.monotonic()
+        child_console = CodingConsole()
+        child = None
+        result = {
+            "status": "error", "session_handle": handle,
+            "verification_module": verification[:-3].replace("/", "."),
+            "check_executed": False,
+            "review_required": True,
+            "unchecked_scope": ["No scientific check has been executed by this tool."],
+        }
+        exit_code = EXIT_RUNTIME_FAILURE
+        abort = True
+        cancelled = False
+        try:
+            options = self.child_options(paths, reads, child_console)
+            if params.session_handle:
+                child = await self.client.resume_session(
+                    handle, continue_pending_work=False, **options
+                )
+            else:
+                directory.mkdir(parents=True, exist_ok=True)
+                registry.write_text(json.dumps(binding), encoding="utf-8")
+                child = await self.client.create_session(session_id=handle, **options)
+            response = await child.send_and_wait(
+                json.dumps({
+                    "intent": params.intent,
+                    "allowed_paths": sorted(paths),
+                    "read_paths": sorted(reads),
+                    "source_context": params.source_context,
+                    "verification_path": verification,
+                }),
+                timeout=self.args.timeout,
+            )
+            abort = False
+            if child_console.session_error:
+                raise RuntimeError(child_console.session_error)
+            report = CodingReport.model_validate_json(response.data.content if response else "")
+            filename = report.artifact_filename
+            if (
+                PureWindowsPath(filename).name != filename
+                or not re.fullmatch(r"[A-Za-z0-9_-]+\.json", filename)
+                or not any("{artifact}" in argument for argument in report.check_args)
+                or not (ROOT / verification).is_file()
+            ):
+                raise ValueError("Missing verification module or invalid controlled-check proposal.")
+            artifact = f"campaigns/evaluations/{self.args.campaign_id}/{filename}"
+            result.update({
+                "status": "completed", "summary": report.summary,
+                "proposed_check": {
+                    "instrument": "python_module",
+                    "module": result["verification_module"],
+                    "args": [
+                        argument.replace("{artifact}", artifact)
+                        for argument in report.check_args
+                    ],
+                    "artifact": artifact,
+                },
+                "check_description": report.check_description,
+                "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
+            })
+            exit_code = EXIT_OK
+        except asyncio.CancelledError:
+            cancelled = True
+            result.update(
+                status="cancelled",
+                error="Coding cancelled; partial edits require PI review.",
+            )
+            exit_code = EXIT_INTERRUPTED
+        except TimeoutError:
+            result.update(
+                status="timeout",
+                error="Coding timed out; partial edits require PI review.",
+            )
+            exit_code = EXIT_TIMEOUT
+        except Exception as error:  # noqa: BLE001 - return partial edits, not an assurance
+            result["error"] = f"{type(error).__name__}: {error}"
+            exit_code = EXIT_SESSION_ERROR
+        finally:
+            async def cleanup_child() -> None:
+                if child is not None:
+                    try:
+                        if abort or cancelled:
+                            await asyncio.wait_for(child.abort(), SHUTDOWN_TIMEOUT_SECONDS)
+                    finally:
+                        await asyncio.wait_for(child.disconnect(), SHUTDOWN_TIMEOUT_SECONDS)
+
+            # A main-session timeout can cancel the tool during child cleanup.
+            # Finish the bounded abort/disconnect before the shared client stops.
+            cleanup_task = asyncio.create_task(cleanup_child())
+            while True:
+                try:
+                    await asyncio.shield(cleanup_task)
+                    break
+                except asyncio.CancelledError:
+                    cancelled = True
+                    result.update(
+                        status="cancelled",
+                        error="Coding cancelled; partial edits require PI review.",
+                    )
+                    exit_code = EXIT_INTERRUPTED
+                    if cleanup_task.cancelled():
+                        result["cleanup_error"] = "Child abort/disconnect was cancelled."
+                        break
+                except Exception as error:  # noqa: BLE001 - runtime shutdown must still follow
+                    result.update(
+                        status="error", cleanup_error=f"{type(error).__name__}: {error}"
+                    )
+                    exit_code = EXIT_RUNTIME_FAILURE
+                    break
+            elapsed = time.monotonic() - started
+            self.console.coding_duration_seconds += elapsed
+            try:
+                record_usage(
+                    self.args, child_console, elapsed, exit_code,
+                    role="scientific_coder", session_id=handle,
+                    parent_session_id=self.args.session_id,
+                )
+            except (OSError, ValueError) as error:
+                result["usage_error"] = str(error)
+                self.console.line("  ! Coding usage could not be recorded.")
+            self.active_tasks.discard(task)
+            self.busy = False
+
+        try:
+            result["changes"], result["diff"] = coding_changes(before)
+        except OSError as error:
+            result.update(status="error", review_error=str(error), changes=[], diff="")
+            result["unchecked_scope"].append("Actual change review could not be collected.")
+        encoded = json.dumps(result, ensure_ascii=False)
+        if cancelled or len(encoded.encode("utf-8")) > LARGE_OUTPUT_MAX_BYTES:
+            LARGE_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+            output = LARGE_OUTPUT_DIR / f"coding-{handle}-{uuid.uuid4()}.json"
+            output.write_text(encoded, encoding="utf-8")
+            result.pop("diff")
+            result["review_output_path"] = str(output)
+            encoded = json.dumps(result, ensure_ascii=False)
+        self.console.line(f"  > scientific_coding: {result['status']}; source/check review required")
+        if cancelled:
+            self.console.line(
+                f"  ! Coding cancelled; partial-change review: {result['review_output_path']}"
+            )
+            raise asyncio.CancelledError
+        return encoded
+
+    async def close(self) -> None:
+        self.closed = True
+        tasks = list(self.active_tasks)
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+
+def session_options(
+    args, console: Console, finished: asyncio.Event, coding=None
+) -> dict:
     from copilot import ToolSet, define_tool
     from runner.artifact_evidence_query import (
         ArtifactEvidenceQueryParams,
@@ -1516,17 +2070,22 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
     on_event, on_permission_request = build_handlers(
         console, finished, preliminary=args.preliminary
     )
-    return {
+    tools = [artifact_evidence_tool]
+    available = (
+        ToolSet()
+        .add_builtin(RESEARCH_TOOLS if args.preliminary else MAIN_PI_TOOLS)
+        .add_custom("artifact_evidence_query")
+    )
+    if not args.preliminary and coding is not None:
+        tools.append(coding.tool())
+        available.add_custom("scientific_coding")
+    options = {
         "model": normalize_model(args.model),
         "reasoning_effort": args.reasoning,
         "on_event": on_event,
         "on_permission_request": on_permission_request,
-        "tools": [artifact_evidence_tool],
-        "available_tools": (
-            ToolSet()
-            .add_builtin(RESEARCH_TOOLS)
-            .add_custom("artifact_evidence_query")
-        ),
+        "tools": tools,
+        "available_tools": available,
         "working_directory": str(ROOT),
         "streaming": True,
         "enable_file_change_tracking": True,
@@ -1534,12 +2093,19 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
         "enable_session_store": False,
         "skip_embedding_retrieval": True,
         "enable_mcp_apps": False,
+        "memory": {"enabled": False},
         "large_output": {
             "enabled": True,
             "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
             "output_directory": str(LARGE_OUTPUT_DIR),
         },
     }
+    if not args.preliminary:
+        options["hooks"] = {"on_pre_tool_use": scoped_tool_hook()}
+        options["enable_file_hooks"] = False
+        options["enable_host_git_operations"] = False
+        options["request_extensions"] = False
+    return options
 
 
 async def open_session(client, args, options: dict):
@@ -1612,6 +2178,7 @@ async def run(args) -> int:
         return EXIT_INTERRUPTED
 
     client = CopilotClient(working_directory=str(ROOT))
+    coding = ScientificCoding(client, args, console) if not args.preliminary else None
     session = None
     abort_session = False
     try:
@@ -1634,7 +2201,7 @@ async def run(args) -> int:
             return EXIT_MODEL_UNAVAILABLE
 
         session = await open_session(
-            client, args, session_options(args, console, finished)
+            client, args, session_options(args, console, finished, coding)
         )
         before = worktree_status()
         before_offload = offload_snapshot()
@@ -1692,7 +2259,11 @@ async def run(args) -> int:
         )
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
     finally:
-        await shutdown_runtime(client, session, console, abort=abort_session)
+        try:
+            if coding is not None:
+                await coding.close()
+        finally:
+            await shutdown_runtime(client, session, console, abort=abort_session)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -1722,13 +2293,20 @@ def console_label(args) -> str:
     return str(args.phase or "")
 
 
-def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None:
+def record_usage(
+    args,
+    console: Console,
+    elapsed: float,
+    exit_code: int,
+    *,
+    role: str = "pi",
+    session_id: str | None = None,
+    parent_session_id: str | None = None,
+) -> None:
     """Append aggregate usage, never conversation content or tool arguments."""
     if not args.campaign_id:
         return  # Standalone invocations are not attributed to an arbitrary campaign.
     # Campaign IDs are path components, not filenames supplied by the model.
-    import uuid
-
     campaign_id = str(uuid.UUID(args.campaign_id))
     directory = ROOT / "reports" / "session_usage"
     directory.mkdir(parents=True, exist_ok=True)
@@ -1736,17 +2314,26 @@ def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None
         "campaign_id": campaign_id,
         "phase": args.phase,
         "attempt": args.attempt,
-        "session_id": args.session_id,
+        "session_id": session_id or args.session_id,
+        "role": role,
+        "parent_session_id": parent_session_id,
         "recorded_at": datetime.now(UTC).isoformat(),
         "model": normalize_model(args.model),
         "reasoning": args.reasoning,
-        "duration_seconds": round(elapsed, 3),
+        # Child time is reported in its own row, not again in the PI row.
+        "duration_seconds": round(
+            max(0.0, elapsed - console.coding_duration_seconds), 3
+        ),
+        "wall_duration_seconds": round(elapsed, 3),
         "exit_code": exit_code,
         "input_tokens": console.prompt_tokens
         if "input_tokens" in console.reported_usage
         else None,
         "cache_read_tokens": console.cache_read_tokens
         if "cache_read_tokens" in console.reported_usage
+        else None,
+        "cache_write_tokens": console.cache_write_tokens
+        if "cache_write_tokens" in console.reported_usage
         else None,
         "output_tokens": console.output_tokens
         if "output_tokens" in console.reported_usage

@@ -168,6 +168,49 @@ The corrective revision below replaces the blanket closure/assessment
 exemption while retaining the distinction between candidate and mechanism claims.
 No campaign was launched, resumed, reset or mutated.
 
+#### Coding author and main PI reviewer: approved first step
+
+In stopped campaign `bfd9e63d`, M5 kept mutable simulator-array history.
+M6 copied only the initialization value and left the loop alias intact.
+The PI accepted a nonzero first-step maximum and passed invalid speed claims
+to I2. These are implementation and review failures, not scientific evidence
+against the method. This repair does not change that campaign's code or record.
+
+The approved generic mechanism separates coding authorship from main-PI
+review. The `scientific_coding` SDK tool creates a narrow child conversation
+using the existing client and campaign model/reasoning. Main-selected exact
+file scopes, explicit source context and child instructions replace automatic
+inheritance of the campaign conversation. The child uses scoped source reads
+and patches, cannot submit operations, and authors a proportionate executable
+laboratory check for the existing `python_module` instrument. The main PI gets
+the actual per-invocation changes and diff, proposed check and unchecked scope.
+It must inspect the implementation and check rather than accept assurances.
+Only Runner executes the reviewed scientific check.
+
+Ordinary main sessions retain source/evidence readers and operation-request
+patches, but lose shell tools and direct scientific-source writes. The
+preliminary analyst retains its current publication contract and has no coding
+tool. The child has no shell, nested delegation, memory, skills, embedding
+retrieval or automatic repository-instruction discovery. The permissions are
+tool-level controls, not an operating-system sandbox.
+
+Persistent child handles support same-change corrections across the existing
+adapter restart boundary. Scope bindings contain identities and file lists,
+not conversation contents. Child errors, timeouts and cancellation require
+review of partial edits; child cleanup precedes adapter-owned runtime shutdown.
+Durable existing usage rows identify the coding role and parent session, with
+separate tokens/AIU/tools and non-overlapping durations.
+
+Step 1 is implemented but scientifically unmeasured. Inert maintainer checks
+do not establish that PI review will catch future faulty measurements. No
+scenario-specific safeguard, reviewer agent, validity certificate, new
+lifecycle phase, schema migration or scientific acceptance gate was added.
+The request-file handoff and per-invocation SDK runtime lifecycle remain intact.
+Structured operation submission and persistent runtime belong to the separately
+approved step 2, after review and publication of this change. Engineering
+instructions stay in the coding tool and child, not the program or repeated
+scientific prompts.
+
 ### 5. Assessment readiness, model roles and acceptance-gate drift
 
 Cover counterevidence loss, premature readiness conclusions, best-known role
