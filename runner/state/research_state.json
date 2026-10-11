@@ -7184,38 +7184,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
-        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
-        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The tested near-limit command-penalty transfer is rejected as a route to the goal. On the identical 160-episode panel, T4:checkpoint-20480 achieved 93.125% (149/160) versus 94.375% (151/160) for T3:checkpoint-120832, with paired wins 0-2. T4 reduced the observed no-first-entry failures from four to three, but each remaining no-entry failure still had 498-500 pre-entry saturation steps, maximum applied control 1.0, and endpoint and joint-speed maxima essentially unchanged from the baseline. The intervention therefore did not produce the required diagnostic improvement and introduced additional hold-related losses. The broader control-regulation hypothesis remains unresolved because this negative recipe result does not distinguish a poor learned intervention from a hard actuator or dynamics limit.",
-        "reason": "M5 completes the bounded comparison required by I3: both candidates were measured on the same panel with complete success, first-entry and hold outcomes, radius, saturation, endpoint/joint speed, branch, and Jacobian diagnostics recorded. The result is regression without a meaningful change in the saturation-linked trajectory signature, which satisfies the closure branch that rejects the tested recipe but leaves the causal explanation unresolved. The next scientific direction should be a direct authority/dynamics investigation rather than another unmeasured variation of this penalty."
-      }
-    },
-    "request_fingerprint": "046dfe81df66433ad0d790834ac0d72a6023a2951e5f3982cfabb78408ffa04e",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
