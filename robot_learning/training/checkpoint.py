@@ -4,7 +4,7 @@ from pathlib import Path
 
 from contracts.policy_runtime import frozen_scientific_modules, save_runtime
 from robot_learning.scenario.policy_io import (
-    RESIDUAL_TORQUE_PROFILE,
+    DIRECT_CONTROL_PROFILE,
     make_policy_io,
 )
 from robot_learning.training.algorithms import load_policy
@@ -31,7 +31,7 @@ def export_runtime(directory: Path, *, stats_path: Path | None):
     normalizer = load_observation_normalizer(model_path) if stats_path else None
     save_runtime(
         model_path,
-        policy_io=make_policy_io(control_profile=RESIDUAL_TORQUE_PROFILE),
+        policy_io=make_policy_io(control_profile=DIRECT_CONTROL_PROFILE),
         loader=load_policy,
         normalizer=normalizer,
         stats_path=stats_path,
