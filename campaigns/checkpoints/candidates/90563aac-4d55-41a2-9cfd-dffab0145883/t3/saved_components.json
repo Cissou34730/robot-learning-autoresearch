@@ -1,0 +1,750 @@
+{
+  "candidates": [
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-100352",
+      "name": "checkpoint-100352",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "d12659e932b732c6a334bde284f6f0d57aecedd2c5c2f29375c9c0f31a2c1d52",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "80c4f479cc91cfbe4b161b408e24bd472456c86988dd5dc1311c4bff0f6ba19d",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "cd72dc50d90f00e530771cc8def35d65b7b57c49cf0d4d33d2a7a95aef762bca",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "ffc32deb241fa1d445803e90382721566bb4aed3825dc7dd2474eb5fd6ceebb3",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 100352
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-10240",
+      "name": "checkpoint-10240",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "4e83b45b00a09cf7b0547ebc385e818bd28a22a1aae8cf5f3b14f2037a1d5279",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "84df704c492b7c20d5c4517ed167c3af6e0205aa76eed35f393f52ae7f2ef92b",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "6a04dcf5071b5cb83bd29f18787c5702ad685b3c935762c461d44bbc966f8408",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "3cedb38abf5328eb824f32a9cc549f8c134d39514a06585ac16b9fab8769baeb",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 10240
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-105472",
+      "name": "checkpoint-105472",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "dc09c218c67b420d60fc06faa199a5b08f139bbcad6dd9364a55a9f03807d747",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "872f051919d6c8a73218a3c29b7c04d636b25716669348cfdeeaebd5623e4cee",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "3d46a8427c75655cde3e6174e39463130435d091fadc1934a6c7d29b22bcdf51",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "c7a05a6e55f0334e171865c31267b657e004552af52a9e34390bfed15f3d4d5f",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 105472
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-110592",
+      "name": "checkpoint-110592",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "9bf91a73e67ee05c52650952e50370d25bea8a243eb9720d0548e8c816c56729",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "77fc8417b1c10a05b66619acf42c9199fc852716adc11c6d45f53fb27a7f47bc",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "aacaaf98900e861af04c568539c0d4179a3f711a23d6d8964511bb7a95a42636",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "48a500c2c9b8a0d43684875460bc8a4e8ebbb47b61552bf4a56752cee3c3af73",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 110592
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-115712",
+      "name": "checkpoint-115712",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "df8412b8e50b4e43466a31bdebf78184fcb5cd632953334ea4626e5282ee2432",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "026670f4a49190309d22f52dd38f0a7e5d7513f0f49fdc27d2b44caf20f34523",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "62879b0f00fd5a953aae9405441265565e51765a156eab50db8d866659f8feac",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "623f49a972563b30f79d85a5fcfa6e2fc2faa559b1d2b29b53f4c96852b37851",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 115712
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-120832",
+      "name": "checkpoint-120832",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "c29071f81b3e23b692e6d1928f5a6330b07e85154eccfa6d1a412ec78fc93c8e",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "497bedf7bbe5ffcdfcd157d559a89a0242abab314d932ce4e3a564c8edab312d",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "4b21e108c5674f4331ec69acf8775d5381ab5cceb03e51bb46a6296a6e8d029a",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "3836666a53139ef0b97d5adc06c2f0d201b2b15ca353709cbee8a9f936de1a4b",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 120832
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-15360",
+      "name": "checkpoint-15360",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "d221c199435a27c9035c33fe2a652d4234541c4a232dd99b1c11e5e348c9ae3d",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "4a5f4c156953e3ec2f84b84f713e7abcdf8fa35abbd54757707500f6c3493b7e",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "db7b93dd47fb1e02773effe665f8c2d4112a74e873565d517a91627daca8f576",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "8d3974127de725f0d600976d9aa6fc47fecd243fe30703cf24841e9d9114e780",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 15360
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-20480",
+      "name": "checkpoint-20480",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "c97eab7105f5b1319dac82019e950c15a97d6919f60a16bf0541f055f40fe436",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "0db675e82a3f10761df0c05af9e58051cbefc3cd054732084d17a5db94625eb0",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "45593a731cc65ea934f295585b79853bf593378552eaf8f77eb463763834b2c8",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "b83bc080a6fe585610bd24f124005864f2d861b7114e9cc2f56fe5fa4b597f73",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 20480
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-25600",
+      "name": "checkpoint-25600",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "6288d41a3ba65e74ac192322a1e25f12c800791a95aa9fa1bbf1f2492a39b356",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "c5f4ae333d3d95c52d1cec817cc946763dfc2edd31ddc1ac64df02ec12a72dea",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "b1e23c92e048131de21d1d2501a7c1951849ff2cbee4db5846cb01ad22b4017b",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "b03ad057aa17ea272932213f47556814a29ec3d1e1232e3c58197e12929a2453",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 25600
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-30720",
+      "name": "checkpoint-30720",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "07c9fb18d7e2fd60dcd1d9d596999a27d70c0af57fc232e082ff1b2f2631c131",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "b0cd85b67f84b13ced03b9fc67b89903272559d5f9c1e50214fa99f3e2366856",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "0c56078db041c5b34f2c520300fd9db022c3a145428ffeae0c1c59ffb0962027",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "8ef69fc4ecb63dae633c45e31edb0c88e34cbd49f919577c19ab633fd0ec595c",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 30720
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-35840",
+      "name": "checkpoint-35840",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "4caba5e057c42ce63590416b441cf39447e646350007b4e95e606dc00ebd6442",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "8102a8c04b062e6134ea2638e93f58b89c995372e7005e9270399059d4035d2a",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "5daf7fd30a5538859c4e940f1763a0d816d5f690aee36ce52e8397f5dfba6f81",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "2abf0f1c5c057473e0ddb2e508239fc658ddbba40e77b0a202a428c9bf84ceb2",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 35840
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-40960",
+      "name": "checkpoint-40960",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "4eac8b53d7dce1d7d352181aa4c02a3801eca680cb85fa61e663b83f7aa39cfe",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "f65dd08b3cd80a3e881ecda650548da08bfd0f33212123286eecec769e3b74e8",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "cc48a3975a1b4a7525f6afbe24637374a2b65889c8ac961a01743b5f93c52924",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "39f036d78200213e4fe795d8087bf4f1f5ef8a4607dbd457b99bdc4e239a91db",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 40960
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-45056",
+      "name": "checkpoint-45056",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "bbad2fa203b1eaa984bcd188e902bfb5686dd1f24043a64f1a1efad360ae0d56",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "0dccb2a355fd9b1fba5dff9210e6be93ef160edc0b42442f364039376c3072e4",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "fa53b431cedf4ead26558483ee69c9d6278944344227f09f9ad0fef656769cf1",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "3558772e23d4b0e8602c2a7d958dc3e90ebe153da563cc60710361a92c892676",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 45056
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-50176",
+      "name": "checkpoint-50176",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "ade534603178ffb07dd0fe62f9eb009592b11cb99e46d6c10f941ba4ae937bb2",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "9527b71f51e810864310f3685706b43386ef2234137b6e79637717e2c35d5f6f",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "d46fe6577c58fe4810b482af83a549e227ecd5c0637b1b71a0feff7300041cca",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "fdc0d7c476d0d71fe45febacd097b841bf1f9b540b74dac28fe4792abde272b3",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 50176
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-5120",
+      "name": "checkpoint-5120",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "3d29dee682d6624b5d2fd0c785d85e29d61a6e91161b3042e48cb27be45d0013",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "405a856b3bcc7df6ba42e48da3139c16bbc08a522bdc77f8f6b9014e6615dfe2",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "b9dc81c0d73136bc6fe479cf0d08663abfb1c78c09c4bc7ec373136e30ce2232",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "e9d2efed7c3ea587a547284bb540404f7c91cfa0d076eb6a2314cca52df9fce5",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 5120
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-55296",
+      "name": "checkpoint-55296",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "d15553f029e7474787759a9d4be02889645350518462385ce1aaace6d1418142",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "dad4fd67d815590089763e7e0c88c4fe64f86f563b01bffc30bbc2f09aea0c7f",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "7c2e19658052bb0a48afde7e41d65447d13082fd32c7f752e46ecf274d76a859",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "65943121c62d780c7ede3dcc9950848d2fd6726b99d3f0e3bcdc40162f8dd663",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 55296
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-60416",
+      "name": "checkpoint-60416",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "efa93dc871f02dc317ed6e08f0eb1c9da636814e5bcf62f5dd0becdd0d0b3866",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "89d7db0c4c101f7f81fa54c0a412808446c9debcc6d299acd1dd4c913f8cdf70",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "10131092baee8013c11bf93a2ca30cd09492b5397ed3a05bd0d509db63c1f284",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "50202953d67585bc8b727d412eead90eeba320ef8c80f326a431c43ac0433bd6",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 60416
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-65536",
+      "name": "checkpoint-65536",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "e7d7f848aaf3f349a61efd6e4368bbeb1da9a0876c94cbd017d9ac8cbfb26d40",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "bf4e9dffbc6846ce9c26e7c70d1d28430fb7b367bf2212d211f0065e2bf5bc88",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "99c2c4c63420adcd93c975a4933e84387482e12110cd552e94ad6ce18302454d",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "8cd3cf7b263aabb7cef7fffb27b0797fa323a73ff2381ecf904e5739119dafff",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 65536
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-70656",
+      "name": "checkpoint-70656",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "101edeb464fc8584b4b05dc751388eb9726ee55d78efeae3d6a02b64f5649bdb",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "8bc6af40222a57bebd96d176812945b6e035f92ec830017a946a2a22cedb24a0",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "8acdb74d0de0547cfa2a27012bf4354837981aaf9a0ea80930bcbf3e873cd26d",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "e0c1fefaeb2eb5526d94d57d5f7e1cb32fdc80085e156d32d379a657f29a4e2f",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 70656
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-75776",
+      "name": "checkpoint-75776",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "6f14e53b18f2a72caa9d20c8677bb62f6e6937bff1d88619bc342b5ca7dfe93d",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "ea7b5e5eeab79b51a591756d2f90ceb4f91301c88b7fa06bdcb50c3cedd63f06",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "75ccc5da344e21e1b72b7efa63c88d4c3b7db4fa51ea6c26e41592305f6c2595",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "f418a2cc5d654f1a4bfaf34c6cf6796ce34e6ab678a8eca82645b11cd85da033",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 75776
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-80896",
+      "name": "checkpoint-80896",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "075e3ea296e0b0958d638b425f709a79134d5bbe7985e93e3216b5146b4107ff",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "d3e6874b18b4276997a24d489464a1ca95e7455704687de97a223211957ad710",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "b5d29a557d817183550ba8c51db9321151563e65787b08e3f8e1ffef3e531ead",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "e952821558864e8c888e9dbfa4653f9e04b58e5bdb94574e5f3289305435108e",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 80896
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-86016",
+      "name": "checkpoint-86016",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "34bce0fadb93a32e05bc3bc83cdd8b14dcef719576eab085e0a73e29d4fae5c2",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "aa4403814c7a5f3a664eacc15c785af1f023c34134c149adffb19da2186f3192",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "e23365f4d5eb47f64516bba027d936ad2b572a1cadfc4bc1a03c962ef40550e6",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "051d8614da9f317dc4c87213c4b35c6b2a1ec289cde68b8c18d9e7d00d81bb87",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 86016
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-90112",
+      "name": "checkpoint-90112",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "cb574c73fa81bdd311a84a62eee9a4bb1ca3bc7ee7ccf33ba7206075bb57ee36",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "f4b240c8dc917b277b6b8167a854768e19942d2aae5a38afced2f513204ebfed",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "8ac653420cb55afe7efacd4838bd78314c10295ef65b5ca0a6b474840d833cb9",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "5ecaea63b4e97f170d4e2e33de4a79f7bebca3cd29c870011a8b0582f47cc650",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 90112
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t3/checkpoint-95232",
+      "name": "checkpoint-95232",
+      "saved_components": {
+        "components": {
+          "additional_tensor_state": {
+            "sha256": "98b4d78ebb79a7f668431910a5959abdce137f13e82a02bcc28e585416046b97",
+            "status": "available"
+          },
+          "normalization": {
+            "sha256": "43703c6335f64c0b8f0dbf0af1266d0437e41b06c1177793d7ded5c8e826c780",
+            "status": "available"
+          },
+          "optimizer": {
+            "sha256": "ddc3e3793255932b46ab31811224916af8d5f70f66ee03dbbd3b1948b7449430",
+            "status": "available"
+          },
+          "policy": {
+            "sha256": "6e10babffcb931ba97a11de73ad8c15ca15c3b13d1357d983397649300a5aa7d",
+            "status": "available"
+          }
+        },
+        "format": "stable_baselines3_zip",
+        "runtime": {
+          "sha256": "b2d0c6a61e1849562d63f5e47febb8ed7d20f5c1034f1b18eec844f02e86c90a",
+          "status": "available"
+        },
+        "schema_version": 1
+      },
+      "training_steps": 95232
+    }
+  ],
+  "operation": "T3",
+  "schema_version": 1
+}
