@@ -16093,38 +16093,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "negative",
-        "reason": "I8 closes negatively for the tested state-dependent velocity-damped torque-interface recipe. M13 measured the complete transferred T9:checkpoint-105472 artifact at 147/160 successes (91.875%) versus T3:checkpoint-120832 at 151/160 (94.375%) on the shared full-radius development panel; T9 lost the paired comparison 0-4. The candidate therefore failed the required 157/160 threshold and did not improve complete uninterrupted success. This is a recipe-specific artifact-selection result, not causal disproof of state-dependent command interfaces generally; the remaining saturation, speed, and no-entry mechanism details are not gates to this bounded closure."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "negative",
-        "reason": "I8 closes negatively for the tested state-dependent velocity-damped torque-interface recipe. M13 measured the complete transferred T9:checkpoint-105472 artifact at 147/160 successes (91.875%) versus T3:checkpoint-120832 at 151/160 (94.375%) on the shared full-radius development panel; T9 lost the paired comparison 0-4. The candidate therefore failed the required 157/160 threshold and did not improve complete uninterrupted success. This is a recipe-specific artifact-selection result, not causal disproof of state-dependent command interfaces generally; the remaining saturation, speed, and no-entry mechanism details are not gates to this bounded closure.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E36",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I8 closes negatively for the tested state-dependent velocity-damped torque-interface recipe. M13 measured the complete transferred T9:checkpoint-105472 artifact at 147/160 successes (91.875%) versus T3:checkpoint-120832 at 151/160 (94.375%) on the shared full-radius development panel; T9 lost the paired comparison 0-4. The candidate therefore failed the required 157/160 threshold and did not improve complete uninterrupted success. This is a recipe-specific artifact-selection result, not causal disproof of state-dependent command interfaces generally; the remaining saturation, speed, and no-entry mechanism details are not gates to this bounded closure."
-      }
-    },
-    "request_fingerprint": "859402b929df233364e340aa89d722d8673cc86a1359848d0d112ae6f2d451cb",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%), supported by M4 and M12. T8:checkpoint-120832 remains rejected as a tested action-rate-limited candidate at 144/160 (90.0%), supported by M12 and E31. No working, best-known, or retained role is assigned; these are evidence-backed artifact comparisons rather than mechanism claims.",
     "completed_operations": [
