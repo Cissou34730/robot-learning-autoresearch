@@ -4109,7 +4109,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 10,
     "session": 11,
@@ -4118,7 +4118,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -10323,32 +10323,193 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T08:08:11Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned in this inquiry session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) and should be preserved as the leading candidate for the next goal review. T5:checkpoint-120832 is a rejected tested interface artifact at 0/160. T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%); T1 and T2 remain earlier reference and counterevidence artifacts. These comparisons establish artifact properties, not causal attribution to an intended method.",
+        "completed_operations": [
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "cumulative_resource_use": "This inquiry session used E20 recipe restoration, one full 120000-step transfer training allocation T5, one 160-episode paired development measurement M10, and E21 inquiry closure. Earlier campaign use includes T1-T4 training, M1-M5 development measurements, M7-M9 authority characterization, and the prior inquiry/checkpoint operations. T5 was the only new training allocation in I5.",
+        "current_goal_gap": "The measured development gap is 3.625 percentage points: 151/160 successes versus the 98% target. T5:checkpoint-120832 achieved 0/160 and is not a viable replacement. Neither development result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands, while the matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width interface that replaced the constant z-error and joint-space velocity slots with planar endpoint velocity and normalized hold progress. T5:checkpoint-120832 achieved 0/160 and lost every paired success against T3 (0-151). The inspected T5 diagnostics showed persistent pre-entry saturation, high endpoint and joint speeds, and brief interrupted entries with zero complete holds across inner and outer examples; T3 completed holds in both bands with lower endpoint-speed behavior and fewer pre-entry saturation steps. E21 therefore closes I5 negatively for this tested interface realization. This rejects that implementation as a route to the goal, not all regulation or representation interventions, and preserves the artifact-level staged-transfer result and bounded authority interpretation.",
+        "decision_frontier": "I5 is resolved negatively for the tested velocity-and-hold interface, but the campaign remains 3.625 percentage points below the development target. The consequential next distinction is whether another PI-owned intervention or candidate-selection decision can improve complete uninterrupted-hold success beyond T3:checkpoint-120832 without repeating the observed saturation and hold failures. A fresh goal review should compare the evidence-backed case for preserving T3 and requesting official assessment against opening one new goal-linked inquiry; any new inquiry must identify a discriminating intervention or complete-artifact comparison whose primary outcome is success and whose secondary evidence separates reach, velocity, saturation, and hold interruption across both radius bands.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E12",
+          "M9",
+          "E16",
+          "E18",
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. The best measured development artifact remains T3:checkpoint-120832 at 151/160 (94.375%), leaving the campaign below the goal and official assessment deferred.",
+        "next_direction_or_closure": "I5 is closed with a negative conclusion supported by E21 and M10. The next session returns to goal review. It must decide whether to preserve T3 and request official assessment or open a fresh inquiry for a different, evidence-backed route toward the remaining gap; no official assessment is requested in this session.",
+        "next_question": "What evidence-backed next action has the greatest credible prospect of closing the remaining complete-hold success gap beyond T3:checkpoint-120832, or does the current evidence justify committing T3 to the official assessment?"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "4b39b9ca84d6d608077bcaabf7baf59b20584b87",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned in this inquiry session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) and should be preserved as the leading candidate for the next goal review. T5:checkpoint-120832 is a rejected tested interface artifact at 0/160. T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%); T1 and T2 remain earlier reference and counterevidence artifacts. These comparisons establish artifact properties, not causal attribution to an intended method.",
+        "completed_operations": [
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "cumulative_resource_use": "This inquiry session used E20 recipe restoration, one full 120000-step transfer training allocation T5, one 160-episode paired development measurement M10, and E21 inquiry closure. Earlier campaign use includes T1-T4 training, M1-M5 development measurements, M7-M9 authority characterization, and the prior inquiry/checkpoint operations. T5 was the only new training allocation in I5.",
+        "current_goal_gap": "The measured development gap is 3.625 percentage points: 151/160 successes versus the 98% target. T5:checkpoint-120832 achieved 0/160 and is not a viable replacement. Neither development result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands, while the matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width interface that replaced the constant z-error and joint-space velocity slots with planar endpoint velocity and normalized hold progress. T5:checkpoint-120832 achieved 0/160 and lost every paired success against T3 (0-151). The inspected T5 diagnostics showed persistent pre-entry saturation, high endpoint and joint speeds, and brief interrupted entries with zero complete holds across inner and outer examples; T3 completed holds in both bands with lower endpoint-speed behavior and fewer pre-entry saturation steps. E21 therefore closes I5 negatively for this tested interface realization. This rejects that implementation as a route to the goal, not all regulation or representation interventions, and preserves the artifact-level staged-transfer result and bounded authority interpretation.",
+        "decision_frontier": "I5 is resolved negatively for the tested velocity-and-hold interface, but the campaign remains 3.625 percentage points below the development target. The consequential next distinction is whether another PI-owned intervention or candidate-selection decision can improve complete uninterrupted-hold success beyond T3:checkpoint-120832 without repeating the observed saturation and hold failures. A fresh goal review should compare the evidence-backed case for preserving T3 and requesting official assessment against opening one new goal-linked inquiry; any new inquiry must identify a discriminating intervention or complete-artifact comparison whose primary outcome is success and whose secondary evidence separates reach, velocity, saturation, and hold interruption across both radius bands.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E12",
+          "M9",
+          "E16",
+          "E18",
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. The best measured development artifact remains T3:checkpoint-120832 at 151/160 (94.375%), leaving the campaign below the goal and official assessment deferred.",
+        "inquiry_id": "I5",
+        "next_direction_or_closure": "I5 is closed with a negative conclusion supported by E21 and M10. The next session returns to goal review. It must decide whether to preserve T3 and request official assessment or open a fresh inquiry for a different, evidence-backed route toward the remaining gap; no official assessment is requested in this session.",
+        "next_question": "What evidence-backed next action has the greatest credible prospect of closing the remaining complete-hold success gap beyond T3:checkpoint-120832, or does the current evidence justify committing T3 to the official assessment?",
+        "session_id": "S11"
+      },
+      "presentation": {
+        "backend_session_id": "a8ccc98a-3b7c-4f15-ab1d-5c8724f017d1",
+        "campaign_id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
+        "campaign_usage": "34m19s | 93.27 AIU | prompt 16.4m (88% cached) | output 135.6k",
+        "session_id": "S11",
+        "session_kind": "inquiry",
+        "session_usage": "4m29s | 14.74 AIU | prompt 2.3m (85% cached) | output 16.4k"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ce481bb26be446e8ccc77f876b38e79a1c4009af",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned in this inquiry session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) and should be preserved as the leading candidate for the next goal review. T5:checkpoint-120832 is a rejected tested interface artifact at 0/160. T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%); T1 and T2 remain earlier reference and counterevidence artifacts. These comparisons establish artifact properties, not causal attribution to an intended method.",
+        "completed_operations": [
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "cumulative_resource_use": "This inquiry session used E20 recipe restoration, one full 120000-step transfer training allocation T5, one 160-episode paired development measurement M10, and E21 inquiry closure. Earlier campaign use includes T1-T4 training, M1-M5 development measurements, M7-M9 authority characterization, and the prior inquiry/checkpoint operations. T5 was the only new training allocation in I5.",
+        "current_goal_gap": "The measured development gap is 3.625 percentage points: 151/160 successes versus the 98% target. T5:checkpoint-120832 achieved 0/160 and is not a viable replacement. Neither development result is official assessment evidence.",
+        "current_synthesis": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands, while the matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width interface that replaced the constant z-error and joint-space velocity slots with planar endpoint velocity and normalized hold progress. T5:checkpoint-120832 achieved 0/160 and lost every paired success against T3 (0-151). The inspected T5 diagnostics showed persistent pre-entry saturation, high endpoint and joint speeds, and brief interrupted entries with zero complete holds across inner and outer examples; T3 completed holds in both bands with lower endpoint-speed behavior and fewer pre-entry saturation steps. E21 therefore closes I5 negatively for this tested interface realization. This rejects that implementation as a route to the goal, not all regulation or representation interventions, and preserves the artifact-level staged-transfer result and bounded authority interpretation.",
+        "decision_frontier": "I5 is resolved negatively for the tested velocity-and-hold interface, but the campaign remains 3.625 percentage points below the development target. The consequential next distinction is whether another PI-owned intervention or candidate-selection decision can improve complete uninterrupted-hold success beyond T3:checkpoint-120832 without repeating the observed saturation and hold failures. A fresh goal review should compare the evidence-backed case for preserving T3 and requesting official assessment against opening one new goal-linked inquiry; any new inquiry must identify a discriminating intervention or complete-artifact comparison whose primary outcome is success and whose secondary evidence separates reach, velocity, saturation, and hold interruption across both radius bands.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E12",
+          "M9",
+          "E16",
+          "E18",
+          "E20",
+          "T5",
+          "M10",
+          "E21"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. The best measured development artifact remains T3:checkpoint-120832 at 151/160 (94.375%), leaving the campaign below the goal and official assessment deferred.",
+        "next_direction_or_closure": "I5 is closed with a negative conclusion supported by E21 and M10. The next session returns to goal review. It must decide whether to preserve T3 and request official assessment or open a fresh inquiry for a different, evidence-backed route toward the remaining gap; no official assessment is requested in this session.",
+        "next_question": "What evidence-backed next action has the greatest credible prospect of closing the remaining complete-hold success gap beyond T3:checkpoint-120832, or does the current evidence justify committing T3 to the official assessment?"
+      }
+    },
+    "request_fingerprint": "fa65540574fd83a74adba40ffbb709be9c64e0d4774643f88747ed8058e58c0f",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned in this goal-review session. T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%, T3:checkpoint-70656 is a secondary measured artifact at 87.5%, T4:checkpoint-20480 is a tested but rejected intervention at 93.125%, T1:checkpoint-120832 is the staged-transfer reference at 68.75%, and T2:checkpoint-120832 is recipe-specific counterevidence at 33.75%. These are complete-artifact comparison facts and do not establish causal explanations.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned in this inquiry session. T3:checkpoint-120832 remains the strongest measured development artifact at 151/160 (94.375%) and should be preserved as the leading candidate for the next goal review. T5:checkpoint-120832 is a rejected tested interface artifact at 0/160. T4:checkpoint-20480 remains recipe-specific rejected counterevidence at 149/160 (93.125%); T1 and T2 remain earlier reference and counterevidence artifacts. These comparisons establish artifact properties, not causal attribution to an intended method.",
     "completed_operations": [
-      "E18"
+      "E20",
+      "T5",
+      "M10",
+      "E21"
     ],
-    "cumulative_resource_use": "This goal-review session opened I5 through E18 and used no training, measurement, model-role, restoration, or official-assessment allocation. Earlier inquiry resource use includes T1-T4 training, M1-M5 development measurements, and M7-M9 authority characterization; M6, M7, and M8 authority attempts are retained only as implementation limits where superseded or invalid, while M9 is the corrected authority evidence.",
-    "current_goal_gap": "The measured development gap is 3.625 percentage points: 151/160 successes versus the 98% target. T4:checkpoint-20480 is weaker at 149/160 (93.125%). Neither development result is official assessment evidence.",
-    "current_synthesis": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result is recipe-specific and does not reject regulation or representation interventions generally. M9 corrected the authority characterization defects and found positive local endpoint authority at both IK branches and both inner and outer representative bands, while the four matched T3 residual episodes remained 500-step no-first-entry failures with 498-500 saturated controls, high endpoint and joint speeds, and zero or near-zero control reserve. This supports a predominantly policy-dependent regulation or learnability failure at the sampled residual configurations, boundedly rather than universally. The initial model's consequences about coupled reaching and stabilization, hidden hold progress, and velocity-aware regulation remain decision-relevant; the observed residual pattern strengthens the case that the policy must learn a low-speed trajectory and complete hold, not merely reach. The next intervention must therefore be judged by complete success and by whether saturation, velocity-linked reach failure, and hold interruptions improve across both radius bands.",
-    "decision_frontier": "The authority-versus-regulation distinction is sufficiently resolved for route selection at the characterized residual configurations, but the intervention mechanism is not. The consequential remaining distinction is whether a targeted policy-interface change that makes velocity and hold-phase regulation easier to learn can reduce pre-entry saturation and residual complete-hold failures without the hold regression seen in the rejected near-limit penalty recipe. A complete-artifact comparison against T3:checkpoint-120832, using complete episode success as primary evidence and radius-stratified saturation, velocity, and hold-interruption diagnostics as discriminators, can change the route toward the goal. If it fails to reach the goal or shows hold regression, the result will reject that tested intervention while preserving the artifact-level staged-transfer conclusion and the bounded authority interpretation.",
+    "cumulative_resource_use": "This inquiry session used E20 recipe restoration, one full 120000-step transfer training allocation T5, one 160-episode paired development measurement M10, and E21 inquiry closure. Earlier campaign use includes T1-T4 training, M1-M5 development measurements, M7-M9 authority characterization, and the prior inquiry/checkpoint operations. T5 was the only new training allocation in I5.",
+    "current_goal_gap": "The measured development gap is 3.625 percentage points: 151/160 successes versus the 98% target. T5:checkpoint-120832 achieved 0/160 and is not a viable replacement. Neither development result is official assessment evidence.",
+    "current_synthesis": "M4 established an artifact-level staged-transfer gain, not a causal attribution: T3:checkpoint-120832 reached 94.375% versus 68.75% for T1:checkpoint-120832 on the identical panel. E12 rejected the tested transferred near-limit command-penalty recipe because it achieved 93.125%, left saturation and high-speed no-entry failures, and added hold losses; that result remains recipe-specific. M9 found positive local endpoint authority at both IK branches and inner and outer representative bands, while the matched T3 residual episodes remained saturated, high-speed, no-first-entry failures, supporting a bounded predominantly policy-dependent regulation or learnability interpretation. M10 tested a same-width interface that replaced the constant z-error and joint-space velocity slots with planar endpoint velocity and normalized hold progress. T5:checkpoint-120832 achieved 0/160 and lost every paired success against T3 (0-151). The inspected T5 diagnostics showed persistent pre-entry saturation, high endpoint and joint speeds, and brief interrupted entries with zero complete holds across inner and outer examples; T3 completed holds in both bands with lower endpoint-speed behavior and fewer pre-entry saturation steps. E21 therefore closes I5 negatively for this tested interface realization. This rejects that implementation as a route to the goal, not all regulation or representation interventions, and preserves the artifact-level staged-transfer result and bounded authority interpretation.",
+    "decision_frontier": "I5 is resolved negatively for the tested velocity-and-hold interface, but the campaign remains 3.625 percentage points below the development target. The consequential next distinction is whether another PI-owned intervention or candidate-selection decision can improve complete uninterrupted-hold success beyond T3:checkpoint-120832 without repeating the observed saturation and hold failures. A fresh goal review should compare the evidence-backed case for preserving T3 and requesting official assessment against opening one new goal-linked inquiry; any new inquiry must identify a discriminating intervention or complete-artifact comparison whose primary outcome is success and whose secondary evidence separates reach, velocity, saturation, and hold interruption across both radius bands.",
     "evidence_references": [
       "M4",
       "E8",
       "E12",
       "M9",
       "E16",
-      "E18"
+      "E18",
+      "E20",
+      "T5",
+      "M10",
+      "E21"
     ],
-    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official assessment, with every success requiring entry and an uninterrupted 100-step hold inside the 1 cm tolerance disk. The strongest development artifact, T3:checkpoint-120832, has 151/160 successes (94.375%), so the campaign remains below the goal and official assessment is deferred.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I5 is opened as one bounded goal-linked inquiry. After this checkpoint starts its fresh inquiry session, choose the PI-owned policy-interface intervention and the smallest complete-artifact development comparison that can test the active question. Preserve the rejected near-limit penalty as recipe-specific counterevidence, and do not request official assessment until an evidence-backed candidate reaches the required development standard or the campaign otherwise justifies commitment.",
-    "next_question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
-    "scientific_commit": "0a1b3a267d1665dd644716d2dcb2b2637b0ed795",
-    "session_id": "S10"
+    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. The best measured development artifact remains T3:checkpoint-120832 at 151/160 (94.375%), leaving the campaign below the goal and official assessment deferred.",
+    "inquiry_id": "I5",
+    "next_direction_or_closure": "I5 is closed with a negative conclusion supported by E21 and M10. The next session returns to goal review. It must decide whether to preserve T3 and request official assessment or open a fresh inquiry for a different, evidence-backed route toward the remaining gap; no official assessment is requested in this session.",
+    "next_question": "What evidence-backed next action has the greatest credible prospect of closing the remaining complete-hold success gap beyond T3:checkpoint-120832, or does the current evidence justify committing T3 to the official assessment?",
+    "scientific_commit": "ce481bb26be446e8ccc77f876b38e79a1c4009af",
+    "session_id": "S11"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -10356,24 +10517,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a8ccc98a-3b7c-4f15-ab1d-5c8724f017d1",
-    "id": "S11",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "E20",
-      "T5",
-      "M10",
-      "E21"
-    ],
-    "scientific_parent_commit": "4b39b9ca84d6d608077bcaabf7baf59b20584b87"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

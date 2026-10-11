@@ -38,3 +38,4 @@
 | T5 | training | I5 | completed |
 | M10 | measurement | I5 | completed |
 | E21 | inquiry | I5 | completed |
+| E22 | checkpoint | I5 | checkpointed |
