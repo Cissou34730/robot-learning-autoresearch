@@ -1660,8 +1660,8 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 9,
-    "session": 6,
+    "measurement": 11,
+    "session": 7,
     "training": 2
   },
   "human_goal": {
@@ -3969,9 +3969,269 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:42:09Z",
+      "error": "robot_learning.lab.time_resolved_rollout_measurement failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 501, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 491, in main\n    write_measurement(\n    ~~~~~~~~~~~~~~~~~^\n        args.model,\n        ^^^^^^^^^^^\n    ...<3 lines>...\n        args.artifact,\n        ^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 468, in write_measurement\n    result = run_measurement(model_path, failure_seeds, control_seeds, max_steps)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 412, in run_measurement\n    rollouts.append(_rollout(env, runtime, model, seed, role, max_steps))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 257, in _rollout\n    env.data.site_xvelp[site_id], dtype=np.float64\n    ^^^^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+      "id": "M10",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "I3 time-resolved mechanism test of retained T2 on all ten M9 failure seeds plus ten geometry-matched successful controls, with independent artifact verification.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579\\model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+            "instrument": "python_module",
+            "label": "I3 T2 time-resolved failures and matched controls",
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+              "--output",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json",
+            "instrument": "python_module",
+            "label": "I3 independent time-resolved measurement verification",
+            "module": "robot_learning.lab.verify_time_resolved_rollout_measurement"
+          }
+        ],
+        "rationale": "M9 establishes the residual failure identities and aggregate outcomes but not their mechanism. This measurement reruns the retained T2 runtime under the unchanged official research environment and records complete per-control-step joint state, endpoint position and velocity, distance, actions and torques, hold-counter transitions and interruptions, bounded open/folded IK feasibility and branch occupancy, and compiled contact events. The ten controls are successful M9 episodes selected to overlap the -150 degree acquisition cluster, the approximately -32 degree inner/exposed cases, and the -41/+16 degree hold cases. A reproducible early singular-escape or approach/braking signature would justify targeted trajectory/control work; repeated post-reach exits with nonzero velocity would justify regulation-focused work; branch-linked occupancy or contacts would justify branch/contact investigation; and traces without these structures would redirect toward generic policy development rather than an unsupported targeted intervention. The second module independently checks the measurement against forward kinematics, task geometry, hold semantics, analytic IK, reset invariants, and expected M9 outcome classes, so aggregate-only or incomplete traces fail validation. This is development evidence and does not request official assessment."
+      },
+      "result": {
+        "error": "robot_learning.lab.time_resolved_rollout_measurement failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 501, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 491, in main\n    write_measurement(\n    ~~~~~~~~~~~~~~~~~^\n        args.model,\n        ^^^^^^^^^^^\n    ...<3 lines>...\n        args.artifact,\n        ^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 468, in write_measurement\n    result = run_measurement(model_path, failure_seeds, control_seeds, max_steps)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 412, in run_measurement\n    rollouts.append(_rollout(env, runtime, model, seed, role, max_steps))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\time_resolved_rollout_measurement.py\", line 257, in _rollout\n    env.data.site_xvelp[site_id], dtype=np.float64\n    ^^^^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+        "status": "failed"
+      },
+      "session_id": "S7",
+      "status": "failed",
+      "superseded_by": "M11",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579\\model.zip",
+            "--failure-seeds",
+            "4201",
+            "4208",
+            "4225",
+            "4226",
+            "4228",
+            "4243",
+            "4244",
+            "4246",
+            "4307",
+            "4316",
+            "--control-seeds",
+            "4211",
+            "4214",
+            "4236",
+            "4264",
+            "4286",
+            "4297",
+            "4337",
+            "4347",
+            "4349",
+            "4355",
+            "--max-steps",
+            "500",
+            "--artifact",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i3-time-resolved-rollout-measurement.json",
+          "instrument": "python_module",
+          "label": "I3 T2 time-resolved failures and matched controls",
+          "module": "robot_learning.lab.time_resolved_rollout_measurement"
+        },
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+            "--output",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i3-time-resolved-rollout-measurement-verification.json",
+          "instrument": "python_module",
+          "label": "I3 independent time-resolved measurement verification",
+          "module": "robot_learning.lab.verify_time_resolved_rollout_measurement"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "1098b180f599962b007842f7e2255c4708a78282e4dd7d009d4bc89709c6606e",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "a0c7d1e3410111ce9cd836c672e39bc2193c7b3c48fe5ebb0c80ecaf91f6f876",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "2bb66cc23900343157bd40c0bc06526436090150",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "1098b180f599962b007842f7e2255c4708a78282e4dd7d009d4bc89709c6606e",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "a0c7d1e3410111ce9cd836c672e39bc2193c7b3c48fe5ebb0c80ecaf91f6f876",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/time_resolved_rollout_measurement.py",
+          "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M11",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "I3 time-resolved mechanism test of retained T2 on all ten M9 failure seeds plus ten geometry-matched successful controls, with independent artifact verification.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579\\model.zip",
+              "--failure-seeds",
+              "4201",
+              "4208",
+              "4225",
+              "4226",
+              "4228",
+              "4243",
+              "4244",
+              "4246",
+              "4307",
+              "4316",
+              "--control-seeds",
+              "4211",
+              "4214",
+              "4236",
+              "4264",
+              "4286",
+              "4297",
+              "4337",
+              "4347",
+              "4349",
+              "4355",
+              "--max-steps",
+              "500",
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+            "instrument": "python_module",
+            "label": "I3 T2 time-resolved failures and matched controls",
+            "module": "robot_learning.lab.time_resolved_rollout_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement.json",
+              "--output",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i3-time-resolved-rollout-measurement-verification.json",
+            "instrument": "python_module",
+            "label": "I3 independent time-resolved measurement verification",
+            "module": "robot_learning.lab.verify_time_resolved_rollout_measurement"
+          }
+        ],
+        "rationale": "M9 establishes the residual failure identities and aggregate outcomes but not their mechanism. This measurement reruns the retained T2 runtime under the unchanged official research environment and records complete per-control-step joint state, endpoint position and velocity, distance, actions and torques, hold-counter transitions and interruptions, bounded open/folded IK feasibility and branch occupancy, and compiled contact events. The ten controls are successful M9 episodes selected to overlap the -150 degree acquisition cluster, the approximately -32 degree inner/exposed cases, and the -41/+16 degree hold cases. A reproducible early singular-escape or approach/braking signature would justify targeted trajectory/control work; repeated post-reach exits with nonzero velocity would justify regulation-focused work; branch-linked occupancy or contacts would justify branch/contact investigation; and traces without these structures would redirect toward generic policy development rather than an unsupported targeted intervention. The second module independently checks the measurement against forward kinematics, task geometry, hold semantics, analytic IK, reset invariants, and expected M9 outcome classes, so aggregate-only or incomplete traces fail validation. This is development evidence and does not request official assessment."
+      }
+    },
+    "request_fingerprint": "ce053a83209195d63be62ee1bdf6ac2e033e32f4b033bec20bc11b1258f1349d",
+    "session_id": "S7",
+    "supersedes": "M10"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the best-known candidate by the completed M9 matched development comparison and is not an official success claim. T1:checkpoint-115712 is the matched baseline comparator. No candidate is working or retained. E8 assigned the best-known role; this inquiry does not change that role.",
     "completed_operations": [
@@ -4002,6 +4262,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "cd153307-ded6-4fcf-a090-a8a03a76dc38",
+    "id": "S7",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Which mechanism explains T2's ten matched-panel failures\u2014angle/radius-dependent singular escape or approach/braking, branch occupancy or contact geometry, or post-reach dynamic regulation\u2014and what targeted intervention, if any, is justified toward 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "2bb66cc23900343157bd40c0bc06526436090150"
+  },
   "terminal_state": null
 }

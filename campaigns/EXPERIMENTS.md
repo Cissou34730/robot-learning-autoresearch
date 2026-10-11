@@ -25,3 +25,4 @@
 | E10 | checkpoint | I2 | checkpointed |
 | E11 | inquiry | I3 | completed |
 | E12 | checkpoint | - | checkpointed |
+| M10 | measurement | I3 | failed |
