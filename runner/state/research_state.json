@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -465,31 +465,152 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T20:16:07Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed startup measurement operation (M1) containing two PI-owned Python-module measurements: an executed verification and a compiled-dynamics trace artifact. No training steps and no candidate artifacts.",
+        "current_goal_gap": "No learned candidate exists and no development success rate has been measured. The remaining gap is capability evidence for a policy that can reach arbitrary official targets, brake the torque-driven arm, and sustain the complete hold with sufficient margin for the 98% objective.",
+        "current_synthesis": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+        "decision_frontier": "The unresolved decision is whether the first capability intervention should develop a learned policy under the existing torque interface with explicit braking/hold-sensitive diagnostics, or whether a broader physical route/contact/geometry investigation is needed first. Evidence that would redirect away from policy development would include target- or branch-conditioned torque-step failures, contact impulses, actuator saturation/force behavior inconsistent with the compiled facts, or systematic inability to settle even under a competent feedback trajectory. Evidence that would support policy-focused development would be a candidate that reaches targets but loses the hold, shows high near-tolerance qdot or internal excursions, or fails by target geometry while the compiled model remains contact-free and dynamically authoritative. The official evaluator's continuous-versus-boundary rule is still unavailable, so any development candidate must be judged with internal traces or conservative margin rather than aggregate sampled success alone.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, where each success requires entering the 1 cm target ball and remaining continuously within it for 2 seconds. M1 directly established the physical control and sampling conditions that a learned policy must satisfy; it did not measure policy success.",
+        "next_direction_or_closure": "M1 establishes the initial scientific direction: prioritize learned-policy capability development and mechanism-level evaluation of braking and hold robustness, rather than treating reachability or static actuation authority as the first bottleneck. This is a provisional direction because policy behavior and protected hold semantics remain unmeasured. Goal review should decide whether to open the bounded policy-capability inquiry.",
+        "next_question": "At the next goal review, determine whether to open a bounded inquiry on developing and measuring a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "c834a34f93c9c59c97af30577d3ae21a9a2f62f4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed startup measurement operation (M1) containing two PI-owned Python-module measurements: an executed verification and a compiled-dynamics trace artifact. No training steps and no candidate artifacts.",
+        "current_goal_gap": "No learned candidate exists and no development success rate has been measured. The remaining gap is capability evidence for a policy that can reach arbitrary official targets, brake the torque-driven arm, and sustain the complete hold with sufficient margin for the 98% objective.",
+        "current_synthesis": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+        "decision_frontier": "The unresolved decision is whether the first capability intervention should develop a learned policy under the existing torque interface with explicit braking/hold-sensitive diagnostics, or whether a broader physical route/contact/geometry investigation is needed first. Evidence that would redirect away from policy development would include target- or branch-conditioned torque-step failures, contact impulses, actuator saturation/force behavior inconsistent with the compiled facts, or systematic inability to settle even under a competent feedback trajectory. Evidence that would support policy-focused development would be a candidate that reaches targets but loses the hold, shows high near-tolerance qdot or internal excursions, or fails by target geometry while the compiled model remains contact-free and dynamically authoritative. The official evaluator's continuous-versus-boundary rule is still unavailable, so any development candidate must be judged with internal traces or conservative margin rather than aggregate sampled success alone.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, where each success requires entering the 1 cm target ball and remaining continuously within it for 2 seconds. M1 directly established the physical control and sampling conditions that a learned policy must satisfy; it did not measure policy success.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "M1 establishes the initial scientific direction: prioritize learned-policy capability development and mechanism-level evaluation of braking and hold robustness, rather than treating reachability or static actuation authority as the first bottleneck. This is a provisional direction because policy behavior and protected hold semantics remain unmeasured. Goal review should decide whether to open the bounded policy-capability inquiry.",
+        "next_question": "At the next goal review, determine whether to open a bounded inquiry on developing and measuring a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "63dceb90-184d-412f-bcb7-1075b5daad9e",
+        "campaign_id": "0d39d52c-e9f6-4b27-814c-3b9e21c07b2a",
+        "campaign_usage": "5m37s | 6.74 AIU | prompt 407.1k (80% cached) | output 33.5k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m50s | 3.95 AIU | prompt 249.9k (82% cached) | output 20.2k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "2a0284e19a2585144576158400171f17a85c0d61",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed startup measurement operation (M1) containing two PI-owned Python-module measurements: an executed verification and a compiled-dynamics trace artifact. No training steps and no candidate artifacts.",
+        "current_goal_gap": "No learned candidate exists and no development success rate has been measured. The remaining gap is capability evidence for a policy that can reach arbitrary official targets, brake the torque-driven arm, and sustain the complete hold with sufficient margin for the 98% objective.",
+        "current_synthesis": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+        "decision_frontier": "The unresolved decision is whether the first capability intervention should develop a learned policy under the existing torque interface with explicit braking/hold-sensitive diagnostics, or whether a broader physical route/contact/geometry investigation is needed first. Evidence that would redirect away from policy development would include target- or branch-conditioned torque-step failures, contact impulses, actuator saturation/force behavior inconsistent with the compiled facts, or systematic inability to settle even under a competent feedback trajectory. Evidence that would support policy-focused development would be a candidate that reaches targets but loses the hold, shows high near-tolerance qdot or internal excursions, or fails by target geometry while the compiled model remains contact-free and dynamically authoritative. The official evaluator's continuous-versus-boundary rule is still unavailable, so any development candidate must be judged with internal traces or conservative margin rather than aggregate sampled success alone.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, where each success requires entering the 1 cm target ball and remaining continuously within it for 2 seconds. M1 directly established the physical control and sampling conditions that a learned policy must satisfy; it did not measure policy success.",
+        "next_direction_or_closure": "M1 establishes the initial scientific direction: prioritize learned-policy capability development and mechanism-level evaluation of braking and hold robustness, rather than treating reachability or static actuation authority as the first bottleneck. This is a provisional direction because policy behavior and protected hold semantics remain unmeasured. Goal review should decide whether to open the bounded policy-capability inquiry.",
+        "next_question": "At the next goal review, determine whether to open a bounded inquiry on developing and measuring a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline."
+      }
+    },
+    "request_fingerprint": "1d12964ea1e3244033493ebce1b2bc9e3c3e93aa65e3671d12a91b3e090c5f4d",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No training candidates have been produced. Working, best-known, and retained roles are empty.",
+    "completed_operations": [
+      "M1"
+    ],
+    "cumulative_resource_use": "One completed startup measurement operation (M1) containing two PI-owned Python-module measurements: an executed verification and a compiled-dynamics trace artifact. No training steps and no candidate artifacts.",
+    "current_goal_gap": "No learned candidate exists and no development success rate has been measured. The remaining gap is capability evidence for a policy that can reach arbitrary official targets, brake the torque-driven arm, and sustain the complete hold with sufficient margin for the 98% objective.",
+    "current_synthesis": "Observed evidence from completed M1: the independent verification passed analytic planar forward kinematics (maximum error 2.78e-17 m), zero-action zero-velocity invariance over 40 internal updates, repeated held-control traces with 30 samples and 29 changing updates per reset, and detection of two deliberately constructed interior tolerance excursions that boundary-only sampling would miss. The operative compiled model measured nq=nv=nu=2, timestep 0.002 s, 10 internal steps per 20 ms control interval, diagonal free-space dof_M0 values 0.01210 and 0.01019, damping and armature 0.5 and 0.01, gear 5, control range [-1,1], and no actuator force limit. In deterministic held unit-torque traces, joint speeds reached about 9.6-9.7 rad/s within 80 ms; zero-action decay from [0.8,-0.5] rad/s reduced to [0.0133,-0.0030] rad/s over 100 ms; tested traces had zero contacts. These observations support the interpretation that motion authority is ample and that overshoot/braking and hold robustness are more consequential initial mechanisms than inability to reach. The near-tolerance controlled trace reached a minimum of 8.5 mm but exceeded 10 mm at both control boundaries and at 28 internal samples, demonstrating that the tested trajectory was not a successful hold and that sampled and internal behavior can differ. Competing explanation A, a compiled-dynamics authority bottleneck, is weakened for the tested configurations but not excluded across all target geometry or policy routes. Explanation B, a learned-policy timing/braking/hold bottleneck, is now the leading development hypothesis, but it is untested because no policy was evaluated. Continuous protected evaluator semantics remain unknown; the synthetic check validates only the analysis capability, not the hidden evaluator.",
+    "decision_frontier": "The unresolved decision is whether the first capability intervention should develop a learned policy under the existing torque interface with explicit braking/hold-sensitive diagnostics, or whether a broader physical route/contact/geometry investigation is needed first. Evidence that would redirect away from policy development would include target- or branch-conditioned torque-step failures, contact impulses, actuator saturation/force behavior inconsistent with the compiled facts, or systematic inability to settle even under a competent feedback trajectory. Evidence that would support policy-focused development would be a candidate that reaches targets but loses the hold, shows high near-tolerance qdot or internal excursions, or fails by target geometry while the compiled model remains contact-free and dynamically authoritative. The official evaluator's continuous-versus-boundary rule is still unavailable, so any development candidate must be judged with internal traces or conservative margin rather than aggregate sampled success alone.",
+    "evidence_references": [
+      "M1"
+    ],
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, where each success requires entering the 1 cm target ball and remaining continuously within it for 2 seconds. M1 directly established the physical control and sampling conditions that a learned policy must satisfy; it did not measure policy success.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "M1 establishes the initial scientific direction: prioritize learned-policy capability development and mechanism-level evaluation of braking and hold robustness, rather than treating reachability or static actuation authority as the first bottleneck. This is a provisional direction because policy behavior and protected hold semantics remain unmeasured. Goal review should decide whether to open the bounded policy-capability inquiry.",
+    "next_question": "At the next goal review, determine whether to open a bounded inquiry on developing and measuring a learned policy for torque-aware reach, braking, and complete-hold robustness under the official target distribution, using M1's compiled dynamics and internal-step distinction as the mechanism baseline.",
+    "scientific_commit": "2a0284e19a2585144576158400171f17a85c0d61",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "eb508dd49d5057744d7f93d34f48a431a59b713f",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "63dceb90-184d-412f-bcb7-1075b5daad9e",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1"
-    ],
-    "scientific_parent_commit": "c834a34f93c9c59c97af30577d3ae21a9a2f62f4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
