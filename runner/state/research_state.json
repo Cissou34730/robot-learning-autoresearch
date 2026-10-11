@@ -13278,38 +13278,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "Negative bounded answer: the tested mechanism-informed residual-torque PPO intervention did not exceed T4's 153/160 matched-panel result and did not retain acquisition performance.",
-        "reason": "M21 completed and passed the implementation verification, establishing that T6 used the intended persisted residual-torque control profile with branch-aware attraction, singular-elbow escape, boundary-aware velocity regulation, joint-limit repulsion, and learned residual clipping while preserving direct legacy behavior. T6 then completed the full 120,000-step fresh run with full official radius exposure. M22 measured two decision-relevant complete artifacts under the unchanged matched seed-4200 160-episode panel: T6:checkpoint-115712 achieved 9/160 and had 141 diagnostics with no first reach; T6:checkpoint-120832 achieved 6/160 and had 150 diagnostics with no first reach. Both therefore fail the I7 success and acquisition conditions. The result redirects away from this tested residual-torque/PPO implementation. It does not establish that residual control in general, another control law, or another learning method cannot work, and the measured diagnostics do not provide time-resolved live torque/joint evidence sufficient to assign the failure causally to any single scaffold term. The human 98% goal remains unresolved; T4 remains best measured at 153/160 and the official panel remains unmeasured."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "Negative bounded answer: the tested mechanism-informed residual-torque PPO intervention did not exceed T4's 153/160 matched-panel result and did not retain acquisition performance.",
-        "reason": "M21 completed and passed the implementation verification, establishing that T6 used the intended persisted residual-torque control profile with branch-aware attraction, singular-elbow escape, boundary-aware velocity regulation, joint-limit repulsion, and learned residual clipping while preserving direct legacy behavior. T6 then completed the full 120,000-step fresh run with full official radius exposure. M22 measured two decision-relevant complete artifacts under the unchanged matched seed-4200 160-episode panel: T6:checkpoint-115712 achieved 9/160 and had 141 diagnostics with no first reach; T6:checkpoint-120832 achieved 6/160 and had 150 diagnostics with no first reach. Both therefore fail the I7 success and acquisition conditions. The result redirects away from this tested residual-torque/PPO implementation. It does not establish that residual control in general, another control law, or another learning method cannot work, and the measured diagnostics do not provide time-resolved live torque/joint evidence sufficient to assign the failure causally to any single scaffold term. The human 98% goal remains unresolved; T4 remains best measured at 153/160 and the official panel remains unmeasured.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E30",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative bounded answer: the tested mechanism-informed residual-torque PPO intervention did not exceed T4's 153/160 matched-panel result and did not retain acquisition performance.",
-        "reason": "M21 completed and passed the implementation verification, establishing that T6 used the intended persisted residual-torque control profile with branch-aware attraction, singular-elbow escape, boundary-aware velocity regulation, joint-limit repulsion, and learned residual clipping while preserving direct legacy behavior. T6 then completed the full 120,000-step fresh run with full official radius exposure. M22 measured two decision-relevant complete artifacts under the unchanged matched seed-4200 160-episode panel: T6:checkpoint-115712 achieved 9/160 and had 141 diagnostics with no first reach; T6:checkpoint-120832 achieved 6/160 and had 150 diagnostics with no first reach. Both therefore fail the I7 success and acquisition conditions. The result redirects away from this tested residual-torque/PPO implementation. It does not establish that residual control in general, another control law, or another learning method cannot work, and the measured diagnostics do not provide time-resolved live torque/joint evidence sufficient to assign the failure causally to any single scaffold term. The human 98% goal remains unresolved; T4 remains best measured at 153/160 and the official panel remains unmeasured."
-      }
-    },
-    "request_fingerprint": "540b2c832c5466c5e53baa3b998490b5f10db7dfa3e516f6bd963f9e8ab37c72",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known on M19 at 153/160. T5:checkpoint-100352 is a complete measured continuation candidate at 153/160 and does not supersede T4. T2:checkpoint-120832 is the 150/160 matched reference. T3 is rejected at 0/160. No candidate is assigned a working or retained role, and no candidate is certified for the human goal.",
     "completed_operations": [
