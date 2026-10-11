@@ -7391,7 +7391,7 @@
     }
   },
   "counters": {
-    "event": 42,
+    "event": 43,
     "inquiry": 9,
     "measurement": 14,
     "session": 20,
@@ -7400,7 +7400,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T3:checkpoint-120832",
     "retained": {},
@@ -19105,9 +19105,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T09:02:37Z",
+      "error": null,
+      "id": "E43",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment of the explicitly assigned best-known candidate T3:checkpoint-120832. T3 achieved 151/160 successes (94.375%) on the shared development panel and exceeded the baseline by 41 paired wins with no baseline wins in M4. Every tested alternative was lower on comparable panels: T4 achieved 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and the four T10 checkpoints achieved 141-145/160 in M14 while losing every discordant paired episode to T3. The remaining gap is material: T3 is five successes below the 156/160 development proxy and has four recorded residual no-first-entry failures characterized by saturated, high-speed trajectories. E16 found positive local endpoint authority at representative residual configurations, but authority sufficiency across all official targets remains unestablished; likewise, the negative T8, T9, and T10 artifact results do not invalidate broader state- or phase-dependent control interfaces. These are real limitations, but no completed evidence supplies a distinct, evidence-backed intervention likely to improve the complete artifact before commitment. Further work would therefore repeat unresolved method exploration without a demonstrated route to overtake T3, while only the protected 200-episode assessment can resolve T3's official-distribution performance. Commitment is justified as best-candidate selection under uncertainty, not as a claim that the 98% criterion has already been met."
+      },
+      "result": {
+        "model": "T3:checkpoint-120832",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T3:checkpoint-120832",
+        "reason": "Request the protected official assessment of the explicitly assigned best-known candidate T3:checkpoint-120832. T3 achieved 151/160 successes (94.375%) on the shared development panel and exceeded the baseline by 41 paired wins with no baseline wins in M4. Every tested alternative was lower on comparable panels: T4 achieved 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and the four T10 checkpoints achieved 141-145/160 in M14 while losing every discordant paired episode to T3. The remaining gap is material: T3 is five successes below the 156/160 development proxy and has four recorded residual no-first-entry failures characterized by saturated, high-speed trajectories. E16 found positive local endpoint authority at representative residual configurations, but authority sufficiency across all official targets remains unestablished; likewise, the negative T8, T9, and T10 artifact results do not invalidate broader state- or phase-dependent control interfaces. These are real limitations, but no completed evidence supplies a distinct, evidence-backed intervention likely to improve the complete artifact before commitment. Further work would therefore repeat unresolved method exploration without a demonstrated route to overtake T3, while only the protected 200-episode assessment can resolve T3's official-distribution performance. Commitment is justified as best-candidate selection under uncertainty, not as a claim that the 98% criterion has already been met.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "855041c5-256e-4142-9961-54cc595e3420",
+        "campaign_id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
+        "campaign_usage": "54m08s | 156.47 AIU | prompt 26.4m (87% cached) | output 198.3k",
+        "session_id": "S20",
+        "session_kind": "goal_review",
+        "session_usage": "1m37s | 4.83 AIU | prompt 696.6k (81% cached) | output 3.8k"
+      },
+      "result": {
+        "model": "T3:checkpoint-120832",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E43",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment of the explicitly assigned best-known candidate T3:checkpoint-120832. T3 achieved 151/160 successes (94.375%) on the shared development panel and exceeded the baseline by 41 paired wins with no baseline wins in M4. Every tested alternative was lower on comparable panels: T4 achieved 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and the four T10 checkpoints achieved 141-145/160 in M14 while losing every discordant paired episode to T3. The remaining gap is material: T3 is five successes below the 156/160 development proxy and has four recorded residual no-first-entry failures characterized by saturated, high-speed trajectories. E16 found positive local endpoint authority at representative residual configurations, but authority sufficiency across all official targets remains unestablished; likewise, the negative T8, T9, and T10 artifact results do not invalidate broader state- or phase-dependent control interfaces. These are real limitations, but no completed evidence supplies a distinct, evidence-backed intervention likely to improve the complete artifact before commitment. Further work would therefore repeat unresolved method exploration without a demonstrated route to overtake T3, while only the protected 200-episode assessment can resolve T3's official-distribution performance. Commitment is justified as best-candidate selection under uncertainty, not as a claim that the 98% criterion has already been met."
+      }
+    },
+    "request_fingerprint": "618d6be49825032313304a4d7f30509aac7b1537d416d5f255be919632d76e1b",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development artifact at 151/160, supported by M4 and M12/M13 references. The T10 checkpoints measured in M14 are rejected relative to T3 for this inquiry. No working, best-known, or retained role is assigned in this session; role assignment remains a goal-review decision.",
     "completed_operations": [
@@ -19141,21 +19194,10 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "855041c5-256e-4142-9961-54cc595e3420",
-    "id": "S20",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E42"
-    ],
-    "scientific_parent_commit": "822b9e2ede46bd4039ee6d5b439374f03156eca0"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T3:checkpoint-120832",
+    "reason": "Request the protected official assessment of the explicitly assigned best-known candidate T3:checkpoint-120832. T3 achieved 151/160 successes (94.375%) on the shared development panel and exceeded the baseline by 41 paired wins with no baseline wins in M4. Every tested alternative was lower on comparable panels: T4 achieved 149/160 in M5, T8 144/160 in M12, T9 147/160 in M13, and the four T10 checkpoints achieved 141-145/160 in M14 while losing every discordant paired episode to T3. The remaining gap is material: T3 is five successes below the 156/160 development proxy and has four recorded residual no-first-entry failures characterized by saturated, high-speed trajectories. E16 found positive local endpoint authority at representative residual configurations, but authority sufficiency across all official targets remains unestablished; likewise, the negative T8, T9, and T10 artifact results do not invalidate broader state- or phase-dependent control interfaces. These are real limitations, but no completed evidence supplies a distinct, evidence-backed intervention likely to improve the complete artifact before commitment. Further work would therefore repeat unresolved method exploration without a demonstrated route to overtake T3, while only the protected 200-episode assessment can resolve T3's official-distribution performance. Commitment is justified as best-candidate selection under uncertainty, not as a claim that the 98% criterion has already been met.",
+    "status": "official_assessment_requested"
+  }
 }

@@ -68,3 +68,4 @@
 | E40 | inquiry | I9 | completed |
 | E41 | checkpoint | I9 | checkpointed |
 | E42 | model_role | - | assigned |
+| E43 | campaign_conclusion | - | official_assessment_requested |
