@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train and archive at least one complete learned candidate within the current 120000-step allocation, then evaluate the selected complete artifact on a held-out development panel sampled from the official task distribution while preserving per-episode target radius, target angle, first reach, minimum and final distance, maximum held steps, hold interruptions, and outcome. Close when the resulting candidate comparison and diagnostics identify a capability gap that changes the next direction, or establish that the evidence is limited/inconclusive and preserve the unresolved distinction for goal review; development evidence will not be treated as official certification.",
-    "goal_connection": "The human goal is at least 196 successful episodes out of 200 under the full 0.06-0.20 m radial distribution, with an uninterrupted 100-step hold. No candidate has yet demonstrated any capability under that distribution. A complete candidate evaluation is the first evidence that can distinguish whether progress is limited by singular escape and reach timing, convergence/braking, uninterrupted hold regulation, inner-radius generalization, or branch/contact behavior.",
-    "handoff_conclusion": "Observed evidence is limited to completed operation M5. It established for the exact compiled model a 0.002 s simulator timestep, ten integration substeps per 0.020 s control update, gear 5 motors with control range [-1,1] and no force limit, finite compiled physical masses/inertias, damping 0.5 and armature 0.01, reproducible zero resets at qpos=qvel=0 with endpoint (0.22,0,0.02), symmetric isolated torque response, reversal of shoulder velocity after command reversal, free-velocity decay, and no contacts in the tested reset, nonsingular torque, reversal, or decay traces; its independent checks passed. These observations support retaining the interpretation that a source-level actuator, timing, reset, or basic compiled-dynamics repair is not currently justified. They do not establish policy capability, long-horizon regulation, behavior from the singular reset across target angles, the unexposed 0.06-0.14 m band, or folded-path contacts. The inherited proposed question was directionally appropriate but is corrected here to require a held-out development panel and explicit radius/angle-stratified reach/hold diagnostics, because no candidate exists and pooled reward or first entry cannot answer the goal question. Competing explanations remain: the tested policy recipe may fail in singular escape, reach timing, braking, or hold regulation; it may generalize poorly from the 0.14-0.20 m training band to inner targets; or branch occupancy/contact geometry may create target-dependent failures. Any unexplained difference between complete candidate artifacts will remain an artifact-level selection fact, not a causal claim.",
-    "handoff_question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified?",
-    "rationale": "M5 completed the compiled-plant verification and supports the inherited correction that a source-level dynamics or action-interface repair is not currently justified, but it did not measure policy behavior, the 100-step hold, the official radial range, or branch occupancy. There is no strongest candidate, training trajectory, or unmeasured candidate artifact to support official assessment. The current PPO implementation and 0.14-0.20 m training exposure are only a recipe to test, not scientific authority. One bounded candidate-development and diagnostic-evaluation inquiry can credibly change candidate selection and reveal whether failures concentrate in reach, stabilization, or the unexposed inner band; it cannot by itself certify the 98% objective or prove a causal mechanism for any unexplained artifact difference.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 6,
     "session": 3,
@@ -1935,9 +1924,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T22:24:56Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Bounded answer: the complete T1:checkpoint-115712 artifact achieves 105/160 (65.625%) on the held-out full-distribution development panel. Its diagnostics identify the dominant capability gap as reach/acquisition rather than uninterrupted hold regulation: 48 of 55 failures never enter the 1 cm tolerance, while 7 reach but fail to sustain the hold. The no-reach failures are concentrated in the previously unexposed inner-radius band below 14 cm (44 of 48), with four failures at exposed radii; angle/branch dependence remains evident but not causally isolated.",
+        "reason": "M5 verified the compiled plant assumptions but did not establish policy behavior. T1 supplied complete candidates and a trajectory; M6 supplied the first held-out per-episode evidence required by I1. This result changes the next direction toward learning/control development that explicitly covers inner-radius reach acquisition and its angle-dependent trajectories, rather than a source-level actuator or basic compiled-dynamics repair. The evidence does not prove whether the gap is singular escape, inner-radius generalization, branch occupancy, or a control-timing mechanism because M6 lacks joint-velocity/contact/branch traces; those distinctions remain unresolved for the next goal review. Development evidence is not official certification."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Bounded answer: the complete T1:checkpoint-115712 artifact achieves 105/160 (65.625%) on the held-out full-distribution development panel. Its diagnostics identify the dominant capability gap as reach/acquisition rather than uninterrupted hold regulation: 48 of 55 failures never enter the 1 cm tolerance, while 7 reach but fail to sustain the hold. The no-reach failures are concentrated in the previously unexposed inner-radius band below 14 cm (44 of 48), with four failures at exposed radii; angle/branch dependence remains evident but not causally isolated.",
+        "reason": "M5 verified the compiled plant assumptions but did not establish policy behavior. T1 supplied complete candidates and a trajectory; M6 supplied the first held-out per-episode evidence required by I1. This result changes the next direction toward learning/control development that explicitly covers inner-radius reach acquisition and its angle-dependent trajectories, rather than a source-level actuator or basic compiled-dynamics repair. The evidence does not prove whether the gap is singular escape, inner-radius generalization, branch occupancy, or a control-timing mechanism because M6 lacks joint-velocity/contact/branch traces; those distinctions remain unresolved for the next goal review. Development evidence is not official certification.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Bounded answer: the complete T1:checkpoint-115712 artifact achieves 105/160 (65.625%) on the held-out full-distribution development panel. Its diagnostics identify the dominant capability gap as reach/acquisition rather than uninterrupted hold regulation: 48 of 55 failures never enter the 1 cm tolerance, while 7 reach but fail to sustain the hold. The no-reach failures are concentrated in the previously unexposed inner-radius band below 14 cm (44 of 48), with four failures at exposed radii; angle/branch dependence remains evident but not causally isolated.",
+        "reason": "M5 verified the compiled plant assumptions but did not establish policy behavior. T1 supplied complete candidates and a trajectory; M6 supplied the first held-out per-episode evidence required by I1. This result changes the next direction toward learning/control development that explicitly covers inner-radius reach acquisition and its angle-dependent trajectories, rather than a source-level actuator or basic compiled-dynamics repair. The evidence does not prove whether the gap is singular escape, inner-radius generalization, branch occupancy, or a control-timing mechanism because M6 lacks joint-velocity/contact/branch traces; those distinctions remain unresolved for the next goal review. Development evidence is not official certification."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Bounded answer: the complete T1:checkpoint-115712 artifact achieves 105/160 (65.625%) on the held-out full-distribution development panel. Its diagnostics identify the dominant capability gap as reach/acquisition rather than uninterrupted hold regulation: 48 of 55 failures never enter the 1 cm tolerance, while 7 reach but fail to sustain the hold. The no-reach failures are concentrated in the previously unexposed inner-radius band below 14 cm (44 of 48), with four failures at exposed radii; angle/branch dependence remains evident but not causally isolated.",
+        "reason": "M5 verified the compiled plant assumptions but did not establish policy behavior. T1 supplied complete candidates and a trajectory; M6 supplied the first held-out per-episode evidence required by I1. This result changes the next direction toward learning/control development that explicitly covers inner-radius reach acquisition and its angle-dependent trajectories, rather than a source-level actuator or basic compiled-dynamics repair. The evidence does not prove whether the gap is singular escape, inner-radius generalization, branch occupancy, or a control-timing mechanism because M6 lacks joint-velocity/contact/branch traces; those distinctions remain unresolved for the next goal review. Development evidence is not official certification.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Bounded answer: the complete T1:checkpoint-115712 artifact achieves 105/160 (65.625%) on the held-out full-distribution development panel. Its diagnostics identify the dominant capability gap as reach/acquisition rather than uninterrupted hold regulation: 48 of 55 failures never enter the 1 cm tolerance, while 7 reach but fail to sustain the hold. The no-reach failures are concentrated in the previously unexposed inner-radius band below 14 cm (44 of 48), with four failures at exposed radii; angle/branch dependence remains evident but not causally isolated.",
+        "reason": "M5 verified the compiled plant assumptions but did not establish policy behavior. T1 supplied complete candidates and a trajectory; M6 supplied the first held-out per-episode evidence required by I1. This result changes the next direction toward learning/control development that explicitly covers inner-radius reach acquisition and its angle-dependent trajectories, rather than a source-level actuator or basic compiled-dynamics repair. The evidence does not prove whether the gap is singular escape, inner-radius generalization, branch occupancy, or a control-timing mechanism because M6 lacks joint-velocity/contact/branch traces; those distinctions remain unresolved for the next goal review. Development evidence is not official certification."
+      }
+    },
+    "request_fingerprint": "95adf2c915ea6bbeecf0badc56d2d4507676868ecea7e0be1a766bb1450b973c",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained, measured, or assigned a role. M5 is plant evidence and cannot serve as a learned candidate. The current PPO implementation and its 0.14-0.20 m exposure are provisional test material, not privileged evidence.",
     "completed_operations": [
@@ -1977,7 +2020,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which complete learned candidate, evaluated on a held-out development panel sampled from the official task distribution with radius- and angle-stratified reach/hold diagnostics, establishes the dominant capability gap after the compiled plant assumptions have been verified? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M6"
+      "M6",
+      "E4"
     ],
     "scientific_parent_commit": "12e747b71992c03fc9c556fd9d31909dd66a0e3a"
   },
