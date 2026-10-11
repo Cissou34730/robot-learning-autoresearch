@@ -17,6 +17,8 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+CONTROL_LIMIT_THRESHOLD = 0.8
+CONTROL_LIMIT_PENALTY_COEFFICIENT = 1.0
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -91,9 +93,21 @@ def reach_reward(
     reward += hold_complete
 
     action_cost = 0.0
+    control_limit_cost = 0.0
     if action is not None:
-        action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
-    reward += action_cost
+        action_values = np.asarray(action, dtype=np.float64)
+        action_cost = -(
+            ACTION_COST_COEFFICIENT * float(np.sum(np.square(action_values)))
+        )
+        near_limit_excess = np.maximum(
+            np.abs(action_values) - CONTROL_LIMIT_THRESHOLD, 0.0
+        )
+        control_limit_cost = -(
+            CONTROL_LIMIT_PENALTY_COEFFICIENT
+            * float(np.sum(np.square(near_limit_excess)))
+        )
+        reward += action_cost
+        reward += control_limit_cost
 
     return RewardResult(
         total=float(reward),
@@ -104,5 +118,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "control_limit_cost": float(control_limit_cost),
         },
     )
