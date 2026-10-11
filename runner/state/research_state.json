@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after one T4-parent transfer using a single exponential action filter with no hard IK branch selection or joint-space target correction, followed by a non-overlapping 200-episode research evaluation of a selected checkpoint against T4 on the same seeds with radius- and angle-stratified diagnostics. Reaching at least 196/200 with inner-radius acquisition preserved supports continued development or official assessment; failure to improve, loss of inner-radius performance, or evidence of a different geometry-specific mechanism supports a limited negative closure and return to goal review for terminal assessment.",
     "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T4 remains the strongest evidence-backed candidate but measured 191/200 on M5 and 186/200 on the matched M7 panel, so terminal assessment would commit a candidate with a demonstrated development gap. A branch-neutral action filter targets the sampled-data stabilization consequence of 50 Hz control without changing T4's observation, IK branch representation, reward, transfer parent, or inner-radius curriculum.",
-    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward after tolerance exit while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then tested a different branch-aware mechanism: episode-stable IK branch selection plus near-target joint-space damping, while preserving T4's curriculum and zero hold-exit forfeiture. M7 measured T6 at 103/200 versus 186/200 for T4 on the same fresh seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing this specific controller implementation. It does not establish that all branch-aware, temporal-memory, or representation methods are ineffective because M7's recorded diagnostics do not identify the radius, angle, branch, or trajectory cause of T6's degradation. The supported route is therefore the staged-transfer T4 baseline; the unresolved choice is whether another non-hard-branch representation or stabilization method can improve its residual tail enough to justify delaying official assessment.",
+    "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
     "handoff_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "handoff_source_session_id": "S5",
+    "handoff_source_session_id": "S6",
     "id": "I3",
     "opened_in_session": "S6",
     "question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
@@ -4931,7 +4931,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 3,
     "measurement": 7,
     "session": 6,
@@ -4940,7 +4940,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8863,20 +8863,187 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T00:13:52Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, and E10 opened I3.",
+        "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
+        "decision_frontier": "The terminal alternative is official assessment of T4, whose measured development performance remains below target. The bounded alternative is I3: test whether a single branch-neutral exponential action filter can reduce sampled-data hold failures without sacrificing T4's inner-radius acquisition. The filter is scientifically consequential because the physical model predicts 50 Hz zero-order-held commands can produce hold errors, while M1 shows the plant has adequate bounded authority and M7 does not isolate its composite causes. A non-overlapping 200-episode paired evaluation with radius- and angle-stratified diagnostics will discriminate the alternatives: at least 196/200 with preserved inner-radius performance supports continued development or assessment of the improved candidate; failure to improve, loss of acquisition, or a geometry-specific residual mechanism supports limited-negative closure and return to goal review. The prior T6 result redirects only its coupled implementation, not this isolated branch-neutral mechanism.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 remains the strongest evidence-backed candidate, but it achieved 191/200 on M5 and 186/200 on the matched M7 panel; neither development result certifies the official goal. Goal review opened I3 instead of requesting terminal assessment because one bounded, T4-preserving stabilization route can still credibly improve the measured gap.",
+        "next_direction_or_closure": "Goal review opened I3 because T4 remains below the human-goal threshold while a distinct, directly testable sampled-data stabilization route remains plausible. This checkpoint ends the goal-review session. The fresh I3 inquiry session must choose the supported training, implementation, or measurement action under its exact active question; it must preserve the distinction between the isolated branch-neutral filter and the composite T6 negative result.",
+        "next_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2cc550a355b8bc14c826c7cf4e56b93a4f3e55f6",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, and E10 opened I3.",
+        "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
+        "decision_frontier": "The terminal alternative is official assessment of T4, whose measured development performance remains below target. The bounded alternative is I3: test whether a single branch-neutral exponential action filter can reduce sampled-data hold failures without sacrificing T4's inner-radius acquisition. The filter is scientifically consequential because the physical model predicts 50 Hz zero-order-held commands can produce hold errors, while M1 shows the plant has adequate bounded authority and M7 does not isolate its composite causes. A non-overlapping 200-episode paired evaluation with radius- and angle-stratified diagnostics will discriminate the alternatives: at least 196/200 with preserved inner-radius performance supports continued development or assessment of the improved candidate; failure to improve, loss of acquisition, or a geometry-specific residual mechanism supports limited-negative closure and return to goal review. The prior T6 result redirects only its coupled implementation, not this isolated branch-neutral mechanism.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 remains the strongest evidence-backed candidate, but it achieved 191/200 on M5 and 186/200 on the matched M7 panel; neither development result certifies the official goal. Goal review opened I3 instead of requesting terminal assessment because one bounded, T4-preserving stabilization route can still credibly improve the measured gap.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened I3 because T4 remains below the human-goal threshold while a distinct, directly testable sampled-data stabilization route remains plausible. This checkpoint ends the goal-review session. The fresh I3 inquiry session must choose the supported training, implementation, or measurement action under its exact active question; it must preserve the distinction between the isolated branch-neutral filter and the composite T6 negative result.",
+        "next_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "1214631c-87ab-4748-85b7-6190ef8075cd",
+        "campaign_id": "89a6354a-0e08-43f6-b017-536e7c05229b",
+        "campaign_usage": "23m58s | 58.51 AIU | prompt 11.1m (90% cached) | output 87.5k",
+        "session_id": "S6",
+        "session_kind": "goal_review",
+        "session_usage": "1m56s | 8.16 AIU | prompt 1.1m (81% cached) | output 7.7k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "2fe1dc53a591a0dd3600daa9b3cb94df722bd9d2",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, and E10 opened I3.",
+        "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
+        "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
+        "decision_frontier": "The terminal alternative is official assessment of T4, whose measured development performance remains below target. The bounded alternative is I3: test whether a single branch-neutral exponential action filter can reduce sampled-data hold failures without sacrificing T4's inner-radius acquisition. The filter is scientifically consequential because the physical model predicts 50 Hz zero-order-held commands can produce hold errors, while M1 shows the plant has adequate bounded authority and M7 does not isolate its composite causes. A non-overlapping 200-episode paired evaluation with radius- and angle-stratified diagnostics will discriminate the alternatives: at least 196/200 with preserved inner-radius performance supports continued development or assessment of the improved candidate; failure to improve, loss of acquisition, or a geometry-specific residual mechanism supports limited-negative closure and return to goal review. The prior T6 result redirects only its coupled implementation, not this isolated branch-neutral mechanism.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "T2",
+          "M3",
+          "T3",
+          "M4",
+          "T4",
+          "M5",
+          "E2",
+          "T5",
+          "M6",
+          "E4",
+          "E6",
+          "T6",
+          "M7",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 remains the strongest evidence-backed candidate, but it achieved 191/200 on M5 and 186/200 on the matched M7 panel; neither development result certifies the official goal. Goal review opened I3 instead of requesting terminal assessment because one bounded, T4-preserving stabilization route can still credibly improve the measured gap.",
+        "next_direction_or_closure": "Goal review opened I3 because T4 remains below the human-goal threshold while a distinct, directly testable sampled-data stabilization route remains plausible. This checkpoint ends the goal-review session. The fresh I3 inquiry session must choose the supported training, implementation, or measurement action under its exact active question; it must preserve the distinction between the isolated branch-neutral filter and the composite T6 negative result.",
+        "next_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?"
+      }
+    },
+    "request_fingerprint": "db9c9f632c49bb225a1381d8da8eda44ab38a5671806ac5dc27494c384ca3ddb",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate, measured at 191/200 on M5 and 186/200 on the matched M7 panel. T6:checkpoint-120832 is not a viable candidate after M7 measured 103/200; it is retained only as evidence about the tested controller implementation.",
+    "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate from M5 and M7. T6:checkpoint-120832 remains evidence about the tested composite controller implementation and is not a viable replacement.",
     "completed_operations": [
-      "T6",
-      "M7",
-      "E8"
+      "E10"
     ],
-    "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, and E8 closed I2 with a limited negative result.",
-    "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved only 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
-    "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward after tolerance exit while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then tested a different branch-aware mechanism: episode-stable IK branch selection plus near-target joint-space damping, while preserving T4's curriculum and zero hold-exit forfeiture. M7 measured T6 at 103/200 versus 186/200 for T4 on the same fresh seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing this specific controller implementation. It does not establish that all branch-aware, temporal-memory, or representation methods are ineffective because M7's recorded diagnostics do not identify the radius, angle, branch, or trajectory cause of T6's degradation. The supported route is therefore the staged-transfer T4 baseline; the unresolved choice is whether another non-hard-branch representation or stabilization method can improve its residual tail enough to justify delaying official assessment.",
-    "decision_frontier": "The tested hard branch-selection and damping controller is redirected by M7, but the broader goal-linked distinction remains whether T4's residual hold failures can be reduced by a different representation or stabilization mechanism without sacrificing inner-radius acquisition, or whether T4 is already the strongest credible candidate and the campaign should request the protected assessment. A new candidate must be measured on a non-overlapping 200-episode panel with radius- and angle-stratified diagnostics; reaching at least 196/200 while preserving inner-radius performance would justify continued development, while failure to improve would make official assessment of the strongest candidate the more defensible next goal-review decision. M7's aggregate artifact does not contain branch identity or trajectory fields, so those mechanisms remain unresolved rather than disproven.",
+    "cumulative_resource_use": "Completed training: T1, T2, T3, T4, T5, and T6, each requested at 120000 steps and completing 120832 steps; total requested training allocation 720000 steps. Completed research measurements: M1 dynamics characterization and M2-M7 development evaluations, with M6 and M7 paired 200-episode panels. No official assessment requested. Completed inquiry boundaries: E2 opened I1, E4 closed I1 with a limited negative result, E6 opened I2, E8 closed I2 with a limited negative result, and E10 opened I3.",
+    "current_goal_gap": "The best available development evidence is ten successes below the 196/200 target on the latest T4 panel (186/200), and five below it on M5 (191/200). T6 achieved 103/200 on the same M7 panel. These are development results only and cannot substitute for the protected official assessment.",
+    "current_synthesis": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. This supports staged transfer plus targeted inner-radius exposure as an acquisition route and makes hold robustness a credible bottleneck, but interruptions also occurred in successful episodes and do not establish a sole cause. T5 implemented full forfeiture of accumulated hold-progress reward while preserving T4's coverage and transfer parent; M6 measured 184/200 for T5 versus 187/200 for T4 on matched seeds, ruling out improvement for that reward-only recipe. T6 then changed observations, policy action mapping, and reward-related scientific files together: its fixed branch selector and near-target joint-space damping achieved 103/200 versus 186/200 for T4 on matched M7 seeds, with 4 T6 wins, 87 T4 wins, and 91 discordant episodes. This is strong evidence against continuing that composite implementation, not against all branch-aware, temporal-memory, representation, or stabilization methods. The correction is consequential: because M7's aggregate artifact lacks branch identity and trajectory fields, it cannot establish whether hard branch selection, damping, altered observation, or their interaction caused the degradation. The supported acquisition route remains staged transfer with targeted inner-radius exposure. I3 therefore isolates a branch-neutral exponential action filter that preserves T4's observation, reward, transfer parent, and radius curriculum while testing the sampled-data bandwidth explanation.",
+    "decision_frontier": "The terminal alternative is official assessment of T4, whose measured development performance remains below target. The bounded alternative is I3: test whether a single branch-neutral exponential action filter can reduce sampled-data hold failures without sacrificing T4's inner-radius acquisition. The filter is scientifically consequential because the physical model predicts 50 Hz zero-order-held commands can produce hold errors, while M1 shows the plant has adequate bounded authority and M7 does not isolate its composite causes. A non-overlapping 200-episode paired evaluation with radius- and angle-stratified diagnostics will discriminate the alternatives: at least 196/200 with preserved inner-radius performance supports continued development or assessment of the improved candidate; failure to improve, loss of acquisition, or a geometry-specific residual mechanism supports limited-negative closure and return to goal review. The prior T6 result redirects only its coupled implementation, not this isolated branch-neutral mechanism.",
     "evidence_references": [
       "M1",
       "T1",
@@ -8894,14 +9061,15 @@
       "E6",
       "T6",
       "M7",
-      "E8"
+      "E8",
+      "E10"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. The strongest development candidate remains T4:checkpoint-105472, which achieved 191/200 on M5 and 186/200 on the fresh matched M7 panel; neither result certifies the official goal. The tested T6 branch-aware controller is not a viable replacement, so the campaign returns to goal review to weigh one different bounded route against terminal official assessment.",
-    "inquiry_id": "I2",
-    "next_direction_or_closure": "I2 is closed with a limited negative conclusion recorded by E8: the tested fixed-branch selector and near-target damping controller did not reduce T4's failure tail and substantially degraded performance. This checkpoint ends the inquiry session. The next goal review must compare the terminal official assessment of T4 against the proposed question about a different T4-preserving representation or stabilization route, without treating M7 as evidence against the broader method.",
-    "next_question": "Can a T4-preserving representation or stabilization change that avoids hard branch selection reduce the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
-    "scientific_commit": "43525ab9e1551a8f82c3ad96c7eb35a3ad056c81",
-    "session_id": "S5"
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T4:checkpoint-105472 remains the strongest evidence-backed candidate, but it achieved 191/200 on M5 and 186/200 on the matched M7 panel; neither development result certifies the official goal. Goal review opened I3 instead of requesting terminal assessment because one bounded, T4-preserving stabilization route can still credibly improve the measured gap.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review opened I3 because T4 remains below the human-goal threshold while a distinct, directly testable sampled-data stabilization route remains plausible. This checkpoint ends the goal-review session. The fresh I3 inquiry session must choose the supported training, implementation, or measurement action under its exact active question; it must preserve the distinction between the isolated branch-neutral filter and the composite T6 negative result.",
+    "next_question": "Can a T4-preserving, branch-neutral exponential action filter improve the residual failure tail to at least 196/200 while preserving inner-radius acquisition?",
+    "scientific_commit": "2fe1dc53a591a0dd3600daa9b3cb94df722bd9d2",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -8909,21 +9077,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1214631c-87ab-4748-85b7-6190ef8075cd",
-    "id": "S6",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E10"
-    ],
-    "scientific_parent_commit": "2cc550a355b8bc14c826c7cf4e56b93a4f3e55f6"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
