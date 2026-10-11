@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Evaluate the complete T4:checkpoint-120832 artifact on the current research evaluator using the matched 160-episode panel starting at seed 4200, and inspect the recorded success count, no-first-reach/hold diagnostics, and evaluator-semantics fingerprint. Close with a positive comparability result if the current-source control retains 153/160 with no material semantic discrepancy; close with a limited or negative comparability result if the outcome materially differs or the semantics show that historical and current results are not directly comparable. Either result must preserve that this is a control/comparability test, not a causal test of individual residual terms and not the official 200-episode assessment.",
     "goal_connection": "The human objective is one frozen learned policy achieving at least 196/200 official episodes, with every success requiring an uninterrupted 100-step hold. T4 is the strongest candidate measured so far at 153/160 on the historical development panel, while both tested I7 residual-torque candidates collapsed to 9/160 and 6/160 under the current evaluator. A current-source control evaluation of T4 can determine whether the best development evidence remains comparable and therefore whether the next effort should redirect away from the tested residual scaffold or first repair the measurement basis; it cannot certify the official goal.",
-    "handoff_conclusion": "Observed: M21 passed an independent implementation check across repeated changed states, negative-angle and near-singular targets, a near-limit state, resets, direct control, legacy runtimes without a marker, training/evaluation profile selection, and checkpoint profile persistence. T6 completed the full allocated fresh run with full official radius exposure; its training proxies reached 0.99-1.00 near the end but did not establish capability. M22 measured both a nonterminal high-proxy checkpoint and the terminal checkpoint under the same current evaluator and matched seed-4200 panel: they achieved 9/160 and 6/160, with 141 and 150 no-first-reach diagnostics. These complete results give a negative bounded answer for the implemented persisted residual-torque PPO policy. Interpretation is limited to this implementation and runtime: high training success proxies did not translate to complete evaluation success, and the residual scaffold failed primarily as an acquisition-capability artifact comparison. The few successful holds show that the current plant and evaluator can still produce complete holds for some targets, but aggregate and episode diagnostics do not establish which scaffold term caused the collapse. Competing explanations remain: the fixed analytic scaffold may create an acquisition basin or branch/limit interaction the learned residual cannot correct; the learned residual/PPO optimization may be poorly conditioned around that scaffold; or the apparent historical comparison may be affected by the evaluator fingerprint change. M15 supports acquisition/braking/regulation mechanisms for T2 but does not causally explain T6. The live time-resolved torque/joint evidence for T4/T5 remains unavailable.",
+    "handoff_conclusion": "Observed: M21 independently verified the implemented residual-torque policy semantics across repeated updates, transitions, resets, direct control, legacy runtimes, profile selection and checkpoint persistence, but did not establish full-trajectory equivalence of legacy T4 under the modified source. T6 completed the full allocated fresh run with full official-radius exposure and training proxies near 0.99-1.00 late in training. M22 then evaluated both selected T6 artifacts completely on the same current evaluator: checkpoint-115712 achieved 9/160 and checkpoint-120832 achieved 6/160; their no-first-reach counts were 141 and 150. E30 therefore supports a negative bounded answer for the tested persisted residual-torque PPO implementation: its high training proxies did not translate to acquisition capability. The few T6 successes show that complete holds remain possible in the current plant, but do not identify whether the fixed scaffold, residual optimization, or another artifact property caused the collapse. Correction to the inherited interpretation: the residual result itself is not established as measurement-limited, because M22 is complete under its recorded current evaluator and M21 verifies the exercised implementation. What remains measurement-limited is the comparison between M22 and historical M19: their evaluator fingerprints differ (f6bf4b99cf62 versus 4e874c58d1e9), and no completed evidence re-evaluates legacy T4 through the current source. The initial physical model remains decision-relevant: official targets are bounded-IK reachable with two branches, the reset is singular and can make early acquisition decisive, torque is saturated and held for 20 ms, and success is a 100-step dynamic regulation event. M15 supports acquisition/braking/regulation mechanisms for T2, but that evidence is not causal evidence for T6. These consequences mean that a current T4 control must be judged by complete acquisition and hold diagnostics, not training proxy or first reach alone.",
     "handoff_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
-    "handoff_source_session_id": "S15",
+    "handoff_source_session_id": "S16",
     "id": "I8",
     "opened_in_session": "S16",
     "question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
@@ -4934,7 +4934,7 @@
     }
   },
   "counters": {
-    "event": 32,
+    "event": 33,
     "inquiry": 8,
     "measurement": 22,
     "session": 16,
@@ -4943,7 +4943,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -13347,33 +13347,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:37:26Z",
+      "error": null,
+      "id": "E33",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
+        "completed_operations": [
+          "E32"
+        ],
+        "cumulative_resource_use": "Completed campaign history through I7 includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22 and E30. Current goal review recorded E32 and opened I8; no new training or measurement resource has been consumed in this session.",
+        "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4 is 43/160 below the 196/200 official success count when viewed as a development signal, and the tested I7 residual-torque candidates reached only 9/160 and 6/160 with 141 and 150 no-first-reach episodes. The remaining comparability gap is whether historical T4 retains its capability under the current scenario source and what evaluator semantics that control receives.",
+        "current_synthesis": "Observed: M21 independently verified the implemented residual-torque policy semantics across repeated updates, transitions, resets, direct control, legacy runtimes, profile selection and checkpoint persistence, but did not establish full-trajectory equivalence of legacy T4 under the modified source. T6 completed the full allocated fresh run with full official-radius exposure and training proxies near 0.99-1.00 late in training. M22 then evaluated both selected T6 artifacts completely on the same current evaluator: checkpoint-115712 achieved 9/160 and checkpoint-120832 achieved 6/160; their no-first-reach counts were 141 and 150. E30 therefore supports a negative bounded answer for the tested persisted residual-torque PPO implementation: its high training proxies did not translate to acquisition capability. The few T6 successes show that complete holds remain possible in the current plant, but do not identify whether the fixed scaffold, residual optimization, or another artifact property caused the collapse. Correction to the inherited interpretation: the residual result itself is not established as measurement-limited, because M22 is complete under its recorded current evaluator and M21 verifies the exercised implementation. What remains measurement-limited is the comparison between M22 and historical M19: their evaluator fingerprints differ (f6bf4b99cf62 versus 4e874c58d1e9), and no completed evidence re-evaluates legacy T4 through the current source. The initial physical model remains decision-relevant: official targets are bounded-IK reachable with two branches, the reset is singular and can make early acquisition decisive, torque is saturated and held for 20 ms, and success is a 100-step dynamic regulation event. M15 supports acquisition/braking/regulation mechanisms for T2, but that evidence is not causal evidence for T6. These consequences mean that a current T4 control must be judged by complete acquisition and hold diagnostics, not training proxy or first reach alone.",
+        "decision_frontier": "The consequential unresolved distinction is whether the large T4-versus-T6 gap is an artifact-level capability difference under comparable semantics or is partly created by the PI-owned scenario-source/evaluator change. The discriminating evidence is one current-source research evaluation of legacy T4:checkpoint-120832 on the matched 160-episode panel beginning at seed 4200, with its success count, no-first-reach and hold diagnostics, and evaluator fingerprint. If T4 retains 153/160 with no material semantic discrepancy, the negative artifact comparison is strengthened and the tested residual scaffold should be abandoned as a development route; if T4 materially changes or the semantics are not comparable, the comparison must be treated as limited and measurement repair or reinterpretation precedes a capability conclusion. Neither outcome tests individual residual terms or certifies the official 200-episode goal.",
+        "evidence_references": [
+          "M21",
+          "T6",
+          "M22",
+          "E30",
+          "E32"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, and each success must contain the complete uninterrupted 100-step hold. The current best development candidate is T4:checkpoint-120832 at 153/160 historically; it is not certified and the official assessment is not yet justified.",
+        "next_direction_or_closure": "Opened bounded inquiry I8 (E32) rather than requesting official assessment. The official assessment is unjustified because T4 is below the development threshold and its current-source comparability is unresolved; the unsuccessful T6 alternative does not improve T4 capability. The fresh I8 inquiry should first run the current-code direct-T4 control evaluation on the matched panel and then close or redirect based on the observed outcome and semantics. The inquiry is control/comparability work, not a causal decomposition of the residual scaffold.",
+        "next_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?"
+      },
+      "result": {
+        "session_id": "S16",
+        "status": "checkpointed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "06b0c850284612a45464741c6ab20d5a2fac197f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
+        "completed_operations": [
+          "E32"
+        ],
+        "cumulative_resource_use": "Completed campaign history through I7 includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22 and E30. Current goal review recorded E32 and opened I8; no new training or measurement resource has been consumed in this session.",
+        "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4 is 43/160 below the 196/200 official success count when viewed as a development signal, and the tested I7 residual-torque candidates reached only 9/160 and 6/160 with 141 and 150 no-first-reach episodes. The remaining comparability gap is whether historical T4 retains its capability under the current scenario source and what evaluator semantics that control receives.",
+        "current_synthesis": "Observed: M21 independently verified the implemented residual-torque policy semantics across repeated updates, transitions, resets, direct control, legacy runtimes, profile selection and checkpoint persistence, but did not establish full-trajectory equivalence of legacy T4 under the modified source. T6 completed the full allocated fresh run with full official-radius exposure and training proxies near 0.99-1.00 late in training. M22 then evaluated both selected T6 artifacts completely on the same current evaluator: checkpoint-115712 achieved 9/160 and checkpoint-120832 achieved 6/160; their no-first-reach counts were 141 and 150. E30 therefore supports a negative bounded answer for the tested persisted residual-torque PPO implementation: its high training proxies did not translate to acquisition capability. The few T6 successes show that complete holds remain possible in the current plant, but do not identify whether the fixed scaffold, residual optimization, or another artifact property caused the collapse. Correction to the inherited interpretation: the residual result itself is not established as measurement-limited, because M22 is complete under its recorded current evaluator and M21 verifies the exercised implementation. What remains measurement-limited is the comparison between M22 and historical M19: their evaluator fingerprints differ (f6bf4b99cf62 versus 4e874c58d1e9), and no completed evidence re-evaluates legacy T4 through the current source. The initial physical model remains decision-relevant: official targets are bounded-IK reachable with two branches, the reset is singular and can make early acquisition decisive, torque is saturated and held for 20 ms, and success is a 100-step dynamic regulation event. M15 supports acquisition/braking/regulation mechanisms for T2, but that evidence is not causal evidence for T6. These consequences mean that a current T4 control must be judged by complete acquisition and hold diagnostics, not training proxy or first reach alone.",
+        "decision_frontier": "The consequential unresolved distinction is whether the large T4-versus-T6 gap is an artifact-level capability difference under comparable semantics or is partly created by the PI-owned scenario-source/evaluator change. The discriminating evidence is one current-source research evaluation of legacy T4:checkpoint-120832 on the matched 160-episode panel beginning at seed 4200, with its success count, no-first-reach and hold diagnostics, and evaluator fingerprint. If T4 retains 153/160 with no material semantic discrepancy, the negative artifact comparison is strengthened and the tested residual scaffold should be abandoned as a development route; if T4 materially changes or the semantics are not comparable, the comparison must be treated as limited and measurement repair or reinterpretation precedes a capability conclusion. Neither outcome tests individual residual terms or certifies the official 200-episode goal.",
+        "evidence_references": [
+          "M21",
+          "T6",
+          "M22",
+          "E30",
+          "E32"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, and each success must contain the complete uninterrupted 100-step hold. The current best development candidate is T4:checkpoint-120832 at 153/160 historically; it is not certified and the official assessment is not yet justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Opened bounded inquiry I8 (E32) rather than requesting official assessment. The official assessment is unjustified because T4 is below the development threshold and its current-source comparability is unresolved; the unsuccessful T6 alternative does not improve T4 capability. The fresh I8 inquiry should first run the current-code direct-T4 control evaluation on the matched panel and then close or redirect based on the observed outcome and semantics. The inquiry is control/comparability work, not a causal decomposition of the residual scaffold.",
+        "next_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
+        "session_id": "S16"
+      },
+      "presentation": {
+        "backend_session_id": "08f414c0-6b23-4c0d-abeb-4a485edd6c1e",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "48m58s | 128.48 AIU | prompt 22.2m (91% cached) | output 311.8k",
+        "session_id": "S16",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S16",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "d84d4be72b8172533539f9e7586a817083969e24",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E33",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
+        "completed_operations": [
+          "E32"
+        ],
+        "cumulative_resource_use": "Completed campaign history through I7 includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22 and E30. Current goal review recorded E32 and opened I8; no new training or measurement resource has been consumed in this session.",
+        "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4 is 43/160 below the 196/200 official success count when viewed as a development signal, and the tested I7 residual-torque candidates reached only 9/160 and 6/160 with 141 and 150 no-first-reach episodes. The remaining comparability gap is whether historical T4 retains its capability under the current scenario source and what evaluator semantics that control receives.",
+        "current_synthesis": "Observed: M21 independently verified the implemented residual-torque policy semantics across repeated updates, transitions, resets, direct control, legacy runtimes, profile selection and checkpoint persistence, but did not establish full-trajectory equivalence of legacy T4 under the modified source. T6 completed the full allocated fresh run with full official-radius exposure and training proxies near 0.99-1.00 late in training. M22 then evaluated both selected T6 artifacts completely on the same current evaluator: checkpoint-115712 achieved 9/160 and checkpoint-120832 achieved 6/160; their no-first-reach counts were 141 and 150. E30 therefore supports a negative bounded answer for the tested persisted residual-torque PPO implementation: its high training proxies did not translate to acquisition capability. The few T6 successes show that complete holds remain possible in the current plant, but do not identify whether the fixed scaffold, residual optimization, or another artifact property caused the collapse. Correction to the inherited interpretation: the residual result itself is not established as measurement-limited, because M22 is complete under its recorded current evaluator and M21 verifies the exercised implementation. What remains measurement-limited is the comparison between M22 and historical M19: their evaluator fingerprints differ (f6bf4b99cf62 versus 4e874c58d1e9), and no completed evidence re-evaluates legacy T4 through the current source. The initial physical model remains decision-relevant: official targets are bounded-IK reachable with two branches, the reset is singular and can make early acquisition decisive, torque is saturated and held for 20 ms, and success is a 100-step dynamic regulation event. M15 supports acquisition/braking/regulation mechanisms for T2, but that evidence is not causal evidence for T6. These consequences mean that a current T4 control must be judged by complete acquisition and hold diagnostics, not training proxy or first reach alone.",
+        "decision_frontier": "The consequential unresolved distinction is whether the large T4-versus-T6 gap is an artifact-level capability difference under comparable semantics or is partly created by the PI-owned scenario-source/evaluator change. The discriminating evidence is one current-source research evaluation of legacy T4:checkpoint-120832 on the matched 160-episode panel beginning at seed 4200, with its success count, no-first-reach and hold diagnostics, and evaluator fingerprint. If T4 retains 153/160 with no material semantic discrepancy, the negative artifact comparison is strengthened and the tested residual scaffold should be abandoned as a development route; if T4 materially changes or the semantics are not comparable, the comparison must be treated as limited and measurement repair or reinterpretation precedes a capability conclusion. Neither outcome tests individual residual terms or certifies the official 200-episode goal.",
+        "evidence_references": [
+          "M21",
+          "T6",
+          "M22",
+          "E30",
+          "E32"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, and each success must contain the complete uninterrupted 100-step hold. The current best development candidate is T4:checkpoint-120832 at 153/160 historically; it is not certified and the official assessment is not yet justified.",
+        "next_direction_or_closure": "Opened bounded inquiry I8 (E32) rather than requesting official assessment. The official assessment is unjustified because T4 is below the development threshold and its current-source comparability is unresolved; the unsuccessful T6 alternative does not improve T4 capability. The fresh I8 inquiry should first run the current-code direct-T4 control evaluation on the matched panel and then close or redirect based on the observed outcome and semantics. The inquiry is control/comparability work, not a causal decomposition of the residual scaffold.",
+        "next_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?"
+      }
+    },
+    "request_fingerprint": "a6642626f4b273f59b7b9e224ff57cbfbcca813057e0e7b614af3c91f6028c76",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M19 at 153/160, with the explicit historical evaluator fingerprint 4e874c58d1e9. T5:checkpoint-100352 remains a complete historical continuation at 153/160 based on M20. T6:checkpoint-115712 and T6:checkpoint-120832 are complete but rejected I7 candidates at 9/160 and 6/160 under M22; neither is assigned a role. T2 remains the 150/160 matched reference. No candidate is certified for the human goal, and no working or retained role is assigned.",
+    "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
     "completed_operations": [
-      "M21",
-      "T6",
-      "M22",
-      "E30"
+      "E32"
     ],
-    "cumulative_resource_use": "Completed campaign history through this session: M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22, and E30. I7 used M21 implementation verification, one full 120000-step T6 run, and M22 matched-panel evaluation of two T6 checkpoints. No official assessment has been requested.",
-    "current_goal_gap": "The I7 residual-torque candidates did not close the development gap: T6:checkpoint-115712 achieved 9/160 and T6:checkpoint-120832 achieved 6/160. Their complete diagnostics recorded 141 and 150 no-first-reach episodes respectively, far above the I7 cap of three. The tested residual implementation is therefore not a viable replacement for T4. A comparability limitation remains: M22 reports evaluator fingerprint f6bf4b99cf62, while historical T4 M19 reports 4e874c58d1e9; M21 checked direct action locally but did not establish full-trajectory equivalence of legacy T4 under the modified scenario source.",
-    "current_synthesis": "Observed: M21 passed an independent implementation check across repeated changed states, negative-angle and near-singular targets, a near-limit state, resets, direct control, legacy runtimes without a marker, training/evaluation profile selection, and checkpoint profile persistence. T6 completed the full allocated fresh run with full official radius exposure; its training proxies reached 0.99-1.00 near the end but did not establish capability. M22 measured both a nonterminal high-proxy checkpoint and the terminal checkpoint under the same current evaluator and matched seed-4200 panel: they achieved 9/160 and 6/160, with 141 and 150 no-first-reach diagnostics. These complete results give a negative bounded answer for the implemented persisted residual-torque PPO policy. Interpretation is limited to this implementation and runtime: high training success proxies did not translate to complete evaluation success, and the residual scaffold failed primarily as an acquisition-capability artifact comparison. The few successful holds show that the current plant and evaluator can still produce complete holds for some targets, but aggregate and episode diagnostics do not establish which scaffold term caused the collapse. Competing explanations remain: the fixed analytic scaffold may create an acquisition basin or branch/limit interaction the learned residual cannot correct; the learned residual/PPO optimization may be poorly conditioned around that scaffold; or the apparent historical comparison may be affected by the evaluator fingerprint change. M15 supports acquisition/braking/regulation mechanisms for T2 but does not causally explain T6. The live time-resolved torque/joint evidence for T4/T5 remains unavailable.",
-    "decision_frontier": "I7 is closed negatively for the tested residual-torque/PPO implementation because neither complete T6 artifact exceeded 153/160 and both violated the no-first-reach cap. Before treating that as a clean capability comparison against historical T4, resolve whether legacy direct-action T4 evaluated under the current scenario source reproduces its 153/160 result and what evaluator semantics fingerprint it receives on the same seed-4200 panel. A current-code T4 control evaluation is the discriminating evidence: matching 153/160 would validate the negative artifact comparison and support redirecting away from this residual scaffold; a materially different result would make the historical comparison limited and require measurement repair or a reinterpreted frontier. This control does not test causality of individual residual terms, which remains unnecessary for the closed I7 result unless it changes the next method decision.",
+    "cumulative_resource_use": "Completed campaign history through I7 includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22 and E30. Current goal review recorded E32 and opened I8; no new training or measurement resource has been consumed in this session.",
+    "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4 is 43/160 below the 196/200 official success count when viewed as a development signal, and the tested I7 residual-torque candidates reached only 9/160 and 6/160 with 141 and 150 no-first-reach episodes. The remaining comparability gap is whether historical T4 retains its capability under the current scenario source and what evaluator semantics that control receives.",
+    "current_synthesis": "Observed: M21 independently verified the implemented residual-torque policy semantics across repeated updates, transitions, resets, direct control, legacy runtimes, profile selection and checkpoint persistence, but did not establish full-trajectory equivalence of legacy T4 under the modified source. T6 completed the full allocated fresh run with full official-radius exposure and training proxies near 0.99-1.00 late in training. M22 then evaluated both selected T6 artifacts completely on the same current evaluator: checkpoint-115712 achieved 9/160 and checkpoint-120832 achieved 6/160; their no-first-reach counts were 141 and 150. E30 therefore supports a negative bounded answer for the tested persisted residual-torque PPO implementation: its high training proxies did not translate to acquisition capability. The few T6 successes show that complete holds remain possible in the current plant, but do not identify whether the fixed scaffold, residual optimization, or another artifact property caused the collapse. Correction to the inherited interpretation: the residual result itself is not established as measurement-limited, because M22 is complete under its recorded current evaluator and M21 verifies the exercised implementation. What remains measurement-limited is the comparison between M22 and historical M19: their evaluator fingerprints differ (f6bf4b99cf62 versus 4e874c58d1e9), and no completed evidence re-evaluates legacy T4 through the current source. The initial physical model remains decision-relevant: official targets are bounded-IK reachable with two branches, the reset is singular and can make early acquisition decisive, torque is saturated and held for 20 ms, and success is a 100-step dynamic regulation event. M15 supports acquisition/braking/regulation mechanisms for T2, but that evidence is not causal evidence for T6. These consequences mean that a current T4 control must be judged by complete acquisition and hold diagnostics, not training proxy or first reach alone.",
+    "decision_frontier": "The consequential unresolved distinction is whether the large T4-versus-T6 gap is an artifact-level capability difference under comparable semantics or is partly created by the PI-owned scenario-source/evaluator change. The discriminating evidence is one current-source research evaluation of legacy T4:checkpoint-120832 on the matched 160-episode panel beginning at seed 4200, with its success count, no-first-reach and hold diagnostics, and evaluator fingerprint. If T4 retains 153/160 with no material semantic discrepancy, the negative artifact comparison is strengthened and the tested residual scaffold should be abandoned as a development route; if T4 materially changes or the semantics are not comparable, the comparison must be treated as limited and measurement repair or reinterpretation precedes a capability conclusion. Neither outcome tests individual residual terms or certifies the official 200-episode goal.",
     "evidence_references": [
       "M21",
       "T6",
       "M22",
-      "E30"
+      "E30",
+      "E32"
     ],
-    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196/200 successes under the official 0.06-0.20 m target distribution, with every success requiring an uninterrupted 100-step hold. T4 remains the best historically measured candidate at 153/160 on the development panel; the official 200-episode assessment remains unmeasured and no candidate is certified.",
-    "inquiry_id": "I7",
-    "next_direction_or_closure": "I7 is closed with a negative bounded answer for the tested mechanism-informed residual-torque PPO artifact. The next goal review should first perform the current-code direct-T4 control evaluation described in the decision frontier, because the evaluator fingerprint changed when the PI-owned scenario source was modified. If the control reproduces historical T4, redirect away from this residual scaffold; if not, repair the comparison before drawing a capability conclusion. The official assessment remains unjustified.",
+    "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the protected 200-episode official panel, and each success must contain the complete uninterrupted 100-step hold. The current best development candidate is T4:checkpoint-120832 at 153/160 historically; it is not certified and the official assessment is not yet justified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Opened bounded inquiry I8 (E32) rather than requesting official assessment. The official assessment is unjustified because T4 is below the development threshold and its current-source comparability is unresolved; the unsuccessful T6 alternative does not improve T4 capability. The fresh I8 inquiry should first run the current-code direct-T4 control evaluation on the matched panel and then close or redirect based on the observed outcome and semantics. The inquiry is control/comparability work, not a causal decomposition of the residual scaffold.",
     "next_question": "Does legacy T4:checkpoint-120832 retain its 153/160 matched-panel capability when evaluated through the current scenario source, or did the I7 source change alter the comparison semantics enough to make the residual intervention result measurement-limited?",
-    "scientific_commit": "5368fbb96b75a52f4e4fb435ab49ffea1df4104c",
-    "session_id": "S15"
+    "scientific_commit": "d84d4be72b8172533539f9e7586a817083969e24",
+    "session_id": "S16"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -13381,21 +13509,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "08f414c0-6b23-4c0d-abeb-4a485edd6c1e",
-    "id": "S16",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E32"
-    ],
-    "scientific_parent_commit": "06b0c850284612a45464741c6ab20d5a2fac197f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
