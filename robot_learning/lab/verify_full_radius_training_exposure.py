@@ -124,7 +124,7 @@ def _run_check(observed: dict[str, Any]) -> None:
             "an in-tolerance transition did not start a contiguous hold",
         )
 
-        for _ in range(EXPECTED_HOLD_STEPS - 2):
+        for _ in range(EXPECTED_HOLD_STEPS - 3):
             official_env.step(zero_action)
         penultimate_transition = official_env.step(zero_action)
         _require(
