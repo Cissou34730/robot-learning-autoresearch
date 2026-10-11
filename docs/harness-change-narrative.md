@@ -154,7 +154,7 @@ Its paired result, 196/200 against 185/200 with eleven wins and no losses,
 establishes candidate improvement, not an isolated filter effect.
 The official pass remains valid.
 
-The approved repair moves attribution guidance from reporting alone to
+The initial approved repair moved attribution guidance from reporting alone to
 comparison design. The program and ordinary scientific prompts distinguish
 candidate selection from mechanism testing. When a causal explanation would
 change the next direction, the PI selects evidence that distinguishes it from
@@ -163,7 +163,9 @@ blocking closure or assessment. Existing instruments already support seeds,
 transfer parents, paired panels, recipe restoration and laboratory measurements.
 No new instrument, compulsory control, one-factor rule, repeated training,
 budget change or Runner adequacy judgment was added.
-The wording is implemented/unmeasured, not scientifically validated.
+The later `f917968b` comparison exposed a connected direction/commitment defect.
+The corrective revision below replaces the blanket closure/assessment
+exemption while retaining the distinction between candidate and mechanism claims.
 No campaign was launched, resumed, reset or mutated.
 
 ### 5. Assessment readiness, model roles and acceptance-gate drift
@@ -237,9 +239,61 @@ history, not hidden from the successful outcome.
 The subsequent approved OI-005 revision moves the decision-record obligation
 from the program into ordinary goal-review prompts. The PI must preserve
 relevant limitations in its operation reason and explain commitment despite
-them. Acknowledgment is not a demand to resolve every failure or perform
-another measurement. This revision is unmeasured. The old E15 reason does not
+them. Acknowledgment was not a demand to resolve every failure or perform
+another measurement. The later campaign preserved more limitations but still
+showed defective commitment reasoning. The old E15 reason does not
 retrospectively become evidence that the PI explicitly accepted its four failures.
+
+#### Connected direction and commitment correction
+
+Parent and independent read-only RCAs compared the previous passing campaign
+`89a6354a` with `f917968b`, which failed at 193/200 using unchanged T3.
+Both launched with the same v3 recipe, PI model, reasoning and training
+allocation. T1 learning sources, parameters, seed and all 24 saved training
+proxy snapshots matched. This does not establish complete learned-state
+equality or isolate a harness effect.
+
+| Recorded use | Previous `89a6354a` | Latest `f917968b` |
+|---|---|---|
+| Completed training steps | 845,824 | 1,087,488 |
+| Inquiries / checkpoints | 3 / 7 | 9 / 19 |
+| Direct development episode executions | 2,000 | 3,680 |
+| Distinct direct development panels | 7 | 1 reused |
+| AIU / PI time | 77.03 / 29m02s | 156.47 / 54m09s |
+
+The latest campaign gained characterization and more limited causal claims,
+but did not improve T3 after six completed training alternatives. Most added
+cost was inquiry work. M6 failed execution, M7/M8 contained invalid
+characterization implementations, and M9 corrected them. Those repairs do not
+all constitute scientific progress. The regulation direction persisted across
+promptly closed inquiries, increasingly focusing on four no-entry failures
+while omitting five failed holds. E33 called T3 unlikely to meet the criterion;
+E43 later committed it because alternatives were worse and no better route
+emerged. Relative selection strengthened without improving T3's capability.
+
+The older negative-recipe safeguard came from `8166e2f`, before OI-014/OI-015
+registration, and was present in both campaigns. `ade304d` added the
+closure/assessment exemption. Their permissive interaction is a plausible
+contributor, not an isolated cause. The approved correction replaces blanket
+permissions with accumulated direction review under OI-014 and a distinct
+candidate-prospect comparison under OI-005. Important rules appear directly in
+ordinary PI prompts, not merely as references. Unresolved causes can survive
+closure, but closure justifies neither continuing a direction nor assessment.
+Scientific possibility alone does not justify another variant.
+
+A narrow OI-004 clarification contextualizes training proxies by exposure and
+runtime. T10's two 100% proxies were visible but omitted from M14, as were all
+full-radius-stage checkpoints. Their superiority remains unknown. T3's measured
+terminal artifact beat its earlier 100%-proxy artifact, so this is not proof of
+terminal preference. The original bounded OI-004 closure remains historical.
+
+The raw-versus-applied-command diagnostic and incomplete residual accounting
+remain scientific-code/evidence corrections, not generic scenario instructions.
+No OI-015 mismatch, old access defect or original OI-002/OI-016 boundary defect
+is reopened. No new instrument, readiness threshold, mandatory repetition,
+complete-explanation requirement or Runner scientific judgment was added.
+The corrective wording is implemented/unmeasured. No campaign was launched,
+resumed, reset or mutated by this revision.
 
 ### 6. Context delivery, cost and evidence tooling
 

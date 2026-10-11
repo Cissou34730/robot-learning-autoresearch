@@ -69,13 +69,22 @@ campaign-level decisions:
 - request the official assessment for the explicit best-known model; or
 - open one bounded inquiry connected directly to the current goal gap.
 
-Compare these alternatives using completed evidence. Weigh the strongest
-evidence-backed candidate's prospect of meeting the protected criterion,
-including residual failures, contrary evidence and measurement uncertainty,
-against what further bounded work can credibly change in candidate capability,
-candidate selection or the commitment decision. Explain why that expected
-contribution warrants delaying assessment, or why the case for assessment is
-stronger.
+Compare the strongest candidate's prospect of meeting the human goal with what
+further bounded work can credibly change in capability, selection or the
+commitment decision. Use supporting evidence, residual failures, contrary
+evidence and uncertainty for both alternatives.
+
+Further work requires a credible contribution, not merely an untested variant
+or an unresolved method. Assessment requires a reasoned case for committing
+this candidate to the human goal. Its best-known rank, unsuccessful alternatives
+and the fact that only official assessment can certify success are not sufficient
+reasons. Failure of alternatives can strengthen relative selection without
+improving the unchanged candidate's demonstrated capability.
+
+Limitations need not all be resolved. Explain how they affect the chosen action
+and why that action remains justified. Neither acknowledged uncertainty nor
+declining expected research yield automatically selects assessment or another
+inquiry.
 
 Official assessment is a terminal commitment: its pass or fail result ends
 this campaign. It is not a development probe followed by another inquiry.
@@ -150,9 +159,7 @@ comparison or diagnostic that distinguishes it from consequential alternatives.
 
 When factors change together, report the result as a property of the compared
 artifacts, not of the intended factor alone. An unexplained candidate difference
-can guide selection, but it is not an established cause. A causal question
-whose answer would not change the next decision may remain unresolved.
-It is not a gate to inquiry closure or official assessment.
+can guide selection, but it is not an established cause.
 
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
@@ -167,15 +174,32 @@ the terminal checkpoint has no privileged status. Select the artifact or
 comparison that best addresses the recorded decision frontier; this does not
 require evaluating every checkpoint.
 
+Interpret training proxies in the context of the exposure and runtime that
+produced them. When these change during training, use that context to select
+checkpoints relevant to the decision. Proxy rank alone does not establish which
+available artifacts deserve development measurement.
+
 Treat planned discriminating evidence that fails or remains unavailable as an
 unresolved part of the decision frontier. Base mechanism conclusions and
 redirects on completed evidence, and preserve the limits of a recipe-specific
 result.
 
-After each completed result, the selected next direction states which evidence
-supports continuing the current route, changing it, or obtaining missing
-evidence. The selected artifact and operation follow the remaining uncertainty
-recorded in the decision frontier.
+After each completed result, update the case for the research direction,
+including evidence accumulated across inquiries. Distinguish what the tested
+implementation establishes from what remains possible about the broader
+method. A negative result neither disproves the method nor supplies a reason
+to try another variant.
+
+Choose among developing the method, investigating a consequential failure, and
+changing direction. Identify what the proposed work can credibly change and why
+its expected contribution remains worthwhile in light of prior results.
+A candidate comparison may be sufficient when capability or selection is the
+decision. When an explanation determines the next direction, use evidence
+capable of distinguishing the consequential alternatives.
+
+An inquiry may close with unresolved causes. Carry their decision consequences
+into goal review. Closing the inquiry does not itself justify continuing the
+broader direction or requesting assessment.
 
 The maintainer controls the per-run training allocation through the launcher's
 `-Timesteps` option, which defaults to 120,000 steps. During startup, that

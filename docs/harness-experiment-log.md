@@ -31,27 +31,24 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 
 **As of 2026-10-11**
 
-- Latest completed campaign: authorized fresh v3 campaign `89a6354a`.
-- Official result: `196/200` (98.0%), at the `196/200` threshold, using
-  `T7:checkpoint-75776`.
-- The launcher stopped after I1's invalid session-operation lists. Only that
+- Latest completed campaign: fresh v3 campaign `f917968b`.
+- Official result: `193/200` (96.5%), below the `196/200` threshold, using
+  `T3:checkpoint-120832`.
+- Previous campaign `89a6354a` passed at `196/200` with T7. Its launcher
+  stopped after I1's invalid session-operation lists. Only that
   checkpoint metadata was corrected to `T5`, `M6`, `E4`; all scientific fields
   were preserved and the same campaign continued without a reset.
-- Latest harness changes: OI-016 handoff revision, OI-003/OI-015/OI-014
-  evidence-fidelity wording, OI-017 nested artifact access, and OI-018 query
-  batching and observability. OI-005 now adds symmetric assessment/further-work
-  comparison and terminality routing in goal review. E15 recognized terminality
-  and compared further work with commitment, but omitted residual failures
-  preserved in E13. OI-005 is observed, not closed. Its direct decision-reason
-  revision and OI-009 checkpoint/submission repair are implemented but unmeasured.
-- OI-014 now distinguishes candidate comparisons from mechanism tests at
-  operation selection. Decision-relevant causal claims need distinguishing
-  evidence; unresolved causes are not closure or assessment gates. This
-  wording revision is implemented but its scientific and cost effects are
-  unmeasured.
-- Campaign resources: seven training operations (845,824 completed steps),
-  eight measurements, three inquiries; launcher-reported 77.03 AIU,
-  29m01s PI time and about 84m32s reset-to-end wall time.
+- Parent and independent RCAs found a connected decision defect: failed
+  variants preserved the broader direction, then justified assessment of an
+  unchanged candidate. The approved OI-014/OI-005 revision directly requires
+  cumulative direction review and a candidate-specific commitment case in
+  ordinary PI prompts. A narrow OI-004 clarification puts training proxies in
+  their exposure/runtime context. The latest revision is unmeasured.
+- Latest resources: nine completed training operations (1,087,488 steps),
+  thirteen completed measurements, nine inquiries, 156.47 AIU and 54m09s PI
+  time. Previous campaign: 845,824 steps, eight measurements, three inquiries,
+  77.03 AIU and 29m02s PI time. Extra inquiry work accounts for most of the
+  increase; this comparison does not isolate a wording effect.
 - No campaign operation is running or authorized by this record.
 - The fifteen-inquiry limit remains a checkpointed operational pause, not a
   scientific-exhaustion result.
@@ -78,8 +75,8 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-001 | Startup scientific-method coupling | **Closed** | Campaign `896c230a` connected the scientific model, startup control, physical measurements and I1 handoff. | None. Startup cost remains OI-006. |
 | OI-002 | Inquiry control and bounded closure | **Closed** | Campaign `1ae27a27` closed positive, negative and limited inquiries without indefinite continuation. | None. |
 | OI-003 | Evidence inspection and interpretation | **Closed** | `current_synthesis` now requires claim-to-artifact references and distinguishes uninspected from absent evidence. Campaign `ec7f3d3a` used nested diagnostic artifacts without repeating the M30 false-missing interpretation. | None. A future distinct interpretation defect requires a new issue. |
-| OI-004 | Checkpoint nomination and progression | **Closed** | Nonterminal candidates and failed probes can inform progression; `896c230a` showed evidence-backed selection. | None. Do not infer causal improvement. |
-| OI-005 | Counterevidence and assessment-decision calibration | **Implemented / observed, not closed; latest revision unmeasured** | `89a6354a` E15 recognized terminality and compared commitment with further work, but omitted four failures preserved in E13. The obligation now appears directly in ordinary goal-review prompts: preserve limitations in the chosen operation's reason and justify assessment despite them. Recording limitations does not require resolving them or another measurement. | Observe future decision reasons only when a campaign is separately authorized; no retrospective claim that E15 explicitly accepted those failures. |
+| OI-004 | Checkpoint nomination and progression | **Original defect closed; nomination clarification unmeasured** | `896c230a` showed nonterminal selection. In `f917968b`, M14 omitted the two 100% T10 training proxies and every full-radius-stage checkpoint. T3's terminal selection was supported by measurement, so this is incomplete nomination, not proven terminal bias. Program and direct prompt guidance now contextualize proxies by exposure/runtime. | Observe context-aware nomination in a separately authorized campaign; do not require measuring every checkpoint. |
+| OI-005 | Counterevidence and assessment-decision calibration | **Observed, not closed; corrective revision unmeasured** | `f917968b` E43 preserved some limitations but committed unchanged T3 after failed alternatives. Best-known rank, failed alternatives and official certification authority cannot substitute for a reasoned case for this candidate meeting the human goal. This comparison now appears directly in ordinary goal-review prompts. | Observe candidate prospects and further-work contributions in a separately authorized campaign; no numerical gate or automatic ending. |
 | OI-006 | Full startup-budget review | **Open** | The 120,000-step ceiling and its scientific/cost effect have not been reviewed. | Separate maintainer budget analysis from scientific repairs. |
 | OI-007 | Prompt-stack ordering R2 | **Paused** | Scientific context precedes operational options; putting the human goal before the PI persona in ordinary sessions is not approved. | No action unless reopened. |
 | OI-008 | Residual context delivery | **Open / not approved** | Brief compaction was implemented; prompt replay and SDK output handling remain possible causes of flooding. | Do not bundle with another repair. |
@@ -88,7 +85,7 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-011 | Console clarity and maintainer-file controls | **Closed** | Logical JSON Pointer rendering, query modifiers and phase-specific read controls are implemented. | None. New defects require a new issue. |
 | OI-012 | Independent frozen-policy publication | **Proposal** | Not approved or implemented. Campaign recovery is not authorized. | None. |
 | OI-013 | Remove the fifteen-inquiry cap | **Withdrawn** | The cap is accepted as an operational checkpoint pause; its value and resume mechanism remain unchanged. | None unless maintainer reopens it. |
-| OI-014 | Decision-relevant causal attribution | **Implemented / unmeasured** | The `89a6354a` RCA found a mismatch between mechanism claims and complete-candidate comparisons. The program now connects comparison design to the intended claim, and ordinary scientific prompts state the distinction before operation selection. Existing seed, parent, paired-evaluation and laboratory capabilities suffice; no new instrument or mandatory control was added. | Observe whether decision-relevant comparisons distinguish consequential alternatives in a separately authorized campaign, alongside their cost. Candidate gains alone do not establish attribution or repair effectiveness. |
+| OI-014 | Decision-relevant causal attribution | **Corrective revision implemented / unmeasured** | `f917968b` improved claim limits but preserved a regulation direction across unsuccessful variants. Program and direct prompt guidance now distinguish a method remaining possible from evidence supporting its next investment. Unresolved causes may survive closure, but their decision consequences remain. | Observe cumulative direction updates and distinguishing evidence in a separately authorized campaign, alongside cost. No new instrument, compulsory control or Runner judgment. |
 | OI-015 | Intended method versus implemented experiment | **Implemented / unmeasured** | Wording requires conclusions to name what was actually implemented. The T10/I12 semantic mismatch was not exercised by `ec7f3d3a`; it remains a documented historical limitation, not an open campaign defect. | None for the current harness. Reopen only if a new mismatch occurs. |
 | OI-016 | Inquiry boundaries and revisable handoff | **Closed** | Campaign `ec7f3d3a` used bounded multi-operation inquiry work, positive closure, an updated E19 → E20 frontier handoff, and assessment progression without forcing a stale question. The two fixed-evidence replays provide supporting boundary evidence. | None. A future distinct handoff defect requires a new issue. |
 | OI-017 | Nested artifact evidence access | **Closed** | Operation-scoped, fingerprint-verified access retrieved nested evidence and changed conclusions in campaign `339736e0`. | None. |
@@ -107,7 +104,7 @@ Source: [`campaign_79395c88_comprehensive_rca_20261009.md`](campaign_79395c88_co
 | Durable handoff gave provisional decisions excessive authority | OI-016 | Closed for the bounded defect: E19 → E20 handed off the updated frontier and the campaign progressed to E21/E22 without preserving a stale question. |
 | Intended method differed from implemented experiment | OI-015 | Wording repair exists; semantic realization still needs the planned replay. |
 | Available evidence was carried forward as missing | OI-003 and OI-017 | Closed for the tracked defect: access was fixed under OI-017 and the current campaign did not repeat the false-absence interpretation. |
-| Candidate comparisons were mistaken for causal comparisons | OI-014 | Claim-driven design guidance is implemented/unmeasured. Artifact results remain valid; unexplained differences do not establish causes. |
+| Candidate comparisons were mistaken for causal comparisons | OI-014 | Claim limits improved in `f917968b`, but did not sufficiently update direction choices. The cumulative direction correction is unmeasured. |
 | Research preferences became acceptance criteria | OI-005; campaign-specific evidence remains in the RCA | Symmetric comparison appeared in `89a6354a` E15, but threshold-trigger wording remains in its handoff. OI-005 is observed, not closed. The radius/panel symptom is not generic harness guidance. |
 | The brief became large and cognitively expensive | OI-008, partly addressed | Brief compaction was implemented, but context-delivery causes and scientific effect remain unmeasured. |
 
@@ -150,6 +147,7 @@ operations and must remain separate from campaign execution:
 | 2026-10-11 | Same-campaign checkpoint correction and completion | Under the original autopilot authorization, only S3's operation list was corrected; every scientific field was unchanged. The Runner accepted E5 and the same campaign continued to an official 196/200 pass with T7. OI-005 is observed, not closed: terminality and work comparison appeared, but commitment omitted recorded residuals and handoff trigger wording persisted. Campaign commits published through `c33531e`; no second reset or campaign. |
 | 2026-10-11 | OI-009 checkpoint/submission repair and OI-005 direct reason | Approved and implemented/unmeasured. Checkpoint transitions expose session identity and operation list; rejection reports expected versus submitted values. The instrument contract explains request consumption. Ordinary goal review directly requires an evidence-based decision despite acknowledged limitations, without extra measurements or readiness gates. Program comparison and authority remain. No campaign launched, resumed, reset or mutated. |
 | 2026-10-11 | OI-014 claim-driven experimental design | Approved and implemented/unmeasured. The RCA distinguishes candidate selection from causal explanation and corrects the T6 changed-file interpretation: its observation values and reward remained equivalent to T4's. Program guidance now connects comparison design to decision-relevant claims; ordinary scientific prompts state the same distinction. No new instrument, matched-seed mandate, repetition rule, budget change or Runner judgment. Inert prompt checks cover ordinary contexts and unchanged checkpoint transitions. No campaign launched, resumed, reset or mutated. |
+| 2026-10-11 | OI-014/OI-005 cumulative direction and commitment correction; narrow OI-004 nomination | Approved after parent and independent RCAs of `f917968b` versus `89a6354a`. Replace blanket non-disproof/no-gate permissions with direct ordinary-prompt rules for accumulated evidence, credible next work and candidate-specific commitment. Contextualize checkpoint proxies. Inert rendering confirms direct guidance in ordinary contexts; checkpoint transitions lose only the old handoff disclaimer, and campaign evidence hashes remain unchanged. Prior wording remains historical, not proven causal. Original OI-002/OI-016/OI-015 defects are not reopened. Measurement-code correction remains separate. Latest revision implemented/unmeasured; no Runner, recipe, budget, cap or schema change. No campaign launched, resumed, reset or mutated. |
 | 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 
 ## Evidence index

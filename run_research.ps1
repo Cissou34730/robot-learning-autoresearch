@@ -791,7 +791,6 @@ function New-ScientificSessionPrompt {
             "Previous session synthesis, verbatim:`n$([string]$checkpoint.current_synthesis)"
             "Proposed question for this goal review, verbatim:`n$([string]$checkpoint.next_question)"
             "Continue from the completed evidence, but treat inherited interpretations, research constraints, priorities and proposed next actions as revisable scientific judgments. Correct an unsupported interpretation or a question already settled by available evidence, and record the correction and its basis."
-            "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
     elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
@@ -800,7 +799,6 @@ function New-ScientificSessionPrompt {
             "Goal-review synthesis, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
             "Active inquiry question, verbatim:`n$([string]$State.active_inquiry.question)"
             "Continue the bounded work from completed evidence. Training, measurement and implementation remain peer options; the question does not require a particular first instrument."
-            "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
     else {
@@ -824,25 +822,28 @@ function New-ScientificSessionPrompt {
     else {
         @(
             if ($session.kind -eq "goal_review") {
-                "Apply contracts/program.md 'Goal review' to compare terminal assessment with further bounded work before choosing the campaign-level outcome."
+                "Compare the strongest candidate's prospect of meeting the human goal with what further bounded work can credibly change. Weigh supporting evidence, residual failures, contrary evidence and uncertainty for both alternatives."
             }
             else {
                 "State the unresolved scientific distinction before selecting an operation."
             }
             "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
+            "Interpret training proxies in the context of the exposure and runtime that produced them. Select checkpoints relevant to the decision when that context changes. Proxy rank alone does not determine which artifacts deserve measurement."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
+            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the implementation tested. A negative result neither disproves the method nor supplies a reason to try another variant."
+            "Choose among developing the method, investigating a consequential failure, and changing direction. Explain what the proposed work can credibly change and why its contribution remains worthwhile in light of prior results."
             "Distinguish candidate selection from mechanism testing. Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives. Choose discriminating evidence when that explanation would change the next direction."
-            "Keep an unexplained candidate difference at artifact-comparison level, not as an established cause. Causal questions that cannot change the next decision may remain unresolved. They are not gates to closure or assessment."
+            "Keep an unexplained candidate difference at artifact-comparison level, not as an established cause. Unresolved causes need not block inquiry closure. Preserve their consequences for the next research or commitment decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
             "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
             if ($session.kind -eq "goal_review") {
                 "For a measurement, explain how its possible outcomes would affect the campaign-level choice."
                 "Record the chosen assessment or inquiry and its evidence-based reason."
                 "Preserve relevant residual failures, counterevidence and uncertainty in the chosen operation's reason."
-                "If requesting official assessment, explain why commitment is justified despite those limitations rather than further bounded work."
-                "Recording a limitation does not require resolving it or requesting another measurement."
+                "If requesting official assessment, explain what measured evidence supports committing this candidate to the human goal despite its limitations. Its best-known rank, unsuccessful alternatives and the exclusive authority of official assessment are not sufficient reasons. Failed alternatives can strengthen relative selection without improving the unchanged candidate's demonstrated capability."
+                "Explain how the limitations affect the chosen action and why it remains justified. Neither acknowledged uncertainty nor declining expected research yield automatically selects assessment or another inquiry."
             }
             else {
-                "State which completed evidence supports continuing the current route, changing it, or obtaining missing evidence. Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
+                "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
             }
             "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis, decision_frontier and next_question. Apply those meanings to the current state shown above."
             if ($session.kind -eq "goal_review") {
