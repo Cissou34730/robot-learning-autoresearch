@@ -3845,49 +3845,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-120832",
-        "evidence": [
-          "M9"
-        ],
-        "reason": "M9 is a matched held-out development comparison under identical seeds and evaluation semantics: T2 achieves 150/160 (93.75%) versus T1's 105/160 (65.625%), with 7 versus 49 no-first-reach diagnostics. The inner-radius no-first-reach count falls from 45 to 3 in this panel, satisfying I2's positive closure condition and making T2 the strongest evidence-backed candidate, while remaining below the official goal and retaining residual exposed-radius and hold failures."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t2-c8cf701d5-ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
-        "fingerprint": "ea4765a8d75f6994863472cc35031a7e01d8ce9f14228d2d8f659f120ebb8579",
-        "source": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t2/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "M9"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "M9"
-        ],
-        "reason": "M9 is a matched held-out development comparison under identical seeds and evaluation semantics: T2 achieves 150/160 (93.75%) versus T1's 105/160 (65.625%), with 7 versus 49 no-first-reach diagnostics. The inner-radius no-first-reach count falls from 45 to 3 in this panel, satisfying I2's positive closure condition and making T2 the strongest evidence-backed candidate, while remaining below the official goal and retaining residual exposed-radius and hold failures."
-      }
-    },
-    "request_fingerprint": "81ff96d723998216a3eb8a8320858f16648bf610daced3ff447f8a11d26de2da",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-115712 is the only candidate with completed development evaluation and is the baseline comparator for I2; its late training-proxy rank is not treated as a capability or official-goal claim. T1:checkpoint-120832 and the other archived T1 checkpoints remain unmeasured and are not selected solely by terminal status or proxy rank.",
     "completed_operations": [
