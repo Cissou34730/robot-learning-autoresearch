@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when a completed candidate-level trajectory measurement or other completed evidence distinguishes the consequential failure mechanism sufficiently to select, reject, or limit a PI-owned intervention toward the 98% goal; preserve any unresolved mechanism and its decision consequence if the evidence is inconclusive.",
     "goal_connection": "The strongest measured candidate succeeds on 150 of 160 development episodes, but the human goal requires at least 196 of 200 official episodes with a complete uninterrupted hold. Resolving the failure mechanism can select an intervention that improves complete-hold capability rather than merely changing an aggregate training proxy.",
-    "handoff_conclusion": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Of its 10 failures, 7 never reached tolerance and 3 reached it only intermittently; failures occurred at both inner and outer radii. Thus full-radius exposure improved coverage but did not solve the goal. The observed failure pattern supports an acquisition failure that depends on target angle and possibly kinematic branch selection or policy generalization, rather than a uniformly unstable hold. The branch, action, qvel, and angle mechanism remains unmeasured, so causal claims about branch switching are not established.",
+    "handoff_conclusion": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
     "handoff_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 4,
     "session": 2,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1584,31 +1584,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T12:21:06Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359. E2: one inquiry-opening decision record; no training or measurement resources consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 93.75% on the 160-episode development panel, with 10 failures: 7 without reaching tolerance and 3 with intermittent holds. Official success remains unmeasured, and no candidate has demonstrated the 196-of-200 requirement.",
+        "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
+        "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure. A matched candidate evaluation should record target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. Concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes. This evidence can change the intervention direction, whereas the current aggregate score cannot.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but remains 4.25 percentage points below the 98% development reference and has not been assessed officially.",
+        "next_direction_or_closure": "Goal review opened I1 because the candidate is below the development target and M4 leaves the causal distinction unresolved. This checkpoint ends S2; the fresh I1 inquiry session should perform the candidate-level trajectory diagnostic that distinguishes angle/branch acquisition from branch-switching transients and dynamic regulation before selecting a PI-owned intervention.",
+        "next_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2756db49950c3df89a5069a73185a1d21b0b890f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359. E2: one inquiry-opening decision record; no training or measurement resources consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 93.75% on the 160-episode development panel, with 10 failures: 7 without reaching tolerance and 3 with intermittent holds. Official success remains unmeasured, and no candidate has demonstrated the 196-of-200 requirement.",
+        "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
+        "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure. A matched candidate evaluation should record target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. Concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes. This evidence can change the intervention direction, whereas the current aggregate score cannot.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but remains 4.25 percentage points below the 98% development reference and has not been assessed officially.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened I1 because the candidate is below the development target and M4 leaves the causal distinction unresolved. This checkpoint ends S2; the fresh I1 inquiry session should perform the candidate-level trajectory diagnostic that distinguishes angle/branch acquisition from branch-switching transients and dynamic regulation before selecting a PI-owned intervention.",
+        "next_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "c5230cf3-3515-44a8-b3dc-5964a2a152d0",
+        "campaign_id": "bfd9e63d-b3d3-4ab8-a56d-027209406cf4",
+        "campaign_usage": "9m07s | 17.18 AIU | prompt 2.5m (86% cached) | output 32.9k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m13s | 4.21 AIU | prompt 521.3k (78% cached) | output 4.1k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "382e8b5dd66ceecc864258b30d773041da8f7e16",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359. E2: one inquiry-opening decision record; no training or measurement resources consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 93.75% on the 160-episode development panel, with 10 failures: 7 without reaching tolerance and 3 with intermittent holds. Official success remains unmeasured, and no candidate has demonstrated the 196-of-200 requirement.",
+        "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
+        "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure. A matched candidate evaluation should record target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. Concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes. This evidence can change the intervention direction, whereas the current aggregate score cannot.",
+        "evidence_references": [
+          "M3",
+          "T1",
+          "M4",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but remains 4.25 percentage points below the 98% development reference and has not been assessed officially.",
+        "next_direction_or_closure": "Goal review opened I1 because the candidate is below the development target and M4 leaves the causal distinction unresolved. This checkpoint ends S2; the fresh I1 inquiry session should perform the candidate-level trajectory diagnostic that distinguishes angle/branch acquisition from branch-switching transients and dynamic regulation before selecting a PI-owned intervention.",
+        "next_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?"
+      }
+    },
+    "request_fingerprint": "bb73b189b4492f7a558dd5107ebd22faaf14db9626a76f584e95b6e70db277d9",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 is the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned because role assignment and official commitment are separate decisions. No candidate meets the human goal on official assessment.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
     "completed_operations": [
-      "M3",
-      "T1",
-      "M4"
+      "E2"
     ],
-    "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359.",
-    "current_goal_gap": "T1 full-radius training produced candidate T1:checkpoint-120832, which achieved 93.75% on the 160-episode development panel, leaving 10 failures and a 4.25 percentage-point development gap to 98%. This is development evidence only; official success remains unmeasured.",
-    "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Of its 10 failures, 7 never reached tolerance and 3 reached it only intermittently; failures occurred at both inner and outer radii. Thus full-radius exposure improved coverage but did not solve the goal. The observed failure pattern supports an acquisition failure that depends on target angle and possibly kinematic branch selection or policy generalization, rather than a uniformly unstable hold. The branch, action, qvel, and angle mechanism remains unmeasured, so causal claims about branch switching are not established.",
-    "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure that the current diagnostics cannot distinguish. Evidence that would discriminate these explanations is a matched candidate evaluation recording target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. A concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes.",
+    "cumulative_resource_use": "M3: one compiled-dynamics python_module measurement over five elbow configurations and five impulse actions. T1: one fresh PPO run, 120000 requested steps and 120832 completed rollout steps, with full official-radius training exposure. M4: one 160-episode development evaluation on seeds 4200-4359. E2: one inquiry-opening decision record; no training or measurement resources consumed.",
+    "current_goal_gap": "T1:checkpoint-120832 achieved 93.75% on the 160-episode development panel, with 10 failures: 7 without reaching tolerance and 3 with intermittent holds. Official success remains unmeasured, and no candidate has demonstrated the 196-of-200 requirement.",
+    "current_synthesis": "M3 established the compiled plant used by the task: both joints are limited to about +/-170 degrees, nominal actuator torque is +/-5, and the configuration-dependent mass matrix varies moderately across representative elbow configurations. One-period saturated impulses generated substantial transient joint and end-effector velocity, but zero-input responses decayed to near-zero within the measured 20-period recovery window. This weakens intrinsic damping or torque authority as the first explanation, without proving that a learned controller can hold. T1 changed only training exposure, expanding target radius from 0.14-0.20 m to the full 0.06-0.20 m range; its training proxy rose to 0.58 at the terminal checkpoint, but that proxy did not establish development capability. M4 measured the terminal full-radius candidate at 93.75%. Its failures occurred across inner and outer radii, while the recorded failure angles include repeated sectors near -130 to -150 degrees and -32 to -41 degrees. This supports an angle-dependent acquisition or generalization contribution, correcting the stronger inherited wording that treated angle dependence only as a possibility. M4 does not record branch errors, actions, qvel, end-effector velocity, or saturation, so branch switching transients and inadequate dynamic regulation remain competing conjectures rather than established causes. The opened inquiry I1 therefore tests the angle/branch/dynamics distinction before another training intervention or official assessment.",
+    "decision_frontier": "The unresolved distinction is whether the remaining failures are caused primarily by branch-conditioned angular acquisition/generalization, by branch switching and associated transients, or by a broader policy-control regulation failure. A matched candidate evaluation should record target angle and radius together with analytic branch errors, joint positions and velocities, actions, end-effector distance and velocity, saturation, and hold interruptions for successful and failed episodes. Concentration of failures in one branch or angular sector would support branch-aware acquisition development; repeated high qvel or saturation at entry and hold interruptions across branches would support stabilization/control or observation work; failures without dynamic signatures would favor representation or training-coverage changes. This evidence can change the intervention direction, whereas the current aggregate score cannot.",
     "evidence_references": [
       "M3",
       "T1",
-      "M4"
+      "M4",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but is not yet at the required success level.",
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring a complete uninterrupted 2-second hold. The strongest development candidate reached 150 of 160 episodes, so the campaign has meaningful capability but remains 4.25 percentage points below the 98% development reference and has not been assessed officially.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Checkpoint the startup session and enter goal review. The next bounded action should investigate the angle/branch/dynamics distinction with candidate-level trajectory diagnostics before choosing another training recipe or requesting assessment.",
+    "next_direction_or_closure": "Goal review opened I1 because the candidate is below the development target and M4 leaves the causal distinction unresolved. This checkpoint ends S2; the fresh I1 inquiry session should perform the candidate-level trajectory diagnostic that distinguishes angle/branch acquisition from branch-switching transients and dynamic regulation before selecting a PI-owned intervention.",
     "next_question": "Which mechanism explains the remaining development failures of the full-radius candidate: branch- or angle-specific acquisition/generalization, branch switching transients, or inadequate dynamic regulation, and which PI-owned intervention can credibly raise complete-hold success toward 98%?",
-    "scientific_commit": "dacb1e5c05ea2093c74116d60608005adb8a84aa",
-    "session_id": "S1"
+    "scientific_commit": "382e8b5dd66ceecc864258b30d773041da8f7e16",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1616,21 +1742,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c5230cf3-3515-44a8-b3dc-5964a2a152d0",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "2756db49950c3df89a5069a73185a1d21b0b890f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
