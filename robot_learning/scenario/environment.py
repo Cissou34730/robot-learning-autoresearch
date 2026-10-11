@@ -25,7 +25,7 @@ from contracts.task_spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.scenario.observations import OBSERVATION_SIZE, branch_error_norms
+from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -42,23 +42,19 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        branch_target: str | None = None,
     ) -> None:
         super().__init__()
-        if branch_target not in (None, "open", "folded"):
-            raise ValueError("branch_target must be None, 'open', or 'folded'")
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
-        self.branch_target = branch_target
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
 
         self.success_threshold = success_threshold
-        self.control_dt = self.model.opt.timestep * self.frame_skip
-        self.hold_steps_required = round(hold_seconds / self.control_dt)
+        control_dt = self.model.opt.timestep * self.frame_skip
+        self.hold_steps_required = round(hold_seconds / control_dt)
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(
@@ -75,8 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_branch_error: float | None = None
-        self._previous_end_effector = np.zeros(3, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -123,12 +117,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_branch_error = (
-            branch_error_norms(self.data)[self.branch_target]
-            if self.branch_target is not None
-            else None
-        )
-        self._previous_end_effector = self._end_effector_position()
         return self._observation(), {}
 
     def step(
@@ -143,12 +131,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
 
-        end_effector = self._end_effector_position()
-        end_effector_speed = float(
-            np.linalg.norm(
-                (end_effector - self._previous_end_effector) / self.control_dt
-            )
-        )
         distance = self._distance_to_target()
 
         previous_held_steps = self._held_steps
@@ -160,11 +142,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        current_branch_error = (
-            branch_error_norms(self.data)[self.branch_target]
-            if self.branch_target is not None
-            else None
-        )
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -174,13 +151,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            previous_branch_error=self._previous_branch_error,
-            branch_error=current_branch_error,
-            end_effector_speed=end_effector_speed,
         )
         self._previous_distance = distance
-        self._previous_branch_error = current_branch_error
-        self._previous_end_effector = end_effector
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
