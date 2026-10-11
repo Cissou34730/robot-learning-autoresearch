@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a complete-artifact development comparison against T3:checkpoint-120832. The conclusion must use complete episode success as the primary criterion and report whether the intervention changes pre-entry saturation, velocity-linked reach behavior, and hold interruptions across inner and outer target bands. A positive route requires at least 98% development success without a material hold-regression pattern; otherwise preserve the best artifact-level result and the unresolved mechanism limits.",
+    "goal_connection": "The strongest measured staged-transfer artifact achieves 151/160 (94.375%), leaving a 3.625 percentage-point gap to the 98% human goal. Closing that gap requires complete uninterrupted holds, and the four matched residual failures are no-first-entry trajectories with 498-500 saturated controls and high endpoint and joint speeds.",
+    "handoff_conclusion": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. M4 and E12 showed four T3 residual no-first-entry failures across inner and outer bands with 498-500 saturated pre-entry steps and high endpoint and joint speeds; the transferred near-limit command penalty reduced one no-entry failure but regressed complete success and added hold losses, so it rejects that recipe without resolving the mechanism. M7 and M8 cannot be used as quantitative authority evidence: M7 contaminated live replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. These are implementation limits, not method results. M9 corrected both issues. Its independent 160-episode evaluator preserved 94.375% success and matched all four residual seeds as 500-step no-first-entry failures with minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The corrected runtime characterization found positive authority at both IK branches and both bands: representative directional authority was approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest endpoint-acceleration singular value remained positive at approximately 2.1-29.4 m/s2. The same four trajectories saturated for 498, 500, 498, and 500 steps with zero or near-zero control reserve. Together, M9 supports a predominantly policy-dependent regulation failure rather than a hard local reachability limit at the sampled residual configurations. This conclusion is bounded: it does not prove that every official configuration has unlimited authority, but it is sufficient to select the next route for I4.",
+    "handoff_question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+    "handoff_source_session_id": "S9",
+    "id": "I5",
+    "opened_in_session": "S10",
+    "question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+    "rationale": "M9 corrected the authority characterization and found positive local endpoint authority at both branches and both radius bands while the residual policy saturated and failed to enter, so authority redesign is not the leading next route. E12 rejects the tested near-limit command-penalty recipe and its hold regression, but that recipe-specific negative result does not reject regulation or representation interventions generally. The current observation contains joint velocity but no explicit endpoint-velocity or hold-phase signal, making a targeted policy-interface change a consequential alternative that can directly test whether learnability of low-speed regulation, rather than absent authority, limits the staged-transfer artifact. Further bounded work is justified because 94.375% development success is below the goal and the residual pattern identifies a measurable mechanism-level discriminator.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -3290,16 +3301,16 @@
     }
   },
   "counters": {
-    "event": 17,
-    "inquiry": 4,
+    "event": 18,
+    "inquiry": 5,
     "measurement": 9,
-    "session": 9,
+    "session": 10,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8527,9 +8538,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:54:36Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a complete-artifact development comparison against T3:checkpoint-120832. The conclusion must use complete episode success as the primary criterion and report whether the intervention changes pre-entry saturation, velocity-linked reach behavior, and hold interruptions across inner and outer target bands. A positive route requires at least 98% development success without a material hold-regression pattern; otherwise preserve the best artifact-level result and the unresolved mechanism limits.",
+        "goal_connection": "The strongest measured staged-transfer artifact achieves 151/160 (94.375%), leaving a 3.625 percentage-point gap to the 98% human goal. Closing that gap requires complete uninterrupted holds, and the four matched residual failures are no-first-entry trajectories with 498-500 saturated controls and high endpoint and joint speeds.",
+        "question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+        "rationale": "M9 corrected the authority characterization and found positive local endpoint authority at both branches and both radius bands while the residual policy saturated and failed to enter, so authority redesign is not the leading next route. E12 rejects the tested near-limit command-penalty recipe and its hold regression, but that recipe-specific negative result does not reject regulation or representation interventions generally. The current observation contains joint velocity but no explicit endpoint-velocity or hold-phase signal, making a targeted policy-interface change a consequential alternative that can directly test whether learnability of low-speed regulation, rather than absent authority, limits the staged-transfer artifact. Further bounded work is justified because 94.375% development success is below the goal and the residual pattern identifies a measurable mechanism-level discriminator."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a complete-artifact development comparison against T3:checkpoint-120832. The conclusion must use complete episode success as the primary criterion and report whether the intervention changes pre-entry saturation, velocity-linked reach behavior, and hold interruptions across inner and outer target bands. A positive route requires at least 98% development success without a material hold-regression pattern; otherwise preserve the best artifact-level result and the unresolved mechanism limits.",
+          "goal_connection": "The strongest measured staged-transfer artifact achieves 151/160 (94.375%), leaving a 3.625 percentage-point gap to the 98% human goal. Closing that gap requires complete uninterrupted holds, and the four matched residual failures are no-first-entry trajectories with 498-500 saturated controls and high endpoint and joint speeds.",
+          "handoff_conclusion": "M4 established an artifact-level staged-transfer gain: T3:checkpoint-70656 reached 87.5% and T3:checkpoint-120832 reached 94.375%, versus 68.75% for T1:checkpoint-120832 on the identical panel. This supports staged coverage as an effective capability-acquisition route but does not establish its cause. M4 and E12 showed four T3 residual no-first-entry failures across inner and outer bands with 498-500 saturated pre-entry steps and high endpoint and joint speeds; the transferred near-limit command penalty reduced one no-entry failure but regressed complete success and added hold losses, so it rejects that recipe without resolving the mechanism. M7 and M8 cannot be used as quantitative authority evidence: M7 contaminated live replay state during probing, and M8 retained a double mass-matrix inversion that inflated authority values. These are implementation limits, not method results. M9 corrected both issues. Its independent 160-episode evaluator preserved 94.375% success and matched all four residual seeds as 500-step no-first-entry failures with minimum distances of 1.071, 1.117, 1.063, and 1.040 cm. The corrected runtime characterization found positive authority at both IK branches and both bands: representative directional authority was approximately 14-78 m/s2, radial authority approximately 30-46 m/s2, and the smallest endpoint-acceleration singular value remained positive at approximately 2.1-29.4 m/s2. The same four trajectories saturated for 498, 500, 498, and 500 steps with zero or near-zero control reserve. Together, M9 supports a predominantly policy-dependent regulation failure rather than a hard local reachability limit at the sampled residual configurations. This conclusion is bounded: it does not prove that every official configuration has unlimited authority, but it is sufficient to select the next route for I4.",
+          "handoff_question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+          "handoff_source_session_id": "S9",
+          "id": "I5",
+          "opened_in_session": "S10",
+          "question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+          "rationale": "M9 corrected the authority characterization and found positive local endpoint authority at both branches and both radius bands while the residual policy saturated and failed to enter, so authority redesign is not the leading next route. E12 rejects the tested near-limit command-penalty recipe and its hold regression, but that recipe-specific negative result does not reject regulation or representation interventions generally. The current observation contains joint velocity but no explicit endpoint-velocity or hold-phase signal, making a targeted policy-interface change a consequential alternative that can directly test whether learnability of low-speed regulation, rather than absent authority, limits the staged-transfer artifact. Further bounded work is justified because 94.375% development success is below the goal and the residual pattern identifies a measurable mechanism-level discriminator.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a complete-artifact development comparison against T3:checkpoint-120832. The conclusion must use complete episode success as the primary criterion and report whether the intervention changes pre-entry saturation, velocity-linked reach behavior, and hold interruptions across inner and outer target bands. A positive route requires at least 98% development success without a material hold-regression pattern; otherwise preserve the best artifact-level result and the unresolved mechanism limits.",
+        "goal_connection": "The strongest measured staged-transfer artifact achieves 151/160 (94.375%), leaving a 3.625 percentage-point gap to the 98% human goal. Closing that gap requires complete uninterrupted holds, and the four matched residual failures are no-first-entry trajectories with 498-500 saturated controls and high endpoint and joint speeds.",
+        "question": "Can a targeted policy-interface intervention that makes velocity and hold-phase regulation easier to learn, rather than another near-limit command penalty, reduce pre-entry saturation and residual complete-hold failures of the staged-transfer policy enough to reach at least 98% success across the official inner and outer target bands?",
+        "rationale": "M9 corrected the authority characterization and found positive local endpoint authority at both branches and both radius bands while the residual policy saturated and failed to enter, so authority redesign is not the leading next route. E12 rejects the tested near-limit command-penalty recipe and its hold regression, but that recipe-specific negative result does not reject regulation or representation interventions generally. The current observation contains joint velocity but no explicit endpoint-velocity or hold-phase signal, making a targeted policy-interface change a consequential alternative that can directly test whether learnability of low-speed regulation, rather than absent authority, limits the staged-transfer artifact. Further bounded work is justified because 94.375% development success is below the goal and the residual pattern identifies a measurable mechanism-level discriminator."
+      }
+    },
+    "request_fingerprint": "39ff98a14b34e2eef7f0b1817339e5a058e37c48423c774211045603e0fd60a3",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T3:checkpoint-120832 remains the strongest measured development artifact at 94.375%; T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T4:checkpoint-20480 is a tested but rejected intervention at 93.125%; T1:checkpoint-120832 is the staged-transfer reference at 68.75%; and T2:checkpoint-120832 is recipe-specific counterevidence at 33.75%. These are complete-artifact comparison facts and do not establish causal explanations. M9 characterizes T3:checkpoint-120832 but does not assign it a role.",
     "completed_operations": [
@@ -8568,6 +8642,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4b2abaa7-3cd4-4808-a91d-65a23fce83c3",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E18"
+    ],
+    "scientific_parent_commit": "1e3cff6f96b62b1c3b8f8f8a22f91666296b10e1"
+  },
   "terminal_state": null
 }
