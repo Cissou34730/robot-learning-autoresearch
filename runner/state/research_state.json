@@ -5416,38 +5416,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "M4 provides a bounded answer to I2. The staged transfer improved complete development success from the T1 reference's 68.75% (110/160) to 87.5% (140/160) at T3:checkpoint-70656 and 94.375% (151/160) at T3:checkpoint-120832, with paired wins of 31-1 and 41-0 respectively. The final staged artifact therefore acquired substantial inner-radius capability without evidence of substantial outer-workspace regression on the same panel. Its four no-first-entry failures included two inner-band targets at 10.66 and 10.85 cm and two outer-band targets at 17.49 and 18.35 cm. All four residual no-entry failures had 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range, so the remaining failures are consistently saturation- and speed-linked rather than evidence against the staged-coverage route.",
-        "reason": "The closure condition is met by completed M4: staged transfer produced a large complete-success and first-entry improvement over T1 while preserving the aggregate outer-workspace behavior, and the final residual no-entry failures show a consistent control-authority signature. This establishes the tested staged-coverage artifact as effective at the candidate-comparison level, not coverage as the sole cause. The next goal-directed direction is control-authority work that preserves the acquired staged policy and tests whether reducing saturation or improving bounded transient authority closes the remaining gap toward 98%. The M4 artifacts do not provide a protected official result, so official assessment remains deferred."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "M4 provides a bounded answer to I2. The staged transfer improved complete development success from the T1 reference's 68.75% (110/160) to 87.5% (140/160) at T3:checkpoint-70656 and 94.375% (151/160) at T3:checkpoint-120832, with paired wins of 31-1 and 41-0 respectively. The final staged artifact therefore acquired substantial inner-radius capability without evidence of substantial outer-workspace regression on the same panel. Its four no-first-entry failures included two inner-band targets at 10.66 and 10.85 cm and two outer-band targets at 17.49 and 18.35 cm. All four residual no-entry failures had 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range, so the remaining failures are consistently saturation- and speed-linked rather than evidence against the staged-coverage route.",
-        "reason": "The closure condition is met by completed M4: staged transfer produced a large complete-success and first-entry improvement over T1 while preserving the aggregate outer-workspace behavior, and the final residual no-entry failures show a consistent control-authority signature. This establishes the tested staged-coverage artifact as effective at the candidate-comparison level, not coverage as the sole cause. The next goal-directed direction is control-authority work that preserves the acquired staged policy and tests whether reducing saturation or improving bounded transient authority closes the remaining gap toward 98%. The M4 artifacts do not provide a protected official result, so official assessment remains deferred.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M4 provides a bounded answer to I2. The staged transfer improved complete development success from the T1 reference's 68.75% (110/160) to 87.5% (140/160) at T3:checkpoint-70656 and 94.375% (151/160) at T3:checkpoint-120832, with paired wins of 31-1 and 41-0 respectively. The final staged artifact therefore acquired substantial inner-radius capability without evidence of substantial outer-workspace regression on the same panel. Its four no-first-entry failures included two inner-band targets at 10.66 and 10.85 cm and two outer-band targets at 17.49 and 18.35 cm. All four residual no-entry failures had 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range, so the remaining failures are consistently saturation- and speed-linked rather than evidence against the staged-coverage route.",
-        "reason": "The closure condition is met by completed M4: staged transfer produced a large complete-success and first-entry improvement over T1 while preserving the aggregate outer-workspace behavior, and the final residual no-entry failures show a consistent control-authority signature. This establishes the tested staged-coverage artifact as effective at the candidate-comparison level, not coverage as the sole cause. The next goal-directed direction is control-authority work that preserves the acquired staged policy and tests whether reducing saturation or improving bounded transient authority closes the remaining gap toward 98%. The M4 artifacts do not provide a protected official result, so official assessment remains deferred."
-      }
-    },
-    "request_fingerprint": "9c9a7ff7f72a5140aa2c662316ed98312ad51ba6be76fd1a36ea35051b8acdd8",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the strongest measured development artifact at 68.75%; T2:checkpoint-120832 is weaker at 33.75% and does not invalidate the coverage hypothesis.",
     "completed_operations": [
