@@ -13530,38 +13530,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited bounded answer",
-        "reason": "M23 completed the required current-source evaluation of the complete T4:checkpoint-120832 artifact on the matched 160-episode panel starting at seed 4200. T4 retained the historical aggregate capability exactly at 153/160 successes (95.625%), with 3/160 no-first-reach episodes, mean maximum held steps 95.6625, mean in-tolerance steps 95.70625, and mean hold interruptions 0.06875. The current evaluator fingerprint is f6bf4b99cf62, which matches M22's current-source evaluation of the I7 residual candidates but differs from M19's historical fingerprint 4e874c58d1e9. Therefore the historical and current aggregate scores cannot be declared directly semantically equivalent, so I8 closes as limited rather than a positive comparability result. Nevertheless, M23 and M22 are a comparable current-evaluator artifact comparison: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and supports abandoning that scaffold as a development route, while preserving that the result is not a causal test of individual residual terms and neither M23 nor M19 certifies the official 196/200 objective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited bounded answer",
-        "reason": "M23 completed the required current-source evaluation of the complete T4:checkpoint-120832 artifact on the matched 160-episode panel starting at seed 4200. T4 retained the historical aggregate capability exactly at 153/160 successes (95.625%), with 3/160 no-first-reach episodes, mean maximum held steps 95.6625, mean in-tolerance steps 95.70625, and mean hold interruptions 0.06875. The current evaluator fingerprint is f6bf4b99cf62, which matches M22's current-source evaluation of the I7 residual candidates but differs from M19's historical fingerprint 4e874c58d1e9. Therefore the historical and current aggregate scores cannot be declared directly semantically equivalent, so I8 closes as limited rather than a positive comparability result. Nevertheless, M23 and M22 are a comparable current-evaluator artifact comparison: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and supports abandoning that scaffold as a development route, while preserving that the result is not a causal test of individual residual terms and neither M23 nor M19 certifies the official 196/200 objective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E34",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited bounded answer",
-        "reason": "M23 completed the required current-source evaluation of the complete T4:checkpoint-120832 artifact on the matched 160-episode panel starting at seed 4200. T4 retained the historical aggregate capability exactly at 153/160 successes (95.625%), with 3/160 no-first-reach episodes, mean maximum held steps 95.6625, mean in-tolerance steps 95.70625, and mean hold interruptions 0.06875. The current evaluator fingerprint is f6bf4b99cf62, which matches M22's current-source evaluation of the I7 residual candidates but differs from M19's historical fingerprint 4e874c58d1e9. Therefore the historical and current aggregate scores cannot be declared directly semantically equivalent, so I8 closes as limited rather than a positive comparability result. Nevertheless, M23 and M22 are a comparable current-evaluator artifact comparison: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and supports abandoning that scaffold as a development route, while preserving that the result is not a causal test of individual residual terms and neither M23 nor M19 certifies the official 196/200 objective."
-      }
-    },
-    "request_fingerprint": "5e52bab083a6d83bb06ad5d27927506c6e12b50e715baf3b9f49f9e85983545d",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19 at 153/160 under evaluator fingerprint 4e874c58d1e9, but is not certified. T5:checkpoint-100352 remains a historical complete continuation at 153/160. T2:checkpoint-120832 remains the 150/160 matched reference. T6:checkpoint-115712 and T6:checkpoint-120832 are complete rejected I7 artifacts at 9/160 and 6/160 under M22 and have no working, retained or certified role. No candidate is assigned working or retained status.",
     "completed_operations": [
