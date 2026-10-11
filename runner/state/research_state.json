@@ -3144,38 +3144,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M5 and corrected M6 distinguish the remaining failures from a purely geometric aggregate effect: the original candidate's 10 failures are concentrated in repeated angular sectors, with 9 of 10 nearest-branch switches, corrected end-effector speeds reaching 0.91 m/s, and 491-498 saturated control steps. This supports an angle/branch-conditioned acquisition problem with associated high-speed regulation demands, while saturation is not by itself causal because successful episodes also saturate during acquisition. T2 tested a PI-owned fixed open-branch progress intervention under the full official radius distribution. Its strongest training-proxy checkpoint, T2:checkpoint-115712, achieved 149/160 (93.125%) on the matched panel, below T1:checkpoint-120832 at 150/160, and retained the same representative angular, branch-switch, and saturation signatures. The intervention is therefore limited/rejected as a demonstrated route to improvement; inadequate regulation and acquisition remain coupled alternatives for the next goal review.",
-        "reason": "The closure condition is met because completed candidate-level trajectory evidence distinguishes the consequential failure pattern sufficiently to reject the tested fixed-branch reward intervention and select the next direction, even though it does not identify a single exclusive cause. Preserve the unresolved interaction between angle-conditioned acquisition, branch switching, and dynamic regulation: M6 shows failure-specific high-speed/saturation signatures but successful episodes also saturate, and M7 shows no capability gain from fixed open-branch shaping. Official assessment is not justified by either development candidate, and the 98% goal remains unmet."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M5 and corrected M6 distinguish the remaining failures from a purely geometric aggregate effect: the original candidate's 10 failures are concentrated in repeated angular sectors, with 9 of 10 nearest-branch switches, corrected end-effector speeds reaching 0.91 m/s, and 491-498 saturated control steps. This supports an angle/branch-conditioned acquisition problem with associated high-speed regulation demands, while saturation is not by itself causal because successful episodes also saturate during acquisition. T2 tested a PI-owned fixed open-branch progress intervention under the full official radius distribution. Its strongest training-proxy checkpoint, T2:checkpoint-115712, achieved 149/160 (93.125%) on the matched panel, below T1:checkpoint-120832 at 150/160, and retained the same representative angular, branch-switch, and saturation signatures. The intervention is therefore limited/rejected as a demonstrated route to improvement; inadequate regulation and acquisition remain coupled alternatives for the next goal review.",
-        "reason": "The closure condition is met because completed candidate-level trajectory evidence distinguishes the consequential failure pattern sufficiently to reject the tested fixed-branch reward intervention and select the next direction, even though it does not identify a single exclusive cause. Preserve the unresolved interaction between angle-conditioned acquisition, branch switching, and dynamic regulation: M6 shows failure-specific high-speed/saturation signatures but successful episodes also saturate, and M7 shows no capability gain from fixed open-branch shaping. Official assessment is not justified by either development candidate, and the 98% goal remains unmet.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M5 and corrected M6 distinguish the remaining failures from a purely geometric aggregate effect: the original candidate's 10 failures are concentrated in repeated angular sectors, with 9 of 10 nearest-branch switches, corrected end-effector speeds reaching 0.91 m/s, and 491-498 saturated control steps. This supports an angle/branch-conditioned acquisition problem with associated high-speed regulation demands, while saturation is not by itself causal because successful episodes also saturate during acquisition. T2 tested a PI-owned fixed open-branch progress intervention under the full official radius distribution. Its strongest training-proxy checkpoint, T2:checkpoint-115712, achieved 149/160 (93.125%) on the matched panel, below T1:checkpoint-120832 at 150/160, and retained the same representative angular, branch-switch, and saturation signatures. The intervention is therefore limited/rejected as a demonstrated route to improvement; inadequate regulation and acquisition remain coupled alternatives for the next goal review.",
-        "reason": "The closure condition is met because completed candidate-level trajectory evidence distinguishes the consequential failure pattern sufficiently to reject the tested fixed-branch reward intervention and select the next direction, even though it does not identify a single exclusive cause. Preserve the unresolved interaction between angle-conditioned acquisition, branch switching, and dynamic regulation: M6 shows failure-specific high-speed/saturation signatures but successful episodes also saturate, and M7 shows no capability gain from fixed open-branch shaping. Official assessment is not justified by either development candidate, and the 98% goal remains unmet."
-      }
-    },
-    "request_fingerprint": "eea37112128dd8319eaca1d899c21c7472b913c73a474bf25ed59b8597b0eea0",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75%, but no working, best-known, or retained role has been assigned. Opening I1 does not certify the candidate or commit it to official assessment.",
     "completed_operations": [
