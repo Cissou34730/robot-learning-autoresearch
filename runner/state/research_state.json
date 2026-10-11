@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a complete candidate from this route is measured on the current f6bf4b99cf62 development panel with per-episode hold diagnostics. A positive bounded answer requires more complete successes than T4 and a corresponding reduction in the observed acquisition or post-reach interruption classes; a negative answer is justified if the candidate fails to improve T4 or loses its acquisition/hold capability. The result will remain development evidence and will not be combined with or substituted for the protected 200-episode official assessment.",
     "goal_connection": "The human objective requires at least 196/200 complete uninterrupted holds under the official distribution. T4 is the strongest measured candidate at 153/160 on the matched current-source development panel, leaving seven observed failures and no official certification. A direct-torque policy is a materially different development route because it removes the persisted hand-coded residual action composition that was present in T4 and in the rejected T6 scaffold while preserving the fixed plant, observation, action limits, and hold semantics.",
-    "handoff_conclusion": "Observed: M23 evaluated the complete legacy T4:checkpoint-120832 artifact through the current scenario source on all 160 episode seeds beginning at 4200 and measured 153 successes, 3 no-first-reach failures, mean maximum held steps of 95.6625, mean in-tolerance steps of 95.70625, and mean hold interruptions of 0.06875. T4 therefore retained its historical aggregate capability under the current evaluator, with seven total failures and a small residual acquisition/hold tail. Observed: M23 uses evaluator fingerprint f6bf4b99cf62, matching M22's current-source T6 measurements but differing from M19's historical T4 fingerprint 4e874c58d1e9. Interpretation: the exact historical and current scores cannot be treated as directly semantically equivalent, so I8 is a limited comparability result rather than a positive equivalence result. Interpretation: because M23 and M22 share f6bf4b99cf62, the current-source artifact comparison is meaningful: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and does not support continuing that scaffold. It does not establish that residual control or braking methods in general fail, does not identify an individual residual term as causal, and does not certify the official goal. The physical model remains decision-relevant: bounded two-branch IK makes geometric impossibility unlikely; the singular reset, saturated 20 ms torque control and dynamic 100-step hold make acquisition, braking and regulation separable diagnostics; M23's few no-first-reach cases and remaining incomplete holds support judging future candidates by complete trajectories rather than training proxies or first reach alone. The historical-current semantic difference remains a measurement limitation for longitudinal score comparisons, but it does not prevent current-evaluator comparison of T4 with the I7 artifacts.",
+    "handoff_conclusion": "Observed: M23 evaluated the complete T4 artifact through evaluator fingerprint f6bf4b99cf62 on the 160-episode panel beginning at seed 4200 and recorded 153 successes. Its seven failures comprised three no-first-reach episodes at target angles approximately -129.9, -150.6 and -130.0 degrees, and four episodes that first reached but held only 1-2 steps before interruption; their target angles were approximately -148.0, -139.5, -131.5 and -148.4 degrees. The matched diagnostic fields therefore support a mixed acquisition and post-reach interruption residual, not a pooled low-reward explanation. Observed: M15 previously identified a reproducible acquisition/saturation signature for T2 failures, but M16/T3 and M21/T6 tested different implementations and do not isolate a causal residual term. Observed: M22 measured the persisted residual-torque T6 artifacts at 9/160 and 6/160 under the same current evaluator, and E30 bounded that tested implementation negatively. Correction to the inherited interpretation: calling T4's residual tail small is descriptive only; it cannot justify official assessment because the candidate is below 196/200 and the seven failures include complete-hold violations. Correction to the inherited question: evaluator harmonization is not the immediate campaign bottleneck for a current-source development comparison, because M23 and M22 share f6bf4b99cf62; harmonization remains necessary only for direct historical-to-current score claims. The physical model remains consequential: reachable two-branch geometry makes exact impossibility unlikely; the singular reset and 20 ms saturated torque make acquisition and braking distinct from hold regulation; the required 100-step continuity makes first reach insufficient. Competing explanations remain that the residual is caused by the persisted residual action composition, by learned policy mapping under the exposure, or by plant timing/branch-dependent transients. Existing evidence distinguishes failure classes but does not identify an individual term or prove that direct control will improve them.",
     "handoff_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
-    "handoff_source_session_id": "S17",
+    "handoff_source_session_id": "S18",
     "id": "I9",
     "opened_in_session": "S18",
     "question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
@@ -4935,7 +4935,7 @@
     }
   },
   "counters": {
-    "event": 36,
+    "event": 37,
     "inquiry": 9,
     "measurement": 23,
     "session": 18,
@@ -4944,7 +4944,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -13600,34 +13600,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T23:46:28Z",
+      "error": null,
+      "id": "E37",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result, with its seven residual failures and the historical/current fingerprint limitation retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected tested persisted residual-torque artifacts at 9/160 and 6/160 under the matched current evaluator. No candidate is certified for official assessment and no new working or retained role is assigned.",
+        "completed_operations": [
+          "E36"
+        ],
+        "cumulative_resource_use": "Campaign history includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, M21, T6, M22, E30, E32, E33, M23, E34, E35 and E36. I9 has used no training allocation or new measurement; E36 recorded the inquiry opening. The inquiry cap is 9 of 15.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4:checkpoint-120832 achieved 153/160 (95.625%) on the matched current-source development panel, leaving seven observed failures and a 43-success shortfall relative to the official 196/200 criterion if the panels were wrongly conflated. The official panel remains distinct, so this is not an official estimate or result.",
+        "current_synthesis": "Observed: M23 evaluated the complete T4 artifact through evaluator fingerprint f6bf4b99cf62 on the 160-episode panel beginning at seed 4200 and recorded 153 successes. Its seven failures comprised three no-first-reach episodes at target angles approximately -129.9, -150.6 and -130.0 degrees, and four episodes that first reached but held only 1-2 steps before interruption; their target angles were approximately -148.0, -139.5, -131.5 and -148.4 degrees. The matched diagnostic fields therefore support a mixed acquisition and post-reach interruption residual, not a pooled low-reward explanation. Observed: M15 previously identified a reproducible acquisition/saturation signature for T2 failures, but M16/T3 and M21/T6 tested different implementations and do not isolate a causal residual term. Observed: M22 measured the persisted residual-torque T6 artifacts at 9/160 and 6/160 under the same current evaluator, and E30 bounded that tested implementation negatively. Correction to the inherited interpretation: calling T4's residual tail small is descriptive only; it cannot justify official assessment because the candidate is below 196/200 and the seven failures include complete-hold violations. Correction to the inherited question: evaluator harmonization is not the immediate campaign bottleneck for a current-source development comparison, because M23 and M22 share f6bf4b99cf62; harmonization remains necessary only for direct historical-to-current score claims. The physical model remains consequential: reachable two-branch geometry makes exact impossibility unlikely; the singular reset and 20 ms saturated torque make acquisition and braking distinct from hold regulation; the required 100-step continuity makes first reach insufficient. Competing explanations remain that the residual is caused by the persisted residual action composition, by learned policy mapping under the exposure, or by plant timing/branch-dependent transients. Existing evidence distinguishes failure classes but does not identify an individual term or prove that direct control will improve them.",
+        "decision_frontier": "The consequential question is whether a materially different learned-policy route can improve the seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold. Direct torque is a consequential alternative because it removes that hand-coded action composition while retaining the fixed plant, observation, action limits, target distribution and hold semantics; its risk is that PPO must relearn singular escape, braking and regulation and may lose T4's acquisition capability. A fresh direct-torque full-radius candidate, measured on the current f6bf4b99cf62 panel with complete diagnostics, would change direction if it exceeds 153/160 while reducing acquisition or interruption failures; failure to improve or loss of the retained capability would redirect or limit this route. Historical/current evaluator semantic differences remain unresolved for longitudinal claims but cannot change this matched current-source development decision.",
+        "evidence_references": [
+          "E36",
+          "M23",
+          "E30",
+          "M22",
+          "M15",
+          "M16",
+          "E17",
+          "E30",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign seeks one learned policy achieving at least 196 successes in the protected 200-episode official assessment, where every success is an uninterrupted 100-step hold within 1 cm over the full 0.06-0.20 m target distribution. I9 is a development inquiry and does not alter the protected assessment or certify the goal.",
+        "next_direction_or_closure": "I9 is opened to develop and measure a fresh direct-torque learned policy over the full official radius range, with acquisition and uninterrupted-hold behavior judged by complete current-source trajectories rather than training proxies. The inquiry is bounded by one candidate-development route and the closure condition recorded above; it is worthwhile because it can change capability, not merely candidate selection, while directly testing a route not inherited from the rejected residual-torque scaffold.",
+        "next_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?"
+      },
+      "result": {
+        "session_id": "S18",
+        "status": "checkpointed"
+      },
+      "session_id": "S18",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ec7d89f964ee7e8e021162abee7590233f51060f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result, with its seven residual failures and the historical/current fingerprint limitation retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected tested persisted residual-torque artifacts at 9/160 and 6/160 under the matched current evaluator. No candidate is certified for official assessment and no new working or retained role is assigned.",
+        "completed_operations": [
+          "E36"
+        ],
+        "cumulative_resource_use": "Campaign history includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, M21, T6, M22, E30, E32, E33, M23, E34, E35 and E36. I9 has used no training allocation or new measurement; E36 recorded the inquiry opening. The inquiry cap is 9 of 15.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4:checkpoint-120832 achieved 153/160 (95.625%) on the matched current-source development panel, leaving seven observed failures and a 43-success shortfall relative to the official 196/200 criterion if the panels were wrongly conflated. The official panel remains distinct, so this is not an official estimate or result.",
+        "current_synthesis": "Observed: M23 evaluated the complete T4 artifact through evaluator fingerprint f6bf4b99cf62 on the 160-episode panel beginning at seed 4200 and recorded 153 successes. Its seven failures comprised three no-first-reach episodes at target angles approximately -129.9, -150.6 and -130.0 degrees, and four episodes that first reached but held only 1-2 steps before interruption; their target angles were approximately -148.0, -139.5, -131.5 and -148.4 degrees. The matched diagnostic fields therefore support a mixed acquisition and post-reach interruption residual, not a pooled low-reward explanation. Observed: M15 previously identified a reproducible acquisition/saturation signature for T2 failures, but M16/T3 and M21/T6 tested different implementations and do not isolate a causal residual term. Observed: M22 measured the persisted residual-torque T6 artifacts at 9/160 and 6/160 under the same current evaluator, and E30 bounded that tested implementation negatively. Correction to the inherited interpretation: calling T4's residual tail small is descriptive only; it cannot justify official assessment because the candidate is below 196/200 and the seven failures include complete-hold violations. Correction to the inherited question: evaluator harmonization is not the immediate campaign bottleneck for a current-source development comparison, because M23 and M22 share f6bf4b99cf62; harmonization remains necessary only for direct historical-to-current score claims. The physical model remains consequential: reachable two-branch geometry makes exact impossibility unlikely; the singular reset and 20 ms saturated torque make acquisition and braking distinct from hold regulation; the required 100-step continuity makes first reach insufficient. Competing explanations remain that the residual is caused by the persisted residual action composition, by learned policy mapping under the exposure, or by plant timing/branch-dependent transients. Existing evidence distinguishes failure classes but does not identify an individual term or prove that direct control will improve them.",
+        "decision_frontier": "The consequential question is whether a materially different learned-policy route can improve the seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold. Direct torque is a consequential alternative because it removes that hand-coded action composition while retaining the fixed plant, observation, action limits, target distribution and hold semantics; its risk is that PPO must relearn singular escape, braking and regulation and may lose T4's acquisition capability. A fresh direct-torque full-radius candidate, measured on the current f6bf4b99cf62 panel with complete diagnostics, would change direction if it exceeds 153/160 while reducing acquisition or interruption failures; failure to improve or loss of the retained capability would redirect or limit this route. Historical/current evaluator semantic differences remain unresolved for longitudinal claims but cannot change this matched current-source development decision.",
+        "evidence_references": [
+          "E36",
+          "M23",
+          "E30",
+          "M22",
+          "M15",
+          "M16",
+          "E17",
+          "E30",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign seeks one learned policy achieving at least 196 successes in the protected 200-episode official assessment, where every success is an uninterrupted 100-step hold within 1 cm over the full 0.06-0.20 m target distribution. I9 is a development inquiry and does not alter the protected assessment or certify the goal.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I9 is opened to develop and measure a fresh direct-torque learned policy over the full official radius range, with acquisition and uninterrupted-hold behavior judged by complete current-source trajectories rather than training proxies. The inquiry is bounded by one candidate-development route and the closure condition recorded above; it is worthwhile because it can change capability, not merely candidate selection, while directly testing a route not inherited from the rejected residual-torque scaffold.",
+        "next_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
+        "session_id": "S18"
+      },
+      "presentation": {
+        "backend_session_id": "da67d2a4-f63b-46e3-915b-c1e8d1d13e75",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "51m26s | 135.56 AIU | prompt 23.2m (91% cached) | output 323.3k",
+        "session_id": "S18",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S18",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "77e8702f170072d1ae39353c75305c74cf4de920",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E37",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result, with its seven residual failures and the historical/current fingerprint limitation retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected tested persisted residual-torque artifacts at 9/160 and 6/160 under the matched current evaluator. No candidate is certified for official assessment and no new working or retained role is assigned.",
+        "completed_operations": [
+          "E36"
+        ],
+        "cumulative_resource_use": "Campaign history includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, M21, T6, M22, E30, E32, E33, M23, E34, E35 and E36. I9 has used no training allocation or new measurement; E36 recorded the inquiry opening. The inquiry cap is 9 of 15.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4:checkpoint-120832 achieved 153/160 (95.625%) on the matched current-source development panel, leaving seven observed failures and a 43-success shortfall relative to the official 196/200 criterion if the panels were wrongly conflated. The official panel remains distinct, so this is not an official estimate or result.",
+        "current_synthesis": "Observed: M23 evaluated the complete T4 artifact through evaluator fingerprint f6bf4b99cf62 on the 160-episode panel beginning at seed 4200 and recorded 153 successes. Its seven failures comprised three no-first-reach episodes at target angles approximately -129.9, -150.6 and -130.0 degrees, and four episodes that first reached but held only 1-2 steps before interruption; their target angles were approximately -148.0, -139.5, -131.5 and -148.4 degrees. The matched diagnostic fields therefore support a mixed acquisition and post-reach interruption residual, not a pooled low-reward explanation. Observed: M15 previously identified a reproducible acquisition/saturation signature for T2 failures, but M16/T3 and M21/T6 tested different implementations and do not isolate a causal residual term. Observed: M22 measured the persisted residual-torque T6 artifacts at 9/160 and 6/160 under the same current evaluator, and E30 bounded that tested implementation negatively. Correction to the inherited interpretation: calling T4's residual tail small is descriptive only; it cannot justify official assessment because the candidate is below 196/200 and the seven failures include complete-hold violations. Correction to the inherited question: evaluator harmonization is not the immediate campaign bottleneck for a current-source development comparison, because M23 and M22 share f6bf4b99cf62; harmonization remains necessary only for direct historical-to-current score claims. The physical model remains consequential: reachable two-branch geometry makes exact impossibility unlikely; the singular reset and 20 ms saturated torque make acquisition and braking distinct from hold regulation; the required 100-step continuity makes first reach insufficient. Competing explanations remain that the residual is caused by the persisted residual action composition, by learned policy mapping under the exposure, or by plant timing/branch-dependent transients. Existing evidence distinguishes failure classes but does not identify an individual term or prove that direct control will improve them.",
+        "decision_frontier": "The consequential question is whether a materially different learned-policy route can improve the seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold. Direct torque is a consequential alternative because it removes that hand-coded action composition while retaining the fixed plant, observation, action limits, target distribution and hold semantics; its risk is that PPO must relearn singular escape, braking and regulation and may lose T4's acquisition capability. A fresh direct-torque full-radius candidate, measured on the current f6bf4b99cf62 panel with complete diagnostics, would change direction if it exceeds 153/160 while reducing acquisition or interruption failures; failure to improve or loss of the retained capability would redirect or limit this route. Historical/current evaluator semantic differences remain unresolved for longitudinal claims but cannot change this matched current-source development decision.",
+        "evidence_references": [
+          "E36",
+          "M23",
+          "E30",
+          "M22",
+          "M15",
+          "M16",
+          "E17",
+          "E30",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign seeks one learned policy achieving at least 196 successes in the protected 200-episode official assessment, where every success is an uninterrupted 100-step hold within 1 cm over the full 0.06-0.20 m target distribution. I9 is a development inquiry and does not alter the protected assessment or certify the goal.",
+        "next_direction_or_closure": "I9 is opened to develop and measure a fresh direct-torque learned policy over the full official radius range, with acquisition and uninterrupted-hold behavior judged by complete current-source trajectories rather than training proxies. The inquiry is bounded by one candidate-development route and the closure condition recorded above; it is worthwhile because it can change capability, not merely candidate selection, while directly testing a route not inherited from the rejected residual-torque scaffold.",
+        "next_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?"
+      }
+    },
+    "request_fingerprint": "4ba2823b8642def3da1decf015d28161736faa682fc433a0349e3ba0a0e61203",
+    "session_id": "S18",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T4:checkpoint-120832 remains the best-known development candidate based on M23's 153/160 current-source result and M19's historical 153/160 result, with the semantic fingerprint limitation explicitly retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected current-source residual-torque artifacts at 9/160 and 6/160. No candidate has a working or retained role, and no candidate is certified for official assessment.",
+    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result, with its seven residual failures and the historical/current fingerprint limitation retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected tested persisted residual-torque artifacts at 9/160 and 6/160 under the matched current evaluator. No candidate is certified for official assessment and no new working or retained role is assigned.",
     "completed_operations": [
-      "M23",
-      "E34"
+      "E36"
     ],
-    "cumulative_resource_use": "Campaign history before I8 includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, E29, M21, T6, M22, E30, E32 and E33. I8 consumed the complete M23 current-source T4 research evaluation and E34 inquiry closure. No official assessment was performed; no new training allocation was used in I8.",
-    "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4:checkpoint-120832 retained 153/160 (95.625%) on the matched development panel under the current source, which is strong development evidence but is not an official result or an estimate obtained by combining distinct panels. The tested I7 residual-torque candidates remain at 9/160 and 6/160 under the same current evaluator, leaving a substantial capability gap.",
-    "current_synthesis": "Observed: M23 evaluated the complete legacy T4:checkpoint-120832 artifact through the current scenario source on all 160 episode seeds beginning at 4200 and measured 153 successes, 3 no-first-reach failures, mean maximum held steps of 95.6625, mean in-tolerance steps of 95.70625, and mean hold interruptions of 0.06875. T4 therefore retained its historical aggregate capability under the current evaluator, with seven total failures and a small residual acquisition/hold tail. Observed: M23 uses evaluator fingerprint f6bf4b99cf62, matching M22's current-source T6 measurements but differing from M19's historical T4 fingerprint 4e874c58d1e9. Interpretation: the exact historical and current scores cannot be treated as directly semantically equivalent, so I8 is a limited comparability result rather than a positive equivalence result. Interpretation: because M23 and M22 share f6bf4b99cf62, the current-source artifact comparison is meaningful: T4 retained 153/160 while T6 terminal achieved 6/160 with 150 no-first-reach episodes. This strengthens the bounded negative result for the tested persisted residual-torque PPO implementation and does not support continuing that scaffold. It does not establish that residual control or braking methods in general fail, does not identify an individual residual term as causal, and does not certify the official goal. The physical model remains decision-relevant: bounded two-branch IK makes geometric impossibility unlikely; the singular reset, saturated 20 ms torque control and dynamic 100-step hold make acquisition, braking and regulation separable diagnostics; M23's few no-first-reach cases and remaining incomplete holds support judging future candidates by complete trajectories rather than training proxies or first reach alone. The historical-current semantic difference remains a measurement limitation for longitudinal score comparisons, but it does not prevent current-evaluator comparison of T4 with the I7 artifacts.",
-    "decision_frontier": "The unresolved campaign-level decision is no longer whether T4 retains its measured development capability: M23 answers that bounded control question. The consequential frontier is whether a materially different policy-development direction can raise current-source T4-level capability from 153/160 toward the protected 196/200 objective, versus whether the remaining historical/current semantic difference first requires evaluator harmonization. The current evidence supports abandoning the tested persisted residual-torque scaffold, not abandoning all control or learning approaches. A future candidate-development comparison should use the current f6bf4b99cf62 evaluator and complete hold diagnostics; a measurement-repair action is warranted only if a proposed direction relies on direct historical-to-current score equivalence. Neither the M23 control nor the M22 residual comparison tests individual residual terms or justifies official assessment.",
+    "cumulative_resource_use": "Campaign history includes M5, T1, M6, E4, M8, T2, M9, E8, E9, E11, M14, M15, E13, E15, M16, T3, M17, M18, E17, E19, T4, M19, E21, E22, E23, E24, E25, T5, M20, E26, E27, E28, M21, T6, M22, E30, E32, E33, M23, E34, E35 and E36. I9 has used no training allocation or new measurement; E36 recorded the inquiry opening. The inquiry cap is 9 of 15.",
+    "current_goal_gap": "No candidate has demonstrated the official objective. T4:checkpoint-120832 achieved 153/160 (95.625%) on the matched current-source development panel, leaving seven observed failures and a 43-success shortfall relative to the official 196/200 criterion if the panels were wrongly conflated. The official panel remains distinct, so this is not an official estimate or result.",
+    "current_synthesis": "Observed: M23 evaluated the complete T4 artifact through evaluator fingerprint f6bf4b99cf62 on the 160-episode panel beginning at seed 4200 and recorded 153 successes. Its seven failures comprised three no-first-reach episodes at target angles approximately -129.9, -150.6 and -130.0 degrees, and four episodes that first reached but held only 1-2 steps before interruption; their target angles were approximately -148.0, -139.5, -131.5 and -148.4 degrees. The matched diagnostic fields therefore support a mixed acquisition and post-reach interruption residual, not a pooled low-reward explanation. Observed: M15 previously identified a reproducible acquisition/saturation signature for T2 failures, but M16/T3 and M21/T6 tested different implementations and do not isolate a causal residual term. Observed: M22 measured the persisted residual-torque T6 artifacts at 9/160 and 6/160 under the same current evaluator, and E30 bounded that tested implementation negatively. Correction to the inherited interpretation: calling T4's residual tail small is descriptive only; it cannot justify official assessment because the candidate is below 196/200 and the seven failures include complete-hold violations. Correction to the inherited question: evaluator harmonization is not the immediate campaign bottleneck for a current-source development comparison, because M23 and M22 share f6bf4b99cf62; harmonization remains necessary only for direct historical-to-current score claims. The physical model remains consequential: reachable two-branch geometry makes exact impossibility unlikely; the singular reset and 20 ms saturated torque make acquisition and braking distinct from hold regulation; the required 100-step continuity makes first reach insufficient. Competing explanations remain that the residual is caused by the persisted residual action composition, by learned policy mapping under the exposure, or by plant timing/branch-dependent transients. Existing evidence distinguishes failure classes but does not identify an individual term or prove that direct control will improve them.",
+    "decision_frontier": "The consequential question is whether a materially different learned-policy route can improve the seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold. Direct torque is a consequential alternative because it removes that hand-coded action composition while retaining the fixed plant, observation, action limits, target distribution and hold semantics; its risk is that PPO must relearn singular escape, braking and regulation and may lose T4's acquisition capability. A fresh direct-torque full-radius candidate, measured on the current f6bf4b99cf62 panel with complete diagnostics, would change direction if it exceeds 153/160 while reducing acquisition or interruption failures; failure to improve or loss of the retained capability would redirect or limit this route. Historical/current evaluator semantic differences remain unresolved for longitudinal claims but cannot change this matched current-source development decision.",
     "evidence_references": [
-      "M21",
-      "M22",
+      "E36",
       "M23",
       "E30",
-      "E32",
-      "E34",
-      "M15"
+      "M22",
+      "M15",
+      "M16",
+      "E17",
+      "E30",
+      "E34"
     ],
-    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold within 1 cm over the official 0.06-0.20 m target distribution. I8 was a development comparability inquiry only; no official assessment was requested or completed.",
-    "inquiry_id": "I8",
-    "next_direction_or_closure": "I8 is closed with a limited bounded answer based on M23 and E34. The current-source control retained T4's 153/160 capability, while the historical/current evaluator fingerprints differ; therefore historical and current scores remain limited for direct comparison. The shared current evaluator nevertheless makes the T4-versus-T6 artifact comparison decision-relevant and rejects the tested persisted residual-torque development route. Return to goal review to choose between a materially different capability-development inquiry and measurement harmonization where needed; do not request official assessment on the current below-objective development evidence.",
-    "next_question": "What materially different policy-development direction, if any, can improve T4:checkpoint-120832's current-source acquisition and uninterrupted-hold residuals toward at least 196/200 without relying on the rejected persisted residual-torque scaffold or conflating development evidence with the protected official assessment?",
-    "scientific_commit": "b0e1e554d14849a5eb39043d6e4adfe17960d13b",
-    "session_id": "S17"
+    "human_goal_connection": "The campaign seeks one learned policy achieving at least 196 successes in the protected 200-episode official assessment, where every success is an uninterrupted 100-step hold within 1 cm over the full 0.06-0.20 m target distribution. I9 is a development inquiry and does not alter the protected assessment or certify the goal.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I9 is opened to develop and measure a fresh direct-torque learned policy over the full official radius range, with acquisition and uninterrupted-hold behavior judged by complete current-source trajectories rather than training proxies. The inquiry is bounded by one candidate-development route and the closure condition recorded above; it is worthwhile because it can change capability, not merely candidate selection, while directly testing a route not inherited from the rejected residual-torque scaffold.",
+    "next_question": "Can a fresh direct-torque learned policy, trained across the full official radius range with an objective that explicitly separates acquisition from uninterrupted hold, raise current-source complete-episode capability beyond T4:checkpoint-120832's 153/160 without relying on the rejected persisted residual-torque control scaffold?",
+    "scientific_commit": "77e8702f170072d1ae39353c75305c74cf4de920",
+    "session_id": "S18"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -13635,21 +13778,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "da67d2a4-f63b-46e3-915b-c1e8d1d13e75",
-    "id": "S18",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E36"
-    ],
-    "scientific_parent_commit": "ec7d89f964ee7e8e021162abee7590233f51060f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
