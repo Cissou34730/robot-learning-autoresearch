@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when completed same-panel evidence comparing the staged-transfer baseline with a bounded control-authority intervention provides complete success, first-entry outcomes stratified across the 6-14 cm inner band and outer-radius band, and trajectory diagnostics for control saturation, endpoint and joint speed, Jacobian/branch behavior, and hold completion. A positive conclusion requires fewer residual failures with reduced or better-timed saturation and preserved inner/outer coverage; unchanged saturation-linked failures with actuator-limit signatures support redirecting to a direct authority or dynamics investigation; regression without diagnostic improvement rejects the tested recipe while leaving the broader control hypothesis unresolved.",
     "goal_connection": "The strongest measured staged-transfer artifact reaches 94.375% development success, leaving a 3.625 percentage-point gap to the 98% objective. Resolving whether the residual no-entry failures are reducible policy regulation failures or reflect a hard actuator limitation can determine whether a control-aware continuation is a credible route to the goal.",
-    "handoff_conclusion": "Observation: M4 measured T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. Observation: the staged transfer therefore improved complete development success at the artifact-comparison level, including after exposure to the full 6-20 cm range, with no aggregate evidence of outer-workspace regression. Observation: T3:checkpoint-120832 had four no-first-entry failures, at target radii 10.66, 10.85, 17.49 and 18.35 cm; each had 498-500 pre-entry control-saturation steps and endpoint speed near the measured upper range. Interpretation: staged coverage is supported as an effective capability-acquisition route, but not established as the sole cause of the gain. The residual failures consistently support a control-authority and speed limitation as the next actionable mechanism. The two inner-band residuals preserve a coverage/control coupling, while the two outer-band residuals show that the remaining issue is not confined to inner-radius generalization.",
+    "handoff_conclusion": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
     "handoff_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
-    "handoff_source_session_id": "S5",
+    "handoff_source_session_id": "S6",
     "id": "I3",
     "opened_in_session": "S6",
     "question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
@@ -2482,7 +2482,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 3,
     "measurement": 4,
     "session": 6,
@@ -2491,7 +2491,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5491,39 +5491,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:29:46Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10. T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 failures and a 3.625 percentage-point gap to the 98% objective. This development artifact is not official assessment evidence.",
+        "current_synthesis": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
+        "decision_frontier": "Determine whether a bounded control-authority intervention applied to the staged-transfer route can reduce saturation- and speed-linked first-entry failures while preserving complete holds across the official 6-14 cm inner band and the outer-radius band. The competing explanations are improved policy regulation versus a hard actuator or dynamics limit. Same-panel complete success, radius-stratified first entry, and trajectory evidence covering saturation, endpoint/joint speed, branch, Jacobian, and hold behavior will discriminate the next direction. Fewer failures with reduced or better-timed saturation and preserved coverage supports continuing control-authority work; unchanged failures with actuator-limit signatures supports a direct authority/dynamics investigation; regression without diagnostic improvement rejects the tested recipe but not the broader control hypothesis.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete episode success under the official task distribution. I3 is opened because the strongest measured development artifact, T3:checkpoint-120832, reached 94.375% (151/160), leaving a 3.625 percentage-point gap, and its residual failures may be actionable control problems.",
+        "next_direction_or_closure": "I3 is open and this goal-review session is complete. The fresh inquiry session should select the most decision-relevant bounded scientific action for distinguishing policy regulation from hard actuator limitation while preserving the staged policy's acquired coverage and complete holds.",
+        "next_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e73cb5e38c34322c6b2fe844dc4ace1bb6f8cff2",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10. T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 failures and a 3.625 percentage-point gap to the 98% objective. This development artifact is not official assessment evidence.",
+        "current_synthesis": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
+        "decision_frontier": "Determine whether a bounded control-authority intervention applied to the staged-transfer route can reduce saturation- and speed-linked first-entry failures while preserving complete holds across the official 6-14 cm inner band and the outer-radius band. The competing explanations are improved policy regulation versus a hard actuator or dynamics limit. Same-panel complete success, radius-stratified first entry, and trajectory evidence covering saturation, endpoint/joint speed, branch, Jacobian, and hold behavior will discriminate the next direction. Fewer failures with reduced or better-timed saturation and preserved coverage supports continuing control-authority work; unchanged failures with actuator-limit signatures supports a direct authority/dynamics investigation; regression without diagnostic improvement rejects the tested recipe but not the broader control hypothesis.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete episode success under the official task distribution. I3 is opened because the strongest measured development artifact, T3:checkpoint-120832, reached 94.375% (151/160), leaving a 3.625 percentage-point gap, and its residual failures may be actionable control problems.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I3 is open and this goal-review session is complete. The fresh inquiry session should select the most decision-relevant bounded scientific action for distinguishing policy regulation from hard actuator limitation while preserving the staged policy's acquired coverage and complete holds.",
+        "next_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "1c786d2d-ce4c-4c2c-b55a-3959a800a2fe",
+        "campaign_id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
+        "campaign_usage": "16m24s | 42.00 AIU | prompt 6.5m (86% cached) | output 67.3k",
+        "session_id": "S6",
+        "session_kind": "goal_review",
+        "session_usage": "58s | 2.34 AIU | prompt 265.3k (77% cached) | output 3.1k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "23cdfc1e5b3274448d15b9c97be3594662a490d2",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10. T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. No official assessment has been requested.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 failures and a 3.625 percentage-point gap to the 98% objective. This development artifact is not official assessment evidence.",
+        "current_synthesis": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
+        "decision_frontier": "Determine whether a bounded control-authority intervention applied to the staged-transfer route can reduce saturation- and speed-linked first-entry failures while preserving complete holds across the official 6-14 cm inner band and the outer-radius band. The competing explanations are improved policy regulation versus a hard actuator or dynamics limit. Same-panel complete success, radius-stratified first entry, and trajectory evidence covering saturation, endpoint/joint speed, branch, Jacobian, and hold behavior will discriminate the next direction. Fewer failures with reduced or better-timed saturation and preserved coverage supports continuing control-authority work; unchanged failures with actuator-limit signatures supports a direct authority/dynamics investigation; regression without diagnostic improvement rejects the tested recipe but not the broader control hypothesis.",
+        "evidence_references": [
+          "M4",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete episode success under the official task distribution. I3 is opened because the strongest measured development artifact, T3:checkpoint-120832, reached 94.375% (151/160), leaving a 3.625 percentage-point gap, and its residual failures may be actionable control problems.",
+        "next_direction_or_closure": "I3 is open and this goal-review session is complete. The fresh inquiry session should select the most decision-relevant bounded scientific action for distinguishing policy regulation from hard actuator limitation while preserving the staged policy's acquired coverage and complete holds.",
+        "next_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?"
+      }
+    },
+    "request_fingerprint": "365906cf44b2c536416e6acebc37f5a818b2b65b844534d7fb6e08ba3d202ae0",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; these are candidate-comparison facts, not role assignments or official certification. T1:checkpoint-120832 remains the 68.75% reference and T2:checkpoint-120832 remains recipe-specific counterevidence.",
+    "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development artifact at 94.375% and T3:checkpoint-70656 is a secondary measured artifact at 87.5%; T1:checkpoint-120832 is the 68.75% reference and T2:checkpoint-120832 is recipe-specific counterevidence. These are candidate-comparison facts only. No working, best-known, or retained role is assigned in this session.",
     "completed_operations": [
-      "T3",
-      "M4",
-      "E8"
+      "E10"
     ],
-    "cumulative_resource_use": "T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832 and used staged radius exposure. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. E2 opened I1, E4 closed I1, E6 opened I2 and E8 closed I2. No official assessment has been requested.",
-    "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 development failures and a 3.625 percentage-point gap to the 98% objective. The strongest artifact is not yet suitable for official assessment.",
-    "current_synthesis": "Observation: M4 measured T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. Observation: the staged transfer therefore improved complete development success at the artifact-comparison level, including after exposure to the full 6-20 cm range, with no aggregate evidence of outer-workspace regression. Observation: T3:checkpoint-120832 had four no-first-entry failures, at target radii 10.66, 10.85, 17.49 and 18.35 cm; each had 498-500 pre-entry control-saturation steps and endpoint speed near the measured upper range. Interpretation: staged coverage is supported as an effective capability-acquisition route, but not established as the sole cause of the gain. The residual failures consistently support a control-authority and speed limitation as the next actionable mechanism. The two inner-band residuals preserve a coverage/control coupling, while the two outer-band residuals show that the remaining issue is not confined to inner-radius generalization.",
-    "decision_frontier": "The next decision is whether control-authority intervention can reduce the saturation- and speed-linked no-entry failures of the acquired staged policy while preserving its inner- and outer-radius success. A control-aware transfer or bounded-action/stabilization intervention should be judged by same-panel complete success, first-entry outcomes by radius, and branch, Jacobian, speed, and saturation diagnostics. Reduced saturation with fewer residual failures and preserved coverage supports continuing control-authority work; unchanged saturation-linked failures would require a more direct authority or dynamics investigation; regression without a diagnostic improvement would reject that recipe rather than the broader control hypothesis.",
+    "cumulative_resource_use": "Completed operations: T1, M1, E2, M2, T2, M3, E4, E6, T3, M4, E8, E10. T1, T2 and T3 each used one 120000-step allocation and completed 120832 simulator steps; T3 transferred from T1:checkpoint-120832. M1 evaluated two T1 checkpoints over 160 episodes each; M2 evaluated T1 over 160 episodes; M3 paired T2 and T1 over 160 shared-seed episodes; M4 paired two T3 checkpoints and T1 over 160 shared-seed episodes. No official assessment has been requested.",
+    "current_goal_gap": "T3:checkpoint-120832 achieved 94.375% development success on the 160-episode panel, leaving 9 failures and a 3.625 percentage-point gap to the 98% objective. This development artifact is not official assessment evidence.",
+    "current_synthesis": "M4 observed T3:checkpoint-70656 at 87.5% (140/160) and T3:checkpoint-120832 at 94.375% (151/160), versus 68.75% (110/160) for T1:checkpoint-120832 on the identical panel; paired wins were 31-1 and 41-0. This supports staged transfer as an effective artifact-level capability-acquisition route, including inner-radius gains without aggregate outer-radius regression, but does not establish staged coverage as the sole cause. The four T3 final no-first-entry failures occurred at target radii 10.66, 10.85, 17.49 and 18.35 cm, with 498-500 pre-entry control-saturation steps and endpoint speeds near the measured upper range. These observations motivate a control-authority hypothesis, but saturation and speed co-occurrence is not evidence that policy regulation, rather than a hard actuator or dynamics limit, caused the failures. The inner-band residuals preserve a coverage/control coupling; the outer-band residuals show the problem is not confined to inner-radius generalization. E10 opened I3 to obtain discriminating evidence rather than treating the proposed cause as established.",
+    "decision_frontier": "Determine whether a bounded control-authority intervention applied to the staged-transfer route can reduce saturation- and speed-linked first-entry failures while preserving complete holds across the official 6-14 cm inner band and the outer-radius band. The competing explanations are improved policy regulation versus a hard actuator or dynamics limit. Same-panel complete success, radius-stratified first entry, and trajectory evidence covering saturation, endpoint/joint speed, branch, Jacobian, and hold behavior will discriminate the next direction. Fewer failures with reduced or better-timed saturation and preserved coverage supports continuing control-authority work; unchanged failures with actuator-limit signatures supports a direct authority/dynamics investigation; regression without diagnostic improvement rejects the tested recipe but not the broader control hypothesis.",
     "evidence_references": [
-      "T1",
-      "M1",
-      "E2",
-      "M2",
-      "T2",
-      "M3",
-      "E4",
-      "E6",
-      "T3",
       "M4",
-      "E8"
+      "E8",
+      "E10"
     ],
-    "human_goal_connection": "The official objective requires at least 196 successes in 200 episodes. M4 raised the strongest measured development artifact, T3:checkpoint-120832, to 94.375% (151/160), leaving a 3.625 percentage-point development gap to 98%. Official assessment remains deferred because this is development evidence, not the protected 200-episode result.",
-    "inquiry_id": "I2",
-    "next_direction_or_closure": "I2 is closed with a positive coverage-acquisition result and a control-authority redirect. The next goal-review session should decide whether to open the proposed control-authority inquiry rather than request official assessment; the current 94.375% development result remains below the protected 98% criterion and the residual failures have a consistent saturation/speed signature.",
+    "human_goal_connection": "The human goal requires at least 98% complete episode success under the official task distribution. I3 is opened because the strongest measured development artifact, T3:checkpoint-120832, reached 94.375% (151/160), leaving a 3.625 percentage-point gap, and its residual failures may be actionable control problems.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I3 is open and this goal-review session is complete. The fresh inquiry session should select the most decision-relevant bounded scientific action for distinguishing policy regulation from hard actuator limitation while preserving the staged policy's acquired coverage and complete holds.",
     "next_question": "Can a control-authority intervention applied to the staged-coverage transfer reduce saturation- and speed-linked first-entry failures while preserving complete holds across both the official 6-14 cm inner band and the outer-radius band, and what trajectory evidence distinguishes improved policy regulation from a hard actuator limit?",
-    "scientific_commit": "90a42c227031eb60caf27b96b67334903cc19bf5",
-    "session_id": "S5"
+    "scientific_commit": "23cdfc1e5b3274448d15b9c97be3594662a490d2",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5531,21 +5645,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1c786d2d-ce4c-4c2c-b55a-3959a800a2fe",
-    "id": "S6",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E10"
-    ],
-    "scientific_parent_commit": "e73cb5e38c34322c6b2fe844dc4ace1bb6f8cff2"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
