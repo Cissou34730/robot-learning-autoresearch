@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed evidence distinguishes whether first-entry failures are primarily concentrated by target radius, target angle or IK/singular-escape behavior, or control-authority signatures, and selects the corresponding next route; if the evidence cannot discriminate these causes, close with that limitation and the most credible goal-directed intervention supported by the measurements.",
-    "goal_connection": "The strongest complete-artifact measurement is only 68.75% (110/160), while the official objective requires at least 196/200 successes. The dominant observed deficit is before first entry, so identifying its mechanism is the most consequential next step toward improving complete episode success.",
-    "handoff_conclusion": "Observation: T1 training recorded success up to 0.96, but complete-artifact development success was only 65.625% and 68.75%; the later artifact won 9 paired episodes versus 4, with 13 discordant episodes. Observation: M1 recorded target radius and first-entry diagnostics over the same 160-episode panel, but did not record branch, singularity, or control-saturation diagnostics. Interpretation: the later checkpoint is the stronger artifact at the candidate-comparison level, not evidence that training duration caused the difference. Interpretation: the dominant measured deficit is failure before first entry, while entry generally led to a complete hold. This supports investigating reach acquisition, but does not yet establish whether the cause is missing inner-radius coverage, angle/IK-branch and singular escape, or bounded control authority. The inquiry E2 therefore opens I1 to resolve that consequential distinction.",
-    "handoff_question": "Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Which mechanism limits first entry into the 1 cm target region for the current baseline policy - missing inner-radius training coverage, target-angle/IK-branch and singular-escape basins, or bounded control authority - and what intervention most credibly raises official-distribution success toward 98%?",
-    "rationale": "Official assessment is not justified by either measured candidate being close to 98%, and no candidate has yet been assigned as best-known. M1 supports the reach-limited observation, but its pooled summary does not establish the radius-specific contribution. The artifacts do record target radius and first-entry diagnostics, so that contribution can be analyzed; branch, singularity, and control-authority diagnostics remain absent. A bounded inquiry can use this evidence and obtain the missing discriminators before selecting a training or control intervention, without treating the later checkpoint's unexplained advantage as a causal effect of training duration.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "cff32374f585c4e46586d9f218de868d9c2b643c",
     "id": "f917968b-2042-42f8-96b1-d2810f89ba4c",
@@ -1661,7 +1650,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -3337,9 +3326,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-11T07:14:00Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Completed evidence supports a limited mechanism conclusion. In the competent baseline T1:checkpoint-120832, the 42 no-first-entry failures had mean target radius 9.82 cm versus 14.36 cm for the 118 entries, concentrating the dominant deficit in the official inner band omitted by baseline training. Those failures all reached their minimum on the positive elbow branch, and the baseline had no branch separation sufficient to make branch choice the primary explanation. The fresh full-radius T2 recipe did not learn a competent policy: it achieved 33.75% development success versus 68.75% for T1, lost the paired comparison 16-72, and 84 of its 97 no-entry failures included pre-entry boundary commands. This establishes that the tested fresh full-radius recipe is inadequate, not that official coverage is irrelevant or that actuator authority alone is causal. The bounded answer is that inner-radius coverage is the leading explanation for the competent baseline's reach deficit, while control authority remains a coupled unresolved risk exposed by the failed T2 recipe.",
+        "reason": "The closure condition is met because completed M2 and M3 evidence distinguishes the dominant baseline failure concentration by radius, rules out a primary branch-only explanation for the observed baseline failures, and identifies the next route. The next intervention should preserve the competent outer-workspace policy while adding official inner-radius experience through transfer or curriculum; fresh full-distribution training is not supported by T2. Saturation remains a diagnostic to retain in the next development evaluation rather than a basis for changing simulator authority without a competent-policy comparison."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Completed evidence supports a limited mechanism conclusion. In the competent baseline T1:checkpoint-120832, the 42 no-first-entry failures had mean target radius 9.82 cm versus 14.36 cm for the 118 entries, concentrating the dominant deficit in the official inner band omitted by baseline training. Those failures all reached their minimum on the positive elbow branch, and the baseline had no branch separation sufficient to make branch choice the primary explanation. The fresh full-radius T2 recipe did not learn a competent policy: it achieved 33.75% development success versus 68.75% for T1, lost the paired comparison 16-72, and 84 of its 97 no-entry failures included pre-entry boundary commands. This establishes that the tested fresh full-radius recipe is inadequate, not that official coverage is irrelevant or that actuator authority alone is causal. The bounded answer is that inner-radius coverage is the leading explanation for the competent baseline's reach deficit, while control authority remains a coupled unresolved risk exposed by the failed T2 recipe.",
+        "reason": "The closure condition is met because completed M2 and M3 evidence distinguishes the dominant baseline failure concentration by radius, rules out a primary branch-only explanation for the observed baseline failures, and identifies the next route. The next intervention should preserve the competent outer-workspace policy while adding official inner-radius experience through transfer or curriculum; fresh full-distribution training is not supported by T2. Saturation remains a diagnostic to retain in the next development evaluation rather than a basis for changing simulator authority without a competent-policy comparison.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Completed evidence supports a limited mechanism conclusion. In the competent baseline T1:checkpoint-120832, the 42 no-first-entry failures had mean target radius 9.82 cm versus 14.36 cm for the 118 entries, concentrating the dominant deficit in the official inner band omitted by baseline training. Those failures all reached their minimum on the positive elbow branch, and the baseline had no branch separation sufficient to make branch choice the primary explanation. The fresh full-radius T2 recipe did not learn a competent policy: it achieved 33.75% development success versus 68.75% for T1, lost the paired comparison 16-72, and 84 of its 97 no-entry failures included pre-entry boundary commands. This establishes that the tested fresh full-radius recipe is inadequate, not that official coverage is irrelevant or that actuator authority alone is causal. The bounded answer is that inner-radius coverage is the leading explanation for the competent baseline's reach deficit, while control authority remains a coupled unresolved risk exposed by the failed T2 recipe.",
+        "reason": "The closure condition is met because completed M2 and M3 evidence distinguishes the dominant baseline failure concentration by radius, rules out a primary branch-only explanation for the observed baseline failures, and identifies the next route. The next intervention should preserve the competent outer-workspace policy while adding official inner-radius experience through transfer or curriculum; fresh full-distribution training is not supported by T2. Saturation remains a diagnostic to retain in the next development evaluation rather than a basis for changing simulator authority without a competent-policy comparison."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Completed evidence supports a limited mechanism conclusion. In the competent baseline T1:checkpoint-120832, the 42 no-first-entry failures had mean target radius 9.82 cm versus 14.36 cm for the 118 entries, concentrating the dominant deficit in the official inner band omitted by baseline training. Those failures all reached their minimum on the positive elbow branch, and the baseline had no branch separation sufficient to make branch choice the primary explanation. The fresh full-radius T2 recipe did not learn a competent policy: it achieved 33.75% development success versus 68.75% for T1, lost the paired comparison 16-72, and 84 of its 97 no-entry failures included pre-entry boundary commands. This establishes that the tested fresh full-radius recipe is inadequate, not that official coverage is irrelevant or that actuator authority alone is causal. The bounded answer is that inner-radius coverage is the leading explanation for the competent baseline's reach deficit, while control authority remains a coupled unresolved risk exposed by the failed T2 recipe.",
+        "reason": "The closure condition is met because completed M2 and M3 evidence distinguishes the dominant baseline failure concentration by radius, rules out a primary branch-only explanation for the observed baseline failures, and identifies the next route. The next intervention should preserve the competent outer-workspace policy while adding official inner-radius experience through transfer or curriculum; fresh full-distribution training is not supported by T2. Saturation remains a diagnostic to retain in the next development evaluation rather than a basis for changing simulator authority without a competent-policy comparison.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Completed evidence supports a limited mechanism conclusion. In the competent baseline T1:checkpoint-120832, the 42 no-first-entry failures had mean target radius 9.82 cm versus 14.36 cm for the 118 entries, concentrating the dominant deficit in the official inner band omitted by baseline training. Those failures all reached their minimum on the positive elbow branch, and the baseline had no branch separation sufficient to make branch choice the primary explanation. The fresh full-radius T2 recipe did not learn a competent policy: it achieved 33.75% development success versus 68.75% for T1, lost the paired comparison 16-72, and 84 of its 97 no-entry failures included pre-entry boundary commands. This establishes that the tested fresh full-radius recipe is inadequate, not that official coverage is irrelevant or that actuator authority alone is causal. The bounded answer is that inner-radius coverage is the leading explanation for the competent baseline's reach deficit, while control authority remains a coupled unresolved risk exposed by the failed T2 recipe.",
+        "reason": "The closure condition is met because completed M2 and M3 evidence distinguishes the dominant baseline failure concentration by radius, rules out a primary branch-only explanation for the observed baseline failures, and identifies the next route. The next intervention should preserve the competent outer-workspace policy while adding official inner-radius experience through transfer or curriculum; fresh full-distribution training is not supported by T2. Saturation remains a diagnostic to retain in the next development evaluation rather than a basis for changing simulator authority without a competent-policy comparison."
+      }
+    },
+    "request_fingerprint": "0f95234e5bfecbaa81c2aee26243a71fd5acb6a35466ee359f6395fe3ff750e4",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T1:checkpoint-120832 remains the stronger measured artifact only at the complete-artifact comparison level, with no causal attribution and no evidence near the official 98% criterion.",
     "completed_operations": [
@@ -3381,7 +3424,8 @@
     "operation_ids": [
       "M2",
       "T2",
-      "M3"
+      "M3",
+      "E4"
     ],
     "scientific_parent_commit": "670569bcbdf2e0b3730df648d033cc022a914134"
   },
