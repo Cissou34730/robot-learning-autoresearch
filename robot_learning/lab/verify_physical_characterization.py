@@ -159,22 +159,28 @@ def run_behavioral_check(
     sequence = run_response_sequence(model, data, (0.0, 0.0), response_steps=6)
     steps = sequence["steps"]
     reversal_index = sequence["summary"]["reversal"]["step_index"]
-    positive_step = steps[0]
-    negative_step = steps[reversal_index]
-    positive_projection = float(
-        np.dot(
-            np.asarray(positive_step["applied_control"], dtype=float),
-            np.asarray(
-                positive_step["finite_difference_acceleration_rad_per_s2"], dtype=float
-            ),
-        )
+    pre_reversal_step = steps[reversal_index - 1]
+    post_reversal_step = steps[reversal_index]
+    pre_reversal_control = np.asarray(
+        pre_reversal_step["applied_control"], dtype=float
     )
-    negative_projection = float(
-        np.dot(
-            np.asarray(negative_step["applied_control"], dtype=float),
+    post_reversal_control = np.asarray(
+        post_reversal_step["applied_control"], dtype=float
+    )
+    control_transition = bool(
+        np.allclose(pre_reversal_control, [1.0, 1.0])
+        and np.allclose(post_reversal_control, [-1.0, -1.0])
+    )
+    acceleration_change = float(
+        np.linalg.norm(
             np.asarray(
-                negative_step["finite_difference_acceleration_rad_per_s2"], dtype=float
-            ),
+                post_reversal_step["finite_difference_acceleration_rad_per_s2"],
+                dtype=float,
+            )
+            - np.asarray(
+                pre_reversal_step["finite_difference_acceleration_rad_per_s2"],
+                dtype=float,
+            )
         )
     )
     qpos_change = float(
@@ -186,9 +192,9 @@ def run_behavioral_check(
     qvel_peak = float(
         max(np.linalg.norm(np.asarray(step["qvel_rad_per_s"], dtype=float)) for step in steps)
     )
-    if positive_projection <= 0.0 or negative_projection >= 0.0:
+    if not control_transition or acceleration_change <= 0.0:
         raise AssertionError(
-            "the +1/-1 control reversal did not reverse acceleration projection"
+            "the sign-changing command transition or response change was not recorded"
         )
     if qpos_change <= 0.0 or qvel_peak <= 0.0:
         raise AssertionError("repeated response steps did not update qpos and qvel")
@@ -198,6 +204,11 @@ def run_behavioral_check(
         "qpos": np.asarray(data.qpos[:2], dtype=float).tolist(),
         "qvel": np.asarray(data.qvel[:2], dtype=float).tolist(),
     }
+    reset_cleared = bool(
+        np.allclose(data.qpos[:2], 0.0) and np.allclose(data.qvel[:2], 0.0)
+    )
+    if not reset_cleared:
+        raise AssertionError("reset did not clear qpos and qvel after response")
 
     measurement = measure_physical_characterization(
         radius_count=radius_count,
@@ -268,13 +279,17 @@ def run_behavioral_check(
         ),
         *ik_checks,
         _check(
-            "reversal_changes_acceleration_direction",
+            "sign_changing_command_transition_changes_response",
             {
-                "positive_control_acceleration_projection": positive_projection,
-                "negative_control_acceleration_projection": negative_projection,
+                "pre_reversal_applied_control": pre_reversal_control.tolist(),
+                "post_reversal_applied_control": post_reversal_control.tolist(),
+                "acceleration_change_norm_rad_per_s2": acceleration_change,
             },
-            {"positive_gt_zero_and_negative_lt_zero": True},
-            "repeated control updates, transition, and finite-difference acceleration",
+            {
+                "command_changes_from_positive_to_negative": True,
+                "acceleration_change_norm_positive": True,
+            },
+            "repeated control updates, sign-changing transition, and changed finite-difference response",
         ),
         _check(
             "repeated_steps_update_state",
@@ -315,7 +330,7 @@ def run_behavioral_check(
             "zero reset state before and after response",
             "target and configuration forward-kinematics consequences",
             "both analytical IK branches at an independent target",
-            "repeated +1/-1 transition and finite-difference acceleration direction",
+            "repeated +1/-1 command transition and changed finite-difference response",
             "compiled authority/timing facts and explicit units",
             "small configured measured grid and response artifact records",
         ],
