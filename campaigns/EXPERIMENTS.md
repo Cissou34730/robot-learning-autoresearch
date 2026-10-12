@@ -90,3 +90,4 @@
 | E49 | checkpoint | - | checkpointed |
 | M30 | measurement | I12 | completed |
 | T9 | training | I12 | completed |
+| M31 | measurement | I12 | completed |
