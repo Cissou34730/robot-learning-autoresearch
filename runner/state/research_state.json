@@ -4924,7 +4924,7 @@
     }
   },
   "counters": {
-    "event": 33,
+    "event": 34,
     "inquiry": 8,
     "measurement": 48,
     "session": 17,
@@ -4933,7 +4933,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -21568,53 +21568,175 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:05:03Z",
+      "error": null,
+      "id": "E34",
+      "inquiry_id": "I8",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30/M41 and is not ready for official assessment. T6:checkpoint-120832 remains an inferior complete I7 artifact and is not working, retained, or best-known. No candidate is working or retained. The new evaluator and analysis modules are measurement tools, not candidate artifacts.",
+        "completed_operations": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 of 15 inquiries, 17 bounded scientific sessions including this one, 34 measurements, 6 completed 120000-step training allocations (120832 actual steps each), 6 candidate families, and zero protected official-assessment episodes. This session completed M44, M45, M46, M47, M48 and E33; no training allocation or candidate role change was made.",
+        "current_goal_gap": "No candidate has protected official-assessment evidence or continuous uninterrupted-hold certification. T2 has 150/160 complete development successes (93.75%), 153/160 first reaches, 7 never-reaches and 3 reached-but-not-complete episodes on the matched seed-4200 panel. The residual physical gap is concentrated in folded-only negative-angle targets and compiled joint-limit pressure, with one feasible, well-margined both-branch never-reach and three stabilization/hold failures remaining unexplained by the dominant mechanism.",
+        "current_synthesis": "Observed evidence: M44 and M45 verified the new production-path trajectory diagnostics and their independent kinematic, reset, transition, clipping, and physics-telemetry checks. M46 reproduced T2's 150/160 success and 153/160 first-reach outcomes on the matched panel with schema-7 traces. M47 verified that the post-processor derives quantities from repeated trace rows and rejects missing or incomplete traces; M48 compacted and inspected the complete M46 artifact. All 7 never-reached targets had at least one analytic feasible branch; 6/7 were folded-only and 1/7 had both branches. The never-reach class had 6/7 negative minimum compiled joint-limit margins, mean minimum margin 0.201 rad and minimum -0.0578 rad, compared with success mean 0.774 rad and minimum -0.0229 rad. The branch pattern was 6 folded-only never-reaches versus 7 folded-only successes, while 137 successes had both branches. These observations support branch/joint-limit feasibility as the dominant mechanism without claiming geometric impossibility: the folded-only targets are feasible but constrain the available route, and most never-reaches encounter limit pressure. The reset-singular coupled-control model remains physically real but was not the dominant discriminator in this panel: all 160 resets had rank-1 Jacobians, all trajectories became full planar rank at control step 1, and never-reach finite condition values were not worse than successes (mean 2.82 versus 4.45). Lower never-reach radial-progress mean (0.020 versus 0.078 m/s), high qvel and nearly universal action saturation indicate a secondary trajectory/control issue, and the one both-branch, +1.679-rad-margin never-reach prevents a claim of complete explanation. The 3 reached-but-not-complete episodes had mean minimum margin 1.146 rad and remain a stabilization/coupled-control residual. M29/M30/T6 establish an inferior complete T6 artifact under the measured panel, not a causal exposure effect; exposure interference was not required to explain the measured T2 failure profile and remains untested as a causal method claim. Physics-step traces remain development diagnostics, not official continuous-hold certification.",
+        "decision_frontier": "The I8 closure condition is met for a positive branch/joint-limit dominance conclusion, so no matched exposure experiment is justified before a physical intervention. The next decision is whether a branch/limit-aware trajectory or branch-conditioned control intervention can improve the folded-only negative-angle and outer-radius residuals without degrading the protected 6-14 cm and 14-20 cm strata. That decision requires an explicit implementation/runtime comparison and matched development measurement against T2, followed by physics-step and, only when a candidate is stronger and hold risk is addressed, protected continuous-hold readiness. The one feasible well-margined both-branch never-reach and the three reached-but-not-complete episodes keep reset-coupled stabilization in the frontier. Training-distribution interference remains an untested alternative for future work, not an established cause.",
+        "evidence_references": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33",
+          "M29",
+          "M30",
+          "M41",
+          "M43",
+          "E31"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 complete uninterrupted 2-second holds under the protected official distribution. T2:checkpoint-120832 remains below that goal at 150/160 complete boundary-sampled development successes, with 7 never-reaches and 3 reached-but-not-complete episodes. I8 now directs the next intervention toward branch/limit-aware trajectory/control behavior rather than unmotivated exposure expansion, while preserving continuous-hold readiness as a separate requirement.",
+        "next_direction_or_closure": "I8 is closed positive by E33. The next research direction is a controlled branch/limit-aware trajectory/control intervention, with candidate comparison and preserved protected strata explicit; do not interpret the negative T6 artifact as proof against exposure shaping generally. Carry forward the one feasible, well-margined never-reach, the three reached-but-not-complete stabilization failures, and continuous-hold uncertainty. Do not request the protected official assessment until a stronger candidate has matched-panel evidence and a credible hold-readiness case.",
+        "next_question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate because M30/M41 show it substantially outperforms T6 on the matched development panel; best-known is not goal certification and T2 is not ready for official assessment. T6:checkpoint-120832 remains a complete negative I7 artifact and is not working, retained, or best-known. No candidate is assigned working or retained status. The tested targeted-angle source remains evidence of one specific exposure implementation, not a privileged route or a causal explanation.",
-    "completed_operations": [
-      "E31"
-    ],
-    "cumulative_resource_use": "The campaign has completed 8 of 15 inquiries and 16 bounded scientific sessions, with 29 completed measurements, 6 completed 120000-request-step training allocations (120832 actual steps each), 6 candidate families, and zero protected official-assessment episodes. The current session completed E31 only; prior evidence and execution history are preserved by the referenced completed operations. I8 adds no measurement or training allocation yet.",
-    "current_goal_gap": "T2:checkpoint-120832 has 150/160 complete boundary-sampled successes (93.75%) and 153/160 first reaches on the matched development panel, versus the 196/200 official requirement. Its residual deficit includes seven never-reached episodes concentrated in difficult negative-angle sectors and only 63/67 first reaches in the 14-20 cm stratum. No candidate has protected official-assessment evidence or demonstrated continuous uninterrupted holds under the authoritative semantics. T6:checkpoint-120832 is weaker at 113/160 complete successes and 116/160 first reaches, including 63/93 complete successes in the protected 6-14 cm stratum.",
-    "current_synthesis": "Observed evidence: M29 verified that T6 preserved the official 0.06-0.20 m radius range, T2's 11-value production observation, action/runtime and hold semantics while changing training exposure toward the identified negative-angle union. In the matched 160-episode panel, M30/M41 found T6 at 113/160 complete successes, 116/160 first reaches and 44/160 never-reached episodes, versus T2 at 150/160, 153/160 and 7/160. Within the selected negative-angle union T6 improved only modestly from 56/63 to 57/63 first reaches and 54/63 to 57/63 complete successes, while worsening the 14-20 cm stratum from 63/67 to 51/67 first reaches and 60/67 to 50/67 complete successes, and the 6-14 cm stratum from 90/93 to 65/93 first reaches and 90/93 to 63/93 complete successes. The paired candidate result establishes that this complete T6 artifact is inferior to T2 under the measured panel; it does not establish that negative-angle exposure itself caused the losses, nor that exposure shaping as a broader method is disproved. Correction to the inherited interpretation: the prior claim that the next review should choose among mechanisms was well motivated, but it did not justify treating branch feasibility, joint-limit pressure, reset-singular control, or training interference as equally supported causes. M41/M43 provide profile and resolver verification, not the missing causal trajectory/limit evidence. The initial model remains physically consequential: analytic branch feasibility and joint-limit margin would redirect away from geometric or branch-focused intervention if most failures have feasible, well-margined alternatives; reset q_e=0 and rank-one Jacobian authority make bend-then-translate control a plausible cause if failures show poor conditioning, coupled radial motion, or late arrival; the T6 profile can support distribution-shift interference only if matched physical diagnostics do not account for the change. Stabilization and the 100-step hold remain goal-critical: entry counts cannot substitute for uninterrupted hold traces, and physics-step excursions could revise candidate readiness but are not yet compared with protected outcomes. The exact compiled dynamics and evaluator sampling therefore remain uncertainties, not explanations.",
-    "decision_frontier": "I8 must discriminate the unresolved alternatives that would change the next goal-directed action: (1) branch/joint-limit feasibility, by enumerating both analytic IK branches over the observed failure targets and measuring compiled joint-limit margins and branch occupancy; (2) reset-singular coupled trajectory control, by measuring Jacobian conditioning, radial/tangential motion, qvel, action/torque and arrival/settling traces from the reset through the T2 never-reach and comparable successful episodes; and (3) training-distribution interference, only after the physical diagnostics are accounted for, by a matched exposure or candidate comparison whose changed source/runtime and preserved strata are explicit. If branch feasibility is absent as a constraint and trajectories show singular/coupled-control signatures, the next direction should target trajectory/control learning rather than workspace coverage. If physical feasibility and trajectory signatures do not explain the failures but a matched exposure comparison reproduces the profile tradeoff, exposure should be redesigned or rejected on protected-regression grounds. If alternatives remain observationally confounded, close I8 as limited or inconclusive rather than claim a dominant mechanism. Continuous-hold equivalence must remain a later assessment/readiness discriminator: physics-step telemetry can reveal risk, but only the protected evaluator can certify official success.",
-    "evidence_references": [
-      "E27",
-      "M29",
-      "T6",
-      "M30",
-      "M41",
-      "M43",
-      "E29",
-      "E31"
-    ],
-    "human_goal_connection": "The immutable goal is at least 196 complete uninterrupted 2-second holds in the protected 200-episode official assessment. T2:checkpoint-120832 is the strongest evidence-backed candidate, but its 150/160 development complete holds and seven never-reached episodes are below the goal and were measured with boundary-sampled hold semantics. I8 is opened to determine which causal failure mechanism can support a credible next intervention without sacrificing the protected task distribution; continuous-hold equivalence remains a separate readiness risk.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I8 is opened as one bounded, goal-linked mechanism inquiry. Its expected contribution is to prevent another unmotivated training mixture and identify whether a policy intervention should address branch/limit feasibility, reset-singular coupled trajectory control, or exposure interference. This is preferable to official assessment now because T2 is six development successes short even under boundary sampling, has seven never-reached failures, and lacks continuous-hold evidence; it is also preferable to promoting T6 because T6 lost both protected 6-14 cm behavior and goal-relevant 14-20 cm behavior. The inquiry may close positive, negative, limited, or inconclusive and must carry unresolved continuous-hold risk forward.",
-    "next_question": "Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention?",
-    "scientific_commit": "93a40b717c2ee7cc85d5daad59d4142ff86cbf7d",
-    "session_id": "S16"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "d2fd4938193bae2770f024c16cfc4b4a0eac9f35",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30/M41 and is not ready for official assessment. T6:checkpoint-120832 remains an inferior complete I7 artifact and is not working, retained, or best-known. No candidate is working or retained. The new evaluator and analysis modules are measurement tools, not candidate artifacts.",
+        "completed_operations": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 of 15 inquiries, 17 bounded scientific sessions including this one, 34 measurements, 6 completed 120000-step training allocations (120832 actual steps each), 6 candidate families, and zero protected official-assessment episodes. This session completed M44, M45, M46, M47, M48 and E33; no training allocation or candidate role change was made.",
+        "current_goal_gap": "No candidate has protected official-assessment evidence or continuous uninterrupted-hold certification. T2 has 150/160 complete development successes (93.75%), 153/160 first reaches, 7 never-reaches and 3 reached-but-not-complete episodes on the matched seed-4200 panel. The residual physical gap is concentrated in folded-only negative-angle targets and compiled joint-limit pressure, with one feasible, well-margined both-branch never-reach and three stabilization/hold failures remaining unexplained by the dominant mechanism.",
+        "current_synthesis": "Observed evidence: M44 and M45 verified the new production-path trajectory diagnostics and their independent kinematic, reset, transition, clipping, and physics-telemetry checks. M46 reproduced T2's 150/160 success and 153/160 first-reach outcomes on the matched panel with schema-7 traces. M47 verified that the post-processor derives quantities from repeated trace rows and rejects missing or incomplete traces; M48 compacted and inspected the complete M46 artifact. All 7 never-reached targets had at least one analytic feasible branch; 6/7 were folded-only and 1/7 had both branches. The never-reach class had 6/7 negative minimum compiled joint-limit margins, mean minimum margin 0.201 rad and minimum -0.0578 rad, compared with success mean 0.774 rad and minimum -0.0229 rad. The branch pattern was 6 folded-only never-reaches versus 7 folded-only successes, while 137 successes had both branches. These observations support branch/joint-limit feasibility as the dominant mechanism without claiming geometric impossibility: the folded-only targets are feasible but constrain the available route, and most never-reaches encounter limit pressure. The reset-singular coupled-control model remains physically real but was not the dominant discriminator in this panel: all 160 resets had rank-1 Jacobians, all trajectories became full planar rank at control step 1, and never-reach finite condition values were not worse than successes (mean 2.82 versus 4.45). Lower never-reach radial-progress mean (0.020 versus 0.078 m/s), high qvel and nearly universal action saturation indicate a secondary trajectory/control issue, and the one both-branch, +1.679-rad-margin never-reach prevents a claim of complete explanation. The 3 reached-but-not-complete episodes had mean minimum margin 1.146 rad and remain a stabilization/coupled-control residual. M29/M30/T6 establish an inferior complete T6 artifact under the measured panel, not a causal exposure effect; exposure interference was not required to explain the measured T2 failure profile and remains untested as a causal method claim. Physics-step traces remain development diagnostics, not official continuous-hold certification.",
+        "decision_frontier": "The I8 closure condition is met for a positive branch/joint-limit dominance conclusion, so no matched exposure experiment is justified before a physical intervention. The next decision is whether a branch/limit-aware trajectory or branch-conditioned control intervention can improve the folded-only negative-angle and outer-radius residuals without degrading the protected 6-14 cm and 14-20 cm strata. That decision requires an explicit implementation/runtime comparison and matched development measurement against T2, followed by physics-step and, only when a candidate is stronger and hold risk is addressed, protected continuous-hold readiness. The one feasible well-margined both-branch never-reach and the three reached-but-not-complete episodes keep reset-coupled stabilization in the frontier. Training-distribution interference remains an untested alternative for future work, not an established cause.",
+        "evidence_references": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33",
+          "M29",
+          "M30",
+          "M41",
+          "M43",
+          "E31"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 complete uninterrupted 2-second holds under the protected official distribution. T2:checkpoint-120832 remains below that goal at 150/160 complete boundary-sampled development successes, with 7 never-reaches and 3 reached-but-not-complete episodes. I8 now directs the next intervention toward branch/limit-aware trajectory/control behavior rather than unmotivated exposure expansion, while preserving continuous-hold readiness as a separate requirement.",
+        "inquiry_id": "I8",
+        "next_direction_or_closure": "I8 is closed positive by E33. The next research direction is a controlled branch/limit-aware trajectory/control intervention, with candidate comparison and preserved protected strata explicit; do not interpret the negative T6 artifact as proof against exposure shaping generally. Carry forward the one feasible, well-margined never-reach, the three reached-but-not-complete stabilization failures, and continuous-hold uncertainty. Do not request the protected official assessment until a stronger candidate has matched-panel evidence and a credible hold-readiness case.",
+        "next_question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?",
+        "session_id": "S17"
+      },
+      "presentation": {
+        "backend_session_id": "b0e3e232-57c2-4a63-97b3-a7725b32fa6b",
+        "campaign_id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
+        "campaign_usage": "1h14m | 169.21 AIU | prompt 29m (91% cached) | output 415.5k",
+        "session_id": "S17",
+        "session_kind": "inquiry",
+        "session_usage": "4m46s | 8.02 AIU | prompt 729.9k (85% cached) | output 33.9k"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "bee9294957702b89f508d5f3655b8d2399248a3d",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "b0e3e232-57c2-4a63-97b3-a7725b32fa6b",
-    "id": "S17",
+    "failure": null,
+    "id": "E34",
     "inquiry_id": "I8",
-    "kind": "inquiry",
-    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30/M41 and is not ready for official assessment. T6:checkpoint-120832 remains an inferior complete I7 artifact and is not working, retained, or best-known. No candidate is working or retained. The new evaluator and analysis modules are measurement tools, not candidate artifacts.",
+        "completed_operations": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 of 15 inquiries, 17 bounded scientific sessions including this one, 34 measurements, 6 completed 120000-step training allocations (120832 actual steps each), 6 candidate families, and zero protected official-assessment episodes. This session completed M44, M45, M46, M47, M48 and E33; no training allocation or candidate role change was made.",
+        "current_goal_gap": "No candidate has protected official-assessment evidence or continuous uninterrupted-hold certification. T2 has 150/160 complete development successes (93.75%), 153/160 first reaches, 7 never-reaches and 3 reached-but-not-complete episodes on the matched seed-4200 panel. The residual physical gap is concentrated in folded-only negative-angle targets and compiled joint-limit pressure, with one feasible, well-margined both-branch never-reach and three stabilization/hold failures remaining unexplained by the dominant mechanism.",
+        "current_synthesis": "Observed evidence: M44 and M45 verified the new production-path trajectory diagnostics and their independent kinematic, reset, transition, clipping, and physics-telemetry checks. M46 reproduced T2's 150/160 success and 153/160 first-reach outcomes on the matched panel with schema-7 traces. M47 verified that the post-processor derives quantities from repeated trace rows and rejects missing or incomplete traces; M48 compacted and inspected the complete M46 artifact. All 7 never-reached targets had at least one analytic feasible branch; 6/7 were folded-only and 1/7 had both branches. The never-reach class had 6/7 negative minimum compiled joint-limit margins, mean minimum margin 0.201 rad and minimum -0.0578 rad, compared with success mean 0.774 rad and minimum -0.0229 rad. The branch pattern was 6 folded-only never-reaches versus 7 folded-only successes, while 137 successes had both branches. These observations support branch/joint-limit feasibility as the dominant mechanism without claiming geometric impossibility: the folded-only targets are feasible but constrain the available route, and most never-reaches encounter limit pressure. The reset-singular coupled-control model remains physically real but was not the dominant discriminator in this panel: all 160 resets had rank-1 Jacobians, all trajectories became full planar rank at control step 1, and never-reach finite condition values were not worse than successes (mean 2.82 versus 4.45). Lower never-reach radial-progress mean (0.020 versus 0.078 m/s), high qvel and nearly universal action saturation indicate a secondary trajectory/control issue, and the one both-branch, +1.679-rad-margin never-reach prevents a claim of complete explanation. The 3 reached-but-not-complete episodes had mean minimum margin 1.146 rad and remain a stabilization/coupled-control residual. M29/M30/T6 establish an inferior complete T6 artifact under the measured panel, not a causal exposure effect; exposure interference was not required to explain the measured T2 failure profile and remains untested as a causal method claim. Physics-step traces remain development diagnostics, not official continuous-hold certification.",
+        "decision_frontier": "The I8 closure condition is met for a positive branch/joint-limit dominance conclusion, so no matched exposure experiment is justified before a physical intervention. The next decision is whether a branch/limit-aware trajectory or branch-conditioned control intervention can improve the folded-only negative-angle and outer-radius residuals without degrading the protected 6-14 cm and 14-20 cm strata. That decision requires an explicit implementation/runtime comparison and matched development measurement against T2, followed by physics-step and, only when a candidate is stronger and hold risk is addressed, protected continuous-hold readiness. The one feasible well-margined both-branch never-reach and the three reached-but-not-complete episodes keep reset-coupled stabilization in the frontier. Training-distribution interference remains an untested alternative for future work, not an established cause.",
+        "evidence_references": [
+          "M44",
+          "M45",
+          "M46",
+          "M47",
+          "M48",
+          "E33",
+          "M29",
+          "M30",
+          "M41",
+          "M43",
+          "E31"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 complete uninterrupted 2-second holds under the protected official distribution. T2:checkpoint-120832 remains below that goal at 150/160 complete boundary-sampled development successes, with 7 never-reaches and 3 reached-but-not-complete episodes. I8 now directs the next intervention toward branch/limit-aware trajectory/control behavior rather than unmotivated exposure expansion, while preserving continuous-hold readiness as a separate requirement.",
+        "next_direction_or_closure": "I8 is closed positive by E33. The next research direction is a controlled branch/limit-aware trajectory/control intervention, with candidate comparison and preserved protected strata explicit; do not interpret the negative T6 artifact as proof against exposure shaping generally. Carry forward the one feasible, well-margined never-reach, the three reached-but-not-complete stabilization failures, and continuous-hold uncertainty. Do not request the protected official assessment until a stronger candidate has matched-panel evidence and a credible hold-readiness case.",
+        "next_question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?"
+      }
+    },
+    "request_fingerprint": "c92ca9af1fd89646d472c5b2c47ccd1c2e94f4a52a33ef01459066f0aa0753a3",
+    "session_id": "S17",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30/M41 and is not ready for official assessment. T6:checkpoint-120832 remains an inferior complete I7 artifact and is not working, retained, or best-known. No candidate is working or retained. The new evaluator and analysis modules are measurement tools, not candidate artifacts.",
+    "completed_operations": [
       "M44",
       "M45",
       "M46",
@@ -21622,7 +21744,36 @@
       "M48",
       "E33"
     ],
-    "scientific_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe"
+    "cumulative_resource_use": "The campaign has completed 8 of 15 inquiries, 17 bounded scientific sessions including this one, 34 measurements, 6 completed 120000-step training allocations (120832 actual steps each), 6 candidate families, and zero protected official-assessment episodes. This session completed M44, M45, M46, M47, M48 and E33; no training allocation or candidate role change was made.",
+    "current_goal_gap": "No candidate has protected official-assessment evidence or continuous uninterrupted-hold certification. T2 has 150/160 complete development successes (93.75%), 153/160 first reaches, 7 never-reaches and 3 reached-but-not-complete episodes on the matched seed-4200 panel. The residual physical gap is concentrated in folded-only negative-angle targets and compiled joint-limit pressure, with one feasible, well-margined both-branch never-reach and three stabilization/hold failures remaining unexplained by the dominant mechanism.",
+    "current_synthesis": "Observed evidence: M44 and M45 verified the new production-path trajectory diagnostics and their independent kinematic, reset, transition, clipping, and physics-telemetry checks. M46 reproduced T2's 150/160 success and 153/160 first-reach outcomes on the matched panel with schema-7 traces. M47 verified that the post-processor derives quantities from repeated trace rows and rejects missing or incomplete traces; M48 compacted and inspected the complete M46 artifact. All 7 never-reached targets had at least one analytic feasible branch; 6/7 were folded-only and 1/7 had both branches. The never-reach class had 6/7 negative minimum compiled joint-limit margins, mean minimum margin 0.201 rad and minimum -0.0578 rad, compared with success mean 0.774 rad and minimum -0.0229 rad. The branch pattern was 6 folded-only never-reaches versus 7 folded-only successes, while 137 successes had both branches. These observations support branch/joint-limit feasibility as the dominant mechanism without claiming geometric impossibility: the folded-only targets are feasible but constrain the available route, and most never-reaches encounter limit pressure. The reset-singular coupled-control model remains physically real but was not the dominant discriminator in this panel: all 160 resets had rank-1 Jacobians, all trajectories became full planar rank at control step 1, and never-reach finite condition values were not worse than successes (mean 2.82 versus 4.45). Lower never-reach radial-progress mean (0.020 versus 0.078 m/s), high qvel and nearly universal action saturation indicate a secondary trajectory/control issue, and the one both-branch, +1.679-rad-margin never-reach prevents a claim of complete explanation. The 3 reached-but-not-complete episodes had mean minimum margin 1.146 rad and remain a stabilization/coupled-control residual. M29/M30/T6 establish an inferior complete T6 artifact under the measured panel, not a causal exposure effect; exposure interference was not required to explain the measured T2 failure profile and remains untested as a causal method claim. Physics-step traces remain development diagnostics, not official continuous-hold certification.",
+    "decision_frontier": "The I8 closure condition is met for a positive branch/joint-limit dominance conclusion, so no matched exposure experiment is justified before a physical intervention. The next decision is whether a branch/limit-aware trajectory or branch-conditioned control intervention can improve the folded-only negative-angle and outer-radius residuals without degrading the protected 6-14 cm and 14-20 cm strata. That decision requires an explicit implementation/runtime comparison and matched development measurement against T2, followed by physics-step and, only when a candidate is stronger and hold risk is addressed, protected continuous-hold readiness. The one feasible well-margined both-branch never-reach and the three reached-but-not-complete episodes keep reset-coupled stabilization in the frontier. Training-distribution interference remains an untested alternative for future work, not an established cause.",
+    "evidence_references": [
+      "M44",
+      "M45",
+      "M46",
+      "M47",
+      "M48",
+      "E33",
+      "M29",
+      "M30",
+      "M41",
+      "M43",
+      "E31"
+    ],
+    "human_goal_connection": "The human goal remains at least 196/200 complete uninterrupted 2-second holds under the protected official distribution. T2:checkpoint-120832 remains below that goal at 150/160 complete boundary-sampled development successes, with 7 never-reaches and 3 reached-but-not-complete episodes. I8 now directs the next intervention toward branch/limit-aware trajectory/control behavior rather than unmotivated exposure expansion, while preserving continuous-hold readiness as a separate requirement.",
+    "inquiry_id": "I8",
+    "next_direction_or_closure": "I8 is closed positive by E33. The next research direction is a controlled branch/limit-aware trajectory/control intervention, with candidate comparison and preserved protected strata explicit; do not interpret the negative T6 artifact as proof against exposure shaping generally. Carry forward the one feasible, well-margined never-reach, the three reached-but-not-complete stabilization failures, and continuous-hold uncertainty. Do not request the protected official assessment until a stronger candidate has matched-panel evidence and a credible hold-readiness case.",
+    "next_question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?",
+    "scientific_commit": "bee9294957702b89f508d5f3655b8d2399248a3d",
+    "session_id": "S17"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "d2fd4938193bae2770f024c16cfc4b4a0eac9f35",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }

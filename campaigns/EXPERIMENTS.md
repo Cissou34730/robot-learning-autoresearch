@@ -89,3 +89,4 @@
 | M47 | measurement | I8 | completed |
 | M48 | measurement | I8 | completed |
 | E33 | inquiry | I8 | completed |
+| E34 | checkpoint | I8 | checkpointed |
