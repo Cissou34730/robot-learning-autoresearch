@@ -93,3 +93,4 @@
 | M31 | measurement | I12 | completed |
 | E50 | inquiry | I12 | completed |
 | E51 | checkpoint | I12 | checkpointed |
+| E52 | inquiry | I13 | completed |

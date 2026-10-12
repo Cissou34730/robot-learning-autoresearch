@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a bounded candidate-development attempt and matched complete-hold evidence with preserved time-resolved diagnostics. A positive answer requires a candidate reaching at least 196/200-equivalent success on the protected-seed development panel and a trace-based reduction of the relevant no-first-reach and/or reach-then-interrupt failures without an acquisition collapse. A negative or limited answer is sufficient if the best measured candidate does not improve beyond T4 or if the intervention loses acquisition; such a result will redirect the campaign rather than certify the human goal.",
+    "goal_connection": "The protected objective requires at least 196 uninterrupted 100-step holds in the official 200-episode panel. T4:checkpoint-120832 is the strongest measured candidate at 153/160, so the remaining seven development failures are materially larger than the allowable gap and official assessment is not justified. A successful inquiry must improve complete episode capability, not merely reward or training proxies, while retaining acquisition across the full 0.06-0.20 m target distribution.",
+    "handoff_conclusion": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+    "handoff_question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+    "handoff_source_session_id": "S25",
+    "id": "I13",
+    "opened_in_session": "S26",
+    "question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+    "rationale": "Further bounded work remains worthwhile because T4's transfer from the mechanism-informed route improved T2 from 150/160 to 153/160 and retained acquisition, showing a small capability gain even though it did not meet the goal. However, T3's 0/160 and T6's 6/160 results show that targeted regulation or residual-torque changes are not generally safe, and M15 already supplies the settled mechanism evidence for T2. The consequential unresolved question is therefore capability development under an acquisition-preservation constraint, not whether the old traces can identify a mechanism. Compare against official assessment: T4 is below the goal and has contrary evidence from its seven residual failures; the protected assessment would end the campaign with a likely failure and cannot guide repair. The inquiry will preserve the artifact-level limits of prior route comparisons and use complete-hold outcomes plus traces to decide whether further policy development can credibly close the gap.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -7381,16 +7392,16 @@
     }
   },
   "counters": {
-    "event": 51,
-    "inquiry": 12,
+    "event": 52,
+    "inquiry": 13,
     "measurement": 31,
-    "session": 25,
+    "session": 26,
     "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -21670,9 +21681,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:31:00Z",
+      "error": null,
+      "id": "E52",
+      "inquiry_id": "I13",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a bounded candidate-development attempt and matched complete-hold evidence with preserved time-resolved diagnostics. A positive answer requires a candidate reaching at least 196/200-equivalent success on the protected-seed development panel and a trace-based reduction of the relevant no-first-reach and/or reach-then-interrupt failures without an acquisition collapse. A negative or limited answer is sufficient if the best measured candidate does not improve beyond T4 or if the intervention loses acquisition; such a result will redirect the campaign rather than certify the human goal.",
+        "goal_connection": "The protected objective requires at least 196 uninterrupted 100-step holds in the official 200-episode panel. T4:checkpoint-120832 is the strongest measured candidate at 153/160, so the remaining seven development failures are materially larger than the allowable gap and official assessment is not justified. A successful inquiry must improve complete episode capability, not merely reward or training proxies, while retaining acquisition across the full 0.06-0.20 m target distribution.",
+        "question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+        "rationale": "Further bounded work remains worthwhile because T4's transfer from the mechanism-informed route improved T2 from 150/160 to 153/160 and retained acquisition, showing a small capability gain even though it did not meet the goal. However, T3's 0/160 and T6's 6/160 results show that targeted regulation or residual-torque changes are not generally safe, and M15 already supplies the settled mechanism evidence for T2. The consequential unresolved question is therefore capability development under an acquisition-preservation constraint, not whether the old traces can identify a mechanism. Compare against official assessment: T4 is below the goal and has contrary evidence from its seven residual failures; the protected assessment would end the campaign with a likely failure and cannot guide repair. The inquiry will preserve the artifact-level limits of prior route comparisons and use complete-hold outcomes plus traces to decide whether further policy development can credibly close the gap."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I13",
+        "status": "completed"
+      },
+      "session_id": "S26",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a bounded candidate-development attempt and matched complete-hold evidence with preserved time-resolved diagnostics. A positive answer requires a candidate reaching at least 196/200-equivalent success on the protected-seed development panel and a trace-based reduction of the relevant no-first-reach and/or reach-then-interrupt failures without an acquisition collapse. A negative or limited answer is sufficient if the best measured candidate does not improve beyond T4 or if the intervention loses acquisition; such a result will redirect the campaign rather than certify the human goal.",
+          "goal_connection": "The protected objective requires at least 196 uninterrupted 100-step holds in the official 200-episode panel. T4:checkpoint-120832 is the strongest measured candidate at 153/160, so the remaining seven development failures are materially larger than the allowable gap and official assessment is not justified. A successful inquiry must improve complete episode capability, not merely reward or training proxies, while retaining acquisition across the full 0.06-0.20 m target distribution.",
+          "handoff_conclusion": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+          "handoff_question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+          "handoff_source_session_id": "S25",
+          "id": "I13",
+          "opened_in_session": "S26",
+          "question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+          "rationale": "Further bounded work remains worthwhile because T4's transfer from the mechanism-informed route improved T2 from 150/160 to 153/160 and retained acquisition, showing a small capability gain even though it did not meet the goal. However, T3's 0/160 and T6's 6/160 results show that targeted regulation or residual-torque changes are not generally safe, and M15 already supplies the settled mechanism evidence for T2. The consequential unresolved question is therefore capability development under an acquisition-preservation constraint, not whether the old traces can identify a mechanism. Compare against official assessment: T4 is below the goal and has contrary evidence from its seven residual failures; the protected assessment would end the campaign with a likely failure and cannot guide repair. The inquiry will preserve the artifact-level limits of prior route comparisons and use complete-hold outcomes plus traces to decide whether further policy development can credibly close the gap.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I13",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E52",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a bounded candidate-development attempt and matched complete-hold evidence with preserved time-resolved diagnostics. A positive answer requires a candidate reaching at least 196/200-equivalent success on the protected-seed development panel and a trace-based reduction of the relevant no-first-reach and/or reach-then-interrupt failures without an acquisition collapse. A negative or limited answer is sufficient if the best measured candidate does not improve beyond T4 or if the intervention loses acquisition; such a result will redirect the campaign rather than certify the human goal.",
+        "goal_connection": "The protected objective requires at least 196 uninterrupted 100-step holds in the official 200-episode panel. T4:checkpoint-120832 is the strongest measured candidate at 153/160, so the remaining seven development failures are materially larger than the allowable gap and official assessment is not justified. A successful inquiry must improve complete episode capability, not merely reward or training proxies, while retaining acquisition across the full 0.06-0.20 m target distribution.",
+        "question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
+        "rationale": "Further bounded work remains worthwhile because T4's transfer from the mechanism-informed route improved T2 from 150/160 to 153/160 and retained acquisition, showing a small capability gain even though it did not meet the goal. However, T3's 0/160 and T6's 6/160 results show that targeted regulation or residual-torque changes are not generally safe, and M15 already supplies the settled mechanism evidence for T2. The consequential unresolved question is therefore capability development under an acquisition-preservation constraint, not whether the old traces can identify a mechanism. Compare against official assessment: T4 is below the goal and has contrary evidence from its seven residual failures; the protected assessment would end the campaign with a likely failure and cannot guide repair. The inquiry will preserve the artifact-level limits of prior route comparisons and use complete-hold outcomes plus traces to decide whether further policy development can credibly close the gap."
+      }
+    },
+    "request_fingerprint": "bf0e2b461b7691749b2255be373d122f85b75292ae4894f4dc44b87c26442f63",
+    "session_id": "S26",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M31 at 153/160; it is not certified for official assessment. T9:checkpoint-120832 is a measured fresh default-reward artifact at 150/160 and is not assigned a role because it does not exceed T4. No candidate is working or retained. The targeted fresh-route T7/T8 artifacts remain rejected for acquisition collapse. No official assessment was requested.",
     "completed_operations": [
@@ -21706,6 +21780,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "29e803d1-bdd9-430c-be92-d4efecfbbb3f",
+    "id": "S26",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E52"
+    ],
+    "scientific_parent_commit": "a830fb40e983d5af314dc2206dd9d057074ab061"
+  },
   "terminal_state": null
 }
