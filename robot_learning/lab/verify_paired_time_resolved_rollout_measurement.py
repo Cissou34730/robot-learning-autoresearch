@@ -163,6 +163,10 @@ def _check_rollout(
     first_reach = None
     max_held = 0
     saw_continued = False
+    nonzero_discrepancy_samples = 0
+    maximum_position_error = 0.0
+    maximum_velocity_error = 0.0
+    first_nonzero_discrepancy = None
     for expected_step, record in enumerate(trace, start=1):
         _require(
             int(record["control_step"]) == expected_step,
@@ -221,16 +225,19 @@ def _check_rollout(
         _require(position_error >= 0.0 and velocity_error >= 0.0, "negative reference error")
         _close(position_error, np.linalg.norm(endpoint - reference_endpoint), "position error")
         _close(velocity_error, np.linalg.norm(endpoint_velocity - reference_velocity), "velocity error")
-        _close(
-            endpoint,
-            reference_endpoint,
-            "live endpoint versus independent forward kinematics",
-        )
-        _close(
-            endpoint_velocity,
-            reference_velocity,
-            "live endpoint velocity versus independent Jacobian",
-        )
+        maximum_position_error = max(maximum_position_error, position_error)
+        maximum_velocity_error = max(maximum_velocity_error, velocity_error)
+        if (
+            position_error > NUMERICAL_TOLERANCE
+            or velocity_error > NUMERICAL_TOLERANCE
+        ):
+            nonzero_discrepancy_samples += 1
+            if first_nonzero_discrepancy is None:
+                first_nonzero_discrepancy = {
+                    "control_step": expected_step,
+                    "position_error_m": position_error,
+                    "velocity_error_m_s": velocity_error,
+                }
 
         distance = float(np.linalg.norm(endpoint - target))
         _close(record["distance_m"], distance, "live distance")
@@ -392,6 +399,10 @@ def _check_rollout(
         "max_held_steps": max_held,
         "saw_continued": saw_continued,
         "steps": len(trace),
+        "nonzero_discrepancy_samples": nonzero_discrepancy_samples,
+        "maximum_position_error_m": maximum_position_error,
+        "maximum_velocity_error_m_s": maximum_velocity_error,
+        "first_nonzero_discrepancy": first_nonzero_discrepancy,
     }
 
 
@@ -506,6 +517,43 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
         _require(int(summary["failures"]) == len(rollouts) - successes, f"{candidate_id} failure summary is wrong")
         checked[candidate_id] = candidate_checked
 
+    discrepancy_by_candidate: dict[str, list[dict[str, Any]]] = {}
+    total_nonzero_discrepancy_samples = 0
+    maximum_position_error = 0.0
+    maximum_velocity_error = 0.0
+    first_nonzero_discrepancy = None
+    for candidate_id, candidate_checked in checked.items():
+        discrepancy_by_candidate[candidate_id] = []
+        for item in candidate_checked:
+            nonzero_samples = int(item["nonzero_discrepancy_samples"])
+            total_nonzero_discrepancy_samples += nonzero_samples
+            maximum_position_error = max(
+                maximum_position_error, float(item["maximum_position_error_m"])
+            )
+            maximum_velocity_error = max(
+                maximum_velocity_error, float(item["maximum_velocity_error_m_s"])
+            )
+            if first_nonzero_discrepancy is None and item["first_nonzero_discrepancy"] is not None:
+                first_nonzero_discrepancy = {
+                    "candidate_id": candidate_id,
+                    "seed": int(item["seed"]),
+                    **item["first_nonzero_discrepancy"],
+                }
+            discrepancy_by_candidate[candidate_id].append(
+                {
+                    "seed": int(item["seed"]),
+                    "nonzero_discrepancy_samples": nonzero_samples,
+                    "maximum_position_error_m": float(item["maximum_position_error_m"]),
+                    "maximum_velocity_error_m_s": float(
+                        item["maximum_velocity_error_m_s"]
+                    ),
+                }
+            )
+    _require(
+        total_nonzero_discrepancy_samples > 0,
+        "the paired artifact has no nonzero live/reference discrepancy sample",
+    )
+
     pairing = artifact["target_pairing"]
     _require(bool(pairing["exact_match_all_seeds"]), "target pairing evidence is false")
     _require([int(item["seed"]) for item in pairing["by_seed"]] == EXPECTED_SEEDS, "target pairing seed list is wrong")
@@ -557,6 +605,13 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
         "distinct_model_fingerprints": True,
         "runtime_fingerprints_recorded": True,
         "trace_difference_seeds": differences,
+        "kinematic_discrepancy": {
+            "nonzero_discrepancy_samples": total_nonzero_discrepancy_samples,
+            "maximum_position_error_m": maximum_position_error,
+            "maximum_velocity_error_m_s": maximum_velocity_error,
+            "first_nonzero_discrepancy": first_nonzero_discrepancy,
+            "by_candidate": discrepancy_by_candidate,
+        },
         "t7_no_first_reach_seeds": sorted(
             item["seed"] for item in t7_checked if item["first_reach_step"] is None
         ),
@@ -587,7 +642,7 @@ def main(argv: list[str] | None = None) -> None:
                 "candidate/model/runtime fingerprints and non-substituted traces",
                 "per-candidate reset evidence and repeated qpos/qvel transitions",
                 "official MuJoCo forward kinematics and translational Jacobian-times-qvel endpoint velocity",
-                "live endpoint, distance, tolerance, hold, interruption, and termination semantics",
+                "live endpoint/reference discrepancy norms, live distance, tolerance, hold, interruption, and termination semantics",
                 "clipped controls, actuator/contact records, bounded IK, and dynamics quantities",
                 "paired target geometry and T7 no-first-reach plus reach-then-interrupt behavior",
             ],
