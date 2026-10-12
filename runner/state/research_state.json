@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a completed candidate comparison on the unchanged 160-episode full-radius complete-hold panel, with time-resolved acquisition and interruption diagnostics, shows either improvement above 153/160 with no increase in no-first-reach failures, or a bounded negative/inconclusive result for this route. Interpret any difference as a property of the complete artifacts unless a separate mechanism test establishes causality.",
-    "goal_connection": "The current best candidate reaches 153/160 (95.625%) on the full-radius development panel, below the 196/200 official requirement. M32 shows seven residual failures and a T5 tie, so a route that improves post-reach continuity while preserving singular-reset acquisition is the most direct remaining capability opportunity before any official commitment.",
-    "handoff_conclusion": "Established observations: M15 independently verified that the earlier T2 residual included both singular-reset acquisition failures and post-reach interruptions, with no contact-based separation; M19 measured T4 at 153/160 after targeted-regulation transfer; M31 measured T9 at 150/160; and M32 measured T5 at 153/160 on the identical complete-hold panel with zero paired success advantage. M32 also verified paired resets, repeated transitions, target pairing, distinct model/runtime fingerprints, and forward-kinematic references; its residual trace comparison found the same seven total failures, with T4 split 3 no-first-reach/4 reach-then-interrupt and T5 split 1/6, including T5 incomplete holds of only 0 to 3 steps. Interpretation correction: the inherited claim that T5 continuation is not a credible route is supported as a candidate-level selection result, but M32 does not establish that reward, runtime, plant dynamics, or any single intervention caused the residual or the shift in failure class. The physical model therefore still makes both singular escape/acquisition and dynamic uninterrupted regulation consequential, while bounded IK feasibility and absence of contact keep geometric impossibility and contact intervention from being the leading route. The remaining mechanism uncertainty does not block development because a complete-artifact comparison can directly test whether a new route changes the goal metric; any causal claim about its objective remains explicitly unresolved unless separately discriminated.",
-    "handoff_question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
-    "handoff_source_session_id": "S28",
-    "id": "I14",
-    "opened_in_session": "S28",
-    "question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
-    "rationale": "Official assessment is not justified by 153/160 development evidence. M32 provides strong candidate-level evidence that extending T5 is exhausted, but it does not identify reward, runtime, plant dynamics, or one intervention as the cause. Existing traces retain both no-first-reach and reach-then-interrupt residuals, so the next route must address interruption without sacrificing acquisition. A T4-initialized, full-radius, direct-control development route with an explicitly hold-recovery-focused objective is distinct from T5 continuation and can credibly change capability; its value will be judged by complete uninterrupted holds and the acquisition constraint, not training proxies.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -8214,7 +8203,7 @@
     }
   },
   "counters": {
-    "event": 57,
+    "event": 58,
     "inquiry": 14,
     "measurement": 35,
     "session": 29,
@@ -25252,9 +25241,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T02:08:58Z",
+      "error": null,
+      "id": "E58",
+      "inquiry_id": "I14",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "bounded negative/inconclusive",
+        "reason": "M34 verified the distinct hold-recovery training route and M35 completed the unchanged 160-episode paired development comparison. T10:checkpoint-95232, selected from the sustained 100% training-proxy plateau, tied T4:checkpoint-120832 at 153/160 with zero paired wins, zero discordant episodes, and the same residual split: 3 no-first-reach failures and 4 reach-then-interrupt failures. The route therefore did not improve complete uninterrupted holds, but it also did not increase no-first-reach failures. This satisfies I14's bounded negative/inconclusive closure condition. The result is a property of the complete candidate artifacts; M34/M35 do not establish that the hold-recovery objective, reward terms, runtime, or plant dynamics caused the tie or failure classes. The official 98% goal remains unmet and official assessment is not justified."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "bounded negative/inconclusive",
+        "reason": "M34 verified the distinct hold-recovery training route and M35 completed the unchanged 160-episode paired development comparison. T10:checkpoint-95232, selected from the sustained 100% training-proxy plateau, tied T4:checkpoint-120832 at 153/160 with zero paired wins, zero discordant episodes, and the same residual split: 3 no-first-reach failures and 4 reach-then-interrupt failures. The route therefore did not improve complete uninterrupted holds, but it also did not increase no-first-reach failures. This satisfies I14's bounded negative/inconclusive closure condition. The result is a property of the complete candidate artifacts; M34/M35 do not establish that the hold-recovery objective, reward terms, runtime, or plant dynamics caused the tie or failure classes. The official 98% goal remains unmet and official assessment is not justified.",
+        "status": "completed"
+      },
+      "session_id": "S29",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "bounded negative/inconclusive",
+        "reason": "M34 verified the distinct hold-recovery training route and M35 completed the unchanged 160-episode paired development comparison. T10:checkpoint-95232, selected from the sustained 100% training-proxy plateau, tied T4:checkpoint-120832 at 153/160 with zero paired wins, zero discordant episodes, and the same residual split: 3 no-first-reach failures and 4 reach-then-interrupt failures. The route therefore did not improve complete uninterrupted holds, but it also did not increase no-first-reach failures. This satisfies I14's bounded negative/inconclusive closure condition. The result is a property of the complete candidate artifacts; M34/M35 do not establish that the hold-recovery objective, reward terms, runtime, or plant dynamics caused the tie or failure classes. The official 98% goal remains unmet and official assessment is not justified."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "bounded negative/inconclusive",
+        "reason": "M34 verified the distinct hold-recovery training route and M35 completed the unchanged 160-episode paired development comparison. T10:checkpoint-95232, selected from the sustained 100% training-proxy plateau, tied T4:checkpoint-120832 at 153/160 with zero paired wins, zero discordant episodes, and the same residual split: 3 no-first-reach failures and 4 reach-then-interrupt failures. The route therefore did not improve complete uninterrupted holds, but it also did not increase no-first-reach failures. This satisfies I14's bounded negative/inconclusive closure condition. The result is a property of the complete candidate artifacts; M34/M35 do not establish that the hold-recovery objective, reward terms, runtime, or plant dynamics caused the tie or failure classes. The official 98% goal remains unmet and official assessment is not justified.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E58",
+    "inquiry_id": "I14",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "bounded negative/inconclusive",
+        "reason": "M34 verified the distinct hold-recovery training route and M35 completed the unchanged 160-episode paired development comparison. T10:checkpoint-95232, selected from the sustained 100% training-proxy plateau, tied T4:checkpoint-120832 at 153/160 with zero paired wins, zero discordant episodes, and the same residual split: 3 no-first-reach failures and 4 reach-then-interrupt failures. The route therefore did not improve complete uninterrupted holds, but it also did not increase no-first-reach failures. This satisfies I14's bounded negative/inconclusive closure condition. The result is a property of the complete candidate artifacts; M34/M35 do not establish that the hold-recovery objective, reward terms, runtime, or plant dynamics caused the tie or failure classes. The official 98% goal remains unmet and official assessment is not justified."
+      }
+    },
+    "request_fingerprint": "bdfca98993726d10fb8d7d7827a477579c9c57d0506590a33f06d2a42d036cb1",
+    "session_id": "S29",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known and the retained development comparison reference at 153/160, supported by M19, M23, M25, M28, M31, and M32. T5:checkpoint-120832 is not competitive after the M32 tie and is not a route to extend. T9 is below T4; T3 and T6 are rejected for acquisition collapse. No candidate is assigned as working for I14 yet.",
     "completed_operations": [
@@ -25298,7 +25341,8 @@
     "operation_ids": [
       "M34",
       "T10",
-      "M35"
+      "M35",
+      "E58"
     ],
     "scientific_parent_commit": "d6416330160c1032f0a2f250a25bae273d4a8838"
   },
