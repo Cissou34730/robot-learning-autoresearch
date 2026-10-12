@@ -99,3 +99,4 @@
 | E54 | inquiry | I13 | completed |
 | E55 | checkpoint | I13 | checkpointed |
 | E56 | inquiry | I14 | completed |
+| E57 | checkpoint | - | checkpointed |
