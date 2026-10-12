@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Train and measure one complete coverage-focused candidate against the same fixed 160-episode development panel and diagnostics used for the baseline. Close when the comparison establishes whether inner-radius first-reach and success improve while outer-radius complete-hold performance is preserved, or instead shows persistent never-reached failures or a newly dominant reached-but-incomplete/hold-instability failure class that redirects the next intervention. Preserve any unresolved branch, joint-limit, sampled-data, and continuous-hold uncertainties in the resulting decision.",
     "goal_connection": "The strongest measured candidate succeeds on 105/160 official-distribution development episodes (65.625%), far below the required 196/200. Its failures are dominated by never entering tolerance (49/55 failures), concentrated in the omitted 0.06-0.14 m training region, while only 6 failures reached tolerance without completing the hold. A full-domain coverage variant could therefore address the largest observed goal gap without presuming that coverage alone reaches 98%.",
-    "handoff_conclusion": "Completed observations: M1 verified the production MuJoCo compatibility path; M2 measured the compiled model, feasible analytic branches, reset Jacobian singularity, bounded actuation, and transient velocity/decay; M3 independently verified that artifact. These observations support feasible official-domain kinematics and make gross geometric or hidden-interface failure less credible as the first blocker, but they do not establish learned behavior. T1 trained the unchanged PPO baseline with 0.14-0.20 m training radii for the maintainer allocation of 120,000 requested steps (actual saved checkpoints rounded through 120,832); proxy success rose from 0 to 0.96 by 115,712 and remained 0.96 at 120,832. Proxies nominated a plateau, not performance, so M6 measured the earlier 115,712-step candidate on 160 fixed official-distribution seeds. M4 verified the production diagnostic path and M5 independently checked its speed, branch, joint-limit, repeated-update, and reset bookkeeping. M6/M8 established 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, 272 total hold interruptions, and complete boundary holds for all 105 successes. Radius strata were 9/40 (22.5%) at 6-10 cm, 33/53 (62.26%) at 10-14 cm, 30/31 (96.77%) at 14-17 cm, and 33/36 (91.67%) at 17-20 cm. Failures had mean maximum hold 2.2 control steps and 270 interruptions; reached-but-incomplete failures had mean maximum hold 20.17 steps, while the dominant failure class never reached tolerance. Angle strata also varied materially (36.84%-92.86% success), so radius coverage is not the only exposure modifier. Branch context showed 140 targets with both analytic branches feasible, 14 folded-only and 6 open-only; among first entries, 108 were nearest open and 3 folded, but this descriptive imbalance is not a causal branch conclusion. Interpretation: the baseline deficit is primarily an official inner-radius reach/trajectory coverage deficit, with angle/branch context as modifiers; the evidence does not justify stabilization/control as the first intervention because late hold loss is a small minority of failures. The conclusion is recipe-specific: it supports coverage-focused work for this PPO baseline, not a claim that coverage alone or PPO generally reaches 98%. Diagnostics are sampled at 20 ms control boundaries and do not resolve excursions within physics steps or protected evaluator semantics.",
+    "handoff_conclusion": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
     "handoff_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 2,
     "measurement": 8,
     "session": 4,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3770,24 +3770,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:06:10Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Before this session: startup physical work M1-M3; I1 opening E2; diagnostic compatibility and verification M4-M5; one fresh 120,000-request-step baseline training run T1 (120,832 actual, 24 archived checkpoints); one 160-episode development measurement M6 plus analysis verification/profile work M7-M8; I1 closure E4. This session used trajectory/evidence review and opened I2 as E6; no official-assessment episodes, new training allocation, or new candidate were consumed.",
+        "current_goal_gap": "The measured baseline candidate falls 32.375 percentage points below the 98% objective. Of 55 development failures, 49 never entered tolerance and 6 entered but did not complete the hold; the never-reached class is concentrated in the official inner-radius region omitted by baseline training. Outer-radius success is already high but not perfect, and angle/branch context, joint-limit effects, sampled-data excursions, and protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
+        "decision_frontier": "The active distinction is whether changing the training exposure to span the full official 0.06-0.20 m radius range while preserving angle/branch diversity raises inner-radius first reach and complete success without degrading outer-radius holds. Improvement in inner first reach and success with preserved outer holds supports continued coverage development toward 98%. Persistent never-reached failures across the domain redirects toward trajectory representation, branch-aware control, or another reach mechanism. Broadly improved entry with a new dominant reached-but-incomplete class redirects toward terminal/sampled-data stabilization. If branch or joint-limit strata become dominant, branch-aware or limit-aware treatment becomes consequential. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation, but this comparison need not resolve that unknown to decide whether coverage is worth continuing.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. The measured baseline is 105/160 (65.625%) on the fixed development panel, so the goal is not met and no official assessment is justified yet.",
+        "next_direction_or_closure": "Keep the inquiry open and begin its fresh session with a complete coverage-focused training-and-measurement comparison against the same fixed development panel and diagnostic schema. This is preferable to official assessment because the strongest measured candidate is far below threshold and the proposed variant directly targets the dominant never-reached deficit; it is preferable to more baseline proxy inspection because the learning trajectory already shows late fluctuations/plateau and proxies cannot resolve the official exposure gap. The inquiry closes after the prescribed comparison establishes benefit with preserved holds or supplies the stated redirect evidence.",
+        "next_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "9b5190e84a4d721a9157cabb49bae93a252208f0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Before this session: startup physical work M1-M3; I1 opening E2; diagnostic compatibility and verification M4-M5; one fresh 120,000-request-step baseline training run T1 (120,832 actual, 24 archived checkpoints); one 160-episode development measurement M6 plus analysis verification/profile work M7-M8; I1 closure E4. This session used trajectory/evidence review and opened I2 as E6; no official-assessment episodes, new training allocation, or new candidate were consumed.",
+        "current_goal_gap": "The measured baseline candidate falls 32.375 percentage points below the 98% objective. Of 55 development failures, 49 never entered tolerance and 6 entered but did not complete the hold; the never-reached class is concentrated in the official inner-radius region omitted by baseline training. Outer-radius success is already high but not perfect, and angle/branch context, joint-limit effects, sampled-data excursions, and protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
+        "decision_frontier": "The active distinction is whether changing the training exposure to span the full official 0.06-0.20 m radius range while preserving angle/branch diversity raises inner-radius first reach and complete success without degrading outer-radius holds. Improvement in inner first reach and success with preserved outer holds supports continued coverage development toward 98%. Persistent never-reached failures across the domain redirects toward trajectory representation, branch-aware control, or another reach mechanism. Broadly improved entry with a new dominant reached-but-incomplete class redirects toward terminal/sampled-data stabilization. If branch or joint-limit strata become dominant, branch-aware or limit-aware treatment becomes consequential. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation, but this comparison need not resolve that unknown to decide whether coverage is worth continuing.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. The measured baseline is 105/160 (65.625%) on the fixed development panel, so the goal is not met and no official assessment is justified yet.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Keep the inquiry open and begin its fresh session with a complete coverage-focused training-and-measurement comparison against the same fixed development panel and diagnostic schema. This is preferable to official assessment because the strongest measured candidate is far below threshold and the proposed variant directly targets the dominant never-reached deficit; it is preferable to more baseline proxy inspection because the learning trajectory already shows late fluctuations/plateau and proxies cannot resolve the official exposure gap. The inquiry closes after the prescribed comparison establishes benefit with preserved holds or supplies the stated redirect evidence.",
+        "next_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "2269635d-b6ca-49a1-a8a5-7f0679bf29bd",
+        "campaign_id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
+        "campaign_usage": "16m28s | 32.06 AIU | prompt 4.8m (91% cached) | output 102.4k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "3ee2965c5f4114b5a5819a470a7f03ec785cd7e3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Before this session: startup physical work M1-M3; I1 opening E2; diagnostic compatibility and verification M4-M5; one fresh 120,000-request-step baseline training run T1 (120,832 actual, 24 archived checkpoints); one 160-episode development measurement M6 plus analysis verification/profile work M7-M8; I1 closure E4. This session used trajectory/evidence review and opened I2 as E6; no official-assessment episodes, new training allocation, or new candidate were consumed.",
+        "current_goal_gap": "The measured baseline candidate falls 32.375 percentage points below the 98% objective. Of 55 development failures, 49 never entered tolerance and 6 entered but did not complete the hold; the never-reached class is concentrated in the official inner-radius region omitted by baseline training. Outer-radius success is already high but not perfect, and angle/branch context, joint-limit effects, sampled-data excursions, and protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
+        "decision_frontier": "The active distinction is whether changing the training exposure to span the full official 0.06-0.20 m radius range while preserving angle/branch diversity raises inner-radius first reach and complete success without degrading outer-radius holds. Improvement in inner first reach and success with preserved outer holds supports continued coverage development toward 98%. Persistent never-reached failures across the domain redirects toward trajectory representation, branch-aware control, or another reach mechanism. Broadly improved entry with a new dominant reached-but-incomplete class redirects toward terminal/sampled-data stabilization. If branch or joint-limit strata become dominant, branch-aware or limit-aware treatment becomes consequential. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation, but this comparison need not resolve that unknown to decide whether coverage is worth continuing.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. The measured baseline is 105/160 (65.625%) on the fixed development panel, so the goal is not met and no official assessment is justified yet.",
+        "next_direction_or_closure": "Keep the inquiry open and begin its fresh session with a complete coverage-focused training-and-measurement comparison against the same fixed development panel and diagnostic schema. This is preferable to official assessment because the strongest measured candidate is far below threshold and the proposed variant directly targets the dominant never-reached deficit; it is preferable to more baseline proxy inspection because the learning trajectory already shows late fluctuations/plateau and proxies cannot resolve the official exposure gap. The inquiry closes after the prescribed comparison establishes benefit with preserved holds or supplies the stated redirect evidence.",
+        "next_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?"
+      }
+    },
+    "request_fingerprint": "2c6763f0a8b78021cf936bf07ac3daa996ec6136c3e2024e37e520c424703bf1",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 archived a complete baseline candidate family, including T1:checkpoint-115712 measured by M6 and the unmeasured 120,832-step terminal checkpoint. M6 provides the strongest completed candidate evidence at 65.625% development success, but no working, best-known, or retained model role was assigned because the role request was unnecessary to close I1; the candidate remains available for the next goal review. M1-M5 and M7-M8 are measurement/tool artifacts, not learned candidates. No official assessment candidate certification is implied.",
+    "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
     "completed_operations": [
-      "M4",
-      "M5",
-      "T1",
-      "M6",
-      "M7",
-      "M8",
-      "E4"
+      "E6"
     ],
-    "cumulative_resource_use": "Startup physical work M1-M3; goal-review inquiry opening E2; diagnostic implementation checks M4-M5; one fresh baseline training run T1 with 120,000 requested steps and actual saved checkpoints through 120,832; one 160-episode development evaluation M6 using seeds 4200-4359; analysis verification M7 and complete-profile analysis M8; inquiry close E4. No official-assessment episodes consumed; no additional training allocation or protected benchmark result consumed.",
-    "current_goal_gap": "The measured baseline candidate achieved 105/160 = 65.625% on the fixed development panel, leaving a large gap to 98% and no official success claim. The principal observed gap is inner-radius reach/coverage: 49 of 55 failures never entered tolerance, concentrated at 6-14 cm. A secondary unresolved gap is preserving complete hold performance while expanding inner-radius and angle/branch exposure; protected continuous-hold semantics and causal contributions of branch/limit and sampled-data stabilization remain unverified.",
-    "current_synthesis": "Completed observations: M1 verified the production MuJoCo compatibility path; M2 measured the compiled model, feasible analytic branches, reset Jacobian singularity, bounded actuation, and transient velocity/decay; M3 independently verified that artifact. These observations support feasible official-domain kinematics and make gross geometric or hidden-interface failure less credible as the first blocker, but they do not establish learned behavior. T1 trained the unchanged PPO baseline with 0.14-0.20 m training radii for the maintainer allocation of 120,000 requested steps (actual saved checkpoints rounded through 120,832); proxy success rose from 0 to 0.96 by 115,712 and remained 0.96 at 120,832. Proxies nominated a plateau, not performance, so M6 measured the earlier 115,712-step candidate on 160 fixed official-distribution seeds. M4 verified the production diagnostic path and M5 independently checked its speed, branch, joint-limit, repeated-update, and reset bookkeeping. M6/M8 established 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, 272 total hold interruptions, and complete boundary holds for all 105 successes. Radius strata were 9/40 (22.5%) at 6-10 cm, 33/53 (62.26%) at 10-14 cm, 30/31 (96.77%) at 14-17 cm, and 33/36 (91.67%) at 17-20 cm. Failures had mean maximum hold 2.2 control steps and 270 interruptions; reached-but-incomplete failures had mean maximum hold 20.17 steps, while the dominant failure class never reached tolerance. Angle strata also varied materially (36.84%-92.86% success), so radius coverage is not the only exposure modifier. Branch context showed 140 targets with both analytic branches feasible, 14 folded-only and 6 open-only; among first entries, 108 were nearest open and 3 folded, but this descriptive imbalance is not a causal branch conclusion. Interpretation: the baseline deficit is primarily an official inner-radius reach/trajectory coverage deficit, with angle/branch context as modifiers; the evidence does not justify stabilization/control as the first intervention because late hold loss is a small minority of failures. The conclusion is recipe-specific: it supports coverage-focused work for this PPO baseline, not a claim that coverage alone or PPO generally reaches 98%. Diagnostics are sampled at 20 ms control boundaries and do not resolve excursions within physics steps or protected evaluator semantics.",
-    "decision_frontier": "The resolved I1 distinction favors coverage-focused development first: expand the omitted 0.06-0.14 m official region and preserve angle/branch diversity, then remeasure the same fixed panel and diagnostics. The next consequential distinction is whether that intervention raises first-tolerance entry and inner-radius success without introducing hold instability, or whether inner-region trajectories remain unreachable/unstable and require representation or control changes. Evidence that would revise the direction is a matched coverage variant with improved inner-radius first reach and success while outer-region holds remain high; a broad improvement in entry but persistent reached-but-incomplete failures would redirect to sampled-data stabilization/terminal control; persistent never-reached failures across the full domain would redirect to trajectory/representation or branch-aware control. The current M6/M8 diagnostics do not resolve protected continuous containment between control boundaries, and target-branch context is descriptive rather than causal; these limits remain explicit for candidate readiness and the next research decision.",
+    "cumulative_resource_use": "Before this session: startup physical work M1-M3; I1 opening E2; diagnostic compatibility and verification M4-M5; one fresh 120,000-request-step baseline training run T1 (120,832 actual, 24 archived checkpoints); one 160-episode development measurement M6 plus analysis verification/profile work M7-M8; I1 closure E4. This session used trajectory/evidence review and opened I2 as E6; no official-assessment episodes, new training allocation, or new candidate were consumed.",
+    "current_goal_gap": "The measured baseline candidate falls 32.375 percentage points below the 98% objective. Of 55 development failures, 49 never entered tolerance and 6 entered but did not complete the hold; the never-reached class is concentrated in the official inner-radius region omitted by baseline training. Outer-radius success is already high but not perfect, and angle/branch context, joint-limit effects, sampled-data excursions, and protected continuous-hold semantics remain unresolved.",
+    "current_synthesis": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
+    "decision_frontier": "The active distinction is whether changing the training exposure to span the full official 0.06-0.20 m radius range while preserving angle/branch diversity raises inner-radius first reach and complete success without degrading outer-radius holds. Improvement in inner first reach and success with preserved outer holds supports continued coverage development toward 98%. Persistent never-reached failures across the domain redirects toward trajectory representation, branch-aware control, or another reach mechanism. Broadly improved entry with a new dominant reached-but-incomplete class redirects toward terminal/sampled-data stabilization. If branch or joint-limit strata become dominant, branch-aware or limit-aware treatment becomes consequential. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation, but this comparison need not resolve that unknown to decide whether coverage is worth continuing.",
     "evidence_references": [
       "M1",
       "M2",
@@ -3799,14 +3944,15 @@
       "M6",
       "M7",
       "M8",
-      "E4"
+      "E4",
+      "E6"
     ],
-    "human_goal_connection": "The human goal remains a frozen learned policy with at least 196 successes in the 200-episode official assessment, each success requiring the complete uninterrupted 2-second hold. I1 supplied the first learned-candidate evidence needed to select the next route toward that threshold, but no official assessment was requested and the goal is not met.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed positive but limited by E4. The observed profile justifies coverage-focused training as the next route for this baseline recipe: the omitted inner-radius region accounts for the dominant first-reach deficit, while outer-radius complete holds are already near 92-97% and only 6/55 failures reached tolerance without completing the hold. At the next goal review, compare the expected contribution of a full-official-radius coverage variant against the remaining stabilization, branch, joint-limit, and continuous-hold uncertainties; do not request official assessment from this 65.625% development candidate.",
-    "next_question": "At goal review, should the campaign train and measure a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity, and does it improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
-    "scientific_commit": "91cfd465a9a6cd27b5c972939314be63199a8664",
-    "session_id": "S3"
+    "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. The measured baseline is 105/160 (65.625%) on the fixed development panel, so the goal is not met and no official assessment is justified yet.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Keep the inquiry open and begin its fresh session with a complete coverage-focused training-and-measurement comparison against the same fixed development panel and diagnostic schema. This is preferable to official assessment because the strongest measured candidate is far below threshold and the proposed variant directly targets the dominant never-reached deficit; it is preferable to more baseline proxy inspection because the learning trajectory already shows late fluctuations/plateau and proxies cannot resolve the official exposure gap. The inquiry closes after the prescribed comparison establishes benefit with preserved holds or supplies the stated redirect evidence.",
+    "next_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
+    "scientific_commit": "3ee2965c5f4114b5a5819a470a7f03ec785cd7e3",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3814,21 +3960,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "2269635d-b6ca-49a1-a8a5-7f0679bf29bd",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "9b5190e84a4d721a9157cabb49bae93a252208f0"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
