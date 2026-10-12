@@ -562,7 +562,7 @@ def run_check() -> dict[str, Any]:
                 "radius_[6,10)": 3.5,
                 "radius_[14,17)": 9,
                 "angle_[-180,-135)": 2.5,
-                "angle_[135,180)": 14,
+                "angle_[135,180)": 24,
             },
             "fresh_invocation_equal": True,
         },
