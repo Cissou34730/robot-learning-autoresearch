@@ -657,6 +657,55 @@ the rejection of scientific exhaustion as a Runner-created terminal outcome.
 
 Keep operational correctness separate from scientific effectiveness.
 
+#### Raw measurement publication failure and local archive
+
+M15 in `4702776a` completed its matched evaluations locally, but publication
+stopped. The two full-trace JSON blobs in the unpublished completion commit
+were 473.0 and 798.5 MiB. Ordinary GitHub Git publication rejects files over
+100 MiB. The old Runner treated all files under `campaigns/evaluations/` as
+publishable memory, and reset publication could force-add that directory.
+The generic push wrapper also hid Git's specific rejection detail.
+
+The maintainer approved ignoring the predictable raw-artifact root and keeping
+measurement files locally. Runner ownership, paths, recorded fingerprints,
+completion metadata and evidence-query semantics remain unchanged. Ordinary,
+reset and recovery publication exclude raw measurements. Git continues to
+publish compact results, artifact identities, source and campaign state.
+Push errors retain the underlying Git detail. A baseline source now requires
+completed measurement records in its versioned state ancestry and matching
+local raw files. This preserves reuse of an imported baseline without a new
+state schema or artifact registry. Reset backup
+preserves that ignored archive and restores the selected baseline files.
+Git alone is not a complete measurement-data backup.
+
+Validation passed 33 assertions with real small local artifacts and inert Git
+calls. The checks cover publication scopes, ignored-file query access,
+fingerprint rejection, baseline reuse through existing schema-6 ancestry,
+backup preservation and explicit push errors. Both touched modules compile
+and pass targeted lint. A temporary Git fixture could not initialize because
+permission was denied; no environment repair was attempted. No production
+campaign operation ran.
+
+The authorized Git-only cleanup replaced unpublished M15 commit `ec0e4ff`
+with `86af8bcc`, removing raw tracking while keeping every non-raw tree entry
+identical and published parent `7aef71c` unchanged. The two oversized blobs
+never reached origin: neither was reachable from its branch or present at
+its tip. Current branch tracking and the unpublished oversized history are
+repaired; earlier published commits remain untouched. Real-branch checks
+found no raw entries at the new tip and no unpublished blob above 100 MiB.
+The complete 25-file local inventory, totaling 1,388,353,693 bytes, retained
+every byte size and streaming SHA-256 fingerprint. The campaign state,
+results, generated history and untracked accepted M15 handoff also retained
+their SHA-256 fingerprints. Publication uses a normal fast-forward push.
+Old objects may remain in shared local reflogs and object storage; no global
+garbage collection, pruning or reflog expiration was run, and no disk
+reclamation is claimed.
+
+No campaign was launched, resumed, reset, trained or evaluated by this repair;
+no operation was accepted or finalized and M15 was not rerun. This changes
+publication mechanics, not PI trace-selection authority, OI status or the
+scientific validity of the completed measurement.
+
 Primary tracker ownership: OI-009, OI-010, OI-012 and OI-013, together with
 closed operational repairs that no longer require OI tracking.
 

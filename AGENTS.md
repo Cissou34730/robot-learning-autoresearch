@@ -105,7 +105,8 @@ requested through the contracts in `contracts/instruments.md`.
   and task, frozen after the preliminary phase.
 - `robot_learning/lab/` - campaign-scoped PI laboratory tools and analyses,
   separate from policy and training recipes.
-- `campaigns/evaluations/` - durable detailed development measurements.
+- `campaigns/evaluations/` - durable local detailed measurements, ignored by Git.
+  Operation metadata and artifact paths/fingerprints remain versioned.
 - `campaigns/checkpoints/candidates/` and `campaigns/checkpoints/retained/` -
   archived training candidates and durable explicitly assigned model roles.
 - `models/candidates/` - disposable training candidates.
@@ -221,6 +222,13 @@ The campaign artifacts, especially `campaigns/brief.md`, the durable scientific
 session record, completed operation records, and their artifacts, are the
 authoritative sources of scientific evidence. Failed operations are execution
 history, not evidence.
+
+Raw measurement files have the fixed local archive root
+`campaigns/evaluations/<campaign-id>/`. Runner publication excludes that root.
+Git publishes source, campaign state, compact results and artifact identities,
+not raw measurement contents. Existing query and integrity checks use the
+preserved local files. Reset backups include the ignored archive.
+Git alone is not a complete backup or transfer of raw campaign measurements.
 
 The PI may use read-only Git only when the current scientific objective requires
 understanding code provenance or a code delta. Git history is not scientific

@@ -326,6 +326,13 @@ def is_runner_memory(path: str) -> bool:
     )
 
 
+def is_local_measurement_artifact(path: str) -> bool:
+    relative = path.replace("\\", "/")
+    return relative == "campaigns/evaluations" or relative.startswith(
+        "campaigns/evaluations/"
+    )
+
+
 def is_runner_owned(path: str) -> bool:
     relative = path.replace("\\", "/")
     return relative in RUNNER_CONTROL_PATHS or is_runner_memory(relative)
@@ -462,8 +469,11 @@ def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
     stageable = [
         path
         for path in dict.fromkeys(candidates)
-        if (paths.ROOT / path).exists()
-        or git("--literal-pathspecs", "ls-files", "--", path).strip()
+        if not is_local_measurement_artifact(path)
+        and (
+            (paths.ROOT / path).exists()
+            or git("--literal-pathspecs", "ls-files", "--", path).strip()
+        )
     ]
     if stageable:
         git_with_pathspecs("add", "-A", scope=stageable)
@@ -475,7 +485,8 @@ def push_head() -> None:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
         raise RuntimeError(
-            "local commits could not be pushed to origin; refusing unpublished state"
+            "local commits could not be pushed to origin; refusing unpublished state\n"
+            + str(error)
         ) from error
 
 
@@ -578,7 +589,11 @@ def publish_campaign_laboratory(operation_id: str) -> dict | None:
 
 
 def changed_runner_memory() -> list[str]:
-    return [path for path in status_paths((".",)) if is_runner_memory(path)]
+    return [
+        path
+        for path in status_paths((".",))
+        if is_runner_memory(path) and not is_local_measurement_artifact(path)
+    ]
 
 
 def commit_runner_memory(message: str) -> bool:

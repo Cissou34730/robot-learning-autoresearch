@@ -24,9 +24,14 @@ or from historical scientific code.
 ```
 
 The Git reference must contain one prepared schema-6 candidate designated as
-both working and best-known, with a ready scientific model and at least one
-committed evaluation artifact. Keep a reference to that prepared state to
-repeat comparisons.
+both working and best-known, with a ready scientific model. Completed
+measurement records for its evaluation artifacts must exist in that reference
+or its versioned schema-6 state ancestry. This permits reuse of an imported
+baseline whose new campaign starts with empty operation history.
+Those raw artifacts must
+also exist in the local archive and match their recorded fingerprints.
+Keep both the prepared Git reference and local archive to repeat comparisons.
+A Git-only checkout cannot supply raw measurement data.
 
 Restores:
 
@@ -34,7 +39,8 @@ Restores:
   surface and `robot_learning/training/current_params.json`;
 - the candidate inference artifact, including `policy_runtime.pkl`, from
   `campaigns/checkpoints/candidates/` or `campaigns/checkpoints/retained/`;
-- committed candidate evaluation evidence under `campaigns/evaluations/`;
+- candidate evaluation evidence from the validated local archive and reset
+  backup under `campaigns/evaluations/`;
 - the scientific model used by the prepared source.
 
 Preserves the current harness, protocol, instrument catalog, protected runtime,
@@ -82,3 +88,5 @@ state already matches Git, no redundant commit is created.
 Versioned and ignored reset targets are included in the validated recovery
 backup. The reset reports the backup location after success and an executable
 recovery command after failure.
+Raw measurements remain local and ignored during reset publication and
+recovery. Neither path force-adds `campaigns/evaluations/` to Git.

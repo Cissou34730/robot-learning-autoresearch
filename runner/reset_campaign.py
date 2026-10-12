@@ -456,7 +456,9 @@ def artifact_fingerprint_at_commit(commit: str, artifact: str) -> str:
     return digest.hexdigest()
 
 
-def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
+def baseline_restore_paths(
+    commit: str, candidate: dict, source_state: dict
+) -> list[str]:
     artifact = validate_artifact_directory(str(candidate["artifact"]).rstrip("/"))
     evaluation_artifacts = [
         validate_evaluation_artifact_path(relative)
@@ -464,12 +466,71 @@ def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
     ]
     if not evaluation_artifacts:
         raise ValueError(
-            "BaselineRef candidate requires at least one committed evaluation artifact"
+            "BaselineRef candidate requires at least one preserved evaluation artifact"
         )
+    records_by_path: dict[str, list[dict]] = {}
+
+    def collect_records(state: dict) -> None:
+        missing = set(evaluation_artifacts) - records_by_path.keys()
+        for event in state["operation_events"]:
+            if event["kind"] != "measurement" or event["status"] != "completed":
+                continue
+            for measurement in event["result"]["measurements"]:
+                metrics = measurement["metrics"]
+                relative = metrics.get("evaluation_artifact")
+                if (
+                    measurement.get("candidate_id") == candidate["id"]
+                    and relative in missing
+                ):
+                    records_by_path.setdefault(relative, []).append(metrics)
+
+    collect_records(source_state)
+    if len(records_by_path) != len(set(evaluation_artifacts)):
+        revisions = str(
+            git(
+                "log",
+                "--format=%H",
+                "--first-parent",
+                "--diff-filter=AM",
+                commit,
+                "--",
+                "runner/state/research_state.json",
+            )
+        ).splitlines()
+        for revision in revisions:
+            if revision == commit:
+                continue
+            historical_state = git_json(revision, "runner/state/research_state.json")
+            if (
+                historical_state.get("schema_version")
+                != repository.STATE_SCHEMA_VERSION
+            ):
+                break
+            collect_records(historical_state)
+            if len(records_by_path) == len(set(evaluation_artifacts)):
+                break
+    for relative in evaluation_artifacts:
+        records = records_by_path.get(relative)
+        if not records:
+            raise ValueError(
+                f"BaselineRef has no completed measurement record for {relative}"
+            )
+        artifact_path = safe_path(relative)
+        if not artifact_path.is_file():
+            raise ValueError(
+                f"BaselineRef requires its preserved local measurement artifact: {relative}"
+            )
+        fingerprint = repository.file_fingerprint(artifact_path)
+        if any(
+            record["evaluation_artifact_fingerprint"] != fingerprint
+            for record in records
+        ):
+            raise ValueError(
+                f"BaselineRef local measurement fingerprint mismatch: {relative}"
+            )
     source = commit_files(commit)
     required = {
         *(f"{artifact}/{name}" for name in repository.INFERENCE_ARTIFACT_FILES),
-        *evaluation_artifacts,
         "pi_workspace/scientific_model.md",
     }
     missing = sorted(required - source)
@@ -511,7 +572,7 @@ def verify_baseline_source(commit: str) -> tuple[dict, dict, list[str], dict]:
     scientific_commit = str(candidate["scientific_commit"])
     resolve_commit(scientific_commit, "BaselineRef scientific_commit")
     verify_task_compatibility(scientific_commit)
-    restore = baseline_restore_paths(commit, candidate)
+    restore = baseline_restore_paths(commit, candidate, state)
     actual_fingerprint = artifact_fingerprint_at_commit(
         commit, str(candidate["artifact"])
     )
@@ -573,6 +634,9 @@ def publish_reset_changes(
     scope: list[str],
     purpose: str,
 ) -> str | None:
+    scope = [
+        path for path in scope if not repository.is_local_measurement_artifact(path)
+    ]
     forced = [
         path
         for path in scope
@@ -580,7 +644,6 @@ def publish_reset_changes(
         and path.startswith(
             (
                 "campaigns/checkpoints",
-                "campaigns/evaluations",
                 "campaigns/training_logs",
                 "models/",
             )
@@ -729,7 +792,12 @@ def restore_backup_files(operation_path: Path, operation: dict) -> None:
 def tracked_recovery_paths(operation: dict) -> list[str]:
     targets = operation["targeted_paths"]
     tracked = commit_files(operation["original_head"]) | commit_files("HEAD")
-    return sorted(path for path in tracked if path_is_covered(path, targets))
+    return sorted(
+        path
+        for path in tracked
+        if path_is_covered(path, targets)
+        and not repository.is_local_measurement_artifact(path)
+    )
 
 
 def recover_reset(operation_path: str) -> tuple[Path, str | None, bool]:
@@ -862,7 +930,7 @@ def baseline_state(
 ) -> dict:
     if not candidate["evaluation_artifacts"]:
         raise ValueError(
-            "imported candidate requires at least one committed evaluation artifact"
+            "imported candidate requires at least one preserved evaluation artifact"
         )
     state = empty_state(base_commit, recipe_source)
     candidate_id = str(candidate["id"])
@@ -948,6 +1016,10 @@ def reset_baseline(reference: str) -> tuple[str, str, Path]:
             "recipe",
         )
         apply_restore(source, restore)
+        for relative in candidate["evaluation_artifacts"]:
+            target = safe_path(relative)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(backup / "files" / relative, target)
         state = baseline_state(
             source_state,
             candidate,

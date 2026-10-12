@@ -486,6 +486,12 @@ The inventory has a bounded metadata size.
 `fields_omitted` and `field_count` identify an array whose field list did not fit.
 An untruncated inventory still describes structure, not the full evidence.
 The full artifact remains unchanged at its recorded path.
+Raw measurement files remain in the fixed local archive
+`campaigns/evaluations/<current-campaign-id>/`, which Git ignores.
+Runner publishes compact operation facts, artifact paths and fingerprints,
+not raw artifact contents. The evidence reader still verifies and reads those
+local files. A Git checkout alone does not contain the full measurement data.
+Publication failures retain Git's specific error and stop without re-execution.
 
 This metadata applies to all measurement instruments.
 It does not require a scenario-specific section or field.

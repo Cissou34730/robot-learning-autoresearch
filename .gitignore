@@ -49,6 +49,9 @@ node_modules/
 # Human reports and campaign-scoped session accounting, never Researcher context
 reports/
 
+# Raw measurement artifacts stay in the local campaign archive, not Git.
+campaigns/evaluations/
+
 # Transient runner controls and generated summaries
 campaigns/training_logs/
 runner/state/last_train_summary.md
