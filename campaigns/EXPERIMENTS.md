@@ -95,3 +95,4 @@
 | E51 | checkpoint | I12 | checkpointed |
 | E52 | inquiry | I13 | completed |
 | E53 | checkpoint | - | checkpointed |
+| M32 | measurement | I13 | completed |
