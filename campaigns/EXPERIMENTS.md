@@ -79,3 +79,4 @@
 | M27 | measurement | I10 | completed |
 | E42 | inquiry | I10 | completed |
 | E43 | checkpoint | I10 | checkpointed |
+| E44 | inquiry | I11 | completed |

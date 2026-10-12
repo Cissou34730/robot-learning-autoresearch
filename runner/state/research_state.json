@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a newly trained route and selected checkpoint have been compared with T4 on the same non-overlapping complete-episode development panel, with per-episode first reach, maximum held steps, interruptions, and full traces inspected. A positive result requires improved complete-episode success without a new acquisition collapse; a negative or limited result is sufficient if the route fails to improve the residual or trades hold improvement for loss of acquisition, and the next direction is recorded.",
+    "goal_connection": "The official objective requires at least 196 complete uninterrupted 100-step holds in 200 episodes. T4 has demonstrated 153/160 development successes, leaving seven failures split between three no-first-reach and four reach-then-interrupt episodes. A route that preserves acquisition while improving uninterrupted regulation could change the candidate's prospect of meeting the official threshold; the tested T7 route is not a candidate because it collapsed to zero development success.",
+    "handoff_conclusion": "M27 and its independently verified artifact measured T7 and T4 on identical 12 target seeds with independent resets, the official 20 ms action hold, direct clipping, live transitions, and complete time-resolved traces. T7 achieved 0/12, including ten no-first-reach cases and two two-step interrupted holds; T4 achieved 10/12 on the same targets. Both routes showed comparable first-step saturated escape and informative plant motion, while T7 commonly reduced control and endpoint/joint velocity to near zero by steps 25-100 while remaining outside the target; T4 sustained coordinated motion and acquired. T7 showed no consistent panel-wide joint-limit signature, though isolated near-limit states remain possible. The bounded interpretation is that a route-specific policy/runtime or reward-control learning collapse stabilized a non-acquiring behavior, not that the compiled plant was shown unable to acquire. The comparison cannot isolate reward timing from learning exposure/runtime because those factors changed together. This supports developing a new acquisition-capable learned route and preserves complete-hold measurement as the selection criterion; it does not establish that any intervention will improve T4 or reach 98%.",
+    "handoff_question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+    "handoff_source_session_id": "S21",
+    "id": "I11",
+    "opened_in_session": "S22",
+    "question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+    "rationale": "Official assessment would terminate the campaign on a candidate known to be below the goal threshold. Further work has credible value because the residual is small enough to target but mechanistically mixed. M27 supports treating T7's low-action behavior as route-specific rather than a shared plant impossibility, while T4's matched diagnostics show both acquisition and hold failures. The prior evidence does not isolate reward timing, exposure, and runtime, so this inquiry tests a new goal-linked route at the artifact level and preserves the complete-hold selection criterion rather than attributing success to any single changed factor.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -5743,16 +5754,16 @@
     }
   },
   "counters": {
-    "event": 43,
-    "inquiry": 10,
+    "event": 44,
+    "inquiry": 11,
     "measurement": 27,
-    "session": 21,
+    "session": 22,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -16461,9 +16472,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T00:36:57Z",
+      "error": null,
+      "id": "E44",
+      "inquiry_id": "I11",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a newly trained route and selected checkpoint have been compared with T4 on the same non-overlapping complete-episode development panel, with per-episode first reach, maximum held steps, interruptions, and full traces inspected. A positive result requires improved complete-episode success without a new acquisition collapse; a negative or limited result is sufficient if the route fails to improve the residual or trades hold improvement for loss of acquisition, and the next direction is recorded.",
+        "goal_connection": "The official objective requires at least 196 complete uninterrupted 100-step holds in 200 episodes. T4 has demonstrated 153/160 development successes, leaving seven failures split between three no-first-reach and four reach-then-interrupt episodes. A route that preserves acquisition while improving uninterrupted regulation could change the candidate's prospect of meeting the official threshold; the tested T7 route is not a candidate because it collapsed to zero development success.",
+        "question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+        "rationale": "Official assessment would terminate the campaign on a candidate known to be below the goal threshold. Further work has credible value because the residual is small enough to target but mechanistically mixed. M27 supports treating T7's low-action behavior as route-specific rather than a shared plant impossibility, while T4's matched diagnostics show both acquisition and hold failures. The prior evidence does not isolate reward timing, exposure, and runtime, so this inquiry tests a new goal-linked route at the artifact level and preserves the complete-hold selection criterion rather than attributing success to any single changed factor."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      },
+      "session_id": "S22",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a newly trained route and selected checkpoint have been compared with T4 on the same non-overlapping complete-episode development panel, with per-episode first reach, maximum held steps, interruptions, and full traces inspected. A positive result requires improved complete-episode success without a new acquisition collapse; a negative or limited result is sufficient if the route fails to improve the residual or trades hold improvement for loss of acquisition, and the next direction is recorded.",
+          "goal_connection": "The official objective requires at least 196 complete uninterrupted 100-step holds in 200 episodes. T4 has demonstrated 153/160 development successes, leaving seven failures split between three no-first-reach and four reach-then-interrupt episodes. A route that preserves acquisition while improving uninterrupted regulation could change the candidate's prospect of meeting the official threshold; the tested T7 route is not a candidate because it collapsed to zero development success.",
+          "handoff_conclusion": "M27 and its independently verified artifact measured T7 and T4 on identical 12 target seeds with independent resets, the official 20 ms action hold, direct clipping, live transitions, and complete time-resolved traces. T7 achieved 0/12, including ten no-first-reach cases and two two-step interrupted holds; T4 achieved 10/12 on the same targets. Both routes showed comparable first-step saturated escape and informative plant motion, while T7 commonly reduced control and endpoint/joint velocity to near zero by steps 25-100 while remaining outside the target; T4 sustained coordinated motion and acquired. T7 showed no consistent panel-wide joint-limit signature, though isolated near-limit states remain possible. The bounded interpretation is that a route-specific policy/runtime or reward-control learning collapse stabilized a non-acquiring behavior, not that the compiled plant was shown unable to acquire. The comparison cannot isolate reward timing from learning exposure/runtime because those factors changed together. This supports developing a new acquisition-capable learned route and preserves complete-hold measurement as the selection criterion; it does not establish that any intervention will improve T4 or reach 98%.",
+          "handoff_question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+          "handoff_source_session_id": "S21",
+          "id": "I11",
+          "opened_in_session": "S22",
+          "question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+          "rationale": "Official assessment would terminate the campaign on a candidate known to be below the goal threshold. Further work has credible value because the residual is small enough to target but mechanistically mixed. M27 supports treating T7's low-action behavior as route-specific rather than a shared plant impossibility, while T4's matched diagnostics show both acquisition and hold failures. The prior evidence does not isolate reward timing, exposure, and runtime, so this inquiry tests a new goal-linked route at the artifact level and preserves the complete-hold selection criterion rather than attributing success to any single changed factor.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E44",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a newly trained route and selected checkpoint have been compared with T4 on the same non-overlapping complete-episode development panel, with per-episode first reach, maximum held steps, interruptions, and full traces inspected. A positive result requires improved complete-episode success without a new acquisition collapse; a negative or limited result is sufficient if the route fails to improve the residual or trades hold improvement for loss of acquisition, and the next direction is recorded.",
+        "goal_connection": "The official objective requires at least 196 complete uninterrupted 100-step holds in 200 episodes. T4 has demonstrated 153/160 development successes, leaving seven failures split between three no-first-reach and four reach-then-interrupt episodes. A route that preserves acquisition while improving uninterrupted regulation could change the candidate's prospect of meeting the official threshold; the tested T7 route is not a candidate because it collapsed to zero development success.",
+        "question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
+        "rationale": "Official assessment would terminate the campaign on a candidate known to be below the goal threshold. Further work has credible value because the residual is small enough to target but mechanistically mixed. M27 supports treating T7's low-action behavior as route-specific rather than a shared plant impossibility, while T4's matched diagnostics show both acquisition and hold failures. The prior evidence does not isolate reward timing, exposure, and runtime, so this inquiry tests a new goal-linked route at the artifact level and preserves the complete-hold selection criterion rather than attributing success to any single changed factor."
+      }
+    },
+    "request_fingerprint": "45a422a8f4a19e4d1782e99edd6db42d1f32e0318b24cc1356f79a8997352b29",
+    "session_id": "S22",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known and is not certified for official assessment. T7:checkpoint-110592 remains rejected for selection because it achieved 0/160 with acquisition-dominated failure. No working or retained role changed. The next route must be compared as a complete learned artifact and must not be inferred from training proxies alone.",
     "completed_operations": [
@@ -16495,6 +16569,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "9f29df50-277b-46d6-bd81-afceee589f95",
+    "id": "S22",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E44"
+    ],
+    "scientific_parent_commit": "311b08b63cdf1b6b62ed8708c562d9dc6f77567c"
+  },
   "terminal_state": null
 }
