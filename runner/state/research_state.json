@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 6,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1045,33 +1045,168 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:25:14Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. M1, M5, and M6 are measurement operations only.",
+        "completed_operations": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "cumulative_resource_use": "One PI-owned laboratory tool and its verification were implemented in the two allowed lab files. Completed measurements: M1 production-path compatibility, M5 bounded behavioral verification, and M6 full characterization. No training steps, candidate archives, model-role assignments, or official assessment resources have been used. Failed implementation attempts were repaired and are not scientific evidence.",
+        "current_goal_gap": "No learned candidate has been trained or measured, so the campaign has no development success rate, hold-failure distribution, or official-goal evidence. The remaining gap is whether a policy can exploit the measured dynamics to enter and regulate inside the 1 cm ball for 100 consecutive control steps across the official 0.06--0.20 m radial distribution.",
+        "current_synthesis": "Observed evidence: M6 loaded the exact XML and recorded compiled timestep 0.002 s, 10-step control interval 0.02 s, joint damping 0.5, armature 0.01, two gear-5 normalized-range motors, and nonzero compiled link masses/inertias. Its deterministic 15-by-32 radius-angle grid contained 960 analytical branch records: all were geometrically feasible, 910 were within the compiled joint ranges, and 50 branch solutions were joint-limit infeasible; the measured worst feasible Jacobian condition number was 5.29 with smallest singular value 0.0415 m/rad. In three representative bounded +1/-1 response sequences, no control step saturated; the full sequences reached up to 10.18 rad/s joint speed and 3.17 m/s endpoint speed, showing high effective authority and a demanding braking/regulation regime. M5 independently verified both IK branches, reset clearing, repeated qpos/qvel updates, sign-changing commands, units, and artifact integrity; M1 verified the MuJoCo production path. Interpretation: the evidence weakens the explanation that policy failure would be caused by generally insufficient actuator authority or a globally singular workspace. It supports the competing explanation that high-speed transient regulation at 50 Hz, together with the narrow 0.14--0.20 m baseline exposure, may dominate hold failures. The 50 branch-level joint-limit exclusions keep a branch-aware geometry explanation consequential, but the grid does not establish target-level infeasibility or policy performance. M6 used open-loop impulses from three configurations, not target-conditioned control, and did not measure complete episodes, between-check excursions, hold interruptions, or learning behavior. Therefore no claim about the 98% goal or even candidate success is established.",
+        "decision_frontier": "The unresolved decision is whether the next bottleneck is (A) generic stabilization/hold learning under fast 20 ms dynamics and underrepresented inner radii, or (B) failures concentrated in target-angle/radius regions where one IK branch violates joint limits. A fresh policy trained with official radial exposure and measured with complete-episode diagnostics would discriminate these routes: first reach, maximum uninterrupted hold, interruptions, endpoint/joint velocity, action saturation, and radius/angle/branch strata. Results showing broad hold interruptions with little saturation would favor stabilization-aware learning or control shaping; failures localized to inner radii or branch-limit regions would favor branch-aware coverage/representation; widespread saturated or unreachable trajectories would reopen the authority/trajectory hypothesis. The current characterization cannot choose among these policy-level alternatives.",
+        "evidence_references": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "human_goal_connection": "The human goal requires one learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 100-control-step hold. M1 established the new measurement path, M5 verified its state-transition and reset behavior, and M6 characterized the fixed embodied system without changing official mechanics. Those measurements select policy learning and hold-behavior evidence as the next route toward the goal; they do not establish any policy success.",
+        "next_direction_or_closure": "Do not request official assessment: no candidate exists and the goal gap is unmeasured. At goal review, open one bounded inquiry on the stated policy-capability question. The first inquiry action should train or adapt a candidate with official 0.06--0.20 m exposure while preserving the official success mechanics, then use complete-episode diagnostics to compare hold regulation with geometry-stratified failures; the measured high-speed responses justify prioritizing stabilization evidence rather than changing the robot or actuator model.",
+        "next_question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. M1, M5, and M6 are measurement operations only.",
+        "completed_operations": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "cumulative_resource_use": "One PI-owned laboratory tool and its verification were implemented in the two allowed lab files. Completed measurements: M1 production-path compatibility, M5 bounded behavioral verification, and M6 full characterization. No training steps, candidate archives, model-role assignments, or official assessment resources have been used. Failed implementation attempts were repaired and are not scientific evidence.",
+        "current_goal_gap": "No learned candidate has been trained or measured, so the campaign has no development success rate, hold-failure distribution, or official-goal evidence. The remaining gap is whether a policy can exploit the measured dynamics to enter and regulate inside the 1 cm ball for 100 consecutive control steps across the official 0.06--0.20 m radial distribution.",
+        "current_synthesis": "Observed evidence: M6 loaded the exact XML and recorded compiled timestep 0.002 s, 10-step control interval 0.02 s, joint damping 0.5, armature 0.01, two gear-5 normalized-range motors, and nonzero compiled link masses/inertias. Its deterministic 15-by-32 radius-angle grid contained 960 analytical branch records: all were geometrically feasible, 910 were within the compiled joint ranges, and 50 branch solutions were joint-limit infeasible; the measured worst feasible Jacobian condition number was 5.29 with smallest singular value 0.0415 m/rad. In three representative bounded +1/-1 response sequences, no control step saturated; the full sequences reached up to 10.18 rad/s joint speed and 3.17 m/s endpoint speed, showing high effective authority and a demanding braking/regulation regime. M5 independently verified both IK branches, reset clearing, repeated qpos/qvel updates, sign-changing commands, units, and artifact integrity; M1 verified the MuJoCo production path. Interpretation: the evidence weakens the explanation that policy failure would be caused by generally insufficient actuator authority or a globally singular workspace. It supports the competing explanation that high-speed transient regulation at 50 Hz, together with the narrow 0.14--0.20 m baseline exposure, may dominate hold failures. The 50 branch-level joint-limit exclusions keep a branch-aware geometry explanation consequential, but the grid does not establish target-level infeasibility or policy performance. M6 used open-loop impulses from three configurations, not target-conditioned control, and did not measure complete episodes, between-check excursions, hold interruptions, or learning behavior. Therefore no claim about the 98% goal or even candidate success is established.",
+        "decision_frontier": "The unresolved decision is whether the next bottleneck is (A) generic stabilization/hold learning under fast 20 ms dynamics and underrepresented inner radii, or (B) failures concentrated in target-angle/radius regions where one IK branch violates joint limits. A fresh policy trained with official radial exposure and measured with complete-episode diagnostics would discriminate these routes: first reach, maximum uninterrupted hold, interruptions, endpoint/joint velocity, action saturation, and radius/angle/branch strata. Results showing broad hold interruptions with little saturation would favor stabilization-aware learning or control shaping; failures localized to inner radii or branch-limit regions would favor branch-aware coverage/representation; widespread saturated or unreachable trajectories would reopen the authority/trajectory hypothesis. The current characterization cannot choose among these policy-level alternatives.",
+        "evidence_references": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "human_goal_connection": "The human goal requires one learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 100-control-step hold. M1 established the new measurement path, M5 verified its state-transition and reset behavior, and M6 characterized the fixed embodied system without changing official mechanics. Those measurements select policy learning and hold-behavior evidence as the next route toward the goal; they do not establish any policy success.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Do not request official assessment: no candidate exists and the goal gap is unmeasured. At goal review, open one bounded inquiry on the stated policy-capability question. The first inquiry action should train or adapt a candidate with official 0.06--0.20 m exposure while preserving the official success mechanics, then use complete-episode diagnostics to compare hold regulation with geometry-stratified failures; the measured high-speed responses justify prioritizing stabilization evidence rather than changing the robot or actuator model.",
+        "next_question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "c9143a55-0b63-4e41-af7d-73309812e3c1",
+        "campaign_id": "659ac6cb-21fe-440b-bdc8-1ea826cb04fd",
+        "campaign_usage": "7m14s | 11.20 AIU | prompt 1.7m (93% cached) | output 41.7k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "4m44s | 8.21 AIU | prompt 1.5m (95% cached) | output 30.1k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ac72e03a6b321d0ec9beb721e669f14e6c5731f5",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. M1, M5, and M6 are measurement operations only.",
+        "completed_operations": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "cumulative_resource_use": "One PI-owned laboratory tool and its verification were implemented in the two allowed lab files. Completed measurements: M1 production-path compatibility, M5 bounded behavioral verification, and M6 full characterization. No training steps, candidate archives, model-role assignments, or official assessment resources have been used. Failed implementation attempts were repaired and are not scientific evidence.",
+        "current_goal_gap": "No learned candidate has been trained or measured, so the campaign has no development success rate, hold-failure distribution, or official-goal evidence. The remaining gap is whether a policy can exploit the measured dynamics to enter and regulate inside the 1 cm ball for 100 consecutive control steps across the official 0.06--0.20 m radial distribution.",
+        "current_synthesis": "Observed evidence: M6 loaded the exact XML and recorded compiled timestep 0.002 s, 10-step control interval 0.02 s, joint damping 0.5, armature 0.01, two gear-5 normalized-range motors, and nonzero compiled link masses/inertias. Its deterministic 15-by-32 radius-angle grid contained 960 analytical branch records: all were geometrically feasible, 910 were within the compiled joint ranges, and 50 branch solutions were joint-limit infeasible; the measured worst feasible Jacobian condition number was 5.29 with smallest singular value 0.0415 m/rad. In three representative bounded +1/-1 response sequences, no control step saturated; the full sequences reached up to 10.18 rad/s joint speed and 3.17 m/s endpoint speed, showing high effective authority and a demanding braking/regulation regime. M5 independently verified both IK branches, reset clearing, repeated qpos/qvel updates, sign-changing commands, units, and artifact integrity; M1 verified the MuJoCo production path. Interpretation: the evidence weakens the explanation that policy failure would be caused by generally insufficient actuator authority or a globally singular workspace. It supports the competing explanation that high-speed transient regulation at 50 Hz, together with the narrow 0.14--0.20 m baseline exposure, may dominate hold failures. The 50 branch-level joint-limit exclusions keep a branch-aware geometry explanation consequential, but the grid does not establish target-level infeasibility or policy performance. M6 used open-loop impulses from three configurations, not target-conditioned control, and did not measure complete episodes, between-check excursions, hold interruptions, or learning behavior. Therefore no claim about the 98% goal or even candidate success is established.",
+        "decision_frontier": "The unresolved decision is whether the next bottleneck is (A) generic stabilization/hold learning under fast 20 ms dynamics and underrepresented inner radii, or (B) failures concentrated in target-angle/radius regions where one IK branch violates joint limits. A fresh policy trained with official radial exposure and measured with complete-episode diagnostics would discriminate these routes: first reach, maximum uninterrupted hold, interruptions, endpoint/joint velocity, action saturation, and radius/angle/branch strata. Results showing broad hold interruptions with little saturation would favor stabilization-aware learning or control shaping; failures localized to inner radii or branch-limit regions would favor branch-aware coverage/representation; widespread saturated or unreachable trajectories would reopen the authority/trajectory hypothesis. The current characterization cannot choose among these policy-level alternatives.",
+        "evidence_references": [
+          "M1",
+          "M5",
+          "M6"
+        ],
+        "human_goal_connection": "The human goal requires one learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 100-control-step hold. M1 established the new measurement path, M5 verified its state-transition and reset behavior, and M6 characterized the fixed embodied system without changing official mechanics. Those measurements select policy learning and hold-behavior evidence as the next route toward the goal; they do not establish any policy success.",
+        "next_direction_or_closure": "Do not request official assessment: no candidate exists and the goal gap is unmeasured. At goal review, open one bounded inquiry on the stated policy-capability question. The first inquiry action should train or adapt a candidate with official 0.06--0.20 m exposure while preserving the official success mechanics, then use complete-episode diagnostics to compare hold regulation with geometry-stratified failures; the measured high-speed responses justify prioritizing stabilization evidence rather than changing the robot or actuator model.",
+        "next_question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?"
+      }
+    },
+    "request_fingerprint": "f97783a382be87fe1f6b0054cce7c8e48a37365863c9f0627bbb4b08d7b3bc24",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. M1, M5, and M6 are measurement operations only.",
+    "completed_operations": [
+      "M1",
+      "M5",
+      "M6"
+    ],
+    "cumulative_resource_use": "One PI-owned laboratory tool and its verification were implemented in the two allowed lab files. Completed measurements: M1 production-path compatibility, M5 bounded behavioral verification, and M6 full characterization. No training steps, candidate archives, model-role assignments, or official assessment resources have been used. Failed implementation attempts were repaired and are not scientific evidence.",
+    "current_goal_gap": "No learned candidate has been trained or measured, so the campaign has no development success rate, hold-failure distribution, or official-goal evidence. The remaining gap is whether a policy can exploit the measured dynamics to enter and regulate inside the 1 cm ball for 100 consecutive control steps across the official 0.06--0.20 m radial distribution.",
+    "current_synthesis": "Observed evidence: M6 loaded the exact XML and recorded compiled timestep 0.002 s, 10-step control interval 0.02 s, joint damping 0.5, armature 0.01, two gear-5 normalized-range motors, and nonzero compiled link masses/inertias. Its deterministic 15-by-32 radius-angle grid contained 960 analytical branch records: all were geometrically feasible, 910 were within the compiled joint ranges, and 50 branch solutions were joint-limit infeasible; the measured worst feasible Jacobian condition number was 5.29 with smallest singular value 0.0415 m/rad. In three representative bounded +1/-1 response sequences, no control step saturated; the full sequences reached up to 10.18 rad/s joint speed and 3.17 m/s endpoint speed, showing high effective authority and a demanding braking/regulation regime. M5 independently verified both IK branches, reset clearing, repeated qpos/qvel updates, sign-changing commands, units, and artifact integrity; M1 verified the MuJoCo production path. Interpretation: the evidence weakens the explanation that policy failure would be caused by generally insufficient actuator authority or a globally singular workspace. It supports the competing explanation that high-speed transient regulation at 50 Hz, together with the narrow 0.14--0.20 m baseline exposure, may dominate hold failures. The 50 branch-level joint-limit exclusions keep a branch-aware geometry explanation consequential, but the grid does not establish target-level infeasibility or policy performance. M6 used open-loop impulses from three configurations, not target-conditioned control, and did not measure complete episodes, between-check excursions, hold interruptions, or learning behavior. Therefore no claim about the 98% goal or even candidate success is established.",
+    "decision_frontier": "The unresolved decision is whether the next bottleneck is (A) generic stabilization/hold learning under fast 20 ms dynamics and underrepresented inner radii, or (B) failures concentrated in target-angle/radius regions where one IK branch violates joint limits. A fresh policy trained with official radial exposure and measured with complete-episode diagnostics would discriminate these routes: first reach, maximum uninterrupted hold, interruptions, endpoint/joint velocity, action saturation, and radius/angle/branch strata. Results showing broad hold interruptions with little saturation would favor stabilization-aware learning or control shaping; failures localized to inner radii or branch-limit regions would favor branch-aware coverage/representation; widespread saturated or unreachable trajectories would reopen the authority/trajectory hypothesis. The current characterization cannot choose among these policy-level alternatives.",
+    "evidence_references": [
+      "M1",
+      "M5",
+      "M6"
+    ],
+    "human_goal_connection": "The human goal requires one learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 100-control-step hold. M1 established the new measurement path, M5 verified its state-transition and reset behavior, and M6 characterized the fixed embodied system without changing official mechanics. Those measurements select policy learning and hold-behavior evidence as the next route toward the goal; they do not establish any policy success.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Do not request official assessment: no candidate exists and the goal gap is unmeasured. At goal review, open one bounded inquiry on the stated policy-capability question. The first inquiry action should train or adapt a candidate with official 0.06--0.20 m exposure while preserving the official success mechanics, then use complete-episode diagnostics to compare hold regulation with geometry-stratified failures; the measured high-speed responses justify prioritizing stabilization evidence rather than changing the robot or actuator model.",
+    "next_question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?",
+    "scientific_commit": "ac72e03a6b321d0ec9beb721e669f14e6c5731f5",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "c5472bc3104c89bebfc2595c941b3513172f04c4",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c9143a55-0b63-4e41-af7d-73309812e3c1",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1",
-      "M5",
-      "M6"
-    ],
-    "scientific_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
