@@ -3298,8 +3298,8 @@
   "counters": {
     "event": 24,
     "inquiry": 6,
-    "measurement": 24,
-    "session": 12,
+    "measurement": 26,
+    "session": 13,
     "training": 4
   },
   "human_goal": {
@@ -12822,9 +12822,172 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T16:07:38Z",
+      "error": "robot_learning/lab/verify_soft_trajectory_reward.py has invalid Python syntax: closing parenthesis ')' does not match opening parenthesis '{' on line 286 (robot_learning/lab/verify_soft_trajectory_reward.py, line 299)",
+      "id": "M25",
+      "inquiry_id": "I6",
+      "kind": "measurement",
+      "request": {
+        "description": "Compatibility verification of the I6 terminal-gated stabilization reward before training.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+              "--compatibility"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+            "instrument": "python_module",
+            "label": "i6-terminal-gated-stabilization-compatibility",
+            "module": "robot_learning.lab.verify_soft_trajectory_reward"
+          }
+        ],
+        "rationale": "The proposed reach-preserving design keeps T2's 11-value observation, full-radius training exposure, PPO/runtime, and weak T4 shaping magnitudes, but gates limit and speed penalties to current distances at or below 0.02 m. This production-path check exercises the actual MuJoCo reset/step and reward calls, repeated controlled transitions, action clipping, the 11-value observation, hold/reset behavior, and both sides of the distance gate. It must fail for the prior ungated T4 implementation or for a gate that is inactive, mis-specified, or applied during approach. It establishes compatibility only, not learning or task performance."
+      },
+      "result": {
+        "error": "robot_learning/lab/verify_soft_trajectory_reward.py has invalid Python syntax: closing parenthesis ')' does not match opening parenthesis '{' on line 286 (robot_learning/lab/verify_soft_trajectory_reward.py, line 299)",
+        "status": "failed"
+      },
+      "session_id": "S13",
+      "status": "failed",
+      "superseded_by": "M26",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+            "--compatibility"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+          "instrument": "python_module",
+          "label": "i6-terminal-gated-stabilization-compatibility",
+          "module": "robot_learning.lab.verify_soft_trajectory_reward"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "fce8da199f1d1c0bc418a9206eca6abc7821b37c",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_soft_trajectory_reward.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "9b754dfe253e84d8e37177414bb37bfda1b63c4da3e031653e5c89b1bf4700de",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M26",
+    "inquiry_id": "I6",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Compatibility verification of the I6 terminal-gated stabilization reward before training.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+              "--compatibility"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/soft_trajectory_reward_compatibility.json",
+            "instrument": "python_module",
+            "label": "i6-terminal-gated-stabilization-compatibility",
+            "module": "robot_learning.lab.verify_soft_trajectory_reward"
+          }
+        ],
+        "rationale": "The proposed reach-preserving design keeps T2's 11-value observation, full-radius training exposure, PPO/runtime, and weak T4 shaping magnitudes, but gates limit and speed penalties to current distances at or below 0.02 m. This production-path check exercises the actual MuJoCo reset/step and reward calls, repeated controlled transitions, action clipping, the 11-value observation, hold/reset behavior, and both sides of the distance gate. It must fail for the prior ungated T4 implementation or for a gate that is inactive, mis-specified, or applied during approach. It establishes compatibility only, not learning or task performance."
+      }
+    },
+    "request_fingerprint": "9f68e1d37caeb47687b681ac307e4dcbc7cd2f937d23ad02308f6e4e92c31c84",
+    "session_id": "S13",
+    "supersedes": "M25"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T4:checkpoint-105472 is a measured limited-negative I5 artifact and is not best-known or retained. T1 and T3 remain earlier measured references. No working or retained candidate exists. The 96 archived checkpoints include unmeasured artifacts, but proxy rank and terminal position do not confer candidate status; the inspected T2 and T4 trajectories provide no stronger unmeasured candidate than T2.",
     "completed_operations": [
@@ -12890,6 +13053,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "74f4ae29-2ec2-4640-bc0f-6a17695902d0",
+    "id": "S13",
+    "inquiry_id": "I6",
+    "kind": "inquiry",
+    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "fce8da199f1d1c0bc418a9206eca6abc7821b37c"
+  },
   "terminal_state": null
 }

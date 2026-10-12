@@ -54,3 +54,4 @@
 | E22 | checkpoint | I5 | checkpointed |
 | E23 | inquiry | I6 | completed |
 | E24 | checkpoint | - | checkpointed |
+| M25 | measurement | I6 | failed |
