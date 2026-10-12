@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after comparing a complete candidate artifact against T2 on the matched 160-episode development panel and inspecting radius-stratified success, failure-class counts, and physics-step hold traces. A positive bounded result requires improvement in never-reached failures with no material regression in any protected radius stratum and no worsening of the continuous-hold readiness proxy; otherwise record the intervention as negative, limited, or inconclusive and carry forward the unresolved protected-evaluator uncertainty.",
+    "goal_connection": "The best-known T2 policy is 150/160 on the fixed development panel, below the 196/200 official objective reference. Its seven never-reached failures are the largest observed residual class and show near-total action saturation and high joint speed. Improving this class while preserving T2's 150 successes is the most credible bounded route to recover the six-or-more episode gap without sacrificing the complete-hold requirement.",
+    "handoff_conclusion": "The initial physical model remains supported in its consequential parts: official targets are kinematically feasible with alternative branches; the fully extended reset is locally rank-one; direct bounded actuation and transient sampled dynamics make reaching, settling, branch selection, and limit margin coupled. T2's matched traces show two residual mechanisms: never-reached cases are high-speed and nearly fully saturated, while reached-but-incomplete cases enter feasible targets with substantial mean limit margin but repeatedly lose the hold. I10 implemented and verified a narrow terminal-only excess joint-speed reward penalty, leaving observations, target distribution, actions, and success semantics unchanged. The complete T8 artifact reduced reached-but-incomplete cases from 3 to 1 and reduced successful-episode saturation fraction and qvel modestly, but it increased never-reached cases from 7 to 20, reduced first reaches from 153 to 140, and regressed all protected radius strata to 32/40, 44/53, 30/31, and 33/36. Its successful-hold mean maximum physics-step excursion was 1.449 cm versus T2's 1.394 cm, so it did not improve the visible continuous-hold readiness proxy. This is a negative complete-artifact result for this terminal reward recipe, not a causal disproof of stabilization-aware control or branch-conditioned control generally. The matched branch-feasibility counts were unchanged overall, so the comparison does not identify branch selection as the cause of the reach loss. The physical consequence that matters next is the tradeoff between terminal settling pressure and the high-speed saturated approach: a future direction must improve the latter without sacrificing both reach coverage and continuous-hold readiness. The protected evaluator remains authoritative; visible physics-step excursions preserve a material readiness uncertainty.",
+    "handoff_question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+    "handoff_source_session_id": "S21",
+    "id": "I11",
+    "opened_in_session": "S22",
+    "question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+    "rationale": "M58's matched diagnostics show T2 never-reached episodes have 99.37% saturated updated rows and mean peak joint speed 13.90 rad/s, while reached-but-incomplete episodes are only three cases. M57/M58 show T8's terminal-only excess-speed penalty reduced reached-but-incomplete cases but increased never-reached failures from 7 to 20, reduced first reaches, and regressed every radius stratum; therefore the exact terminal-only recipe is closed and should not be repeated. A reach-phase intervention that changes approach pressure or trajectory before tolerance is a distinct test of the consequential saturated-approach explanation. The protected evaluator remains unmeasured, so development physics-step containment is a readiness proxy rather than official certification.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -6562,16 +6573,16 @@
     }
   },
   "counters": {
-    "event": 44,
-    "inquiry": 10,
+    "event": 45,
+    "inquiry": 11,
     "measurement": 58,
-    "session": 21,
+    "session": 22,
     "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -28724,9 +28735,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:48:37Z",
+      "error": null,
+      "id": "E45",
+      "inquiry_id": "I11",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after comparing a complete candidate artifact against T2 on the matched 160-episode development panel and inspecting radius-stratified success, failure-class counts, and physics-step hold traces. A positive bounded result requires improvement in never-reached failures with no material regression in any protected radius stratum and no worsening of the continuous-hold readiness proxy; otherwise record the intervention as negative, limited, or inconclusive and carry forward the unresolved protected-evaluator uncertainty.",
+        "goal_connection": "The best-known T2 policy is 150/160 on the fixed development panel, below the 196/200 official objective reference. Its seven never-reached failures are the largest observed residual class and show near-total action saturation and high joint speed. Improving this class while preserving T2's 150 successes is the most credible bounded route to recover the six-or-more episode gap without sacrificing the complete-hold requirement.",
+        "question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+        "rationale": "M58's matched diagnostics show T2 never-reached episodes have 99.37% saturated updated rows and mean peak joint speed 13.90 rad/s, while reached-but-incomplete episodes are only three cases. M57/M58 show T8's terminal-only excess-speed penalty reduced reached-but-incomplete cases but increased never-reached failures from 7 to 20, reduced first reaches, and regressed every radius stratum; therefore the exact terminal-only recipe is closed and should not be repeated. A reach-phase intervention that changes approach pressure or trajectory before tolerance is a distinct test of the consequential saturated-approach explanation. The protected evaluator remains unmeasured, so development physics-step containment is a readiness proxy rather than official certification."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      },
+      "session_id": "S22",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after comparing a complete candidate artifact against T2 on the matched 160-episode development panel and inspecting radius-stratified success, failure-class counts, and physics-step hold traces. A positive bounded result requires improvement in never-reached failures with no material regression in any protected radius stratum and no worsening of the continuous-hold readiness proxy; otherwise record the intervention as negative, limited, or inconclusive and carry forward the unresolved protected-evaluator uncertainty.",
+          "goal_connection": "The best-known T2 policy is 150/160 on the fixed development panel, below the 196/200 official objective reference. Its seven never-reached failures are the largest observed residual class and show near-total action saturation and high joint speed. Improving this class while preserving T2's 150 successes is the most credible bounded route to recover the six-or-more episode gap without sacrificing the complete-hold requirement.",
+          "handoff_conclusion": "The initial physical model remains supported in its consequential parts: official targets are kinematically feasible with alternative branches; the fully extended reset is locally rank-one; direct bounded actuation and transient sampled dynamics make reaching, settling, branch selection, and limit margin coupled. T2's matched traces show two residual mechanisms: never-reached cases are high-speed and nearly fully saturated, while reached-but-incomplete cases enter feasible targets with substantial mean limit margin but repeatedly lose the hold. I10 implemented and verified a narrow terminal-only excess joint-speed reward penalty, leaving observations, target distribution, actions, and success semantics unchanged. The complete T8 artifact reduced reached-but-incomplete cases from 3 to 1 and reduced successful-episode saturation fraction and qvel modestly, but it increased never-reached cases from 7 to 20, reduced first reaches from 153 to 140, and regressed all protected radius strata to 32/40, 44/53, 30/31, and 33/36. Its successful-hold mean maximum physics-step excursion was 1.449 cm versus T2's 1.394 cm, so it did not improve the visible continuous-hold readiness proxy. This is a negative complete-artifact result for this terminal reward recipe, not a causal disproof of stabilization-aware control or branch-conditioned control generally. The matched branch-feasibility counts were unchanged overall, so the comparison does not identify branch selection as the cause of the reach loss. The physical consequence that matters next is the tradeoff between terminal settling pressure and the high-speed saturated approach: a future direction must improve the latter without sacrificing both reach coverage and continuous-hold readiness. The protected evaluator remains authoritative; visible physics-step excursions preserve a material readiness uncertainty.",
+          "handoff_question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+          "handoff_source_session_id": "S21",
+          "id": "I11",
+          "opened_in_session": "S22",
+          "question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+          "rationale": "M58's matched diagnostics show T2 never-reached episodes have 99.37% saturated updated rows and mean peak joint speed 13.90 rad/s, while reached-but-incomplete episodes are only three cases. M57/M58 show T8's terminal-only excess-speed penalty reduced reached-but-incomplete cases but increased never-reached failures from 7 to 20, reduced first reaches, and regressed every radius stratum; therefore the exact terminal-only recipe is closed and should not be repeated. A reach-phase intervention that changes approach pressure or trajectory before tolerance is a distinct test of the consequential saturated-approach explanation. The protected evaluator remains unmeasured, so development physics-step containment is a readiness proxy rather than official certification.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E45",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after comparing a complete candidate artifact against T2 on the matched 160-episode development panel and inspecting radius-stratified success, failure-class counts, and physics-step hold traces. A positive bounded result requires improvement in never-reached failures with no material regression in any protected radius stratum and no worsening of the continuous-hold readiness proxy; otherwise record the intervention as negative, limited, or inconclusive and carry forward the unresolved protected-evaluator uncertainty.",
+        "goal_connection": "The best-known T2 policy is 150/160 on the fixed development panel, below the 196/200 official objective reference. Its seven never-reached failures are the largest observed residual class and show near-total action saturation and high joint speed. Improving this class while preserving T2's 150 successes is the most credible bounded route to recover the six-or-more episode gap without sacrificing the complete-hold requirement.",
+        "question": "Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness?",
+        "rationale": "M58's matched diagnostics show T2 never-reached episodes have 99.37% saturated updated rows and mean peak joint speed 13.90 rad/s, while reached-but-incomplete episodes are only three cases. M57/M58 show T8's terminal-only excess-speed penalty reduced reached-but-incomplete cases but increased never-reached failures from 7 to 20, reduced first reaches, and regressed every radius stratum; therefore the exact terminal-only recipe is closed and should not be repeated. A reach-phase intervention that changes approach pressure or trajectory before tolerance is a distinct test of the consequential saturated-approach explanation. The protected evaluator remains unmeasured, so development physics-step containment is a readiness proxy rather than official certification."
+      }
+    },
+    "request_fingerprint": "98bbe227bb076f2ee6f0c9f31ef502f07029c20a941e719942208546c9bc5f30",
+    "session_id": "S22",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, based on the matched M57/M58 comparison and prior development evidence; it is not an official-assessment result. T8:checkpoint-100352 is rejected as the negative I10 terminal-stabilization candidate. No candidate is working or retained.",
     "completed_operations": [
@@ -28765,6 +28839,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "35d1ab3d-ff2f-4785-959d-fcde5a6d52a5",
+    "id": "S22",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E45"
+    ],
+    "scientific_parent_commit": "8277f4f0e52d9be4e221708a91997f2d0ba63f64"
+  },
   "terminal_state": null
 }
