@@ -1659,7 +1659,7 @@
   "counters": {
     "event": 7,
     "inquiry": 2,
-    "measurement": 11,
+    "measurement": 12,
     "session": 5,
     "training": 2
   },
@@ -4930,9 +4930,1285 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:40:07Z",
+      "error": null,
+      "id": "M12",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Apply the validated schema-6 mechanism analyzer to the complete M11 targeted-exposure evaluation artifact.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M11 targeted-exposure mechanism analysis",
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "rationale": "M11 shows 27.0% development success, so aggregate performance is insufficient to close I2 positively and cannot by itself distinguish persistent no-reach from new sampled-hold or branch-specific failures. The M7-validated analyzer will inspect the complete M11 artifact using the same radius bins, angular sectors, no-reach versus sampled-hold classification, reached-failure interruption and held-run summaries, and branch occupancy/attribution used for M8. This analysis supports a bounded negative or limited conclusion and determines whether the next direction should remain exposure/trajectory work or redirect toward observation/reward/interface, runtime control, dynamics, or another mechanism. It does not establish causal attribution or official performance."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M11 targeted-exposure mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M12-1-m11_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evidence_status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reached_failure_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/validated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/validated_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-180,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-90,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[0,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[90,180]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/overall",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[14,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/max_held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/branch_summaries/failures/branch_at_first_reach",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1b39862c135c56d4f365bec0b858ba005dbcca989eba2ee12e3ac69be8adb25a"
+            },
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+            "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+                "path": "robot_learning/lab/verify_training_exposure.py"
+              }
+            ]
+          },
+          "code_parent_commit": "925b2f378ce179969174fc3291be4454100686fc",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_research_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/m11_mechanism_analysis.json",
+          "instrument": "python_module",
+          "label": "M11 targeted-exposure mechanism analysis",
+          "module": "robot_learning.lab.analyze_research_evaluation"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+            "path": "robot_learning/lab/analyze_research_evaluation.py"
+          },
+          {
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          },
+          {
+            "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+            "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+          },
+          {
+            "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+            "path": "robot_learning/lab/verify_training_exposure.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+          "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+          "manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ]
+        },
+        "code_parent_commit": "925b2f378ce179969174fc3291be4454100686fc",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+            "path": "robot_learning/lab/analyze_research_evaluation.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_research_evaluation.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "M11 targeted-exposure mechanism analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M12-1-m11_mechanism_analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 11,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis",
+                  "type": "string"
+                },
+                {
+                  "path": "/analysis_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_sectors",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/branch_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/evidence_status",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/radius_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reached_failure_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/source_artifact",
+                  "type": "string"
+                },
+                {
+                  "path": "/validated_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/validated_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[-180,-90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[-90,0)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[0,90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[90,180]",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/branch_summaries/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/branch_summaries/overall",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[10,14)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[14,20]",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[6,10)",
+                  "type": "object"
+                },
+                {
+                  "path": "/reached_failure_summaries/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/reached_failure_summaries/hold_interruptions",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/reached_failure_summaries/max_held_steps",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/successes",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/branch_summaries/failures/branch_at_first_reach",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "1b39862c135c56d4f365bec0b858ba005dbcca989eba2ee12e3ac69be8adb25a"
+          },
+          "module": "robot_learning.lab.analyze_research_evaluation"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M11 targeted-exposure mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M12-1-m11_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evidence_status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reached_failure_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/validated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/validated_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-180,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-90,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[0,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[90,180]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/overall",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[14,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/max_held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/branch_summaries/failures/branch_at_first_reach",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1b39862c135c56d4f365bec0b858ba005dbcca989eba2ee12e3ac69be8adb25a"
+            },
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+            "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+                "path": "robot_learning/lab/verify_training_exposure.py"
+              }
+            ]
+          },
+          "code_parent_commit": "925b2f378ce179969174fc3291be4454100686fc",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_research_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M12",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Apply the validated schema-6 mechanism analyzer to the complete M11 targeted-exposure evaluation artifact.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m11-T2-checkpoint-120832-200ep-seed200000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m11_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M11 targeted-exposure mechanism analysis",
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "rationale": "M11 shows 27.0% development success, so aggregate performance is insufficient to close I2 positively and cannot by itself distinguish persistent no-reach from new sampled-hold or branch-specific failures. The M7-validated analyzer will inspect the complete M11 artifact using the same radius bins, angular sectors, no-reach versus sampled-hold classification, reached-failure interruption and held-run summaries, and branch occupancy/attribution used for M8. This analysis supports a bounded negative or limited conclusion and determines whether the next direction should remain exposure/trajectory work or redirect toward observation/reward/interface, runtime control, dynamics, or another mechanism. It does not establish causal attribution or official performance."
+      }
+    },
+    "request_fingerprint": "f64385761a7b10e4d0442d57415a22577c35bb4dd5bea171275ac4a2b290b939",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 is the only archived and development-measured learned candidate. It remains unassigned to working, best-known, or retained roles because its 68.0% development result is far below the human goal and no official assessment is requested. No new candidate has yet been produced in E6.",
     "completed_operations": [
@@ -4981,7 +6257,8 @@
     "operation_ids": [
       "M10",
       "T2",
-      "M11"
+      "M11",
+      "M12"
     ],
     "scientific_parent_commit": "925b2f378ce179969174fc3291be4454100686fc"
   },
