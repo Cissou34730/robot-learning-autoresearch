@@ -25,3 +25,4 @@
 | E10 | inquiry | I2 | completed |
 | E11 | checkpoint | I2 | checkpointed |
 | E12 | inquiry | I3 | completed |
+| E13 | checkpoint | - | checkpointed |
