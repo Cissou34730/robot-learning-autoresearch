@@ -122,6 +122,10 @@ MAIN_WRITE_DENIAL = (
     "Use scientific_coding for bounded scientific source changes."
 )
 CODING_SCOPE_DENIAL = "This action is outside this coding session's exact file scope."
+CODING_PERMISSION_DENIAL = (
+    "Harness authorization failure: the permission request has no matching active "
+    "native-child or main-PI identity. No file access was authorized."
+)
 SHELL_DENIAL = "Shell tools are unavailable in this session; Runner executes checks."
 
 READ_ONLY_GIT = frozenset(
@@ -1579,9 +1583,9 @@ def build_handlers(
 
     def on_event(event) -> None:
         data = event.data
+        if coding is not None:
+            coding.on_event(event)
         if getattr(event, "agent_id", None) is not None and not child_accounting:
-            if coding is not None:
-                coding.on_event(event)
             return
         if isinstance(data, AssistantMessageDeltaData):
             console.delta(data.delta_content or "")
@@ -1595,8 +1599,6 @@ def build_handlers(
         # not routed: the console reports the work a session did, not the text it
         # thought through on the way there.
         elif isinstance(data, ToolExecutionStartData):
-            if coding is not None:
-                coding.calls[data.tool_call_id] = None
             console.tool(data.tool_name, data.arguments, data.tool_call_id)
         elif isinstance(data, ToolExecutionCompleteData):
             tool = console.active_tools.pop(data.tool_call_id, None)
@@ -1642,16 +1644,18 @@ def build_handlers(
                 finished.set()
 
     def on_permission_request(request, invocation):
-        del invocation
         if operations is not None and (operations.busy or operations.closed):
             return PermissionDecisionReject(
                 feedback="Runner is executing or this bounded session has ended."
             )
+        scope = None
+        if coding is not None:
+            try:
+                scope = coding.permission_scope(request, invocation)
+            except ValueError:
+                console.denied(CODING_PERMISSION_DENIAL, getattr(request, "tool_call_id", None))
+                return PermissionDecisionReject(feedback=CODING_PERMISSION_DENIAL)
         if isinstance(request, PermissionRequestRead):
-            scope = (
-                coding.permission_scope(getattr(request, "tool_call_id", None))
-                if coding is not None else None
-            )
             native_paths = frozenset(scope["read_paths"]) if scope is not None else read_paths
             reason = (
                 CODING_SCOPE_DENIAL
@@ -1669,10 +1673,6 @@ def build_handlers(
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
         elif isinstance(request, PermissionRequestWrite):
-            scope = (
-                coding.permission_scope(getattr(request, "tool_call_id", None))
-                if coding is not None else None
-            )
             reason = scoped_edit_denial(
                 request.file_name,
                 preliminary=preliminary,
@@ -1887,7 +1887,7 @@ class ScientificCoding:
         self.stop_response = ""
         self.stop_challenges = 0
         self.child_error = None
-        self.calls: dict[str, str | None] = {}
+        self.permission_requests: dict[int, tuple[object, str | None, dict | None]] = {}
         self.native_accounting: dict = {}
         self.cancellation_unconfirmed = False
         self.quiescent = False
@@ -1956,8 +1956,8 @@ class ScientificCoding:
 
     def on_event(self, event) -> None:
         from copilot.session_events import (
+            PermissionRequestedData,
             SubagentCompletedData, SubagentFailedData, SubagentStartedData,
-            ToolExecutionStartData,
         )
 
         data = event.data
@@ -1965,10 +1965,14 @@ class ScientificCoding:
         if isinstance(data, SubagentStartedData) and self.busy:
             if data.agent_name == "scientific-coder" and self.active_handle is None:
                 self.active_handle = handle or data.tool_call_id
+        if isinstance(data, PermissionRequestedData) and not data.resolved_by_hook:
+            # SDK dispatches this event before its callback, using the same request object.
+            self.permission_requests[id(data.permission_request)] = (
+                data.permission_request, handle,
+                self.binding if self.busy and handle == self.active_handle else None,
+            )
         if handle != self.active_handle or not self.busy:
             return
-        if isinstance(data, ToolExecutionStartData):
-            self.calls[data.tool_call_id] = handle
         if self.child_events is not None:
             self.child_events(event)
         if isinstance(data, (SubagentCompletedData, SubagentFailedData)):
@@ -2010,13 +2014,24 @@ class ScientificCoding:
             # SDK hook exceptions otherwise fail open. Malformed calls must not.
             return {"permissionDecision": "deny", "permissionDecisionReason": CODING_SCOPE_DENIAL}
 
-    def permission_scope(self, call_id: str | None) -> dict | None:
+    def permission_scope(self, request, invocation) -> dict | None:
+        record = self.permission_requests.pop(id(request), None)
+        if (
+            record is None or record[0] is not request or self.closed
+            or not isinstance(invocation, dict)
+            or invocation.get("session_id") != self.args.session_id
+        ):
+            raise ValueError(CODING_PERMISSION_DENIAL)
+        _, handle, binding = record
+        if handle is None and not self.busy:
+            return None
         if (
             self.busy and self.binding is not None
-            and call_id is not None and self.calls.get(call_id) == self.active_handle
+            and handle is not None and handle == self.active_handle
+            and binding is self.binding
         ):
             return self.binding
-        return None
+        raise ValueError(CODING_PERMISSION_DENIAL)
 
     def start_hook(self, request, invocation):
         if (
@@ -2161,6 +2176,7 @@ class ScientificCoding:
         )
         self.active_handle = params.session_handle
         self.binding = binding
+        self.permission_requests.clear()
         self.completed.clear()
         self.stop_response = ""
         self.stop_challenges = 0

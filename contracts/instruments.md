@@ -101,7 +101,11 @@ reported rather than falling back to manual coding sessions.
 The default/main agent excludes file-write tools. The registered coder has
 scoped `view` and `apply_patch` only; it cannot execute code, delegate further
 or submit campaign operations. Hooks and permission callbacks bind its calls
-to the authorized native child and file scope. Native start instructions
+to the authorized native child and file scope.
+Permission callbacks use the native permission event's identity and current
+file binding, not the arrival of a tool-start event. Unknown or stale identities
+fail closed with a harness authorization error.
+Native start instructions
 include the installed scientific API versions and dependency restrictions.
 Completion handling challenges an incomplete engineering handoff, not
 scientific adequacy or research direction.

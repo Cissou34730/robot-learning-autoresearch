@@ -298,6 +298,25 @@ Timeouts and cancellation preserve actual partial changes for review.
 Usage and diffs are per invocation; native task-lifetime totals are labeled
 separately rather than added again on each correction.
 
+#### Native permission ordering repair
+
+The stopped `5da30677` campaign exposed a false write rejection of its
+authorized coding child. The native permission event arrived at
+06:44:42.249Z, nine milliseconds before the corresponding tool-start event.
+The adapter populated its child authorization lookup only at tool start.
+The permission callback therefore missed the child scope and applied the
+ordinary main-PI write prohibition. The tool-call identity was present.
+This was a harness event-ordering defect, not a human rejection.
+
+Permission authorization now uses the SDK permission event's native identity
+and the current exact-file binding. SDK 1.0.19 schedules the callback after
+its synchronous event handlers and passes the same permission-request object.
+The adapter consumes that identity once. Unknown callers, stale bindings,
+closed contexts and out-of-scope paths remain denied. Main PI write tools
+remain unavailable. An identity failure reports a harness authorization error.
+An inert replay exercises the actual SDK dispatcher without model inference,
+source writes or Runner execution. Campaign reliability remains unmeasured.
+
 Copilot is the selected agent runtime, not a drop-in model-provider interface.
 Scientific operations, evidence resolution and parsing remain ordinary harness
 functions, exposed through SDK wrappers. OpenCode keeps its legacy interfaces,
