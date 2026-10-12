@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a fresh candidate using the targeted official-radius and difficult-angle exposure has been produced and its complete development artifact is evaluated with the retained branch diagnostics on a non-overlapping 200-episode panel, then compare overall success, no-reach versus sampled-hold failures, radius/angle strata, and reached-episode hold interruptions against M4. A positive bounded conclusion requires materially fewer no-reach failures in the 6-14 cm and difficult-angle regions without loss of the baseline's outer-radius sampled-hold performance; a negative or limited conclusion records persistent no-reach or new hold deficits and redirects the next decision toward observations, reward/interface, runtime control, or another tested mechanism. This inquiry does not certify the protected official panel or continuous between-check containment.",
     "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds under targets uniformly spanning 6-20 cm and the full angular range. The only evaluated candidate achieved 136/200 on a distinct development panel, with 56 of 64 failures classified as no-reach and strong radius/angle stratification. A fresh candidate with exposure covering the omitted inner radii and difficult angular trajectories can directly test whether this high-contribution deficit is improved before any protected assessment is committed.",
-    "handoff_conclusion": "Established observations: M1 passed controlled implementation checks for equilibrium, bounded actuation, repeatability and reset states. M2 measured local actuation and passive decay in representative controlled postures, but did not establish learned reach, braking, sampled-hold sustainment, or official-distribution behavior. T1 trained a fresh PPO baseline for 120832 actual steps using the existing 14-20 cm training exposure. M3 verified the production-path branch diagnostics without changing task success semantics. M4 evaluated archived candidate T1:checkpoint-115712 on a fresh 200-episode development panel and observed 136 successes. M7 independently verified the strict schema-6 analysis tool on controlled synthetic inputs, including radius and angle boundaries and malformed-artifact rejection. M8 analyzed M4: 64 failures comprised 56 no-reach failures and 8 sampled-hold failures; no-reach failures were 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm, while success rates were 34.6%, 57.4% and 95.4% respectively. The angular sectors also differed strongly, from 50.9% success in [-90,0) to 94.4% in [90,180]. All 8 reached failures had hold interruptions, with maximum held runs from 1 to 87 steps (median 8), versus the required 100 checks. Branch diagnostics attributed every reached episode to the open branch; failure control-step occupancy was 99.5% open, with only 36 switches across 64 failure episodes. Interpretation: this baseline artifact is dominated by reach/generalization failure in the omitted inner-radius and difficult-angle regions, not by hold regulation or folded-branch occupancy. This is not a causal proof that exposure omission caused the failures: training exposure, learned trajectories and artifact properties are confounded, and development sampled checks do not certify continuous containment or the protected panel. The tested implementation supports an exposure/trajectory direction; it does not disprove other learning methods or establish that broader exposure will reach the goal.",
+    "handoff_conclusion": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 characterized compiled dynamics and local actuation/passive decay but did not establish learned reach or hold behavior. T1 trained a fresh PPO candidate for 120832 actual steps with the outer 14-20 cm training exposure. Its training proxy rose late to approximately 0.94-0.97 success-rate values under that exposure, but this is not development evidence. M3 verified production-path branch diagnostics without changing task-success semantics. M4 evaluated T1:checkpoint-115712 on a fresh 200-episode development panel at 68.0%. M7 verified the strict schema-6 analysis tool. M8 found 56/64 failures were no-reach, with 30/34 failures at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; success was 34.6%, 57.4%, and 95.4% in those bins. Angular success ranged from 50.9% in [-90,0) to 94.4% in [90,180]. The 8 reached failures all interrupted sampled hold, with maximum held runs from 1 to 87 checks, while failure occupancy was 99.5% open branch with no reached failure attributed to the folded branch. Interpretation revised at this goal review: M8 establishes radius/angle-stratified no-reach failure in this artifact, not causal 'generalization failure.' The late outer-exposure training proxy is consistent with an out-of-exposure deficit but cannot separate exposure causality from learned trajectory, reward/interface, observation, or runtime effects. The physical model predicts that reset from the extended pose makes inner-radius contraction and large-angle motion more demanding, and that bounded coupled dynamics can make braking a secondary failure source. The present evidence makes exposure/trajectory the highest-contribution next comparison, while preserving sampled-hold success as a non-regression discriminator. Competing explanations remain consequential: persistent no-reach after targeted exposure would redirect toward observation/reward/interface or runtime control; new reached interruptions would elevate stabilization, dynamics, timing, or action authority; branch/contact work is not currently supported because reached episodes were open-branch attributed. Unmeasured substep excursions remain a limitation of both development evidence and this inquiry, but cannot by themselves justify official assessment or a separate inquiry before the dominant sampled outcome is improved.",
     "handoff_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 2,
     "measurement": 8,
     "session": 4,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3169,23 +3169,163 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:29:35Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-115712 is the only archived and development-measured learned candidate. It remains unassigned to working, best-known, or retained roles because its 68.0% development result is far below the human goal and no official assessment is requested. No new candidate has yet been produced in E6.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Completed campaign resources before this checkpoint: one fresh training operation T1, requested 120000 and completed 120832 actual steps; six measurements including M1, M2, M3, M4, M7, and M8; inquiry I1 with E2/E4; and goal-review inquiry opening E6. The current session completed only E6. No official assessment, model-role assignment, or retained candidate exists.",
+        "current_goal_gap": "The only evaluated candidate, T1:checkpoint-115712, achieved 136/200 (68.0%) on the fresh M4 development panel and has no assigned model role. Its 64 failures comprised 56 no-reach and 8 sampled-hold failures. No protected official result exists, and continuous between-control-check containment remains unmeasured. The candidate-level deficit is therefore far above the 4-failure budget and cannot support official assessment.",
+        "current_synthesis": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 characterized compiled dynamics and local actuation/passive decay but did not establish learned reach or hold behavior. T1 trained a fresh PPO candidate for 120832 actual steps with the outer 14-20 cm training exposure. Its training proxy rose late to approximately 0.94-0.97 success-rate values under that exposure, but this is not development evidence. M3 verified production-path branch diagnostics without changing task-success semantics. M4 evaluated T1:checkpoint-115712 on a fresh 200-episode development panel at 68.0%. M7 verified the strict schema-6 analysis tool. M8 found 56/64 failures were no-reach, with 30/34 failures at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; success was 34.6%, 57.4%, and 95.4% in those bins. Angular success ranged from 50.9% in [-90,0) to 94.4% in [90,180]. The 8 reached failures all interrupted sampled hold, with maximum held runs from 1 to 87 checks, while failure occupancy was 99.5% open branch with no reached failure attributed to the folded branch. Interpretation revised at this goal review: M8 establishes radius/angle-stratified no-reach failure in this artifact, not causal 'generalization failure.' The late outer-exposure training proxy is consistent with an out-of-exposure deficit but cannot separate exposure causality from learned trajectory, reward/interface, observation, or runtime effects. The physical model predicts that reset from the extended pose makes inner-radius contraction and large-angle motion more demanding, and that bounded coupled dynamics can make braking a secondary failure source. The present evidence makes exposure/trajectory the highest-contribution next comparison, while preserving sampled-hold success as a non-regression discriminator. Competing explanations remain consequential: persistent no-reach after targeted exposure would redirect toward observation/reward/interface or runtime control; new reached interruptions would elevate stabilization, dynamics, timing, or action authority; branch/contact work is not currently supported because reached episodes were open-branch attributed. Unmeasured substep excursions remain a limitation of both development evidence and this inquiry, but cannot by themselves justify official assessment or a separate inquiry before the dominant sampled outcome is improved.",
+        "decision_frontier": "The consequential unresolved distinction is whether a fresh policy trained with official 6-20 cm radius exposure and targeted difficult-angle trajectories produces a materially better complete artifact, specifically fewer no-reach failures in 6-14 cm and difficult-angle strata while preserving the baseline's strong outer-radius sampled-hold behavior. A matched complete-artifact comparison with the same diagnostic fields can support continuing exposure/trajectory development if that pattern appears, or redirect toward observations, reward/interface, runtime control, or another mechanism if no-reach persists or hold reliability regresses. This is a candidate comparison, not causal proof of exposure alone, because the fresh training run changes learned weights and trajectories together. Dynamic authority, branch/contact feasibility, and continuous between-check containment remain unresolved; they would revise the route if targeted candidates show late hold failures, folded/contact correlations, or a need for finer hold robustness, respectively.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "M4",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes in the protected 200-episode official panel, where each success is a complete uninterrupted 2-second hold for targets uniformly distributed over 6-20 cm and all angles. The current candidate is not suitable for terminal assessment; E6 opens one bounded comparison intended to remove the largest observed development deficit before any official commitment.",
+        "next_direction_or_closure": "E6 opens inquiry I2. In the fresh inquiry session, implement or restore only a controlled training recipe that actually exposes the official 6-20 cm radii and difficult angular/trajectory regions while preserving the validated diagnostic evaluator, train a fresh candidate within the maintainer allocation, select a decision-relevant checkpoint rather than assuming the terminal checkpoint is best, and evaluate the complete artifact on a non-overlapping 200-episode development panel. Close I2 only after comparing overall success, radius/angle failure strata, no-reach versus sampled-hold failure counts, and reached-episode hold interruptions against M4; do not treat the result as official certification.",
+        "next_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e31126885a461ef208efadbe8f69a3c298a4841b",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-115712 is the only archived and development-measured learned candidate. It remains unassigned to working, best-known, or retained roles because its 68.0% development result is far below the human goal and no official assessment is requested. No new candidate has yet been produced in E6.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Completed campaign resources before this checkpoint: one fresh training operation T1, requested 120000 and completed 120832 actual steps; six measurements including M1, M2, M3, M4, M7, and M8; inquiry I1 with E2/E4; and goal-review inquiry opening E6. The current session completed only E6. No official assessment, model-role assignment, or retained candidate exists.",
+        "current_goal_gap": "The only evaluated candidate, T1:checkpoint-115712, achieved 136/200 (68.0%) on the fresh M4 development panel and has no assigned model role. Its 64 failures comprised 56 no-reach and 8 sampled-hold failures. No protected official result exists, and continuous between-control-check containment remains unmeasured. The candidate-level deficit is therefore far above the 4-failure budget and cannot support official assessment.",
+        "current_synthesis": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 characterized compiled dynamics and local actuation/passive decay but did not establish learned reach or hold behavior. T1 trained a fresh PPO candidate for 120832 actual steps with the outer 14-20 cm training exposure. Its training proxy rose late to approximately 0.94-0.97 success-rate values under that exposure, but this is not development evidence. M3 verified production-path branch diagnostics without changing task-success semantics. M4 evaluated T1:checkpoint-115712 on a fresh 200-episode development panel at 68.0%. M7 verified the strict schema-6 analysis tool. M8 found 56/64 failures were no-reach, with 30/34 failures at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; success was 34.6%, 57.4%, and 95.4% in those bins. Angular success ranged from 50.9% in [-90,0) to 94.4% in [90,180]. The 8 reached failures all interrupted sampled hold, with maximum held runs from 1 to 87 checks, while failure occupancy was 99.5% open branch with no reached failure attributed to the folded branch. Interpretation revised at this goal review: M8 establishes radius/angle-stratified no-reach failure in this artifact, not causal 'generalization failure.' The late outer-exposure training proxy is consistent with an out-of-exposure deficit but cannot separate exposure causality from learned trajectory, reward/interface, observation, or runtime effects. The physical model predicts that reset from the extended pose makes inner-radius contraction and large-angle motion more demanding, and that bounded coupled dynamics can make braking a secondary failure source. The present evidence makes exposure/trajectory the highest-contribution next comparison, while preserving sampled-hold success as a non-regression discriminator. Competing explanations remain consequential: persistent no-reach after targeted exposure would redirect toward observation/reward/interface or runtime control; new reached interruptions would elevate stabilization, dynamics, timing, or action authority; branch/contact work is not currently supported because reached episodes were open-branch attributed. Unmeasured substep excursions remain a limitation of both development evidence and this inquiry, but cannot by themselves justify official assessment or a separate inquiry before the dominant sampled outcome is improved.",
+        "decision_frontier": "The consequential unresolved distinction is whether a fresh policy trained with official 6-20 cm radius exposure and targeted difficult-angle trajectories produces a materially better complete artifact, specifically fewer no-reach failures in 6-14 cm and difficult-angle strata while preserving the baseline's strong outer-radius sampled-hold behavior. A matched complete-artifact comparison with the same diagnostic fields can support continuing exposure/trajectory development if that pattern appears, or redirect toward observations, reward/interface, runtime control, or another mechanism if no-reach persists or hold reliability regresses. This is a candidate comparison, not causal proof of exposure alone, because the fresh training run changes learned weights and trajectories together. Dynamic authority, branch/contact feasibility, and continuous between-check containment remain unresolved; they would revise the route if targeted candidates show late hold failures, folded/contact correlations, or a need for finer hold robustness, respectively.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "M4",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes in the protected 200-episode official panel, where each success is a complete uninterrupted 2-second hold for targets uniformly distributed over 6-20 cm and all angles. The current candidate is not suitable for terminal assessment; E6 opens one bounded comparison intended to remove the largest observed development deficit before any official commitment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "E6 opens inquiry I2. In the fresh inquiry session, implement or restore only a controlled training recipe that actually exposes the official 6-20 cm radii and difficult angular/trajectory regions while preserving the validated diagnostic evaluator, train a fresh candidate within the maintainer allocation, select a decision-relevant checkpoint rather than assuming the terminal checkpoint is best, and evaluate the complete artifact on a non-overlapping 200-episode development panel. Close I2 only after comparing overall success, radius/angle failure strata, no-reach versus sampled-hold failure counts, and reached-episode hold interruptions against M4; do not treat the result as official certification.",
+        "next_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "01ed4c1b-4a0e-4cbe-b2ae-aea0111cc6ac",
+        "campaign_id": "4702776a-0b97-4740-85d4-a1b52a96b10a",
+        "campaign_usage": "15m34s | 30.56 AIU | prompt 4.3m (89% cached) | output 89.1k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "4731ec276dc4c1beb078c6247f35a1c68b70a46c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-115712 is the only archived and development-measured learned candidate. It remains unassigned to working, best-known, or retained roles because its 68.0% development result is far below the human goal and no official assessment is requested. No new candidate has yet been produced in E6.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Completed campaign resources before this checkpoint: one fresh training operation T1, requested 120000 and completed 120832 actual steps; six measurements including M1, M2, M3, M4, M7, and M8; inquiry I1 with E2/E4; and goal-review inquiry opening E6. The current session completed only E6. No official assessment, model-role assignment, or retained candidate exists.",
+        "current_goal_gap": "The only evaluated candidate, T1:checkpoint-115712, achieved 136/200 (68.0%) on the fresh M4 development panel and has no assigned model role. Its 64 failures comprised 56 no-reach and 8 sampled-hold failures. No protected official result exists, and continuous between-control-check containment remains unmeasured. The candidate-level deficit is therefore far above the 4-failure budget and cannot support official assessment.",
+        "current_synthesis": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 characterized compiled dynamics and local actuation/passive decay but did not establish learned reach or hold behavior. T1 trained a fresh PPO candidate for 120832 actual steps with the outer 14-20 cm training exposure. Its training proxy rose late to approximately 0.94-0.97 success-rate values under that exposure, but this is not development evidence. M3 verified production-path branch diagnostics without changing task-success semantics. M4 evaluated T1:checkpoint-115712 on a fresh 200-episode development panel at 68.0%. M7 verified the strict schema-6 analysis tool. M8 found 56/64 failures were no-reach, with 30/34 failures at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; success was 34.6%, 57.4%, and 95.4% in those bins. Angular success ranged from 50.9% in [-90,0) to 94.4% in [90,180]. The 8 reached failures all interrupted sampled hold, with maximum held runs from 1 to 87 checks, while failure occupancy was 99.5% open branch with no reached failure attributed to the folded branch. Interpretation revised at this goal review: M8 establishes radius/angle-stratified no-reach failure in this artifact, not causal 'generalization failure.' The late outer-exposure training proxy is consistent with an out-of-exposure deficit but cannot separate exposure causality from learned trajectory, reward/interface, observation, or runtime effects. The physical model predicts that reset from the extended pose makes inner-radius contraction and large-angle motion more demanding, and that bounded coupled dynamics can make braking a secondary failure source. The present evidence makes exposure/trajectory the highest-contribution next comparison, while preserving sampled-hold success as a non-regression discriminator. Competing explanations remain consequential: persistent no-reach after targeted exposure would redirect toward observation/reward/interface or runtime control; new reached interruptions would elevate stabilization, dynamics, timing, or action authority; branch/contact work is not currently supported because reached episodes were open-branch attributed. Unmeasured substep excursions remain a limitation of both development evidence and this inquiry, but cannot by themselves justify official assessment or a separate inquiry before the dominant sampled outcome is improved.",
+        "decision_frontier": "The consequential unresolved distinction is whether a fresh policy trained with official 6-20 cm radius exposure and targeted difficult-angle trajectories produces a materially better complete artifact, specifically fewer no-reach failures in 6-14 cm and difficult-angle strata while preserving the baseline's strong outer-radius sampled-hold behavior. A matched complete-artifact comparison with the same diagnostic fields can support continuing exposure/trajectory development if that pattern appears, or redirect toward observations, reward/interface, runtime control, or another mechanism if no-reach persists or hold reliability regresses. This is a candidate comparison, not causal proof of exposure alone, because the fresh training run changes learned weights and trajectories together. Dynamic authority, branch/contact feasibility, and continuous between-check containment remain unresolved; they would revise the route if targeted candidates show late hold failures, folded/contact correlations, or a need for finer hold robustness, respectively.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "M4",
+          "M7",
+          "M8",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes in the protected 200-episode official panel, where each success is a complete uninterrupted 2-second hold for targets uniformly distributed over 6-20 cm and all angles. The current candidate is not suitable for terminal assessment; E6 opens one bounded comparison intended to remove the largest observed development deficit before any official commitment.",
+        "next_direction_or_closure": "E6 opens inquiry I2. In the fresh inquiry session, implement or restore only a controlled training recipe that actually exposes the official 6-20 cm radii and difficult angular/trajectory regions while preserving the validated diagnostic evaluator, train a fresh candidate within the maintainer allocation, select a decision-relevant checkpoint rather than assuming the terminal checkpoint is best, and evaluate the complete artifact on a non-overlapping 200-episode development panel. Close I2 only after comparing overall success, radius/angle failure strata, no-reach versus sampled-hold failure counts, and reached-episode hold interruptions against M4; do not treat the result as official certification.",
+        "next_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?"
+      }
+    },
+    "request_fingerprint": "3de3b360a40c454931b9dddbbbec5637a708283d2a4e626f6d09122f3ba4d701",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-115712 is the evaluated fresh baseline artifact and remains a development candidate only. No working, best-known, or retained role has been assigned. M4's 68.0% development result is not official certification.",
+    "candidates_and_roles": "T1:checkpoint-115712 is the only archived and development-measured learned candidate. It remains unassigned to working, best-known, or retained roles because its 68.0% development result is far below the human goal and no official assessment is requested. No new candidate has yet been produced in E6.",
     "completed_operations": [
-      "T1",
-      "M3",
-      "M4",
-      "M7",
-      "M8",
-      "E4"
+      "E6"
     ],
-    "cumulative_resource_use": "One fresh training run T1 requested the maintainer allocation of 120000 steps and completed at 120832 due to rollout-boundary rounding. Six measurements are recorded in this session: M3 compatibility verification, M4 200-episode development evaluation, M7 analyzer verification, and M8 artifact analysis, plus prior campaign measurements summarized by M1/M2/E2. No official assessment, model-role assignment, or additional training run was performed.",
-    "current_goal_gap": "The only evaluated learned candidate achieved 136/200 successes (68.0%) on a fresh development panel, far below the 196/200 objective. The candidate has not been assessed on the protected official panel. Its dominant development deficit is failure to reach inner-radius and some angular targets, with a smaller sampled-hold deficit after reach. Continuous between-check containment and causal effects of any exposure change remain unmeasured.",
-    "current_synthesis": "Established observations: M1 passed controlled implementation checks for equilibrium, bounded actuation, repeatability and reset states. M2 measured local actuation and passive decay in representative controlled postures, but did not establish learned reach, braking, sampled-hold sustainment, or official-distribution behavior. T1 trained a fresh PPO baseline for 120832 actual steps using the existing 14-20 cm training exposure. M3 verified the production-path branch diagnostics without changing task success semantics. M4 evaluated archived candidate T1:checkpoint-115712 on a fresh 200-episode development panel and observed 136 successes. M7 independently verified the strict schema-6 analysis tool on controlled synthetic inputs, including radius and angle boundaries and malformed-artifact rejection. M8 analyzed M4: 64 failures comprised 56 no-reach failures and 8 sampled-hold failures; no-reach failures were 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm, while success rates were 34.6%, 57.4% and 95.4% respectively. The angular sectors also differed strongly, from 50.9% success in [-90,0) to 94.4% in [90,180]. All 8 reached failures had hold interruptions, with maximum held runs from 1 to 87 steps (median 8), versus the required 100 checks. Branch diagnostics attributed every reached episode to the open branch; failure control-step occupancy was 99.5% open, with only 36 switches across 64 failure episodes. Interpretation: this baseline artifact is dominated by reach/generalization failure in the omitted inner-radius and difficult-angle regions, not by hold regulation or folded-branch occupancy. This is not a causal proof that exposure omission caused the failures: training exposure, learned trajectories and artifact properties are confounded, and development sampled checks do not certify continuous containment or the protected panel. The tested implementation supports an exposure/trajectory direction; it does not disprove other learning methods or establish that broader exposure will reach the goal.",
-    "decision_frontier": "The next consequential comparison is a fresh candidate trained with target exposure covering the official 6-20 cm radius and the poorly performing angular/trajectory regions, while retaining the branch diagnostics. It should be compared by complete artifact performance and the same per-episode mechanism fields. Improvement concentrated in 6-14 cm no-reach failures, with preserved outer-radius success, would support continuing exposure/trajectory work; persistent no-reach failures would redirect investigation toward observations, reward/interface, or runtime control. A large reduction in reached-hold interruptions would support a secondary regulation contribution, but the current evidence does not make that the first intervention. Folded-branch-specific work is not currently justified because no reached episode was folded-attributed, though branch/contact behavior outside this panel remains unresolved. Official assessment is not justified by the present development result and no candidate role has been assigned.",
+    "cumulative_resource_use": "Completed campaign resources before this checkpoint: one fresh training operation T1, requested 120000 and completed 120832 actual steps; six measurements including M1, M2, M3, M4, M7, and M8; inquiry I1 with E2/E4; and goal-review inquiry opening E6. The current session completed only E6. No official assessment, model-role assignment, or retained candidate exists.",
+    "current_goal_gap": "The only evaluated candidate, T1:checkpoint-115712, achieved 136/200 (68.0%) on the fresh M4 development panel and has no assigned model role. Its 64 failures comprised 56 no-reach and 8 sampled-hold failures. No protected official result exists, and continuous between-control-check containment remains unmeasured. The candidate-level deficit is therefore far above the 4-failure budget and cannot support official assessment.",
+    "current_synthesis": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 characterized compiled dynamics and local actuation/passive decay but did not establish learned reach or hold behavior. T1 trained a fresh PPO candidate for 120832 actual steps with the outer 14-20 cm training exposure. Its training proxy rose late to approximately 0.94-0.97 success-rate values under that exposure, but this is not development evidence. M3 verified production-path branch diagnostics without changing task-success semantics. M4 evaluated T1:checkpoint-115712 on a fresh 200-episode development panel at 68.0%. M7 verified the strict schema-6 analysis tool. M8 found 56/64 failures were no-reach, with 30/34 failures at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; success was 34.6%, 57.4%, and 95.4% in those bins. Angular success ranged from 50.9% in [-90,0) to 94.4% in [90,180]. The 8 reached failures all interrupted sampled hold, with maximum held runs from 1 to 87 checks, while failure occupancy was 99.5% open branch with no reached failure attributed to the folded branch. Interpretation revised at this goal review: M8 establishes radius/angle-stratified no-reach failure in this artifact, not causal 'generalization failure.' The late outer-exposure training proxy is consistent with an out-of-exposure deficit but cannot separate exposure causality from learned trajectory, reward/interface, observation, or runtime effects. The physical model predicts that reset from the extended pose makes inner-radius contraction and large-angle motion more demanding, and that bounded coupled dynamics can make braking a secondary failure source. The present evidence makes exposure/trajectory the highest-contribution next comparison, while preserving sampled-hold success as a non-regression discriminator. Competing explanations remain consequential: persistent no-reach after targeted exposure would redirect toward observation/reward/interface or runtime control; new reached interruptions would elevate stabilization, dynamics, timing, or action authority; branch/contact work is not currently supported because reached episodes were open-branch attributed. Unmeasured substep excursions remain a limitation of both development evidence and this inquiry, but cannot by themselves justify official assessment or a separate inquiry before the dominant sampled outcome is improved.",
+    "decision_frontier": "The consequential unresolved distinction is whether a fresh policy trained with official 6-20 cm radius exposure and targeted difficult-angle trajectories produces a materially better complete artifact, specifically fewer no-reach failures in 6-14 cm and difficult-angle strata while preserving the baseline's strong outer-radius sampled-hold behavior. A matched complete-artifact comparison with the same diagnostic fields can support continuing exposure/trajectory development if that pattern appears, or redirect toward observations, reward/interface, runtime control, or another mechanism if no-reach persists or hold reliability regresses. This is a candidate comparison, not causal proof of exposure alone, because the fresh training run changes learned weights and trajectories together. Dynamic authority, branch/contact feasibility, and continuous between-check containment remain unresolved; they would revise the route if targeted candidates show late hold failures, folded/contact correlations, or a need for finer hold robustness, respectively.",
     "evidence_references": [
       "M1",
       "M2",
@@ -3195,14 +3335,15 @@
       "M4",
       "M7",
       "M8",
-      "E4"
+      "E4",
+      "E6"
     ],
-    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring an uninterrupted 2 second hold inside the 1 cm tolerance. I1 directly addressed why the fresh baseline misses that goal and selected the next intervention direction; no official assessment is requested.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed with a limited, development-artifact conclusion. Return to goal review and choose whether to open the proposed exposure/trajectory inquiry. If opened, use a fresh controlled comparison against the baseline recipe, preserve the diagnostic evaluator, and distinguish candidate improvement from causal mechanism evidence. Do not request official assessment before a candidate is explicitly selected as best-known and the goal-level decision supports assessment.",
+    "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes in the protected 200-episode official panel, where each success is a complete uninterrupted 2-second hold for targets uniformly distributed over 6-20 cm and all angles. The current candidate is not suitable for terminal assessment; E6 opens one bounded comparison intended to remove the largest observed development deficit before any official commitment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "E6 opens inquiry I2. In the fresh inquiry session, implement or restore only a controlled training recipe that actually exposes the official 6-20 cm radii and difficult angular/trajectory regions while preserving the validated diagnostic evaluator, train a fresh candidate within the maintainer allocation, select a decision-relevant checkpoint rather than assuming the terminal checkpoint is best, and evaluate the complete artifact on a non-overlapping 200-episode development panel. Close I2 only after comparing overall success, radius/angle failure strata, no-reach versus sampled-hold failure counts, and reached-episode hold interruptions against M4; do not treat the result as official certification.",
     "next_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
-    "scientific_commit": "70a39a0f056f1ba941d59c89ca2224cc3127209b",
-    "session_id": "S3"
+    "scientific_commit": "4731ec276dc4c1beb078c6247f35a1c68b70a46c",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3210,21 +3351,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "01ed4c1b-4a0e-4cbe-b2ae-aea0111cc6ac",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "e31126885a461ef208efadbe8f69a3c298a4841b"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
