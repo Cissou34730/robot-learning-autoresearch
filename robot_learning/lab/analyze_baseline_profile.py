@@ -16,7 +16,7 @@ from typing import Any
 
 
 HOLD_STEPS_REQUIRED = 100
-ANALYSIS_SCHEMA_VERSION = 1
+ANALYSIS_SCHEMA_VERSION = 2
 
 RADIUS_BINS = (
     ("[6,10)", 6.0, 10.0, True, False),
@@ -55,7 +55,19 @@ _NUMERIC_FIELDS = (
     "first_entry_cartesian_speed_m_per_s",
     "max_cartesian_speed_m_per_s",
     "min_joint_limit_margin_rad",
+    "max_physics_step_distance_cm",
+    "max_physics_step_distance_during_hold_cm",
+    "hold_intervals_with_out_of_tolerance_physics_step",
+    "out_of_tolerance_physics_substeps_during_hold",
 )
+
+_NONNEGATIVE_INTEGER_FIELDS = {
+    "first_reach_step",
+    "max_held_steps",
+    "hold_interruptions",
+    "hold_intervals_with_out_of_tolerance_physics_step",
+    "out_of_tolerance_physics_substeps_during_hold",
+}
 
 
 def _mapping(value: Any, location: str) -> dict[str, Any]:
@@ -204,7 +216,7 @@ def _validate_and_join(document: Any) -> list[dict[str, Any]]:
         for field in _NUMERIC_FIELDS:
             if field not in diagnostic:
                 values[field] = None
-            elif field in {"first_reach_step", "max_held_steps", "hold_interruptions"}:
+            elif field in _NONNEGATIVE_INTEGER_FIELDS:
                 values[field] = _optional_nonnegative_int(
                     diagnostic[field], f"episode_diagnostics[{index}].{field}"
                 )
@@ -324,6 +336,34 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "max_max_cartesian_speed_m_per_s": _maximum(
             rows, "max_cartesian_speed_m_per_s"
         ),
+        "mean_max_physics_step_distance_cm": _mean(
+            rows, "max_physics_step_distance_cm"
+        ),
+        "max_max_physics_step_distance_cm": _maximum(
+            rows, "max_physics_step_distance_cm"
+        ),
+        "mean_max_physics_step_distance_during_hold_cm": _mean(
+            rows, "max_physics_step_distance_during_hold_cm"
+        ),
+        "max_max_physics_step_distance_during_hold_cm": _maximum(
+            rows, "max_physics_step_distance_during_hold_cm"
+        ),
+        "hold_intervals_with_out_of_tolerance_physics_step": sum(
+            row["hold_intervals_with_out_of_tolerance_physics_step"]
+            for row in rows
+            if row["hold_intervals_with_out_of_tolerance_physics_step"] is not None
+        ),
+        "mean_hold_intervals_with_out_of_tolerance_physics_step": _mean(
+            rows, "hold_intervals_with_out_of_tolerance_physics_step"
+        ),
+        "out_of_tolerance_physics_substeps_during_hold": sum(
+            row["out_of_tolerance_physics_substeps_during_hold"]
+            for row in rows
+            if row["out_of_tolerance_physics_substeps_during_hold"] is not None
+        ),
+        "mean_out_of_tolerance_physics_substeps_during_hold": _mean(
+            rows, "out_of_tolerance_physics_substeps_during_hold"
+        ),
         "mean_min_joint_limit_margin_rad": _mean(
             rows, "min_joint_limit_margin_rad"
         ),
@@ -410,7 +450,9 @@ def _bin_definitions() -> dict[str, Any]:
         "hold_semantics": (
             "Complete hold means max_held_steps >= 100. The artifact's "
             "diagnostics are sampled at control boundaries; this analysis does "
-            "not infer excursions between boundaries."
+            "not infer excursions between boundaries. The physics-step fields "
+            "quantify observed within-frame excursions during boundary-held "
+            "intervals, but they do not define official continuous semantics."
         ),
         "rate_unit": "percent in [0,100]",
         "interpretation": (
