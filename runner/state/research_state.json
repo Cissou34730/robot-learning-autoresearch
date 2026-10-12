@@ -6575,7 +6575,7 @@
   "counters": {
     "event": 42,
     "inquiry": 10,
-    "measurement": 57,
+    "measurement": 58,
     "session": 21,
     "training": 8
   },
@@ -27823,9 +27823,2530 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:45:03Z",
+      "error": null,
+      "id": "M58",
+      "inquiry_id": "I10",
+      "kind": "measurement",
+      "request": {
+        "description": "Trace-derived matched mechanism analysis for M57 T8 and T2 evaluations, covering failure classes, protected strata, terminal dynamics, saturation, and physics-step hold excursions.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M57 T8 terminal stabilization mechanism analysis",
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M57 T2 matched reference mechanism analysis",
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          }
+        ],
+        "rationale": "M57 establishes that the complete T8 artifact regressed overall success, but I10's closure condition also requires determining whether the narrow terminal intervention changed reached-incomplete stabilization diagnostics and whether any loss came from reach or coupled-control classes. The existing analyzer joins the complete schema-7 traces and derives first reach, failure class, radius/angle strata, branch feasibility, joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold metrics. This remains an artifact-level comparison and cannot establish causality beyond the tested recipe."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M57 T8 terminal stabilization mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-1-m57_t8_trajectory_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "angle_stratum",
+                      "classification",
+                      "episode",
+                      "radius_stratum",
+                      "success",
+                      "target_angle_degrees",
+                      "target_feasible_branches",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/episode_profiles",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/panel_metadata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/overall/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_metadata/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_metadata/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_metadata/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[14,17)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[17,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-135,-90)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-180,-135)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-45,0)/actuator_saturation",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "9a17eb075454d85741d3656313c327517c45b635ade3a34cdcfbcc3a48773207"
+            },
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M57 T2 matched reference mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-2-m57_t2_trajectory_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "angle_stratum",
+                      "classification",
+                      "episode",
+                      "radius_stratum",
+                      "success",
+                      "target_angle_degrees",
+                      "target_feasible_branches",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/episode_profiles",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/panel_metadata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/overall/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_metadata/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_metadata/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_metadata/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[14,17)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[17,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-135,-90)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-180,-135)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-45,0)/actuator_saturation",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "e77caa03f073a3860f46c2c1e386519e8dcbeea8cba2fb7b51cd9a1dd87e0fa4"
+            },
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "eb06953b83925c4bb813592194d7f2ae6c3ce3d9",
+            "fingerprint": "f1164a2f1e8fd8f5415dfd8c30c3c32d755eb94c496a8b710d0f99aba86ef6d9",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1f13488be7eae899f5927af1efc45a74513a3765",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_trajectory_mechanism.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json",
+          "instrument": "python_module",
+          "label": "M57 T8 terminal stabilization mechanism analysis",
+          "module": "robot_learning.lab.analyze_trajectory_mechanism"
+        },
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json",
+          "instrument": "python_module",
+          "label": "M57 T2 matched reference mechanism analysis",
+          "module": "robot_learning.lab.analyze_trajectory_mechanism"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+            "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+            "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          },
+          {
+            "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+            "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+          },
+          {
+            "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+            "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "eb06953b83925c4bb813592194d7f2ae6c3ce3d9",
+          "fingerprint": "f1164a2f1e8fd8f5415dfd8c30c3c32d755eb94c496a8b710d0f99aba86ef6d9",
+          "manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ]
+        },
+        "code_parent_commit": "1f13488be7eae899f5927af1efc45a74513a3765",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+            "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_trajectory_mechanism.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "M57 T8 terminal stabilization mechanism analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-1-m57_t8_trajectory_mechanism_analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 11,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/class_summaries",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/definitions",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "angle_stratum",
+                    "classification",
+                    "episode",
+                    "radius_stratum",
+                    "success",
+                    "target_angle_degrees",
+                    "target_feasible_branches",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/episode_profiles",
+                  "type": "array"
+                },
+                {
+                  "path": "/input_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/interpretation",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/panel_metadata",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/radius_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-135,-90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-180,-135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-45,0)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-90,-45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[0,45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[135,180)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[45,90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[90,135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/never_reached",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/reached_but_not_complete",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/successes",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/angle_sectors_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/definitions/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "path": "/definitions/missing_null_policy",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/radius_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/overall/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/overall/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/target_feasible_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "path": "/panel_metadata/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_metadata/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/panel_metadata/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[10,14)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[14,17)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[17,20]",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[6,10)",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-135,-90)/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/angle_strata/[-135,-90)/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-135,-90)/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-180,-135)/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/angle_strata/[-180,-135)/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-180,-135)/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-45,0)/actuator_saturation",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "9a17eb075454d85741d3656313c327517c45b635ade3a34cdcfbcc3a48773207"
+          },
+          "module": "robot_learning.lab.analyze_trajectory_mechanism"
+        },
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "M57 T2 matched reference mechanism analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-2-m57_t2_trajectory_mechanism_analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 11,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/class_summaries",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/definitions",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "angle_stratum",
+                    "classification",
+                    "episode",
+                    "radius_stratum",
+                    "success",
+                    "target_angle_degrees",
+                    "target_feasible_branches",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/episode_profiles",
+                  "type": "array"
+                },
+                {
+                  "path": "/input_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/interpretation",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/panel_metadata",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/radius_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-135,-90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-180,-135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-45,0)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[-90,-45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[0,45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[135,180)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[45,90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/angle_strata/[90,135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/never_reached",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/reached_but_not_complete",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/class_summaries/successes",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/angle_sectors_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/definitions/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "path": "/definitions/missing_null_policy",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/radius_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/overall/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/overall/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/overall/target_feasible_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "path": "/panel_metadata/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_metadata/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/panel_metadata/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel_metadata/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[10,14)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[14,17)",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[17,20]",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/radius_strata/[6,10)",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-135,-90)/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/angle_strata/[-135,-90)/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-135,-90)/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-180,-135)/count",
+                  "type": "number"
+                },
+                {
+                  "entries": 11,
+                  "path": "/angle_strata/[-180,-135)/metrics",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_strata/[-180,-135)/success_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/angle_strata/[-45,0)/actuator_saturation",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "e77caa03f073a3860f46c2c1e386519e8dcbeea8cba2fb7b51cd9a1dd87e0fa4"
+          },
+          "module": "robot_learning.lab.analyze_trajectory_mechanism"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M57 T8 terminal stabilization mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-1-m57_t8_trajectory_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "angle_stratum",
+                      "classification",
+                      "episode",
+                      "radius_stratum",
+                      "success",
+                      "target_angle_degrees",
+                      "target_feasible_branches",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/episode_profiles",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/panel_metadata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/overall/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_metadata/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_metadata/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_metadata/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[14,17)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[17,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-135,-90)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-180,-135)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-45,0)/actuator_saturation",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "9a17eb075454d85741d3656313c327517c45b635ade3a34cdcfbcc3a48773207"
+            },
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M57 T2 matched reference mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M58-2-m57_t2_trajectory_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "angle_stratum",
+                      "classification",
+                      "episode",
+                      "radius_stratum",
+                      "success",
+                      "target_angle_degrees",
+                      "target_feasible_branches",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/episode_profiles",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/panel_metadata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/overall/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/overall/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/panel_metadata/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_metadata/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/panel_metadata/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel_metadata/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[14,17)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[17,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/radius_strata/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-135,-90)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-135,-90)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-135,-90)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-135,-90)/target_feasible_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/actuator_saturation",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/angle_strata/[-180,-135)/metrics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_strata/[-180,-135)/reset_jacobian_rank_deficient",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_strata/[-180,-135)/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/angle_strata/[-45,0)/actuator_saturation",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "e77caa03f073a3860f46c2c1e386519e8dcbeea8cba2fb7b51cd9a1dd87e0fa4"
+            },
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "eb06953b83925c4bb813592194d7f2ae6c3ce3d9",
+            "fingerprint": "f1164a2f1e8fd8f5415dfd8c30c3c32d755eb94c496a8b710d0f99aba86ef6d9",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1f13488be7eae899f5927af1efc45a74513a3765",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_trajectory_mechanism.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M58",
+    "inquiry_id": "I10",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Trace-derived matched mechanism analysis for M57 T8 and T2 evaluations, covering failure classes, protected strata, terminal dynamics, saturation, and physics-step hold excursions.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T8-checkpoint-100352-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t8_trajectory_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M57 T8 terminal stabilization mechanism analysis",
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m57-T2-checkpoint-120832-160ep-seed4200-813487c348cf.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/m57_t2_trajectory_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M57 T2 matched reference mechanism analysis",
+            "module": "robot_learning.lab.analyze_trajectory_mechanism"
+          }
+        ],
+        "rationale": "M57 establishes that the complete T8 artifact regressed overall success, but I10's closure condition also requires determining whether the narrow terminal intervention changed reached-incomplete stabilization diagnostics and whether any loss came from reach or coupled-control classes. The existing analyzer joins the complete schema-7 traces and derives first reach, failure class, radius/angle strata, branch feasibility, joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold metrics. This remains an artifact-level comparison and cannot establish causality beyond the tested recipe."
+      }
+    },
+    "request_fingerprint": "dc7c2675da94c104bd6efefba4ba3bbabb3262fca27453a8f54f43c203599735",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, based on M10, M11, M14, M18, M21, M23, M27, M30, M46 and M52 comparisons and analyses; it is not a protected official-assessment result. T7:checkpoint-120832 is rejected as an inferior complete safe-IK trajectory-potential artifact by M52/M53 and E38. No candidate is working or retained. E35/E37/E40 are inquiry-boundary or restoration records; M50/M51 are implementation checks; M53 is trace-derived analysis; none are learned candidates.",
     "completed_operations": [
@@ -27875,7 +30396,8 @@
       "M55",
       "M56",
       "T8",
-      "M57"
+      "M57",
+      "M58"
     ],
     "scientific_parent_commit": "1f13488be7eae899f5927af1efc45a74513a3765"
   },
