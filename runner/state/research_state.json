@@ -21650,47 +21650,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when the bounded work has produced and measured a complete candidate artifact against T2 on the matched development panel, with branch/limit and trajectory diagnostics, radius-stratified success and first-reach results, and physics-step hold-readiness evidence. A positive closure requires improvement in the targeted folded-only/negative-angle and outer-radius residuals without regression in the 6-14 cm and 14-20 cm strata and without an adverse continuous-hold signal; a negative, limited, or inconclusive closure is sufficient when the compared artifact fails those criteria or the implementation/evidence cannot support a stronger direction.",
-          "goal_connection": "T2 is the strongest evidence-backed candidate but achieves 150/160 complete development successes (93.75%), below the 196/200 human goal, with residual failures concentrated in folded-only negative-angle targets and joint-limit pressure plus stabilization failures. The protected official assessment is terminal and no candidate has protected evidence or continuous-hold certification. A bounded intervention study can therefore improve the candidate before committing the campaign, while preserving explicit radius-stratum and hold-readiness checks.",
-          "handoff_conclusion": "Observed evidence: M44 and M45 verified the new production-path trajectory diagnostics and their independent kinematic, reset, transition, clipping, and physics-telemetry checks. M46 reproduced T2's 150/160 success and 153/160 first-reach outcomes on the matched panel with schema-7 traces. M47 verified that the post-processor derives quantities from repeated trace rows and rejects missing or incomplete traces; M48 compacted and inspected the complete M46 artifact. All 7 never-reached targets had at least one analytic feasible branch; 6/7 were folded-only and 1/7 had both branches. The never-reach class had 6/7 negative minimum compiled joint-limit margins, mean minimum margin 0.201 rad and minimum -0.0578 rad, compared with success mean 0.774 rad and minimum -0.0229 rad. The branch pattern was 6 folded-only never-reaches versus 7 folded-only successes, while 137 successes had both branches. These observations support branch/joint-limit feasibility as the dominant mechanism without claiming geometric impossibility: the folded-only targets are feasible but constrain the available route, and most never-reaches encounter limit pressure. The reset-singular coupled-control model remains physically real but was not the dominant discriminator in this panel: all 160 resets had rank-1 Jacobians, all trajectories became full planar rank at control step 1, and never-reach finite condition values were not worse than successes (mean 2.82 versus 4.45). Lower never-reach radial-progress mean (0.020 versus 0.078 m/s), high qvel and nearly universal action saturation indicate a secondary trajectory/control issue, and the one both-branch, +1.679-rad-margin never-reach prevents a claim of complete explanation. The 3 reached-but-not-complete episodes had mean minimum margin 1.146 rad and remain a stabilization/coupled-control residual. M29/M30/T6 establish an inferior complete T6 artifact under the measured panel, not a causal exposure effect; exposure interference was not required to explain the measured T2 failure profile and remains untested as a causal method claim. Physics-step traces remain development diagnostics, not official continuous-hold certification.",
-          "handoff_question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?",
-          "handoff_source_session_id": "S17",
-          "id": "I9",
-          "opened_in_session": "S18",
-          "question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?",
-          "rationale": "Request the inquiry rather than official assessment because T2 is 10 percentage points below the development target, has seven never-reaches and three reached-but-not-complete episodes, and its continuous-hold status is unresolved. Existing evidence closes the prior mechanism question positively for branch/joint-limit dominance, but does not establish that branch-aware methods broadly work. The already-tested T6 implementation combined targeted negative-angle exposure, a larger branch/margin observation, and terminal joint-limit/speed reward shaping, yet measured only 113/160 successes; this is evidence against that complete artifact, not against a redesigned trajectory or branch-conditioned control method. One feasible, well-margined both-branch never-reach and three stabilization failures keep a bounded control/trajectory inquiry scientifically consequential. Its expected contribution is a direct candidate comparison and mechanistic residual check at the cost of one inquiry, while official assessment now would irrevocably end the campaign on an uncertified candidate.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I9",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E35",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when the bounded work has produced and measured a complete candidate artifact against T2 on the matched development panel, with branch/limit and trajectory diagnostics, radius-stratified success and first-reach results, and physics-step hold-readiness evidence. A positive closure requires improvement in the targeted folded-only/negative-angle and outer-radius residuals without regression in the 6-14 cm and 14-20 cm strata and without an adverse continuous-hold signal; a negative, limited, or inconclusive closure is sufficient when the compared artifact fails those criteria or the implementation/evidence cannot support a stronger direction.",
-        "goal_connection": "T2 is the strongest evidence-backed candidate but achieves 150/160 complete development successes (93.75%), below the 196/200 human goal, with residual failures concentrated in folded-only negative-angle targets and joint-limit pressure plus stabilization failures. The protected official assessment is terminal and no candidate has protected evidence or continuous-hold certification. A bounded intervention study can therefore improve the candidate before committing the campaign, while preserving explicit radius-stratum and hold-readiness checks.",
-        "question": "Which branch/limit-aware trajectory or branch-conditioned control intervention can improve T2's folded-only negative-angle and outer-radius failures toward 98% without regressing the protected radius strata, while preserving continuous uninterrupted-hold readiness?",
-        "rationale": "Request the inquiry rather than official assessment because T2 is 10 percentage points below the development target, has seven never-reaches and three reached-but-not-complete episodes, and its continuous-hold status is unresolved. Existing evidence closes the prior mechanism question positively for branch/joint-limit dominance, but does not establish that branch-aware methods broadly work. The already-tested T6 implementation combined targeted negative-angle exposure, a larger branch/margin observation, and terminal joint-limit/speed reward shaping, yet measured only 113/160 successes; this is evidence against that complete artifact, not against a redesigned trajectory or branch-conditioned control method. One feasible, well-margined both-branch never-reach and three stabilization failures keep a bounded control/trajectory inquiry scientifically consequential. Its expected contribution is a direct candidate comparison and mechanistic residual check at the cost of one inquiry, while official assessment now would irrevocably end the campaign on an uncertified candidate."
-      }
-    },
-    "request_fingerprint": "db58f58962f01409abd73ca630e205e7a95301724fefaf298ab539329770f77c",
-    "session_id": "S18",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30/M41 and is not ready for official assessment. T6:checkpoint-120832 remains an inferior complete I7 artifact and is not working, retained, or best-known. No candidate is working or retained. The new evaluator and analysis modules are measurement tools, not candidate artifacts.",
     "completed_operations": [
