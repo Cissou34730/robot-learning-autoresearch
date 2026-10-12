@@ -2422,47 +2422,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Train one bounded candidate under the explicitly broadened official-radius, reset-escape, and two-branch coverage recipe using the maintainer allocation, then evaluate a selected checkpoint and the current best-known candidate on the same full official-range development panel with radius-, angle-, first-reach-, and complete-hold diagnostics. Close with a positive, negative, limited, or inconclusive artifact-comparison conclusion when the paired results establish whether inner pre-reach success improved and whether outer complete-hold performance was preserved; retain unresolved causal attribution as a frontier rather than treating the factor bundle as causal.",
-          "goal_connection": "The best measured candidate succeeds on 42/93 inner-band episodes (45.16%) but 63/67 outer-band episodes (94.03%), with 45 inner failures before any reach and no outer post-reach incomplete holds. A candidate trained with explicit 0.06-0.20 m exposure and deliberate reset escape/two-branch coverage could directly address the dominant measured gap while retaining the authoritative complete 100-step hold evaluation; improvement would increase the prospect of reaching the 98% official objective, whereas deterioration would identify a tradeoff that must be resolved before assessment.",
-          "handoff_conclusion": "Established campaign evidence: M3 found 50 Hz control, finite compiled inertial quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and a reset singularity-direction asymmetry in five deterministic postures and bounded command probes. M3 weakened a blanket nominal torque/inertia impossibility explanation but did not test learning or official target-directed behavior. T1 then trained a fresh PPO candidate for the maintainer allocation: the current recipe exposed it only to target radii 0.14-0.20 m, with actual completed steps rounded to 120,832 and a late training-proxy plateau near 0.96-0.97. Training proxies do not establish development performance, and the terminal checkpoint was not privileged. The archived late-plateau candidate T1:checkpoint-115712 was measured by M4 on 160 episodes spanning the official radius and angle distribution and achieved 105/160 successes (65.625%). M6 independently verified the grouped analysis and reported full panel coverage of 6.165-19.820 cm and -178.895 to 179.975 degrees. In the required bands, inner 6.0-<14.0 cm had 42/93 successes (45.16%), 48/93 first reaches, 45 failures before any reach, and 6 failures after reach without a complete hold; outer 14.0-20.0 cm had 63/67 successes (94.03%), 63/67 first reaches, 4 failures before any reach, and no post-reach incomplete-hold failures. Angle-sector success ranged from 48.39% to 92.11%, so angular coverage remains a residual artifact-level contributor. Interpretation supported by these observations: inner-radius/branch coverage and reset escape are the first consequential learned-policy bottleneck for this tested candidate, while post-arrival regulation is largely adequate after successful outer-band approach. This is a bounded candidate conclusion, not a causal proof that radius exposure alone, branch choice alone, or the PPO method broadly is responsible; M3 remains limited to its deterministic probes, and no official success result exists.",
-          "handoff_question": "Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution?",
-          "rationale": "Official assessment is terminal and the only measured candidate is far below 98%, so its likely fail result has little decision value compared with one bounded attempt targeted at the identified failure regime. Existing evidence supports inner approach/escape as the candidate bottleneck but does not distinguish exposure, reset sequencing, branch choice, or angle effects. The proposed inquiry changes and records those training conditions together, making the immediate scientific claim a comparison of complete artifacts. It is implementable in the PI-owned training environment without changing protected task or evaluation semantics, and its result can either improve the candidate prospect or redirect the next decision.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Train one bounded candidate under the explicitly broadened official-radius, reset-escape, and two-branch coverage recipe using the maintainer allocation, then evaluate a selected checkpoint and the current best-known candidate on the same full official-range development panel with radius-, angle-, first-reach-, and complete-hold diagnostics. Close with a positive, negative, limited, or inconclusive artifact-comparison conclusion when the paired results establish whether inner pre-reach success improved and whether outer complete-hold performance was preserved; retain unresolved causal attribution as a frontier rather than treating the factor bundle as causal.",
-        "goal_connection": "The best measured candidate succeeds on 42/93 inner-band episodes (45.16%) but 63/67 outer-band episodes (94.03%), with 45 inner failures before any reach and no outer post-reach incomplete holds. A candidate trained with explicit 0.06-0.20 m exposure and deliberate reset escape/two-branch coverage could directly address the dominant measured gap while retaining the authoritative complete 100-step hold evaluation; improvement would increase the prospect of reaching the 98% official objective, whereas deterioration would identify a tradeoff that must be resolved before assessment.",
-        "question": "Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution?",
-        "rationale": "Official assessment is terminal and the only measured candidate is far below 98%, so its likely fail result has little decision value compared with one bounded attempt targeted at the identified failure regime. Existing evidence supports inner approach/escape as the candidate bottleneck but does not distinguish exposure, reset sequencing, branch choice, or angle effects. The proposed inquiry changes and records those training conditions together, making the immediate scientific claim a comparison of complete artifacts. It is implementable in the PI-owned training environment without changing protected task or evaluation semantics, and its result can either improve the candidate prospect or redirect the next decision."
-      }
-    },
-    "request_fingerprint": "eafc76f3c48c715a8ab73f316d5cb114ecbc1ea800342985b89fca64b3a100d1",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, explicitly assigned by E4 using T1, M4, and M6. It is the only learned candidate with a completed full official-range development measurement and is not an official-success declaration. Working and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The first candidate's training and measurement facts are preserved; no candidate comparison was performed.",
     "completed_operations": [
