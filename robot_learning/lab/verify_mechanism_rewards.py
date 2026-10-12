@@ -49,7 +49,7 @@ def _compiled_posture_metrics(
     condition_number = float(np.linalg.cond(jacobian_position[:2, :2]))
 
     margins = []
-    for joint_id in range(env.model.nj):
+    for joint_id in range(env.model.njnt):
         qpos_index = env.model.jnt_qposadr[joint_id]
         lower, upper = env.model.jnt_range[joint_id]
         margins.append(
