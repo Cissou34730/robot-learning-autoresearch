@@ -8,6 +8,7 @@ import argparse
 import json
 from pathlib import Path
 
+import gymnasium as gym
 import mujoco
 import numpy as np
 
@@ -15,6 +16,7 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.scenario import evaluation as evaluation_module
 from robot_learning.scenario.evaluation import build_step_diagnostic
+from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 
 
@@ -211,6 +213,12 @@ def _check() -> dict:
     class ZeroRuntime:
         def __init__(self) -> None:
             self.io = make_policy_io()
+            self.observation_space = gym.spaces.Box(
+                low=-np.inf,
+                high=np.inf,
+                shape=(OBSERVATION_SIZE,),
+                dtype=np.float32,
+            )
 
         def reset(self) -> None:
             return None
@@ -218,8 +226,13 @@ def _check() -> dict:
         def predict(self, _obs: np.ndarray) -> np.ndarray:
             return np.zeros(2, dtype=np.float32)
 
+    zero_runtime = ZeroRuntime()
+    assert zero_runtime.observation_space.shape == (OBSERVATION_SIZE,)
+    assert zero_runtime.observation_space.dtype == np.dtype(np.float32)
+    assert np.all(np.isneginf(zero_runtime.observation_space.low))
+    assert np.all(np.isposinf(zero_runtime.observation_space.high))
     original_loader = evaluation_module.load_runtime
-    evaluation_module.load_runtime = lambda _path, _algorithm: ZeroRuntime()
+    evaluation_module.load_runtime = lambda _path, _algorithm: zero_runtime
     try:
         evaluator_output = evaluation_module.evaluate_research_model(
             Path("controlled-policy"), episodes=1, seed=31415
@@ -261,6 +274,11 @@ def _check() -> dict:
             ],
             "rank_loss_condition_number": "inf",
             "invalid_condition_numbers_rejected": ["nan", "-inf"],
+            "runtime_observation_space": {
+                "shape": list(zero_runtime.observation_space.shape),
+                "dtype": str(zero_runtime.observation_space.dtype),
+                "unbounded": True,
+            },
         },
         "expected": {
             "repeated_seed_resets": "identical initial state and target",
@@ -268,10 +286,16 @@ def _check() -> dict:
             "posture_labels": ["open", "folded", "open"],
             "rank_loss_condition_number": "inf",
             "invalid_condition_numbers_rejected": ["nan", "-inf"],
+            "runtime_observation_space": {
+                "shape": [OBSERVATION_SIZE],
+                "dtype": "float32",
+                "unbounded": True,
+            },
             "reference": "planar Jacobian singular values, velocity, and limits",
         },
         "checked_scope": [
             "official evaluation environment construction and seeded reset determinism",
+            "controlled runtime observation space shape, dtype, and unbounded limits",
             "repeated zero-action post-step trajectory rows and field dimensions",
             "evaluator episode wiring retains a full trajectory and legacy fields",
             "planar Jacobian singular values and qvel-mapped cm/s velocity",
