@@ -77,3 +77,4 @@
 | E41 | checkpoint | - | checkpointed |
 | M26 | measurement | I10 | failed |
 | M27 | measurement | I10 | completed |
+| E42 | inquiry | I10 | completed |

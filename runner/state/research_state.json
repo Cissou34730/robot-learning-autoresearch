@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close with a positive, negative, limited, or inconclusive bounded answer after complete time-resolved and/or controlled acquisition/braking evidence distinguishes the consequential explanations enough to choose the next route, or after a goal-linked learned artifact implementing the selected route is measured on a matched development panel. The inquiry need not certify the official 196/200 objective; any candidate-selection claim must use complete development episodes and preserve first-reach, hold interruption, and maximum-held-step diagnostics.",
-    "goal_connection": "The best measured learned policy, T4:checkpoint-120832, succeeds on 153/160 matched development episodes and remains below the required 98% complete-hold objective. T7 fails primarily before first reach (158/160 no-first-reach, with only two two-step holds), so resolving whether its acquisition failure reflects a route-specific learning/exposure/runtime artifact or a plant-timing/saturation bottleneck can determine whether a redesigned learned route can recover the three T4 acquisition failures and reduce the four reach-then-interrupt failures without committing the campaign to the rejected T6 residual-torque scaffold.",
-    "handoff_conclusion": "Observed: M25's matched diagnostics show that T4 succeeds on 153/160 episodes and that its seven residual failures comprise three no-first-reach cases and four cases that first reach but interrupt the hold; the complete-hold criterion remains decisive, so first reach cannot stand in for success. Observed: the same M25 panel shows T7 at 0/160, with 158 no-first-reach cases and only two first-reach cases, each holding for two steps before interruption. Observed: M24 verified the fresh full-radius direct-torque route, direct clipped action transmission, unchanged reset and interruption semantics, and separate acquisition, held-step, and interruption reward consequences, but it did not verify that the shaping predicts learned success. Observed: M15 independently supported a saturation/joint-limit/high-velocity acquisition-and-regulation signature for the earlier T2 residual, while M30/E30 showed that the tested persisted residual-torque intervention did not improve T4 and lost acquisition capability; those findings do not establish that the same mechanism caused T7's fresh failure. Correction to the inherited interpretation: T7's aggregate failure is now behaviorally localized to acquisition, but its causal mechanism remains unresolved; M15's T2 mechanism must not be promoted to a T7 diagnosis. Competing explanations therefore remain: (1) fresh direct-policy learning/exposure or runtime dynamics prevented useful acquisition exploration; (2) the reward/control timing interaction produced a stable but non-acquiring policy; or (3) the singular start, 20 ms zero-order-held saturated torque, braking limits, or compiled plant dynamics made the tested route unable to escape and approach reliably. The physical model changes decisions as follows: singular escape and action saturation require early acquisition/braking traces before judging hold regulation; compiled dynamics matter only if controlled responses differ from the learning/runtime explanation and would then redirect work toward timing or control design; the 100-step continuity requirement means any route must be judged by complete hold traces, not distance or first reach; full-radius exposure is necessary but not sufficient because T7 had it and still failed. Existing evidence supports continuing toward a new learned route only if the next evidence distinguishes these explanations and demonstrates recovered acquisition before candidate selection.",
-    "handoff_question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
-    "handoff_source_session_id": "S20",
-    "id": "I10",
-    "opened_in_session": "S20",
-    "question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
-    "rationale": "Opening further work is justified because T4 is materially closer to the goal than T7 but below 98%, while T7's 0/160 result is a route-specific negative result whose aggregate diagnostics expose catastrophic acquisition loss without identifying its cause. Existing M15 evidence supports saturation/joint-limit dynamics for an earlier T2 residual but does not establish that those dynamics caused T7's fresh direct-policy failure; M24 verified the direct route and objective but not the learning mechanism. A bounded discrimination followed by a route-specific capability test can change the candidate's capability, unlike re-ranking T4 or repeating the rejected persisted residual-torque recipe. Official assessment would terminate the campaign on a candidate with seven matched-panel failures and no protected-panel evidence, so it is not the better next action.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -5754,7 +5743,7 @@
     }
   },
   "counters": {
-    "event": 41,
+    "event": 42,
     "inquiry": 10,
     "measurement": 27,
     "session": 21,
@@ -16412,9 +16401,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M26"
+    },
+    {
+      "completed_at": "2026-10-12T00:30:28Z",
+      "error": null,
+      "id": "E42",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited bounded answer",
+        "reason": "M27, independently verified by its second artifact, provides complete 500-step live traces for T7 and T4 on the same 12 target geometries under the official reset, 20 ms action hold, clipping, and 100-step hold semantics. T7 produced 0/12 successes: all ten no-first-reach probes remained outside tolerance and both reach probes interrupted after two held steps. T4 on the identical targets produced 10/12 successes, with first reach at steps 10-17 and uninterrupted 100-step holds on ten probes. Both policies show a comparable saturated first-step escape (T7 first-step joint velocity examples 5.39-5.56 rad/s and T4 5.32-5.64 rad/s), so the compiled plant and singular escape are not sufficient to explain T7's collapse. By steps 25-100, T7 commonly has low endpoint/joint velocity and near-zero control while remaining several centimetres from target; T4 maintains coordinated high-magnitude control and reaches. T7's two reach probes and its no-reach probes are preserved, with no consistent panel-wide joint-limit signature; isolated near-limit states remain possible. The strongest bounded interpretation is route-specific policy/runtime or reward-control learning collapse into a stable non-acquiring behavior, not a demonstrated plant inability. Because policy route, exposure, and runtime changed together, reward timing versus learning/runtime cannot be causally separated here. This resolves the consequential distinction sufficiently to redirect work toward a new acquisition-capable learned route and away from repeating fresh T7 or inheriting T6 residual torque, while leaving intervention efficacy and the 98% objective unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited bounded answer",
+        "reason": "M27, independently verified by its second artifact, provides complete 500-step live traces for T7 and T4 on the same 12 target geometries under the official reset, 20 ms action hold, clipping, and 100-step hold semantics. T7 produced 0/12 successes: all ten no-first-reach probes remained outside tolerance and both reach probes interrupted after two held steps. T4 on the identical targets produced 10/12 successes, with first reach at steps 10-17 and uninterrupted 100-step holds on ten probes. Both policies show a comparable saturated first-step escape (T7 first-step joint velocity examples 5.39-5.56 rad/s and T4 5.32-5.64 rad/s), so the compiled plant and singular escape are not sufficient to explain T7's collapse. By steps 25-100, T7 commonly has low endpoint/joint velocity and near-zero control while remaining several centimetres from target; T4 maintains coordinated high-magnitude control and reaches. T7's two reach probes and its no-reach probes are preserved, with no consistent panel-wide joint-limit signature; isolated near-limit states remain possible. The strongest bounded interpretation is route-specific policy/runtime or reward-control learning collapse into a stable non-acquiring behavior, not a demonstrated plant inability. Because policy route, exposure, and runtime changed together, reward timing versus learning/runtime cannot be causally separated here. This resolves the consequential distinction sufficiently to redirect work toward a new acquisition-capable learned route and away from repeating fresh T7 or inheriting T6 residual torque, while leaving intervention efficacy and the 98% objective unresolved.",
+        "status": "completed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited bounded answer",
+        "reason": "M27, independently verified by its second artifact, provides complete 500-step live traces for T7 and T4 on the same 12 target geometries under the official reset, 20 ms action hold, clipping, and 100-step hold semantics. T7 produced 0/12 successes: all ten no-first-reach probes remained outside tolerance and both reach probes interrupted after two held steps. T4 on the identical targets produced 10/12 successes, with first reach at steps 10-17 and uninterrupted 100-step holds on ten probes. Both policies show a comparable saturated first-step escape (T7 first-step joint velocity examples 5.39-5.56 rad/s and T4 5.32-5.64 rad/s), so the compiled plant and singular escape are not sufficient to explain T7's collapse. By steps 25-100, T7 commonly has low endpoint/joint velocity and near-zero control while remaining several centimetres from target; T4 maintains coordinated high-magnitude control and reaches. T7's two reach probes and its no-reach probes are preserved, with no consistent panel-wide joint-limit signature; isolated near-limit states remain possible. The strongest bounded interpretation is route-specific policy/runtime or reward-control learning collapse into a stable non-acquiring behavior, not a demonstrated plant inability. Because policy route, exposure, and runtime changed together, reward timing versus learning/runtime cannot be causally separated here. This resolves the consequential distinction sufficiently to redirect work toward a new acquisition-capable learned route and away from repeating fresh T7 or inheriting T6 residual torque, while leaving intervention efficacy and the 98% objective unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited bounded answer",
+        "reason": "M27, independently verified by its second artifact, provides complete 500-step live traces for T7 and T4 on the same 12 target geometries under the official reset, 20 ms action hold, clipping, and 100-step hold semantics. T7 produced 0/12 successes: all ten no-first-reach probes remained outside tolerance and both reach probes interrupted after two held steps. T4 on the identical targets produced 10/12 successes, with first reach at steps 10-17 and uninterrupted 100-step holds on ten probes. Both policies show a comparable saturated first-step escape (T7 first-step joint velocity examples 5.39-5.56 rad/s and T4 5.32-5.64 rad/s), so the compiled plant and singular escape are not sufficient to explain T7's collapse. By steps 25-100, T7 commonly has low endpoint/joint velocity and near-zero control while remaining several centimetres from target; T4 maintains coordinated high-magnitude control and reaches. T7's two reach probes and its no-reach probes are preserved, with no consistent panel-wide joint-limit signature; isolated near-limit states remain possible. The strongest bounded interpretation is route-specific policy/runtime or reward-control learning collapse into a stable non-acquiring behavior, not a demonstrated plant inability. Because policy route, exposure, and runtime changed together, reward timing versus learning/runtime cannot be causally separated here. This resolves the consequential distinction sufficiently to redirect work toward a new acquisition-capable learned route and away from repeating fresh T7 or inheriting T6 residual torque, while leaving intervention efficacy and the 98% objective unresolved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E42",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited bounded answer",
+        "reason": "M27, independently verified by its second artifact, provides complete 500-step live traces for T7 and T4 on the same 12 target geometries under the official reset, 20 ms action hold, clipping, and 100-step hold semantics. T7 produced 0/12 successes: all ten no-first-reach probes remained outside tolerance and both reach probes interrupted after two held steps. T4 on the identical targets produced 10/12 successes, with first reach at steps 10-17 and uninterrupted 100-step holds on ten probes. Both policies show a comparable saturated first-step escape (T7 first-step joint velocity examples 5.39-5.56 rad/s and T4 5.32-5.64 rad/s), so the compiled plant and singular escape are not sufficient to explain T7's collapse. By steps 25-100, T7 commonly has low endpoint/joint velocity and near-zero control while remaining several centimetres from target; T4 maintains coordinated high-magnitude control and reaches. T7's two reach probes and its no-reach probes are preserved, with no consistent panel-wide joint-limit signature; isolated near-limit states remain possible. The strongest bounded interpretation is route-specific policy/runtime or reward-control learning collapse into a stable non-acquiring behavior, not a demonstrated plant inability. Because policy route, exposure, and runtime changed together, reward timing versus learning/runtime cannot be causally separated here. This resolves the consequential distinction sufficiently to redirect work toward a new acquisition-capable learned route and away from repeating fresh T7 or inheriting T6 residual torque, while leaving intervention efficacy and the 98% objective unresolved."
+      }
+    },
+    "request_fingerprint": "aff3f56006cf21e710e1ce2b2e0a0ec7e73b777b36c1971f4994fff4f987bc4f",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known on M23/M25's 153/160 current-source matched result but is not certified for official assessment. T7:checkpoint-110592 is a measured fresh direct-torque artifact at 0/160 and is rejected for candidate selection; its other checkpoints remain unmeasured training artifacts and training proxies do not establish development performance. The T6 persisted residual-torque artifacts remain rejected after 9/160 and 6/160 results. No working or retained role is assigned.",
     "completed_operations": [
@@ -16457,7 +16500,8 @@
     "kind": "inquiry",
     "objective": "Advance I10 toward an evidence-supported answer to its scientific question: What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M27"
+      "M27",
+      "E42"
     ],
     "scientific_parent_commit": "d0292defe0e01daf6b30f10f441a05768212ec72"
   },
