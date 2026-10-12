@@ -7381,7 +7381,7 @@
     }
   },
   "counters": {
-    "event": 50,
+    "event": 51,
     "inquiry": 12,
     "measurement": 31,
     "session": 25,
@@ -7390,7 +7390,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -21631,35 +21631,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:28:30Z",
+      "error": null,
+      "id": "E51",
+      "inquiry_id": "I12",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M31 at 153/160; it is not certified for official assessment. T9:checkpoint-120832 is a measured fresh default-reward artifact at 150/160 and is not assigned a role because it does not exceed T4. No candidate is working or retained. The targeted fresh-route T7/T8 artifacts remain rejected for acquisition collapse. No official assessment was requested.",
+        "completed_operations": [
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "cumulative_resource_use": "At this checkpoint the campaign has used 12 of 15 inquiry allocations, 25 scientific sessions, 21 completed measurements, and 9 completed training operations. T9 consumed the full 120000-step maintainer allocation and completed 120832 rollout-rounded steps. The current closed inquiry session completed M30, T9, M31, and E50. The protected official assessment remains unrequested.",
+        "current_goal_gap": "The 98% objective remains un demonstrated. The best-known T4:checkpoint-120832 has 153/160 development successes (95.625%), leaving seven failures; the fresh default-reward T9:checkpoint-120832 has 150/160 (93.75%), leaving ten failures. Development evidence cannot replace the protected 196/200 assessment.",
+        "current_synthesis": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+        "decision_frontier": "I12 is resolved only as a limited bounded answer. The tested default-reward route recovers acquisition relative to the T8 targeted-reward collapse but leaves the candidate below T4 and far below the human goal. The consequential unresolved distinction is whether the remaining failures are primarily singular-reset acquisition/trajectory timing, post-reach dynamic regulation, or optimization/initialization/runtime realization. Discriminating evidence should preserve complete matched traces and stratify no-first-reach versus reach-then-interrupt outcomes; a successful reduction in no-first-reach failures would support acquisition/braking work, while unchanged acquisition with interruptions would redirect to hold regulation. If neither failure class improves, runtime or optimization/initialization must remain primary alternatives rather than attributing the result to reward shaping.",
+        "evidence_references": [
+          "E46",
+          "M29",
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign still seeks one learned policy with at least 196 successes in the protected 200-episode panel, where every success is a complete uninterrupted 100-step hold. I12 did not produce a candidate that justifies official assessment: T9 achieved 150/160 on the matched development panel, while T4 remains strongest at 153/160.",
+        "next_direction_or_closure": "I12 is closed with a limited bounded answer. Do not request official assessment: neither measured candidate demonstrates the human objective. At the next goal review, compare further mechanism-focused policy development against changing direction. Any continuation should target the residual failure classes with complete-hold evidence and must preserve that I12 established only an artifact-level reward-route result, not a general causal claim about targeted shaping.",
+        "next_question": "Can a candidate-specific intervention reduce the mixed no-first-reach and reach-then-interrupt residual to at least 196/200 complete uninterrupted holds, and do matched time-resolved traces show that the limiting mechanism is singular-reset acquisition/trajectory timing or post-reach dynamic regulation?"
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "session_id": "S25",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "5432bf4902b91c9fb7f18fcde985069457da8ecd",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M31 at 153/160; it is not certified for official assessment. T9:checkpoint-120832 is a measured fresh default-reward artifact at 150/160 and is not assigned a role because it does not exceed T4. No candidate is working or retained. The targeted fresh-route T7/T8 artifacts remain rejected for acquisition collapse. No official assessment was requested.",
+        "completed_operations": [
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "cumulative_resource_use": "At this checkpoint the campaign has used 12 of 15 inquiry allocations, 25 scientific sessions, 21 completed measurements, and 9 completed training operations. T9 consumed the full 120000-step maintainer allocation and completed 120832 rollout-rounded steps. The current closed inquiry session completed M30, T9, M31, and E50. The protected official assessment remains unrequested.",
+        "current_goal_gap": "The 98% objective remains un demonstrated. The best-known T4:checkpoint-120832 has 153/160 development successes (95.625%), leaving seven failures; the fresh default-reward T9:checkpoint-120832 has 150/160 (93.75%), leaving ten failures. Development evidence cannot replace the protected 196/200 assessment.",
+        "current_synthesis": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+        "decision_frontier": "I12 is resolved only as a limited bounded answer. The tested default-reward route recovers acquisition relative to the T8 targeted-reward collapse but leaves the candidate below T4 and far below the human goal. The consequential unresolved distinction is whether the remaining failures are primarily singular-reset acquisition/trajectory timing, post-reach dynamic regulation, or optimization/initialization/runtime realization. Discriminating evidence should preserve complete matched traces and stratify no-first-reach versus reach-then-interrupt outcomes; a successful reduction in no-first-reach failures would support acquisition/braking work, while unchanged acquisition with interruptions would redirect to hold regulation. If neither failure class improves, runtime or optimization/initialization must remain primary alternatives rather than attributing the result to reward shaping.",
+        "evidence_references": [
+          "E46",
+          "M29",
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign still seeks one learned policy with at least 196 successes in the protected 200-episode panel, where every success is a complete uninterrupted 100-step hold. I12 did not produce a candidate that justifies official assessment: T9 achieved 150/160 on the matched development panel, while T4 remains strongest at 153/160.",
+        "inquiry_id": "I12",
+        "next_direction_or_closure": "I12 is closed with a limited bounded answer. Do not request official assessment: neither measured candidate demonstrates the human objective. At the next goal review, compare further mechanism-focused policy development against changing direction. Any continuation should target the residual failure classes with complete-hold evidence and must preserve that I12 established only an artifact-level reward-route result, not a general causal claim about targeted shaping.",
+        "next_question": "Can a candidate-specific intervention reduce the mixed no-first-reach and reach-then-interrupt residual to at least 196/200 complete uninterrupted holds, and do matched time-resolved traces show that the limiting mechanism is singular-reset acquisition/trajectory timing or post-reach dynamic regulation?",
+        "session_id": "S25"
+      },
+      "presentation": {
+        "backend_session_id": "f1dc1193-bf5a-4c72-b27d-d0dee1108962",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "1h15m | 198.51 AIU | prompt 34m (90% cached) | output 444.4k",
+        "session_id": "S25",
+        "session_kind": "inquiry",
+        "session_usage": "2m20s | 3.76 AIU | prompt 435.3k (89% cached) | output 15.1k"
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "54490c4a1ca8ced78a5a7868affed5b8a18f4d06",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E51",
+    "inquiry_id": "I12",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M31 at 153/160; it is not certified for official assessment. T9:checkpoint-120832 is a measured fresh default-reward artifact at 150/160 and is not assigned a role because it does not exceed T4. No candidate is working or retained. The targeted fresh-route T7/T8 artifacts remain rejected for acquisition collapse. No official assessment was requested.",
+        "completed_operations": [
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "cumulative_resource_use": "At this checkpoint the campaign has used 12 of 15 inquiry allocations, 25 scientific sessions, 21 completed measurements, and 9 completed training operations. T9 consumed the full 120000-step maintainer allocation and completed 120832 rollout-rounded steps. The current closed inquiry session completed M30, T9, M31, and E50. The protected official assessment remains unrequested.",
+        "current_goal_gap": "The 98% objective remains un demonstrated. The best-known T4:checkpoint-120832 has 153/160 development successes (95.625%), leaving seven failures; the fresh default-reward T9:checkpoint-120832 has 150/160 (93.75%), leaving ten failures. Development evidence cannot replace the protected 196/200 assessment.",
+        "current_synthesis": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+        "decision_frontier": "I12 is resolved only as a limited bounded answer. The tested default-reward route recovers acquisition relative to the T8 targeted-reward collapse but leaves the candidate below T4 and far below the human goal. The consequential unresolved distinction is whether the remaining failures are primarily singular-reset acquisition/trajectory timing, post-reach dynamic regulation, or optimization/initialization/runtime realization. Discriminating evidence should preserve complete matched traces and stratify no-first-reach versus reach-then-interrupt outcomes; a successful reduction in no-first-reach failures would support acquisition/braking work, while unchanged acquisition with interruptions would redirect to hold regulation. If neither failure class improves, runtime or optimization/initialization must remain primary alternatives rather than attributing the result to reward shaping.",
+        "evidence_references": [
+          "E46",
+          "M29",
+          "M30",
+          "T9",
+          "M31",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign still seeks one learned policy with at least 196 successes in the protected 200-episode panel, where every success is a complete uninterrupted 100-step hold. I12 did not produce a candidate that justifies official assessment: T9 achieved 150/160 on the matched development panel, while T4 remains strongest at 153/160.",
+        "next_direction_or_closure": "I12 is closed with a limited bounded answer. Do not request official assessment: neither measured candidate demonstrates the human objective. At the next goal review, compare further mechanism-focused policy development against changing direction. Any continuation should target the residual failure classes with complete-hold evidence and must preserve that I12 established only an artifact-level reward-route result, not a general causal claim about targeted shaping.",
+        "next_question": "Can a candidate-specific intervention reduce the mixed no-first-reach and reach-then-interrupt residual to at least 196/200 complete uninterrupted holds, and do matched time-resolved traces show that the limiting mechanism is singular-reset acquisition/trajectory timing or post-reach dynamic regulation?"
+      }
+    },
+    "request_fingerprint": "f7e33322a308e9ae9d142991de375d8adf9c868d676cffddce5d671fce95ab63",
+    "session_id": "S25",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T4:checkpoint-120832 based on M25/M23/M28 at 153/160; it is not certified for official assessment. T5:checkpoint-100352 is historical 153/160 and does not supersede T4. T7 and T8 are rejected for fresh-route acquisition collapse, with T8 independently verified by M29. No working or retained candidate is assigned. The next candidate will be selected only after complete-episode evidence, not from training proxies.",
+    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M31 at 153/160; it is not certified for official assessment. T9:checkpoint-120832 is a measured fresh default-reward artifact at 150/160 and is not assigned a role because it does not exceed T4. No candidate is working or retained. The targeted fresh-route T7/T8 artifacts remain rejected for acquisition collapse. No official assessment was requested.",
     "completed_operations": [
-      "E48"
+      "M30",
+      "T9",
+      "M31",
+      "E50"
     ],
-    "cumulative_resource_use": "Campaign state after this goal review: inquiry allocations 12 of 15 used, 24 scientific sessions recorded, 19 measurements completed, and 8 training operations completed. E48 opened I12; no training or measurement was executed in this session. The protected official assessment remains unrequested.",
-    "current_goal_gap": "No candidate has demonstrated the official 98% objective. T4 has 153/160 matched development successes, including three no-first-reach and four reach-then-interrupt failures. T8 has 0/160 and 0/12 paired-probe successes, dominated by no-first-reach failures.",
-    "current_synthesis": "Established: M25/M23/M28 measure T4 at 153/160 under complete-hold semantics; T5 also reached 153/160 at an earlier selected checkpoint, so terminal checkpoints have no privileged status. M27 and M29 show a reproducible fresh-route acquisition collapse: T7/T8 have matching learning trajectories, zero logged training success throughout, and T8 has ten no-first-reach plus two reach-then-interrupt failures on 12 paired resets, while T4 succeeds on 10/12. The plant remains reachable and regulatable in T4, and direct clipped torque, full-radius exposure, reset/hold semantics, and measurement integrity were verified by M24/M29. Correction to the inherited question and interpretation: the prior framing grouped exposure, reward-credit, optimization, and runtime as equally actionable route causes, but available evidence has already established full-radius exposure and direct-control wiring in the failing route, and T7/T8's identical early learning trajectories make terminal checkpoint choice an inadequate explanation. The current source explicitly combines full-radius exposure and direct control with targeted velocity/action reward shaping; T2 supplies a prior fresh full-radius success at 150/160 under the earlier route. This supports a bounded reward-credit test, but does not establish targeted shaping as causal: runtime and optimization/initialization remain alternatives, and a reward intervention that changes several effective learning consequences must be interpreted at artifact level unless it yields a discriminating recovery pattern.",
-    "decision_frontier": "The active distinction is whether targeted regulation reward shaping is responsible for the fresh full-radius acquisition collapse, versus unresolved optimization/initialization or runtime effects. The discriminating action is a fresh full-radius direct-control training route with the default reach-and-hold reward and unchanged official runtime/control semantics, followed by frozen complete-hold matched-panel measurement. Recovery of acquisition and a material improvement over 153/160 would justify continuing reward-credit development; repeated collapse would reject this reward hypothesis for the tested implementation and redirect to optimization/initialization or runtime; acquisition recovery without hold improvement would show that reward credit was consequential for acquisition but not sufficient for the 98% goal. Plant-dynamics work remains non-consequential for this inquiry because the failing artifact does not produce informative acquisition actions, while T4 demonstrates reachability and regulation.",
+    "cumulative_resource_use": "At this checkpoint the campaign has used 12 of 15 inquiry allocations, 25 scientific sessions, 21 completed measurements, and 9 completed training operations. T9 consumed the full 120000-step maintainer allocation and completed 120832 rollout-rounded steps. The current closed inquiry session completed M30, T9, M31, and E50. The protected official assessment remains unrequested.",
+    "current_goal_gap": "The 98% objective remains un demonstrated. The best-known T4:checkpoint-120832 has 153/160 development successes (95.625%), leaving seven failures; the fresh default-reward T9:checkpoint-120832 has 150/160 (93.75%), leaving ten failures. Development evidence cannot replace the protected 196/200 assessment.",
+    "current_synthesis": "Established observations: M30 passed the implementation check for the intended I12 route: training samples the full 0.06-0.20 m radius interval, uses direct clipped control, and uses the default reach-and-hold reward without targeted velocity/action components; repeated updates, resets, complete 100-step holds, and interruption semantics were exercised, while the evaluation route remained direct/default. T9 was a fresh 120832-step run with that route. Its learning trajectory nominated checkpoint-120832 by its highest logged training success (0.58) and reward (117.35), not by terminal status alone. M31 measured T9 and T4 on the same 160 held-out complete-hold seeds under identical evaluation semantics: T9 scored 150/160 and T4 153/160, with all three discordant episodes favoring T4. Diagnostics show T9 had seven no-first-reach episodes, three reach-then-interrupt failures, and hold interruptions distributed as 155 zero, two one, one two, one 192, and one 242; T4 had three no-first-reach episodes, four reach-then-interrupt failures, and 150 zero, nine one, and one two interruptions. The earlier E46/M29 evidence established T8's fresh targeted-reward route as a severe acquisition collapse (0/160 and 0/12 paired probe successes, including ten no-first-reach episodes), while T4 remained acquisition-capable. Interpretation: restoring the default reward did not reproduce that deterministic collapse and recovered a capable fresh artifact, so reward credit was consequential for the tested route at artifact level. It did not improve T4, did not meet 196/200, and does not establish that targeted shaping is the general cause: optimization/initialization, runtime realization, and other artifact differences remain consequential alternatives. The physical model remains consistent with a coupled transient/hold problem: official targets are reachable, direct torque and full-radius exposure are present, and success requires a continuous 100-step event. The seven T9 no-first-reach cases keep acquisition from the singular reset and trajectory/torque timing on the decision path; the three reach-then-interrupt cases keep post-reach dynamic regulation and residual velocity on the decision path. A change in those failure-class counts would redirect work between acquisition/braking and hold-control investigations; complete traces with first reach, endpoint/joint velocity, action, boundary crossings, and hold interruptions are the evidence that would revise this allocation. M30 did not measure learned behavior, and M31 does not identify the remaining mechanism beyond the artifact-level comparison.",
+    "decision_frontier": "I12 is resolved only as a limited bounded answer. The tested default-reward route recovers acquisition relative to the T8 targeted-reward collapse but leaves the candidate below T4 and far below the human goal. The consequential unresolved distinction is whether the remaining failures are primarily singular-reset acquisition/trajectory timing, post-reach dynamic regulation, or optimization/initialization/runtime realization. Discriminating evidence should preserve complete matched traces and stratify no-first-reach versus reach-then-interrupt outcomes; a successful reduction in no-first-reach failures would support acquisition/braking work, while unchanged acquisition with interruptions would redirect to hold regulation. If neither failure class improves, runtime or optimization/initialization must remain primary alternatives rather than attributing the result to reward shaping.",
     "evidence_references": [
       "E46",
       "M29",
-      "T7",
-      "T8",
-      "M24",
-      "M25",
-      "M23",
-      "T2",
-      "E48"
+      "M30",
+      "T9",
+      "M31",
+      "E50"
     ],
-    "human_goal_connection": "The campaign still seeks a learned policy with at least 196 successes in the protected 200-episode official panel, where every success is a complete uninterrupted 100-step hold. The strongest development evidence is T4 at 153/160, so the objective remains unmet and official assessment is not justified.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open inquiry I12 and next train the default-reward, full-radius, direct-control route specified in E48. This is a bounded method-development and mechanism test: it can plausibly recover the missing acquisition capability while preserving the complete-hold decision criterion, and its negative or partial result will redirect the remaining research rather than justify official assessment.",
-    "next_question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
-    "scientific_commit": "fd52416595ca6e972754ec8c3d83382b1d53af6c",
-    "session_id": "S24"
+    "human_goal_connection": "The campaign still seeks one learned policy with at least 196 successes in the protected 200-episode panel, where every success is a complete uninterrupted 100-step hold. I12 did not produce a candidate that justifies official assessment: T9 achieved 150/160 on the matched development panel, while T4 remains strongest at 153/160.",
+    "inquiry_id": "I12",
+    "next_direction_or_closure": "I12 is closed with a limited bounded answer. Do not request official assessment: neither measured candidate demonstrates the human objective. At the next goal review, compare further mechanism-focused policy development against changing direction. Any continuation should target the residual failure classes with complete-hold evidence and must preserve that I12 established only an artifact-level reward-route result, not a general causal claim about targeted shaping.",
+    "next_question": "Can a candidate-specific intervention reduce the mixed no-first-reach and reach-then-interrupt residual to at least 196/200 complete uninterrupted holds, and do matched time-resolved traces show that the limiting mechanism is singular-reset acquisition/trajectory timing or post-reach dynamic regulation?",
+    "scientific_commit": "54490c4a1ca8ced78a5a7868affed5b8a18f4d06",
+    "session_id": "S25"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -21667,24 +21809,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "f1dc1193-bf5a-4c72-b27d-d0dee1108962",
-    "id": "S25",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "objective": "Advance I12 toward an evidence-supported answer to its scientific question: Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M30",
-      "T9",
-      "M31",
-      "E50"
-    ],
-    "scientific_parent_commit": "5432bf4902b91c9fb7f18fcde985069457da8ecd"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
