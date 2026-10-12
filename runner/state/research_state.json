@@ -546,47 +546,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when an explicitly exposed candidate has a completed full official-range development measurement with binary success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle-stratified diagnostics for 0.06-0.14 m and 0.14-0.20 m, and the evidence supports a bounded conclusion about whether inner-radius/branch coverage or uninterrupted hold regulation is the first consequential bottleneck. A limited or inconclusive result is acceptable if the diagnostics do not discriminate the two mechanisms; the residual distinction and its consequence for the next goal decision must be preserved.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. This inquiry will first produce and measure a learned candidate across the complete 0.06-0.20 m and full-angle distribution, separating inner-radius/branch approach failures from post-arrival hold interruptions so the next intervention targets the dominant capability rather than a nominal plant assumption.",
-          "handoff_conclusion": "Observed in completed operation M3: the compiled MuJoCo model has timestep 0.002 s, ten physics steps per control update, and 50 Hz control; compiled joint damping is 0.5 for both joints, armature is 0.01, motor gear is 5 with controls bounded by [-1,1], and the compiler supplies finite body masses/inertias and nominal solver settings. The reviewed verification artifact passed timing, bounded-control, repeated-reset, complete-trace, nonzero-response, zero-command decay, and singularity-direction checks. Saturated commands produced repeatable nonzero motion at reset and at representative 0.08 m and 0.18 m open/folded IK postures; after a command burst, repeated zero-command updates reduced joint velocity essentially to zero. At the reset singular posture, the first-step inward radial displacement was 0.000192 m versus 0.012219 m tangential displacement, directly supporting the predicted local radial escape disadvantage. Interpretation: nominal motor authority and damping are ample in these bounded deterministic probes, so a blanket torque/inertia impossibility explanation is weakened. The reset singularity remains a real sequencing/approach mechanism, and the two inner-radius branches remain a policy coverage and branch-selection problem. Competing explanations for future task failures are therefore (1) insufficient exposure to official inner radii, (2) failure to escape or choose a robust branch from the reset state, and (3) overshoot or intermittent boundary regulation during the 100-step hold. M3 did not command toward targets, measure a learned policy, test all angles, or observe official hold success; its physical conclusion is limited to the five postures and command sequences recorded.",
-          "handoff_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
-          "rationale": "No learned candidate or development evaluation exists, so requesting the terminal official assessment would provide no evidence-backed best-known policy and could not resolve the recorded goal gap. M3 completed the needed initial plant check only in five deterministic postures and bounded command probes: it found nonzero repeatable response and decay, while confirming the reset singularity's radial-escape disadvantage. Those observations weaken a blanket torque/inertia explanation but do not test target-directed learning, all official radii and angles, branch selection, or the complete hold. One bounded candidate-generation and full-diagnostic measurement is therefore expected to improve the campaign-level choice more than either terminal assessment now or another nominal motor probe.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when an explicitly exposed candidate has a completed full official-range development measurement with binary success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle-stratified diagnostics for 0.06-0.14 m and 0.14-0.20 m, and the evidence supports a bounded conclusion about whether inner-radius/branch coverage or uninterrupted hold regulation is the first consequential bottleneck. A limited or inconclusive result is acceptable if the diagnostics do not discriminate the two mechanisms; the residual distinction and its consequence for the next goal decision must be preserved.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. This inquiry will first produce and measure a learned candidate across the complete 0.06-0.20 m and full-angle distribution, separating inner-radius/branch approach failures from post-arrival hold interruptions so the next intervention targets the dominant capability rather than a nominal plant assumption.",
-        "question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
-        "rationale": "No learned candidate or development evaluation exists, so requesting the terminal official assessment would provide no evidence-backed best-known policy and could not resolve the recorded goal gap. M3 completed the needed initial plant check only in five deterministic postures and bounded command probes: it found nonzero repeatable response and decay, while confirming the reset singularity's radial-escape disadvantage. Those observations weaken a blanket torque/inertia explanation but do not test target-directed learning, all official radii and angles, branch selection, or the complete hold. One bounded candidate-generation and full-diagnostic measurement is therefore expected to improve the campaign-level choice more than either terminal assessment now or another nominal motor probe."
-      }
-    },
-    "request_fingerprint": "ec5fdfb41bc19cfab41451980a3df6d2907250e95378cd301d48c01954738326",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The earlier M1 and M2 records were implementation failures and are not evidence.",
     "completed_operations": [
