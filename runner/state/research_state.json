@@ -22,14 +22,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 3,
-    "session": 2,
+    "measurement": 4,
+    "session": 3,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1107,9 +1107,550 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T14:52:55Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Production-path compatibility check for the expanded research-evaluation diagnostics: run bounded TwoJointArmReachEnv reset/step transitions, update the new diagnostic state at each control boundary, finalize it, then reset and verify diagnostic isolation.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "I1 requires diagnostics beyond the existing evaluator fields: joint velocity or Cartesian speed and branch/joint-limit context. The evaluator implementation was extended without changing policy inputs, actions, frame skip, task mechanics, or success accounting. Before relying on a larger candidate evaluation, this controlled check exercises the changed production environment path and repeated updates/resets, so an integration defect cannot be mistaken for a learned-policy failure. It does not establish policy performance or protected continuous-hold semantics."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "research-evaluation-diagnostics-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M4-1-research_evaluation_diagnostics_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/final_boundary_fields_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reset_clears_first_entry",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/bounded_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/production_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/reset_repeated",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "246ce155e606df981b5e7bb4b15db7b189229bd0251c215e543cfb916567566d"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8e3cc13474252c7b3204eb90d8544eb370b87951",
+            "fingerprint": "27fa2f9ad5a4a51bb47e0391077d072da8297bb16338feb5677d9b1c668de299",
+            "manifest": [
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ea7b4ecf89402864b6f1d7898eb68c1ee9b60043",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "ef7e4272fe9796d66b048529507a907f3ed7e88a",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "4b35725bfb250c33503c8b1b54ca227208aa2e2c02f583185a8c1932c65be84d",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json",
+          "instrument": "python_module",
+          "label": "research-evaluation-diagnostics-compatibility",
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "8e3cc13474252c7b3204eb90d8544eb370b87951",
+          "fingerprint": "27fa2f9ad5a4a51bb47e0391077d072da8297bb16338feb5677d9b1c668de299",
+          "manifest": [
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "ea7b4ecf89402864b6f1d7898eb68c1ee9b60043",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+        ],
+        "scientific_commit": "ef7e4272fe9796d66b048529507a907f3ed7e88a",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "4b35725bfb250c33503c8b1b54ca227208aa2e2c02f583185a8c1932c65be84d",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "research-evaluation-diagnostics-compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M4-1-research_evaluation_diagnostics_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "path": "/mode",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/final_boundary_fields_present",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/reset_clears_first_entry",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/bounded_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/production_path",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/reset_repeated",
+                  "type": "boolean"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "246ce155e606df981b5e7bb4b15db7b189229bd0251c215e543cfb916567566d"
+          },
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "research-evaluation-diagnostics-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M4-1-research_evaluation_diagnostics_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/final_boundary_fields_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reset_clears_first_entry",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/bounded_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/production_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/reset_repeated",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "246ce155e606df981b5e7bb4b15db7b189229bd0251c215e543cfb916567566d"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8e3cc13474252c7b3204eb90d8544eb370b87951",
+            "fingerprint": "27fa2f9ad5a4a51bb47e0391077d072da8297bb16338feb5677d9b1c668de299",
+            "manifest": [
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ea7b4ecf89402864b6f1d7898eb68c1ee9b60043",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "ef7e4272fe9796d66b048529507a907f3ed7e88a",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "4b35725bfb250c33503c8b1b54ca227208aa2e2c02f583185a8c1932c65be84d",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Production-path compatibility check for the expanded research-evaluation diagnostics: run bounded TwoJointArmReachEnv reset/step transitions, update the new diagnostic state at each control boundary, finalize it, then reset and verify diagnostic isolation.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_compatibility.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "I1 requires diagnostics beyond the existing evaluator fields: joint velocity or Cartesian speed and branch/joint-limit context. The evaluator implementation was extended without changing policy inputs, actions, frame skip, task mechanics, or success accounting. Before relying on a larger candidate evaluation, this controlled check exercises the changed production environment path and repeated updates/resets, so an integration defect cannot be mistaken for a learned-policy failure. It does not establish policy performance or protected continuous-hold semantics."
+      }
+    },
+    "request_fingerprint": "8494b2210eaeef14024ce9038a6acf7ea0d6f4785d99675472f23ad973302c3a",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. M1-M3 are completed physical measurements, not policy candidates; E2 records the bounded inquiry opening. Working, best-known, and retained roles remain empty, so official assessment is not currently supportable.",
     "completed_operations": [
@@ -1138,6 +1679,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "ad06f52f-4a0c-4ea2-b3bc-e86d42f93de5",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M4"
+    ],
+    "scientific_parent_commit": "ef7e4272fe9796d66b048529507a907f3ed7e88a"
+  },
   "terminal_state": null
 }
