@@ -22,3 +22,4 @@
 | E8 | checkpoint | - | checkpointed |
 | M10 | measurement | I2 | failed |
 | M11 | measurement | I2 | completed |
+| T2 | training | I2 | completed |
