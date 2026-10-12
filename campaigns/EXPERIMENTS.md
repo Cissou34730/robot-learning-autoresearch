@@ -107,3 +107,4 @@
 | M54 | measurement | I10 | failed |
 | M55 | measurement | I10 | completed |
 | M56 | measurement | I10 | completed |
+| T8 | training | I10 | completed |
