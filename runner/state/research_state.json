@@ -28682,38 +28682,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "negative",
-        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "negative",
-        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E43",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review."
-      }
-    },
-    "request_fingerprint": "b12cb8134fc42649ec309619c789697891eeeb31548389b5323a4c664db315f4",
-    "session_id": "S21",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, based on M10, M11, M14, M18, M21, M23, M27, M30, M46 and M52 comparisons and analyses; it is not a protected official-assessment result. T7:checkpoint-120832 is rejected as an inferior complete safe-IK trajectory-potential artifact by M52/M53 and E38. No candidate is working or retained. E35/E37/E40 are inquiry-boundary or restoration records; M50/M51 are implementation checks; M53 is trace-derived analysis; none are learned candidates.",
     "completed_operations": [
