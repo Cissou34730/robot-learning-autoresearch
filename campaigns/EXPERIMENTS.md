@@ -105,3 +105,4 @@
 | T10 | training | I14 | completed |
 | M35 | measurement | I14 | completed |
 | E58 | inquiry | I14 | completed |
+| E59 | checkpoint | I14 | checkpointed |
