@@ -265,7 +265,24 @@ def _sample(
     qacc = _finite_array(data.qacc, "qacc")
     ctrl = _finite_array(data.ctrl, "ctrl")
     xy = _finite_array(data.site_xpos[site_id, :2], "end_effector_xy")
-    xy_velocity = _finite_array(data.site_xvelp[site_id, :2], "end_effector_xy_velocity")
+    site_velocity = np.zeros(6, dtype=np.float64)
+    mujoco.mj_objectVelocity(
+        model,
+        data,
+        mujoco.mjtObj.mjOBJ_SITE,
+        site_id,
+        site_velocity,
+        0,
+    )
+    # mj_objectVelocity returns [angular xyz, translational xyz].  With
+    # flg_local=0 these are world-frame components, so [3:5] is xy.
+    site_velocity = np.asarray(
+        _finite_array(site_velocity, "end_effector_site_velocity"),
+        dtype=np.float64,
+    )
+    xy_velocity = _finite_array(
+        site_velocity[3:5], "end_effector_xy_velocity"
+    )
     distance = _finite_scalar(
         np.linalg.norm(np.asarray(xy, dtype=np.float64) - fixed_target_xy),
         "distance_to_fixed_target",
@@ -503,6 +520,7 @@ def collect_probe(
                 "control": "dimensionless MuJoCo actuator control",
                 "end_effector_xy": "m",
                 "end_effector_xy_velocity": "m/s",
+                "end_effector_xy_velocity_source": "mujoco.mj_objectVelocity site result[3:5] with flg_local=0 (world-frame translational xy)",
                 "joint_limit_margin": "rad",
             },
             "probe_definitions": {
