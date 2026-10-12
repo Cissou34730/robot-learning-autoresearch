@@ -26,6 +26,12 @@ HOLD_COMPLETE_BONUS = 50.0
 TERMINAL_STABILIZATION_DISTANCE = 0.015
 TERMINAL_STABILIZATION_SPEED_THRESHOLD = 1.0
 TERMINAL_STABILIZATION_COEFFICIENT = 0.02
+REACH_PHASE_ACTION_SATURATION_THRESHOLD = 0.8
+REACH_PHASE_ACTION_SATURATION_COEFFICIENT = 0.05
+REACH_PHASE_ACTION_SATURATION_EXCESS_CAP = 0.2
+REACH_PHASE_JOINT_SPEED_THRESHOLD = 2.0
+REACH_PHASE_JOINT_SPEED_COEFFICIENT = 0.01
+REACH_PHASE_JOINT_SPEED_EXCESS_CAP = 5.0
 
 
 @dataclass(frozen=True)
@@ -125,6 +131,35 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
+    reach_phase_action_saturation = 0.0
+    reach_phase_joint_speed = 0.0
+    if current_distance > TERMINAL_STABILIZATION_DISTANCE:
+        if action is not None:
+            action_magnitude = float(np.max(np.abs(action)))
+            action_excess = min(
+                max(
+                    action_magnitude - REACH_PHASE_ACTION_SATURATION_THRESHOLD,
+                    0.0,
+                ),
+                REACH_PHASE_ACTION_SATURATION_EXCESS_CAP,
+            )
+            reach_phase_action_saturation = (
+                -REACH_PHASE_ACTION_SATURATION_COEFFICIENT * action_excess
+            )
+        if joint_velocities is not None:
+            speed_excess = min(
+                max(
+                    joint_speed_norm - REACH_PHASE_JOINT_SPEED_THRESHOLD,
+                    0.0,
+                ),
+                REACH_PHASE_JOINT_SPEED_EXCESS_CAP,
+            )
+            reach_phase_joint_speed = (
+                -REACH_PHASE_JOINT_SPEED_COEFFICIENT * speed_excess
+            )
+    reward += reach_phase_action_saturation
+    reward += reach_phase_joint_speed
+
     terminal_stabilization = 0.0
     if (
         joint_velocities is not None
@@ -149,6 +184,8 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
+            "reach_phase_action_saturation": float(reach_phase_action_saturation),
+            "reach_phase_joint_speed": float(reach_phase_joint_speed),
             "terminal_stabilization": float(terminal_stabilization),
             "action_cost": float(action_cost),
         },
