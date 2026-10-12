@@ -118,3 +118,4 @@
 | M60 | measurement | I11 | completed |
 | T9 | training | I11 | completed |
 | M61 | measurement | I11 | completed |
+| M62 | measurement | I11 | completed |
