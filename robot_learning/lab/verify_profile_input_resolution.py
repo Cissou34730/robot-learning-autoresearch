@@ -119,6 +119,36 @@ def run_compatibility_check() -> dict[str, Any]:
             "compatibility leading-dot snapshot provenance",
         )
 
+        quoted_m30_text = f' "{exact_m30_path}" '
+        quoted_m30_path = Path(quoted_m30_text)
+        resolved_quoted_m30, quoted_m30_source_kind = resolve_profile_input(
+            quoted_m30_text
+        )
+        _assert_equal(
+            resolved_quoted_m30,
+            quoted_m30_path,
+            "compatibility quoted snapshot resolution",
+        )
+        _assert_equal(
+            quoted_m30_source_kind,
+            "m28_profile_snapshot_fallback",
+            "compatibility quoted snapshot source kind",
+        )
+        quoted_m30_report = analyze_path(quoted_m30_text)
+        _assert_equal(
+            quoted_m30_report["source_resolution"],
+            {
+                "requested_path": str(quoted_m30_path),
+                "resolved_path": str(quoted_m30_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "compatibility quoted snapshot provenance",
+        )
+
     return {
         "status": "passed",
         "observed": {
@@ -128,16 +158,22 @@ def run_compatibility_check() -> dict[str, Any]:
             "leading_dot_source_resolution": leading_dot_report[
                 "source_resolution"
             ],
+            "quoted_m30_source_kind": quoted_m30_source_kind,
+            "quoted_m30_source_resolution": quoted_m30_report[
+                "source_resolution"
+            ],
         },
         "expected": {
             "source_kind": "m28_profile_snapshot_fallback",
             "backslash_form_exact_m30_path_is_accepted": True,
             "leading_dot_exact_m30_path_is_accepted": True,
+            "quoted_trailing_space_exact_m30_path_is_accepted": True,
             "snapshot_provenance_is_emitted": True,
         },
         "checked_scope": [
             "backslash-form exact M30 T2 input at the production resolution boundary",
             "leading-dot normalized exact M30 T2 input at the production resolution boundary",
+            "quoted and trailing-space exact M30 T2 input at the production resolution boundary",
             "artifact-independent M28 snapshot fallback selection",
             "snapshot source provenance emitted by analyze_path",
         ],

@@ -670,15 +670,21 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
     if requested_path.exists():
         return requested_path, "requested_evaluation"
 
-    normalized_path = str(artifact_path).replace("\\", "/")
+    normalized_path = str(artifact_path).replace("\\", "/").strip()
+    if (
+        len(normalized_path) >= 2
+        and normalized_path[0] == normalized_path[-1]
+        and normalized_path[0] in {"'", '"'}
+    ):
+        normalized_path = normalized_path[1:-1].strip()
+    normalized_path_casefold = normalized_path.casefold()
+    reference_filename_casefold = M30_T2_REFERENCE_FILENAME.casefold()
     is_exact_m30_input = (
-        normalized_path == M30_T2_REFERENCE_FILENAME
-        or normalized_path.endswith("/" + M30_T2_REFERENCE_FILENAME)
+        normalized_path_casefold == reference_filename_casefold
+        or normalized_path_casefold.endswith("/" + reference_filename_casefold)
     )
     if is_exact_m30_input:
-        fallback_parent = requested_path.parent
-        if fallback_parent == Path("."):
-            fallback_parent = Path(normalized_path).parent
+        fallback_parent = Path(normalized_path).parent
 
         fallback_path = fallback_parent / M27_T2_REFERENCE_FILENAME
         if fallback_path.exists():
