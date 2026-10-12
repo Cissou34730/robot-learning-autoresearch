@@ -19,6 +19,7 @@ from contracts.robots.two_joint_arm import (
 )
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 from robot_learning.scenario.evaluation import (
+    _validated_physics_step_distances,
     finalize_episode_diagnostics,
     initialize_episode_diagnostics,
     update_episode_diagnostics,
@@ -214,11 +215,81 @@ def _behavioral_check(output: Path) -> None:
         "reset maximum joint speed",
     )
 
+    # Use an independent within-interval reference.  The second held
+    # interval has one out-of-tolerance physics step; the third does not.
+    telemetry_state = initialize_episode_diagnostics(
+        model,
+        data,
+        target,
+        interval,
+        success_threshold=0.075,
+    )
+    telemetry_sequences = (
+        (False, (0.02, 0.08, 0.03)),
+        (True, (0.04, 0.09, 0.05)),
+        (True, (0.06, 0.07, 0.05)),
+        (False, (0.20, 0.04, 0.03)),
+    )
+    for in_tolerance, distances in telemetry_sequences:
+        update_episode_diagnostics(
+            telemetry_state,
+            model,
+            data,
+            in_tolerance=in_tolerance,
+            physics_step_distances=distances,
+        )
+    telemetry_observed = finalize_episode_diagnostics(telemetry_state)
+    _assert_close(
+        telemetry_observed["max_physics_step_distance_cm"],
+        20.0,
+        "maximum physics-step distance",
+    )
+    _assert_close(
+        telemetry_observed["max_physics_step_distance_during_hold_cm"],
+        9.0,
+        "maximum held-interval physics-step distance",
+    )
+    _assert(
+        telemetry_observed[
+            "hold_intervals_with_out_of_tolerance_physics_step"
+        ]
+        == 1,
+        "only one held interval should contain an out-of-tolerance step",
+    )
+    _assert(
+        telemetry_observed["out_of_tolerance_physics_substeps_during_hold"] == 1,
+        "only one held physics substep should be out of tolerance",
+    )
+    telemetry_reset = finalize_episode_diagnostics(
+        initialize_episode_diagnostics(
+            model,
+            data,
+            target,
+            interval,
+            success_threshold=0.075,
+        )
+    )
+    _assert_close(
+        telemetry_reset["max_physics_step_distance_cm"],
+        0.0,
+        "reset maximum physics-step distance",
+    )
+    _assert(
+        telemetry_reset[
+            "hold_intervals_with_out_of_tolerance_physics_step"
+        ]
+        == 0,
+        "reset must clear held-interval physics-step counts",
+    )
+
     _write(
         output,
         {
             "mode": "behavioral",
-            "observed": observed,
+            "observed": {
+                "boundary_diagnostics": observed,
+                "physics_step_diagnostics": telemetry_observed,
+            },
             "expected": {
                 "joint_speed_norm_rad_per_s": expected_joint_speeds,
                 "cartesian_speed_m_per_s": expected_cartesian_speeds,
@@ -226,6 +297,10 @@ def _behavioral_check(output: Path) -> None:
                 "first_entry_branch": "open",
                 "final_boundary_branch": "folded",
                 "reset_first_entry": None,
+                "max_physics_step_distance_cm": 20.0,
+                "max_physics_step_distance_during_hold_cm": 9.0,
+                "hold_intervals_with_out_of_tolerance_physics_step": 1,
+                "out_of_tolerance_physics_substeps_during_hold": 1,
             },
             "checked_scope": [
                 "repeated post-step updates",
@@ -234,11 +309,14 @@ def _behavioral_check(output: Path) -> None:
                 "actual end-effector displacement over 20 ms intervals",
                 "analytic open/folded labeling and nearest-branch context",
                 "diagnostic reset isolation",
+                "repeated within-interval telemetry updates",
+                "hold versus non-hold interval classification",
+                "threshold-based out-of-tolerance substep counting",
             ],
             "unchecked_scope": [
                 "learned-policy evaluation",
                 "protected benchmark semantics",
-                "intra-physics-step excursions",
+                "whether a learned policy reaches a scientific performance target",
             ],
         },
     )
@@ -247,51 +325,120 @@ def _behavioral_check(output: Path) -> None:
 def _compatibility_check(output: Path) -> None:
     env = TwoJointArmReachEnv(
         target_radius_range=(0.15, 0.15),
-        max_episode_steps=3,
+        success_threshold=0.20,
+        hold_seconds=0.10,
+        max_episode_steps=4,
+    )
+    clipped_env = TwoJointArmReachEnv(
+        target_radius_range=(0.15, 0.15),
+        success_threshold=0.20,
+        hold_seconds=0.10,
+        max_episode_steps=4,
     )
     try:
         _, _ = env.reset(seed=17)
+        _assert(env.physics_step_distances == (), "reset must clear telemetry")
         target = np.asarray(env.data.mocap_pos[0], dtype=np.float64).copy()
         state = initialize_episode_diagnostics(
             env.model,
             env.data,
             target,
             env.model.opt.timestep * env.frame_skip,
+            success_threshold=env.success_threshold,
         )
-        for action in (
-            np.zeros(2, dtype=np.float32),
-            np.asarray([0.25, -0.25], dtype=np.float32),
-            np.zeros(2, dtype=np.float32),
-        ):
-            _, _, terminated, truncated, info = env.step(action)
+        hold_flags = []
+        interval_lengths = []
+        for index in range(3):
+            if index < 2:
+                env.data.mocap_pos[0] = env.data.site("end_effector").xpos
+            else:
+                env.data.mocap_pos[0] = (
+                    env.data.site("end_effector").xpos
+                    + np.asarray([1.0, 0.0, 0.0])
+                )
+            _, _, terminated, truncated, info = env.step(
+                np.zeros(2, dtype=np.float32)
+            )
+            published_distances = env.physics_step_distances
+            _assert(
+                isinstance(published_distances, tuple)
+                and len(published_distances) == env.frame_skip,
+                "each production step must publish one distance per mj_step",
+            )
+            _assert(
+                all(
+                    np.isfinite(value) and value >= 0.0
+                    for value in published_distances
+                ),
+                "production telemetry must be finite and nonnegative",
+            )
+            distances = _validated_physics_step_distances(env)
+            _assert_close(
+                distances[-1],
+                float(info["distance"]),
+                "last physics distance must equal the policy-step distance",
+            )
+            interval_lengths.append(len(distances))
+            hold_flags.append(bool(info["held_steps"] > 0))
             update_episode_diagnostics(
                 state,
                 env.model,
                 env.data,
                 in_tolerance=bool(info.get("held_steps", 0) > 0),
+                physics_step_distances=distances,
+                success_threshold=env.success_threshold,
             )
             if terminated or truncated:
                 break
         observed = finalize_episode_diagnostics(state)
+        _assert(
+            hold_flags[:2] == [True, True] and hold_flags[2:] == [False],
+            "controlled target changes must exercise hold and non-hold intervals",
+        )
+        _assert(
+            observed["max_physics_step_distance_cm"]
+            >= observed["max_physics_step_distance_during_hold_cm"],
+            "all-interval maximum must include held intervals",
+        )
         _assert(
             observed["final_joint_speed_norm_rad_per_s"] is not None
             and observed["final_cartesian_speed_m_per_s"] is not None,
             "production environment steps must reach a final diagnostic boundary",
         )
         _, _ = env.reset(seed=18)
+        _assert(env.physics_step_distances == (), "reset must isolate telemetry")
         fresh = initialize_episode_diagnostics(
             env.model,
             env.data,
             np.asarray(env.data.mocap_pos[0], dtype=np.float64),
             env.model.opt.timestep * env.frame_skip,
+            success_threshold=env.success_threshold,
         )
         _assert(
             finalize_episode_diagnostics(fresh)["ik_branch_context"]["first_entry"]
             is None,
             "production reset must clear the prior entry snapshot",
         )
+
+        # Clipping remains a policy-step invariant: an out-of-range action and
+        # its clipped equivalent must have identical controlled consequences.
+        obs_a, _ = clipped_env.reset(seed=23)
+        result_a = clipped_env.step(np.asarray([2.0, -2.0], dtype=np.float32))
+        obs_b, _ = clipped_env.reset(seed=23)
+        result_b = clipped_env.step(np.asarray([1.0, -1.0], dtype=np.float32))
+        _assert(np.allclose(obs_a, obs_b), "seeded reset observations must match")
+        _assert(
+            np.allclose(result_a[0], result_b[0]),
+            "action clipping changed observation",
+        )
+        _assert_close(result_a[1], result_b[1], "action clipping changed reward")
+        _assert(
+            result_a[2] == result_b[2] and result_a[3] == result_b[3],
+            "action clipping changed termination or truncation",
+        )
     finally:
         env.close()
+        clipped_env.close()
 
     _write(
         output,
@@ -300,15 +447,25 @@ def _compatibility_check(output: Path) -> None:
             "observed": {
                 "production_path": "TwoJointArmReachEnv.reset/step plus diagnostic helpers",
                 "bounded_steps": 3,
+                "interval_lengths": interval_lengths,
+                "hold_flags": hold_flags,
                 "reset_repeated": True,
+                "reset_telemetry": (),
             },
             "expected": {
                 "final_boundary_fields_present": True,
                 "reset_clears_first_entry": True,
+                "physics_steps_per_interval": env.frame_skip,
+                "hold_flags": [True, True, False],
+                "clipped_action_equivalence": True,
             },
             "checked_scope": [
                 "artifact-independent production environment reset and steps",
                 "diagnostic initialization, repeated updates, finalization, and reset",
+                "repeated internal-step telemetry publication",
+                "hold/non-hold transition classification using the environment threshold",
+                "reset isolation of the latest telemetry interval",
+                "preservation of action clipping and policy-step consequences",
             ],
             "unchecked_scope": [
                 "learned-policy runtime loading",
