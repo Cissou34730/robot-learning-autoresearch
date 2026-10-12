@@ -57,3 +57,4 @@
 | M25 | measurement | I6 | failed |
 | M26 | measurement | I6 | completed |
 | T5 | training | I6 | completed |
+| M27 | measurement | I6 | completed |
