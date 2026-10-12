@@ -101,3 +101,4 @@
 | E56 | inquiry | I14 | completed |
 | E57 | checkpoint | - | checkpointed |
 | M33 | measurement | I14 | failed |
+| M34 | measurement | I14 | completed |

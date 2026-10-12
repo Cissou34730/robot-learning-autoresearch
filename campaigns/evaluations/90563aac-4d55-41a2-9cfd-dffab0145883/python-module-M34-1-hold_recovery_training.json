@@ -1,0 +1,303 @@
+{
+  "checked_scope": [
+    "direct full-radius hold-recovery training route wiring",
+    "unchanged direct/default evaluation route wiring",
+    "outside-boundary acquisition without hold-recovery terms",
+    "independent repeated in-tolerance and late interruption equations",
+    "re-entry after interruption and repeated reset state restoration",
+    "complete uninterrupted 100-step hold termination semantics"
+  ],
+  "execution_note": "This check was authored but has not been executed by the author.",
+  "expected": {
+    "evaluation_route": {
+      "control_profile": "direct",
+      "reward_profile": "default",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    },
+    "hold_steps_required": 100,
+    "interruption_forfeit": "100% of prior accumulated recovery progress",
+    "recovery_progress": "100 * (held_steps / 100) ** 2",
+    "regulation_activation": "current_distance <= 0.01",
+    "training_route": {
+      "control_profile": "direct",
+      "reward_profile": "hold_recovery",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    }
+  },
+  "observed_vs_expected": {
+    "independent_reward_equations": {
+      "first_in_tolerance_update": {
+        "expected": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.2620637115986315,
+            "hold_complete": 0.0,
+            "hold_progress": 0.01,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.04
+          },
+          "total": 0.28153929192733806
+        },
+        "observed": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.2620637115986315,
+            "hold_complete": 0.0,
+            "hold_progress": 0.01,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.04
+          },
+          "total": 0.28153929192733806
+        }
+      },
+      "late_hold_interruption": {
+        "expected": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": -0.7272949717222881,
+            "hold_complete": 0.0,
+            "hold_progress": -98.00999999999999,
+            "outside_band": -0.1,
+            "progress": -0.12
+          },
+          "total": -98.95929497172227
+        },
+        "observed": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": -0.7272949717222881,
+            "hold_complete": 0.0,
+            "hold_progress": -98.00999999999999,
+            "outside_band": -0.1,
+            "progress": -0.12
+          },
+          "total": -98.95929497172227
+        }
+      },
+      "late_in_tolerance_update": {
+        "expected": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.0,
+            "hold_complete": 50.0,
+            "hold_progress": 1.990000000000009,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.0
+          },
+          "total": 51.959475580328714
+        },
+        "observed": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.0,
+            "hold_complete": 50.0,
+            "hold_progress": 1.990000000000009,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.0
+          },
+          "total": 51.959475580328714
+        }
+      },
+      "reentry_after_interruption": {
+        "expected": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.7272949717222881,
+            "hold_complete": 0.0,
+            "hold_progress": 0.01,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.12
+          },
+          "total": 0.8267705520509946
+        },
+        "observed": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.7272949717222881,
+            "hold_complete": 0.0,
+            "hold_progress": 0.01,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.12
+          },
+          "total": 0.8267705520509946
+        }
+      },
+      "repeated_in_tolerance_update": {
+        "expected": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.0,
+            "hold_complete": 0.0,
+            "hold_progress": 0.990000000000002,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.0
+          },
+          "total": 0.9594755803287085
+        },
+        "observed": {
+          "components": {
+            "action_cost": -0.0020000000000000005,
+            "closeness": 0.0,
+            "hold_complete": 0.0,
+            "hold_progress": 0.990000000000002,
+            "hold_recovery_action_regulation": -0.0052820730250867755,
+            "hold_recovery_endpoint_velocity": -0.022047241613387808,
+            "hold_recovery_joint_velocity": -0.0011951050328188704,
+            "outside_band": 0.0,
+            "progress": 0.0
+          },
+          "total": 0.9594755803287085
+        }
+      }
+    },
+    "routes_and_outside_acquisition": {
+      "acquisition_components": {
+        "action_cost": -0.02,
+        "closeness": 1.8736941121639354,
+        "hold_complete": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "progress": 0.6
+      },
+      "acquisition_distance": 0.02,
+      "clipped_control": [
+        1.0,
+        -1.0
+      ],
+      "evaluation": {
+        "control_profile": "direct",
+        "reward_profile": "default",
+        "target_radius_range": [
+          0.06,
+          0.2
+        ]
+      },
+      "training": {
+        "control_profile": "direct",
+        "reward_profile": "hold_recovery",
+        "target_radius_range": [
+          0.06,
+          0.2
+        ]
+      }
+    },
+    "sampling_resets_and_transitions": {
+      "complete_hold": {
+        "final_held_steps": 100,
+        "steps": 100,
+        "terminated": true
+      },
+      "interruption": {
+        "held_steps": 0,
+        "hold_progress": -98.00999999999999
+      },
+      "reentry": {
+        "held_steps": 1,
+        "hold_progress": 0.01
+      },
+      "resets": [
+        {
+          "held_steps": 0,
+          "outside_after_hold": false,
+          "qpos": [
+            0.0,
+            0.0
+          ],
+          "qvel": [
+            0.0,
+            0.0
+          ],
+          "seed": 1101
+        },
+        {
+          "held_steps": 0,
+          "outside_after_hold": false,
+          "qpos": [
+            0.0,
+            0.0
+          ],
+          "qvel": [
+            0.0,
+            0.0
+          ],
+          "seed": 1102
+        },
+        {
+          "held_steps": 0,
+          "outside_after_hold": false,
+          "qpos": [
+            0.0,
+            0.0
+          ],
+          "qvel": [
+            0.0,
+            0.0
+          ],
+          "seed": 1103
+        }
+      ],
+      "sampled_radii": [
+        0.09315347092345397,
+        0.18962170827433852,
+        0.1526336209123464,
+        0.16064749152747815
+      ]
+    },
+    "unchanged_profiles": {
+      "default_components": {
+        "action_cost": -0.0020000000000000005,
+        "closeness": 0.9897297844902647,
+        "hold_complete": 0.0,
+        "hold_progress": 0.5,
+        "outside_band": 0.0,
+        "progress": 0.4
+      },
+      "targeted_components": {
+        "action_cost": -0.0020000000000000005,
+        "braking_weight": 0.5000000000000001,
+        "closeness": 0.0,
+        "hold_complete": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "progress": 0.0,
+        "targeted_action_regulation": -0.002641036512543388,
+        "targeted_endpoint_velocity": -0.011023620806693906,
+        "targeted_joint_velocity": -0.0011951050328188704
+      }
+    }
+  },
+  "status": "passed",
+  "unchecked_scope": [
+    "learned-policy performance, PPO behavior, and official evaluation success",
+    "whether hold-recovery shaping improves complete holds or no-first-reach failures",
+    "causal validity of the route-level intervention",
+    "long-horizon dynamics beyond the controlled synthetic transitions"
+  ]
+}
