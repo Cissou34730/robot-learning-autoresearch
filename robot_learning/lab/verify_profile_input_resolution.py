@@ -56,6 +56,64 @@ def _assert_raises_file_not_found(callable_: Any, label: str) -> None:
     raise AssertionError(f"{label}: expected FileNotFoundError")
 
 
+def run_compatibility_check() -> dict[str, Any]:
+    """Exercise the changed path boundary without a campaign artifact."""
+    with TemporaryDirectory() as temporary_directory:
+        directory = Path(temporary_directory)
+        exact_m30_path = directory / M30_T2_REFERENCE_FILENAME
+        backslash_m30_text = str(exact_m30_path).replace("/", "\\")
+        requested_path = Path(backslash_m30_text)
+
+        resolved_path, source_kind = resolve_profile_input(backslash_m30_text)
+        _assert_equal(
+            resolved_path, requested_path, "compatibility snapshot resolution"
+        )
+        _assert_equal(
+            source_kind,
+            "m28_profile_snapshot_fallback",
+            "compatibility snapshot source kind",
+        )
+        report = analyze_path(backslash_m30_text)
+        expected_resolution = {
+            "requested_path": str(requested_path),
+            "resolved_path": str(requested_path),
+            "fallback_used": True,
+            "source_kind": "m28_profile_snapshot_fallback",
+            "snapshot_used": True,
+            "source_operation": "M28",
+            "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+        }
+        _assert_equal(
+            report["source_resolution"],
+            expected_resolution,
+            "compatibility snapshot provenance",
+        )
+
+    return {
+        "status": "passed",
+        "observed": {
+            "source_kind": source_kind,
+            "source_resolution": report["source_resolution"],
+        },
+        "expected": {
+            "source_kind": "m28_profile_snapshot_fallback",
+            "backslash_form_exact_m30_path_is_accepted": True,
+            "snapshot_provenance_is_emitted": True,
+        },
+        "checked_scope": [
+            "backslash-form exact M30 T2 input at the production resolution boundary",
+            "artifact-independent M28 snapshot fallback selection",
+            "snapshot source provenance emitted by analyze_path",
+        ],
+        "unchecked_scope": [
+            "sibling-file fallback behavior covered by the behavioral check",
+            "completed campaign artifact schema and values",
+            "scientific validity or interpretation of the profile",
+        ],
+        "execution_note": "This check has not been executed.",
+    }
+
+
 def run_check() -> dict[str, Any]:
     artifact = _synthetic_artifact()
     required_sections = (
@@ -258,6 +316,36 @@ def run_check() -> dict[str, Any]:
             "M28 snapshot branch counts",
         )
 
+        backslash_m30_text = str(missing_m30_path).replace("/", "\\")
+        backslash_m30_path = Path(backslash_m30_text)
+        resolved_backslash_m30, backslash_m30_source_kind = resolve_profile_input(
+            backslash_m30_text
+        )
+        _assert_equal(
+            resolved_backslash_m30,
+            backslash_m30_path,
+            "backslash-form exact M30 snapshot resolution",
+        )
+        _assert_equal(
+            backslash_m30_source_kind,
+            "m28_profile_snapshot_fallback",
+            "backslash-form M28 snapshot source kind",
+        )
+        backslash_snapshot_report = analyze_path(backslash_m30_text)
+        _assert_equal(
+            backslash_snapshot_report["source_resolution"],
+            {
+                "requested_path": str(backslash_m30_path),
+                "resolved_path": str(backslash_m30_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "backslash-form M28 snapshot provenance",
+        )
+
         non_m30_missing_path = directory / "missing.json"
         _assert_raises_file_not_found(
             lambda: resolve_profile_input(non_m30_missing_path),
@@ -289,6 +377,9 @@ def run_check() -> dict[str, Any]:
             "m28_report_source_resolution": m28_report[
                 "source_resolution"
             ],
+            "backslash_m30_snapshot_source_resolution": backslash_snapshot_report[
+                "source_resolution"
+            ],
             "m28_preserved_profile_marker": m28_report["profile_marker"],
             "m28_snapshot_corrected_first_reach_counts": {
                 "[-180,-135)": snapshot_report["angle_strata"]["[-180,-135)"][
@@ -311,6 +402,7 @@ def run_check() -> dict[str, Any]:
             "exact_m30_path_uses_m28_profile_only_when_m27_is_absent": True,
             "m28_profile_is_loaded_without_recomputation": True,
             "missing_exact_m30_path_uses_provenance_bound_m28_snapshot": True,
+            "backslash_form_exact_m30_path_uses_same_m28_snapshot_provenance": True,
             "m28_snapshot_corrected_first_reach_counts": {
                 "[-180,-135)": 22,
                 "[-45,0)": 11,
@@ -325,6 +417,7 @@ def run_check() -> dict[str, Any]:
             "source kind and fallback provenance in emitted path reports",
             "preservation of a loaded M28 profile without recomputation",
             "artifact-independent M28 snapshot fallback for an absent exact M30 T2 file",
+            "backslash-form exact M30 T2 snapshot fallback and provenance",
             "M28 snapshot provenance and representative aggregate counts",
             "corrected M28 snapshot first-reach counts for [-180,-135) and [-45,0)",
             "rejection of an unrelated missing input",
@@ -342,8 +435,13 @@ def run_check() -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, help="verification artifact path")
+    parser.add_argument(
+        "--compatibility",
+        action="store_true",
+        help="run the artifact-independent path compatibility check",
+    )
     args = parser.parse_args(argv)
-    result = run_check()
+    result = run_compatibility_check() if args.compatibility else run_check()
     with Path(args.output).open("w", encoding="utf-8") as handle:
         json.dump(result, handle, indent=2, sort_keys=True)
         handle.write("\n")

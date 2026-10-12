@@ -670,11 +670,17 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
     if requested_path.exists():
         return requested_path, "requested_evaluation"
 
-    if requested_path.name == M30_T2_REFERENCE_FILENAME:
-        fallback_path = requested_path.parent / M27_T2_REFERENCE_FILENAME
+    normalized_path = str(artifact_path).replace("\\", "/")
+    normalized_basename = normalized_path.rsplit("/", 1)[-1]
+    if normalized_basename == M30_T2_REFERENCE_FILENAME:
+        fallback_parent = requested_path.parent
+        if fallback_parent == Path("."):
+            fallback_parent = Path(normalized_path).parent
+
+        fallback_path = fallback_parent / M27_T2_REFERENCE_FILENAME
         if fallback_path.exists():
             return fallback_path, "m27_evaluation_fallback"
-        fallback_path = requested_path.parent / M28_T2_PROFILE_FILENAME
+        fallback_path = fallback_parent / M28_T2_PROFILE_FILENAME
         if fallback_path.exists():
             return fallback_path, "m28_profile_fallback"
         return requested_path, "m28_profile_snapshot_fallback"
