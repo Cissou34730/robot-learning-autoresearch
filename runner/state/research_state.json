@@ -4936,7 +4936,7 @@
   "counters": {
     "event": 32,
     "inquiry": 8,
-    "measurement": 44,
+    "measurement": 45,
     "session": 17,
     "training": 6
   },
@@ -20149,9 +20149,1183 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T16:57:26Z",
+      "error": null,
+      "id": "M45",
+      "inquiry_id": "I8",
+      "kind": "measurement",
+      "request": {
+        "description": "Run the reviewed independent behavioral verification for compiled Jacobian, trajectory, branch, limit, hold-transition, reset, and physics-step diagnostic bookkeeping.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+            ],
+            "artifact": "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json",
+            "instrument": "python_module",
+            "label": "I8 trajectory diagnostics behavioral verification",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "Compatibility preserved the production environment path, but it does not independently verify the compiled Jacobian against analytic kinematics or repeated diagnostic updates and reset isolation. This behavioral check is required to catch incorrect mechanism telemetry before using it to interpret T2 failures."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+            ],
+            "instrument": "python_module",
+            "label": "I8 trajectory diagnostics behavioral verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M45-1-research_evaluation_diagnostics_behavioral.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 13,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/cartesian_speed_m_per_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/final_boundary_branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/first_entry_branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/joint_speed_norm_rad_per_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/reset_first_entry",
+                    "type": "null"
+                  },
+                  {
+                    "path": "/expected/trajectory_reset_rank_deficient",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/trajectory_rows_include_actions_and_jacobians",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed/boundary_diagnostics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed/physics_step_diagnostics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/boundary_diagnostics/ik_branch_context",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/min_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "applied_clipped_action",
+                      "control_step",
+                      "end_effector_position_m",
+                      "held_steps",
+                      "in_tolerance",
+                      "jacobian",
+                      "joint_limit_margin_rad",
+                      "physics_step_distances_cm",
+                      "qpos_rad",
+                      "qvel_rad_per_s",
+                      "radial_cartesian_velocity_m_per_s",
+                      "tangential_cartesian_velocity_m_per_s",
+                      "target_relative_distance_m",
+                      "target_relative_position_m"
+                    ],
+                    "path": "/observed/boundary_diagnostics/trajectory_trace",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/physics_step_diagnostics/ik_branch_context",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/min_joint_limit_margin_rad",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "2a8439cfb693e820621aa81f6ecb3d7ff87d82f9f48663208de4c8f4b0aea434"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "61a0062304e327d1f1dc85b9188a1198a00735ed",
+            "fingerprint": "85ca1c2ba32544d765f0e08e27fa3b8a63a38bd99a4c22f960aeccf9b0fc523a",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--mode",
+            "behavioral",
+            "--output",
+            "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/research_evaluation_diagnostics_behavioral.json",
+          "instrument": "python_module",
+          "label": "I8 trajectory diagnostics behavioral verification",
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "61a0062304e327d1f1dc85b9188a1198a00735ed",
+          "fingerprint": "85ca1c2ba32544d765f0e08e27fa3b8a63a38bd99a4c22f960aeccf9b0fc523a",
+          "manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            }
+          ]
+        },
+        "code_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--mode",
+            "behavioral",
+            "--output",
+            "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+          ],
+          "instrument": "python_module",
+          "label": "I8 trajectory diagnostics behavioral verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M45-1-research_evaluation_diagnostics_behavioral.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 13,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 12,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "path": "/mode",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected/cartesian_speed_m_per_s",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/final_boundary_branch",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/first_entry_branch",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/hold_intervals_with_out_of_tolerance_physics_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected/joint_speed_norm_rad_per_s",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/max_physics_step_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/max_physics_step_distance_during_hold_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/out_of_tolerance_physics_substeps_during_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/reset_first_entry",
+                  "type": "null"
+                },
+                {
+                  "path": "/expected/trajectory_reset_rank_deficient",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/trajectory_rows_include_actions_and_jacobians",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 15,
+                  "path": "/observed/boundary_diagnostics",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/observed/physics_step_diagnostics",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/final_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/final_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/final_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/first_entry_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/first_entry_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/boundary_diagnostics/ik_branch_context",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/max_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/max_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/max_physics_step_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/max_physics_step_distance_during_hold_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/min_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/boundary_diagnostics/out_of_tolerance_physics_substeps_during_hold",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "applied_clipped_action",
+                    "control_step",
+                    "end_effector_position_m",
+                    "held_steps",
+                    "in_tolerance",
+                    "jacobian",
+                    "joint_limit_margin_rad",
+                    "physics_step_distances_cm",
+                    "qpos_rad",
+                    "qvel_rad_per_s",
+                    "radial_cartesian_velocity_m_per_s",
+                    "tangential_cartesian_velocity_m_per_s",
+                    "target_relative_distance_m",
+                    "target_relative_position_m"
+                  ],
+                  "path": "/observed/boundary_diagnostics/trajectory_trace",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/final_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/final_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/final_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/first_entry_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/first_entry_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/physics_step_diagnostics/ik_branch_context",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/max_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/max_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/physics_step_diagnostics/min_joint_limit_margin_rad",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "2a8439cfb693e820621aa81f6ecb3d7ff87d82f9f48663208de4c8f4b0aea434"
+          },
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+            ],
+            "instrument": "python_module",
+            "label": "I8 trajectory diagnostics behavioral verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M45-1-research_evaluation_diagnostics_behavioral.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 13,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/cartesian_speed_m_per_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/final_boundary_branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/first_entry_branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/joint_speed_norm_rad_per_s",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/reset_first_entry",
+                    "type": "null"
+                  },
+                  {
+                    "path": "/expected/trajectory_reset_rank_deficient",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/trajectory_rows_include_actions_and_jacobians",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed/boundary_diagnostics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed/physics_step_diagnostics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/final_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/boundary_diagnostics/ik_branch_context",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/min_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/boundary_diagnostics/out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "applied_clipped_action",
+                      "control_step",
+                      "end_effector_position_m",
+                      "held_steps",
+                      "in_tolerance",
+                      "jacobian",
+                      "joint_limit_margin_rad",
+                      "physics_step_distances_cm",
+                      "qpos_rad",
+                      "qvel_rad_per_s",
+                      "radial_cartesian_velocity_m_per_s",
+                      "tangential_cartesian_velocity_m_per_s",
+                      "target_relative_distance_m",
+                      "target_relative_position_m"
+                    ],
+                    "path": "/observed/boundary_diagnostics/trajectory_trace",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/final_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/physics_step_diagnostics/ik_branch_context",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/physics_step_diagnostics/min_joint_limit_margin_rad",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "2a8439cfb693e820621aa81f6ecb3d7ff87d82f9f48663208de4c8f4b0aea434"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "61a0062304e327d1f1dc85b9188a1198a00735ed",
+            "fingerprint": "85ca1c2ba32544d765f0e08e27fa3b8a63a38bd99a4c22f960aeccf9b0fc523a",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M45",
+    "inquiry_id": "I8",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run the reviewed independent behavioral verification for compiled Jacobian, trajectory, branch, limit, hold-transition, reset, and physics-step diagnostic bookkeeping.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json"
+            ],
+            "artifact": "campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\research_evaluation_diagnostics_behavioral.json",
+            "instrument": "python_module",
+            "label": "I8 trajectory diagnostics behavioral verification",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "Compatibility preserved the production environment path, but it does not independently verify the compiled Jacobian against analytic kinematics or repeated diagnostic updates and reset isolation. This behavioral check is required to catch incorrect mechanism telemetry before using it to interpret T2 failures."
+      }
+    },
+    "request_fingerprint": "6e0e04f737239606877bc023c0de02c3f418e398b76de6297fe7ee382815958b",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate because M30/M41 show it substantially outperforms T6 on the matched development panel; best-known is not goal certification and T2 is not ready for official assessment. T6:checkpoint-120832 remains a complete negative I7 artifact and is not working, retained, or best-known. No candidate is assigned working or retained status. The tested targeted-angle source remains evidence of one specific exposure implementation, not a privileged route or a causal explanation.",
     "completed_operations": [
@@ -20196,7 +21370,8 @@
     "kind": "inquiry",
     "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M44"
+      "M44",
+      "M45"
     ],
     "scientific_parent_commit": "f9d7ecad4ba261f67bfbd65ddc101264bac2f6fe"
   },

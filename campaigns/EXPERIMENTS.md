@@ -84,3 +84,4 @@
 | E31 | inquiry | I8 | completed |
 | E32 | checkpoint | - | checkpointed |
 | M44 | measurement | I8 | completed |
+| M45 | measurement | I8 | completed |
