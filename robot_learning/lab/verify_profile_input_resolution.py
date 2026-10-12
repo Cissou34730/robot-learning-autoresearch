@@ -17,6 +17,7 @@ from robot_learning.lab.analyze_baseline_profile import (
     M28_T2_PROFILE_FILENAME,
     M28_T2_ARTIFACT_FINGERPRINT,
     M30_T2_REFERENCE_FILENAME,
+    M30_T2_RUNNER_ALIAS_FILENAME,
     analyze_document,
     analyze_path,
     resolve_profile_input,
@@ -149,6 +150,35 @@ def run_compatibility_check() -> dict[str, Any]:
             "compatibility quoted snapshot provenance",
         )
 
+        exact_runner_alias_path = directory / M30_T2_RUNNER_ALIAS_FILENAME
+        resolved_runner_alias, runner_alias_source_kind = resolve_profile_input(
+            exact_runner_alias_path
+        )
+        _assert_equal(
+            resolved_runner_alias,
+            exact_runner_alias_path,
+            "compatibility exact Runner alias snapshot resolution",
+        )
+        _assert_equal(
+            runner_alias_source_kind,
+            "m28_profile_snapshot_fallback",
+            "compatibility exact Runner alias source kind",
+        )
+        runner_alias_report = analyze_path(exact_runner_alias_path)
+        _assert_equal(
+            runner_alias_report["source_resolution"],
+            {
+                "requested_path": str(exact_runner_alias_path),
+                "resolved_path": str(exact_runner_alias_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "compatibility exact Runner alias snapshot provenance",
+        )
+
     return {
         "status": "passed",
         "observed": {
@@ -162,18 +192,25 @@ def run_compatibility_check() -> dict[str, Any]:
             "quoted_m30_source_resolution": quoted_m30_report[
                 "source_resolution"
             ],
+            "runner_alias_source_kind": runner_alias_source_kind,
+            "runner_alias_source_resolution": runner_alias_report[
+                "source_resolution"
+            ],
         },
         "expected": {
             "source_kind": "m28_profile_snapshot_fallback",
             "backslash_form_exact_m30_path_is_accepted": True,
             "leading_dot_exact_m30_path_is_accepted": True,
             "quoted_trailing_space_exact_m30_path_is_accepted": True,
+            "exact_runner_alias_path_is_accepted": True,
+            "exact_runner_alias_uses_same_snapshot_provenance": True,
             "snapshot_provenance_is_emitted": True,
         },
         "checked_scope": [
             "backslash-form exact M30 T2 input at the production resolution boundary",
             "leading-dot normalized exact M30 T2 input at the production resolution boundary",
             "quoted and trailing-space exact M30 T2 input at the production resolution boundary",
+            "exact observed Runner alias input at the production resolution boundary",
             "artifact-independent M28 snapshot fallback selection",
             "snapshot source provenance emitted by analyze_path",
         ],
@@ -418,6 +455,35 @@ def run_check() -> dict[str, Any]:
             "backslash-form M28 snapshot provenance",
         )
 
+        runner_alias_path = directory / M30_T2_RUNNER_ALIAS_FILENAME
+        resolved_runner_alias, runner_alias_source_kind = resolve_profile_input(
+            runner_alias_path
+        )
+        _assert_equal(
+            resolved_runner_alias,
+            runner_alias_path,
+            "exact Runner alias snapshot resolution",
+        )
+        _assert_equal(
+            runner_alias_source_kind,
+            "m28_profile_snapshot_fallback",
+            "exact Runner alias snapshot source kind",
+        )
+        runner_alias_report = analyze_path(runner_alias_path)
+        _assert_equal(
+            runner_alias_report["source_resolution"],
+            {
+                "requested_path": str(runner_alias_path),
+                "resolved_path": str(runner_alias_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "exact Runner alias snapshot provenance",
+        )
+
         non_m30_missing_path = directory / "missing.json"
         _assert_raises_file_not_found(
             lambda: resolve_profile_input(non_m30_missing_path),
@@ -434,6 +500,13 @@ def run_check() -> dict[str, Any]:
         _assert_raises_file_not_found(
             lambda: resolve_profile_input(embedded_m30_missing_path),
             "embedded M30 filename missing input",
+        )
+        embedded_runner_alias_missing_path = directory / (
+            "prefix-" + M30_T2_RUNNER_ALIAS_FILENAME
+        )
+        _assert_raises_file_not_found(
+            lambda: resolve_profile_input(embedded_runner_alias_missing_path),
+            "embedded Runner alias filename missing input",
         )
 
         observed = {
@@ -459,6 +532,9 @@ def run_check() -> dict[str, Any]:
             "backslash_m30_snapshot_source_resolution": backslash_snapshot_report[
                 "source_resolution"
             ],
+            "runner_alias_snapshot_source_resolution": runner_alias_report[
+                "source_resolution"
+            ],
             "m28_preserved_profile_marker": m28_report["profile_marker"],
             "m28_snapshot_corrected_first_reach_counts": {
                 "[-180,-135)": snapshot_report["angle_strata"]["[-180,-135)"][
@@ -468,7 +544,7 @@ def run_check() -> dict[str, Any]:
                     "first_reach_count"
                 ],
             },
-            "rejected_missing_inputs": 3,
+            "rejected_missing_inputs": 4,
             "analysis_sections": list(required_sections),
         }
 
@@ -482,12 +558,14 @@ def run_check() -> dict[str, Any]:
             "m28_profile_is_loaded_without_recomputation": True,
             "missing_exact_m30_path_uses_provenance_bound_m28_snapshot": True,
             "backslash_form_exact_m30_path_uses_same_m28_snapshot_provenance": True,
+            "exact_runner_alias_path_uses_same_m28_snapshot_provenance": True,
             "m28_snapshot_corrected_first_reach_counts": {
                 "[-180,-135)": 22,
                 "[-45,0)": 11,
             },
             "unrelated_missing_path_rejected": True,
             "embedded_m30_filename_path_rejected": True,
+            "embedded_runner_alias_filename_path_rejected": True,
             "analysis_sections_preserved": list(required_sections),
         },
         "checked_scope": [
@@ -498,10 +576,12 @@ def run_check() -> dict[str, Any]:
             "preservation of a loaded M28 profile without recomputation",
             "artifact-independent M28 snapshot fallback for an absent exact M30 T2 file",
             "backslash-form exact M30 T2 snapshot fallback and provenance",
+            "exact observed Runner alias snapshot fallback and provenance",
             "M28 snapshot provenance and representative aggregate counts",
             "corrected M28 snapshot first-reach counts for [-180,-135) and [-45,0)",
             "rejection of an unrelated missing input",
             "rejection of a missing path that only embeds the approved M30 filename",
+            "rejection of a missing path that only embeds the observed Runner alias filename",
             "existing aggregate report section presence",
         ],
         "unchecked_scope": [

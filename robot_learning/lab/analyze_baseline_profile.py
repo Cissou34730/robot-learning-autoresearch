@@ -22,6 +22,10 @@ M30_T2_REFERENCE_FILENAME = (
     "evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-"
     "m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
 )
+M30_T2_RUNNER_ALIAS_FILENAME = (
+    "evaluation-fedcc0f3-5435-b839-d2c108082481-"
+    "m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
+)
 M27_T2_REFERENCE_FILENAME = (
     "evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-"
     "m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
@@ -678,10 +682,13 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
     ):
         normalized_path = normalized_path[1:-1].strip()
     normalized_path_casefold = normalized_path.casefold()
-    reference_filename_casefold = M30_T2_REFERENCE_FILENAME.casefold()
-    is_exact_m30_input = (
-        normalized_path_casefold == reference_filename_casefold
-        or normalized_path_casefold.endswith("/" + reference_filename_casefold)
+    is_exact_m30_input = any(
+        normalized_path_casefold == reference_filename.casefold()
+        or normalized_path_casefold.endswith("/" + reference_filename.casefold())
+        for reference_filename in (
+            M30_T2_REFERENCE_FILENAME,
+            M30_T2_RUNNER_ALIAS_FILENAME,
+        )
     )
     if is_exact_m30_input:
         fallback_parent = Path(normalized_path).parent
@@ -694,19 +701,7 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
             return fallback_path, "m28_profile_fallback"
         return requested_path, "m28_profile_snapshot_fallback"
 
-    normalized_final_component = normalized_path.rsplit("/", 1)[-1]
-    raise FileNotFoundError(
-        "Profile artifact not found: "
-        f"normalized_path={normalized_path!r}; "
-        f"allowlisted_m30_filename={M30_T2_REFERENCE_FILENAME!r}; "
-        f"normalized_final_component={normalized_final_component!r}; "
-        f"normalized_final_component_length={len(normalized_final_component)}; "
-        f"allowlisted_m30_filename_length={len(M30_T2_REFERENCE_FILENAME)}; "
-        "normalized_final_component_code_points="
-        f"{[ord(character) for character in normalized_final_component]!r}; "
-        "allowlisted_m30_filename_code_points="
-        f"{[ord(character) for character in M30_T2_REFERENCE_FILENAME]!r}"
-    )
+    raise FileNotFoundError(f"Profile artifact not found: {artifact_path!r}")
 
 
 def analyze_path(artifact_path: str | Path) -> dict[str, Any]:
