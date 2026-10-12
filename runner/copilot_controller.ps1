@@ -72,7 +72,7 @@ function Get-RunnerSubmissionError {
     } else { $script:ProcessOutput }
     $lines = @($errorText -split '\r?\n' | Where-Object { $_.Trim() })
     if ($lines.Count) {
-        return $lines[-1].Trim()
+        return ($lines -join [Environment]::NewLine).Trim()
     }
     return "Runner failed without an error message; transaction state is preserved."
 }
