@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 3,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -479,31 +479,152 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M2"
+    },
+    {
+      "completed_at": "2026-10-12T06:50:09Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The earlier M1 and M2 records were implementation failures and are not evidence.",
+        "completed_operations": [
+          "M3"
+        ],
+        "cumulative_resource_use": "Completed one startup measurement operation M3 containing the compiled-dynamics characterization and its reviewed verification; no training steps and no policy evaluation episodes were consumed. M1 and M2 were failed execution attempts repaired and reaccepted into M3, not completed scientific operations or evidence.",
+        "current_goal_gap": "No learned candidate or development evaluation exists yet, so official success is entirely unestablished and the gap to 98% is unknown. The remaining gap is to produce and measure a policy over the full 0.06-0.20 m target distribution, separating arrival from the complete uninterrupted hold.",
+        "current_synthesis": "Observed in completed operation M3: the compiled MuJoCo model has timestep 0.002 s, ten physics steps per control update, and 50 Hz control; compiled joint damping is 0.5 for both joints, armature is 0.01, motor gear is 5 with controls bounded by [-1,1], and the compiler supplies finite body masses/inertias and nominal solver settings. The reviewed verification artifact passed timing, bounded-control, repeated-reset, complete-trace, nonzero-response, zero-command decay, and singularity-direction checks. Saturated commands produced repeatable nonzero motion at reset and at representative 0.08 m and 0.18 m open/folded IK postures; after a command burst, repeated zero-command updates reduced joint velocity essentially to zero. At the reset singular posture, the first-step inward radial displacement was 0.000192 m versus 0.012219 m tangential displacement, directly supporting the predicted local radial escape disadvantage. Interpretation: nominal motor authority and damping are ample in these bounded deterministic probes, so a blanket torque/inertia impossibility explanation is weakened. The reset singularity remains a real sequencing/approach mechanism, and the two inner-radius branches remain a policy coverage and branch-selection problem. Competing explanations for future task failures are therefore (1) insufficient exposure to official inner radii, (2) failure to escape or choose a robust branch from the reset state, and (3) overshoot or intermittent boundary regulation during the 100-step hold. M3 did not command toward targets, measure a learned policy, test all angles, or observe official hold success; its physical conclusion is limited to the five postures and command sequences recorded.",
+        "decision_frontier": "The unresolved distinction is now policy capability rather than nominal plant authority: will a learned policy trained with full official-radius exposure and the existing runtime convert the available actuation into robust branch-aware approach plus 100 consecutive in-tolerance updates, or will reset escape and post-arrival regulation remain dominant failures? Discriminating evidence is a complete candidate measurement under the official task distribution with success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle stratification, interpreted separately for 0.06-0.14 m versus 0.14-0.20 m. A result with strong reach but interrupted holds redirects toward stabilization/action-history or recurrent-control mechanisms; a result with inner-radius failures and outer-radius competence redirects toward exposure and branch-aware training; a broadly weak result despite the measured authority would challenge the policy representation or optimization route. M3 does not resolve robustness outside the nominal simulator or generalize beyond its deterministic probes.",
+        "evidence_references": [
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires a learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 2 s hold within 1 cm. M3 advances this goal by testing whether the nominal compiled plant itself lacks the authority needed for that objective before investing in policy learning or interpreting policy failures.",
+        "next_direction_or_closure": "Checkpoint the startup session and enter goal review with the policy-capability distinction above. Prefer candidate generation and complete official-range development measurement over further nominal motor probing, because M3 found substantial bounded authority and the next decision now depends on whether learning exposure, branch sequencing, or hold regulation limits task success.",
+        "next_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The earlier M1 and M2 records were implementation failures and are not evidence.",
+        "completed_operations": [
+          "M3"
+        ],
+        "cumulative_resource_use": "Completed one startup measurement operation M3 containing the compiled-dynamics characterization and its reviewed verification; no training steps and no policy evaluation episodes were consumed. M1 and M2 were failed execution attempts repaired and reaccepted into M3, not completed scientific operations or evidence.",
+        "current_goal_gap": "No learned candidate or development evaluation exists yet, so official success is entirely unestablished and the gap to 98% is unknown. The remaining gap is to produce and measure a policy over the full 0.06-0.20 m target distribution, separating arrival from the complete uninterrupted hold.",
+        "current_synthesis": "Observed in completed operation M3: the compiled MuJoCo model has timestep 0.002 s, ten physics steps per control update, and 50 Hz control; compiled joint damping is 0.5 for both joints, armature is 0.01, motor gear is 5 with controls bounded by [-1,1], and the compiler supplies finite body masses/inertias and nominal solver settings. The reviewed verification artifact passed timing, bounded-control, repeated-reset, complete-trace, nonzero-response, zero-command decay, and singularity-direction checks. Saturated commands produced repeatable nonzero motion at reset and at representative 0.08 m and 0.18 m open/folded IK postures; after a command burst, repeated zero-command updates reduced joint velocity essentially to zero. At the reset singular posture, the first-step inward radial displacement was 0.000192 m versus 0.012219 m tangential displacement, directly supporting the predicted local radial escape disadvantage. Interpretation: nominal motor authority and damping are ample in these bounded deterministic probes, so a blanket torque/inertia impossibility explanation is weakened. The reset singularity remains a real sequencing/approach mechanism, and the two inner-radius branches remain a policy coverage and branch-selection problem. Competing explanations for future task failures are therefore (1) insufficient exposure to official inner radii, (2) failure to escape or choose a robust branch from the reset state, and (3) overshoot or intermittent boundary regulation during the 100-step hold. M3 did not command toward targets, measure a learned policy, test all angles, or observe official hold success; its physical conclusion is limited to the five postures and command sequences recorded.",
+        "decision_frontier": "The unresolved distinction is now policy capability rather than nominal plant authority: will a learned policy trained with full official-radius exposure and the existing runtime convert the available actuation into robust branch-aware approach plus 100 consecutive in-tolerance updates, or will reset escape and post-arrival regulation remain dominant failures? Discriminating evidence is a complete candidate measurement under the official task distribution with success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle stratification, interpreted separately for 0.06-0.14 m versus 0.14-0.20 m. A result with strong reach but interrupted holds redirects toward stabilization/action-history or recurrent-control mechanisms; a result with inner-radius failures and outer-radius competence redirects toward exposure and branch-aware training; a broadly weak result despite the measured authority would challenge the policy representation or optimization route. M3 does not resolve robustness outside the nominal simulator or generalize beyond its deterministic probes.",
+        "evidence_references": [
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires a learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 2 s hold within 1 cm. M3 advances this goal by testing whether the nominal compiled plant itself lacks the authority needed for that objective before investing in policy learning or interpreting policy failures.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint the startup session and enter goal review with the policy-capability distinction above. Prefer candidate generation and complete official-range development measurement over further nominal motor probing, because M3 found substantial bounded authority and the next decision now depends on whether learning exposure, branch sequencing, or hold regulation limits task success.",
+        "next_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "928f367c-5e69-46ca-aa1b-12ad9bc93ab3",
+        "campaign_id": "5da30677-03e6-49ec-98b3-d27252a5530c",
+        "campaign_usage": "7m32s | 11.24 AIU | prompt 1.3m (91% cached) | output 48.6k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "4m58s | 7.50 AIU | prompt 1m (94% cached) | output 34k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7487bd8cdd2e184cc9318e3f740b47a4600fbacf",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The earlier M1 and M2 records were implementation failures and are not evidence.",
+        "completed_operations": [
+          "M3"
+        ],
+        "cumulative_resource_use": "Completed one startup measurement operation M3 containing the compiled-dynamics characterization and its reviewed verification; no training steps and no policy evaluation episodes were consumed. M1 and M2 were failed execution attempts repaired and reaccepted into M3, not completed scientific operations or evidence.",
+        "current_goal_gap": "No learned candidate or development evaluation exists yet, so official success is entirely unestablished and the gap to 98% is unknown. The remaining gap is to produce and measure a policy over the full 0.06-0.20 m target distribution, separating arrival from the complete uninterrupted hold.",
+        "current_synthesis": "Observed in completed operation M3: the compiled MuJoCo model has timestep 0.002 s, ten physics steps per control update, and 50 Hz control; compiled joint damping is 0.5 for both joints, armature is 0.01, motor gear is 5 with controls bounded by [-1,1], and the compiler supplies finite body masses/inertias and nominal solver settings. The reviewed verification artifact passed timing, bounded-control, repeated-reset, complete-trace, nonzero-response, zero-command decay, and singularity-direction checks. Saturated commands produced repeatable nonzero motion at reset and at representative 0.08 m and 0.18 m open/folded IK postures; after a command burst, repeated zero-command updates reduced joint velocity essentially to zero. At the reset singular posture, the first-step inward radial displacement was 0.000192 m versus 0.012219 m tangential displacement, directly supporting the predicted local radial escape disadvantage. Interpretation: nominal motor authority and damping are ample in these bounded deterministic probes, so a blanket torque/inertia impossibility explanation is weakened. The reset singularity remains a real sequencing/approach mechanism, and the two inner-radius branches remain a policy coverage and branch-selection problem. Competing explanations for future task failures are therefore (1) insufficient exposure to official inner radii, (2) failure to escape or choose a robust branch from the reset state, and (3) overshoot or intermittent boundary regulation during the 100-step hold. M3 did not command toward targets, measure a learned policy, test all angles, or observe official hold success; its physical conclusion is limited to the five postures and command sequences recorded.",
+        "decision_frontier": "The unresolved distinction is now policy capability rather than nominal plant authority: will a learned policy trained with full official-radius exposure and the existing runtime convert the available actuation into robust branch-aware approach plus 100 consecutive in-tolerance updates, or will reset escape and post-arrival regulation remain dominant failures? Discriminating evidence is a complete candidate measurement under the official task distribution with success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle stratification, interpreted separately for 0.06-0.14 m versus 0.14-0.20 m. A result with strong reach but interrupted holds redirects toward stabilization/action-history or recurrent-control mechanisms; a result with inner-radius failures and outer-radius competence redirects toward exposure and branch-aware training; a broadly weak result despite the measured authority would challenge the policy representation or optimization route. M3 does not resolve robustness outside the nominal simulator or generalize beyond its deterministic probes.",
+        "evidence_references": [
+          "M3"
+        ],
+        "human_goal_connection": "The human goal requires a learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 2 s hold within 1 cm. M3 advances this goal by testing whether the nominal compiled plant itself lacks the authority needed for that objective before investing in policy learning or interpreting policy failures.",
+        "next_direction_or_closure": "Checkpoint the startup session and enter goal review with the policy-capability distinction above. Prefer candidate generation and complete official-range development measurement over further nominal motor probing, because M3 found substantial bounded authority and the next decision now depends on whether learning exposure, branch sequencing, or hold regulation limits task success.",
+        "next_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention."
+      }
+    },
+    "request_fingerprint": "a43b041f19c97f46d169063e290e0ac41f1cd1611836f40b93789d167d148ae4",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles are empty. M3 is a physical characterization artifact, not a policy candidate. The earlier M1 and M2 records were implementation failures and are not evidence.",
+    "completed_operations": [
+      "M3"
+    ],
+    "cumulative_resource_use": "Completed one startup measurement operation M3 containing the compiled-dynamics characterization and its reviewed verification; no training steps and no policy evaluation episodes were consumed. M1 and M2 were failed execution attempts repaired and reaccepted into M3, not completed scientific operations or evidence.",
+    "current_goal_gap": "No learned candidate or development evaluation exists yet, so official success is entirely unestablished and the gap to 98% is unknown. The remaining gap is to produce and measure a policy over the full 0.06-0.20 m target distribution, separating arrival from the complete uninterrupted hold.",
+    "current_synthesis": "Observed in completed operation M3: the compiled MuJoCo model has timestep 0.002 s, ten physics steps per control update, and 50 Hz control; compiled joint damping is 0.5 for both joints, armature is 0.01, motor gear is 5 with controls bounded by [-1,1], and the compiler supplies finite body masses/inertias and nominal solver settings. The reviewed verification artifact passed timing, bounded-control, repeated-reset, complete-trace, nonzero-response, zero-command decay, and singularity-direction checks. Saturated commands produced repeatable nonzero motion at reset and at representative 0.08 m and 0.18 m open/folded IK postures; after a command burst, repeated zero-command updates reduced joint velocity essentially to zero. At the reset singular posture, the first-step inward radial displacement was 0.000192 m versus 0.012219 m tangential displacement, directly supporting the predicted local radial escape disadvantage. Interpretation: nominal motor authority and damping are ample in these bounded deterministic probes, so a blanket torque/inertia impossibility explanation is weakened. The reset singularity remains a real sequencing/approach mechanism, and the two inner-radius branches remain a policy coverage and branch-selection problem. Competing explanations for future task failures are therefore (1) insufficient exposure to official inner radii, (2) failure to escape or choose a robust branch from the reset state, and (3) overshoot or intermittent boundary regulation during the 100-step hold. M3 did not command toward targets, measure a learned policy, test all angles, or observe official hold success; its physical conclusion is limited to the five postures and command sequences recorded.",
+    "decision_frontier": "The unresolved distinction is now policy capability rather than nominal plant authority: will a learned policy trained with full official-radius exposure and the existing runtime convert the available actuation into robust branch-aware approach plus 100 consecutive in-tolerance updates, or will reset escape and post-arrival regulation remain dominant failures? Discriminating evidence is a complete candidate measurement under the official task distribution with success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle stratification, interpreted separately for 0.06-0.14 m versus 0.14-0.20 m. A result with strong reach but interrupted holds redirects toward stabilization/action-history or recurrent-control mechanisms; a result with inner-radius failures and outer-radius competence redirects toward exposure and branch-aware training; a broadly weak result despite the measured authority would challenge the policy representation or optimization route. M3 does not resolve robustness outside the nominal simulator or generalize beyond its deterministic probes.",
+    "evidence_references": [
+      "M3"
+    ],
+    "human_goal_connection": "The human goal requires a learned policy to succeed on at least 196 of 200 official episodes, each requiring an uninterrupted 2 s hold within 1 cm. M3 advances this goal by testing whether the nominal compiled plant itself lacks the authority needed for that objective before investing in policy learning or interpreting policy failures.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Checkpoint the startup session and enter goal review with the policy-capability distinction above. Prefer candidate generation and complete official-range development measurement over further nominal motor probing, because M3 found substantial bounded authority and the next decision now depends on whether learning exposure, branch sequencing, or hold regulation limits task success.",
+    "next_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
+    "scientific_commit": "7487bd8cdd2e184cc9318e3f740b47a4600fbacf",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "67c60d768f73270b123cd0ae5177d124eb99228b",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "928f367c-5e69-46ca-aa1b-12ad9bc93ab3",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M3"
-    ],
-    "scientific_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
