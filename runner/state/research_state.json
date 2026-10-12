@@ -6562,7 +6562,7 @@
     }
   },
   "counters": {
-    "event": 46,
+    "event": 47,
     "inquiry": 11,
     "measurement": 29,
     "session": 23,
@@ -6571,7 +6571,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -19221,33 +19221,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:03:21Z",
+      "error": null,
+      "id": "E47",
+      "inquiry_id": "I11",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-120832, measured at 153/160 but not certified for official assessment. T8:checkpoint-110592 is rejected after M28 and M29 because it scored 0/160 and showed acquisition-dominated traces. T7 remains rejected for the same artifact-level collapse pattern. T5:checkpoint-100352 remains a historical 153/160 result and does not supersede T4. No candidate is retained or working; unmeasured checkpoints remain training nominations only.",
+        "completed_operations": [
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "cumulative_resource_use": "Campaign state after closure: 11 of 15 inquiry allocations used, 23 scientific sessions recorded, 19 measurements completed, and 8 training operations completed. T8 used the maintainer's 120,000-step training allocation and completed at 120,832 actual steps; no official 200-episode assessment was requested. The campaign retains the prior resource history and all completed operation identities.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4 retains seven matched-panel failures: three no-first-reach and four reach-then-interrupt episodes, and remains 43 successful episodes short of the 196/200 official criterion when its 153/160 result is used only as development evidence. T8:checkpoint-110592 scored 0/160 in M28 and 0/12 in the M29 full-trace probe, with acquisition-dominated failure. The official 200-episode result is unknown.",
+        "current_synthesis": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+        "decision_frontier": "The I11 distinction is resolved negatively at the candidate-artifact level: the fresh full-radius route did not retain acquisition, so it cannot be selected or used to target T4's hold residual. The consequential unresolved distinction for the next session is which route-specific factor produces T7/T8-like low-action acquisition collapse despite T4's acquisition: learning exposure and reward-credit structure, optimization/initialization, or runtime/timing behavior. Plant-dynamics investigation should be reopened only if a controlled route produces informative acquisition actions yet still cannot regulate; another pre-acquisition collapse would not discriminate the plant explanation. Any future candidate must again be judged by complete episodes on matched panels, not proxy reward or first reach.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "T7",
+          "M25",
+          "M27",
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted 100-step holds in the protected 200-episode official distribution. T4:checkpoint-120832 remains the strongest measured artifact at 153/160 (95.625%) on the matched development panel, below the 98% threshold, while T8 provides no improvement and is rejected. The protected official assessment remains unrequested because this inquiry produced no candidate at or above the required evidence level.",
+        "next_direction_or_closure": "I11 is closed negatively by E46. Do not request the protected official assessment. The next session should investigate a consequential route-level learning/runtime mechanism with a discriminating design that changes one causal factor while preserving the official full-radius distribution and complete-hold semantics. Preserve the unresolved causal alternatives and require matched frozen-artifact complete-episode evidence before candidate selection; do not infer a general method failure or revisit compiled plant dynamics without informative acquisition behavior.",
+        "next_question": "Which route-specific learning exposure, reward-credit, or runtime mechanism causes fresh full-radius routes to collapse before acquisition while T4 acquires, and can a discriminating intervention improve complete-episode success without sacrificing acquisition?"
+      },
+      "result": {
+        "session_id": "S23",
+        "status": "checkpointed"
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "694e73b2bad94fe818522f3057bcb5dd383b0b78",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-120832, measured at 153/160 but not certified for official assessment. T8:checkpoint-110592 is rejected after M28 and M29 because it scored 0/160 and showed acquisition-dominated traces. T7 remains rejected for the same artifact-level collapse pattern. T5:checkpoint-100352 remains a historical 153/160 result and does not supersede T4. No candidate is retained or working; unmeasured checkpoints remain training nominations only.",
+        "completed_operations": [
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "cumulative_resource_use": "Campaign state after closure: 11 of 15 inquiry allocations used, 23 scientific sessions recorded, 19 measurements completed, and 8 training operations completed. T8 used the maintainer's 120,000-step training allocation and completed at 120,832 actual steps; no official 200-episode assessment was requested. The campaign retains the prior resource history and all completed operation identities.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4 retains seven matched-panel failures: three no-first-reach and four reach-then-interrupt episodes, and remains 43 successful episodes short of the 196/200 official criterion when its 153/160 result is used only as development evidence. T8:checkpoint-110592 scored 0/160 in M28 and 0/12 in the M29 full-trace probe, with acquisition-dominated failure. The official 200-episode result is unknown.",
+        "current_synthesis": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+        "decision_frontier": "The I11 distinction is resolved negatively at the candidate-artifact level: the fresh full-radius route did not retain acquisition, so it cannot be selected or used to target T4's hold residual. The consequential unresolved distinction for the next session is which route-specific factor produces T7/T8-like low-action acquisition collapse despite T4's acquisition: learning exposure and reward-credit structure, optimization/initialization, or runtime/timing behavior. Plant-dynamics investigation should be reopened only if a controlled route produces informative acquisition actions yet still cannot regulate; another pre-acquisition collapse would not discriminate the plant explanation. Any future candidate must again be judged by complete episodes on matched panels, not proxy reward or first reach.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "T7",
+          "M25",
+          "M27",
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted 100-step holds in the protected 200-episode official distribution. T4:checkpoint-120832 remains the strongest measured artifact at 153/160 (95.625%) on the matched development panel, below the 98% threshold, while T8 provides no improvement and is rejected. The protected official assessment remains unrequested because this inquiry produced no candidate at or above the required evidence level.",
+        "inquiry_id": "I11",
+        "next_direction_or_closure": "I11 is closed negatively by E46. Do not request the protected official assessment. The next session should investigate a consequential route-level learning/runtime mechanism with a discriminating design that changes one causal factor while preserving the official full-radius distribution and complete-hold semantics. Preserve the unresolved causal alternatives and require matched frozen-artifact complete-episode evidence before candidate selection; do not infer a general method failure or revisit compiled plant dynamics without informative acquisition behavior.",
+        "next_question": "Which route-specific learning exposure, reward-credit, or runtime mechanism causes fresh full-radius routes to collapse before acquisition while T4 acquires, and can a discriminating intervention improve complete-episode success without sacrificing acquisition?",
+        "session_id": "S23"
+      },
+      "presentation": {
+        "backend_session_id": "690beb33-2a35-478d-9f9e-95150b214122",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "1h08m | 179.59 AIU | prompt 30.8m (90% cached) | output 410.6k",
+        "session_id": "S23",
+        "session_kind": "inquiry",
+        "session_usage": "2m08s | 3.04 AIU | prompt 301.5k (87% cached) | output 12.6k"
+      },
+      "result": {
+        "session_id": "S23",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7791163106b9b5a4dd01d0722970a2cfd091282f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E47",
+    "inquiry_id": "I11",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-120832, measured at 153/160 but not certified for official assessment. T8:checkpoint-110592 is rejected after M28 and M29 because it scored 0/160 and showed acquisition-dominated traces. T7 remains rejected for the same artifact-level collapse pattern. T5:checkpoint-100352 remains a historical 153/160 result and does not supersede T4. No candidate is retained or working; unmeasured checkpoints remain training nominations only.",
+        "completed_operations": [
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "cumulative_resource_use": "Campaign state after closure: 11 of 15 inquiry allocations used, 23 scientific sessions recorded, 19 measurements completed, and 8 training operations completed. T8 used the maintainer's 120,000-step training allocation and completed at 120,832 actual steps; no official 200-episode assessment was requested. The campaign retains the prior resource history and all completed operation identities.",
+        "current_goal_gap": "No candidate has demonstrated the official objective. T4 retains seven matched-panel failures: three no-first-reach and four reach-then-interrupt episodes, and remains 43 successful episodes short of the 196/200 official criterion when its 153/160 result is used only as development evidence. T8:checkpoint-110592 scored 0/160 in M28 and 0/12 in the M29 full-trace probe, with acquisition-dominated failure. The official 200-episode result is unknown.",
+        "current_synthesis": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+        "decision_frontier": "The I11 distinction is resolved negatively at the candidate-artifact level: the fresh full-radius route did not retain acquisition, so it cannot be selected or used to target T4's hold residual. The consequential unresolved distinction for the next session is which route-specific factor produces T7/T8-like low-action acquisition collapse despite T4's acquisition: learning exposure and reward-credit structure, optimization/initialization, or runtime/timing behavior. Plant-dynamics investigation should be reopened only if a controlled route produces informative acquisition actions yet still cannot regulate; another pre-acquisition collapse would not discriminate the plant explanation. Any future candidate must again be judged by complete episodes on matched panels, not proxy reward or first reach.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "T7",
+          "M25",
+          "M27",
+          "T8",
+          "M28",
+          "M29",
+          "E46"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted 100-step holds in the protected 200-episode official distribution. T4:checkpoint-120832 remains the strongest measured artifact at 153/160 (95.625%) on the matched development panel, below the 98% threshold, while T8 provides no improvement and is rejected. The protected official assessment remains unrequested because this inquiry produced no candidate at or above the required evidence level.",
+        "next_direction_or_closure": "I11 is closed negatively by E46. Do not request the protected official assessment. The next session should investigate a consequential route-level learning/runtime mechanism with a discriminating design that changes one causal factor while preserving the official full-radius distribution and complete-hold semantics. Preserve the unresolved causal alternatives and require matched frozen-artifact complete-episode evidence before candidate selection; do not infer a general method failure or revisit compiled plant dynamics without informative acquisition behavior.",
+        "next_question": "Which route-specific learning exposure, reward-credit, or runtime mechanism causes fresh full-radius routes to collapse before acquisition while T4 acquires, and can a discriminating intervention improve complete-episode success without sacrificing acquisition?"
+      }
+    },
+    "request_fingerprint": "258d62d4af640f6ea12104601d2ab3cd7d376c182bd5461b490f8a7e783a8966",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M25 and is not certified for official assessment. T7:checkpoint-110592 remains rejected for selection based on M25 and M27 because its complete-episode success is zero and its failure is acquisition-dominated. T5:checkpoint-100352 has measured 153/160 in M20 but does not supersede T4 and has no privileged terminal status. No working or retained role changes. Unmeasured candidate checkpoints remain training nominations only and are not evidence of development performance.",
+    "candidates_and_roles": "Best-known remains T4:checkpoint-120832, measured at 153/160 but not certified for official assessment. T8:checkpoint-110592 is rejected after M28 and M29 because it scored 0/160 and showed acquisition-dominated traces. T7 remains rejected for the same artifact-level collapse pattern. T5:checkpoint-100352 remains a historical 153/160 result and does not supersede T4. No candidate is retained or working; unmeasured checkpoints remain training nominations only.",
     "completed_operations": [
-      "E44"
+      "T8",
+      "M28",
+      "M29",
+      "E46"
     ],
-    "cumulative_resource_use": "Before this goal review, the campaign had completed 10 inquiries, 17 measurements, 7 training operations, and 120,832-step allocations for each completed training route, with T4 as best-known. This session added E44 opening I11 and no training or measurement allocation. The inquiry budget is 11/15; the current goal-review session contains only E44.",
-    "current_goal_gap": "No candidate has demonstrated the official objective. T4 has seven matched-panel failures: three no-first-reach and four reach-then-interrupt episodes. T7 is not a candidate, with 0/160 matched-panel success and a late training trajectory fixed at zero success. The protected 200-episode result remains unknown because assessment has not been requested.",
-    "current_synthesis": "Established observations: M25 measured T4 at 153/160 (95.625%) under the current-source complete-hold semantics. Its seven failures are specifically seeds 4201, 4228, 4244, and 4316 with first reach followed by an interruption, and seeds 4208, 4246, and 4307 with no first reach. The failures span target radii and angles rather than forming a demonstrated single-radius defect. T4 training logs show a late proxy peak and subsequent drift, so the terminal checkpoint has no privileged status; T5 also reached 153/160 at an earlier peak-proxy checkpoint, while T7 remained at zero late-training success. M27 independently verified matched T7/T4 live traces: both had informative initial saturated motion, but T7 commonly settled into low action and low velocity outside the target while T4 acquired on most probes. Interpretation corrected from the inherited proposal: M27 supports an artifact-level route/runtime or reward-control collapse in T7, but does not establish that reward timing, exposure, or runtime alone caused it, and it does not justify treating any fresh route as acquisition-capable in advance. The shared plant's singular reset and direct clipped torque semantics remain consequential physical constraints, not proven barriers; compiled-dynamics evidence and complete traces support a reachable, regulatable task but do not guarantee a new policy. Competing explanations for the T4 residual remain (mixed acquisition/hold learning failure, target-conditioned trajectory/branch selection, and transient braking or hold regulation), and existing evidence does not isolate them. The tested residual-torque intervention T6 was negative and lost acquisition, so persisted residual torque is not a justified scaffold. A new route is worthwhile because acquisition has been demonstrated by T4 and the remaining gap is finite, while the mixed residual means success must be judged by complete episodes and diagnostics, not training proxy or first reach.",
-    "decision_frontier": "The consequential distinction is whether a new full-radius, hold-aligned learned route can retain T4-like acquisition while reducing both the three no-first-reach and four reach-then-interrupt residuals, or instead reproduces T7's low-action collapse or trades acquisition for hold regulation. The inquiry must compare complete frozen artifacts on matched non-overlapping development episodes with first-reach, maximum-held-step, interruption, and full-trace diagnostics. If acquisition is preserved and interruptions fall, continue toward candidate selection and later official readiness; if acquisition collapses, redirect to learning exposure/reward credit/runtime design; if acquisition remains informative but holds still interrupt, focus on braking and regulation. The scientific model's unresolved compiled inertia and initial-singularity consequences remain relevant only if controlled acquisition fails despite informative policy actions; that observation would reopen timing/plant investigation, whereas another policy collapse would not.",
+    "cumulative_resource_use": "Campaign state after closure: 11 of 15 inquiry allocations used, 23 scientific sessions recorded, 19 measurements completed, and 8 training operations completed. T8 used the maintainer's 120,000-step training allocation and completed at 120,832 actual steps; no official 200-episode assessment was requested. The campaign retains the prior resource history and all completed operation identities.",
+    "current_goal_gap": "No candidate has demonstrated the official objective. T4 retains seven matched-panel failures: three no-first-reach and four reach-then-interrupt episodes, and remains 43 successful episodes short of the 196/200 official criterion when its 153/160 result is used only as development evidence. T8:checkpoint-110592 scored 0/160 in M28 and 0/12 in the M29 full-trace probe, with acquisition-dominated failure. The official 200-episode result is unknown.",
+    "current_synthesis": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+    "decision_frontier": "The I11 distinction is resolved negatively at the candidate-artifact level: the fresh full-radius route did not retain acquisition, so it cannot be selected or used to target T4's hold residual. The consequential unresolved distinction for the next session is which route-specific factor produces T7/T8-like low-action acquisition collapse despite T4's acquisition: learning exposure and reward-credit structure, optimization/initialization, or runtime/timing behavior. Plant-dynamics investigation should be reopened only if a controlled route produces informative acquisition actions yet still cannot regulate; another pre-acquisition collapse would not discriminate the plant explanation. Any future candidate must again be judged by complete episodes on matched panels, not proxy reward or first reach.",
     "evidence_references": [
-      "M25",
-      "M27",
-      "E42",
-      "M24",
       "T4",
       "T5",
-      "T7"
+      "T7",
+      "M25",
+      "M27",
+      "T8",
+      "M28",
+      "M29",
+      "E46"
     ],
-    "human_goal_connection": "The human goal is at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. T4:checkpoint-120832 is the strongest evidence-backed candidate but has only 153/160 successes on the matched development panel, so it is not ready for official assessment. I11 is opened to develop and measure a route that can improve the residual without sacrificing acquisition.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open I11 and then develop or measure a fresh full-radius learned route whose objective explicitly values the complete uninterrupted hold while retaining informative acquisition actions and the official direct-clipped torque semantics. Do not request official assessment now: the unchanged best-known candidate is 2.375 percentage points below the development 98% threshold and has seven resolved outcome classes still available for credible improvement. I11 closes when the specified matched complete-episode comparison gives a positive, negative, limited, or inconclusive answer; closure will carry unresolved causal factors forward rather than treating the route result as a general method verdict.",
-    "next_question": "Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence?",
-    "scientific_commit": "b3d5090b7b5a2e23294f0b76a83103239132c0f5",
-    "session_id": "S22"
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted 100-step holds in the protected 200-episode official distribution. T4:checkpoint-120832 remains the strongest measured artifact at 153/160 (95.625%) on the matched development panel, below the 98% threshold, while T8 provides no improvement and is rejected. The protected official assessment remains unrequested because this inquiry produced no candidate at or above the required evidence level.",
+    "inquiry_id": "I11",
+    "next_direction_or_closure": "I11 is closed negatively by E46. Do not request the protected official assessment. The next session should investigate a consequential route-level learning/runtime mechanism with a discriminating design that changes one causal factor while preserving the official full-radius distribution and complete-hold semantics. Preserve the unresolved causal alternatives and require matched frozen-artifact complete-episode evidence before candidate selection; do not infer a general method failure or revisit compiled plant dynamics without informative acquisition behavior.",
+    "next_question": "Which route-specific learning exposure, reward-credit, or runtime mechanism causes fresh full-radius routes to collapse before acquisition while T4 acquires, and can a discriminating intervention improve complete-episode success without sacrificing acquisition?",
+    "scientific_commit": "7791163106b9b5a4dd01d0722970a2cfd091282f",
+    "session_id": "S23"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -19255,24 +19411,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "690beb33-2a35-478d-9f9e-95150b214122",
-    "id": "S23",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "objective": "Advance I11 toward an evidence-supported answer to its scientific question: Can a fresh full-radius learned route with an explicitly complete-hold-aligned objective preserve acquisition-capable runtime behavior, without a persisted residual-torque scaffold, and improve T4's seven-failure residual on matched complete-episode development evidence? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T8",
-      "M28",
-      "M29",
-      "E46"
-    ],
-    "scientific_parent_commit": "694e73b2bad94fe818522f3057bcb5dd383b0b78"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

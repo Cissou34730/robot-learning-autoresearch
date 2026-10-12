@@ -85,3 +85,4 @@
 | M28 | measurement | I11 | completed |
 | M29 | measurement | I11 | completed |
 | E46 | inquiry | I11 | completed |
+| E47 | checkpoint | I11 | checkpointed |
