@@ -2832,38 +2832,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative result with control/runtime redirection",
-        "reason": "M5 measured the best-proxy T1 candidate trained with the full official 0.06-0.20 m radius exposure on an independent 160-episode official-distribution development panel: 150/160 successes (93.75%), below the 98% campaign objective. The ten failures did not form a low-radius-only cluster: six never entered tolerance and four entered but failed complete hold continuity, with failure radii spanning approximately 10.66-18.83 cm. The failed episodes all showed high applied-action saturation (0.492-0.990), joint-speed maxima around 12.1-14.2 rad/s, and large internal-step excursions; the hold-failure cases had explicit interruptions (including 192 and 242) after first reach. The candidate therefore supports prioritizing braking, action shaping/control timing, or runtime stabilization over treating low-radius coverage as the sole immediate bottleneck. This conclusion is a property of the tested PPO recipe, reward, runtime, seed and saved artifact, not a disproof of learning or official exposure as broader methods. Internal-step excursions remain a diagnostic because the protected evaluator's treatment of between-control states is unresolved; M5 is development evidence, not an official assessment. M3, M4 and M6 establish the changed exposure and diagnostics paths, not scientific performance."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative result with control/runtime redirection",
-        "reason": "M5 measured the best-proxy T1 candidate trained with the full official 0.06-0.20 m radius exposure on an independent 160-episode official-distribution development panel: 150/160 successes (93.75%), below the 98% campaign objective. The ten failures did not form a low-radius-only cluster: six never entered tolerance and four entered but failed complete hold continuity, with failure radii spanning approximately 10.66-18.83 cm. The failed episodes all showed high applied-action saturation (0.492-0.990), joint-speed maxima around 12.1-14.2 rad/s, and large internal-step excursions; the hold-failure cases had explicit interruptions (including 192 and 242) after first reach. The candidate therefore supports prioritizing braking, action shaping/control timing, or runtime stabilization over treating low-radius coverage as the sole immediate bottleneck. This conclusion is a property of the tested PPO recipe, reward, runtime, seed and saved artifact, not a disproof of learning or official exposure as broader methods. Internal-step excursions remain a diagnostic because the protected evaluator's treatment of between-control states is unresolved; M5 is development evidence, not an official assessment. M3, M4 and M6 establish the changed exposure and diagnostics paths, not scientific performance.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative result with control/runtime redirection",
-        "reason": "M5 measured the best-proxy T1 candidate trained with the full official 0.06-0.20 m radius exposure on an independent 160-episode official-distribution development panel: 150/160 successes (93.75%), below the 98% campaign objective. The ten failures did not form a low-radius-only cluster: six never entered tolerance and four entered but failed complete hold continuity, with failure radii spanning approximately 10.66-18.83 cm. The failed episodes all showed high applied-action saturation (0.492-0.990), joint-speed maxima around 12.1-14.2 rad/s, and large internal-step excursions; the hold-failure cases had explicit interruptions (including 192 and 242) after first reach. The candidate therefore supports prioritizing braking, action shaping/control timing, or runtime stabilization over treating low-radius coverage as the sole immediate bottleneck. This conclusion is a property of the tested PPO recipe, reward, runtime, seed and saved artifact, not a disproof of learning or official exposure as broader methods. Internal-step excursions remain a diagnostic because the protected evaluator's treatment of between-control states is unresolved; M5 is development evidence, not an official assessment. M3, M4 and M6 establish the changed exposure and diagnostics paths, not scientific performance."
-      }
-    },
-    "request_fingerprint": "62c4d821aeafad0b1cbceb663262cda7a802b985b6f203888f34a5c8525556f5",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
     "completed_operations": [
