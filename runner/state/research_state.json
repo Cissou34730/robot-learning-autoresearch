@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 1,
+    "measurement": 3,
     "session": 1,
     "training": 0
   },
@@ -173,9 +173,155 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:17:45Z",
+      "error": "robot_learning.lab.verify_physical_characterization failed:\n\nusage: verify_physical_characterization.py [-h] --artifact ARTIFACT\n                                           [--compatibility]\nverify_physical_characterization.py: error: unrecognized arguments: --radius-count 2 --angle-count 4 --response-steps 6\n",
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Run the defect-sensitive behavioral verification for the physical-characterization tool on a small controlled grid and reversal sequence.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+              "--radius-count",
+              "2",
+              "--angle-count",
+              "4",
+              "--response-steps",
+              "6"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+            "instrument": "python_module",
+            "label": "physical-characterization behavioral verification",
+            "module": "robot_learning.lab.verify_physical_characterization"
+          }
+        ],
+        "rationale": "M1 established that the exact MuJoCo production calls execute, but not that the measurement detects state transitions and resets. This check independently tests target/configuration changes, both IK branches, repeated +1/-1 response direction, qpos/qvel updates, reset clearing, explicit units, and bounded artifact content before using the full measurement."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_physical_characterization failed:\n\nusage: verify_physical_characterization.py [-h] --artifact ARTIFACT\n                                           [--compatibility]\nverify_physical_characterization.py: error: unrecognized arguments: --radius-count 2 --angle-count 4 --response-steps 6\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M3",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+            "--radius-count",
+            "2",
+            "--angle-count",
+            "4",
+            "--response-steps",
+            "6"
+          ],
+          "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+          "instrument": "python_module",
+          "label": "physical-characterization behavioral verification",
+          "module": "robot_learning.lab.verify_physical_characterization"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "9a969896a942ea252985cc5ceba4bfd026226bd19bdc6e70d767f7f2b6043060",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "76f02469db7e58d95cc3e8cbd802cecb9f7ed4b34fc4ac3ea63256934a61444b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "76f02469db7e58d95cc3e8cbd802cecb9f7ed4b34fc4ac3ea63256934a61444b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_physical_characterization.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Run the defect-sensitive behavioral verification for the physical-characterization tool on a small controlled grid and reversal sequence.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+              "--radius-count",
+              "2",
+              "--angle-count",
+              "4",
+              "--response-steps",
+              "6"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+            "instrument": "python_module",
+            "label": "physical-characterization behavioral verification",
+            "module": "robot_learning.lab.verify_physical_characterization"
+          }
+        ],
+        "rationale": "M1 established that the exact MuJoCo production calls execute, but not that the measurement detects state transitions and resets. This check independently tests target/configuration changes, both IK branches, repeated +1/-1 response direction, qpos/qvel updates, reset clearing, explicit units, and bounded artifact content before using the full measurement."
+      }
+    },
+    "request_fingerprint": "a17aacdccf216584aaa4fb2074d0f3cf41ed04bc0c04826c8ec314021d139923",
+    "session_id": "S1",
+    "supersedes": "M2"
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
