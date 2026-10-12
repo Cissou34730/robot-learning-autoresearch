@@ -45,3 +45,4 @@
 | E17 | checkpoint | I4 | checkpointed |
 | E18 | model_role | - | assigned |
 | E19 | inquiry | I5 | completed |
+| E20 | checkpoint | - | checkpointed |

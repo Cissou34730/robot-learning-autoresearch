@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after one bounded follow-on design has been implemented and trained with the full inquiry allocation, then compared with T2 on the same fixed development seeds using complete success, radius/angle, first-reach, never-reached versus reached-incomplete, branch feasibility, joint-limit margin, entry/final velocity, hold interruptions, and physics-step containment diagnostics. A positive conclusion requires improved paired success with preserved reach and a diagnostic shift in reached episodes consistent with stabilization; a negative conclusion is a matched loss of reach or no reduction in the targeted failure class; a limited or inconclusive conclusion preserves unresolved causes and continuous-hold uncertainty explicitly.",
     "goal_connection": "The human goal requires at least 196 of 200 episodes to complete the uninterrupted hold. T2 is the best-known development candidate at 150/160 and remains below that threshold; this inquiry will test whether a constrained follow-on can close the gap without repeating T3's reach collapse, while separating any hold benefit from simply reaching more targets.",
-    "handoff_conclusion": "Established observations: M19 and M20 verified that the I4 implementation was active through production reset and step paths. It expanded the 11-value T2 observation with analytic open/folded compiled-limit feasibility flags and normalized per-joint limit margins, and added bounded near-limit and high-speed reward shaping while preserving action clipping, reset, hold accounting, and physics-step telemetry. T3 was a fresh 120000-step PPO artifact with the same seed and coverage exposure as T2 but this changed observation/reward implementation; its training proxies showed no success at any checkpoint, unlike T2's rising success proxy and terminal 0.58 proxy, so those proxies nominate concern but do not establish development performance. M21 is the complete matched artifact comparison: T3 scored 3/160 versus T2's 150/160, with 149 T3 episodes never reaching tolerance. T3's minimum joint-limit margin was positive in all 160 episodes (range 0.47 to 2.89 rad), showing that this artifact avoided the negative-margin behavior but did not solve reaching; therefore the observed T2 alignment between single-branch targets and negative limit margin was not sufficient to specify a successful intervention. T3 had 11 episodes with any hold, including the three successes; its physics-step hold diagnostics showed only 11 episodes with any hold interval and no newly dominant hold-loss class. This does not support prioritizing terminal stabilization from this comparison, but it also does not resolve stabilization for a competent reach policy. Interpretation limits: M21 compares complete artifacts with multiple coupled changes and cannot attribute the degradation to branch flags, margin features, limit shaping, speed shaping, or their interaction. It does not disprove branch-aware or trajectory-aware control generally. The one well-margin, two-branch T2 never-reached failure remains an alternative trajectory/representation mechanism. The protected contract still requires continuous hold, while the development trace samples control boundaries; the physics-step diagnostics are research evidence only and do not establish official semantics.",
+    "handoff_conclusion": "Established observations: M19 and M20 verified that I4's branch/limit/trajectory implementation was active through production reset and step paths. T2 was measured at 150/160 on M21, while the complete matched T3 artifact scored 3/160; T3 had 149 never-reached episodes and positive minimum joint-limit margins in all 160 episodes, so avoiding negative margins did not recover reaching. T2 had seven never-reached and three reached-incomplete failures; T3 had only 11 episodes with any boundary hold, including its three successes, so M21 cannot test stabilization of a competent reach policy. T1 measured 105/160 and is weaker than T2. The preserved learning logs show T2's terminal training proxy at 0.58 despite its 150/160 development result, T3 at zero proxy success throughout, and T1 at 0.96 terminal proxy; these are execution-history learning dynamics, not development performance. Correction to the inherited interpretation: proxy rank and terminal checkpoint status must not be used as readiness surrogates, and T3's reach-deficient comparison does not make terminal stabilization secondary as a physical mechanism; it only makes stabilization unidentifiable in T3. The scientific model still supports feasible two-branch kinematics, a reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation with transient settling consequences, and a causal separation between reach, convergence, and uninterrupted hold. Competing explanations remain: I4's degradation may arise from restrictive shaping, representation/normalization or branch flags, their interaction, or broader trajectory-learning failure; T2's residual never-reached failures may still involve branch/limit or inner-radius trajectory effects, while reached-incomplete failures may involve arrival speed, overshoot, or sampled-data stabilization. M21 is an artifact-level negative comparison and cannot attribute the T3 loss to any single changed factor. Physics-step traces are research diagnostics only, and protected continuous-hold equivalence remains unresolved.",
     "handoff_question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?",
-    "handoff_source_session_id": "S9",
+    "handoff_source_session_id": "S10",
     "id": "I5",
     "opened_in_session": "S10",
     "question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?",
@@ -2477,7 +2477,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 21,
     "session": 10,
@@ -2486,7 +2486,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -9922,35 +9922,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:49:22Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 is explicitly assigned best-known based on M21's 150/160 result and paired superiority over T3; it is not certified for the official goal. T1:checkpoint-115712 measured 105/160 and T3:checkpoint-120832 measured 3/160, so neither is best-known or retained. Working and retained roles are empty. I5 is the active inquiry; no candidate is assigned as working.",
+        "completed_operations": [
+          "E18",
+          "E19"
+        ],
+        "cumulative_resource_use": "Campaign state at this goal-review decision: 5 inquiries used of 15 (I5 newly opened), 10 bounded sessions before this checkpoint, 19 completed measurements, 3 completed training allocations, 3 learned candidate families (T1, T2, T3), 1 best-known role assignment (T2), no retained or working candidate, and 0 official-assessment episodes. The current decision added one best-known role operation (E18) and one inquiry-opening operation (E19); no new training or measurement allocation was consumed.",
+        "current_goal_gap": "The best-known T2 artifact is 46 successes short of the 196/200 reference on the 160-episode development panel. Its residual profile contains seven never-reached failures and three reached-incomplete failures. The campaign has no candidate at or above the goal and has not resolved whether development boundary holds are equivalent to the protected uninterrupted hold.",
+        "current_synthesis": "Established observations: M19 and M20 verified that I4's branch/limit/trajectory implementation was active through production reset and step paths. T2 was measured at 150/160 on M21, while the complete matched T3 artifact scored 3/160; T3 had 149 never-reached episodes and positive minimum joint-limit margins in all 160 episodes, so avoiding negative margins did not recover reaching. T2 had seven never-reached and three reached-incomplete failures; T3 had only 11 episodes with any boundary hold, including its three successes, so M21 cannot test stabilization of a competent reach policy. T1 measured 105/160 and is weaker than T2. The preserved learning logs show T2's terminal training proxy at 0.58 despite its 150/160 development result, T3 at zero proxy success throughout, and T1 at 0.96 terminal proxy; these are execution-history learning dynamics, not development performance. Correction to the inherited interpretation: proxy rank and terminal checkpoint status must not be used as readiness surrogates, and T3's reach-deficient comparison does not make terminal stabilization secondary as a physical mechanism; it only makes stabilization unidentifiable in T3. The scientific model still supports feasible two-branch kinematics, a reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation with transient settling consequences, and a causal separation between reach, convergence, and uninterrupted hold. Competing explanations remain: I4's degradation may arise from restrictive shaping, representation/normalization or branch flags, their interaction, or broader trajectory-learning failure; T2's residual never-reached failures may still involve branch/limit or inner-radius trajectory effects, while reached-incomplete failures may involve arrival speed, overshoot, or sampled-data stabilization. M21 is an artifact-level negative comparison and cannot attribute the T3 loss to any single changed factor. Physics-step traces are research diagnostics only, and protected continuous-hold equivalence remains unresolved.",
+        "decision_frontier": "The consequential unresolved question is whether a less-restrictive, T2-compatible branch/trajectory or reward-balancing design can address the single-branch negative-limit failure pattern without sacrificing reach, and whether any improvement in complete success comes from better terminal stabilization rather than simply reaching more targets. The discriminating evidence is one bounded follow-on trained with the full inquiry allocation and compared with T2 on identical fixed development seeds, with complete radius/angle, first-reach, never-reached versus reached-incomplete, branch feasibility, joint-limit margin, entry/final velocity, hold interruption, and physics-step containment diagnostics. An improved paired success with preserved reach plus a reached-episode stabilization shift would support the design and a terminal gain; reach loss or no targeted failure-class change would redirect away from it. Any boundary/physics-step disagreement remains a protected-semantics limitation rather than a development success claim.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M19",
+          "M20",
+          "M21",
+          "E18",
+          "E19"
+        ],
+        "human_goal_connection": "The human goal remains a frozen learned policy with at least 196 successes in the protected 200-episode assessment, each completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is now the best-known development candidate at 150/160 (93.75%), but it is below goal and development semantics do not certify the protected continuous hold.",
+        "next_direction_or_closure": "Goal review chose bounded inquiry I5 rather than official assessment because the best-known T2 artifact is materially below 196/200 and the available comparison cannot identify a safe improvement or certify continuous hold. I5 will continue in a fresh inquiry session after this checkpoint. Its intended route is one less-restrictive T2-compatible design, with candidate selection and mechanism testing kept distinct by the matched fixed-panel and reach-conditioned stabilization diagnostics; do not repeat the coupled I4 intervention as if its causal mechanism were known.",
+        "next_question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?"
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e1d948a5bb17de7a5ff3f14c56beb8a42b6c90b1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 is explicitly assigned best-known based on M21's 150/160 result and paired superiority over T3; it is not certified for the official goal. T1:checkpoint-115712 measured 105/160 and T3:checkpoint-120832 measured 3/160, so neither is best-known or retained. Working and retained roles are empty. I5 is the active inquiry; no candidate is assigned as working.",
+        "completed_operations": [
+          "E18",
+          "E19"
+        ],
+        "cumulative_resource_use": "Campaign state at this goal-review decision: 5 inquiries used of 15 (I5 newly opened), 10 bounded sessions before this checkpoint, 19 completed measurements, 3 completed training allocations, 3 learned candidate families (T1, T2, T3), 1 best-known role assignment (T2), no retained or working candidate, and 0 official-assessment episodes. The current decision added one best-known role operation (E18) and one inquiry-opening operation (E19); no new training or measurement allocation was consumed.",
+        "current_goal_gap": "The best-known T2 artifact is 46 successes short of the 196/200 reference on the 160-episode development panel. Its residual profile contains seven never-reached failures and three reached-incomplete failures. The campaign has no candidate at or above the goal and has not resolved whether development boundary holds are equivalent to the protected uninterrupted hold.",
+        "current_synthesis": "Established observations: M19 and M20 verified that I4's branch/limit/trajectory implementation was active through production reset and step paths. T2 was measured at 150/160 on M21, while the complete matched T3 artifact scored 3/160; T3 had 149 never-reached episodes and positive minimum joint-limit margins in all 160 episodes, so avoiding negative margins did not recover reaching. T2 had seven never-reached and three reached-incomplete failures; T3 had only 11 episodes with any boundary hold, including its three successes, so M21 cannot test stabilization of a competent reach policy. T1 measured 105/160 and is weaker than T2. The preserved learning logs show T2's terminal training proxy at 0.58 despite its 150/160 development result, T3 at zero proxy success throughout, and T1 at 0.96 terminal proxy; these are execution-history learning dynamics, not development performance. Correction to the inherited interpretation: proxy rank and terminal checkpoint status must not be used as readiness surrogates, and T3's reach-deficient comparison does not make terminal stabilization secondary as a physical mechanism; it only makes stabilization unidentifiable in T3. The scientific model still supports feasible two-branch kinematics, a reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation with transient settling consequences, and a causal separation between reach, convergence, and uninterrupted hold. Competing explanations remain: I4's degradation may arise from restrictive shaping, representation/normalization or branch flags, their interaction, or broader trajectory-learning failure; T2's residual never-reached failures may still involve branch/limit or inner-radius trajectory effects, while reached-incomplete failures may involve arrival speed, overshoot, or sampled-data stabilization. M21 is an artifact-level negative comparison and cannot attribute the T3 loss to any single changed factor. Physics-step traces are research diagnostics only, and protected continuous-hold equivalence remains unresolved.",
+        "decision_frontier": "The consequential unresolved question is whether a less-restrictive, T2-compatible branch/trajectory or reward-balancing design can address the single-branch negative-limit failure pattern without sacrificing reach, and whether any improvement in complete success comes from better terminal stabilization rather than simply reaching more targets. The discriminating evidence is one bounded follow-on trained with the full inquiry allocation and compared with T2 on identical fixed development seeds, with complete radius/angle, first-reach, never-reached versus reached-incomplete, branch feasibility, joint-limit margin, entry/final velocity, hold interruption, and physics-step containment diagnostics. An improved paired success with preserved reach plus a reached-episode stabilization shift would support the design and a terminal gain; reach loss or no targeted failure-class change would redirect away from it. Any boundary/physics-step disagreement remains a protected-semantics limitation rather than a development success claim.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M19",
+          "M20",
+          "M21",
+          "E18",
+          "E19"
+        ],
+        "human_goal_connection": "The human goal remains a frozen learned policy with at least 196 successes in the protected 200-episode assessment, each completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is now the best-known development candidate at 150/160 (93.75%), but it is below goal and development semantics do not certify the protected continuous hold.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review chose bounded inquiry I5 rather than official assessment because the best-known T2 artifact is materially below 196/200 and the available comparison cannot identify a safe improvement or certify continuous hold. I5 will continue in a fresh inquiry session after this checkpoint. Its intended route is one less-restrictive T2-compatible design, with candidate selection and mechanism testing kept distinct by the matched fixed-panel and reach-conditioned stabilization diagnostics; do not repeat the coupled I4 intervention as if its causal mechanism were known.",
+        "next_question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?",
+        "session_id": "S10"
+      },
+      "presentation": {
+        "backend_session_id": "58e8aa49-06e4-4313-a2ed-786547f2ec6e",
+        "campaign_id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
+        "campaign_usage": "36m53s | 83.34 AIU | prompt 14.1m (91% cached) | output 215.6k",
+        "session_id": "S10",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5ddaed7eb43d69adc19ccf8f38c6f6ab02147a9f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 is explicitly assigned best-known based on M21's 150/160 result and paired superiority over T3; it is not certified for the official goal. T1:checkpoint-115712 measured 105/160 and T3:checkpoint-120832 measured 3/160, so neither is best-known or retained. Working and retained roles are empty. I5 is the active inquiry; no candidate is assigned as working.",
+        "completed_operations": [
+          "E18",
+          "E19"
+        ],
+        "cumulative_resource_use": "Campaign state at this goal-review decision: 5 inquiries used of 15 (I5 newly opened), 10 bounded sessions before this checkpoint, 19 completed measurements, 3 completed training allocations, 3 learned candidate families (T1, T2, T3), 1 best-known role assignment (T2), no retained or working candidate, and 0 official-assessment episodes. The current decision added one best-known role operation (E18) and one inquiry-opening operation (E19); no new training or measurement allocation was consumed.",
+        "current_goal_gap": "The best-known T2 artifact is 46 successes short of the 196/200 reference on the 160-episode development panel. Its residual profile contains seven never-reached failures and three reached-incomplete failures. The campaign has no candidate at or above the goal and has not resolved whether development boundary holds are equivalent to the protected uninterrupted hold.",
+        "current_synthesis": "Established observations: M19 and M20 verified that I4's branch/limit/trajectory implementation was active through production reset and step paths. T2 was measured at 150/160 on M21, while the complete matched T3 artifact scored 3/160; T3 had 149 never-reached episodes and positive minimum joint-limit margins in all 160 episodes, so avoiding negative margins did not recover reaching. T2 had seven never-reached and three reached-incomplete failures; T3 had only 11 episodes with any boundary hold, including its three successes, so M21 cannot test stabilization of a competent reach policy. T1 measured 105/160 and is weaker than T2. The preserved learning logs show T2's terminal training proxy at 0.58 despite its 150/160 development result, T3 at zero proxy success throughout, and T1 at 0.96 terminal proxy; these are execution-history learning dynamics, not development performance. Correction to the inherited interpretation: proxy rank and terminal checkpoint status must not be used as readiness surrogates, and T3's reach-deficient comparison does not make terminal stabilization secondary as a physical mechanism; it only makes stabilization unidentifiable in T3. The scientific model still supports feasible two-branch kinematics, a reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation with transient settling consequences, and a causal separation between reach, convergence, and uninterrupted hold. Competing explanations remain: I4's degradation may arise from restrictive shaping, representation/normalization or branch flags, their interaction, or broader trajectory-learning failure; T2's residual never-reached failures may still involve branch/limit or inner-radius trajectory effects, while reached-incomplete failures may involve arrival speed, overshoot, or sampled-data stabilization. M21 is an artifact-level negative comparison and cannot attribute the T3 loss to any single changed factor. Physics-step traces are research diagnostics only, and protected continuous-hold equivalence remains unresolved.",
+        "decision_frontier": "The consequential unresolved question is whether a less-restrictive, T2-compatible branch/trajectory or reward-balancing design can address the single-branch negative-limit failure pattern without sacrificing reach, and whether any improvement in complete success comes from better terminal stabilization rather than simply reaching more targets. The discriminating evidence is one bounded follow-on trained with the full inquiry allocation and compared with T2 on identical fixed development seeds, with complete radius/angle, first-reach, never-reached versus reached-incomplete, branch feasibility, joint-limit margin, entry/final velocity, hold interruption, and physics-step containment diagnostics. An improved paired success with preserved reach plus a reached-episode stabilization shift would support the design and a terminal gain; reach loss or no targeted failure-class change would redirect away from it. Any boundary/physics-step disagreement remains a protected-semantics limitation rather than a development success claim.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M19",
+          "M20",
+          "M21",
+          "E18",
+          "E19"
+        ],
+        "human_goal_connection": "The human goal remains a frozen learned policy with at least 196 successes in the protected 200-episode assessment, each completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is now the best-known development candidate at 150/160 (93.75%), but it is below goal and development semantics do not certify the protected continuous hold.",
+        "next_direction_or_closure": "Goal review chose bounded inquiry I5 rather than official assessment because the best-known T2 artifact is materially below 196/200 and the available comparison cannot identify a safe improvement or certify continuous hold. I5 will continue in a fresh inquiry session after this checkpoint. Its intended route is one less-restrictive T2-compatible design, with candidate selection and mechanism testing kept distinct by the matched fixed-panel and reach-conditioned stabilization diagnostics; do not repeat the coupled I4 intervention as if its causal mechanism were known.",
+        "next_question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?"
+      }
+    },
+    "request_fingerprint": "b5715fd2f336279fd4b97bcebe5d8b4d119d5494dfdb7311680690862e89fed2",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development reference at 150/160 with 6-14 cm success of 90/93. T3:checkpoint-120832 is a measured negative I4 artifact at 3/160 and is not working, best-known, or retained. No candidate is certified for the official assessment; no model role is assigned.",
+    "candidates_and_roles": "T2:checkpoint-120832 is explicitly assigned best-known based on M21's 150/160 result and paired superiority over T3; it is not certified for the official goal. T1:checkpoint-115712 measured 105/160 and T3:checkpoint-120832 measured 3/160, so neither is best-known or retained. Working and retained roles are empty. I5 is the active inquiry; no candidate is assigned as working.",
     "completed_operations": [
-      "M19",
-      "M20",
-      "T3",
-      "M21",
-      "E16"
+      "E18",
+      "E19"
     ],
-    "cumulative_resource_use": "Campaign state after I4: 4 inquiries used of 15, 9 bounded sessions, 19 completed measurements, 3 training allocations, 3 learned candidate families (T1, T2, T3), no official-assessment episodes, and no candidate assigned working, best-known, or retained status. I4 consumed M19/M20 compatibility and controlled verification, one 120000-step training allocation T3, and matched development measurement M21. T3 produced 24 archived checkpoints; checkpoint position was not treated as privileged, and the terminal checkpoint was measured because it was the most relevant complete artifact after the training trajectory showed no success proxy.",
-    "current_goal_gap": "The strongest measured candidate remains T2:checkpoint-120832 at 150/160, including 90/93 successes at 6-14 cm, seven never-reached failures and three reached-incomplete failures. The fresh I4 candidate T3:checkpoint-120832 achieved only 3/160, leaving the campaign below the 196/200 reference and leaving protected continuous-hold equivalence unresolved.",
-    "current_synthesis": "Established observations: M19 and M20 verified that the I4 implementation was active through production reset and step paths. It expanded the 11-value T2 observation with analytic open/folded compiled-limit feasibility flags and normalized per-joint limit margins, and added bounded near-limit and high-speed reward shaping while preserving action clipping, reset, hold accounting, and physics-step telemetry. T3 was a fresh 120000-step PPO artifact with the same seed and coverage exposure as T2 but this changed observation/reward implementation; its training proxies showed no success at any checkpoint, unlike T2's rising success proxy and terminal 0.58 proxy, so those proxies nominate concern but do not establish development performance. M21 is the complete matched artifact comparison: T3 scored 3/160 versus T2's 150/160, with 149 T3 episodes never reaching tolerance. T3's minimum joint-limit margin was positive in all 160 episodes (range 0.47 to 2.89 rad), showing that this artifact avoided the negative-margin behavior but did not solve reaching; therefore the observed T2 alignment between single-branch targets and negative limit margin was not sufficient to specify a successful intervention. T3 had 11 episodes with any hold, including the three successes; its physics-step hold diagnostics showed only 11 episodes with any hold interval and no newly dominant hold-loss class. This does not support prioritizing terminal stabilization from this comparison, but it also does not resolve stabilization for a competent reach policy. Interpretation limits: M21 compares complete artifacts with multiple coupled changes and cannot attribute the degradation to branch flags, margin features, limit shaping, speed shaping, or their interaction. It does not disprove branch-aware or trajectory-aware control generally. The one well-margin, two-branch T2 never-reached failure remains an alternative trajectory/representation mechanism. The protected contract still requires continuous hold, while the development trace samples control boundaries; the physics-step diagnostics are research evidence only and do not establish official semantics.",
-    "decision_frontier": "I4 is closed with a limited negative result. The consequential unresolved distinction is whether the large T3 degradation came from an overly restrictive limit/speed shaping signal, an observation/normalization or branch-flag representation effect, or a broader trajectory-learning failure; the artifact comparison cannot separate these coupled causes. The next direction should not repeat this combined intervention without evidence. A credible follow-on must first choose and test a less restrictive trajectory/representation or reward-balancing design against T2, with complete fixed-panel reach/hold diagnostics; controlled ablations of shaping magnitude or representation would be needed only if causal attribution would change that choice. Terminal stabilization remains secondary: M18's T2 evidence supports its importance for reached-incomplete failures, but M21's T3 was too reach-deficient to test stabilization capability. Protected continuous-hold uncertainty, the one well-margin two-branch failure, and the difference between boundary and physics-step acceptance remain consequential because they can change official readiness even if development success improves.",
+    "cumulative_resource_use": "Campaign state at this goal-review decision: 5 inquiries used of 15 (I5 newly opened), 10 bounded sessions before this checkpoint, 19 completed measurements, 3 completed training allocations, 3 learned candidate families (T1, T2, T3), 1 best-known role assignment (T2), no retained or working candidate, and 0 official-assessment episodes. The current decision added one best-known role operation (E18) and one inquiry-opening operation (E19); no new training or measurement allocation was consumed.",
+    "current_goal_gap": "The best-known T2 artifact is 46 successes short of the 196/200 reference on the 160-episode development panel. Its residual profile contains seven never-reached failures and three reached-incomplete failures. The campaign has no candidate at or above the goal and has not resolved whether development boundary holds are equivalent to the protected uninterrupted hold.",
+    "current_synthesis": "Established observations: M19 and M20 verified that I4's branch/limit/trajectory implementation was active through production reset and step paths. T2 was measured at 150/160 on M21, while the complete matched T3 artifact scored 3/160; T3 had 149 never-reached episodes and positive minimum joint-limit margins in all 160 episodes, so avoiding negative margins did not recover reaching. T2 had seven never-reached and three reached-incomplete failures; T3 had only 11 episodes with any boundary hold, including its three successes, so M21 cannot test stabilization of a competent reach policy. T1 measured 105/160 and is weaker than T2. The preserved learning logs show T2's terminal training proxy at 0.58 despite its 150/160 development result, T3 at zero proxy success throughout, and T1 at 0.96 terminal proxy; these are execution-history learning dynamics, not development performance. Correction to the inherited interpretation: proxy rank and terminal checkpoint status must not be used as readiness surrogates, and T3's reach-deficient comparison does not make terminal stabilization secondary as a physical mechanism; it only makes stabilization unidentifiable in T3. The scientific model still supports feasible two-branch kinematics, a reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation with transient settling consequences, and a causal separation between reach, convergence, and uninterrupted hold. Competing explanations remain: I4's degradation may arise from restrictive shaping, representation/normalization or branch flags, their interaction, or broader trajectory-learning failure; T2's residual never-reached failures may still involve branch/limit or inner-radius trajectory effects, while reached-incomplete failures may involve arrival speed, overshoot, or sampled-data stabilization. M21 is an artifact-level negative comparison and cannot attribute the T3 loss to any single changed factor. Physics-step traces are research diagnostics only, and protected continuous-hold equivalence remains unresolved.",
+    "decision_frontier": "The consequential unresolved question is whether a less-restrictive, T2-compatible branch/trajectory or reward-balancing design can address the single-branch negative-limit failure pattern without sacrificing reach, and whether any improvement in complete success comes from better terminal stabilization rather than simply reaching more targets. The discriminating evidence is one bounded follow-on trained with the full inquiry allocation and compared with T2 on identical fixed development seeds, with complete radius/angle, first-reach, never-reached versus reached-incomplete, branch feasibility, joint-limit margin, entry/final velocity, hold interruption, and physics-step containment diagnostics. An improved paired success with preserved reach plus a reached-episode stabilization shift would support the design and a terminal gain; reach loss or no targeted failure-class change would redirect away from it. Any boundary/physics-step disagreement remains a protected-semantics limitation rather than a development success claim.",
     "evidence_references": [
+      "T1",
+      "T2",
+      "T3",
       "M19",
       "M20",
-      "T3",
       "M21",
-      "E16"
+      "E18",
+      "E19"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode assessment, with every episode completing the uninterrupted 2-second hold. T2 remains the strongest measured development artifact at 150/160 (93.75%) and is materially below the goal; the I4 candidate did not improve the gap, so no official assessment is justified from this work.",
-    "inquiry_id": "I4",
-    "next_direction_or_closure": "I4 is closed as limited negative by E16 because its closure condition was met: one bounded branch/joint-limit/trajectory-aware implementation was verified, trained with the full allocation, measured completely on the same 160-episode panel, and evaluated with branch, limit, reach, hold, and physics-step diagnostics. Return to goal review rather than request official assessment. Carry forward the redirect toward less restrictive trajectory/representation or reward balancing; do not treat T3's failure as a causal rejection of the broader branch-aware direction. Preserve the terminal-stabilization question for a competent reach artifact and preserve the protected continuous-hold limitation.",
-    "next_question": "Which less-restrictive trajectory/representation or reward-balancing intervention can recover reach performance toward T2 while addressing the single-branch negative-margin failures, and what matched evidence can isolate any terminal-stabilization gain without confusing it with reach failure?",
-    "scientific_commit": "bcf0149d1e479bf436cd042bb4e30dfaf64e2f9f",
-    "session_id": "S9"
+    "human_goal_connection": "The human goal remains a frozen learned policy with at least 196 successes in the protected 200-episode assessment, each completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is now the best-known development candidate at 150/160 (93.75%), but it is below goal and development semantics do not certify the protected continuous hold.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review chose bounded inquiry I5 rather than official assessment because the best-known T2 artifact is materially below 196/200 and the available comparison cannot identify a safe improvement or certify continuous hold. I5 will continue in a fresh inquiry session after this checkpoint. Its intended route is one less-restrictive T2-compatible design, with candidate selection and mechanism testing kept distinct by the matched fixed-panel and reach-conditioned stabilization diagnostics; do not repeat the coupled I4 intervention as if its causal mechanism were known.",
+    "next_question": "Can one T2-compatible, less-restrictive branch/trajectory or reward-balancing design recover or exceed T2 reach performance while reducing the single-branch negative-limit failures, and is any resulting success gain attributable to terminal stabilization rather than increased reach?",
+    "scientific_commit": "5ddaed7eb43d69adc19ccf8f38c6f6ab02147a9f",
+    "session_id": "S10"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -9958,22 +10100,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "58e8aa49-06e4-4313-a2ed-786547f2ec6e",
-    "id": "S10",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E18",
-      "E19"
-    ],
-    "scientific_parent_commit": "e1d948a5bb17de7a5ff3f14c56beb8a42b6c90b1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
