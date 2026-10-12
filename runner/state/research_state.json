@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 4,
+    "measurement": 5,
     "session": 1,
     "training": 0
   },
@@ -247,6 +247,43 @@
       "status": "failed",
       "superseded_by": "M4",
       "supersedes": "M2"
+    },
+    {
+      "completed_at": "2026-10-12T12:23:41Z",
+      "error": "robot_learning.lab.verify_physical_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 375, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 365, in main\n    else run_behavioral_check(\n         ~~~~~~~~~~~~~~~~~~~~^\n        radius_count=args.radius_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        angle_count=args.angle_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_steps=args.response_steps,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 213, in run_behavioral_check\n    measurement = measure_physical_characterization(\n        radius_count=radius_count,\n        angle_count=angle_count,\n        response_steps=response_steps,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\physical_characterization.py\", line 529, in measure_physical_characterization\n    \"compiled_facts\": _compiled_facts(model),\n                      ~~~~~~~~~~~~~~~^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\physical_characterization.py\", line 172, in _compiled_facts\n    actuator_id = int(model.actuator(name).id)\n                      ~~~~~~~~~~~~~~^^^^^^\nKeyError: \"Invalid name 'shoulder'. Valid names: []\"\n",
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Run the defect-sensitive behavioral verification for the physical-characterization tool on a small controlled grid and reversal sequence.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+              "--radius-count",
+              "2",
+              "--angle-count",
+              "4",
+              "--response-steps",
+              "6"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+            "instrument": "python_module",
+            "label": "physical-characterization behavioral verification",
+            "module": "robot_learning.lab.verify_physical_characterization"
+          }
+        ],
+        "rationale": "M1 established that the exact MuJoCo production calls execute, but not that the measurement detects state transitions and resets. This check independently tests target/configuration changes, both IK branches, repeated +1/-1 response direction, qpos/qvel updates, reset clearing, explicit units, and bounded artifact content before using the full measurement."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_physical_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 375, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 365, in main\n    else run_behavioral_check(\n         ~~~~~~~~~~~~~~~~~~~~^\n        radius_count=args.radius_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        angle_count=args.angle_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_steps=args.response_steps,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 213, in run_behavioral_check\n    measurement = measure_physical_characterization(\n        radius_count=radius_count,\n        angle_count=angle_count,\n        response_steps=response_steps,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\physical_characterization.py\", line 529, in measure_physical_characterization\n    \"compiled_facts\": _compiled_facts(model),\n                      ~~~~~~~~~~~~~~~^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\physical_characterization.py\", line 172, in _compiled_facts\n    actuator_id = int(model.actuator(name).id)\n                      ~~~~~~~~~~~~~~^^^^^^\nKeyError: \"Invalid name 'shoulder'. Valid names: []\"\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M5",
+      "supersedes": "M3"
     }
   ],
   "pending_operation": {
@@ -273,7 +310,7 @@
       "module_provenance": {
         "campaign_lab_manifest": [
           {
-            "fingerprint": "9a969896a942ea252985cc5ceba4bfd026226bd19bdc6e70d767f7f2b6043060",
+            "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
             "path": "robot_learning/lab/physical_characterization.py"
           },
           {
@@ -327,7 +364,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M4",
+    "id": "M5",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
@@ -357,7 +394,7 @@
     },
     "request_fingerprint": "a17aacdccf216584aaa4fb2074d0f3cf41ed04bc0c04826c8ec314021d139923",
     "session_id": "S1",
-    "supersedes": "M3"
+    "supersedes": "M4"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
