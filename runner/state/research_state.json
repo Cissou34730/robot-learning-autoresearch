@@ -9022,7 +9022,7 @@
     }
   },
   "counters": {
-    "event": 62,
+    "event": 63,
     "inquiry": 15,
     "measurement": 38,
     "session": 31,
@@ -9031,7 +9031,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -27675,31 +27675,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T02:39:08Z",
+      "error": null,
+      "id": "E63",
+      "inquiry_id": "I15",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from its matched 153/160 development evidence. T11:checkpoint-95232 is the selected I15 candidate but is not retained or best-known after scoring 152/160. No working or retained candidate is assigned. I15 is closed negatively; no candidate is proposed for official assessment.",
+        "completed_operations": [
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "cumulative_resource_use": "At I15 closure, the session completed M37, T11, M38, and E62. Campaign totals are 15 closed inquiries, 31 completed scientific sessions before this checkpoint, 26 measurements, and 11 training operations; the protected official assessment has not been requested. The I15 allocation was used for one implementation verification, one full 120,000-step transfer training run, one matched 160-episode paired evaluation, and the inquiry close.",
+        "current_goal_gap": "T4:checkpoint-120832 remains best-known at 153/160 (95.625%) with three no-first-reach and four reach-then-interrupt failures. The I15 candidate T11:checkpoint-95232 achieved 152/160, reduced no-first-reach failures to two, but increased reach-then-interrupt failures to six. No candidate has official-panel evidence and the 196/200 objective remains unmet.",
+        "current_synthesis": "M37 passed the independent implementation verification for the full-radius direct-control route: the new joint-limit and approach-velocity shaping was wired into training, evaluation remained unchanged, and reward attribution plus repeated hold/interruption/re-entry/reset semantics were preserved. T11 training then produced a nonterminal proxy peak at checkpoint-95232, while terminal proxy performance declined; this selected checkpoint was evaluated rather than granting the terminal checkpoint privilege. M38 found 152/160 for T11 versus 153/160 for T4 on the matched unchanged development panel, with one discordant episode and no candidate win. The candidate improved acquisition count from three to two no-first-reach failures, but worsened post-reach regulation from four to six reach-then-interrupt failures and increased episodes with hold interruptions from ten to fifteen. These are complete-hold artifact observations and a negative result for this tested shaping route, not proof that the reward terms alone caused the change or that direct control, PPO, or the broader learning method is exhausted. The intended shaping was verified as exercised, so the route failure cannot be attributed to absent wiring. The official task and assessment remain protected and unchanged.",
+        "decision_frontier": "I15 is closed negatively because the full-allocation, mechanism-verified candidate failed to exceed 153/160 despite preserving full-radius exposure and reducing no-first-reach failures. The consequential unresolved frontier is now upstream of another reward-only variant: whether actuation timing, compiled dynamics, torque authority, or a control/learning representation limits complete hold regulation enough that those mechanisms must be measured or redesigned before another capability test. M38 provides episode-level first-reach, held-step, interruption, and complete-outcome diagnostics, but it does not identify which plant/control mechanism caused the increased interruptions; that causal distinction should guide the next direction.",
+        "evidence_references": [
+          "M15",
+          "M34",
+          "M35",
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains one frozen policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. I15 did not justify official assessment: the best measured development artifact remains T4:checkpoint-120832 at 153/160, leaving a 43-success gap to the official threshold.",
+        "next_direction_or_closure": "I15 is explicitly closed negatively. The tested direct full-radius joint-limit/approach-velocity shaping route is not retained as a capability direction because it failed the improvement criterion and increased reach-then-interrupt failures. The result does not disprove the broader method. The next goal review should decide whether to measure the unresolved actuation/compiled-dynamics consequences and redesign control representation or system identification before allocating another full training run. The protected official assessment remains unrequested.",
+        "next_question": "Can independent actuation and compiled-dynamics measurements identify a control-relevant regulation bottleneck behind the persistent reach-then-interrupt failures, and thereby determine whether the next credible capability test should change control/system identification rather than add another reward shaping variant?"
+      },
+      "result": {
+        "session_id": "S31",
+        "status": "checkpointed"
+      },
+      "session_id": "S31",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "495f7a7e175f664fed251aa7e63355c9dd104c6e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from its matched 153/160 development evidence. T11:checkpoint-95232 is the selected I15 candidate but is not retained or best-known after scoring 152/160. No working or retained candidate is assigned. I15 is closed negatively; no candidate is proposed for official assessment.",
+        "completed_operations": [
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "cumulative_resource_use": "At I15 closure, the session completed M37, T11, M38, and E62. Campaign totals are 15 closed inquiries, 31 completed scientific sessions before this checkpoint, 26 measurements, and 11 training operations; the protected official assessment has not been requested. The I15 allocation was used for one implementation verification, one full 120,000-step transfer training run, one matched 160-episode paired evaluation, and the inquiry close.",
+        "current_goal_gap": "T4:checkpoint-120832 remains best-known at 153/160 (95.625%) with three no-first-reach and four reach-then-interrupt failures. The I15 candidate T11:checkpoint-95232 achieved 152/160, reduced no-first-reach failures to two, but increased reach-then-interrupt failures to six. No candidate has official-panel evidence and the 196/200 objective remains unmet.",
+        "current_synthesis": "M37 passed the independent implementation verification for the full-radius direct-control route: the new joint-limit and approach-velocity shaping was wired into training, evaluation remained unchanged, and reward attribution plus repeated hold/interruption/re-entry/reset semantics were preserved. T11 training then produced a nonterminal proxy peak at checkpoint-95232, while terminal proxy performance declined; this selected checkpoint was evaluated rather than granting the terminal checkpoint privilege. M38 found 152/160 for T11 versus 153/160 for T4 on the matched unchanged development panel, with one discordant episode and no candidate win. The candidate improved acquisition count from three to two no-first-reach failures, but worsened post-reach regulation from four to six reach-then-interrupt failures and increased episodes with hold interruptions from ten to fifteen. These are complete-hold artifact observations and a negative result for this tested shaping route, not proof that the reward terms alone caused the change or that direct control, PPO, or the broader learning method is exhausted. The intended shaping was verified as exercised, so the route failure cannot be attributed to absent wiring. The official task and assessment remain protected and unchanged.",
+        "decision_frontier": "I15 is closed negatively because the full-allocation, mechanism-verified candidate failed to exceed 153/160 despite preserving full-radius exposure and reducing no-first-reach failures. The consequential unresolved frontier is now upstream of another reward-only variant: whether actuation timing, compiled dynamics, torque authority, or a control/learning representation limits complete hold regulation enough that those mechanisms must be measured or redesigned before another capability test. M38 provides episode-level first-reach, held-step, interruption, and complete-outcome diagnostics, but it does not identify which plant/control mechanism caused the increased interruptions; that causal distinction should guide the next direction.",
+        "evidence_references": [
+          "M15",
+          "M34",
+          "M35",
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains one frozen policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. I15 did not justify official assessment: the best measured development artifact remains T4:checkpoint-120832 at 153/160, leaving a 43-success gap to the official threshold.",
+        "inquiry_id": "I15",
+        "next_direction_or_closure": "I15 is explicitly closed negatively. The tested direct full-radius joint-limit/approach-velocity shaping route is not retained as a capability direction because it failed the improvement criterion and increased reach-then-interrupt failures. The result does not disprove the broader method. The next goal review should decide whether to measure the unresolved actuation/compiled-dynamics consequences and redesign control representation or system identification before allocating another full training run. The protected official assessment remains unrequested.",
+        "next_question": "Can independent actuation and compiled-dynamics measurements identify a control-relevant regulation bottleneck behind the persistent reach-then-interrupt failures, and thereby determine whether the next credible capability test should change control/system identification rather than add another reward shaping variant?",
+        "session_id": "S31"
+      },
+      "presentation": {
+        "backend_session_id": "0e4e87a5-628b-4896-98c1-8fbf245fb8a3",
+        "campaign_id": "90563aac-4d55-41a2-9cfd-dffab0145883",
+        "campaign_usage": "1h34m | 253.31 AIU | prompt 42.8m (90% cached) | output 541.7k",
+        "session_id": "S31",
+        "session_kind": "inquiry",
+        "session_usage": "4m11s | 6.39 AIU | prompt 701.7k (88% cached) | output 25.5k"
+      },
+      "result": {
+        "session_id": "S31",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "9025fb580112a0340a3695b33533d0d97a8fe6fb",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E63",
+    "inquiry_id": "I15",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T4:checkpoint-120832 remains best-known from its matched 153/160 development evidence. T11:checkpoint-95232 is the selected I15 candidate but is not retained or best-known after scoring 152/160. No working or retained candidate is assigned. I15 is closed negatively; no candidate is proposed for official assessment.",
+        "completed_operations": [
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "cumulative_resource_use": "At I15 closure, the session completed M37, T11, M38, and E62. Campaign totals are 15 closed inquiries, 31 completed scientific sessions before this checkpoint, 26 measurements, and 11 training operations; the protected official assessment has not been requested. The I15 allocation was used for one implementation verification, one full 120,000-step transfer training run, one matched 160-episode paired evaluation, and the inquiry close.",
+        "current_goal_gap": "T4:checkpoint-120832 remains best-known at 153/160 (95.625%) with three no-first-reach and four reach-then-interrupt failures. The I15 candidate T11:checkpoint-95232 achieved 152/160, reduced no-first-reach failures to two, but increased reach-then-interrupt failures to six. No candidate has official-panel evidence and the 196/200 objective remains unmet.",
+        "current_synthesis": "M37 passed the independent implementation verification for the full-radius direct-control route: the new joint-limit and approach-velocity shaping was wired into training, evaluation remained unchanged, and reward attribution plus repeated hold/interruption/re-entry/reset semantics were preserved. T11 training then produced a nonterminal proxy peak at checkpoint-95232, while terminal proxy performance declined; this selected checkpoint was evaluated rather than granting the terminal checkpoint privilege. M38 found 152/160 for T11 versus 153/160 for T4 on the matched unchanged development panel, with one discordant episode and no candidate win. The candidate improved acquisition count from three to two no-first-reach failures, but worsened post-reach regulation from four to six reach-then-interrupt failures and increased episodes with hold interruptions from ten to fifteen. These are complete-hold artifact observations and a negative result for this tested shaping route, not proof that the reward terms alone caused the change or that direct control, PPO, or the broader learning method is exhausted. The intended shaping was verified as exercised, so the route failure cannot be attributed to absent wiring. The official task and assessment remain protected and unchanged.",
+        "decision_frontier": "I15 is closed negatively because the full-allocation, mechanism-verified candidate failed to exceed 153/160 despite preserving full-radius exposure and reducing no-first-reach failures. The consequential unresolved frontier is now upstream of another reward-only variant: whether actuation timing, compiled dynamics, torque authority, or a control/learning representation limits complete hold regulation enough that those mechanisms must be measured or redesigned before another capability test. M38 provides episode-level first-reach, held-step, interruption, and complete-outcome diagnostics, but it does not identify which plant/control mechanism caused the increased interruptions; that causal distinction should guide the next direction.",
+        "evidence_references": [
+          "M15",
+          "M34",
+          "M35",
+          "M37",
+          "T11",
+          "M38",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains one frozen policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. I15 did not justify official assessment: the best measured development artifact remains T4:checkpoint-120832 at 153/160, leaving a 43-success gap to the official threshold.",
+        "next_direction_or_closure": "I15 is explicitly closed negatively. The tested direct full-radius joint-limit/approach-velocity shaping route is not retained as a capability direction because it failed the improvement criterion and increased reach-then-interrupt failures. The result does not disprove the broader method. The next goal review should decide whether to measure the unresolved actuation/compiled-dynamics consequences and redesign control representation or system identification before allocating another full training run. The protected official assessment remains unrequested.",
+        "next_question": "Can independent actuation and compiled-dynamics measurements identify a control-relevant regulation bottleneck behind the persistent reach-then-interrupt failures, and thereby determine whether the next credible capability test should change control/system identification rather than add another reward shaping variant?"
+      }
+    },
+    "request_fingerprint": "e11503b67505517285efa10242fe33843a62bcc89c80d82f3a80001dfa6b5225",
+    "session_id": "S31",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19/M23/M28/M31/M32/M35 at 153/160; T10:checkpoint-95232 is a tied rejected route-level candidate, not working or retained. T2 remains an earlier candidate and is not current best-known. No working or retained candidate is assigned. The active inquiry is I15; no new candidate has yet been produced.",
+    "candidates_and_roles": "T4:checkpoint-120832 remains best-known from its matched 153/160 development evidence. T11:checkpoint-95232 is the selected I15 candidate but is not retained or best-known after scoring 152/160. No working or retained candidate is assigned. I15 is closed negatively; no candidate is proposed for official assessment.",
     "completed_operations": [
-      "E60"
+      "M37",
+      "T11",
+      "M38",
+      "E62"
     ],
-    "cumulative_resource_use": "Before this goal review: 14 inquiries had closed, 29 scientific sessions had completed, 24 measurements and 10 training operations had completed, with 15 inquiry allocations used after opening I15. The campaign has not requested the protected official assessment. In this goal-review session, completed evidence M15, M34 and M35 was inspected, the inherited broad mechanism question was corrected, and E60 opened I15; no training or measurement allocation was consumed in this session.",
-    "current_goal_gap": "T4:checkpoint-120832 remains the strongest measured artifact at 153/160 (95.625%) on the protected development semantics, with seven failures: three no-first-reach episodes and four reach-then-interrupt episodes. T10:checkpoint-95232 ties it exactly with zero paired wins and the same failure-class split. No candidate has official-panel evidence.",
-    "current_synthesis": "Established observations: M15 independently verified time-resolved T2 traces with seven acquisition failures showing joint-limit/saturated-velocity or high-speed oscillatory behavior, three post-reach failures with nonzero endpoint/joint velocity and saturated or near-saturated torque, zero contact events, and no separating final-branch occupancy; M34 verified that T10's hold-recovery terms were active only in its intended training route and that reset, interruption, and evaluation semantics were preserved; M35 compared the complete T10:checkpoint-95232 artifact with T4 on the unchanged paired 160-episode panel and found 153/160 for both, zero paired wins, zero discordant episodes, and the same 3/4 acquisition-versus-interruption split. These are artifact and mechanism-signature observations, not proof that reward, runtime, plant dynamics, or one isolated intervention caused the failures. Correction to the inherited proposed question: the consequential failure classes are already discriminated sufficiently to select the next capability test; reopening a broad acquisition-versus-regulation survey would not itself change capability. The unresolved campaign question is whether a direct full-radius policy can use explicit joint-limit and approach-velocity shaping to address both signatures without losing acquisition. This route is a method-specific test only and does not establish that the broader learning method is exhausted or that the official goal is met.",
-    "decision_frontier": "The active frontier is whether a mechanism-supported direct-control training route can exceed 153/160 while preserving the three no-first-reach outcomes and reducing dynamic interruptions. The discriminating evidence is a complete candidate evaluation on matched development seeds, with per-episode and time-resolved diagnostics showing joint-limit proximity, approach velocity, torque/action saturation, first reach, hold interruptions, and complete 100-step outcomes. Exceeding 153 without an acquisition regression supports retaining the route and considering official assessment only after a separate goal-review commitment; failure to exceed, acquisition regression, or absent intended diagnostics closes this route as negative or inconclusive. Contact and branch mechanisms remain non-leading because M15 found no contacts and no branch-occupancy separation, but they are not claimed impossible.",
+    "cumulative_resource_use": "At I15 closure, the session completed M37, T11, M38, and E62. Campaign totals are 15 closed inquiries, 31 completed scientific sessions before this checkpoint, 26 measurements, and 11 training operations; the protected official assessment has not been requested. The I15 allocation was used for one implementation verification, one full 120,000-step transfer training run, one matched 160-episode paired evaluation, and the inquiry close.",
+    "current_goal_gap": "T4:checkpoint-120832 remains best-known at 153/160 (95.625%) with three no-first-reach and four reach-then-interrupt failures. The I15 candidate T11:checkpoint-95232 achieved 152/160, reduced no-first-reach failures to two, but increased reach-then-interrupt failures to six. No candidate has official-panel evidence and the 196/200 objective remains unmet.",
+    "current_synthesis": "M37 passed the independent implementation verification for the full-radius direct-control route: the new joint-limit and approach-velocity shaping was wired into training, evaluation remained unchanged, and reward attribution plus repeated hold/interruption/re-entry/reset semantics were preserved. T11 training then produced a nonterminal proxy peak at checkpoint-95232, while terminal proxy performance declined; this selected checkpoint was evaluated rather than granting the terminal checkpoint privilege. M38 found 152/160 for T11 versus 153/160 for T4 on the matched unchanged development panel, with one discordant episode and no candidate win. The candidate improved acquisition count from three to two no-first-reach failures, but worsened post-reach regulation from four to six reach-then-interrupt failures and increased episodes with hold interruptions from ten to fifteen. These are complete-hold artifact observations and a negative result for this tested shaping route, not proof that the reward terms alone caused the change or that direct control, PPO, or the broader learning method is exhausted. The intended shaping was verified as exercised, so the route failure cannot be attributed to absent wiring. The official task and assessment remain protected and unchanged.",
+    "decision_frontier": "I15 is closed negatively because the full-allocation, mechanism-verified candidate failed to exceed 153/160 despite preserving full-radius exposure and reducing no-first-reach failures. The consequential unresolved frontier is now upstream of another reward-only variant: whether actuation timing, compiled dynamics, torque authority, or a control/learning representation limits complete hold regulation enough that those mechanisms must be measured or redesigned before another capability test. M38 provides episode-level first-reach, held-step, interruption, and complete-outcome diagnostics, but it does not identify which plant/control mechanism caused the increased interruptions; that causal distinction should guide the next direction.",
     "evidence_references": [
       "M15",
       "M34",
       "M35",
-      "E58",
-      "E60"
+      "M37",
+      "T11",
+      "M38",
+      "E62"
     ],
-    "human_goal_connection": "The campaign still seeks one frozen learned policy that achieves at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. The best-known development artifact, T4:checkpoint-120832, achieves 153/160 and is 43 successes short of the official threshold; official assessment remains unrequested.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review opened I15 as the final bounded inquiry and corrected the inherited mechanism question. After this checkpoint, develop one full-allocation direct-control candidate with explicit joint-limit and approach-velocity shaping while preserving full-radius exposure and official hold semantics, then evaluate a selected complete artifact against T4 on matched seeds with time-resolved diagnostics. The inquiry closes positively only on a complete-hold improvement beyond 153/160 without increased acquisition failures and with evidence that the shaping was exercised; otherwise it closes negatively or inconclusively and carries the unchanged capability gap forward. This checkpoint does not request official assessment.",
-    "next_question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
-    "scientific_commit": "8c8c8f76fcbec731782225010605ff84f3d9e8f3",
-    "session_id": "S30"
+    "human_goal_connection": "The human goal remains one frozen policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official panel. I15 did not justify official assessment: the best measured development artifact remains T4:checkpoint-120832 at 153/160, leaving a 43-success gap to the official threshold.",
+    "inquiry_id": "I15",
+    "next_direction_or_closure": "I15 is explicitly closed negatively. The tested direct full-radius joint-limit/approach-velocity shaping route is not retained as a capability direction because it failed the improvement criterion and increased reach-then-interrupt failures. The result does not disprove the broader method. The next goal review should decide whether to measure the unresolved actuation/compiled-dynamics consequences and redesign control representation or system identification before allocating another full training run. The protected official assessment remains unrequested.",
+    "next_question": "Can independent actuation and compiled-dynamics measurements identify a control-relevant regulation bottleneck behind the persistent reach-then-interrupt failures, and thereby determine whether the next credible capability test should change control/system identification rather than add another reward shaping variant?",
+    "scientific_commit": "9025fb580112a0340a3695b33533d0d97a8fe6fb",
+    "session_id": "S31"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -27707,24 +27857,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "0e4e87a5-628b-4896-98c1-8fbf245fb8a3",
-    "id": "S31",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M37",
-      "T11",
-      "M38",
-      "E62"
-    ],
-    "scientific_parent_commit": "495f7a7e175f664fed251aa7e63355c9dd104c6e"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

@@ -113,3 +113,4 @@
 | T11 | training | I15 | completed |
 | M38 | measurement | I15 | completed |
 | E62 | inquiry | I15 | completed |
+| E63 | checkpoint | I15 | checkpointed |
