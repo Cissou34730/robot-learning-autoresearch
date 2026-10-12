@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a complete refined candidate is compared with T2 on a non-overlapping full official-range development panel using identical seeds for both candidates and episode-level radius/angle, first-reach, maximum-held-step, and interruption diagnostics. A positive bounded conclusion requires fewer inner and negative-angle pre-reach failures, no outer post-reach incomplete hold, and no material loss of T2's inner or outer complete-hold success; a negative, limited, or inconclusive result is sufficient to redirect toward representation/optimization or another specifically supported mechanism without claiming that any bundled factor caused the outcome.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T2 is the strongest evidence-backed candidate but achieved only 138/160 (86.25%) on the matched full-range development panel. This inquiry targets the dominant residual failure classes while preserving the already demonstrated inner-band improvement and outer-band success, with the eventual decision still based on complete-hold success rather than a proxy.",
+    "handoff_conclusion": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+    "handoff_question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+    "rationale": "Opening one more bounded inquiry is preferable to requesting terminal assessment now because the best candidate remains 22 percentage points below the 98% development target and its failures are diagnostically concentrated rather than uniformly distributed: 18/18 inner failures are pre-reach, 19 failures occur in the [-180,-90) angle sector, and the outer band has one post-reach incomplete hold with two interruptions. The evidence supports a goal-linked targeted candidate-development test, not a causal claim about radius exposure, branch coverage, reset escape, or shaping individually. The new evidence also corrects the inherited broader phrasing: the main unresolved approach issue is specifically the negative-angle/inner pre-reach regime, while post-reach regulation is a smaller but consequential outer caveat. T2's training proxy rose to 0.88 around 104448 steps and then declined to 0.81 at 120832, so the selected pre-dip checkpoint remains the relevant baseline and terminal status has no special authority. One full training allocation plus a matched diagnostic comparison is a bounded cost relative to the large remaining goal gap and can either produce a stronger candidate or redirect the method; official assessment now would have low expected value.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "3218038ed3e93616a5627105857610f4fe9c7895",
     "id": "5da30677-03e6-49ec-98b3-d27252a5530c",
@@ -1647,16 +1658,16 @@
     }
   },
   "counters": {
-    "event": 11,
-    "inquiry": 2,
+    "event": 12,
+    "inquiry": 3,
     "measurement": 9,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-105472",
     "retained": {},
@@ -4667,9 +4678,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T07:19:28Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a complete refined candidate is compared with T2 on a non-overlapping full official-range development panel using identical seeds for both candidates and episode-level radius/angle, first-reach, maximum-held-step, and interruption diagnostics. A positive bounded conclusion requires fewer inner and negative-angle pre-reach failures, no outer post-reach incomplete hold, and no material loss of T2's inner or outer complete-hold success; a negative, limited, or inconclusive result is sufficient to redirect toward representation/optimization or another specifically supported mechanism without claiming that any bundled factor caused the outcome.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T2 is the strongest evidence-backed candidate but achieved only 138/160 (86.25%) on the matched full-range development panel. This inquiry targets the dominant residual failure classes while preserving the already demonstrated inner-band improvement and outer-band success, with the eventual decision still based on complete-hold success rather than a proxy.",
+        "question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+        "rationale": "Opening one more bounded inquiry is preferable to requesting terminal assessment now because the best candidate remains 22 percentage points below the 98% development target and its failures are diagnostically concentrated rather than uniformly distributed: 18/18 inner failures are pre-reach, 19 failures occur in the [-180,-90) angle sector, and the outer band has one post-reach incomplete hold with two interruptions. The evidence supports a goal-linked targeted candidate-development test, not a causal claim about radius exposure, branch coverage, reset escape, or shaping individually. The new evidence also corrects the inherited broader phrasing: the main unresolved approach issue is specifically the negative-angle/inner pre-reach regime, while post-reach regulation is a smaller but consequential outer caveat. T2's training proxy rose to 0.88 around 104448 steps and then declined to 0.81 at 120832, so the selected pre-dip checkpoint remains the relevant baseline and terminal status has no special authority. One full training allocation plus a matched diagnostic comparison is a bounded cost relative to the large remaining goal gap and can either produce a stronger candidate or redirect the method; official assessment now would have low expected value."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a complete refined candidate is compared with T2 on a non-overlapping full official-range development panel using identical seeds for both candidates and episode-level radius/angle, first-reach, maximum-held-step, and interruption diagnostics. A positive bounded conclusion requires fewer inner and negative-angle pre-reach failures, no outer post-reach incomplete hold, and no material loss of T2's inner or outer complete-hold success; a negative, limited, or inconclusive result is sufficient to redirect toward representation/optimization or another specifically supported mechanism without claiming that any bundled factor caused the outcome.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T2 is the strongest evidence-backed candidate but achieved only 138/160 (86.25%) on the matched full-range development panel. This inquiry targets the dominant residual failure classes while preserving the already demonstrated inner-band improvement and outer-band success, with the eventual decision still based on complete-hold success rather than a proxy.",
+          "handoff_conclusion": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+          "handoff_question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+          "rationale": "Opening one more bounded inquiry is preferable to requesting terminal assessment now because the best candidate remains 22 percentage points below the 98% development target and its failures are diagnostically concentrated rather than uniformly distributed: 18/18 inner failures are pre-reach, 19 failures occur in the [-180,-90) angle sector, and the outer band has one post-reach incomplete hold with two interruptions. The evidence supports a goal-linked targeted candidate-development test, not a causal claim about radius exposure, branch coverage, reset escape, or shaping individually. The new evidence also corrects the inherited broader phrasing: the main unresolved approach issue is specifically the negative-angle/inner pre-reach regime, while post-reach regulation is a smaller but consequential outer caveat. T2's training proxy rose to 0.88 around 104448 steps and then declined to 0.81 at 120832, so the selected pre-dip checkpoint remains the relevant baseline and terminal status has no special authority. One full training allocation plus a matched diagnostic comparison is a bounded cost relative to the large remaining goal gap and can either produce a stronger candidate or redirect the method; official assessment now would have low expected value.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a complete refined candidate is compared with T2 on a non-overlapping full official-range development panel using identical seeds for both candidates and episode-level radius/angle, first-reach, maximum-held-step, and interruption diagnostics. A positive bounded conclusion requires fewer inner and negative-angle pre-reach failures, no outer post-reach incomplete hold, and no material loss of T2's inner or outer complete-hold success; a negative, limited, or inconclusive result is sufficient to redirect toward representation/optimization or another specifically supported mechanism without claiming that any bundled factor caused the outcome.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T2 is the strongest evidence-backed candidate but achieved only 138/160 (86.25%) on the matched full-range development panel. This inquiry targets the dominant residual failure classes while preserving the already demonstrated inner-band improvement and outer-band success, with the eventual decision still based on complete-hold success rather than a proxy.",
+        "question": "Can a targeted refinement of the broadened policy reduce the remaining inner-radius and negative-angle pre-reach failures and eliminate the outer post-reach interruption without eroding T2's full-distribution gains?",
+        "rationale": "Opening one more bounded inquiry is preferable to requesting terminal assessment now because the best candidate remains 22 percentage points below the 98% development target and its failures are diagnostically concentrated rather than uniformly distributed: 18/18 inner failures are pre-reach, 19 failures occur in the [-180,-90) angle sector, and the outer band has one post-reach incomplete hold with two interruptions. The evidence supports a goal-linked targeted candidate-development test, not a causal claim about radius exposure, branch coverage, reset escape, or shaping individually. The new evidence also corrects the inherited broader phrasing: the main unresolved approach issue is specifically the negative-angle/inner pre-reach regime, while post-reach regulation is a smaller but consequential outer caveat. T2's training proxy rose to 0.88 around 104448 steps and then declined to 0.81 at 120832, so the selected pre-dip checkpoint remains the relevant baseline and terminal status has no special authority. One full training allocation plus a matched diagnostic comparison is a bounded cost relative to the large remaining goal gap and can either produce a stronger candidate or redirect the method; official assessment now would have low expected value."
+      }
+    },
+    "request_fingerprint": "ed5c91f3ffef33a3eee2a542bc41aa574e4c889c8dea3afffeb535fd3584a1cb",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T2:checkpoint-105472, assigned by E9 using T2, M8, and M9. It is the selected late pre-dip checkpoint from the broadened recipe and is not an official-success declaration. T1:checkpoint-115712 remains the matched baseline artifact. Working and retained roles are empty. M7 is an implementation verification artifact, and M8/M9 are development evidence, not official assessment results.",
     "completed_operations": [
@@ -4705,6 +4779,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "6a00907a-c65a-479c-95c9-f29dcae189d6",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E12"
+    ],
+    "scientific_parent_commit": "f14214d87f44ed5c74b5e65bd74aee35470622e8"
+  },
   "terminal_state": null
 }
