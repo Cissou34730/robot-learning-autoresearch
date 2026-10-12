@@ -15,6 +15,7 @@ from typing import Any
 from robot_learning.lab.analyze_baseline_profile import (
     M27_T2_REFERENCE_FILENAME,
     M28_T2_PROFILE_FILENAME,
+    M28_T2_ARTIFACT_FINGERPRINT,
     M30_T2_REFERENCE_FILENAME,
     analyze_document,
     analyze_path,
@@ -149,14 +150,119 @@ def run_check() -> dict[str, Any]:
             "M28 fallback provenance",
         )
 
-        missing_m30_directory = directory / "without_fallback"
+        missing_m30_directory = directory / "without_profile_files"
         missing_m30_directory.mkdir()
         missing_m30_path = missing_m30_directory / M30_T2_REFERENCE_FILENAME
-        _assert_raises_file_not_found(
-            lambda: resolve_profile_input(missing_m30_path),
-            "M30 fallback requires an approved sibling",
+        _assert_equal(
+            missing_m30_path.exists(),
+            False,
+            "snapshot input is absent before fallback",
+        )
+        snapshot_report = analyze_path(missing_m30_path)
+        _assert_equal(
+            missing_m30_path.exists(),
+            False,
+            "snapshot fallback does not create an input file",
+        )
+        _assert_equal(
+            snapshot_report["report_source"],
+            "m28_profile_snapshot_fallback",
+            "M28 snapshot report source",
+        )
+        _assert_equal(
+            snapshot_report["source_operation"],
+            "M28",
+            "M28 snapshot operation provenance",
+        )
+        _assert_equal(
+            snapshot_report["source_artifact_fingerprint"],
+            M28_T2_ARTIFACT_FINGERPRINT,
+            "M28 snapshot artifact provenance",
+        )
+        _assert_equal(
+            snapshot_report["snapshot_used"],
+            True,
+            "M28 snapshot usage marker",
+        )
+        _assert_equal(
+            snapshot_report["source_resolution"],
+            {
+                "requested_path": str(missing_m30_path),
+                "resolved_path": str(missing_m30_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "M28 snapshot provenance",
+        )
+        _assert_equal(
+            snapshot_report["overall"]["count"],
+            160,
+            "M28 snapshot overall count",
+        )
+        _assert_equal(
+            snapshot_report["overall"]["successes"],
+            150,
+            "M28 snapshot overall successes",
+        )
+        _assert_equal(
+            snapshot_report["overall"]["first_reach_count"],
+            153,
+            "M28 snapshot overall first reaches",
+        )
+        _assert_equal(
+            snapshot_report["radius_strata"]["[14,17)"],
+            {
+                "count": 31,
+                "successes": 28,
+                "complete_hold_count": 28,
+                "first_reach_count": 29,
+            },
+            "M28 snapshot radius strata",
+        )
+        _assert_equal(
+            snapshot_report["angle_strata"]["[-180,-135)"]["first_reach_count"],
+            22,
+            "M28 snapshot [-180,-135) first reaches",
+        )
+        _assert_equal(
+            snapshot_report["angle_strata"]["[-45,0)"]["first_reach_count"],
+            11,
+            "M28 snapshot [-45,0) first reaches",
+        )
+        _assert_equal(
+            snapshot_report["angle_strata"]["[-135,-90)"],
+            {
+                "count": 26,
+                "successes": 23,
+                "complete_hold_count": 23,
+                "first_reach_count": 23,
+                "never_reached_count": 3,
+            },
+            "M28 snapshot angle strata",
+        )
+        _assert_equal(
+            snapshot_report["class_summaries"]["reached_but_not_complete"][
+                "count"
+            ],
+            3,
+            "M28 snapshot class count",
+        )
+        _assert_equal(
+            snapshot_report["branch_context_counts"][
+                "target_feasible_branch_sets"
+            ],
+            {"folded": 14, "open": 6, "open+folded": 140},
+            "M28 snapshot branch counts",
         )
 
+        non_m30_missing_path = directory / "missing.json"
+        _assert_raises_file_not_found(
+            lambda: resolve_profile_input(non_m30_missing_path),
+            "non-M30 missing input",
+        )
         unrelated_missing_path = directory / "unrelated.json"
         _assert_raises_file_not_found(
             lambda: resolve_profile_input(unrelated_missing_path),
@@ -184,6 +290,14 @@ def run_check() -> dict[str, Any]:
                 "source_resolution"
             ],
             "m28_preserved_profile_marker": m28_report["profile_marker"],
+            "m28_snapshot_corrected_first_reach_counts": {
+                "[-180,-135)": snapshot_report["angle_strata"]["[-180,-135)"][
+                    "first_reach_count"
+                ],
+                "[-45,0)": snapshot_report["angle_strata"]["[-45,0)"][
+                    "first_reach_count"
+                ],
+            },
             "rejected_missing_inputs": 2,
             "analysis_sections": list(required_sections),
         }
@@ -196,7 +310,11 @@ def run_check() -> dict[str, Any]:
             "exact_m30_path_uses_m27_sibling_only_when_present": True,
             "exact_m30_path_uses_m28_profile_only_when_m27_is_absent": True,
             "m28_profile_is_loaded_without_recomputation": True,
-            "missing_m30_without_sibling_rejected": True,
+            "missing_exact_m30_path_uses_provenance_bound_m28_snapshot": True,
+            "m28_snapshot_corrected_first_reach_counts": {
+                "[-180,-135)": 22,
+                "[-45,0)": 11,
+            },
             "unrelated_missing_path_rejected": True,
             "analysis_sections_preserved": list(required_sections),
         },
@@ -206,7 +324,9 @@ def run_check() -> dict[str, Any]:
             "exact M30 T2 to M28 T2 profile fallback",
             "source kind and fallback provenance in emitted path reports",
             "preservation of a loaded M28 profile without recomputation",
-            "rejection of an M30 request without either exact fallback sibling",
+            "artifact-independent M28 snapshot fallback for an absent exact M30 T2 file",
+            "M28 snapshot provenance and representative aggregate counts",
+            "corrected M28 snapshot first-reach counts for [-180,-135) and [-45,0)",
             "rejection of an unrelated missing input",
             "existing aggregate report section presence",
         ],
@@ -215,6 +335,7 @@ def run_check() -> dict[str, Any]:
             "scientific validity or interpretation of the profile",
             "Runner archive visibility and filesystem behavior outside the controlled temporary directory",
         ],
+        "execution_note": "This check has not been executed.",
     }
 
 

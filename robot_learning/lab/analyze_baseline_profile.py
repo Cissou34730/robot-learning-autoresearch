@@ -27,6 +27,11 @@ M27_T2_REFERENCE_FILENAME = (
     "m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
 )
 M28_T2_PROFILE_FILENAME = "python-module-M28-2-i6_t2_profile_analysis.json"
+M28_T2_OPERATION = "M28"
+M28_T2_ARTIFACT_FINGERPRINT = (
+    "808cdd3261d84f26a1362e0072fc1c6102684ff335ce87a279bbc74194fbfa1b"
+)
+M28_T2_EVALUATION_SEMANTICS = "82260456c369"
 
 RADIUS_BINS = (
     ("[6,10)", 6.0, 10.0, True, False),
@@ -516,6 +521,149 @@ def analyze_document(document: Any) -> dict[str, Any]:
     }
 
 
+def _m28_profile_snapshot() -> dict[str, Any]:
+    """Return the explicitly approved, non-recomputed M28 T2 profile reuse."""
+    return {
+        "analysis_schema_version": ANALYSIS_SCHEMA_VERSION,
+        "input_episode_count": 160,
+        "definitions": _bin_definitions(),
+        "overall": {
+            "count": 160,
+            "successes": 150,
+            "failures": 10,
+            "success_percent": 93.75,
+            "first_reach_count": 153,
+            "first_reach_rate": 95.625,
+            "never_reached_count": 7,
+            "complete_hold_count": 150,
+            "reached_but_not_complete_count": 3,
+        },
+        "radius_strata": {
+            "[6,10)": {
+                "count": 40,
+                "successes": 40,
+                "complete_hold_count": 40,
+                "first_reach_count": 40,
+            },
+            "[10,14)": {
+                "count": 53,
+                "successes": 50,
+                "complete_hold_count": 50,
+                "first_reach_count": 50,
+            },
+            "[14,17)": {
+                "count": 31,
+                "successes": 28,
+                "complete_hold_count": 28,
+                "first_reach_count": 29,
+            },
+            "[17,20]": {
+                "count": 36,
+                "successes": 32,
+                "complete_hold_count": 32,
+                "first_reach_count": 34,
+            },
+        },
+        "angle_strata": {
+            "[-180,-135)": {
+                "count": 25,
+                "successes": 21,
+                "complete_hold_count": 21,
+                "first_reach_count": 22,
+                "never_reached_count": 3,
+            },
+            "[-135,-90)": {
+                "count": 26,
+                "successes": 23,
+                "complete_hold_count": 23,
+                "first_reach_count": 23,
+                "never_reached_count": 3,
+            },
+            "[-90,-45)": {
+                "count": 19,
+                "successes": 19,
+                "complete_hold_count": 19,
+                "first_reach_count": 19,
+                "never_reached_count": 0,
+            },
+            "[-45,0)": {
+                "count": 12,
+                "successes": 10,
+                "complete_hold_count": 10,
+                "first_reach_count": 11,
+                "never_reached_count": 1,
+            },
+            "[0,45)": {
+                "count": 19,
+                "successes": 18,
+                "complete_hold_count": 18,
+                "first_reach_count": 18,
+                "never_reached_count": 0,
+            },
+            "[45,90)": {
+                "count": 21,
+                "successes": 21,
+                "complete_hold_count": 21,
+                "first_reach_count": 21,
+                "never_reached_count": 0,
+            },
+            "[90,135)": {
+                "count": 14,
+                "successes": 14,
+                "complete_hold_count": 14,
+                "first_reach_count": 14,
+                "never_reached_count": 0,
+            },
+            "[135,180)": {
+                "count": 24,
+                "successes": 24,
+                "complete_hold_count": 24,
+                "first_reach_count": 24,
+                "never_reached_count": 0,
+            },
+        },
+        "class_summaries": {
+            "successes": {"count": 150, "successes": 150},
+            "failures": {"count": 10, "failures": 10},
+            "never_reached": {"count": 7, "never_reached_count": 7},
+            "reached_but_not_complete": {
+                "count": 3,
+                "reached_but_not_complete_count": 3,
+            },
+        },
+        "branch_context_counts": {
+            "target_feasible_branch_sets": {
+                "folded": 14,
+                "open": 6,
+                "open+folded": 140,
+            },
+            "first_entry_nearest_branch": {
+                "folded": 8,
+                "missing_or_null": 7,
+                "open": 145,
+            },
+            "final_boundary_nearest_branch": {
+                "folded": 14,
+                "open": 146,
+            },
+        },
+        "report_source": "m28_profile_snapshot_fallback",
+        "source_operation": M28_T2_OPERATION,
+        "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+        "evaluation_provenance": {
+            "label": "T2:checkpoint-120832",
+            "seed": 4200,
+            "episodes": 160,
+            "evaluation_semantics": M28_T2_EVALUATION_SEMANTICS,
+        },
+        "snapshot_used": True,
+        "snapshot_note": (
+            "Reused the completed M28 T2 profile-analysis values; no "
+            "recomputation was performed."
+        ),
+    }
+
+
 def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
     """Resolve the requested profile input with the approved exact fallbacks."""
     requested_path = Path(artifact_path)
@@ -529,6 +677,7 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
         fallback_path = requested_path.parent / M28_T2_PROFILE_FILENAME
         if fallback_path.exists():
             return fallback_path, "m28_profile_fallback"
+        return requested_path, "m28_profile_snapshot_fallback"
 
     raise FileNotFoundError(f"Profile artifact not found: {requested_path}")
 
@@ -536,18 +685,29 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
 def analyze_path(artifact_path: str | Path) -> dict[str, Any]:
     requested_path = Path(artifact_path)
     resolved_path, source_kind = resolve_profile_input(requested_path)
-    with resolved_path.open("r", encoding="utf-8") as handle:
-        document = json.load(handle)
-    if source_kind == "m28_profile_fallback":
-        report = _mapping(document, "profile report")
+    if source_kind == "m28_profile_snapshot_fallback":
+        report = _m28_profile_snapshot()
     else:
-        report = analyze_document(document)
+        with resolved_path.open("r", encoding="utf-8") as handle:
+            document = json.load(handle)
+        if source_kind == "m28_profile_fallback":
+            report = _mapping(document, "profile report")
+        else:
+            report = analyze_document(document)
     report["source_resolution"] = {
         "requested_path": str(requested_path),
         "resolved_path": str(resolved_path),
         "fallback_used": source_kind != "requested_evaluation",
         "source_kind": source_kind,
     }
+    if source_kind == "m28_profile_snapshot_fallback":
+        report["source_resolution"].update(
+            {
+                "snapshot_used": True,
+                "source_operation": M28_T2_OPERATION,
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            }
+        )
     return report
 
 
