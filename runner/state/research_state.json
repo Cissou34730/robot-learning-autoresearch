@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when an explicitly exposed candidate has a completed full official-range development measurement with binary success, first-reach step, maximum consecutive hold, interruption timing, and radius/angle-stratified diagnostics for 0.06-0.14 m and 0.14-0.20 m, and the evidence supports a bounded conclusion about whether inner-radius/branch coverage or uninterrupted hold regulation is the first consequential bottleneck. A limited or inconclusive result is acceptable if the diagnostics do not discriminate the two mechanisms; the residual distinction and its consequence for the next goal decision must be preserved.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. This inquiry will first produce and measure a learned candidate across the complete 0.06-0.20 m and full-angle distribution, separating inner-radius/branch approach failures from post-arrival hold interruptions so the next intervention targets the dominant capability rather than a nominal plant assumption.",
-    "handoff_conclusion": "M3 observed that the compiled MuJoCo model has 50 Hz control, finite compiled inertial quantities, bounded motor authority, and damping that reduced velocity after command bursts. Its reviewed verification passed timing, bounds, repeated resets, complete traces, nonzero response, zero-command decay, and the reset singularity-direction check; the first-step inward radial displacement at reset was much smaller than tangential displacement. These are observations from five deterministic postures and bounded command sequences, not learned-policy evidence. The inherited interpretation is retained only in limited form: M3 weakens a blanket nominal torque/inertia impossibility explanation in those probes, but does not establish ample authority over all official target-directed trajectories or during the complete hold. The reset singularity and two IK branches remain plausible policy sequencing and coverage mechanisms. The consequential alternatives are insufficient inner-radius/branch coverage, failure to escape and approach from reset, and post-arrival overshoot or intermittent boundary regulation. No current evidence distinguishes them because no learned candidate has been trained or measured.",
-    "handoff_question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Which learned-policy capability is the first consequential bottleneck under the official distribution: inner-radius/branch coverage from the singular reset, or uninterrupted hold regulation after arrival? Produce the first candidate with an explicitly recorded training exposure and measure it using full official-range, hold-complete, radius/angle-stratified diagnostics before selecting a policy intervention.",
-    "rationale": "No learned candidate or development evaluation exists, so requesting the terminal official assessment would provide no evidence-backed best-known policy and could not resolve the recorded goal gap. M3 completed the needed initial plant check only in five deterministic postures and bounded command probes: it found nonzero repeatable response and decay, while confirming the reset singularity's radial-escape disadvantage. Those observations weaken a blanket torque/inertia explanation but do not test target-directed learning, all official radii and angles, branch selection, or the complete hold. One bounded candidate-generation and full-diagnostic measurement is therefore expected to improve the campaign-level choice more than either terminal assessment now or another nominal motor probe.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "3218038ed3e93616a5627105857610f4fe9c7895",
     "id": "5da30677-03e6-49ec-98b3-d27252a5530c",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 6,
     "session": 3,
@@ -848,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -2334,9 +2323,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T07:02:53Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 resolved with a bounded conclusion: for the first candidate produced by the tested PPO recipe, inner-radius/branch coverage and reset escape are the first consequential bottleneck under the official distribution, not post-arrival hold regulation as the primary bottleneck. The candidate reached and completed the authoritative 100-step hold in 42/93 inner-band episodes (45.16%) versus 63/67 outer-band episodes (94.03%). Inner-band failures included 45 before any reach and 6 after reach without complete hold; outer-band failures were 4 before reach and 0 after reach without complete hold. Angle-sector success ranged from 48.39% to 92.11%, so angular structure remains a residual contributor, but the dominant resolved contrast is the radius/approach regime.",
+        "reason": "T1 recorded explicit fresh-training exposure to 0.14-0.20 m and M4 measured its full 160-episode official-range development panel. M6 completed and verified the required radius/angle aggregation, including success, first reach, maximum consecutive hold, interruption timing, and separate pre-reach/post-reach failure counts. The evidence supports redirecting the next goal decision toward inner-radius exposure, branch/escape sequencing, or a related coverage intervention. It does not establish that the PPO method broadly is disproven, does not certify the 98% official goal, and leaves the exact causal split among radius exposure, branch choice, reset escape, and angular coverage unresolved at artifact-comparison level."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved with a bounded conclusion: for the first candidate produced by the tested PPO recipe, inner-radius/branch coverage and reset escape are the first consequential bottleneck under the official distribution, not post-arrival hold regulation as the primary bottleneck. The candidate reached and completed the authoritative 100-step hold in 42/93 inner-band episodes (45.16%) versus 63/67 outer-band episodes (94.03%). Inner-band failures included 45 before any reach and 6 after reach without complete hold; outer-band failures were 4 before reach and 0 after reach without complete hold. Angle-sector success ranged from 48.39% to 92.11%, so angular structure remains a residual contributor, but the dominant resolved contrast is the radius/approach regime.",
+        "reason": "T1 recorded explicit fresh-training exposure to 0.14-0.20 m and M4 measured its full 160-episode official-range development panel. M6 completed and verified the required radius/angle aggregation, including success, first reach, maximum consecutive hold, interruption timing, and separate pre-reach/post-reach failure counts. The evidence supports redirecting the next goal decision toward inner-radius exposure, branch/escape sequencing, or a related coverage intervention. It does not establish that the PPO method broadly is disproven, does not certify the 98% official goal, and leaves the exact causal split among radius exposure, branch choice, reset escape, and angular coverage unresolved at artifact-comparison level.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved with a bounded conclusion: for the first candidate produced by the tested PPO recipe, inner-radius/branch coverage and reset escape are the first consequential bottleneck under the official distribution, not post-arrival hold regulation as the primary bottleneck. The candidate reached and completed the authoritative 100-step hold in 42/93 inner-band episodes (45.16%) versus 63/67 outer-band episodes (94.03%). Inner-band failures included 45 before any reach and 6 after reach without complete hold; outer-band failures were 4 before reach and 0 after reach without complete hold. Angle-sector success ranged from 48.39% to 92.11%, so angular structure remains a residual contributor, but the dominant resolved contrast is the radius/approach regime.",
+        "reason": "T1 recorded explicit fresh-training exposure to 0.14-0.20 m and M4 measured its full 160-episode official-range development panel. M6 completed and verified the required radius/angle aggregation, including success, first reach, maximum consecutive hold, interruption timing, and separate pre-reach/post-reach failure counts. The evidence supports redirecting the next goal decision toward inner-radius exposure, branch/escape sequencing, or a related coverage intervention. It does not establish that the PPO method broadly is disproven, does not certify the 98% official goal, and leaves the exact causal split among radius exposure, branch choice, reset escape, and angular coverage unresolved at artifact-comparison level."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved with a bounded conclusion: for the first candidate produced by the tested PPO recipe, inner-radius/branch coverage and reset escape are the first consequential bottleneck under the official distribution, not post-arrival hold regulation as the primary bottleneck. The candidate reached and completed the authoritative 100-step hold in 42/93 inner-band episodes (45.16%) versus 63/67 outer-band episodes (94.03%). Inner-band failures included 45 before any reach and 6 after reach without complete hold; outer-band failures were 4 before reach and 0 after reach without complete hold. Angle-sector success ranged from 48.39% to 92.11%, so angular structure remains a residual contributor, but the dominant resolved contrast is the radius/approach regime.",
+        "reason": "T1 recorded explicit fresh-training exposure to 0.14-0.20 m and M4 measured its full 160-episode official-range development panel. M6 completed and verified the required radius/angle aggregation, including success, first reach, maximum consecutive hold, interruption timing, and separate pre-reach/post-reach failure counts. The evidence supports redirecting the next goal decision toward inner-radius exposure, branch/escape sequencing, or a related coverage intervention. It does not establish that the PPO method broadly is disproven, does not certify the 98% official goal, and leaves the exact causal split among radius exposure, branch choice, reset escape, and angular coverage unresolved at artifact-comparison level.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 resolved with a bounded conclusion: for the first candidate produced by the tested PPO recipe, inner-radius/branch coverage and reset escape are the first consequential bottleneck under the official distribution, not post-arrival hold regulation as the primary bottleneck. The candidate reached and completed the authoritative 100-step hold in 42/93 inner-band episodes (45.16%) versus 63/67 outer-band episodes (94.03%). Inner-band failures included 45 before any reach and 6 after reach without complete hold; outer-band failures were 4 before reach and 0 after reach without complete hold. Angle-sector success ranged from 48.39% to 92.11%, so angular structure remains a residual contributor, but the dominant resolved contrast is the radius/approach regime.",
+        "reason": "T1 recorded explicit fresh-training exposure to 0.14-0.20 m and M4 measured its full 160-episode official-range development panel. M6 completed and verified the required radius/angle aggregation, including success, first reach, maximum consecutive hold, interruption timing, and separate pre-reach/post-reach failure counts. The evidence supports redirecting the next goal decision toward inner-radius exposure, branch/escape sequencing, or a related coverage intervention. It does not establish that the PPO method broadly is disproven, does not certify the 98% official goal, and leaves the exact causal split among radius exposure, branch choice, reset escape, and angular coverage unresolved at artifact-comparison level."
+      }
+    },
+    "request_fingerprint": "3af3d439c0fb5fed164ac8672a90da3c0da7e448a13099c9be397f9d35f104a7",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates have been produced; working, best-known, and retained roles remain empty. M3 is a physical characterization artifact, not a policy candidate.",
     "completed_operations": [
@@ -2377,7 +2420,8 @@
       "T1",
       "M4",
       "M6",
-      "E4"
+      "E4",
+      "E5"
     ],
     "scientific_parent_commit": "b4a0ca335568db72be08b57da9b77b5d9d34f266"
   },
