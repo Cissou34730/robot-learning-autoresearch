@@ -256,7 +256,10 @@ def _check() -> dict:
     }
     assert legacy_diagnostic_fields.issubset(evaluator_diagnostic)
     assert evaluator_diagnostic["trajectory"]
-    assert len(evaluator_diagnostic["trajectory"]) == evaluator_diagnostic["steps"]
+    assert (
+        len(evaluator_diagnostic["trajectory"])
+        == evaluator_output["episode_results"][0]["steps"]
+    )
     _assert_step_shape(evaluator_diagnostic["trajectory"][0])
     _assert_step_shape(evaluator_diagnostic["trajectory"][-1])
     assert evaluator_diagnostic["maximum_sampled_velocity_cm_s"] >= 0.0
