@@ -27677,38 +27677,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "negative",
-        "reason": "I15 is negative for the tested full-radius direct-control route with explicit joint-limit and approach-velocity shaping. The repaired M37 verification passed and independently confirmed the intended route, reward attribution, limit/approach orderings, and repeated hold/reset semantics, so the result is not explained by an unwired intervention. After the full 120,000-step transfer training allocation, the selected nonterminal T11:checkpoint-95232 artifact was evaluated on the matched 160-episode panel. It achieved 152/160 (95.0%), below T4:checkpoint-120832 at 153/160 (95.625%), with one discordant episode lost to T4. The candidate reduced no-first-reach failures from 3 to 2, but increased reach-then-interrupt failures from 4 to 6; hold-interruption diagnostics increased from 10 reference episodes to 15 candidate episodes. Thus the shaping changed acquisition behavior in the intended direction but did not improve complete uninterrupted regulation, and the closure condition requiring an improvement beyond 153/160 was not met. This closes the method-specific route without disproving direct control, PPO, or the broader learning method. The official 196/200 goal remains unmet and no official assessment is justified by this development result."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "negative",
-        "reason": "I15 is negative for the tested full-radius direct-control route with explicit joint-limit and approach-velocity shaping. The repaired M37 verification passed and independently confirmed the intended route, reward attribution, limit/approach orderings, and repeated hold/reset semantics, so the result is not explained by an unwired intervention. After the full 120,000-step transfer training allocation, the selected nonterminal T11:checkpoint-95232 artifact was evaluated on the matched 160-episode panel. It achieved 152/160 (95.0%), below T4:checkpoint-120832 at 153/160 (95.625%), with one discordant episode lost to T4. The candidate reduced no-first-reach failures from 3 to 2, but increased reach-then-interrupt failures from 4 to 6; hold-interruption diagnostics increased from 10 reference episodes to 15 candidate episodes. Thus the shaping changed acquisition behavior in the intended direction but did not improve complete uninterrupted regulation, and the closure condition requiring an improvement beyond 153/160 was not met. This closes the method-specific route without disproving direct control, PPO, or the broader learning method. The official 196/200 goal remains unmet and no official assessment is justified by this development result.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E62",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I15 is negative for the tested full-radius direct-control route with explicit joint-limit and approach-velocity shaping. The repaired M37 verification passed and independently confirmed the intended route, reward attribution, limit/approach orderings, and repeated hold/reset semantics, so the result is not explained by an unwired intervention. After the full 120,000-step transfer training allocation, the selected nonterminal T11:checkpoint-95232 artifact was evaluated on the matched 160-episode panel. It achieved 152/160 (95.0%), below T4:checkpoint-120832 at 153/160 (95.625%), with one discordant episode lost to T4. The candidate reduced no-first-reach failures from 3 to 2, but increased reach-then-interrupt failures from 4 to 6; hold-interruption diagnostics increased from 10 reference episodes to 15 candidate episodes. Thus the shaping changed acquisition behavior in the intended direction but did not improve complete uninterrupted regulation, and the closure condition requiring an improvement beyond 153/160 was not met. This closes the method-specific route without disproving direct control, PPO, or the broader learning method. The official 196/200 goal remains unmet and no official assessment is justified by this development result."
-      }
-    },
-    "request_fingerprint": "5e8dd011960fb47a4b4c260c4522ec433acb2beaa86205bf73666205b1610bfa",
-    "session_id": "S31",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19/M23/M28/M31/M32/M35 at 153/160; T10:checkpoint-95232 is a tied rejected route-level candidate, not working or retained. T2 remains an earlier candidate and is not current best-known. No working or retained candidate is assigned. The active inquiry is I15; no new candidate has yet been produced.",
     "completed_operations": [
