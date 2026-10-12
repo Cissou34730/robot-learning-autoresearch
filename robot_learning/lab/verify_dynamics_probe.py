@@ -71,7 +71,7 @@ def _trajectory_checks(artifact: dict[str, Any]) -> list[dict[str, Any]]:
             )
             finite = all(
                 _finite(sample["qpos_rad"])
-                and _finite(sample["qvel_rad"])
+                and _finite(sample["qvel_rad_s"])
                 and _finite(sample["qacc_rad_s2"])
                 for sample in samples
             )
