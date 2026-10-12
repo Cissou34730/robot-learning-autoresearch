@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3251,6 +3251,435 @@
       "status": "failed",
       "superseded_by": "M10",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:33:48Z",
+      "error": null,
+      "id": "M10",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the production I2 targeted training-exposure sampler before training the fresh candidate.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure_compatibility.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure_compatibility.json",
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-production-compatibility",
+            "module": "robot_learning.lab.verify_training_exposure"
+          },
+          {
+            "args": [
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure.json",
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-distribution-check",
+            "module": "robot_learning.lab.verify_training_exposure"
+          }
+        ],
+        "rationale": "The planned candidate comparison is meaningful only if the changed production training path actually samples the official 6-20 cm radii and oversamples the M8-identified difficult [-90,0) sector while retaining all angular sectors. The compatibility mode checks the unchanged reset/step API through make_training_env; the behavioral mode checks seeded reproducibility, radius bounds and uniform radius-bin frequencies, full-angle representation, and a finite-sample distinction from the old 25% uniform-only difficult-sector frequency. These checks do not measure policy performance or establish a causal exposure effect."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-production-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-1-verify_training_exposure_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/author_execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/production_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/reset_and_step_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/action_space_shape",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/environment_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/observation_space_shape",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "info_type",
+                      "observation_shape",
+                      "reset_info_type",
+                      "reset_observation_dtype",
+                      "reset_observation_shape",
+                      "reward",
+                      "step",
+                      "terminated_type",
+                      "truncated_type"
+                    ],
+                    "path": "/observed/reset_and_step_records",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bdc547c3425829f1a5886806057b2f0fa88478ae4f1be039e728a53a58675fa6"
+            },
+            "module": "robot_learning.lab.verify_training_exposure"
+          },
+          {
+            "args": [
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-distribution-check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-2-verify_training_exposure.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/author_execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/confidence_failure_probability",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/difficult_fraction_lower_bound_against_uniform",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/difficult_fraction_one_sided_epsilon",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/difficult_fraction_two_sided_interval",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/official_radius_interval_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/radius_sampling",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/targeted_difficult_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/uniform_only_difficult_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/all_radii_in_official_interval",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/angle_max_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_min_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/angle_sector_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/difficult_sector_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/difficult_sector_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/radius_bin_counts",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/radius_bin_edges",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/radius_bin_fractions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/radius_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/radius_min",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/represented_angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/seeded_targets_match",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[-180,-90)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[-90,0)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[0,90)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[90,180]",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d36bacdbe5434b100a54947c6854c97ba1fd729827b9f594c64ab4c32a6701fc"
+            },
+            "module": "robot_learning.lab.verify_training_exposure"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+            "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+                "path": "robot_learning/lab/verify_training_exposure.py"
+              }
+            ]
+          },
+          "code_parent_commit": "722be4758aee6a900273fdbe6de93bf3c52fb57d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_training_exposure.py"
+          ],
+          "scientific_commit": "bea6c166c08da91ee7ec4fe9e5903faee347be71",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b0a2fec94bcce5bf9f956636c81d6b7e88e0dc0f9a313d095f39fc05435ab1a1",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M9"
     }
   ],
   "pending_operation": {
@@ -3306,7 +3735,36 @@
             "path": "robot_learning/lab/verify_training_exposure.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+          "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+          "manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ]
+        },
         "code_parent_commit": "722be4758aee6a900273fdbe6de93bf3c52fb57d",
         "effective_parameters": {
           "algorithm": {
@@ -3342,7 +3800,7 @@
         "module_paths": [
           "robot_learning/lab/verify_training_exposure.py"
         ],
-        "scientific_commit": null,
+        "scientific_commit": "bea6c166c08da91ee7ec4fe9e5903faee347be71",
         "scientific_manifest": [
           {
             "exists": true,
@@ -3355,15 +3813,687 @@
         ]
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "I2-targeted-exposure-production-compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-1-verify_training_exposure_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/author_execution_note",
+                  "type": "string"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 0,
+                  "path": "/failures",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/production_path",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/reset_and_step_api",
+                  "type": "string"
+                },
+                {
+                  "entries": 1,
+                  "path": "/observed/action_space_shape",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/environment_type",
+                  "type": "string"
+                },
+                {
+                  "entries": 1,
+                  "path": "/observed/observation_space_shape",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "info_type",
+                    "observation_shape",
+                    "reset_info_type",
+                    "reset_observation_dtype",
+                    "reset_observation_shape",
+                    "reward",
+                    "step",
+                    "terminated_type",
+                    "truncated_type"
+                  ],
+                  "path": "/observed/reset_and_step_records",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "bdc547c3425829f1a5886806057b2f0fa88478ae4f1be039e728a53a58675fa6"
+          },
+          "module": "robot_learning.lab.verify_training_exposure"
+        },
+        {
+          "args": [
+            "--output",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure.json"
+          ],
+          "instrument": "python_module",
+          "label": "I2-targeted-exposure-distribution-check",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-2-verify_training_exposure.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/author_execution_note",
+                  "type": "string"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 6,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 0,
+                  "path": "/failures",
+                  "type": "array"
+                },
+                {
+                  "entries": 15,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/angle_sectors",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/confidence_failure_probability",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/difficult_fraction_lower_bound_against_uniform",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/difficult_fraction_one_sided_epsilon",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/difficult_fraction_two_sided_interval",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/official_radius_interval_m",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/radius_sampling",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/targeted_difficult_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/uniform_only_difficult_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/all_radii_in_official_interval",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/angle_max_degrees",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/angle_min_degrees",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/angle_sector_counts",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/difficult_sector_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/difficult_sector_fraction",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/radius_bin_counts",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/radius_bin_edges",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/radius_bin_fractions",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/radius_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/radius_min",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/represented_angle_sectors",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/sample_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/seeded_targets_match",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/angle_sector_counts/[-180,-90)",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/angle_sector_counts/[-90,0)",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/angle_sector_counts/[0,90)",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/angle_sector_counts/[90,180]",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "d36bacdbe5434b100a54947c6854c97ba1fd729827b9f594c64ab4c32a6701fc"
+          },
+          "module": "robot_learning.lab.verify_training_exposure"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-production-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-1-verify_training_exposure_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/author_execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/production_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/reset_and_step_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/action_space_shape",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/environment_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/observation_space_shape",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "info_type",
+                      "observation_shape",
+                      "reset_info_type",
+                      "reset_observation_dtype",
+                      "reset_observation_shape",
+                      "reward",
+                      "step",
+                      "terminated_type",
+                      "truncated_type"
+                    ],
+                    "path": "/observed/reset_and_step_records",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bdc547c3425829f1a5886806057b2f0fa88478ae4f1be039e728a53a58675fa6"
+            },
+            "module": "robot_learning.lab.verify_training_exposure"
+          },
+          {
+            "args": [
+              "--output",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\verify_training_exposure.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2-targeted-exposure-distribution-check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M10-2-verify_training_exposure.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/author_execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/confidence_failure_probability",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/difficult_fraction_lower_bound_against_uniform",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/difficult_fraction_one_sided_epsilon",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/difficult_fraction_two_sided_interval",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/official_radius_interval_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/radius_sampling",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/targeted_difficult_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/uniform_only_difficult_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/all_radii_in_official_interval",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/angle_max_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_min_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/angle_sector_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/difficult_sector_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/difficult_sector_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/radius_bin_counts",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/radius_bin_edges",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/radius_bin_fractions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/radius_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/radius_min",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/represented_angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/seeded_targets_match",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[-180,-90)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[-90,0)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[0,90)",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/angle_sector_counts/[90,180]",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d36bacdbe5434b100a54947c6854c97ba1fd729827b9f594c64ab4c32a6701fc"
+            },
+            "module": "robot_learning.lab.verify_training_exposure"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e78dd06bcfecc9c802a527e25ec72f4e73a8ccc5",
+            "fingerprint": "0058fde03b94736678399db9c13482b19d7524a591fe5519d16c2baf2ac07ce1",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+                "path": "robot_learning/lab/verify_training_exposure.py"
+              }
+            ]
+          },
+          "code_parent_commit": "722be4758aee6a900273fdbe6de93bf3c52fb57d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "a5e2418c5b0c6639e60ceb39831b24b7b272ccca9c0807a7e15934c23f68714d",
+              "path": "robot_learning/lab/verify_training_exposure.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_training_exposure.py"
+          ],
+          "scientific_commit": "bea6c166c08da91ee7ec4fe9e5903faee347be71",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b0a2fec94bcce5bf9f956636c81d6b7e88e0dc0f9a313d095f39fc05435ab1a1",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M10",
     "inquiry_id": "I2",
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Verify the production I2 targeted training-exposure sampler before training the fresh candidate.",
@@ -3442,8 +4572,10 @@
     "inquiry_id": "I2",
     "kind": "inquiry",
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [],
-    "scientific_parent_commit": "722be4758aee6a900273fdbe6de93bf3c52fb57d"
+    "operation_ids": [
+      "M10"
+    ],
+    "scientific_parent_commit": "bea6c166c08da91ee7ec4fe9e5903faee347be71"
   },
   "terminal_state": null
 }

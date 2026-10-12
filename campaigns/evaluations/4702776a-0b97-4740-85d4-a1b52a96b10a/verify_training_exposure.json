@@ -42,4 +42,41 @@
       "[0,90)": 63,
       "[90,180]": 54
     },
-    "difficult_sector_count": 
+    "difficult_sector_count": 339,
+    "difficult_sector_fraction": 0.662109375,
+    "radius_bin_counts": [
+      176,
+      180,
+      156
+    ],
+    "radius_bin_edges": [
+      0.06,
+      0.10666666666666666,
+      0.15333333333333332,
+      0.2
+    ],
+    "radius_bin_fractions": [
+      0.34375,
+      0.3515625,
+      0.3046875
+    ],
+    "radius_max": 0.19971351415252653,
+    "radius_min": 0.060018502424243676,
+    "represented_angle_sectors": [
+      "[-180,-90)",
+      "[-90,0)",
+      "[0,90)",
+      "[90,180]"
+    ],
+    "sample_count": 512,
+    "seed": 20261012,
+    "seeded_targets_match": true
+  },
+  "status": "passed",
+  "unchecked_scope": [
+    "policy training or policy success",
+    "causal effect of exposure on no-reach failures",
+    "evaluation-environment behavior beyond the unchanged scenario implementation",
+    "continuous-time target or hold behavior between control checks"
+  ]
+}
