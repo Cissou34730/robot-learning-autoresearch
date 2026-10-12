@@ -74,3 +74,4 @@
 | E38 | inquiry | I9 | completed |
 | E39 | checkpoint | I9 | checkpointed |
 | E40 | inquiry | I10 | completed |
+| E41 | checkpoint | - | checkpointed |
