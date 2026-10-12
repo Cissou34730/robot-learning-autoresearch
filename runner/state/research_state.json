@@ -3100,47 +3100,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after implementing this single coupled method without changing protected mechanics, verifying its production path, training one fresh candidate within the current allocation, and measuring it with complete-episode research diagnostics on the held-out official-distribution panel. Compare success, first reach, maximum uninterrupted hold, interruptions, peak and final velocities, saturation, and failures by folded_only, open_only, both_branches_feasible, radius, and angle against T1:checkpoint-120832 on matched seeds. A positive result requires at least 157/160 development successes with no material migration of failures into both_branches_feasible or another official stratum; a negative result is a failure to improve the complete-hold gap or persistent saturation/nonreach in either class; an inconclusive result preserves unavailable diagnostics or an implementation limitation explicitly.",
-          "goal_connection": "The human goal requires one frozen learned policy to achieve at least 196/200 official episodes, each with an uninterrupted 100-control-step hold. The best-known candidate reaches only 150/160 on development evidence. The coupled intervention directly targets both observed residual failure classes: folded-only nonreach/geometry failures and failures among fully feasible targets with near-universal command saturation.",
-          "handoff_conclusion": "Established evidence: M1, M5 and M6 verified the physical-characterization path and compiled dynamics/geometry; M7 and M9 verified the changed official-exposure training construction and research-diagnostic production path. T1 was a fresh PPO run using the existing observation, reward, 20 ms mechanics and policy architecture, with training radius changed from 0.14\u20130.20 m to the official 0.06\u20130.20 m; it completed 120,832 actual steps after rollout rounding, and its training proxy rose to 0.58 at the terminal checkpoint. M10 is the relevant development evidence, not the proxy: 153/160 episodes first reached the 1 cm band, 150/160 completed the uninterrupted 100-step hold, and the maximum uninterrupted hold had mean 93.79 steps. Seven of ten failures were in the 14 folded_only episodes, all with negative target angles from -114.5 to -150.6 degrees; the other three failures were among 140 both_branches_feasible episodes, while six open_only episodes did not fail. Across all 160 episodes, action saturation at an absolute normalized bound occurred in every episode, with per-episode saturated-step fractions from 0.922 to 1.0 and mean 0.977; peak endpoint speed reached 2.95 m/s and peak joint speed 14.23 rad/s. Interpretation: official radial exposure substantially improved learned capability but this tested recipe did not achieve the human goal. The failure pattern supports a real geometry-localized branch/range problem, while the near-universal high-bound action usage and fast motion reopen target-conditioned braking/effective-authority as consequential alternatives. The trajectory branch label is a nearest feasible IK-posture label, not proof of causal branch usage over the trajectory; action saturation is policy-command saturation, not by itself proof that physical torque authority was insufficient. M10 did not measure within-frame-skip excursions, and no causal intervention separated geometry handling from authority/regulation. Therefore the tested result is a recipe-specific candidate comparison and mechanism localization, not a general verdict on PPO or on all geometry-aware or control methods.",
-          "handoff_question": "Can one bounded coupled intervention\u2014explicit range/branch-feasibility target features together with target-conditioned braking/regulation shaping\u2014raise complete uninterrupted hold success to at least 98% on a held-out official-distribution development panel without moving failures into the both-branches-feasible or other official geometry strata?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can one bounded coupled intervention\u2014explicit range/branch-feasibility target features together with target-conditioned braking/regulation shaping\u2014raise complete uninterrupted hold success to at least 98% on a held-out official-distribution development panel without moving failures into the both-branches-feasible or other official geometry strata?",
-          "rationale": "Official assessment would terminate the campaign on a candidate already measured at 93.75%, while another untested variant alone is not enough reason to continue. I correct the inherited tendency to treat the folded-only concentration as sufficient evidence for a geometry-only route: M10 contains seven folded-only failures, but three failures are both-branches-feasible and every episode saturates, so geometry and regulation remain consequential alternatives. Conversely, saturation is command saturation, not proof of inadequate physical authority, and M6 only established fast unsaturated open-loop probes. A coupled intervention has the highest expected one-run contribution because it can address the two observed failure modes while preserving the official mechanics; its cost is one fresh training allocation plus one matched development evaluation, and its coupled factors will be interpreted as an artifact-level capability result rather than as separate causal effects.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after implementing this single coupled method without changing protected mechanics, verifying its production path, training one fresh candidate within the current allocation, and measuring it with complete-episode research diagnostics on the held-out official-distribution panel. Compare success, first reach, maximum uninterrupted hold, interruptions, peak and final velocities, saturation, and failures by folded_only, open_only, both_branches_feasible, radius, and angle against T1:checkpoint-120832 on matched seeds. A positive result requires at least 157/160 development successes with no material migration of failures into both_branches_feasible or another official stratum; a negative result is a failure to improve the complete-hold gap or persistent saturation/nonreach in either class; an inconclusive result preserves unavailable diagnostics or an implementation limitation explicitly.",
-        "goal_connection": "The human goal requires one frozen learned policy to achieve at least 196/200 official episodes, each with an uninterrupted 100-control-step hold. The best-known candidate reaches only 150/160 on development evidence. The coupled intervention directly targets both observed residual failure classes: folded-only nonreach/geometry failures and failures among fully feasible targets with near-universal command saturation.",
-        "question": "Can one bounded coupled intervention\u2014explicit range/branch-feasibility target features together with target-conditioned braking/regulation shaping\u2014raise complete uninterrupted hold success to at least 98% on a held-out official-distribution development panel without moving failures into the both-branches-feasible or other official geometry strata?",
-        "rationale": "Official assessment would terminate the campaign on a candidate already measured at 93.75%, while another untested variant alone is not enough reason to continue. I correct the inherited tendency to treat the folded-only concentration as sufficient evidence for a geometry-only route: M10 contains seven folded-only failures, but three failures are both-branches-feasible and every episode saturates, so geometry and regulation remain consequential alternatives. Conversely, saturation is command saturation, not proof of inadequate physical authority, and M6 only established fast unsaturated open-loop probes. A coupled intervention has the highest expected one-run contribution because it can address the two observed failure modes while preserving the official mechanics; its cost is one fresh training allocation plus one matched development evaluation, and its coupled factors will be interpreted as an artifact-level capability result rather than as separate causal effects."
-      }
-    },
-    "request_fingerprint": "a089c1e1f46f38dc65d100ea1a3249276fabeb5b81e56de62c2aecf73958dd03",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Candidate T1:checkpoint-120832 is archived and measured by M10 but has no working, best-known, or retained role assigned. Its complete development artifact is evidence for the closed I1 inquiry, not a claim of goal attainment. Other T1 checkpoints remain unmeasured and are not presumed equivalent or superior from training proxy rank alone.",
     "completed_operations": [
