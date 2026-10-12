@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a bounded diagnostic comparison of T2 success and failure trajectories, including physics-step distance excursions where available, terminal/entry velocity, hold interruptions, Jacobian or branch context, and joint-limit margin, either distinguishes sampled-data terminal instability from branch/joint-limit/trajectory failure sufficiently to select one next intervention, or demonstrates that the available evidence cannot distinguish them and records that limitation while preserving T2 as the best measured candidate. If an intervention is then developed within the inquiry, close after measuring its complete artifact on the fixed development panel and determining whether it preserves T2's inner-radius gains while reducing the identified residual class; a negative or limited result must redirect rather than be treated as evidence against the broader method.",
-    "goal_connection": "T2 is the strongest measured development candidate at 150/160 successes (93.75%), but it remains below the 98% objective. The full-domain exposure achieved 40/40 success at 6-10 cm and 50/53 at 10-14 cm, so the original omitted-inner-radius deficit is no longer the leading observed gap. The residual 7 never-reached and 3 reached-but-incomplete episodes are accompanied by 438 boundary hold interruptions, reduced 14-20 cm success (60/67), and uneven difficult-angle strata, making terminal sampled-data stabilization and branch/limit-aware trajectory explanations consequential alternatives. The inquiry will determine which route has the better expected contribution before consuming another full training allocation or requesting the protected 200-episode assessment.",
-    "handoff_conclusion": "Established observations: M1-M5 established and verified the compiled two-link physical model and the production diagnostics path. The model predicts feasible official-domain targets, a singular fully extended reset requiring coupled bend-then-translate motion, bounded direct actuation, and a sampled-data reach/settle/hold chain; each consequence remains decision-relevant because branch/limit or trajectory evidence would favor representation/trajectory treatment, while velocity, overshoot, interruptions, or physics-step excursions would favor terminal stabilization and stricter readiness margins. T1 was a fresh unchanged-PPO baseline trained on 0.14-0.20 m radii; M6/M8 measured 105/160 successes with 49 never-reached and 6 reached-but-incomplete failures. M9 verified that T2 changed only the production training exposure to 0.06-0.20 m while preserving the evaluation range, reset/transition behavior, PPO/runtime context, and seeded construction. T2 was a fresh seed-0 run with the same requested 120,000-step allocation and 120,832 actual steps; its saved components had no exact matches to T1, so the result is a complete artifact comparison, not an isolated causal proof of radius coverage. M10/M11 measured T2:checkpoint-120832 on the same fixed 160 seeds: 150 successes, 153 first reaches, 7 never reached, 3 reached but incomplete, and 438 boundary hold interruptions. Inner-radius success was 40/40 at 6-10 cm and 50/53 at 10-14 cm, while outer-radius success was 28/31 and 32/36, or 60/67 combined; difficult angle strata included 21/25 and 10/12 successes, while other angle strata were perfect. The profile therefore shows that the omitted-inner-radius deficit was substantially corrected, but the candidate did not establish 98% and coverage alone is not established as the cause or sufficient remedy. The trajectory log improved from 0.44 proxy success at 95,232 steps to 0.58 at 120,832 under the changed exposure, but those recipe-dependent proxies only nominate artifacts and give no privilege to the terminal checkpoint. Correction to the inherited research direction: the proposed continuation of coverage is now too narrow. Existing evidence already demonstrates the relevant artifact-level coverage improvement and instead makes sampled-data terminal instability versus branch/joint-limit/trajectory failure the consequential next distinction. Boundary diagnostics do not establish within-physics-step containment or protected evaluator semantics; those remain explicit readiness limits.",
-    "handoff_question": "Which residual T2 failure mechanism\u2014sampled-data terminal instability or branch/joint-limit/trajectory failure\u2014should determine the next bounded intervention toward 98% while preserving its inner-radius gains?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Which residual T2 failure mechanism\u2014sampled-data terminal instability or branch/joint-limit/trajectory failure\u2014should determine the next bounded intervention toward 98% while preserving its inner-radius gains?",
-    "rationale": "The inherited proposal to continue coverage is too narrow after M10/M11: coverage changed the dominant inner-radius reach deficit, but T2 still falls seven successes short of a 98% development reference and lost outer-radius performance relative to T1. The result is an artifact-level comparison, not proof that coverage caused the gain, and the remaining failure mix does not justify assuming that more radius exposure will solve it. Official assessment would terminate the campaign on a candidate with a material measured deficit, while another undiagnosed coverage run would spend the full allocation without distinguishing the now-consequential stabilization and branch/limit alternatives. A bounded mechanism-focused inquiry can use the validated diagnostics and the physical model's predicted reach/settle/hold chain to choose the next intervention; it will preserve the unresolved 20 ms boundary versus continuous-hold semantics and other protected-evaluator limits.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 18,
     "session": 7,
@@ -7518,9 +7507,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:30:14Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
+        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
+        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
+        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
+        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
+        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case."
+      }
+    },
+    "request_fingerprint": "bd6958e7a76bab4678f8db5ce239c642ed3cbc6cffa84bc9540e6964430d801e",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate, supported by M10/M11, but no working or best-known role is assigned in this session and no official-assessment candidate is certified. T1:checkpoint-115712 remains the measured baseline reference. T2's other 23 archived checkpoints and T1's unmeasured terminal checkpoint remain unmeasured; their training proxies and terminal positions do not confer privileged status. M1-M11 and E4/E6/E8/E10 are scientific, diagnostic, inquiry, or analysis records rather than candidate roles.",
     "completed_operations": [
@@ -7578,7 +7621,8 @@
       "M13",
       "M14",
       "M17",
-      "M18"
+      "M18",
+      "E12"
     ],
     "scientific_parent_commit": "f7713e80c5009a5860c3cebd2ed4ce6ced345216"
   },

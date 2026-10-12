@@ -33,3 +33,4 @@
 | M16 | measurement | I3 | failed |
 | M17 | measurement | I3 | completed |
 | M18 | measurement | I3 | completed |
+| E12 | inquiry | I3 | completed |
