@@ -841,7 +841,7 @@
   "counters": {
     "event": 8,
     "inquiry": 2,
-    "measurement": 11,
+    "measurement": 13,
     "session": 5,
     "training": 1
   },
@@ -3370,9 +3370,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:47:04Z",
+      "error": "robot_learning.lab.verify_i2_coupled_intervention failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 503, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 488, in main\n    **_run_check(compatibility=args.compatibility),\n      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 448, in _run_check\n    reward = _check_reward_transitions()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 285, in _check_reward_transitions\n    _assert_components_sum(result)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 241, in _assert_components_sum\n    raise AssertionError(\"reward components do not attribute the scalar total\")\nAssertionError: reward components do not attribute the scalar total\n",
+      "id": "M12",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "I2 full implementation verification of the coupled intervention: independently validate branch/range features, distance-gated speed shaping, retained hold transitions, and repeated production training/evaluation paths.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json",
+            "instrument": "python_module",
+            "label": "I2 coupled intervention controlled verification",
+            "module": "robot_learning.lab.verify_i2_coupled_intervention"
+          }
+        ],
+        "rationale": "M11 established only production compatibility. This controlled verification is required before training because the scientific intervention depends on two coupled code changes whose defects could otherwise produce a misleading candidate: branch features must distinguish reachable and range-infeasible targets, while regulation shaping must be negative near the target, weak when far, and preserve hold-entry, interruption, and completion behavior. The check uses independent references and repeated resets/updates; it does not claim policy quality."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_i2_coupled_intervention failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 503, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 488, in main\n    **_run_check(compatibility=args.compatibility),\n      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 448, in _run_check\n    reward = _check_reward_transitions()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 285, in _check_reward_transitions\n    _assert_components_sum(result)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_i2_coupled_intervention.py\", line 241, in _assert_components_sum\n    raise AssertionError(\"reward components do not attribute the scalar total\")\nAssertionError: reward components do not attribute the scalar total\n",
+        "status": "failed"
+      },
+      "session_id": "S5",
+      "status": "failed",
+      "superseded_by": "M13",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json"
+          ],
+          "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json",
+          "instrument": "python_module",
+          "label": "I2 coupled intervention controlled verification",
+          "module": "robot_learning.lab.verify_i2_coupled_intervention"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+            "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+          },
+          {
+            "fingerprint": "6dc7a00a2a572858f37207bbe9e4d3a606213af4e4a393c9ae5ec7824941fb3c",
+            "path": "robot_learning/lab/verify_i2_coupled_intervention.py"
+          },
+          {
+            "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "45fe3f18e823ee8707b74017fdd0b9dd7d955b68",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "6dc7a00a2a572858f37207bbe9e4d3a606213af4e4a393c9ae5ec7824941fb3c",
+            "path": "robot_learning/lab/verify_i2_coupled_intervention.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_i2_coupled_intervention.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M13",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "I2 full implementation verification of the coupled intervention: independently validate branch/range features, distance-gated speed shaping, retained hold transitions, and repeated production training/evaluation paths.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/i2_coupled_intervention.json",
+            "instrument": "python_module",
+            "label": "I2 coupled intervention controlled verification",
+            "module": "robot_learning.lab.verify_i2_coupled_intervention"
+          }
+        ],
+        "rationale": "M11 established only production compatibility. This controlled verification is required before training because the scientific intervention depends on two coupled code changes whose defects could otherwise produce a misleading candidate: branch features must distinguish reachable and range-infeasible targets, while regulation shaping must be negative near the target, weak when far, and preserve hold-entry, interruption, and completion behavior. The check uses independent references and repeated resets/updates; it does not claim policy quality."
+      }
+    },
+    "request_fingerprint": "9a583eb0933aec45d460c4add17bd5251e4adaf855cc6d5743666230ce897b1a",
+    "session_id": "S5",
+    "supersedes": "M12"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is explicitly assigned to T1:checkpoint-120832 by E6 because it is the strongest currently measured learned artifact, not because it meets the human goal. Its M10 development result is 150/160 and remains below assessment readiness. No candidate is working or retained. The other 23 T1 checkpoints are archived and unmeasured; their proxy rank does not establish development superiority.",
     "completed_operations": [
