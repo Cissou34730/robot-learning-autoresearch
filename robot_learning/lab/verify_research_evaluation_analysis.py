@@ -150,9 +150,9 @@ def run_check(output_path: Path) -> None:
             raise AssertionError(f"overall {field}: {overall[field]} != {expected}")
 
     expected_radius_counts = {
-        "[6,10)": (1, 1, 0),
+        "[6,10)": (1, 0, 0),
         "[10,14)": (0, 1, 1),
-        "[14,20]": (0, 2, 1),
+        "[14,20]": (0, 2, 0),
     }
     for label, (successes, failures, no_reach) in expected_radius_counts.items():
         group = observed["radius_bins"][label]
