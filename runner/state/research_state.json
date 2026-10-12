@@ -19223,38 +19223,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "Negative bounded answer: the fresh full-radius T8 route did not preserve acquisition-capable runtime behavior and did not improve T4's residual. On the matched 160-episode complete-episode panel, T8 was 0/160 versus T4 153/160. The selected pre-terminal checkpoint was not privileged by training proxy; the full-trace probe independently verified the same artifact-level pattern on 12 paired non-overlapping development seeds: T8 had 0/12 successes, ten no-first-reach episodes, and two reach-then-interrupt episodes with maximum held steps of two, whereas T4 had 10/12 successes. The paired verifier passed over 24 labeled resets and 8,121 steps, including target pairing, repeated qpos/qvel transitions, live hold/interruption semantics, and independent kinematic references. I11's closure condition is therefore met negatively. The evidence supports a route/artifact-level acquisition collapse and rejects T8 as a candidate; it does not identify reward credit, exposure, optimization, runtime, timing, saturation, or plant dynamics as the cause.",
-        "reason": "M28 supplied the complete-episode candidate comparison and M29 supplied the required full traces and independent verification. T8 reproduced the acquisition failure rather than trading acquisition for improved hold regulation, while T4 retained acquisition and the known mixed residual. The inquiry can close without official assessment because no new candidate improved the evidence-backed prospect of the 98% objective. Preserve the unresolved causal alternatives for the next direction: discriminate learning exposure/reward-credit/runtime mechanisms before revisiting compiled plant dynamics; do not treat this route result as a general method verdict or as evidence for a persisted residual-torque scaffold."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "Negative bounded answer: the fresh full-radius T8 route did not preserve acquisition-capable runtime behavior and did not improve T4's residual. On the matched 160-episode complete-episode panel, T8 was 0/160 versus T4 153/160. The selected pre-terminal checkpoint was not privileged by training proxy; the full-trace probe independently verified the same artifact-level pattern on 12 paired non-overlapping development seeds: T8 had 0/12 successes, ten no-first-reach episodes, and two reach-then-interrupt episodes with maximum held steps of two, whereas T4 had 10/12 successes. The paired verifier passed over 24 labeled resets and 8,121 steps, including target pairing, repeated qpos/qvel transitions, live hold/interruption semantics, and independent kinematic references. I11's closure condition is therefore met negatively. The evidence supports a route/artifact-level acquisition collapse and rejects T8 as a candidate; it does not identify reward credit, exposure, optimization, runtime, timing, saturation, or plant dynamics as the cause.",
-        "reason": "M28 supplied the complete-episode candidate comparison and M29 supplied the required full traces and independent verification. T8 reproduced the acquisition failure rather than trading acquisition for improved hold regulation, while T4 retained acquisition and the known mixed residual. The inquiry can close without official assessment because no new candidate improved the evidence-backed prospect of the 98% objective. Preserve the unresolved causal alternatives for the next direction: discriminate learning exposure/reward-credit/runtime mechanisms before revisiting compiled plant dynamics; do not treat this route result as a general method verdict or as evidence for a persisted residual-torque scaffold.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E46",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative bounded answer: the fresh full-radius T8 route did not preserve acquisition-capable runtime behavior and did not improve T4's residual. On the matched 160-episode complete-episode panel, T8 was 0/160 versus T4 153/160. The selected pre-terminal checkpoint was not privileged by training proxy; the full-trace probe independently verified the same artifact-level pattern on 12 paired non-overlapping development seeds: T8 had 0/12 successes, ten no-first-reach episodes, and two reach-then-interrupt episodes with maximum held steps of two, whereas T4 had 10/12 successes. The paired verifier passed over 24 labeled resets and 8,121 steps, including target pairing, repeated qpos/qvel transitions, live hold/interruption semantics, and independent kinematic references. I11's closure condition is therefore met negatively. The evidence supports a route/artifact-level acquisition collapse and rejects T8 as a candidate; it does not identify reward credit, exposure, optimization, runtime, timing, saturation, or plant dynamics as the cause.",
-        "reason": "M28 supplied the complete-episode candidate comparison and M29 supplied the required full traces and independent verification. T8 reproduced the acquisition failure rather than trading acquisition for improved hold regulation, while T4 retained acquisition and the known mixed residual. The inquiry can close without official assessment because no new candidate improved the evidence-backed prospect of the 98% objective. Preserve the unresolved causal alternatives for the next direction: discriminate learning exposure/reward-credit/runtime mechanisms before revisiting compiled plant dynamics; do not treat this route result as a general method verdict or as evidence for a persisted residual-torque scaffold."
-      }
-    },
-    "request_fingerprint": "927e2a94dea48d27e5cb6d6a1e22e0eb6a21da664235bde04d8e515cf2df48ce",
-    "session_id": "S23",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M25 and is not certified for official assessment. T7:checkpoint-110592 remains rejected for selection based on M25 and M27 because its complete-episode success is zero and its failure is acquisition-dominated. T5:checkpoint-100352 has measured 153/160 in M20 but does not supersede T4 and has no privileged terminal status. No working or retained role changes. Unmeasured candidate checkpoints remain training nominations only and are not evidence of development performance.",
     "completed_operations": [
