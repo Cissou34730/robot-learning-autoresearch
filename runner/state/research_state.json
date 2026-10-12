@@ -191,7 +191,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/evaluation-659ac6cb-21fe-440b-bdc8-1ea826cb04fd-m10-T1-checkpoint-120832-160ep-seed4200-673cb21aaebe.json"
+      ],
       "fingerprint": "f5d859cced7cf124a71ab385c43d6df22c4ca954f2771ddf70ac13d437456cdf",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 9,
+    "measurement": 10,
     "session": 3,
     "training": 1
   },
@@ -2797,9 +2799,544 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:37:28Z",
+      "error": null,
+      "id": "M10",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Complete development evaluation of T1:checkpoint-120832 under the official task distribution with hold, dynamics, action, and geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 full official-distribution development diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "This late T1 checkpoint has the strongest recorded training proxy among the final checkpoints, but checkpoint proxy rank is not development evidence. A 160-episode held-out research panel over the official 0.06\u20130.20 m radial and full angular distribution directly measures the I1 closure fields: official success semantics, first reach, maximum uninterrupted hold, interruptions, distance and settling proxies, endpoint/joint velocities, action saturation, target radius/angle, and analytical IK branch/range strata. The outcome will distinguish broad regulation failure from geometry-localized failure without changing protected mechanics."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I1 full official-distribution development diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/evaluation-659ac6cb-21fe-440b-bdc8-1ea826cb04fd-m10-T1-checkpoint-120832-160ep-seed4200-673cb21aaebe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturated",
+                      "action_saturation",
+                      "branch_feasibility",
+                      "endpoint_speed_final_m_per_s",
+                      "endpoint_speed_peak_m_per_s",
+                      "endpoint_velocity",
+                      "endpoint_velocity_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "geometry_strata",
+                      "hold_interruption_count",
+                      "hold_interruptions",
+                      "ik_branches",
+                      "in_tolerance_steps",
+                      "joint_speed_final_rad_per_s",
+                      "joint_speed_peak_rad_per_s",
+                      "joint_velocity",
+                      "joint_velocity_rad_per_s",
+                      "max_held_steps",
+                      "max_uninterrupted_hold_steps",
+                      "min_distance_cm",
+                      "peak_distance_cm",
+                      "range_stratum",
+                      "target_angle_degrees",
+                      "target_angle_rad",
+                      "target_radius_cm",
+                      "target_radius_m",
+                      "trajectory_branch_counts",
+                      "trajectory_branch_label"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_angles",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/range_margin",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38abe6a495484f15f836a3528fb77bbf7511c60ed8460296f4768e1b305c273d",
+              "evaluation_semantics": "673cb21aaebe",
+              "model_fingerprint": "f5d859cced7cf124a71ab385c43d6df22c4ca954f2771ddf70ac13d437456cdf",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "673cb21aaebe",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I1 full official-distribution development diagnostics",
+          "model_fingerprint": "f5d859cced7cf124a71ab385c43d6df22c4ca954f2771ddf70ac13d437456cdf",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I1 full official-distribution development diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/evaluation-659ac6cb-21fe-440b-bdc8-1ea826cb04fd-m10-T1-checkpoint-120832-160ep-seed4200-673cb21aaebe.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "action_saturated",
+                    "action_saturation",
+                    "branch_feasibility",
+                    "endpoint_speed_final_m_per_s",
+                    "endpoint_speed_peak_m_per_s",
+                    "endpoint_velocity",
+                    "endpoint_velocity_m_per_s",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "geometry_strata",
+                    "hold_interruption_count",
+                    "hold_interruptions",
+                    "ik_branches",
+                    "in_tolerance_steps",
+                    "joint_speed_final_rad_per_s",
+                    "joint_speed_peak_rad_per_s",
+                    "joint_velocity",
+                    "joint_velocity_rad_per_s",
+                    "max_held_steps",
+                    "max_uninterrupted_hold_steps",
+                    "min_distance_cm",
+                    "peak_distance_cm",
+                    "range_stratum",
+                    "target_angle_degrees",
+                    "target_angle_rad",
+                    "target_radius_cm",
+                    "target_radius_m",
+                    "trajectory_branch_counts",
+                    "trajectory_branch_label"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/target_radius",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/target_angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_angles",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/range_margin",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "38abe6a495484f15f836a3528fb77bbf7511c60ed8460296f4768e1b305c273d",
+            "evaluation_semantics": "673cb21aaebe",
+            "model_fingerprint": "f5d859cced7cf124a71ab385c43d6df22c4ca954f2771ddf70ac13d437456cdf",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I1 full official-distribution development diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/evaluation-659ac6cb-21fe-440b-bdc8-1ea826cb04fd-m10-T1-checkpoint-120832-160ep-seed4200-673cb21aaebe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturated",
+                      "action_saturation",
+                      "branch_feasibility",
+                      "endpoint_speed_final_m_per_s",
+                      "endpoint_speed_peak_m_per_s",
+                      "endpoint_velocity",
+                      "endpoint_velocity_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "geometry_strata",
+                      "hold_interruption_count",
+                      "hold_interruptions",
+                      "ik_branches",
+                      "in_tolerance_steps",
+                      "joint_speed_final_rad_per_s",
+                      "joint_speed_peak_rad_per_s",
+                      "joint_velocity",
+                      "joint_velocity_rad_per_s",
+                      "max_held_steps",
+                      "max_uninterrupted_hold_steps",
+                      "min_distance_cm",
+                      "peak_distance_cm",
+                      "range_stratum",
+                      "target_angle_degrees",
+                      "target_angle_rad",
+                      "target_radius_cm",
+                      "target_radius_m",
+                      "trajectory_branch_counts",
+                      "trajectory_branch_label"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_angles",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/range_margin",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38abe6a495484f15f836a3528fb77bbf7511c60ed8460296f4768e1b305c273d",
+              "evaluation_semantics": "673cb21aaebe",
+              "model_fingerprint": "f5d859cced7cf124a71ab385c43d6df22c4ca954f2771ddf70ac13d437456cdf",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M10",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Complete development evaluation of T1:checkpoint-120832 under the official task distribution with hold, dynamics, action, and geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 full official-distribution development diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "This late T1 checkpoint has the strongest recorded training proxy among the final checkpoints, but checkpoint proxy rank is not development evidence. A 160-episode held-out research panel over the official 0.06\u20130.20 m radial and full angular distribution directly measures the I1 closure fields: official success semantics, first reach, maximum uninterrupted hold, interruptions, distance and settling proxies, endpoint/joint velocities, action saturation, target radius/angle, and analytical IK branch/range strata. The outcome will distinguish broad regulation failure from geometry-localized failure without changing protected mechanics."
+      }
+    },
+    "request_fingerprint": "56cfd10296addbd7acaa2441fe18da1e6e9cbc91d34201c0aeae85f74b7b8dfc",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. E2 opened inquiry I1; M1, M5, and M6 are completed measurements only.",
     "completed_operations": [
@@ -2841,7 +3378,8 @@
     "operation_ids": [
       "M7",
       "M9",
-      "T1"
+      "T1",
+      "M10"
     ],
     "scientific_parent_commit": "c45601984954464c965aa2e4d156be226e839f20"
   },
