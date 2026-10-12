@@ -15707,47 +15707,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Train and measure one candidate using the fixed official radius range with deliberately increased training exposure to the identified negative-angle sectors, retaining T2's observation, reward, action, runtime, and hold semantics. Close with a positive result only if matched development evidence improves first reach in the negative-angle and 14-20 cm strata while preserving T2-level 6-14 cm first reach and complete-hold success; close negative if the candidate loses those protections or fails to improve reach; close inconclusive if the implementation or diagnostics cannot distinguish those outcomes. In all cases carry forward continuous-hold uncertainty and any residual branch/limit failures.",
-          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode assessment. T2 is the best-known candidate at 150/160 development successes and 153/160 first reaches; its seven never-reached failures are concentrated in negative-angle sectors, including single-feasible-branch and near-limit cases, while one outer failure has both branches and large limit margin. A reach-only angular-exposure intervention could improve the measured reach gap without reintroducing the failed terminal-gated stabilization recipe, and matched success, first reach, and hold diagnostics can determine whether it makes official assessment more credible.",
-          "handoff_conclusion": "The physical model continues to support feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. Across I1-I5, full-radius exposure made the material improvement from T1 to T2, while stronger branch/limit/speed shaping and the I5 weak stabilization recipe produced artifact-level reach/stabilization tradeoffs rather than a general method conclusion. M26 verified that I6 preserved T2's 11-value observation and production semantics while gating the existing weak joint-limit/high-speed penalties to the 0.02 m terminal neighborhood. T5 was trained for the full allocation with unchanged full-radius exposure and runtime. M27/M28 show that this exact terminal-gated recipe preserved the 6-10 cm stratum at 40/40 and nearly preserved 10-14 cm success at 49/53 versus T2's 50/53, but collapsed overall first reach to 103/160 versus 153/160, increased never-reached failures to 57 versus 7, and reduced complete success to 96/160 versus 150/160. T5 also had 7 reached-incomplete failures versus T2's 3; its lower absolute boundary interruptions (225 versus 438) and physics-step excursions (7247 versus 11655) occurred with 50 fewer reached episodes and did not yield a complete-success gain. I6 therefore establishes only that this terminal-distance-gated weak-shaping implementation failed the required reach-preserving stabilization test. It does not disprove terminal stabilization or reward shaping generally. Physics-step traces remain research diagnostics, and disagreement between boundary-sampled evidence and protected continuous-hold semantics remains an explicit readiness limitation.",
-          "handoff_question": "Can targeted training exposure to T2's difficult negative-angle sectors, while retaining the official radius range, T2's 11-value production observation, and unchanged reward and hold semantics, reduce outer-radius never-reached failures without degrading T2's 6-14 cm first reach and complete-hold success?",
-          "handoff_source_session_id": "S13",
-          "id": "I7",
-          "opened_in_session": "S14",
-          "question": "Can targeted training exposure to T2's difficult negative-angle sectors, while retaining the official radius range, T2's 11-value production observation, and unchanged reward and hold semantics, reduce outer-radius never-reached failures without degrading T2's 6-14 cm first reach and complete-hold success?",
-          "rationale": "Further bounded work is preferable to official assessment now because the best-known candidate is materially below the development target and its boundary-sampled score cannot establish the protected continuous-hold goal. Existing full-radius T2 exposure does not imply adequate exposure to the observed difficult angular sectors; M27/M28 identify a concrete, goal-linked reach concentration. I6's terminal-gated recipe was a limited negative for stabilization shaping and should not be repeated. This inquiry isolates a new distribution factor, compares a complete artifact against T2 under the same development panel, and has an explicit preservation test against the known 6-14 cm behavior.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I7",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E27",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Train and measure one candidate using the fixed official radius range with deliberately increased training exposure to the identified negative-angle sectors, retaining T2's observation, reward, action, runtime, and hold semantics. Close with a positive result only if matched development evidence improves first reach in the negative-angle and 14-20 cm strata while preserving T2-level 6-14 cm first reach and complete-hold success; close negative if the candidate loses those protections or fails to improve reach; close inconclusive if the implementation or diagnostics cannot distinguish those outcomes. In all cases carry forward continuous-hold uncertainty and any residual branch/limit failures.",
-        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode assessment. T2 is the best-known candidate at 150/160 development successes and 153/160 first reaches; its seven never-reached failures are concentrated in negative-angle sectors, including single-feasible-branch and near-limit cases, while one outer failure has both branches and large limit margin. A reach-only angular-exposure intervention could improve the measured reach gap without reintroducing the failed terminal-gated stabilization recipe, and matched success, first reach, and hold diagnostics can determine whether it makes official assessment more credible.",
-        "question": "Can targeted training exposure to T2's difficult negative-angle sectors, while retaining the official radius range, T2's 11-value production observation, and unchanged reward and hold semantics, reduce outer-radius never-reached failures without degrading T2's 6-14 cm first reach and complete-hold success?",
-        "rationale": "Further bounded work is preferable to official assessment now because the best-known candidate is materially below the development target and its boundary-sampled score cannot establish the protected continuous-hold goal. Existing full-radius T2 exposure does not imply adequate exposure to the observed difficult angular sectors; M27/M28 identify a concrete, goal-linked reach concentration. I6's terminal-gated recipe was a limited negative for stabilization shaping and should not be repeated. This inquiry isolates a new distribution factor, compares a complete artifact against T2 under the same development panel, and has an explicit preservation test against the known 6-14 cm behavior."
-      }
-    },
-    "request_fingerprint": "0719338df141d555ee1162440af69f81f81f11dd20673125defceed4f75ae0c5",
-    "session_id": "S14",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T5:checkpoint-120832 is a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. The I6 implementation remains a recipe-specific scientific artifact, not a broader method claim.",
     "completed_operations": [
