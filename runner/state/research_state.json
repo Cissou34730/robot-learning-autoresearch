@@ -1646,7 +1646,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 11,
     "session": 5,
@@ -1655,7 +1655,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5719,23 +5719,201 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:16:00Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2 archived 24 coverage-focused checkpoints; T2:checkpoint-120832 was measured by M10/M11 and is the strongest measured development candidate, but no working or best-known role is assigned in this session. T1 remains the measured baseline reference at T1:checkpoint-115712; its terminal checkpoint and T2's other checkpoints are not privileged without development measurement. M1-M11 include physical, diagnostic, compatibility, analysis, and candidate-measurement artifacts; no candidate is certified for official assessment.",
+        "completed_operations": [
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "cumulative_resource_use": "Before I2: startup physical measurements M1-M3; I1 diagnostics M4-M5; baseline T1 with 120,000 requested and 120,832 actual steps; baseline panel M6 of 160 seeds 4200-4359; verification/profile analyses M7-M8; I1 closure E4; I2 opening E6. I2 consumed M9 compatibility verification, one fresh 120,000-request-step T2 run with 120,832 actual steps, M10 evaluation of one T2 checkpoint on the same 160-episode panel, and M11 matched profile analysis; E8 closed I2. Total official-assessment episodes consumed: zero. No protected benchmark result has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 achieved 150/160 = 93.75% on the fixed development panel under the visible boundary-sampled evaluator, versus the 98% objective as a development reference. It had 10/160 failures: 7 never reached tolerance and 3 reached but did not complete the boundary hold. The 150/160 result cannot be converted into an official 200-episode result; the candidate remains below the human-goal standard and has not been assessed officially.",
+        "current_synthesis": "Established observations: M9 independently exercised the changed production training construction and confirmed the exact 0.06-0.20 m training radius range, repeated seeded reset behavior, transition target persistence, and unchanged evaluation range. T2 implemented a fresh PPO run with only this training-exposure change, the same seed 0 and 120,000 requested-step allocation as T1, and no exact serialized checkpoint matches to T1. Its learning trajectory continued improving through 120,832 steps, but those recipe-dependent proxies only nominated the measured artifact. M10 measured T2:checkpoint-120832 on the same fixed 160 official-distribution development seeds and evaluator semantics as M6, yielding 150/160 (93.75%) successes. M11 applied the same verified reduction as M8: first tolerance reach increased from 111/160 to 153/160; complete success increased from 105/160 to 150/160; failures changed from 49 never-reached and 6 reached-but-incomplete to 7 never-reached and 3 reached-but-incomplete. Inner-radius success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius complete holds remained high but were not perfectly preserved: 14-17 cm declined from 30/31 to 28/31 and 17-20 cm from 33/36 to 32/36, or 60/67 combined versus 63/67. Angle-stratified performance improved broadly but remains uneven, and fixed-panel branch feasibility counts remain descriptive rather than causal. Interpretation: for this unchanged PPO/runtime and this single fresh seed, full-domain exposure is a strong artifact-level improvement and justifies continued coverage work; it does not establish coverage as the sole cause, guarantee 98%, or show that PPO generally solves the task. The residual reached-but-incomplete cases and elevated interruption concentration keep sampled-data stabilization consequential as a secondary direction. M8 and M11 explicitly limit hold claims to 20 ms control-boundary sampling; neither resolves within-physics-step excursions or protected evaluator semantics.",
+        "decision_frontier": "I2 resolved the bounded comparison in favor of continuing coverage, but the next consequential distinction is whether the remaining 10 failures are best addressed by preserving and balancing radius/angle/branch exposure, by terminal sampled-data stabilization, or by branch/joint-limit-aware trajectory treatment. The observed outer-radius decline and angle unevenness revise the simple interpretation that adding radius coverage is sufficient. A future matched candidate with retained inner gains, restored outer/angle performance, and a smaller reached-but-incomplete class supports continued coverage toward the 98% goal; persistent never-reached failures in particular angle/branch or limit strata redirects toward branch-aware trajectory/control representation; broad entry with a dominant hold-loss class redirects toward stabilization. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation and could change the intervention priority. These uncertainties do not invalidate the completed I2 artifact comparison.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6",
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. I2 produced a materially stronger development candidate but did not establish official performance or resolve the protected continuous-hold semantics.",
+        "next_direction_or_closure": "I2 is closed positive but limited by E8. At the next goal review, retain T2 as the strongest measured development artifact for comparison, but do not request official assessment from 150/160 boundary-sampled successes. Compare a further coverage-retuned candidate that protects outer and angle strata against a stabilization or branch/limit-aware alternative using the same fixed panel and diagnostic schema. Preserve the unresolved continuous-hold and physics-step questions when judging readiness.",
+        "next_question": "Can a coverage-retuned learned policy preserve T2's inner-radius gains while eliminating the residual angle/outer-radius and reached-but-incomplete failures sufficiently to justify the protected official assessment toward 98% success?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2 archived 24 coverage-focused checkpoints; T2:checkpoint-120832 was measured by M10/M11 and is the strongest measured development candidate, but no working or best-known role is assigned in this session. T1 remains the measured baseline reference at T1:checkpoint-115712; its terminal checkpoint and T2's other checkpoints are not privileged without development measurement. M1-M11 include physical, diagnostic, compatibility, analysis, and candidate-measurement artifacts; no candidate is certified for official assessment.",
+        "completed_operations": [
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "cumulative_resource_use": "Before I2: startup physical measurements M1-M3; I1 diagnostics M4-M5; baseline T1 with 120,000 requested and 120,832 actual steps; baseline panel M6 of 160 seeds 4200-4359; verification/profile analyses M7-M8; I1 closure E4; I2 opening E6. I2 consumed M9 compatibility verification, one fresh 120,000-request-step T2 run with 120,832 actual steps, M10 evaluation of one T2 checkpoint on the same 160-episode panel, and M11 matched profile analysis; E8 closed I2. Total official-assessment episodes consumed: zero. No protected benchmark result has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 achieved 150/160 = 93.75% on the fixed development panel under the visible boundary-sampled evaluator, versus the 98% objective as a development reference. It had 10/160 failures: 7 never reached tolerance and 3 reached but did not complete the boundary hold. The 150/160 result cannot be converted into an official 200-episode result; the candidate remains below the human-goal standard and has not been assessed officially.",
+        "current_synthesis": "Established observations: M9 independently exercised the changed production training construction and confirmed the exact 0.06-0.20 m training radius range, repeated seeded reset behavior, transition target persistence, and unchanged evaluation range. T2 implemented a fresh PPO run with only this training-exposure change, the same seed 0 and 120,000 requested-step allocation as T1, and no exact serialized checkpoint matches to T1. Its learning trajectory continued improving through 120,832 steps, but those recipe-dependent proxies only nominated the measured artifact. M10 measured T2:checkpoint-120832 on the same fixed 160 official-distribution development seeds and evaluator semantics as M6, yielding 150/160 (93.75%) successes. M11 applied the same verified reduction as M8: first tolerance reach increased from 111/160 to 153/160; complete success increased from 105/160 to 150/160; failures changed from 49 never-reached and 6 reached-but-incomplete to 7 never-reached and 3 reached-but-incomplete. Inner-radius success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius complete holds remained high but were not perfectly preserved: 14-17 cm declined from 30/31 to 28/31 and 17-20 cm from 33/36 to 32/36, or 60/67 combined versus 63/67. Angle-stratified performance improved broadly but remains uneven, and fixed-panel branch feasibility counts remain descriptive rather than causal. Interpretation: for this unchanged PPO/runtime and this single fresh seed, full-domain exposure is a strong artifact-level improvement and justifies continued coverage work; it does not establish coverage as the sole cause, guarantee 98%, or show that PPO generally solves the task. The residual reached-but-incomplete cases and elevated interruption concentration keep sampled-data stabilization consequential as a secondary direction. M8 and M11 explicitly limit hold claims to 20 ms control-boundary sampling; neither resolves within-physics-step excursions or protected evaluator semantics.",
+        "decision_frontier": "I2 resolved the bounded comparison in favor of continuing coverage, but the next consequential distinction is whether the remaining 10 failures are best addressed by preserving and balancing radius/angle/branch exposure, by terminal sampled-data stabilization, or by branch/joint-limit-aware trajectory treatment. The observed outer-radius decline and angle unevenness revise the simple interpretation that adding radius coverage is sufficient. A future matched candidate with retained inner gains, restored outer/angle performance, and a smaller reached-but-incomplete class supports continued coverage toward the 98% goal; persistent never-reached failures in particular angle/branch or limit strata redirects toward branch-aware trajectory/control representation; broad entry with a dominant hold-loss class redirects toward stabilization. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation and could change the intervention priority. These uncertainties do not invalidate the completed I2 artifact comparison.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6",
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. I2 produced a materially stronger development candidate but did not establish official performance or resolve the protected continuous-hold semantics.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed positive but limited by E8. At the next goal review, retain T2 as the strongest measured development artifact for comparison, but do not request official assessment from 150/160 boundary-sampled successes. Compare a further coverage-retuned candidate that protects outer and angle strata against a stabilization or branch/limit-aware alternative using the same fixed panel and diagnostic schema. Preserve the unresolved continuous-hold and physics-step questions when judging readiness.",
+        "next_question": "Can a coverage-retuned learned policy preserve T2's inner-radius gains while eliminating the residual angle/outer-radius and reached-but-incomplete failures sufficiently to justify the protected official assessment toward 98% success?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "5b15bf40-5dc4-4dad-9949-193b22ca12b7",
+        "campaign_id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
+        "campaign_usage": "18m34s | 35.28 AIU | prompt 5m (90% cached) | output 114.3k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "1m12s | 1.54 AIU | prompt 88.2k (80% cached) | output 7.9k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e0dfd5044da06195b9defa37ce55e4830cfbdf2c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2 archived 24 coverage-focused checkpoints; T2:checkpoint-120832 was measured by M10/M11 and is the strongest measured development candidate, but no working or best-known role is assigned in this session. T1 remains the measured baseline reference at T1:checkpoint-115712; its terminal checkpoint and T2's other checkpoints are not privileged without development measurement. M1-M11 include physical, diagnostic, compatibility, analysis, and candidate-measurement artifacts; no candidate is certified for official assessment.",
+        "completed_operations": [
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "cumulative_resource_use": "Before I2: startup physical measurements M1-M3; I1 diagnostics M4-M5; baseline T1 with 120,000 requested and 120,832 actual steps; baseline panel M6 of 160 seeds 4200-4359; verification/profile analyses M7-M8; I1 closure E4; I2 opening E6. I2 consumed M9 compatibility verification, one fresh 120,000-request-step T2 run with 120,832 actual steps, M10 evaluation of one T2 checkpoint on the same 160-episode panel, and M11 matched profile analysis; E8 closed I2. Total official-assessment episodes consumed: zero. No protected benchmark result has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 achieved 150/160 = 93.75% on the fixed development panel under the visible boundary-sampled evaluator, versus the 98% objective as a development reference. It had 10/160 failures: 7 never reached tolerance and 3 reached but did not complete the boundary hold. The 150/160 result cannot be converted into an official 200-episode result; the candidate remains below the human-goal standard and has not been assessed officially.",
+        "current_synthesis": "Established observations: M9 independently exercised the changed production training construction and confirmed the exact 0.06-0.20 m training radius range, repeated seeded reset behavior, transition target persistence, and unchanged evaluation range. T2 implemented a fresh PPO run with only this training-exposure change, the same seed 0 and 120,000 requested-step allocation as T1, and no exact serialized checkpoint matches to T1. Its learning trajectory continued improving through 120,832 steps, but those recipe-dependent proxies only nominated the measured artifact. M10 measured T2:checkpoint-120832 on the same fixed 160 official-distribution development seeds and evaluator semantics as M6, yielding 150/160 (93.75%) successes. M11 applied the same verified reduction as M8: first tolerance reach increased from 111/160 to 153/160; complete success increased from 105/160 to 150/160; failures changed from 49 never-reached and 6 reached-but-incomplete to 7 never-reached and 3 reached-but-incomplete. Inner-radius success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius complete holds remained high but were not perfectly preserved: 14-17 cm declined from 30/31 to 28/31 and 17-20 cm from 33/36 to 32/36, or 60/67 combined versus 63/67. Angle-stratified performance improved broadly but remains uneven, and fixed-panel branch feasibility counts remain descriptive rather than causal. Interpretation: for this unchanged PPO/runtime and this single fresh seed, full-domain exposure is a strong artifact-level improvement and justifies continued coverage work; it does not establish coverage as the sole cause, guarantee 98%, or show that PPO generally solves the task. The residual reached-but-incomplete cases and elevated interruption concentration keep sampled-data stabilization consequential as a secondary direction. M8 and M11 explicitly limit hold claims to 20 ms control-boundary sampling; neither resolves within-physics-step excursions or protected evaluator semantics.",
+        "decision_frontier": "I2 resolved the bounded comparison in favor of continuing coverage, but the next consequential distinction is whether the remaining 10 failures are best addressed by preserving and balancing radius/angle/branch exposure, by terminal sampled-data stabilization, or by branch/joint-limit-aware trajectory treatment. The observed outer-radius decline and angle unevenness revise the simple interpretation that adding radius coverage is sufficient. A future matched candidate with retained inner gains, restored outer/angle performance, and a smaller reached-but-incomplete class supports continued coverage toward the 98% goal; persistent never-reached failures in particular angle/branch or limit strata redirects toward branch-aware trajectory/control representation; broad entry with a dominant hold-loss class redirects toward stabilization. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation and could change the intervention priority. These uncertainties do not invalidate the completed I2 artifact comparison.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "T1",
+          "M6",
+          "M7",
+          "M8",
+          "E4",
+          "E6",
+          "M9",
+          "T2",
+          "M10",
+          "M11",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. I2 produced a materially stronger development candidate but did not establish official performance or resolve the protected continuous-hold semantics.",
+        "next_direction_or_closure": "I2 is closed positive but limited by E8. At the next goal review, retain T2 as the strongest measured development artifact for comparison, but do not request official assessment from 150/160 boundary-sampled successes. Compare a further coverage-retuned candidate that protects outer and angle strata against a stabilization or branch/limit-aware alternative using the same fixed panel and diagnostic schema. Preserve the unresolved continuous-hold and physics-step questions when judging readiness.",
+        "next_question": "Can a coverage-retuned learned policy preserve T2's inner-radius gains while eliminating the residual angle/outer-radius and reached-but-incomplete failures sufficiently to justify the protected official assessment toward 98% success?"
+      }
+    },
+    "request_fingerprint": "d66271a9b1eee345a50233b7b12287f25b43a1e93b8687debad6b08513022d5d",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
+    "candidates_and_roles": "T2 archived 24 coverage-focused checkpoints; T2:checkpoint-120832 was measured by M10/M11 and is the strongest measured development candidate, but no working or best-known role is assigned in this session. T1 remains the measured baseline reference at T1:checkpoint-115712; its terminal checkpoint and T2's other checkpoints are not privileged without development measurement. M1-M11 include physical, diagnostic, compatibility, analysis, and candidate-measurement artifacts; no candidate is certified for official assessment.",
     "completed_operations": [
-      "E6"
+      "M9",
+      "T2",
+      "M10",
+      "M11",
+      "E8"
     ],
-    "cumulative_resource_use": "Before this session: startup physical work M1-M3; I1 opening E2; diagnostic compatibility and verification M4-M5; one fresh 120,000-request-step baseline training run T1 (120,832 actual, 24 archived checkpoints); one 160-episode development measurement M6 plus analysis verification/profile work M7-M8; I1 closure E4. This session used trajectory/evidence review and opened I2 as E6; no official-assessment episodes, new training allocation, or new candidate were consumed.",
-    "current_goal_gap": "The measured baseline candidate falls 32.375 percentage points below the 98% objective. Of 55 development failures, 49 never entered tolerance and 6 entered but did not complete the hold; the never-reached class is concentrated in the official inner-radius region omitted by baseline training. Outer-radius success is already high but not perfect, and angle/branch context, joint-limit effects, sampled-data excursions, and protected continuous-hold semantics remain unresolved.",
-    "current_synthesis": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
-    "decision_frontier": "The active distinction is whether changing the training exposure to span the full official 0.06-0.20 m radius range while preserving angle/branch diversity raises inner-radius first reach and complete success without degrading outer-radius holds. Improvement in inner first reach and success with preserved outer holds supports continued coverage development toward 98%. Persistent never-reached failures across the domain redirects toward trajectory representation, branch-aware control, or another reach mechanism. Broadly improved entry with a new dominant reached-but-incomplete class redirects toward terminal/sampled-data stabilization. If branch or joint-limit strata become dominant, branch-aware or limit-aware treatment becomes consequential. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation, but this comparison need not resolve that unknown to decide whether coverage is worth continuing.",
+    "cumulative_resource_use": "Before I2: startup physical measurements M1-M3; I1 diagnostics M4-M5; baseline T1 with 120,000 requested and 120,832 actual steps; baseline panel M6 of 160 seeds 4200-4359; verification/profile analyses M7-M8; I1 closure E4; I2 opening E6. I2 consumed M9 compatibility verification, one fresh 120,000-request-step T2 run with 120,832 actual steps, M10 evaluation of one T2 checkpoint on the same 160-episode panel, and M11 matched profile analysis; E8 closed I2. Total official-assessment episodes consumed: zero. No protected benchmark result has been requested.",
+    "current_goal_gap": "T2:checkpoint-120832 achieved 150/160 = 93.75% on the fixed development panel under the visible boundary-sampled evaluator, versus the 98% objective as a development reference. It had 10/160 failures: 7 never reached tolerance and 3 reached but did not complete the boundary hold. The 150/160 result cannot be converted into an official 200-episode result; the candidate remains below the human-goal standard and has not been assessed officially.",
+    "current_synthesis": "Established observations: M9 independently exercised the changed production training construction and confirmed the exact 0.06-0.20 m training radius range, repeated seeded reset behavior, transition target persistence, and unchanged evaluation range. T2 implemented a fresh PPO run with only this training-exposure change, the same seed 0 and 120,000 requested-step allocation as T1, and no exact serialized checkpoint matches to T1. Its learning trajectory continued improving through 120,832 steps, but those recipe-dependent proxies only nominated the measured artifact. M10 measured T2:checkpoint-120832 on the same fixed 160 official-distribution development seeds and evaluator semantics as M6, yielding 150/160 (93.75%) successes. M11 applied the same verified reduction as M8: first tolerance reach increased from 111/160 to 153/160; complete success increased from 105/160 to 150/160; failures changed from 49 never-reached and 6 reached-but-incomplete to 7 never-reached and 3 reached-but-incomplete. Inner-radius success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius complete holds remained high but were not perfectly preserved: 14-17 cm declined from 30/31 to 28/31 and 17-20 cm from 33/36 to 32/36, or 60/67 combined versus 63/67. Angle-stratified performance improved broadly but remains uneven, and fixed-panel branch feasibility counts remain descriptive rather than causal. Interpretation: for this unchanged PPO/runtime and this single fresh seed, full-domain exposure is a strong artifact-level improvement and justifies continued coverage work; it does not establish coverage as the sole cause, guarantee 98%, or show that PPO generally solves the task. The residual reached-but-incomplete cases and elevated interruption concentration keep sampled-data stabilization consequential as a secondary direction. M8 and M11 explicitly limit hold claims to 20 ms control-boundary sampling; neither resolves within-physics-step excursions or protected evaluator semantics.",
+    "decision_frontier": "I2 resolved the bounded comparison in favor of continuing coverage, but the next consequential distinction is whether the remaining 10 failures are best addressed by preserving and balancing radius/angle/branch exposure, by terminal sampled-data stabilization, or by branch/joint-limit-aware trajectory treatment. The observed outer-radius decline and angle unevenness revise the simple interpretation that adding radius coverage is sufficient. A future matched candidate with retained inner gains, restored outer/angle performance, and a smaller reached-but-incomplete class supports continued coverage toward the 98% goal; persistent never-reached failures in particular angle/branch or limit strata redirects toward branch-aware trajectory/control representation; broad entry with a dominant hold-loss class redirects toward stabilization. Physics-step excursions or disagreement with protected semantics would revise candidate-readiness interpretation and could change the intervention priority. These uncertainties do not invalidate the completed I2 artifact comparison.",
     "evidence_references": [
       "M1",
       "M2",
       "M3",
-      "E2",
       "M4",
       "M5",
       "T1",
@@ -5743,14 +5921,19 @@
       "M7",
       "M8",
       "E4",
-      "E6"
+      "E6",
+      "M9",
+      "T2",
+      "M10",
+      "M11",
+      "E8"
     ],
-    "human_goal_connection": "The campaign still seeks one frozen learned policy with at least 196 successes in the 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. The measured baseline is 105/160 (65.625%) on the fixed development panel, so the goal is not met and no official assessment is justified yet.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Keep the inquiry open and begin its fresh session with a complete coverage-focused training-and-measurement comparison against the same fixed development panel and diagnostic schema. This is preferable to official assessment because the strongest measured candidate is far below threshold and the proposed variant directly targets the dominant never-reached deficit; it is preferable to more baseline proxy inspection because the learning trajectory already shows late fluctuations/plateau and proxies cannot resolve the official exposure gap. The inquiry closes after the prescribed comparison establishes benefit with preserved holds or supplies the stated redirect evidence.",
-    "next_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
-    "scientific_commit": "3ee2965c5f4114b5a5819a470a7f03ec785cd7e3",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal remains one frozen learned policy achieving at least 196 successes in the protected 200-episode official assessment, with every success requiring the complete uninterrupted 2-second hold. I2 produced a materially stronger development candidate but did not establish official performance or resolve the protected continuous-hold semantics.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed positive but limited by E8. At the next goal review, retain T2 as the strongest measured development artifact for comparison, but do not request official assessment from 150/160 boundary-sampled successes. Compare a further coverage-retuned candidate that protects outer and angle strata against a stabilization or branch/limit-aware alternative using the same fixed panel and diagnostic schema. Preserve the unresolved continuous-hold and physics-step questions when judging readiness.",
+    "next_question": "Can a coverage-retuned learned policy preserve T2's inner-radius gains while eliminating the residual angle/outer-radius and reached-but-incomplete failures sufficiently to justify the protected official assessment toward 98% success?",
+    "scientific_commit": "e0dfd5044da06195b9defa37ce55e4830cfbdf2c",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5758,25 +5941,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5b15bf40-5dc4-4dad-9949-193b22ca12b7",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M9",
-      "T2",
-      "M10",
-      "M11",
-      "E8"
-    ],
-    "scientific_parent_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
