@@ -22,3 +22,4 @@
 | M8 | measurement | I2 | completed |
 | M9 | measurement | I2 | completed |
 | E9 | model_role | I2 | assigned |
+| E10 | inquiry | I2 | completed |
