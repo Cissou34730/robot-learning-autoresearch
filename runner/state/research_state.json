@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 2,
+    "measurement": 3,
     "session": 1,
     "training": 0
   },
@@ -66,6 +66,47 @@
       "status": "failed",
       "superseded_by": "M2",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T06:49:03Z",
+      "error": "robot_learning.lab.compiled_dynamics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 387, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 380, in main\n    artifact = characterize()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 368, in characterize\n    \"compiled_model\": _compiled_fields(model),\n                      ~~~~~~~~~~~~~~~~^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 94, in _compiled_fields\n    jnt_damping = _required_attribute(model, \"jnt_damping\", \"MjModel\")\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 50, in _required_attribute\n    raise RuntimeError(f\"required compiled field is unavailable: {label}.{name}\")\nRuntimeError: required compiled field is unavailable: MjModel.jnt_damping\n",
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled two-joint MuJoCo dynamics and execute the reviewed independent verification of the resulting artifact.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics characterization",
+            "module": "robot_learning.lab.compiled_dynamics"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+              "--output",
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics verification",
+            "module": "robot_learning.lab.verify_compiled_dynamics"
+          }
+        ],
+        "rationale": "The first decision is whether bounded 50 Hz motor control has adequate authority across reset singularity escape and representative official inner/outer IK postures. This operation measures the compiled quantities omitted from the XML and deterministic saturated/zero-command responses before attributing any future failure to policy learning. If responses are nonzero, repeatable, and settle with substantial margin, the next direction should test learned coverage and hold regulation; if they are weak or poorly damped in a regime, the next direction should investigate control-aware learning and that physical bottleneck. The verification is included to detect static, truncated, mistimed, or out-of-bounds measurement implementations rather than to certify task success."
+      },
+      "result": {
+        "error": "robot_learning.lab.compiled_dynamics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 387, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 380, in main\n    artifact = characterize()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 368, in characterize\n    \"compiled_model\": _compiled_fields(model),\n                      ~~~~~~~~~~~~~~~~^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 94, in _compiled_fields\n    jnt_damping = _required_attribute(model, \"jnt_damping\", \"MjModel\")\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\compiled_dynamics.py\", line 50, in _required_attribute\n    raise RuntimeError(f\"required compiled field is unavailable: {label}.{name}\")\nRuntimeError: required compiled field is unavailable: MjModel.jnt_damping\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M3",
+      "supersedes": "M1"
     }
   ],
   "pending_operation": {
@@ -96,7 +137,7 @@
       "module_provenance": {
         "campaign_lab_manifest": [
           {
-            "fingerprint": "1769b8d6ba4433ce350dea94153dc0eb18a26a17cb44edbe8070ab9d0c828505",
+            "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
             "path": "robot_learning/lab/compiled_dynamics.py"
           },
           {
@@ -133,7 +174,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "1769b8d6ba4433ce350dea94153dc0eb18a26a17cb44edbe8070ab9d0c828505",
+            "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
             "path": "robot_learning/lab/compiled_dynamics.py"
           },
           {
@@ -156,7 +197,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M2",
+    "id": "M3",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
@@ -190,7 +231,7 @@
     },
     "request_fingerprint": "69a328b95491c1acc75b69b9ccfdefc2b8c5974ca5c54a1be9923b4b567ebfb3",
     "session_id": "S1",
-    "supersedes": "M1"
+    "supersedes": "M2"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
