@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one bounded reach-preserving terminal-stabilization implementation has been compatibility-verified, trained within the available allocation, and compared with T2 on the fixed non-overlapping development panel using the established success, first-reach, radius/angle, reached-incomplete, interruption, entry/final-velocity, and physics-step diagnostics. A positive conclusion requires preserved T2-level first reach and inner-radius performance together with a material reduction in reached-incomplete or hold-loss failures sufficient to make official assessment a credible next choice; a negative or limited conclusion is sufficient if reach or inner-radius performance is not preserved, if the stabilization shift does not improve complete success, or if evidence redirects toward reach trajectory/branch/distribution work. The result must not claim a broader method effect beyond the implemented recipe, and any disagreement between boundary and physics-step hold evidence must remain an explicit readiness limitation.",
-    "goal_connection": "The immutable goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is the strongest measured development artifact at 150/160 successes and 153/160 first reaches, with 40/40 success at 6-10 cm and 50/53 at 10-14 cm, but it remains below the 98% reference with seven never-reached and three reached-but-incomplete failures. T4 shows that the tested weak terminal-focused design can remove reached-incomplete and boundary interruptions among reached episodes, but it also falls to 144/160 and 144/160 first reaches, so the unresolved campaign-level opportunity is specifically stabilization without sacrificing T2's reach and inner-radius coverage. Any result remains development evidence; protected continuous-hold semantics remain authoritative and unresolved.",
-    "handoff_conclusion": "Established observations: the physical model supports feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. T1's omitted-inner-radius baseline measured 105/160; T2's validated full-radius exposure artifact measured 150/160 with 153 first reaches and strong 6-14 cm performance. T3 changed observation representation and stronger branch/limit/speed shaping together and measured 3/160, so that coupled result cannot identify a component cause or reject branch-aware control generally. M22 verified the I5 implementation restored T2's 11-value observation and used weak near-limit/high-speed penalties while preserving production semantics. T4 was a fresh full-allocation artifact under that implementation and was measured against T2 on identical seeds: it achieved 144/160 versus 150/160 and 144 versus 153 first reaches. M24 found zero reached-incomplete failures for T4 versus three for T2, zero boundary interruptions versus 438, and fewer physics-step out-of-tolerance hold substeps (8090 versus 11655 overall), but T4 also had 16 never-reached failures and degraded the 6-10 cm and 10-14 cm strata to 32/40 and 49/53. Correction to the inherited interpretation: T4 establishes a recipe-specific stabilization/reach tradeoff among compared artifacts, not a campaign-level stabilization gain or evidence that terminal stabilization is dominant. Its higher late proxy cannot be privileged because development measurement contradicted it. The remaining evidence supports testing stabilization only in a design explicitly constrained to preserve T2 reach; if that constraint fails, the result redirects toward reach trajectory/branch/distribution work. Physics-step traces remain research diagnostics, and the boundary-versus-protected-continuous hold equivalence remains unresolved.",
-    "handoff_question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
-    "handoff_source_session_id": "S12",
-    "id": "I6",
-    "opened_in_session": "S12",
-    "question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
-    "rationale": "The inherited interpretation that stabilization had become the dominant residual is unsupported at campaign level: T4's zero reached-incomplete failures and reduced boundary/physics-step interruptions occurred with 16 never-reached failures, loss of nine first reaches relative to T2, degradation in the 6-10 cm and 10-14 cm strata, and six fewer paired successes. This is a recipe-specific tradeoff, not evidence against terminal stabilization generally. The current question remains consequential because T2 is close enough to the objective that eliminating only a small residual class could materially change the assessment decision, while the protected assessment would terminate the campaign on a candidate measured at 150/160 under boundary-sampled semantics and with unresolved continuous-hold equivalence. The expected contribution of one bounded inquiry is therefore higher than spending the terminal assessment now: it can test whether T4's stabilization signal is compatible with T2's reach, while the closure condition explicitly redirects if reach is lost. The cost is one bounded full training allocation and matched development measurement; five inquiries have been used of fifteen, and no official-assessment episodes have been consumed. Existing training proxies and unmeasured checkpoints do not justify selecting another artifact: T2's 0.58 terminal proxy nominated the measured candidate, whereas T4's late 0.90 proxy did not predict its 144/160 result.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -4115,7 +4104,7 @@
     }
   },
   "counters": {
-    "event": 24,
+    "event": 25,
     "inquiry": 6,
     "measurement": 28,
     "session": 13,
@@ -15615,9 +15604,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T16:16:13Z",
+      "error": null,
+      "id": "E25",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative result",
+        "reason": "M26 compatibility-verified the I6 implementation: it preserved T2's 11-value observation and production reset/step paths, applied the existing weak joint-limit/high-speed penalties at or below a 0.02 m terminal gate, and applied zero such shaping at a 5 cm approach distance. T5 then trained a fresh seed-0 candidate for the full 120000-step allocation under T2's full-radius exposure, unchanged PPO/runtime, and the gated reward; its late proxy reached 0.58 at 120832 steps, which nominated the measured checkpoint but did not establish performance. M27 measured T5:checkpoint-120832 against T2:checkpoint-120832 on identical fixed seeds: T5 achieved 96/160 (60.0%) versus 150/160 (93.75%), with zero paired wins and 54 paired losses. M28 establishes the relevant failure mechanism at artifact level: T5 retained T2's 6-10 cm result at 40/40 and was strong but lower at 10-14 cm (49/53 versus 50/53), but first reach fell to 103/160 versus 153/160, never-reached failures rose to 57 versus 7, and outer strata collapsed to 7/31 and 0/36 versus T2's 28/31 and 32/36. T5 had seven reached-incomplete failures versus T2's three, so the targeted reached-episode failure class did not improve. Its 225 boundary interruptions and 7247 out-of-tolerance physics substeps during hold were lower than T2's 438 and 11655 only in the context of 50 fewer reached episodes; the reach-conditioned failure count and complete success did not improve. Therefore this terminal-distance-gated weak-shaping implementation does not satisfy the reach-preserving stabilization closure criterion. The result is specific to the tested gating recipe and does not disprove terminal stabilization generally, but it redirects the next research decision toward reach trajectory, outer-radius/angle distribution, or representation work. M27/M28 remain boundary-sampled development evidence with physics-step traces as research diagnostics; protected continuous-hold equivalence remains unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative result",
+        "reason": "M26 compatibility-verified the I6 implementation: it preserved T2's 11-value observation and production reset/step paths, applied the existing weak joint-limit/high-speed penalties at or below a 0.02 m terminal gate, and applied zero such shaping at a 5 cm approach distance. T5 then trained a fresh seed-0 candidate for the full 120000-step allocation under T2's full-radius exposure, unchanged PPO/runtime, and the gated reward; its late proxy reached 0.58 at 120832 steps, which nominated the measured checkpoint but did not establish performance. M27 measured T5:checkpoint-120832 against T2:checkpoint-120832 on identical fixed seeds: T5 achieved 96/160 (60.0%) versus 150/160 (93.75%), with zero paired wins and 54 paired losses. M28 establishes the relevant failure mechanism at artifact level: T5 retained T2's 6-10 cm result at 40/40 and was strong but lower at 10-14 cm (49/53 versus 50/53), but first reach fell to 103/160 versus 153/160, never-reached failures rose to 57 versus 7, and outer strata collapsed to 7/31 and 0/36 versus T2's 28/31 and 32/36. T5 had seven reached-incomplete failures versus T2's three, so the targeted reached-episode failure class did not improve. Its 225 boundary interruptions and 7247 out-of-tolerance physics substeps during hold were lower than T2's 438 and 11655 only in the context of 50 fewer reached episodes; the reach-conditioned failure count and complete success did not improve. Therefore this terminal-distance-gated weak-shaping implementation does not satisfy the reach-preserving stabilization closure criterion. The result is specific to the tested gating recipe and does not disprove terminal stabilization generally, but it redirects the next research decision toward reach trajectory, outer-radius/angle distribution, or representation work. M27/M28 remain boundary-sampled development evidence with physics-step traces as research diagnostics; protected continuous-hold equivalence remains unresolved.",
+        "status": "completed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative result",
+        "reason": "M26 compatibility-verified the I6 implementation: it preserved T2's 11-value observation and production reset/step paths, applied the existing weak joint-limit/high-speed penalties at or below a 0.02 m terminal gate, and applied zero such shaping at a 5 cm approach distance. T5 then trained a fresh seed-0 candidate for the full 120000-step allocation under T2's full-radius exposure, unchanged PPO/runtime, and the gated reward; its late proxy reached 0.58 at 120832 steps, which nominated the measured checkpoint but did not establish performance. M27 measured T5:checkpoint-120832 against T2:checkpoint-120832 on identical fixed seeds: T5 achieved 96/160 (60.0%) versus 150/160 (93.75%), with zero paired wins and 54 paired losses. M28 establishes the relevant failure mechanism at artifact level: T5 retained T2's 6-10 cm result at 40/40 and was strong but lower at 10-14 cm (49/53 versus 50/53), but first reach fell to 103/160 versus 153/160, never-reached failures rose to 57 versus 7, and outer strata collapsed to 7/31 and 0/36 versus T2's 28/31 and 32/36. T5 had seven reached-incomplete failures versus T2's three, so the targeted reached-episode failure class did not improve. Its 225 boundary interruptions and 7247 out-of-tolerance physics substeps during hold were lower than T2's 438 and 11655 only in the context of 50 fewer reached episodes; the reach-conditioned failure count and complete success did not improve. Therefore this terminal-distance-gated weak-shaping implementation does not satisfy the reach-preserving stabilization closure criterion. The result is specific to the tested gating recipe and does not disprove terminal stabilization generally, but it redirects the next research decision toward reach trajectory, outer-radius/angle distribution, or representation work. M27/M28 remain boundary-sampled development evidence with physics-step traces as research diagnostics; protected continuous-hold equivalence remains unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative result",
+        "reason": "M26 compatibility-verified the I6 implementation: it preserved T2's 11-value observation and production reset/step paths, applied the existing weak joint-limit/high-speed penalties at or below a 0.02 m terminal gate, and applied zero such shaping at a 5 cm approach distance. T5 then trained a fresh seed-0 candidate for the full 120000-step allocation under T2's full-radius exposure, unchanged PPO/runtime, and the gated reward; its late proxy reached 0.58 at 120832 steps, which nominated the measured checkpoint but did not establish performance. M27 measured T5:checkpoint-120832 against T2:checkpoint-120832 on identical fixed seeds: T5 achieved 96/160 (60.0%) versus 150/160 (93.75%), with zero paired wins and 54 paired losses. M28 establishes the relevant failure mechanism at artifact level: T5 retained T2's 6-10 cm result at 40/40 and was strong but lower at 10-14 cm (49/53 versus 50/53), but first reach fell to 103/160 versus 153/160, never-reached failures rose to 57 versus 7, and outer strata collapsed to 7/31 and 0/36 versus T2's 28/31 and 32/36. T5 had seven reached-incomplete failures versus T2's three, so the targeted reached-episode failure class did not improve. Its 225 boundary interruptions and 7247 out-of-tolerance physics substeps during hold were lower than T2's 438 and 11655 only in the context of 50 fewer reached episodes; the reach-conditioned failure count and complete success did not improve. Therefore this terminal-distance-gated weak-shaping implementation does not satisfy the reach-preserving stabilization closure criterion. The result is specific to the tested gating recipe and does not disprove terminal stabilization generally, but it redirects the next research decision toward reach trajectory, outer-radius/angle distribution, or representation work. M27/M28 remain boundary-sampled development evidence with physics-step traces as research diagnostics; protected continuous-hold equivalence remains unresolved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E25",
+    "inquiry_id": "I6",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative result",
+        "reason": "M26 compatibility-verified the I6 implementation: it preserved T2's 11-value observation and production reset/step paths, applied the existing weak joint-limit/high-speed penalties at or below a 0.02 m terminal gate, and applied zero such shaping at a 5 cm approach distance. T5 then trained a fresh seed-0 candidate for the full 120000-step allocation under T2's full-radius exposure, unchanged PPO/runtime, and the gated reward; its late proxy reached 0.58 at 120832 steps, which nominated the measured checkpoint but did not establish performance. M27 measured T5:checkpoint-120832 against T2:checkpoint-120832 on identical fixed seeds: T5 achieved 96/160 (60.0%) versus 150/160 (93.75%), with zero paired wins and 54 paired losses. M28 establishes the relevant failure mechanism at artifact level: T5 retained T2's 6-10 cm result at 40/40 and was strong but lower at 10-14 cm (49/53 versus 50/53), but first reach fell to 103/160 versus 153/160, never-reached failures rose to 57 versus 7, and outer strata collapsed to 7/31 and 0/36 versus T2's 28/31 and 32/36. T5 had seven reached-incomplete failures versus T2's three, so the targeted reached-episode failure class did not improve. Its 225 boundary interruptions and 7247 out-of-tolerance physics substeps during hold were lower than T2's 438 and 11655 only in the context of 50 fewer reached episodes; the reach-conditioned failure count and complete success did not improve. Therefore this terminal-distance-gated weak-shaping implementation does not satisfy the reach-preserving stabilization closure criterion. The result is specific to the tested gating recipe and does not disprove terminal stabilization generally, but it redirects the next research decision toward reach trajectory, outer-radius/angle distribution, or representation work. M27/M28 remain boundary-sampled development evidence with physics-step traces as research diagnostics; protected continuous-hold equivalence remains unresolved."
+      }
+    },
+    "request_fingerprint": "a31c1e30d89b5bae932411eacac59b469dc43b32f4363e2860751c0155821463",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T4:checkpoint-105472 is a measured limited-negative I5 artifact and is not best-known or retained. T1 and T3 remain earlier measured references. No working or retained candidate exists. The 96 archived checkpoints include unmeasured artifacts, but proxy rank and terminal position do not confer candidate status; the inspected T2 and T4 trajectories provide no stronger unmeasured candidate than T2.",
     "completed_operations": [
@@ -15698,7 +15741,8 @@
       "M26",
       "T5",
       "M27",
-      "M28"
+      "M28",
+      "E25"
     ],
     "scientific_parent_commit": "fef819db9cd62d960a0250a938a6887de089b848"
   },

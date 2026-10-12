@@ -59,3 +59,4 @@
 | T5 | training | I6 | completed |
 | M27 | measurement | I6 | completed |
 | M28 | measurement | I6 | completed |
+| E25 | inquiry | I6 | completed |
