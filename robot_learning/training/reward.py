@@ -27,12 +27,14 @@ HOLD_COMPLETE_BONUS = 50.0
 # unshaped, while a narrow limit margin or extreme arrival speed gets a small
 # stabilizing signal.  The 10% normalized margin and 2.5-to-10 speed window
 # leave routine motion untouched while reserving the bounded penalties for
-# near-boundary or unusually fast arrival states.
+# near-boundary or unusually fast arrival states.  The distance gate below
+# keeps these signals out of the bend-then-translate approach trajectory.
 JOINT_LIMIT_SAFE_MARGIN = 0.10
 JOINT_LIMIT_PENALTY_COEFFICIENT = 0.05
 JOINT_SPEED_SAFE_NORM = 2.5
 JOINT_SPEED_PENALTY_NORM = 10.0
 JOINT_SPEED_PENALTY_COEFFICIENT = 0.005
+TERMINAL_SHAPING_DISTANCE = 0.02
 
 
 @dataclass(frozen=True)
@@ -121,6 +123,13 @@ def _joint_shaping(
     return float(limit_penalty), float(speed_penalty)
 
 
+def _terminal_shaping_active(current_distance: float) -> bool:
+    """Enable joint stabilization only in the current terminal neighborhood."""
+    if TERMINAL_SHAPING_DISTANCE <= 0.0:
+        raise ValueError("TERMINAL_SHAPING_DISTANCE must be positive")
+    return current_distance <= TERMINAL_SHAPING_DISTANCE
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -181,6 +190,9 @@ def reach_reward(
         joint_velocities,
         joint_ranges,
     )
+    if not _terminal_shaping_active(current_distance):
+        joint_limit_penalty = 0.0
+        joint_speed_penalty = 0.0
     reward += joint_limit_penalty + joint_speed_penalty
 
     return RewardResult(
