@@ -107,7 +107,12 @@ def run_compatibility_check() -> dict[str, Any]:
     return result
 
 
-def run_behavioral_check() -> dict[str, Any]:
+def run_behavioral_check(
+    *,
+    radius_count: int = 2,
+    angle_count: int = 4,
+    response_steps: int = 6,
+) -> dict[str, Any]:
     model = load_model()
     data = mujoco.MjData(model)
 
@@ -195,7 +200,9 @@ def run_behavioral_check() -> dict[str, Any]:
     }
 
     measurement = measure_physical_characterization(
-        radius_count=2, angle_count=4, response_steps=6
+        radius_count=radius_count,
+        angle_count=angle_count,
+        response_steps=response_steps,
     )
     facts = measurement["compiled_facts"]
     required_units = {
@@ -310,7 +317,7 @@ def run_behavioral_check() -> dict[str, Any]:
             "both analytical IK branches at an independent target",
             "repeated +1/-1 transition and finite-difference acceleration direction",
             "compiled authority/timing facts and explicit units",
-            "small measured grid and response artifact records",
+            "small configured measured grid and response artifact records",
         ],
         "unchecked_scope": [
             "full default grid density beyond the controlled 2-by-4 verification grid",
@@ -329,13 +336,22 @@ def _argument_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="run only the small artifact-independent production-path check",
     )
+    parser.add_argument("--radius-count", type=int, default=2)
+    parser.add_argument("--angle-count", type=int, default=4)
+    parser.add_argument("--response-steps", type=int, default=6)
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = _argument_parser().parse_args(argv)
     result = (
-        run_compatibility_check() if args.compatibility else run_behavioral_check()
+        run_compatibility_check()
+        if args.compatibility
+        else run_behavioral_check(
+            radius_count=args.radius_count,
+            angle_count=args.angle_count,
+            response_steps=args.response_steps,
+        )
     )
     write_json_artifact(result, args.artifact)
 
