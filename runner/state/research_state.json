@@ -1621,7 +1621,9 @@
     },
     "T11:checkpoint-95232": {
       "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t11/checkpoint-95232",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json"
+      ],
       "fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
       "id": "T11:checkpoint-95232",
       "name": "checkpoint-95232",
@@ -4289,7 +4291,8 @@
         "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m28-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
         "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m31-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
         "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m32-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
-        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m35-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json"
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m35-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+        "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json"
       ],
       "fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
       "id": "T4:checkpoint-120832",
@@ -9032,7 +9035,7 @@
   "counters": {
     "event": 61,
     "inquiry": 15,
-    "measurement": 37,
+    "measurement": 38,
     "session": 31,
     "training": 11
   },
@@ -27233,9 +27236,1272 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T02:34:51Z",
+      "error": null,
+      "id": "M38",
+      "inquiry_id": "I15",
+      "kind": "measurement",
+      "request": {
+        "description": "Matched complete-hold development evaluation of T11:checkpoint-95232 against T4:checkpoint-120832 on 160 episodes with per-episode and time-resolved control diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+            "seed": 4200
+          },
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I15 T4 matched complete-hold development reference",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "reference": "T4:checkpoint-120832"
+          }
+        ],
+        "rationale": "T11 training proxies peaked at checkpoint-95232 rather than the terminal checkpoint, with 0.99 reported training success and the highest late-route reward. M37 verified the intended shaping route, but training proxies do not establish complete-hold performance. This matched evaluation directly tests I15's closure condition under unchanged development semantics, including acquisition, uninterrupted 100-step holds, joint-limit proximity, approach velocity, torque/action saturation, and hold interruptions; T4 is the 153/160 reference on the same panel."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "candidate_id": "T11:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "df1b59a550b01c6ff3bca2cd0c1c13f23bd9ae8e585ca75231d7dc6ebe08b348",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.0,
+              "successes": 152
+            }
+          },
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I15 T4 matched complete-hold development reference",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.625,
+              "successes": 153
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "candidate_model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+            "candidate_wins": 0,
+            "discordant_episodes": 1,
+            "episodes": 160,
+            "net_wins": -1,
+            "reference": "T4:checkpoint-120832",
+            "reference_model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+            "reference_wins": 1,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json"
+            ],
+            "success_delta_percent": -0.625
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S31",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "f6bf4b99cf62",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/90563aac-4d55-41a2-9cfd-dffab0145883/t11/checkpoint-95232",
+          "candidate": "T11:checkpoint-95232",
+          "candidate_id": "T11:checkpoint-95232",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+          "model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+          "seed": 4200
+        },
+        {
+          "artifact": "campaigns/checkpoints/retained/90563aac-4d55-41a2-9cfd-dffab0145883/t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I15 T4 matched complete-hold development reference",
+          "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T11:checkpoint-95232",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+          "reference": "T4:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+          "shared_episode_seeds": [
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4217,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4226,
+            4227,
+            4228,
+            4229,
+            4230,
+            4231,
+            4232,
+            4233,
+            4234,
+            4235,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4260,
+            4261,
+            4262,
+            4263,
+            4264,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4287,
+            4288,
+            4289,
+            4290,
+            4291,
+            4292,
+            4293,
+            4294,
+            4295,
+            4296,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4305,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4320,
+            4321,
+            4322,
+            4323,
+            4324,
+            4325,
+            4326,
+            4327,
+            4328,
+            4329,
+            4330,
+            4331,
+            4332,
+            4333,
+            4334,
+            4335,
+            4336,
+            4337,
+            4338,
+            4339,
+            4340,
+            4341,
+            4342,
+            4343,
+            4344,
+            4345,
+            4346,
+            4347,
+            4348,
+            4349,
+            4350,
+            4351,
+            4352,
+            4353,
+            4354,
+            4355,
+            4356,
+            4357,
+            4358,
+            4359
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T11:checkpoint-95232",
+          "candidate_id": "T11:checkpoint-95232",
+          "instrument": "research_evaluation",
+          "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "df1b59a550b01c6ff3bca2cd0c1c13f23bd9ae8e585ca75231d7dc6ebe08b348",
+            "evaluation_semantics": "f6bf4b99cf62",
+            "model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 95.0,
+            "successes": 152
+          }
+        },
+        {
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I15 T4 matched complete-hold development reference",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+            "evaluation_semantics": "f6bf4b99cf62",
+            "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 95.625,
+            "successes": 153
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "candidate_id": "T11:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "df1b59a550b01c6ff3bca2cd0c1c13f23bd9ae8e585ca75231d7dc6ebe08b348",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.0,
+              "successes": 152
+            }
+          },
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I15 T4 matched complete-hold development reference",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a8065a56d2db1646858bad84ea2c9337c83603ab69301df8245852792b176afb",
+              "evaluation_semantics": "f6bf4b99cf62",
+              "model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 95.625,
+              "successes": 153
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "candidate_model_fingerprint": "f9bd2ca36a226d9aef2e070c707540573befd3c514410c357cc109b8e2a733a7",
+            "candidate_wins": 0,
+            "discordant_episodes": 1,
+            "episodes": 160,
+            "net_wins": -1,
+            "reference": "T4:checkpoint-120832",
+            "reference_model_fingerprint": "cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d",
+            "reference_wins": 1,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T11-checkpoint-95232-160ep-seed4200-f6bf4b99cf62.json",
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/evaluation-90563aac-4d55-41a2-9cfd-dffab0145883-m38-T4-checkpoint-120832-160ep-seed4200-f6bf4b99cf62.json"
+            ],
+            "success_delta_percent": -0.625
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M38",
+    "inquiry_id": "I15",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Matched complete-hold development evaluation of T11:checkpoint-95232 against T4:checkpoint-120832 on 160 episodes with per-episode and time-resolved control diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I15 T11 selected checkpoint complete-hold development evaluation",
+            "seed": 4200
+          },
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I15 T4 matched complete-hold development reference",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T11:checkpoint-95232",
+            "reference": "T4:checkpoint-120832"
+          }
+        ],
+        "rationale": "T11 training proxies peaked at checkpoint-95232 rather than the terminal checkpoint, with 0.99 reported training success and the highest late-route reward. M37 verified the intended shaping route, but training proxies do not establish complete-hold performance. This matched evaluation directly tests I15's closure condition under unchanged development semantics, including acquisition, uninterrupted 100-step holds, joint-limit proximity, approach velocity, torque/action saturation, and hold interruptions; T4 is the 153/160 reference on the same panel."
+      }
+    },
+    "request_fingerprint": "5e9466f570fdf1eba89d726c8864d1e145f38b338c9e1105e5acda895029f1ef",
+    "session_id": "S31",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19/M23/M28/M31/M32/M35 at 153/160; T10:checkpoint-95232 is a tied rejected route-level candidate, not working or retained. T2 remains an earlier candidate and is not current best-known. No working or retained candidate is assigned. The active inquiry is I15; no new candidate has yet been produced.",
     "completed_operations": [
@@ -27278,7 +28544,8 @@
     "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "M37",
-      "T11"
+      "T11",
+      "M38"
     ],
     "scientific_parent_commit": "495f7a7e175f664fed251aa7e63355c9dd104c6e"
   },
