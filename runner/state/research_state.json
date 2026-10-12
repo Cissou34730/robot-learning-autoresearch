@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a fresh candidate using the targeted official-radius and difficult-angle exposure has been produced and its complete development artifact is evaluated with the retained branch diagnostics on a non-overlapping 200-episode panel, then compare overall success, no-reach versus sampled-hold failures, radius/angle strata, and reached-episode hold interruptions against M4. A positive bounded conclusion requires materially fewer no-reach failures in the 6-14 cm and difficult-angle regions without loss of the baseline's outer-radius sampled-hold performance; a negative or limited conclusion records persistent no-reach or new hold deficits and redirects the next decision toward observations, reward/interface, runtime control, or another tested mechanism. This inquiry does not certify the protected official panel or continuous between-check containment.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds under targets uniformly spanning 6-20 cm and the full angular range. The only evaluated candidate achieved 136/200 on a distinct development panel, with 56 of 64 failures classified as no-reach and strong radius/angle stratification. A fresh candidate with exposure covering the omitted inner radii and difficult angular trajectories can directly test whether this high-contribution deficit is improved before any protected assessment is committed.",
+    "handoff_conclusion": "Established observations: M1 passed controlled implementation checks for equilibrium, bounded actuation, repeatability and reset states. M2 measured local actuation and passive decay in representative controlled postures, but did not establish learned reach, braking, sampled-hold sustainment, or official-distribution behavior. T1 trained a fresh PPO baseline for 120832 actual steps using the existing 14-20 cm training exposure. M3 verified the production-path branch diagnostics without changing task success semantics. M4 evaluated archived candidate T1:checkpoint-115712 on a fresh 200-episode development panel and observed 136 successes. M7 independently verified the strict schema-6 analysis tool on controlled synthetic inputs, including radius and angle boundaries and malformed-artifact rejection. M8 analyzed M4: 64 failures comprised 56 no-reach failures and 8 sampled-hold failures; no-reach failures were 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm, while success rates were 34.6%, 57.4% and 95.4% respectively. The angular sectors also differed strongly, from 50.9% success in [-90,0) to 94.4% in [90,180]. All 8 reached failures had hold interruptions, with maximum held runs from 1 to 87 steps (median 8), versus the required 100 checks. Branch diagnostics attributed every reached episode to the open branch; failure control-step occupancy was 99.5% open, with only 36 switches across 64 failure episodes. Interpretation: this baseline artifact is dominated by reach/generalization failure in the omitted inner-radius and difficult-angle regions, not by hold regulation or folded-branch occupancy. This is not a causal proof that exposure omission caused the failures: training exposure, learned trajectories and artifact properties are confounded, and development sampled checks do not certify continuous containment or the protected panel. The tested implementation supports an exposure/trajectory direction; it does not disprove other learning methods or establish that broader exposure will reach the goal.",
+    "handoff_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+    "rationale": "Official assessment is not preferable now: the strongest available candidate is only a 68.0% development artifact, has no explicit best-known role, and is far below the 98% objective. The dominant observed deficit is a candidate-level association with target radius and angle: 56/64 failures were no-reach, including 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; difficult angular sectors were also much worse. This is consistent with the physical model's reset-demand and exposure-gap consequences, but it does not prove that training exposure caused the failures because training recipe, learned trajectories, and artifact properties are confounded. The training log shows the baseline learned the outer-distribution task late in training, reaching roughly 0.94-0.97 proxy success, which strengthens the case that the 68% development result is an out-of-exposure candidate deficit but cannot establish causality. The proposed fresh targeted candidate is a bounded, goal-linked candidate comparison that can change the next direction at the largest currently observed failure source. Its cost is one maintainer-sized training run plus one development evaluation; that is preferable to terminally exposing a clearly inadequate candidate, while preserving the unresolved alternatives. The inherited phrase 'reach/generalization failure' is narrowed here to 'radius/angle-stratified no-reach failure in this artifact': the mechanism remains a hypothesis until the targeted comparison is measured. Preserve the sampled-hold result as a safety discriminator because all 8 reached failures interrupted their holds, and require outer-radius hold performance not to regress. Branch-specific intervention remains unsupported because all reached episodes were open-branch attributed, and continuous substep containment remains unmeasured but cannot be resolved by this candidate comparison alone.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "dd13c4e472e8f9a6883183c894ec1e25c6d4d20b",
     "id": "4702776a-0b97-4740-85d4-a1b52a96b10a",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 8,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3135,9 +3146,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:29:02Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a fresh candidate using the targeted official-radius and difficult-angle exposure has been produced and its complete development artifact is evaluated with the retained branch diagnostics on a non-overlapping 200-episode panel, then compare overall success, no-reach versus sampled-hold failures, radius/angle strata, and reached-episode hold interruptions against M4. A positive bounded conclusion requires materially fewer no-reach failures in the 6-14 cm and difficult-angle regions without loss of the baseline's outer-radius sampled-hold performance; a negative or limited conclusion records persistent no-reach or new hold deficits and redirects the next decision toward observations, reward/interface, runtime control, or another tested mechanism. This inquiry does not certify the protected official panel or continuous between-check containment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds under targets uniformly spanning 6-20 cm and the full angular range. The only evaluated candidate achieved 136/200 on a distinct development panel, with 56 of 64 failures classified as no-reach and strong radius/angle stratification. A fresh candidate with exposure covering the omitted inner radii and difficult angular trajectories can directly test whether this high-contribution deficit is improved before any protected assessment is committed.",
+        "question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+        "rationale": "Official assessment is not preferable now: the strongest available candidate is only a 68.0% development artifact, has no explicit best-known role, and is far below the 98% objective. The dominant observed deficit is a candidate-level association with target radius and angle: 56/64 failures were no-reach, including 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; difficult angular sectors were also much worse. This is consistent with the physical model's reset-demand and exposure-gap consequences, but it does not prove that training exposure caused the failures because training recipe, learned trajectories, and artifact properties are confounded. The training log shows the baseline learned the outer-distribution task late in training, reaching roughly 0.94-0.97 proxy success, which strengthens the case that the 68% development result is an out-of-exposure candidate deficit but cannot establish causality. The proposed fresh targeted candidate is a bounded, goal-linked candidate comparison that can change the next direction at the largest currently observed failure source. Its cost is one maintainer-sized training run plus one development evaluation; that is preferable to terminally exposing a clearly inadequate candidate, while preserving the unresolved alternatives. The inherited phrase 'reach/generalization failure' is narrowed here to 'radius/angle-stratified no-reach failure in this artifact': the mechanism remains a hypothesis until the targeted comparison is measured. Preserve the sampled-hold result as a safety discriminator because all 8 reached failures interrupted their holds, and require outer-radius hold performance not to regress. Branch-specific intervention remains unsupported because all reached episodes were open-branch attributed, and continuous substep containment remains unmeasured but cannot be resolved by this candidate comparison alone."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a fresh candidate using the targeted official-radius and difficult-angle exposure has been produced and its complete development artifact is evaluated with the retained branch diagnostics on a non-overlapping 200-episode panel, then compare overall success, no-reach versus sampled-hold failures, radius/angle strata, and reached-episode hold interruptions against M4. A positive bounded conclusion requires materially fewer no-reach failures in the 6-14 cm and difficult-angle regions without loss of the baseline's outer-radius sampled-hold performance; a negative or limited conclusion records persistent no-reach or new hold deficits and redirects the next decision toward observations, reward/interface, runtime control, or another tested mechanism. This inquiry does not certify the protected official panel or continuous between-check containment.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds under targets uniformly spanning 6-20 cm and the full angular range. The only evaluated candidate achieved 136/200 on a distinct development panel, with 56 of 64 failures classified as no-reach and strong radius/angle stratification. A fresh candidate with exposure covering the omitted inner radii and difficult angular trajectories can directly test whether this high-contribution deficit is improved before any protected assessment is committed.",
+          "handoff_conclusion": "Established observations: M1 passed controlled implementation checks for equilibrium, bounded actuation, repeatability and reset states. M2 measured local actuation and passive decay in representative controlled postures, but did not establish learned reach, braking, sampled-hold sustainment, or official-distribution behavior. T1 trained a fresh PPO baseline for 120832 actual steps using the existing 14-20 cm training exposure. M3 verified the production-path branch diagnostics without changing task success semantics. M4 evaluated archived candidate T1:checkpoint-115712 on a fresh 200-episode development panel and observed 136 successes. M7 independently verified the strict schema-6 analysis tool on controlled synthetic inputs, including radius and angle boundaries and malformed-artifact rejection. M8 analyzed M4: 64 failures comprised 56 no-reach failures and 8 sampled-hold failures; no-reach failures were 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm, while success rates were 34.6%, 57.4% and 95.4% respectively. The angular sectors also differed strongly, from 50.9% success in [-90,0) to 94.4% in [90,180]. All 8 reached failures had hold interruptions, with maximum held runs from 1 to 87 steps (median 8), versus the required 100 checks. Branch diagnostics attributed every reached episode to the open branch; failure control-step occupancy was 99.5% open, with only 36 switches across 64 failure episodes. Interpretation: this baseline artifact is dominated by reach/generalization failure in the omitted inner-radius and difficult-angle regions, not by hold regulation or folded-branch occupancy. This is not a causal proof that exposure omission caused the failures: training exposure, learned trajectories and artifact properties are confounded, and development sampled checks do not certify continuous containment or the protected panel. The tested implementation supports an exposure/trajectory direction; it does not disprove other learning methods or establish that broader exposure will reach the goal.",
+          "handoff_question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+          "rationale": "Official assessment is not preferable now: the strongest available candidate is only a 68.0% development artifact, has no explicit best-known role, and is far below the 98% objective. The dominant observed deficit is a candidate-level association with target radius and angle: 56/64 failures were no-reach, including 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; difficult angular sectors were also much worse. This is consistent with the physical model's reset-demand and exposure-gap consequences, but it does not prove that training exposure caused the failures because training recipe, learned trajectories, and artifact properties are confounded. The training log shows the baseline learned the outer-distribution task late in training, reaching roughly 0.94-0.97 proxy success, which strengthens the case that the 68% development result is an out-of-exposure candidate deficit but cannot establish causality. The proposed fresh targeted candidate is a bounded, goal-linked candidate comparison that can change the next direction at the largest currently observed failure source. Its cost is one maintainer-sized training run plus one development evaluation; that is preferable to terminally exposing a clearly inadequate candidate, while preserving the unresolved alternatives. The inherited phrase 'reach/generalization failure' is narrowed here to 'radius/angle-stratified no-reach failure in this artifact': the mechanism remains a hypothesis until the targeted comparison is measured. Preserve the sampled-hold result as a safety discriminator because all 8 reached failures interrupted their holds, and require outer-radius hold performance not to regress. Branch-specific intervention remains unsupported because all reached episodes were open-branch attributed, and continuous substep containment remains unmeasured but cannot be resolved by this candidate comparison alone.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a fresh candidate using the targeted official-radius and difficult-angle exposure has been produced and its complete development artifact is evaluated with the retained branch diagnostics on a non-overlapping 200-episode panel, then compare overall success, no-reach versus sampled-hold failures, radius/angle strata, and reached-episode hold interruptions against M4. A positive bounded conclusion requires materially fewer no-reach failures in the 6-14 cm and difficult-angle regions without loss of the baseline's outer-radius sampled-hold performance; a negative or limited conclusion records persistent no-reach or new hold deficits and redirects the next decision toward observations, reward/interface, runtime control, or another tested mechanism. This inquiry does not certify the protected official panel or continuous between-check containment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds under targets uniformly spanning 6-20 cm and the full angular range. The only evaluated candidate achieved 136/200 on a distinct development panel, with 56 of 64 failures classified as no-reach and strong radius/angle stratification. A fresh candidate with exposure covering the omitted inner radii and difficult angular trajectories can directly test whether this high-contribution deficit is improved before any protected assessment is committed.",
+        "question": "For a fresh candidate trained with official inner-radius and difficult-angle trajectory exposure, does the targeted exposure change reduce no-reach failures while preserving uninterrupted sampled-hold success across the official distribution?",
+        "rationale": "Official assessment is not preferable now: the strongest available candidate is only a 68.0% development artifact, has no explicit best-known role, and is far below the 98% objective. The dominant observed deficit is a candidate-level association with target radius and angle: 56/64 failures were no-reach, including 30/34 at 6-10 cm, 22/26 at 10-14 cm, and 4/4 at 14-20 cm; difficult angular sectors were also much worse. This is consistent with the physical model's reset-demand and exposure-gap consequences, but it does not prove that training exposure caused the failures because training recipe, learned trajectories, and artifact properties are confounded. The training log shows the baseline learned the outer-distribution task late in training, reaching roughly 0.94-0.97 proxy success, which strengthens the case that the 68% development result is an out-of-exposure candidate deficit but cannot establish causality. The proposed fresh targeted candidate is a bounded, goal-linked candidate comparison that can change the next direction at the largest currently observed failure source. Its cost is one maintainer-sized training run plus one development evaluation; that is preferable to terminally exposing a clearly inadequate candidate, while preserving the unresolved alternatives. The inherited phrase 'reach/generalization failure' is narrowed here to 'radius/angle-stratified no-reach failure in this artifact': the mechanism remains a hypothesis until the targeted comparison is measured. Preserve the sampled-hold result as a safety discriminator because all 8 reached failures interrupted their holds, and require outer-radius hold performance not to regress. Branch-specific intervention remains unsupported because all reached episodes were open-branch attributed, and continuous substep containment remains unmeasured but cannot be resolved by this candidate comparison alone."
+      }
+    },
+    "request_fingerprint": "e57ce49881de1ee717db8cb7f69301c9c9696f50e1e9b9b941dac8841f3e5933",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 is the evaluated fresh baseline artifact and remains a development candidate only. No working, best-known, or retained role has been assigned. M4's 68.0% development result is not official certification.",
     "completed_operations": [
@@ -3176,6 +3250,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "01ed4c1b-4a0e-4cbe-b2ae-aea0111cc6ac",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "e31126885a461ef208efadbe8f69a3c298a4841b"
+  },
   "terminal_state": null
 }
