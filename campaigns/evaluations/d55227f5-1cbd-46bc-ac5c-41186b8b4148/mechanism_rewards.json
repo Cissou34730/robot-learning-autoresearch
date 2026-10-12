@@ -1,0 +1,40 @@
+{
+  "check": "mechanism_rewards",
+  "status": "failed",
+  "observed": {
+    "unexpected_check_error": "AttributeError(\"'mujoco._structs.MjModel' object has no attribute 'nj'\")"
+  },
+  "expected": {
+    "profiles": [
+      "baseline",
+      "hold_aware",
+      "posture_limit_aware"
+    ],
+    "configured_training_variant": "hold_aware",
+    "baseline_interruption": {
+      "hold_progress": 0.0,
+      "outside_band": -0.1
+    },
+    "hold_aware_interruption": {
+      "hold_progress": -15.0,
+      "outside_band": -5.0
+    },
+    "posture_scope": "near-target condition and joint-limit penalties only"
+  },
+  "checked_scope": [
+    "explicit training-variant configuration wiring and unknown-profile rejection",
+    "baseline versus hold-aware interruption consequences",
+    "repeated hold updates, interruption re-entry, compiled transitions, and reset",
+    "compiled-arm Jacobian conditioning and joint-limit metrics",
+    "posture penalties for safe, risky, and far controls"
+  ],
+  "errors": [
+    "check raised unexpectedly: AttributeError(\"'mujoco._structs.MjModel' object has no attribute 'nj'\")"
+  ],
+  "unchecked_scope": [
+    "PPO learning behavior and candidate performance",
+    "long-horizon distributional effects across the official target range",
+    "scientific validity of the chosen coefficients",
+    "official evaluation outcomes"
+  ]
+}
