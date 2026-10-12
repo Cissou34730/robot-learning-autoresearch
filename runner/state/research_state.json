@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 2,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -608,32 +608,160 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:12:30Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidates exist; working, best-known, and retained roles are empty. M1 is an implementation-check measurement and M2 is a controlled physical-characterization measurement, not a policy candidate.",
+        "completed_operations": [
+          "M1",
+          "M2"
+        ],
+        "cumulative_resource_use": "Two completed measurement operations: M1 short behavioral compatibility check and M2 deterministic physical characterization. No training steps, policy candidates, official assessment, or inquiry allocation have been used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated. It is unknown whether the first candidate will fail mainly before entering the 1 cm region, during the uninterrupted hold, or selectively on inner-radius/folded targets and angular sectors. Therefore the campaign has no evidence-backed development success rate and cannot request official assessment.",
+        "current_synthesis": "Observed evidence: M1 passed all controlled implementation checks: zero-command equilibrium was exact, a bounded command changed state, repeated transitions matched to 0, and resets correctly reached extended, open, and folded configurations. M2 measured the compiled model as 2 ms explicit Euler with Newton solver, two joints each with 0.5 N m s damping and 0.01 kg m^2 armature, and two 5 N m nominal motor limits. Across representative extended, open, and folded postures, saturated 160 ms pulses reached about 10 rad/s joint speed and paired commands about 14.1-14.2 rad/s; single-joint cross-joint speeds were roughly 0.09-0.16 rad/s. A 20 ms half-command pulse displaced the endpoint 2.63-3.20 cm and met the measurement settling criterion after about 0.126-0.132 s. A 0.8 s zero-command free-decay trial reduced the imposed 1.166 rad/s joint-speed norm to below 1e-14 of its initial value in all three postures. Interpretation: the compiled system has substantial actuation and strong passive decay, so the physical plant is not presently shown to be authority-limited or intrinsically unable to stabilize; however, the large transient speeds and 20 ms action holding can still make policy braking and entry timing decisive. The controlled traces do not distinguish reach from hold failures because no learned policy was run, do not cover the official radius-angle panel, do not record contacts or continuous tolerance excursions, and use representative rather than IK-swept postures. Competing explanations remain: (1) a baseline policy can reach and hold once trained on the relevant geometry, making exposure/generalization the main gap; (2) the baseline reaches but overshoots or interrupts the sampled hold, making terminal velocity-aware regulation the main gap; or (3) branch/inner-radius geometry creates selective failures despite adequate local dynamics. M2 supports treating explanation (1)/(2)/(3) as unresolved rather than selecting a control intervention from plant data alone.",
+        "decision_frontier": "The next direction is determined by learned-policy behavior, not by the controlled plant response alone: under a fixed fresh baseline recipe, are official-distribution failures predominantly no-reach, late hold interruptions, or inner-radius/branch-specific failures? Discriminating evidence is a research evaluation of a trained candidate with per-episode first-reach step, maximum held steps, interruptions, final/minimum distance, target radius and angle, plus branch-relevant stratification. Findings that would redirect the work: reach failures concentrated at 0.06-0.14 m or one branch support exposure/branch-aware trajectory work; early entry followed by short holds and high terminal motion support velocity-aware/local regulation; broadly distributed failures despite stable physical responses would make learning method or observation/reward design the next question. M2's settling and decay thresholds are diagnostic conventions, not the official 1 cm/100-check criterion, so they cannot substitute for this policy measurement.",
+        "evidence_references": [
+          "M1",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. M1 verified the new measurement path, and M2 characterized the physical mechanisms that a learned policy must exploit; neither operation measured learned-policy success, so they advance diagnosis but do not narrow the goal gap to a percentage.",
+        "next_direction_or_closure": "Startup is complete. At goal review, compare the cost and expected information of training and evaluating a fresh baseline against further plant characterization. The credible immediate route is to obtain a baseline candidate and measure it with failure-mode diagnostics before changing the learning recipe; keep dynamic characterization as supporting evidence and revisit it only if policy traces implicate terminal braking or branch/contact mechanics.",
+        "next_question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidates exist; working, best-known, and retained roles are empty. M1 is an implementation-check measurement and M2 is a controlled physical-characterization measurement, not a policy candidate.",
+        "completed_operations": [
+          "M1",
+          "M2"
+        ],
+        "cumulative_resource_use": "Two completed measurement operations: M1 short behavioral compatibility check and M2 deterministic physical characterization. No training steps, policy candidates, official assessment, or inquiry allocation have been used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated. It is unknown whether the first candidate will fail mainly before entering the 1 cm region, during the uninterrupted hold, or selectively on inner-radius/folded targets and angular sectors. Therefore the campaign has no evidence-backed development success rate and cannot request official assessment.",
+        "current_synthesis": "Observed evidence: M1 passed all controlled implementation checks: zero-command equilibrium was exact, a bounded command changed state, repeated transitions matched to 0, and resets correctly reached extended, open, and folded configurations. M2 measured the compiled model as 2 ms explicit Euler with Newton solver, two joints each with 0.5 N m s damping and 0.01 kg m^2 armature, and two 5 N m nominal motor limits. Across representative extended, open, and folded postures, saturated 160 ms pulses reached about 10 rad/s joint speed and paired commands about 14.1-14.2 rad/s; single-joint cross-joint speeds were roughly 0.09-0.16 rad/s. A 20 ms half-command pulse displaced the endpoint 2.63-3.20 cm and met the measurement settling criterion after about 0.126-0.132 s. A 0.8 s zero-command free-decay trial reduced the imposed 1.166 rad/s joint-speed norm to below 1e-14 of its initial value in all three postures. Interpretation: the compiled system has substantial actuation and strong passive decay, so the physical plant is not presently shown to be authority-limited or intrinsically unable to stabilize; however, the large transient speeds and 20 ms action holding can still make policy braking and entry timing decisive. The controlled traces do not distinguish reach from hold failures because no learned policy was run, do not cover the official radius-angle panel, do not record contacts or continuous tolerance excursions, and use representative rather than IK-swept postures. Competing explanations remain: (1) a baseline policy can reach and hold once trained on the relevant geometry, making exposure/generalization the main gap; (2) the baseline reaches but overshoots or interrupts the sampled hold, making terminal velocity-aware regulation the main gap; or (3) branch/inner-radius geometry creates selective failures despite adequate local dynamics. M2 supports treating explanation (1)/(2)/(3) as unresolved rather than selecting a control intervention from plant data alone.",
+        "decision_frontier": "The next direction is determined by learned-policy behavior, not by the controlled plant response alone: under a fixed fresh baseline recipe, are official-distribution failures predominantly no-reach, late hold interruptions, or inner-radius/branch-specific failures? Discriminating evidence is a research evaluation of a trained candidate with per-episode first-reach step, maximum held steps, interruptions, final/minimum distance, target radius and angle, plus branch-relevant stratification. Findings that would redirect the work: reach failures concentrated at 0.06-0.14 m or one branch support exposure/branch-aware trajectory work; early entry followed by short holds and high terminal motion support velocity-aware/local regulation; broadly distributed failures despite stable physical responses would make learning method or observation/reward design the next question. M2's settling and decay thresholds are diagnostic conventions, not the official 1 cm/100-check criterion, so they cannot substitute for this policy measurement.",
+        "evidence_references": [
+          "M1",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. M1 verified the new measurement path, and M2 characterized the physical mechanisms that a learned policy must exploit; neither operation measured learned-policy success, so they advance diagnosis but do not narrow the goal gap to a percentage.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Startup is complete. At goal review, compare the cost and expected information of training and evaluating a fresh baseline against further plant characterization. The credible immediate route is to obtain a baseline candidate and measure it with failure-mode diagnostics before changing the learning recipe; keep dynamic characterization as supporting evidence and revisit it only if policy traces implicate terminal braking or branch/contact mechanics.",
+        "next_question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "42e09a3c-1f3c-4352-b779-9f9697d2e066",
+        "campaign_id": "4702776a-0b97-4740-85d4-a1b52a96b10a",
+        "campaign_usage": "5m15s | 7.34 AIU | prompt 640.5k (84% cached) | output 31.1k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m23s | 3.17 AIU | prompt 203.2k (81% cached) | output 15.5k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "45ad871566653b0e7ef66e116ca667b040ae82a7",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidates exist; working, best-known, and retained roles are empty. M1 is an implementation-check measurement and M2 is a controlled physical-characterization measurement, not a policy candidate.",
+        "completed_operations": [
+          "M1",
+          "M2"
+        ],
+        "cumulative_resource_use": "Two completed measurement operations: M1 short behavioral compatibility check and M2 deterministic physical characterization. No training steps, policy candidates, official assessment, or inquiry allocation have been used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated. It is unknown whether the first candidate will fail mainly before entering the 1 cm region, during the uninterrupted hold, or selectively on inner-radius/folded targets and angular sectors. Therefore the campaign has no evidence-backed development success rate and cannot request official assessment.",
+        "current_synthesis": "Observed evidence: M1 passed all controlled implementation checks: zero-command equilibrium was exact, a bounded command changed state, repeated transitions matched to 0, and resets correctly reached extended, open, and folded configurations. M2 measured the compiled model as 2 ms explicit Euler with Newton solver, two joints each with 0.5 N m s damping and 0.01 kg m^2 armature, and two 5 N m nominal motor limits. Across representative extended, open, and folded postures, saturated 160 ms pulses reached about 10 rad/s joint speed and paired commands about 14.1-14.2 rad/s; single-joint cross-joint speeds were roughly 0.09-0.16 rad/s. A 20 ms half-command pulse displaced the endpoint 2.63-3.20 cm and met the measurement settling criterion after about 0.126-0.132 s. A 0.8 s zero-command free-decay trial reduced the imposed 1.166 rad/s joint-speed norm to below 1e-14 of its initial value in all three postures. Interpretation: the compiled system has substantial actuation and strong passive decay, so the physical plant is not presently shown to be authority-limited or intrinsically unable to stabilize; however, the large transient speeds and 20 ms action holding can still make policy braking and entry timing decisive. The controlled traces do not distinguish reach from hold failures because no learned policy was run, do not cover the official radius-angle panel, do not record contacts or continuous tolerance excursions, and use representative rather than IK-swept postures. Competing explanations remain: (1) a baseline policy can reach and hold once trained on the relevant geometry, making exposure/generalization the main gap; (2) the baseline reaches but overshoots or interrupts the sampled hold, making terminal velocity-aware regulation the main gap; or (3) branch/inner-radius geometry creates selective failures despite adequate local dynamics. M2 supports treating explanation (1)/(2)/(3) as unresolved rather than selecting a control intervention from plant data alone.",
+        "decision_frontier": "The next direction is determined by learned-policy behavior, not by the controlled plant response alone: under a fixed fresh baseline recipe, are official-distribution failures predominantly no-reach, late hold interruptions, or inner-radius/branch-specific failures? Discriminating evidence is a research evaluation of a trained candidate with per-episode first-reach step, maximum held steps, interruptions, final/minimum distance, target radius and angle, plus branch-relevant stratification. Findings that would redirect the work: reach failures concentrated at 0.06-0.14 m or one branch support exposure/branch-aware trajectory work; early entry followed by short holds and high terminal motion support velocity-aware/local regulation; broadly distributed failures despite stable physical responses would make learning method or observation/reward design the next question. M2's settling and decay thresholds are diagnostic conventions, not the official 1 cm/100-check criterion, so they cannot substitute for this policy measurement.",
+        "evidence_references": [
+          "M1",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. M1 verified the new measurement path, and M2 characterized the physical mechanisms that a learned policy must exploit; neither operation measured learned-policy success, so they advance diagnosis but do not narrow the goal gap to a percentage.",
+        "next_direction_or_closure": "Startup is complete. At goal review, compare the cost and expected information of training and evaluating a fresh baseline against further plant characterization. The credible immediate route is to obtain a baseline candidate and measure it with failure-mode diagnostics before changing the learning recipe; keep dynamic characterization as supporting evidence and revisit it only if policy traces implicate terminal braking or branch/contact mechanics.",
+        "next_question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?"
+      }
+    },
+    "request_fingerprint": "b7a60fe78a92fb247c4f70f2f2c5cc139a56c64644c8d2c2e18e58db2b59bc12",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No training candidates exist; working, best-known, and retained roles are empty. M1 is an implementation-check measurement and M2 is a controlled physical-characterization measurement, not a policy candidate.",
+    "completed_operations": [
+      "M1",
+      "M2"
+    ],
+    "cumulative_resource_use": "Two completed measurement operations: M1 short behavioral compatibility check and M2 deterministic physical characterization. No training steps, policy candidates, official assessment, or inquiry allocation have been used.",
+    "current_goal_gap": "No learned candidate has been trained or evaluated. It is unknown whether the first candidate will fail mainly before entering the 1 cm region, during the uninterrupted hold, or selectively on inner-radius/folded targets and angular sectors. Therefore the campaign has no evidence-backed development success rate and cannot request official assessment.",
+    "current_synthesis": "Observed evidence: M1 passed all controlled implementation checks: zero-command equilibrium was exact, a bounded command changed state, repeated transitions matched to 0, and resets correctly reached extended, open, and folded configurations. M2 measured the compiled model as 2 ms explicit Euler with Newton solver, two joints each with 0.5 N m s damping and 0.01 kg m^2 armature, and two 5 N m nominal motor limits. Across representative extended, open, and folded postures, saturated 160 ms pulses reached about 10 rad/s joint speed and paired commands about 14.1-14.2 rad/s; single-joint cross-joint speeds were roughly 0.09-0.16 rad/s. A 20 ms half-command pulse displaced the endpoint 2.63-3.20 cm and met the measurement settling criterion after about 0.126-0.132 s. A 0.8 s zero-command free-decay trial reduced the imposed 1.166 rad/s joint-speed norm to below 1e-14 of its initial value in all three postures. Interpretation: the compiled system has substantial actuation and strong passive decay, so the physical plant is not presently shown to be authority-limited or intrinsically unable to stabilize; however, the large transient speeds and 20 ms action holding can still make policy braking and entry timing decisive. The controlled traces do not distinguish reach from hold failures because no learned policy was run, do not cover the official radius-angle panel, do not record contacts or continuous tolerance excursions, and use representative rather than IK-swept postures. Competing explanations remain: (1) a baseline policy can reach and hold once trained on the relevant geometry, making exposure/generalization the main gap; (2) the baseline reaches but overshoots or interrupts the sampled hold, making terminal velocity-aware regulation the main gap; or (3) branch/inner-radius geometry creates selective failures despite adequate local dynamics. M2 supports treating explanation (1)/(2)/(3) as unresolved rather than selecting a control intervention from plant data alone.",
+    "decision_frontier": "The next direction is determined by learned-policy behavior, not by the controlled plant response alone: under a fixed fresh baseline recipe, are official-distribution failures predominantly no-reach, late hold interruptions, or inner-radius/branch-specific failures? Discriminating evidence is a research evaluation of a trained candidate with per-episode first-reach step, maximum held steps, interruptions, final/minimum distance, target radius and angle, plus branch-relevant stratification. Findings that would redirect the work: reach failures concentrated at 0.06-0.14 m or one branch support exposure/branch-aware trajectory work; early entry followed by short holds and high terminal motion support velocity-aware/local regulation; broadly distributed failures despite stable physical responses would make learning method or observation/reward design the next question. M2's settling and decay thresholds are diagnostic conventions, not the official 1 cm/100-check criterion, so they cannot substitute for this policy measurement.",
+    "evidence_references": [
+      "M1",
+      "M2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s hold. M1 verified the new measurement path, and M2 characterized the physical mechanisms that a learned policy must exploit; neither operation measured learned-policy success, so they advance diagnosis but do not narrow the goal gap to a percentage.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Startup is complete. At goal review, compare the cost and expected information of training and evaluating a fresh baseline against further plant characterization. The credible immediate route is to obtain a baseline candidate and measure it with failure-mode diagnostics before changing the learning recipe; keep dynamic characterization as supporting evidence and revisit it only if policy traces implicate terminal braking or branch/contact mechanics.",
+    "next_question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?",
+    "scientific_commit": "45ad871566653b0e7ef66e116ca667b040ae82a7",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "79674d93db81439f0f77067eb92ed6856ae64c3c",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "42e09a3c-1f3c-4352-b779-9f9697d2e066",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1",
-      "M2"
-    ],
-    "scientific_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
