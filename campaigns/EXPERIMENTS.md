@@ -110,3 +110,4 @@
 | E61 | checkpoint | - | checkpointed |
 | M36 | measurement | I15 | failed |
 | M37 | measurement | I15 | completed |
+| T11 | training | I15 | completed |
