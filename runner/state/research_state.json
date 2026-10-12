@@ -841,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 7,
+    "measurement": 8,
     "session": 3,
     "training": 1
   },
@@ -2657,9 +2657,1261 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M6"
+    },
+    {
+      "completed_at": "2026-10-12T08:27:03Z",
+      "error": null,
+      "id": "M8",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Apply the validated mechanism analyzer to the preserved M4 development evaluation artifact, producing exact reach-versus-hold failure counts stratified by official target radius and angle plus branch occupancy and attribution summaries.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M4 mechanism analysis",
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "rationale": "The active inquiry requires discriminating no-reach failures from sampled-hold failures and testing whether failures concentrate in the omitted inner-radius or branch geometry. M4 contains the required schema-6 per-episode outcomes and diagnostics; M7 independently verified the analyzer on controlled synthetic inputs, including boundary and malformed-artifact cases. This is a development-artifact analysis and cannot certify the protected official panel or establish causality."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M4 mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M8-1-m4_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evidence_status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reached_failure_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/validated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/validated_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-180,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-90,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[0,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[90,180]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/overall",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[14,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/max_held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/branch_summaries/failures/branch_at_first_reach",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "9a821a4a8734fd5f7bcb93814c770cc8adc25ab214946ce1b30378e49d876a35"
+            },
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ef3a9db131653d6781a8d72348f2a248b5896f52",
+            "fingerprint": "45319bc5bc0a4612841117524598bba431ea4736f637440090e01b0a6f432279",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_research_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/m4_mechanism_analysis.json",
+          "instrument": "python_module",
+          "label": "M4 mechanism analysis",
+          "module": "robot_learning.lab.analyze_research_evaluation"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+            "path": "robot_learning/lab/analyze_research_evaluation.py"
+          },
+          {
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          },
+          {
+            "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+            "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+          },
+          {
+            "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "ef3a9db131653d6781a8d72348f2a248b5896f52",
+          "fingerprint": "45319bc5bc0a4612841117524598bba431ea4736f637440090e01b0a6f432279",
+          "manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+            "path": "robot_learning/lab/analyze_research_evaluation.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_research_evaluation.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+            "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "M4 mechanism analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M8-1-m4_mechanism_analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 11,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis",
+                  "type": "string"
+                },
+                {
+                  "path": "/analysis_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/angle_sectors",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/branch_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/evidence_status",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/radius_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reached_failure_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/source_artifact",
+                  "type": "string"
+                },
+                {
+                  "path": "/validated_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/validated_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[-180,-90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[-90,0)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[0,90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_sectors/[90,180]",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/branch_summaries/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/branch_summaries/overall",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[10,14)",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[14,20]",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radius_bins/[6,10)",
+                  "type": "object"
+                },
+                {
+                  "path": "/reached_failure_summaries/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/reached_failure_summaries/hold_interruptions",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/reached_failure_summaries/max_held_steps",
+                  "type": "object"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-180,-90)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[-90,0)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[0,90)/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/denominator",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/failure_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/angle_sectors/[90,180]/successes",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/branch_summaries/failures/branch_at_first_reach",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "9a821a4a8734fd5f7bcb93814c770cc8adc25ab214946ce1b30378e49d876a35"
+          },
+          "module": "robot_learning.lab.analyze_research_evaluation"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "M4 mechanism analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M8-1-m4_mechanism_analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 11,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/angle_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evidence_status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reached_failure_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/validated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/validated_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-180,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[-90,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[0,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_sectors/[90,180]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/branch_summaries/overall",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[10,14)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[14,20]",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radius_bins/[6,10)",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reached_failure_summaries/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reached_failure_summaries/max_held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-180,-90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[-90,0)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[0,90)/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/denominator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failure_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/sampled_hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/angle_sectors/[90,180]/successes",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/branch_summaries/failures/branch_at_first_reach",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "9a821a4a8734fd5f7bcb93814c770cc8adc25ab214946ce1b30378e49d876a35"
+            },
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            },
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+              "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ef3a9db131653d6781a8d72348f2a248b5896f52",
+            "fingerprint": "45319bc5bc0a4612841117524598bba431ea4736f637440090e01b0a6f432279",
+            "manifest": [
+              {
+                "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+                "path": "robot_learning/lab/analyze_research_evaluation.py"
+              },
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
+                "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+              "path": "robot_learning/lab/analyze_research_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_research_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M8",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Apply the validated mechanism analyzer to the preserved M4 development evaluation artifact, producing exact reach-versus-hold failure counts stratified by official target radius and angle plus branch occupancy and attribution summaries.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\evaluation-4702776a-0b97-4740-85d4-a1b52a96b10a-m4-T1-checkpoint-115712-200ep-seed100000-24695375dec2.json",
+              "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json"
+            ],
+            "artifact": "campaigns\\evaluations\\4702776a-0b97-4740-85d4-a1b52a96b10a\\m4_mechanism_analysis.json",
+            "instrument": "python_module",
+            "label": "M4 mechanism analysis",
+            "module": "robot_learning.lab.analyze_research_evaluation"
+          }
+        ],
+        "rationale": "The active inquiry requires discriminating no-reach failures from sampled-hold failures and testing whether failures concentrate in the omitted inner-radius or branch geometry. M4 contains the required schema-6 per-episode outcomes and diagnostics; M7 independently verified the analyzer on controlled synthetic inputs, including boundary and malformed-artifact cases. This is a development-artifact analysis and cannot certify the protected official panel or establish causality."
+      }
+    },
+    "request_fingerprint": "51ca62c37bcdf6b99570714a6dcb5f95f194132b5cd42c1b6b021e419e0e9675",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists and working, best-known, and retained roles remain empty. E2 is an inquiry boundary, not a policy candidate; M1 and M2 are measurements and cannot fill a candidate role.",
     "completed_operations": [
@@ -2702,7 +3954,8 @@
       "T1",
       "M3",
       "M4",
-      "M7"
+      "M7",
+      "M8"
     ],
     "scientific_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d"
   },
