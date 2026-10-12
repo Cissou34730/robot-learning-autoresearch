@@ -1,22 +1,32 @@
 # Review of complexity in reusable infrastructure
 
 Date: 2026-10-12.
+Updated: 2026-10-13.
 
 **Judgment: SIMPLIFY.**
 
 The two reviews identify three local cleanup opportunities and five opportunities from the broader architecture review.
 Four architecture findings concern repeated rules, repeated plans, or duplicate history updates.
 The fifth architecture finding concerns duplicate prompt content.
+The additional review identifies two modules and two functions that concentrate too many responsibilities.
+These findings overlap with some architecture findings.
+They do not represent four additional execution defects.
 
 The initial review did not examine the architecture deeply enough to justify its broad conclusion.
 The second review changes that conclusion.
 Several layers meet explicit requirements, but repeated responsibility creates unnecessary maintenance work.
+The first two reviews omitted a separate assessment of responsibility concentration.
+That omission did not establish the absence of god modules or god functions.
 
 ## Scope and limits
 
-This document combines both reviews.
+This document combines both reviews and the additional assessment of modules and functions.
 The reviews examine reusable infrastructure, launchers, contracts, agent runtimes, evidence tools, and maintainer utilities.
 The reviews exclude campaign commits, campaign results, campaign reports, and campaign-specific scientific changes.
+
+The initial and architecture findings record the 2026-10-12 review.
+The additional findings record the 2026-10-13 inspection.
+Later source changes can alter the status of a finding.
 
 The review uses static source inspection and traces calls between components.
 The review does not execute tests, training, or evaluation.
@@ -51,6 +61,11 @@ The review applies these methods:
 | Coding child | The scoped Copilot agent that can edit authorized scientific files. |
 | Finding | An issue that the review supports through source evidence. |
 | Pending operation | An accepted operation that Runner must execute, complete, or recover. |
+| God module | A module that concentrates distinct responsibilities and makes separate changes depend on the same implementation. |
+| God function | A function that mixes distinct responsibilities and their state, which obscures control flow and ownership. |
+| Coordinator | A function that orders stages and retains control of their shared transaction. |
+| Event handling | The code that receives runtime events and applies the corresponding actions. |
+| Usage accounting | The calculation of token and cost totals for a runtime session. |
 
 ### Evidence categories
 
@@ -61,6 +76,7 @@ The review does not establish that result through execution.
 
 **Hypotheses:** Fewer rule definitions can reduce future inconsistencies.
 Fewer history writers can reduce recovery work.
+Clear responsibility boundaries can make changes easier to understand and check.
 The review does not quantify these benefits.
 
 ## Findings from the initial review
@@ -233,6 +249,102 @@ Keep the brief available as durable context.
 Retain both payloads when they express different information.
 The source shows duplicate content, but the review does not establish an effect on scientific decisions.
 
+## Additional findings on modules and functions
+
+Size alone does not establish a god module or god function.
+These findings use the responsibilities and shared state visible in the source.
+The module findings provide stronger evidence for separation than the function findings.
+A coordinator can legitimately connect several required stages.
+Extract helpers only when the change clarifies ownership or reduces shared state.
+
+### G1. The repository module combines several independent responsibilities
+
+**Issue:** `repository.py` combines Git publication, stored-state validation, lifecycle updates, history presentation, and artifact management.
+These responsibilities change for different reasons, but their implementations occupy the same module.
+This is the strongest god-module finding.
+
+**Evidence:** [repository.py](C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/runner/repository.py) implements `git`, `commit_paths`, and `publish_scientific_recipe`.
+The same module defines state fields and validates pending requests, completed results, and the complete state.
+It also implements `start_scientific_session`, `render_operation_log`, `publish_artifact`, and `archive_candidates`.
+Those functions span publication policy, data contracts, lifecycle decisions, presentation, and filesystem changes.
+
+**Simplification:** Separate stored-state validation and its field definitions as the first change.
+Keep durable state writes and publication order explicit in their current coordinator.
+Resolve duplicate history ownership from A3 before further changes to history storage.
+
+**Trade-off:** A new module adds an import boundary.
+The change has value only if that boundary separates responsibilities without circular imports or duplicate rules.
+Preserve checks that connect state records to artifacts and completed events.
+A change in file location alone does not resolve A3 or A4.
+
+### G2. The Copilot adapter combines policy, presentation, and runtime supervision
+
+**Issue:** `copilot_adapter.py` concentrates distinct concerns around the SDK integration.
+Console presentation and permission rules share a module with coding-child supervision and operation submission.
+
+**Evidence:** [copilot_adapter.py](C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/runner/copilot_adapter.py) defines console formatters and the `Console` class.
+It also defines `is_pi_writable_path`, `command_denial`, scoped hooks, and read restrictions.
+`ScientificCoding` manages child authorization, reports, changes, and cancellation.
+`OperationSubmission` manages controller requests and waits.
+`run` and `serve` manage SDK sessions and the persistent runtime.
+
+**Simplification:** Separate Copilot console presentation from runtime supervision.
+Resolve shared ownership rules from A2 before a separate change to permission policy.
+Keep SDK-specific session and coding-child behavior in the adapter.
+
+**Trade-off:** Event handling connects console output, usage accounting, and runtime state.
+Preserve event order and the state that each handler requires.
+Preserve independent authorization checks at each trust boundary.
+Do not replace native backend behavior with a common provider framework.
+
+### G3. Measurement execution mixes instrument work and transaction coordination
+
+**Issue:** `execute_measurement` combines several substantial stages and their state in one function.
+The function is a strong candidate for responsibility separation.
+
+**Evidence:** [execute_measurement](C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/runner/run_experiment.py:993) checks frozen contracts and source provenance.
+It publishes scientific sources and laboratory tools when required.
+It executes three instrument paths and seals module artifacts.
+It validates recovered partial results and saves durable progress.
+
+The same function verifies completed evidence and constructs paired comparisons.
+It then updates candidate references and completes the operation.
+Instrument-specific work, evidence assembly, and transaction coordination therefore share one control flow.
+
+**Simplification:** Extract instrument execution into explicit helpers.
+Extract paired-comparison construction into a separate helper.
+Keep one coordinator responsible for stage order, partial-result persistence, interruption, and completion.
+
+**Trade-off:** Preserve the exact durable boundaries between stages.
+Preserve reuse of sealed artifacts and completed partial results after interruption.
+Return explicit results from helpers.
+Avoid additional hidden mutations.
+Do not remove integrity checks to shorten the function.
+
+### G4. OpenCode session execution mixes supervision and event presentation
+
+**Issue:** OpenCode's `run` function combines session supervision with console events, permissions, and usage accounting.
+Nested handlers share mutable state across these concerns.
+The function is a strong candidate for responsibility separation.
+
+**Evidence:** [run](C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/researcher_opencode/src/adapter.ts:470) creates or connects to a server and resolves the session.
+It manages stream subscription, reconnection, and checks of session completion.
+Its nested `handleEvent` handles text, tools, permissions, file changes, usage, errors, and idle events.
+
+The function also manages prompt submission, timeout, interruption, session abort, summary output, and shutdown.
+Handlers share flags, completion promises, message positions, model identity, and console state.
+That shared state makes the boundaries between supervision and presentation difficult to identify.
+
+**Simplification:** Separate console event handling and usage accounting from session supervision.
+Pass the required state explicitly.
+Keep completion decisions, reconnection, cancellation, and cleanup under one supervisor.
+
+**Trade-off:** Preserve stream subscription before prompt submission.
+Preserve message baselines for resumed sessions and suppression of late output.
+Keep permission handling active while the session runs.
+Retain the distinction between timeout and an unknown session outcome.
+An extraction that merely relocates the same shared state does not simplify the design.
+
 ## Complexity that serves explicit requirements
 
 The broader review does not justify removal of these mechanisms merely because they contain substantial code:
@@ -248,8 +360,9 @@ The broader review does not justify removal of these mechanisms merely because t
 | Recoverable reset backups | Preserve ignored measurements and support repair after interruption. |
 
 These requirements justify distinct checks at different trust boundaries.
-The findings concern repeated rule definitions or repeated work within those boundaries.
+The findings concern repeated rules, repeated work, and excessive concentration of responsibilities.
 They do not establish that all repeated checks are unnecessary.
+Required behavior does not justify every current module or function boundary.
 
 ## Recommended order
 
@@ -259,11 +372,17 @@ They do not establish that all repeated checks are unnecessary.
 4. Reuse checked plans within one acceptance pass.
 5. Remove identical prompt payloads.
 6. Consolidate history updates as a separate change.
+7. Separate stored-state validation from repository operations.
+8. Separate Copilot presentation and policy after shared rules have one definition.
+9. Separate measurement instrument work and comparison construction from transaction coordination.
+10. Separate OpenCode event presentation and accounting from session supervision.
 
 Use the current Runner validation for each affected behavior.
 Keep checks proportional to each change.
 Require interruption and publication checks before adoption of the history change.
+Check stage order and cancellation behavior after changes to coordinator boundaries.
+Avoid duplicate helpers when architectural changes already address the same responsibility.
 The review does not require a new framework, a new backend abstraction, or a repository-wide rewrite.
 
-**SIMPLIFY.** Remove repeated responsibility.
+**SIMPLIFY.** Remove repeated responsibility and clarify boundaries around concentrated responsibilities.
 Preserve required behavior, ownership enforcement, artifact integrity, and recovery.
