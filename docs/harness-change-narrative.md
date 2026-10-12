@@ -672,15 +672,15 @@ completion metadata and evidence-query semantics remain unchanged. Ordinary,
 reset and recovery publication exclude raw measurements. Git continues to
 publish compact results, artifact identities, source and campaign state.
 Push errors retain the underlying Git detail. A baseline source now requires
-completed measurement records in its versioned state ancestry and matching
+completed measurement records in retained versioned state references and matching
 local raw files. This preserves reuse of an imported baseline without a new
 state schema or artifact registry. Reset backup
 preserves that ignored archive and restores the selected baseline files.
 Git alone is not a complete measurement-data backup.
 
-Validation passed 33 assertions with real small local artifacts and inert Git
+Validation passed 35 assertions with real small local artifacts and inert Git
 calls. The checks cover publication scopes, ignored-file query access,
-fingerprint rejection, baseline reuse through existing schema-6 ancestry,
+fingerprint rejection, baseline reuse through retained schema-6 references,
 backup preservation and explicit push errors. Both touched modules compile
 and pass targeted lint. A temporary Git fixture could not initialize because
 permission was denied; no environment repair was attempted. No production

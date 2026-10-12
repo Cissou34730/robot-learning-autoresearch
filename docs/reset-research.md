@@ -26,7 +26,9 @@ or from historical scientific code.
 The Git reference must contain one prepared schema-6 candidate designated as
 both working and best-known, with a ready scientific model. Completed
 measurement records for its evaluation artifacts must exist in that reference
-or its versioned schema-6 state ancestry. This permits reuse of an imported
+or retained versioned schema-6 state references. The lookup matches the exact
+selected candidate and artifact paths and does not accept other schemas.
+This permits reuse of an imported
 baseline whose new campaign starts with empty operation history.
 Those raw artifacts must
 also exist in the local archive and match their recorded fingerprints.

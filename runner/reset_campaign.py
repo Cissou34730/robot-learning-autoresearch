@@ -490,7 +490,7 @@ def baseline_restore_paths(
             git(
                 "log",
                 "--format=%H",
-                "--first-parent",
+                "--all",
                 "--diff-filter=AM",
                 commit,
                 "--",
@@ -505,7 +505,7 @@ def baseline_restore_paths(
                 historical_state.get("schema_version")
                 != repository.STATE_SCHEMA_VERSION
             ):
-                break
+                continue
             collect_records(historical_state)
             if len(records_by_path) == len(set(evaluation_artifacts)):
                 break
