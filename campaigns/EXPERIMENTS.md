@@ -53,3 +53,4 @@
 | E21 | inquiry | I5 | completed |
 | E22 | checkpoint | I5 | checkpointed |
 | E23 | inquiry | I6 | completed |
+| E24 | checkpoint | - | checkpointed |
