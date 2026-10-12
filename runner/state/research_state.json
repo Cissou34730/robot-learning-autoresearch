@@ -1380,6 +1380,393 @@
       "status": "failed",
       "superseded_by": "M9",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:31:52Z",
+      "error": null,
+      "id": "M9",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Controlled verification of I1 training exposure and candidate-diagnostic behavior.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json",
+            "instrument": "python_module",
+            "label": "I1 candidate diagnostics controlled verification",
+            "module": "robot_learning.lab.verify_candidate_diagnostics"
+          }
+        ],
+        "rationale": "Before the full candidate run, verify the exact engineering predicates on which the planned scientific measurement depends: official radial exposure, repeated episode transitions and resets, explicit diagnostic units, bounded-action saturation detection, and distinct analytical IK/range strata. This check is not evidence of policy capability or scientific validity; it prevents an implementation defect from masquerading as a candidate result."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 candidate diagnostics controlled verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M9-1-verify_candidate_diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/training",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed/behavior",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/training_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/diagnostics_for_each_episode",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/bounded_action_saturated",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reachable_and_infeasible_strata_distinct",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/expected_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/constant_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/constructed_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/geometry/reachable",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable_measured_label",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/geometry/limit_infeasible",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/behavior/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/resets",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/runtime_resets",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/runtime_predictions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "action_saturated",
+                      "action_saturation",
+                      "branch_feasibility",
+                      "endpoint_speed_final_m_per_s",
+                      "endpoint_speed_peak_m_per_s",
+                      "endpoint_velocity",
+                      "endpoint_velocity_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "geometry_strata",
+                      "hold_interruption_count",
+                      "hold_interruptions",
+                      "ik_branches",
+                      "in_tolerance_steps",
+                      "joint_speed_final_rad_per_s",
+                      "joint_speed_peak_rad_per_s",
+                      "joint_velocity",
+                      "joint_velocity_rad_per_s",
+                      "max_held_steps",
+                      "max_uninterrupted_hold_steps",
+                      "min_distance_cm",
+                      "peak_distance_cm",
+                      "range_stratum",
+                      "target_angle_degrees",
+                      "target_angle_rad",
+                      "target_radius_cm",
+                      "target_radius_m",
+                      "trajectory_branch_counts",
+                      "trajectory_branch_label"
+                    ],
+                    "path": "/observed/behavior/diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/behavior/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/target_radius_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/target_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/reachable/branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/reachable/branches",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/range_stratum",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/target_radius_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/target_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/limit_infeasible/branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/limit_infeasible/branches",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/range_stratum",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/target_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/joint_angles",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/range_margin",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branch_feasibility/open",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branch_feasibility/folded",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry/reachable/branches/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry/reachable/branches/folded",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branches/open/feasible",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "aa0197e89c620c8275cafdf8c7784a71b829ac5aeba5a8398866e7b5e162da48"
+            },
+            "module": "robot_learning.lab.verify_candidate_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+              "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "767552aedb9a3ab83960624e3edc63428435a57a",
+            "fingerprint": "fb61766d3a61594c1a2b81156dab410698d22d6e0004b5e35ba58c2fbbd4bcfd",
+            "manifest": [
+              {
+                "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+                "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+              },
+              {
+                "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6cdbc9b264c81ea1b9c51613952897ece702aa4d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+              "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_candidate_diagnostics.py"
+          ],
+          "scientific_commit": "b105b28293dd91bbaf3c7f79b28c216511c83f43",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9d044e9175fa9a8815a45db245765f33fd83000a89b6b090c4f0121f89d79ac5",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M8"
     }
   ],
   "pending_operation": {
@@ -1412,7 +1799,24 @@
             "path": "robot_learning/lab/verify_physical_characterization.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "767552aedb9a3ab83960624e3edc63428435a57a",
+          "fingerprint": "fb61766d3a61594c1a2b81156dab410698d22d6e0004b5e35ba58c2fbbd4bcfd",
+          "manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+              "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ]
+        },
         "code_parent_commit": "6cdbc9b264c81ea1b9c51613952897ece702aa4d",
         "effective_parameters": {
           "algorithm": {
@@ -1448,7 +1852,7 @@
         "module_paths": [
           "robot_learning/lab/verify_candidate_diagnostics.py"
         ],
-        "scientific_commit": null,
+        "scientific_commit": "b105b28293dd91bbaf3c7f79b28c216511c83f43",
         "scientific_manifest": [
           {
             "exists": true,
@@ -1461,15 +1865,649 @@
         ]
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+          ],
+          "instrument": "python_module",
+          "label": "I1 candidate diagnostics controlled verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M9-1-verify_candidate_diagnostics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/training",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/geometry",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/observed/behavior",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/training_range_m",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/diagnostics_for_each_episode",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/bounded_action_saturated",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/reachable_and_infeasible_strata_distinct",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/training/expected_m",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/training/constant_m",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/training/constructed_m",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/observed/geometry/reachable",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/geometry/reachable_measured_label",
+                  "type": "string"
+                },
+                {
+                  "entries": 5,
+                  "path": "/observed/geometry/limit_infeasible",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/behavior/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/behavior/resets",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/behavior/steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/behavior/runtime_resets",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/behavior/runtime_predictions",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "action_saturated",
+                    "action_saturation",
+                    "branch_feasibility",
+                    "endpoint_speed_final_m_per_s",
+                    "endpoint_speed_peak_m_per_s",
+                    "endpoint_velocity",
+                    "endpoint_velocity_m_per_s",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "geometry_strata",
+                    "hold_interruption_count",
+                    "hold_interruptions",
+                    "ik_branches",
+                    "in_tolerance_steps",
+                    "joint_speed_final_rad_per_s",
+                    "joint_speed_peak_rad_per_s",
+                    "joint_velocity",
+                    "joint_velocity_rad_per_s",
+                    "max_held_steps",
+                    "max_uninterrupted_hold_steps",
+                    "min_distance_cm",
+                    "peak_distance_cm",
+                    "range_stratum",
+                    "target_angle_degrees",
+                    "target_angle_rad",
+                    "target_radius_cm",
+                    "target_radius_m",
+                    "trajectory_branch_counts",
+                    "trajectory_branch_label"
+                  ],
+                  "path": "/observed/behavior/diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/behavior/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/geometry/reachable/target_radius_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/geometry/reachable/target_angle_rad",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/geometry/reachable/branch_feasibility",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/geometry/reachable/branches",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/geometry/reachable/range_stratum",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/geometry/limit_infeasible/target_radius_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/geometry/limit_infeasible/target_angle_rad",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/geometry/limit_infeasible/branch_feasibility",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/geometry/limit_infeasible/branches",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/geometry/limit_infeasible/range_stratum",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/target_radius",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/target_angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/joint_angles",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/range_margin",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/behavior/units/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/geometry/reachable/branch_feasibility/open",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/geometry/reachable/branch_feasibility/folded",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/geometry/reachable/branches/open",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/geometry/reachable/branches/folded",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/geometry/reachable/branches/open/feasible",
+                  "type": "boolean"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "aa0197e89c620c8275cafdf8c7784a71b829ac5aeba5a8398866e7b5e162da48"
+          },
+          "module": "robot_learning.lab.verify_candidate_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 candidate diagnostics controlled verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M9-1-verify_candidate_diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/training",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed/behavior",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/training_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/diagnostics_for_each_episode",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/bounded_action_saturated",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/reachable_and_infeasible_strata_distinct",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/expected_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/constant_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training/constructed_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/geometry/reachable",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable_measured_label",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/geometry/limit_infeasible",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/behavior/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/resets",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/runtime_resets",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/behavior/runtime_predictions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "action_saturated",
+                      "action_saturation",
+                      "branch_feasibility",
+                      "endpoint_speed_final_m_per_s",
+                      "endpoint_speed_peak_m_per_s",
+                      "endpoint_velocity",
+                      "endpoint_velocity_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "geometry_strata",
+                      "hold_interruption_count",
+                      "hold_interruptions",
+                      "ik_branches",
+                      "in_tolerance_steps",
+                      "joint_speed_final_rad_per_s",
+                      "joint_speed_peak_rad_per_s",
+                      "joint_velocity",
+                      "joint_velocity_rad_per_s",
+                      "max_held_steps",
+                      "max_uninterrupted_hold_steps",
+                      "min_distance_cm",
+                      "peak_distance_cm",
+                      "range_stratum",
+                      "target_angle_degrees",
+                      "target_angle_rad",
+                      "target_radius_cm",
+                      "target_radius_m",
+                      "trajectory_branch_counts",
+                      "trajectory_branch_label"
+                    ],
+                    "path": "/observed/behavior/diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/behavior/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/target_radius_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/target_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/reachable/branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/reachable/branches",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/range_stratum",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/target_radius_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/target_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/limit_infeasible/branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/geometry/limit_infeasible/branches",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/limit_infeasible/range_stratum",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/target_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/joint_angles",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/range_margin",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/behavior/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branch_feasibility/open",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branch_feasibility/folded",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry/reachable/branches/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/geometry/reachable/branches/folded",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/geometry/reachable/branches/open/feasible",
+                    "type": "boolean"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "aa0197e89c620c8275cafdf8c7784a71b829ac5aeba5a8398866e7b5e162da48"
+            },
+            "module": "robot_learning.lab.verify_candidate_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+              "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "767552aedb9a3ab83960624e3edc63428435a57a",
+            "fingerprint": "fb61766d3a61594c1a2b81156dab410698d22d6e0004b5e35ba58c2fbbd4bcfd",
+            "manifest": [
+              {
+                "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+                "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+              },
+              {
+                "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6cdbc9b264c81ea1b9c51613952897ece702aa4d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+              "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_candidate_diagnostics.py"
+          ],
+          "scientific_commit": "b105b28293dd91bbaf3c7f79b28c216511c83f43",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9d044e9175fa9a8815a45db245765f33fd83000a89b6b090c4f0121f89d79ac5",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M9",
     "inquiry_id": "I1",
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Controlled verification of I1 training exposure and candidate-diagnostic behavior.",
@@ -1531,9 +2569,10 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M7"
+      "M7",
+      "M9"
     ],
-    "scientific_parent_commit": "6cdbc9b264c81ea1b9c51613952897ece702aa4d"
+    "scientific_parent_commit": "b105b28293dd91bbaf3c7f79b28c216511c83f43"
   },
   "terminal_state": null
 }
