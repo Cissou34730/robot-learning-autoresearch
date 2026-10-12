@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 1,
+    "measurement": 2,
     "session": 1,
     "training": 0
   },
@@ -179,9 +179,1282 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:11:40Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Deterministic physical characterization of compiled two-joint-arm dynamics under bounded commands, at extended/open/folded postures, with native substep and 20 ms control-block traces.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json",
+            "instrument": "python_module",
+            "label": "compiled-dynamics-authority-and-settling",
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "rationale": "The initial model identifies stabilization versus reach as the first direction-setting distinction, while compiled inertia, torque authority, coupling, damping, and folded-posture behavior remain unquantified. This controlled measurement does not train or alter the official task; it measures the mechanisms that determine whether a learned policy can brake and settle within the 1 cm tolerance at the 20 ms action rate. If responses show ample authority and rapid decay across configurations, the next direction should be baseline learning with official-exposure diagnostics; if they show saturation, strong configuration-dependent coupling, or slow settling, the next direction should prioritize velocity-aware or model-informed control and targeted measurements before interpreting policy failures."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled-dynamics-authority-and-settling",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M2-1-physical_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/deterministic",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/protocol",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_facts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/free_decay",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/endpoint_settling",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/interpretation_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/simulation_step",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/control_block",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angular_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/mass",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/command",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/protocol/repeats_per_trial",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/protocol/configuration_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/protocol/step_response",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/protocol/free_decay",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_facts/dimensions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_facts/options",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature_kg_m2",
+                      "damping_Nm_s",
+                      "name",
+                      "range_rad",
+                      "range_source_units"
+                    ],
+                    "path": "/compiled_facts/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_range_normalized",
+                      "gear",
+                      "joint",
+                      "name",
+                      "nominal_torque_at_control_limits_Nm"
+                    ],
+                    "path": "/compiled_facts/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "inertia_kg_m2_principal",
+                      "mass_kg",
+                      "name"
+                    ],
+                    "path": "/compiled_facts/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_facts/gravity_m_s2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/extended",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/open",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/folded",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/integrator_code",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/integrator",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/options/solver_code",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/solver",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/options/iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/single_elbow",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/single_elbow",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded/single_elbow",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "7cda89f9ac2a3030e65131c716d30ad663bed6b3f66169f1db1bef0435cb5ae8"
+            },
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "0de9ef02fb77f4e3d25a58a8550b632e45dbf227",
+            "fingerprint": "1712702f02d05e1133ba1f481ff9732b5e8da8372cd6751f24e90150cf82651e",
+            "manifest": [
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/physical_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+          ],
+          "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json",
+          "instrument": "python_module",
+          "label": "compiled-dynamics-authority-and-settling",
+          "module": "robot_learning.lab.physical_characterization"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "0de9ef02fb77f4e3d25a58a8550b632e45dbf227",
+          "fingerprint": "1712702f02d05e1133ba1f481ff9732b5e8da8372cd6751f24e90150cf82651e",
+          "manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ]
+        },
+        "code_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/physical_characterization.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled-dynamics-authority-and-settling",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M2-1-physical_characterization.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 10,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/deterministic",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 11,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/protocol",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/compiled_facts",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/free_decay",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/endpoint_settling",
+                  "type": "object"
+                },
+                {
+                  "path": "/interpretation_note",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/simulation_step",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/control_block",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angular_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/mass",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/inertia",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/torque",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/command",
+                  "type": "string"
+                },
+                {
+                  "path": "/protocol/repeats_per_trial",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/protocol/configuration_qpos_rad",
+                  "type": "object"
+                },
+                {
+                  "path": "/protocol/step_response",
+                  "type": "string"
+                },
+                {
+                  "path": "/protocol/free_decay",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/xml_path",
+                  "type": "string"
+                },
+                {
+                  "entries": 5,
+                  "path": "/compiled_facts/dimensions",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/compiled_facts/options",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "armature_kg_m2",
+                    "damping_Nm_s",
+                    "name",
+                    "range_rad",
+                    "range_source_units"
+                  ],
+                  "path": "/compiled_facts/joints",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "control_range_normalized",
+                    "gear",
+                    "joint",
+                    "name",
+                    "nominal_torque_at_control_limits_Nm"
+                  ],
+                  "path": "/compiled_facts/actuators",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "inertia_kg_m2_principal",
+                    "mass_kg",
+                    "name"
+                  ],
+                  "path": "/compiled_facts/bodies",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/compiled_facts/gravity_m_s2",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/extended",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/open",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/folded",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/free_decay/extended",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/free_decay/open",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/free_decay/folded",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/endpoint_settling/extended",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/endpoint_settling/open",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/endpoint_settling/folded",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/protocol/configuration_qpos_rad/extended",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/protocol/configuration_qpos_rad/open",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/protocol/configuration_qpos_rad/folded",
+                  "type": "array"
+                },
+                {
+                  "path": "/compiled_facts/dimensions/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/dimensions/nv",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/dimensions/nu",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/dimensions/njnt",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/dimensions/nbody",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/options/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/options/integrator_code",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/options/integrator",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/options/solver_code",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/options/solver",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/options/iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/options/tolerance",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/extended/single_shoulder",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/extended/single_elbow",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/extended/paired",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/open/single_shoulder",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/open/single_elbow",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/open/paired",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/folded/single_shoulder",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/step_responses/folded/single_elbow",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "7cda89f9ac2a3030e65131c716d30ad663bed6b3f66169f1db1bef0435cb5ae8"
+          },
+          "module": "robot_learning.lab.physical_characterization"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled-dynamics-authority-and-settling",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M2-1-physical_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/deterministic",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/protocol",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_facts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/free_decay",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/endpoint_settling",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/interpretation_note",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/simulation_step",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/control_block",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angular_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/mass",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/command",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/protocol/repeats_per_trial",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/protocol/configuration_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/protocol/step_response",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/protocol/free_decay",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_facts/dimensions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/compiled_facts/options",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature_kg_m2",
+                      "damping_Nm_s",
+                      "name",
+                      "range_rad",
+                      "range_source_units"
+                    ],
+                    "path": "/compiled_facts/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_range_normalized",
+                      "gear",
+                      "joint",
+                      "name",
+                      "nominal_torque_at_control_limits_Nm"
+                    ],
+                    "path": "/compiled_facts/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "inertia_kg_m2_principal",
+                      "mass_kg",
+                      "name"
+                    ],
+                    "path": "/compiled_facts/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_facts/gravity_m_s2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/free_decay/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/extended",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/endpoint_settling/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/extended",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/open",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/protocol/configuration_qpos_rad/folded",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/dimensions/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/integrator_code",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/integrator",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/options/solver_code",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/solver",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/options/iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/options/tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/single_elbow",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/extended/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/single_elbow",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/open/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded/single_shoulder",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/step_responses/folded/single_elbow",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "7cda89f9ac2a3030e65131c716d30ad663bed6b3f66169f1db1bef0435cb5ae8"
+            },
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "0de9ef02fb77f4e3d25a58a8550b632e45dbf227",
+            "fingerprint": "1712702f02d05e1133ba1f481ff9732b5e8da8372cd6751f24e90150cf82651e",
+            "manifest": [
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/physical_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Deterministic physical characterization of compiled two-joint-arm dynamics under bounded commands, at extended/open/folded postures, with native substep and 20 ms control-block traces.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/physical_characterization.json",
+            "instrument": "python_module",
+            "label": "compiled-dynamics-authority-and-settling",
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "rationale": "The initial model identifies stabilization versus reach as the first direction-setting distinction, while compiled inertia, torque authority, coupling, damping, and folded-posture behavior remain unquantified. This controlled measurement does not train or alter the official task; it measures the mechanisms that determine whether a learned policy can brake and settle within the 1 cm tolerance at the 20 ms action rate. If responses show ample authority and rapid decay across configurations, the next direction should be baseline learning with official-exposure diagnostics; if they show saturation, strong configuration-dependent coupling, or slow settling, the next direction should prioritize velocity-aware or model-informed control and targeted measurements before interpreting policy failures."
+      }
+    },
+    "request_fingerprint": "4784b7412dc09686ebb58586d8bad8df61e387b14c665bae90952d3d4e084efc",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -201,7 +1474,8 @@
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
-      "M1"
+      "M1",
+      "M2"
     ],
     "scientific_parent_commit": "dbcfa25eb4c655e38b0e7646de70a199619db6d9"
   },
