@@ -27,7 +27,7 @@ from contracts.task_spec import (
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
-from robot_learning.training.reward import reach_reward, validate_reward_variant
+from robot_learning.training.reward import reach_reward
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -42,10 +42,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        training_variant: str = "baseline",
     ) -> None:
         super().__init__()
-        self.training_variant = validate_reward_variant(training_variant)
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
@@ -73,30 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-
-    def _posture_metrics(self) -> tuple[float, float]:
-        site_id = self.model.site("end_effector").id
-        jacobian_position = np.zeros((3, self.model.nv))
-        jacobian_rotation = np.zeros((3, self.model.nv))
-        mujoco.mj_jacSite(
-            self.model,
-            self.data,
-            jacobian_position,
-            jacobian_rotation,
-            site_id,
-        )
-        planar_jacobian = jacobian_position[:2, :2]
-        condition_number = float(np.linalg.cond(planar_jacobian))
-
-        joint_margins = []
-        for joint_id in range(self.model.njnt):
-            qpos_index = self.model.jnt_qposadr[joint_id]
-            lower, upper = self.model.jnt_range[joint_id]
-            joint_position = self.data.qpos[qpos_index]
-            joint_margins.append(
-                min(joint_position - lower, upper - joint_position)
-            )
-        return condition_number, float(min(joint_margins))
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -168,14 +142,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        reward_kwargs = {}
-        if self.training_variant == "posture_limit_aware":
-            condition_number, joint_limit_margin = self._posture_metrics()
-            reward_kwargs = {
-                "jacobian_condition_number": condition_number,
-                "minimum_joint_limit_margin": joint_limit_margin,
-            }
-
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -185,8 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            reward_variant=self.training_variant,
-            **reward_kwargs,
         )
         self._previous_distance = distance
 
