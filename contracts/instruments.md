@@ -19,6 +19,12 @@ inquiry | measurement | training | checkpoint | model_role |
 restore_recipe | campaign_conclusion
 ```
 
+The SDK schema exposes these exclusive wrappers and validates their structure
+before dispatch. Runner uses the same wrapper validation, then validates
+the operation body against the active state. A flat operation record with
+`kind` and body fields is not a submission envelope. Errors identify
+missing wrappers, extra top-level fields, or a non-object body.
+
 Measurement identities use `M#`. Training identities use `T#`.
 Other event identities use `E#`.
 Evidence references must identify completed operations.
@@ -40,9 +46,10 @@ the bounded session, preserving the existing one-retry limit. Implementation
 errors retain the PI's repair authority: diagnose, use `scientific_coding` for
 source repair, review actual changes, and submit a replacement envelope or
 `{"request": null}` to reaccept the failed pending operation after repair.
-An execution failure is history, not scientific evidence. Publication failures,
-interruption, terminality and recovery-required results prohibit further
-submission in that context. The controller recovers existing accepted/completed
+An execution failure is history, not scientific evidence. `validation_fatal`,
+`controller_fatal`, publication failures, interruption, terminality and
+recovery-required results prohibit further submission and evidence queries
+in that context. The controller recovers existing accepted/completed
 transactions after channel loss; it does not blindly replay a tool call or
 fabricate checkpoint content. Main SDK resumes explicitly disable automatic
 unfinished-work continuation; the existing resume prompt includes current
@@ -83,6 +90,12 @@ session retains its existing publication interface and does not expose coding.
   included in `allowed_paths`;
 - `session_handle`: optional returned native child identity for same-change
   corrections within this bounded context.
+
+New calls require `intent`, `allowed_paths` and `verification_path`.
+Corrections may supply only `intent` and `session_handle`, with optional
+`source_context`. Omit scope fields to reuse the stored binding. Explicitly
+resubmitted fields must resolve to the same binding; changed fields reject
+with their names. A new scope requires a new PI-directed call without a handle.
 
 Protected writes, directories, wildcard scopes, operation requests and arbitrary
 filesystem paths are refused. New writable files are permitted even when their

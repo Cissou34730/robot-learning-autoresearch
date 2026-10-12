@@ -24,8 +24,9 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from runner import protocol
 from runner.stop_control import stop_request_path, stop_requested, wait_for_stop_request
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1718,14 +1719,52 @@ def build_handlers(
 
 
 class ScientificCodingParams(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "anyOf": [
+                {
+                    "required": ["allowed_paths", "verification_path"],
+                    "properties": {
+                        "allowed_paths": {"type": "array"},
+                        "verification_path": {"type": "string"},
+                        "session_handle": {"type": "null"},
+                    },
+                },
+                {
+                    "required": ["session_handle"],
+                    "properties": {"session_handle": {"type": "string"}},
+                },
+            ]
+        },
+    )
 
     intent: str = Field(min_length=1, max_length=16_000)
-    allowed_paths: list[str] = Field(min_length=1, max_length=64)
-    read_paths: list[str] = Field(default_factory=list, max_length=64)
+    allowed_paths: list[str] | None = Field(
+        default=None, min_length=1, max_length=64,
+        description="Exact writable files for a new child; omit for a correction.",
+    )
+    read_paths: list[str] | None = Field(
+        default=None, max_length=64,
+        description="Additional readable files; omit to reuse correction scope.",
+    )
     source_context: str = Field(default="", max_length=32_000)
-    verification_path: str
-    session_handle: str | None = None
+    verification_path: str | None = Field(
+        default=None, min_length=1,
+        description="Scoped lab verification module; omit for a correction.",
+    )
+    session_handle: str | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def require_initial_scope(self) -> ScientificCodingParams:
+        if not self.session_handle and (
+            self.allowed_paths is None or self.verification_path is None
+        ):
+            raise ValueError(
+                "A new coding call requires allowed_paths and verification_path. "
+                "A correction requires the returned session_handle and intent."
+            )
+        return self
 
 
 class CodingCheck(BaseModel):
@@ -1935,8 +1974,10 @@ class ScientificCoding:
             "scientific_coding",
             description=(
                 "Dispatch an SDK-native isolated scientific-coder subagent, or send "
-                "a correction to its returned session_handle for the SAME change and identical "
-                "scope. Supply scientific intent, exact repository-relative "
+                "a correction using its returned session_handle and intent for the SAME change. "
+                "Correction scope is retained internally; omit allowed_paths, read_paths "
+                "and verification_path. Explicit scope changes are rejected. "
+                "For a new child, supply scientific intent, exact repository-relative "
                 "allowed_paths, optional relevant read_paths/source_context, and "
                 "a .py verification_path under robot_learning/lab included in "
                 "allowed_paths. New writable files are permitted even when their "
@@ -2160,6 +2201,51 @@ class ScientificCoding:
                 return
             await asyncio.sleep(0.05)
 
+    def resolve_binding(self, params: ScientificCodingParams) -> dict:
+        previous = None
+        if params.session_handle:
+            previous = self.bindings.get(params.session_handle)
+            if previous is None:
+                raise ValueError(
+                    "Unknown native coding handle in this bounded context; "
+                    "a handle from another context cannot authorize a correction."
+                )
+        supplied = params.model_dump(
+            include={"allowed_paths", "read_paths", "verification_path"},
+            exclude_none=True,
+        )
+        scope = {**(previous or {}), **supplied}
+        if "allowed_paths" not in scope or "verification_path" not in scope:
+            raise ValueError("A new coding call requires allowed_paths and verification_path.")
+        paths = coding_file_scope(scope["allowed_paths"], writable=True)
+        reads = paths | coding_file_scope(scope.get("read_paths", []), writable=False)
+        verification = next(iter(
+            coding_file_scope([scope["verification_path"]], writable=True)
+        ))
+        if (
+            verification not in paths
+            or not verification.startswith("robot_learning/lab/")
+            or not verification.endswith(".py")
+            or any(not part.isidentifier() for part in verification[:-3].split("/"))
+        ):
+            raise ValueError(
+                "verification_path must be a scoped robot_learning/lab Python module."
+            )
+        binding = {
+            "allowed_paths": sorted(paths),
+            "read_paths": sorted(reads),
+            "verification_path": verification,
+        }
+        if previous is not None:
+            changed = [field for field in binding if binding[field] != previous[field]]
+            if changed:
+                raise ValueError(
+                    f"Coding correction changes immutable scope fields: {changed}. "
+                    "Omit scope fields to reuse the stored binding. "
+                    "A new scope requires a new PI-directed call without session_handle."
+                )
+        return binding
+
     async def invoke(self, params: ScientificCodingParams, invocation) -> str:
         from copilot.generated.rpc import TasksSendMessageRequest, TasksStartAgentRequest
 
@@ -2180,28 +2266,10 @@ class ScientificCoding:
             if not self.args.campaign_id:
                 raise ValueError("Coding requires an explicit campaign identity.")
             uuid.UUID(self.args.campaign_id)
-            paths = coding_file_scope(params.allowed_paths, writable=True)
-            reads = paths | coding_file_scope(params.read_paths, writable=False)
-            verification = next(iter(
-                coding_file_scope([params.verification_path], writable=True)
-            ))
-            if (
-                verification not in paths
-                or not verification.startswith("robot_learning/lab/")
-                or not verification.endswith(".py")
-                or any(not part.isidentifier() for part in verification[:-3].split("/"))
-            ):
-                raise ValueError(
-                    "verification_path must be a scoped robot_learning/lab Python module."
-                )
-            binding = {
-                "allowed_paths": sorted(paths),
-                "read_paths": sorted(reads),
-                "verification_path": verification,
-            }
+            binding = self.resolve_binding(params)
+            paths = frozenset(binding["allowed_paths"])
+            verification = binding["verification_path"]
             if params.session_handle:
-                if self.bindings.get(params.session_handle) != binding:
-                    raise ValueError("Unknown native coding handle or changed scope; refusing correction.")
                 tasks = await self.session.rpc.tasks.list()
                 child = next((item for item in tasks.tasks if item.id == params.session_handle), None)
                 if child is None or child.status.value != "idle":
@@ -2424,8 +2492,21 @@ class OperationSubmissionParams(BaseModel):
         description=(
             "One existing contracts/instruments.md operation envelope. "
             "Use null only to reaccept a failed pending operation after repair."
-        )
+        ),
+        json_schema_extra={
+            "anyOf": [protocol.operation_envelope_schema(), {"type": "null"}],
+        },
     )
+
+    @field_validator("request")
+    @classmethod
+    def validate_envelope(cls, request: dict[str, object] | None) -> dict[str, object] | None:
+        if request is not None:
+            try:
+                protocol.validate_operation_envelope(request)
+            except TypeError as error:
+                raise ValueError(str(error)) from error
+        return request
 
 
 class ControllerChannel:
@@ -2485,7 +2566,8 @@ class OperationSubmission:
                 "open/reframe/close requires checkpoint next. Use actual completed_operations "
                 "metadata, not invented IDs; preserve your scientific content. Checkpoint "
                 "or terminal commitment ends this bounded context. Do not submit again after "
-                "session_ended, publication_fatal, recovery_required or interruption. "
+                "session_ended, validation_fatal, controller_fatal, publication_fatal, "
+                "recovery_required or interruption. Do not query evidence after context closure. "
                 "No submission result certifies scientific validity."
             ),
             handler=self.invoke,

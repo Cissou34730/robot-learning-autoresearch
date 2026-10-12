@@ -50,6 +50,10 @@ through the contracts in `contracts/instruments.md`. Never invoke system
 
 ## Command authority
 
+Runner executes PI-authorized operations and returns factual results. It must
+not initiate or coordinate PI coding, diagnosis, debugging, repair decisions,
+or scientific interpretation. This authority boundary is immutable.
+
 The ordinary Copilot main PI session may inspect files and call
 `submit_operation`; it has no file-write tools. The trusted launcher validates
 and executes the structured request through Runner and returns factual results
@@ -180,7 +184,9 @@ preserves prior work.
 This is scientific ownership, not direct main-session write permission.
 The coding child cannot write operation requests or campaign/state files.
 Its native handle supports same-change corrections within the current bounded
-context without expanding file scope. A handle from another context is not an
+context without expanding file scope. A correction may supply intent and handle
+alone; the handler retains and revalidates the immutable stored file scope.
+A handle from another context is not an
 authorization to attach a coder. Lifecycle hooks and actual change reports
 support main-PI review; they do not certify scientific validity or add a
 scientific decision-maker.

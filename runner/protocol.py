@@ -932,6 +932,53 @@ def _validate_session_operation(
         )
 
 
+def operation_envelope_schema() -> dict:
+    return {
+        "oneOf": [
+            {
+                "type": "object",
+                "properties": {kind: {"type": "object"}},
+                "required": [kind],
+                "additionalProperties": False,
+            }
+            for kind in sorted(OPERATION_KEYS)
+        ]
+    }
+
+
+def validate_operation_envelope(operation: dict) -> str:
+    if not isinstance(operation, dict):
+        raise TypeError("operation request must be an object")
+    keys = set(operation)
+    wrappers = keys & OPERATION_KEYS
+    if not wrappers:
+        intended = operation.get("kind")
+        hint = (
+            f"Put the operation body inside '{intended}', not a 'kind' field."
+            if isinstance(intended, str) and intended in OPERATION_KEYS
+            else "Put the operation body inside one operation-named object."
+        )
+        raise ValueError(
+            "Missing operation wrapper. "
+            f"{hint} Allowed wrappers: {sorted(OPERATION_KEYS)}. "
+            f"Received top-level fields: {sorted(map(str, keys))}."
+        )
+    if len(wrappers) != 1:
+        raise ValueError(
+            "An operation request must contain exactly one wrapper; "
+            f"received {sorted(wrappers)}."
+        )
+    kind = next(iter(wrappers))
+    if extra := keys - wrappers:
+        raise ValueError(
+            f"Unexpected top-level fields: {sorted(map(str, extra))}. "
+            f"Keep only '{kind}' at the top level; put its body fields inside it."
+        )
+    if not isinstance(operation[kind], dict):
+        raise TypeError(f"'{kind}' operation body must be an object")
+    return kind
+
+
 def validate_operation_request(operation: dict, state: dict) -> str:
     if not isinstance(operation, dict):
         raise TypeError("operation request must be an object")
@@ -942,15 +989,8 @@ def validate_operation_request(operation: dict, state: dict) -> str:
         if operation != pending["request"]:
             raise ValueError("a different Runner operation is already pending")
         return str(pending["kind"])
-    keys = set(operation)
-    if len(keys) != 1 or not keys <= OPERATION_KEYS:
-        raise ValueError(
-            f"operation request must contain one of {sorted(OPERATION_KEYS)}"
-        )
-    kind = next(iter(keys))
+    kind = validate_operation_envelope(operation)
     request = operation[kind]
-    if not isinstance(request, dict):
-        raise TypeError(f"{kind} operation must be an object")
     session = require_active_session(state)
     _validate_session_operation(kind, request, state, session)
     if (
