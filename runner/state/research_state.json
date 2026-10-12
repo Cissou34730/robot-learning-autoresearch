@@ -22,7 +22,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 7,
+    "measurement": 9,
     "session": 3,
     "training": 0
   },
@@ -1349,9 +1349,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:31:34Z",
+      "error": "robot_learning.lab.verify_candidate_diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 271, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 256, in main\n    **_run_check(compatibility=args.compatibility),\n      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 224, in _run_check\n    behavior = _check_behavior()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 168, in _check_behavior\n    if item[\"action_saturation\"][\"steps\"] != item[\"steps\"]:\n                                             ~~~~^^^^^^^^^\nKeyError: 'steps'\n",
+      "id": "M8",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Controlled verification of I1 training exposure and candidate-diagnostic behavior.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json",
+            "instrument": "python_module",
+            "label": "I1 candidate diagnostics controlled verification",
+            "module": "robot_learning.lab.verify_candidate_diagnostics"
+          }
+        ],
+        "rationale": "Before the full candidate run, verify the exact engineering predicates on which the planned scientific measurement depends: official radial exposure, repeated episode transitions and resets, explicit diagnostic units, bounded-action saturation detection, and distinct analytical IK/range strata. This check is not evidence of policy capability or scientific validity; it prevents an implementation defect from masquerading as a candidate result."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_candidate_diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 271, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 256, in main\n    **_run_check(compatibility=args.compatibility),\n      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 224, in _run_check\n    behavior = _check_behavior()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_candidate_diagnostics.py\", line 168, in _check_behavior\n    if item[\"action_saturation\"][\"steps\"] != item[\"steps\"]:\n                                             ~~~~^^^^^^^^^\nKeyError: 'steps'\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M9",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+          ],
+          "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json",
+          "instrument": "python_module",
+          "label": "I1 candidate diagnostics controlled verification",
+          "module": "robot_learning.lab.verify_candidate_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+            "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+          },
+          {
+            "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "6cdbc9b264c81ea1b9c51613952897ece702aa4d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "08941427a3fdc5261fb5fa839be469296cf981f4e678fded7404693f3b67796f",
+            "path": "robot_learning/lab/verify_candidate_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_candidate_diagnostics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "9d044e9175fa9a8815a45db245765f33fd83000a89b6b090c4f0121f89d79ac5",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Controlled verification of I1 training exposure and candidate-diagnostic behavior.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/verify_candidate_diagnostics.json",
+            "instrument": "python_module",
+            "label": "I1 candidate diagnostics controlled verification",
+            "module": "robot_learning.lab.verify_candidate_diagnostics"
+          }
+        ],
+        "rationale": "Before the full candidate run, verify the exact engineering predicates on which the planned scientific measurement depends: official radial exposure, repeated episode transitions and resets, explicit diagnostic units, bounded-action saturation detection, and distinct analytical IK/range strata. This check is not evidence of policy capability or scientific validity; it prevents an implementation defect from masquerading as a candidate result."
+      }
+    },
+    "request_fingerprint": "7d7a64399eb92e7c13c3b39ab5af89ebcef2142d2aab55d13fc317b02008468c",
+    "session_id": "S3",
+    "supersedes": "M8"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. E2 opened inquiry I1; M1, M5, and M6 are completed measurements only.",
     "completed_operations": [
