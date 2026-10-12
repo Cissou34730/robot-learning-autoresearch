@@ -4937,7 +4937,7 @@
   "counters": {
     "event": 37,
     "inquiry": 9,
-    "measurement": 48,
+    "measurement": 50,
     "session": 19,
     "training": 6
   },
@@ -21720,9 +21720,216 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:15:16Z",
+      "error": "robot_learning.lab.verify_safe_branch_trajectory failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 453, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 447, in main\n    _compatibility_check(Path(args.output))\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 402, in _compatibility_check\n    next_observation, reward, _, _, info = env.step(np.asarray([2.0, -2.0]))\n                                           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\training\\environment.py\", line 229, in step\n    observation, base_reward, terminated, truncated, info = super().step(action)\n                                                            ~~~~~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 182, in step\n    reward = reach_reward(\n        self._previous_distance,\n    ...<9 lines>...\n        joint_ranges=joint_ranges,\n    )\nTypeError: reach_reward() got an unexpected keyword argument 'joint_positions'\n",
+      "id": "M49",
+      "inquiry_id": "I9",
+      "kind": "measurement",
+      "request": {
+        "description": "Compatibility verification for the reviewed SafeBranchTrajectoryEnv training intervention. The check exercises reset and a clipped production step, verifies the 11-value observation and finite reward attribution, confirms the bounded safe-branch potential and selected branch state, and confirms action clipping through the actual training environment.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json",
+            "instrument": "python_module",
+            "label": "I9 safe-branch trajectory compatibility",
+            "module": "robot_learning.lab.verify_safe_branch_trajectory"
+          }
+        ],
+        "rationale": "I9's next decision depends on whether a complete redesigned candidate can be trained without changing T2 task mechanics. The implementation was corrected to delegate the full transition to TwoJointArmReachEnv and add only the bounded trajectory-potential difference. A successful result establishes only this production-path compatibility, allowing a full training allocation; a failure would require repairing the implementation before any learning comparison. It does not establish learning performance, protected-stratum behavior, or continuous-hold readiness."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_safe_branch_trajectory failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 453, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 447, in main\n    _compatibility_check(Path(args.output))\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_safe_branch_trajectory.py\", line 402, in _compatibility_check\n    next_observation, reward, _, _, info = env.step(np.asarray([2.0, -2.0]))\n                                           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\training\\environment.py\", line 229, in step\n    observation, base_reward, terminated, truncated, info = super().step(action)\n                                                            ~~~~~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 182, in step\n    reward = reach_reward(\n        self._previous_distance,\n    ...<9 lines>...\n        joint_ranges=joint_ranges,\n    )\nTypeError: reach_reward() got an unexpected keyword argument 'joint_positions'\n",
+        "status": "failed"
+      },
+      "session_id": "S19",
+      "status": "failed",
+      "superseded_by": "M50",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json",
+          "instrument": "python_module",
+          "label": "I9 safe-branch trajectory compatibility",
+          "module": "robot_learning.lab.verify_safe_branch_trajectory"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+            "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+            "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          },
+          {
+            "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+            "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+            "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_safe_branch_trajectory.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "74685b01d3bba3d5289cf8cd7a02d2621d0ea3dc634e017523d413a2fe41a118",
+            "path": "robot_learning/scenario/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "dfe7d4297e6cbe50aab7e304a694e594dc574e27836de32c9698e2e36afcf5de",
+            "path": "robot_learning/scenario/evaluation.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "c73f7dfeea94cdac9249200ac27327ee57b9fd5fd3972e4d95a6296369c571db",
+            "path": "robot_learning/scenario/observations.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "db9c09c73d5ad1aa3ab8e1eb8b3b73f5044aa8cacb8dece6157b1bdcfe12a232",
+            "path": "robot_learning/training/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "5e564e9e5eb7259e53ce36160e73db2493ffe983a2f919f9d39c5013c4761e52",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/scenario/observations.py",
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M50",
+    "inquiry_id": "I9",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Compatibility verification for the reviewed SafeBranchTrajectoryEnv training intervention. The check exercises reset and a clipped production step, verifies the 11-value observation and finite reward attribution, confirms the bounded safe-branch potential and selected branch state, and confirms action clipping through the actual training environment.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/safe_branch_trajectory_compatibility.json",
+            "instrument": "python_module",
+            "label": "I9 safe-branch trajectory compatibility",
+            "module": "robot_learning.lab.verify_safe_branch_trajectory"
+          }
+        ],
+        "rationale": "I9's next decision depends on whether a complete redesigned candidate can be trained without changing T2 task mechanics. The implementation was corrected to delegate the full transition to TwoJointArmReachEnv and add only the bounded trajectory-potential difference. A successful result establishes only this production-path compatibility, allowing a full training allocation; a failure would require repairing the implementation before any learning comparison. It does not establish learning performance, protected-stratum behavior, or continuous-hold readiness."
+      }
+    },
+    "request_fingerprint": "02a9dc8f86cc74ec903cab78eceee97a3a3a1049ff828c7910c8a89fce507572",
+    "session_id": "S19",
+    "supersedes": "M49"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30, M41 and M46; it is not ready for official assessment. T6:checkpoint-120832 is an inferior complete I7 artifact from M30 and is not working, retained or best-known. No candidate is working or retained. M44, M45, M47 and M48 are measurement tools, not candidate artifacts. The already-tested T6 implementation included targeted negative-angle exposure, branch/margin observations and terminal joint-limit/speed shaping; its complete artifact comparison is retained as a negative candidate result without a broad causal claim.",
     "completed_operations": [

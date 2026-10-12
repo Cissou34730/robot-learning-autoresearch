@@ -93,3 +93,4 @@
 | E35 | inquiry | I9 | completed |
 | E36 | checkpoint | - | checkpointed |
 | E37 | restore_recipe | I9 | restored |
+| M49 | measurement | I9 | failed |
