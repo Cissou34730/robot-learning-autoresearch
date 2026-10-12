@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a bounded candidate-development attempt and matched complete-hold evidence with preserved time-resolved diagnostics. A positive answer requires a candidate reaching at least 196/200-equivalent success on the protected-seed development panel and a trace-based reduction of the relevant no-first-reach and/or reach-then-interrupt failures without an acquisition collapse. A negative or limited answer is sufficient if the best measured candidate does not improve beyond T4 or if the intervention loses acquisition; such a result will redirect the campaign rather than certify the human goal.",
-    "goal_connection": "The protected objective requires at least 196 uninterrupted 100-step holds in the official 200-episode panel. T4:checkpoint-120832 is the strongest measured candidate at 153/160, so the remaining seven development failures are materially larger than the allowable gap and official assessment is not justified. A successful inquiry must improve complete episode capability, not merely reward or training proxies, while retaining acquisition across the full 0.06-0.20 m target distribution.",
-    "handoff_conclusion": "Established observations: M30 verified the I12 fresh route as full-radius training with direct clipped control and the default reach-and-hold reward; T9 completed that route and reached 150/160 on M31. T4 remains best-known at 153/160, winning all three discordant T9/T4 episodes. M15 independently verified complete traces for T2: seven no-first-reach failures were dominated by negative-angle saturated joint-limit/high-velocity trajectories and one high-speed saturated oscillation; three reach-then-interrupt failures crossed the 1 cm boundary with nonzero velocity and saturated or near-saturated torque; branch occupancy and contact did not separate failures from controls. M16 verified the targeted acquisition-braking/post-reach regulation implementation, and T4's transfer route improved T2 from 150/160 to 153/160 while retaining acquisition. Contrary evidence is strong: T3's targeted-regulation fresh route scored 0/160 and T6's fresh residual-torque route scored 6/160, so targeted regulation changes are not generally safe and their results remain artifact-level, not general causal proof. Correction to the inherited proposed question: the mechanism distinction for the T2 residual is no longer the main unresolved issue because M15 supplied discriminating evidence; the consequential unresolved issue is whether a candidate-specific intervention can improve capability while preserving singular-reset acquisition. The residual mechanism for T4 itself still requires complete matched traces, and runtime/optimization realization remains an alternative explanation for artifact differences.",
-    "handoff_question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
-    "handoff_source_session_id": "S26",
-    "id": "I13",
-    "opened_in_session": "S26",
-    "question": "Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces?",
-    "rationale": "Further bounded work remains worthwhile because T4's transfer from the mechanism-informed route improved T2 from 150/160 to 153/160 and retained acquisition, showing a small capability gain even though it did not meet the goal. However, T3's 0/160 and T6's 6/160 results show that targeted regulation or residual-torque changes are not generally safe, and M15 already supplies the settled mechanism evidence for T2. The consequential unresolved question is therefore capability development under an acquisition-preservation constraint, not whether the old traces can identify a mechanism. Compare against official assessment: T4 is below the goal and has contrary evidence from its seven residual failures; the protected assessment would end the campaign with a likely failure and cannot guide repair. The inquiry will preserve the artifact-level limits of prior route comparisons and use complete-hold outcomes plus traces to decide whether further policy development can credibly close the gap.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -7395,7 +7384,7 @@
     }
   },
   "counters": {
-    "event": 53,
+    "event": 54,
     "inquiry": 13,
     "measurement": 32,
     "session": 27,
@@ -22892,9 +22881,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:43:24Z",
+      "error": null,
+      "id": "E54",
+      "inquiry_id": "I13",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited negative answer: T5:checkpoint-120832 does not improve the strongest measured candidate under the protected development semantics.",
+        "reason": "M32 measured T5 and T4 on the identical 160-episode full-radius panel; both achieved 153/160 (95.625%), so the candidate-specific continuation did not reduce the seven-failure gap to the 196/200-equivalent direction and does not justify official assessment. The paired time-resolved probe covered all seven established T4 residual seeds plus five successful controls, with 24 rollouts and 8,120 verified update steps. Independent verification passed exact target pairing, repeated state transitions and resets, live complete-hold outcome preservation, distinct model fingerprints, and runtime/kinematic reference recording. On the probe panel T5 also had 7 failures versus T4's 7; T5's failures were one no-first-reach (4246) and six reach-then-interrupt (4201, 4208, 4228, 4244, 4307, 4316), while the full T5 panel showed one no-first-reach and six incomplete holds, including max-held values 0, 1, 2, and 3. Thus acquisition was not catastrophically lost, but no capability gain was demonstrated and the residual class shifted toward interruption. This closes the bounded T5 continuation attempt without claiming a causal explanation for reward, runtime, or plant effects; future work should change direction rather than extend this terminal continuation route."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Limited negative answer: T5:checkpoint-120832 does not improve the strongest measured candidate under the protected development semantics.",
+        "reason": "M32 measured T5 and T4 on the identical 160-episode full-radius panel; both achieved 153/160 (95.625%), so the candidate-specific continuation did not reduce the seven-failure gap to the 196/200-equivalent direction and does not justify official assessment. The paired time-resolved probe covered all seven established T4 residual seeds plus five successful controls, with 24 rollouts and 8,120 verified update steps. Independent verification passed exact target pairing, repeated state transitions and resets, live complete-hold outcome preservation, distinct model fingerprints, and runtime/kinematic reference recording. On the probe panel T5 also had 7 failures versus T4's 7; T5's failures were one no-first-reach (4246) and six reach-then-interrupt (4201, 4208, 4228, 4244, 4307, 4316), while the full T5 panel showed one no-first-reach and six incomplete holds, including max-held values 0, 1, 2, and 3. Thus acquisition was not catastrophically lost, but no capability gain was demonstrated and the residual class shifted toward interruption. This closes the bounded T5 continuation attempt without claiming a causal explanation for reward, runtime, or plant effects; future work should change direction rather than extend this terminal continuation route.",
+        "status": "completed"
+      },
+      "session_id": "S27",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Limited negative answer: T5:checkpoint-120832 does not improve the strongest measured candidate under the protected development semantics.",
+        "reason": "M32 measured T5 and T4 on the identical 160-episode full-radius panel; both achieved 153/160 (95.625%), so the candidate-specific continuation did not reduce the seven-failure gap to the 196/200-equivalent direction and does not justify official assessment. The paired time-resolved probe covered all seven established T4 residual seeds plus five successful controls, with 24 rollouts and 8,120 verified update steps. Independent verification passed exact target pairing, repeated state transitions and resets, live complete-hold outcome preservation, distinct model fingerprints, and runtime/kinematic reference recording. On the probe panel T5 also had 7 failures versus T4's 7; T5's failures were one no-first-reach (4246) and six reach-then-interrupt (4201, 4208, 4228, 4244, 4307, 4316), while the full T5 panel showed one no-first-reach and six incomplete holds, including max-held values 0, 1, 2, and 3. Thus acquisition was not catastrophically lost, but no capability gain was demonstrated and the residual class shifted toward interruption. This closes the bounded T5 continuation attempt without claiming a causal explanation for reward, runtime, or plant effects; future work should change direction rather than extend this terminal continuation route."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Limited negative answer: T5:checkpoint-120832 does not improve the strongest measured candidate under the protected development semantics.",
+        "reason": "M32 measured T5 and T4 on the identical 160-episode full-radius panel; both achieved 153/160 (95.625%), so the candidate-specific continuation did not reduce the seven-failure gap to the 196/200-equivalent direction and does not justify official assessment. The paired time-resolved probe covered all seven established T4 residual seeds plus five successful controls, with 24 rollouts and 8,120 verified update steps. Independent verification passed exact target pairing, repeated state transitions and resets, live complete-hold outcome preservation, distinct model fingerprints, and runtime/kinematic reference recording. On the probe panel T5 also had 7 failures versus T4's 7; T5's failures were one no-first-reach (4246) and six reach-then-interrupt (4201, 4208, 4228, 4244, 4307, 4316), while the full T5 panel showed one no-first-reach and six incomplete holds, including max-held values 0, 1, 2, and 3. Thus acquisition was not catastrophically lost, but no capability gain was demonstrated and the residual class shifted toward interruption. This closes the bounded T5 continuation attempt without claiming a causal explanation for reward, runtime, or plant effects; future work should change direction rather than extend this terminal continuation route.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E54",
+    "inquiry_id": "I13",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited negative answer: T5:checkpoint-120832 does not improve the strongest measured candidate under the protected development semantics.",
+        "reason": "M32 measured T5 and T4 on the identical 160-episode full-radius panel; both achieved 153/160 (95.625%), so the candidate-specific continuation did not reduce the seven-failure gap to the 196/200-equivalent direction and does not justify official assessment. The paired time-resolved probe covered all seven established T4 residual seeds plus five successful controls, with 24 rollouts and 8,120 verified update steps. Independent verification passed exact target pairing, repeated state transitions and resets, live complete-hold outcome preservation, distinct model fingerprints, and runtime/kinematic reference recording. On the probe panel T5 also had 7 failures versus T4's 7; T5's failures were one no-first-reach (4246) and six reach-then-interrupt (4201, 4208, 4228, 4244, 4307, 4316), while the full T5 panel showed one no-first-reach and six incomplete holds, including max-held values 0, 1, 2, and 3. Thus acquisition was not catastrophically lost, but no capability gain was demonstrated and the residual class shifted toward interruption. This closes the bounded T5 continuation attempt without claiming a causal explanation for reward, runtime, or plant effects; future work should change direction rather than extend this terminal continuation route."
+      }
+    },
+    "request_fingerprint": "216ea34e68b8d7aec38343229bf0b2185a8c9394e8867fc19f84c51377e2ea95",
+    "session_id": "S27",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known on M31 at 153/160 but is not certified for official assessment. T9:checkpoint-120832 is measured at 150/160 and is not competitive. T3 and T6 are rejected for their severe acquisition failures; T5's measured continuation checkpoint is 153/160 and does not exceed T4. No candidate is working or retained. The new inquiry I13 will evaluate a candidate-development route against T4 with complete-hold evidence rather than treating training proxies as performance.",
     "completed_operations": [
@@ -22949,7 +22992,8 @@
     "kind": "inquiry",
     "objective": "Advance I13 toward an evidence-supported answer to its scientific question: Can a mechanism-preserving candidate-specific policy-development intervention raise the strongest complete-hold policy from 153/160 to at least 196/200 without sacrificing singular-reset acquisition, as shown by matched complete-hold outcomes and time-resolved failure-class traces? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M32"
+      "M32",
+      "E54"
     ],
     "scientific_parent_commit": "787310cba995c82ddfd7e589c114009108078b3c"
   },
