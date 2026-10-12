@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -107,6 +107,378 @@
       "status": "failed",
       "superseded_by": "M3",
       "supersedes": "M1"
+    },
+    {
+      "completed_at": "2026-10-12T06:49:15Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled two-joint MuJoCo dynamics and execute the reviewed independent verification of the resulting artifact.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics characterization",
+            "module": "robot_learning.lab.compiled_dynamics"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+              "--output",
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics verification",
+            "module": "robot_learning.lab.verify_compiled_dynamics"
+          }
+        ],
+        "rationale": "The first decision is whether bounded 50 Hz motor control has adequate authority across reset singularity escape and representative official inner/outer IK postures. This operation measures the compiled quantities omitted from the XML and deterministic saturated/zero-command responses before attributing any future failure to policy learning. If responses are nonzero, repeatable, and settle with substantial margin, the next direction should test learned coverage and hold regulation; if they are weak or poorly damped in a regime, the next direction should investigate control-aware learning and that physical bottleneck. The verification is included to detect static, truncated, mistimed, or out-of-bounds measurement implementations rather than to certify task success."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-1-compiled_dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/tool",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/description",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source_xml",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/measurement_contract",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "branch",
+                      "kind",
+                      "name",
+                      "q",
+                      "representative_radius_m",
+                      "target_angle_rad"
+                    ],
+                    "path": "/postures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 20,
+                    "field_names": [
+                      "active_command",
+                      "active_control_steps",
+                      "initial_state",
+                      "name",
+                      "posture",
+                      "summary",
+                      "total_control_steps",
+                      "trace"
+                    ],
+                    "path": "/experiments",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_contract/compiled_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/expected_xml_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/control_rate_hz",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/measurement_contract/controls_bound",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_contract/total_control_steps_per_trace",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/posture_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_model/counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "inertia",
+                      "ipos",
+                      "mass",
+                      "name"
+                    ],
+                    "path": "/compiled_model/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "name"
+                    ],
+                    "path": "/compiled_model/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "ctrlrange",
+                      "gear",
+                      "name",
+                      "trnid"
+                    ],
+                    "path": "/compiled_model/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_model/options",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_model/counts/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/counts/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/counts/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/timestep",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/solver",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/ls_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/noslip_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/ccd_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/sdf_iterations",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "03b6e474dcf2c38f6691ff35e16c2498176caa83d763174b733e7ff0fed3abde"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+              "--output",
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-2-compiled_dynamics_verification.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "checked_scope",
+                      "expected",
+                      "name",
+                      "observed",
+                      "status"
+                    ],
+                    "path": "/checks",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5ae1e41de7e010488132290965118bb6922f0243c4f11f424542a72ca9b00444"
+            },
+            "module": "robot_learning.lab.verify_compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "77b3492625e1cf9065997549dbeb93d0a4f811a3",
+            "fingerprint": "7a1b3f2092f8b6780df2e12e6c2cd2f878f2b7e3932289fe8006992ca76cbcf4",
+            "manifest": [
+              {
+                "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py",
+            "robot_learning/lab/verify_compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M2"
     }
   ],
   "pending_operation": {
@@ -145,7 +517,20 @@
             "path": "robot_learning/lab/verify_compiled_dynamics.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "77b3492625e1cf9065997549dbeb93d0a4f811a3",
+          "fingerprint": "7a1b3f2092f8b6780df2e12e6c2cd2f878f2b7e3932289fe8006992ca76cbcf4",
+          "manifest": [
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            }
+          ]
+        },
         "code_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491",
         "effective_parameters": {
           "algorithm": {
@@ -192,15 +577,609 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled dynamics characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-1-compiled_dynamics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema",
+                  "type": "string"
+                },
+                {
+                  "path": "/tool",
+                  "type": "string"
+                },
+                {
+                  "path": "/description",
+                  "type": "string"
+                },
+                {
+                  "path": "/source_xml",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "path": "/measurement_contract",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/compiled_model",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "branch",
+                    "kind",
+                    "name",
+                    "q",
+                    "representative_radius_m",
+                    "target_angle_rad"
+                  ],
+                  "path": "/postures",
+                  "type": "array"
+                },
+                {
+                  "entries": 20,
+                  "field_names": [
+                    "active_command",
+                    "active_control_steps",
+                    "initial_state",
+                    "name",
+                    "posture",
+                    "summary",
+                    "total_control_steps",
+                    "trace"
+                  ],
+                  "path": "/experiments",
+                  "type": "array"
+                },
+                {
+                  "path": "/measurement_contract/compiled_timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_contract/expected_xml_timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_contract/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_contract/control_interval_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_contract/control_rate_hz",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/measurement_contract/controls_bound",
+                  "type": "array"
+                },
+                {
+                  "path": "/measurement_contract/total_control_steps_per_trace",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement_contract/posture_angle_rad",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/compiled_model/counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "inertia",
+                    "ipos",
+                    "mass",
+                    "name"
+                  ],
+                  "path": "/compiled_model/bodies",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "armature",
+                    "damping",
+                    "name"
+                  ],
+                  "path": "/compiled_model/joints",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "ctrlrange",
+                    "gear",
+                    "name",
+                    "trnid"
+                  ],
+                  "path": "/compiled_model/actuators",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/compiled_model/options",
+                  "type": "object"
+                },
+                {
+                  "path": "/compiled_model/counts/nbody",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/counts/njnt",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/counts/nu",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/timestep",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/integrator",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/solver",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/tolerance",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/ls_iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/noslip_iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/ccd_iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/sdf_iterations",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "03b6e474dcf2c38f6691ff35e16c2498176caa83d763174b733e7ff0fed3abde"
+          },
+          "module": "robot_learning.lab.compiled_dynamics"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+            "--output",
+            "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled dynamics verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-2-compiled_dynamics_verification.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema",
+                  "type": "string"
+                },
+                {
+                  "path": "/artifact",
+                  "type": "string"
+                },
+                {
+                  "path": "/passed",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 9,
+                  "field_names": [
+                    "checked_scope",
+                    "expected",
+                    "name",
+                    "observed",
+                    "status"
+                  ],
+                  "path": "/checks",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "5ae1e41de7e010488132290965118bb6922f0243c4f11f424542a72ca9b00444"
+          },
+          "module": "robot_learning.lab.verify_compiled_dynamics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-1-compiled_dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/tool",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/description",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source_xml",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/measurement_contract",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "branch",
+                      "kind",
+                      "name",
+                      "q",
+                      "representative_radius_m",
+                      "target_angle_rad"
+                    ],
+                    "path": "/postures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 20,
+                    "field_names": [
+                      "active_command",
+                      "active_control_steps",
+                      "initial_state",
+                      "name",
+                      "posture",
+                      "summary",
+                      "total_control_steps",
+                      "trace"
+                    ],
+                    "path": "/experiments",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_contract/compiled_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/expected_xml_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/control_rate_hz",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/measurement_contract/controls_bound",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/measurement_contract/total_control_steps_per_trace",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement_contract/posture_angle_rad",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_model/counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "inertia",
+                      "ipos",
+                      "mass",
+                      "name"
+                    ],
+                    "path": "/compiled_model/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "name"
+                    ],
+                    "path": "/compiled_model/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "ctrlrange",
+                      "gear",
+                      "name",
+                      "trnid"
+                    ],
+                    "path": "/compiled_model/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_model/options",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_model/counts/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/counts/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/counts/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/timestep",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/solver",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/ls_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/noslip_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/ccd_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/sdf_iterations",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "03b6e474dcf2c38f6691ff35e16c2498176caa83d763174b733e7ff0fed3abde"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics.json",
+              "--output",
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/compiled_dynamics_verification.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M3-2-compiled_dynamics_verification.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/passed",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "checked_scope",
+                      "expected",
+                      "name",
+                      "observed",
+                      "status"
+                    ],
+                    "path": "/checks",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5ae1e41de7e010488132290965118bb6922f0243c4f11f424542a72ca9b00444"
+            },
+            "module": "robot_learning.lab.verify_compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "77b3492625e1cf9065997549dbeb93d0a4f811a3",
+            "fingerprint": "7a1b3f2092f8b6780df2e12e6c2cd2f878f2b7e3932289fe8006992ca76cbcf4",
+            "manifest": [
+              {
+                "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py",
+            "robot_learning/lab/verify_compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M3",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Characterize the compiled two-joint MuJoCo dynamics and execute the reviewed independent verification of the resulting artifact.",
@@ -251,7 +1230,9 @@
     "inquiry_id": null,
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M3"
+    ],
     "scientific_parent_commit": "ad0f5f8b0cce82bb8208d4802510b3da31207491"
   },
   "terminal_state": null
