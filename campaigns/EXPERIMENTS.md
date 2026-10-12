@@ -72,3 +72,4 @@
 | M34 | measurement | I7 | failed |
 | M35 | measurement | I7 | failed |
 | M36 | measurement | I7 | failed |
+| M37 | measurement | I7 | failed |

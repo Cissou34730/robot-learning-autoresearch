@@ -4936,7 +4936,7 @@
   "counters": {
     "event": 28,
     "inquiry": 7,
-    "measurement": 37,
+    "measurement": 38,
     "session": 15,
     "training": 6
   },
@@ -18094,6 +18094,51 @@
       "status": "failed",
       "superseded_by": "M37",
       "supersedes": "M35"
+    },
+    {
+      "completed_at": "2026-10-12T16:44:10Z",
+      "error": "robot_learning.lab.analyze_baseline_profile failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 735, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 728, in main\n    report = analyze_path(args.artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 696, in analyze_path\n    resolved_path, source_kind = resolve_profile_input(requested_path)\n                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 691, in resolve_profile_input\n    raise FileNotFoundError(f\"Profile artifact not found: {requested_path}\")\nFileNotFoundError: Profile artifact not found: campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json\n",
+      "id": "M37",
+      "inquiry_id": "I7",
+      "kind": "measurement",
+      "request": {
+        "description": "Stratify the complete M30 matched evaluation artifacts into overall, radius, angle, reach-versus-hold, speed, joint-limit, branch, and physics-step hold summaries for T6 and T2.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m30-T6-checkpoint-120832-160ep-seed4200-82260456c369.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t6_profile_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t6_profile_analysis.json",
+            "instrument": "python_module",
+            "label": "I7-T6-profile-analysis",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t2_profile_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t2_profile_analysis.json",
+            "instrument": "python_module",
+            "label": "I7-T2-profile-analysis",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "rationale": "M30 establishes a large aggregate loss for T6 but aggregate success cannot determine whether the targeted exposure changed the stated negative-angle or 14-20 cm never-reach mechanisms while preserving 6-14 cm behavior. The existing independently verified analyzer is the appropriate reduction for the complete schema-6 episode diagnostics. Applying it identically to both M30 artifacts supplies the exact closure-condition fields without changing candidate artifacts or evaluator semantics; it remains development evidence and does not certify continuous hold or official success."
+      },
+      "result": {
+        "error": "robot_learning.lab.analyze_baseline_profile failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 735, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 728, in main\n    report = analyze_path(args.artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 696, in analyze_path\n    resolved_path, source_kind = resolve_profile_input(requested_path)\n                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 691, in resolve_profile_input\n    raise FileNotFoundError(f\"Profile artifact not found: {requested_path}\")\nFileNotFoundError: Profile artifact not found: campaigns\\evaluations\\fedcc0f3-5435-4aa3-b839-d2c108082481\\evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json\n",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "M38",
+      "supersedes": "M36"
     }
   ],
   "pending_operation": {
@@ -18128,7 +18173,7 @@
       "module_provenance": {
         "campaign_lab_manifest": [
           {
-            "fingerprint": "a3a918620500f1f2deec4c47fd51e4099600f86a4c8ac1b595cc276f5447b05d",
+            "fingerprint": "2dbdfd468ee7d358066a74c08e617aa0d2440654902e99fd324c4a252c778376",
             "path": "robot_learning/lab/analyze_baseline_profile.py"
           },
           {
@@ -18152,7 +18197,7 @@
             "path": "robot_learning/lab/verify_initial_model_measurement.py"
           },
           {
-            "fingerprint": "0437954d4bf622d4fc91108b83f5882e2602881eae11da4b742ce65ed0930224",
+            "fingerprint": "985e36de71ca1f500a9e9202c4dda6eaaf0f3bdf133c3de9f419b77d29d612a9",
             "path": "robot_learning/lab/verify_profile_input_resolution.py"
           },
           {
@@ -18197,7 +18242,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "a3a918620500f1f2deec4c47fd51e4099600f86a4c8ac1b595cc276f5447b05d",
+            "fingerprint": "2dbdfd468ee7d358066a74c08e617aa0d2440654902e99fd324c4a252c778376",
             "path": "robot_learning/lab/analyze_baseline_profile.py"
           }
         ],
@@ -18214,7 +18259,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M37",
+    "id": "M38",
     "inquiry_id": "I7",
     "kind": "measurement",
     "progress": "accepted",
@@ -18252,7 +18297,7 @@
     },
     "request_fingerprint": "01361d7f6846e540003455a63a55cf2a8e217846f96c13c16109f507a46122f3",
     "session_id": "S15",
-    "supersedes": "M36"
+    "supersedes": "M37"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains explicit best-known, supported by M10, M11, M14, M21, M23, M27, and M28; it is not certified for official assessment. T5:checkpoint-120832 remains a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. I7 will produce a new complete candidate only if its training and matched development measurement support that role.",
