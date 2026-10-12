@@ -258,22 +258,24 @@ def reach_reward(
                     1.0,
                 )
             )
-        reward += (
-            joint_velocity_penalty
-            + endpoint_velocity_penalty
-            + action_regulation_penalty
-        )
-        components.update(
-            {
-                "hold_recovery_joint_velocity": float(joint_velocity_penalty),
-                "hold_recovery_endpoint_velocity": float(
-                    endpoint_velocity_penalty
-                ),
-                "hold_recovery_action_regulation": float(
-                    action_regulation_penalty
-                ),
-            }
-        )
+            reward += (
+                joint_velocity_penalty
+                + endpoint_velocity_penalty
+                + action_regulation_penalty
+            )
+            components.update(
+                {
+                    "hold_recovery_joint_velocity": float(
+                        joint_velocity_penalty
+                    ),
+                    "hold_recovery_endpoint_velocity": float(
+                        endpoint_velocity_penalty
+                    ),
+                    "hold_recovery_action_regulation": float(
+                        action_regulation_penalty
+                    ),
+                }
+            )
 
     return RewardResult(
         total=float(reward),
