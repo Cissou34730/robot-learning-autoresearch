@@ -13,6 +13,7 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import mujoco
 import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
@@ -21,6 +22,92 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+
+
+def build_step_diagnostic(
+    model,
+    data,
+    *,
+    control_step: int,
+    distance_cm: float,
+    held_steps: int,
+    action,
+    in_tolerance: bool | None = None,
+) -> dict:
+    """Return JSON-compatible kinematic diagnostics at a post-step boundary.
+
+    The site Jacobian is computed from the current MuJoCo state rather than
+    from a site-velocity convenience field.  A non-full-rank planar Jacobian
+    has an infinite condition number; otherwise the condition number is the
+    ratio of its largest to smallest singular value.  The zero elbow
+    convention is ``open`` (the non-negative-q2 branch).
+    """
+    qpos = np.asarray(data.qpos, dtype=np.float64)
+    qvel = np.asarray(data.qvel, dtype=np.float64)
+    jacobian_position = np.zeros((3, model.nv), dtype=np.float64)
+    jacobian_rotation = np.zeros((3, model.nv), dtype=np.float64)
+    site_id = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+    )
+    if site_id < 0:
+        raise ValueError("the evaluation model has no end-effector site")
+    mujoco.mj_jacSite(
+        model, data, jacobian_position, jacobian_rotation, site_id
+    )
+    planar_jacobian = jacobian_position[:2, :]
+    singular_values = np.linalg.svd(planar_jacobian, compute_uv=False)
+    rank_tolerance = (
+        np.finfo(np.float64).eps
+        * max(planar_jacobian.shape)
+        * (float(singular_values[0]) if singular_values.size else 0.0)
+    )
+    rank_lost = (
+        not np.all(np.isfinite(singular_values))
+        or not singular_values.size
+        or float(singular_values[-1]) <= rank_tolerance
+    )
+    condition_number = (
+        float("inf")
+        if rank_lost
+        else float(singular_values[0] / singular_values[-1])
+    )
+
+    # The official model has two hinge joints whose qpos/qvel coordinates are
+    # the first two generalized coordinates.  Keep both per-joint margins and
+    # their limiting value for direct interpretation.
+    joint_positions = qpos[:2]
+    joint_ranges = np.asarray(model.jnt_range[:2], dtype=np.float64)
+    joint_limit_margins = np.minimum(
+        joint_positions - joint_ranges[:, 0],
+        joint_ranges[:, 1] - joint_positions,
+    )
+    if in_tolerance is None:
+        in_tolerance = held_steps > 0
+
+    planar_velocity_cm_s = planar_jacobian @ qvel * 100.0
+    return {
+        "control_step": int(control_step),
+        "distance_cm": float(distance_cm),
+        "held_steps": int(held_steps),
+        "in_tolerance": bool(in_tolerance),
+        "qpos_rad": [float(value) for value in joint_positions],
+        "qvel_rad": [float(value) for value in qvel[:2]],
+        "planar_ee_velocity_cm_s": [
+            float(value) for value in planar_velocity_cm_s
+        ],
+        "action": [
+            float(value) for value in np.asarray(action, dtype=np.float64).reshape(-1)
+        ],
+        "jacobian_singular_values": [
+            float(value) for value in singular_values
+        ],
+        "jacobian_condition_number": condition_number,
+        "joint_limit_margins_rad": [
+            float(value) for value in joint_limit_margins
+        ],
+        "joint_limit_margin_rad": float(np.min(joint_limit_margins)),
+        "elbow_branch": "open" if joint_positions[1] >= 0.0 else "folded",
+    }
 
 
 def evaluate_research_model(
@@ -55,6 +142,9 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        trajectory: list[dict] = []
+        velocity_at_first_reach_cm_s: float | None = None
+        maximum_sampled_velocity_cm_s = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,6 +152,23 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            in_tolerance = distance_cm <= 100.0 * env.success_threshold
+            step_diagnostic = build_step_diagnostic(
+                env.model,
+                env.data,
+                control_step=steps,
+                distance_cm=distance_cm,
+                held_steps=held_steps,
+                action=env.data.ctrl.copy(),
+                in_tolerance=in_tolerance,
+            )
+            trajectory.append(step_diagnostic)
+            sampled_velocity_cm_s = float(
+                np.linalg.norm(step_diagnostic["planar_ee_velocity_cm_s"])
+            )
+            maximum_sampled_velocity_cm_s = max(
+                maximum_sampled_velocity_cm_s, sampled_velocity_cm_s
+            )
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -69,6 +176,7 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    velocity_at_first_reach_cm_s = sampled_velocity_cm_s
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +211,9 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "trajectory": trajectory,
+                "velocity_at_first_reach_cm_s": velocity_at_first_reach_cm_s,
+                "maximum_sampled_velocity_cm_s": maximum_sampled_velocity_cm_s,
             }
         )
         if progress_callback is not None:
@@ -122,6 +233,12 @@ def evaluate_research_model(
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
             "units": {"distance": "cm", "time": "control_steps"},
+            "diagnostic_conventions": {
+                "elbow_branch": "open for q2 >= 0 radians, folded for q2 < 0",
+                "jacobian_condition_number": (
+                    "largest/smallest singular value; inf when planar rank is lost"
+                ),
+            },
         },
     }
 
