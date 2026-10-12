@@ -30,6 +30,19 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
 
+def _finite_vector(value: Any, shape: tuple[int, ...], *, context: str) -> np.ndarray:
+    """Convert a diagnostic vector without accepting implicit reshaping."""
+    try:
+        array = np.asarray(value, dtype=np.float64)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{context} must be a numeric vector with shape {shape}") from exc
+    if array.shape != shape:
+        raise ValueError(f"{context} must have shape {shape}, got {array.shape}")
+    if not np.all(np.isfinite(array)):
+        raise ValueError(f"{context} contains non-finite values")
+    return array.copy()
+
+
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
@@ -71,6 +84,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._has_reached = False
+        self._last_substep_trace: list[dict[str, Any]] = []
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -99,6 +114,68 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
+    def _diagnostic_snapshot(self) -> dict[str, Any]:
+        """Capture one simulator state using only public MuJoCo state fields."""
+        qpos = _finite_vector(
+            self.data.qpos, (self.model.nq,), context="MuJoCo qpos"
+        )
+        qvel = _finite_vector(
+            self.data.qvel, (self.model.nv,), context="MuJoCo qvel"
+        )
+        ctrl = _finite_vector(
+            self.data.ctrl, (self.model.nu,), context="MuJoCo ctrl"
+        )
+        joint_count = 2
+        qpos_addresses = np.asarray(
+            self.model.jnt_qposadr[:joint_count], dtype=np.int64
+        )
+        if qpos_addresses.shape != (joint_count,):
+            raise ValueError("MuJoCo joint position addresses must describe two joints")
+        if np.any(qpos_addresses < 0) or np.any(qpos_addresses >= self.model.nq):
+            raise ValueError("MuJoCo joint position addresses are out of bounds")
+        joint_qpos = qpos[qpos_addresses]
+        _finite_vector(qvel[:joint_count], (joint_count,), context="MuJoCo joint qvel")
+
+        joint_ranges = _finite_vector(
+            self.model.jnt_range[:joint_count].reshape(-1),
+            (joint_count * 2,),
+            context="MuJoCo joint ranges",
+        ).reshape(joint_count, 2)
+        joint_limited = np.asarray(
+            self.model.jnt_limited[:joint_count], dtype=bool
+        )
+        if joint_limited.shape != (joint_count,):
+            raise ValueError("MuJoCo joint limit flags must describe two joints")
+        distance_to_limit = np.minimum(
+            joint_qpos - joint_ranges[:, 0], joint_ranges[:, 1] - joint_qpos
+        )
+        # The distance is retained in radians; the boolean proximity field uses
+        # a fixed one-degree diagnostic band and does not affect the dynamics.
+        proximity = joint_limited & (distance_to_limit <= np.deg2rad(1.0))
+        active = joint_limited & (
+            (joint_qpos <= joint_ranges[:, 0])
+            | (joint_qpos >= joint_ranges[:, 1])
+        )
+
+        contact_pairs = [
+            [int(self.data.contact[index].geom1), int(self.data.contact[index].geom2)]
+            for index in range(int(self.data.ncon))
+        ]
+        distance = self._distance_to_target()
+        if not np.isfinite(distance):
+            raise ValueError("endpoint distance is non-finite")
+        return {
+            "qpos": qpos.tolist(),
+            "qvel": qvel.tolist(),
+            "ctrl": ctrl.tolist(),
+            "endpoint_distance": float(distance),
+            "contact_count": int(self.data.ncon),
+            "contact_geom_pairs": contact_pairs,
+            "joint_limit_distance": distance_to_limit.tolist(),
+            "joint_limit_proximity": proximity.tolist(),
+            "joint_limit_active": active.tolist(),
+        }
+
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
@@ -117,21 +194,54 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._has_reached = False
+        self._last_substep_trace = []
         return self._observation(), {}
 
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
-        action = np.clip(
-            np.asarray(self.policy_io.action(action), dtype=np.float64),
-            self.action_space.low,
-            self.action_space.high,
+        try:
+            supplied_action = np.asarray(action, dtype=np.float64)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("action must be a numeric two-element vector") from exc
+        if supplied_action.shape != self.action_space.shape:
+            raise ValueError(
+                f"action must have shape {self.action_space.shape}, "
+                f"got {supplied_action.shape}"
+            )
+        if not np.all(np.isfinite(supplied_action)):
+            raise ValueError("action contains non-finite values")
+        try:
+            post_policy_action = np.asarray(
+                self.policy_io.action(action), dtype=np.float64
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "post-policy action must be a numeric two-element vector"
+            ) from exc
+        if post_policy_action.shape != self.action_space.shape:
+            raise ValueError(
+                "post-policy action must have shape "
+                f"{self.action_space.shape}, got {post_policy_action.shape}"
+            )
+        if not np.all(np.isfinite(post_policy_action)):
+            raise ValueError("post-policy action contains non-finite values")
+        clipped_action = np.clip(
+            post_policy_action, self.action_space.low, self.action_space.high
         )
-        self.data.ctrl[:] = action
+        joint_saturation = (
+            (post_policy_action < self.action_space.low)
+            | (post_policy_action > self.action_space.high)
+        )
+        self.data.ctrl[:] = clipped_action
+        substep_trace = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            substep_trace.append(self._diagnostic_snapshot())
 
-        distance = self._distance_to_target()
+        post_control = self._diagnostic_snapshot()
+        distance = float(post_control["endpoint_distance"])
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -146,7 +256,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self._previous_distance,
             distance,
             self.success_threshold,
-            action,
+            clipped_action,
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
@@ -154,13 +264,26 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
         self._previous_distance = distance
 
+        first_reach = not self._has_reached and self._held_steps > 0
+        if first_reach:
+            self._has_reached = True
+        hold_interrupted = previous_held_steps > 0 and self._held_steps == 0
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
         truncated = self._step_count >= self.max_episode_steps
+        self._last_substep_trace = substep_trace
         info = {
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            "first_reach": first_reach,
+            "hold_interrupted": hold_interrupted,
+            "post_policy_action": post_policy_action.tolist(),
+            "clipped_action": clipped_action.tolist(),
+            "joint_saturation": joint_saturation.tolist(),
+            "action_saturated": bool(np.any(joint_saturation)),
+            **post_control,
+            "substep_trace": substep_trace,
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,

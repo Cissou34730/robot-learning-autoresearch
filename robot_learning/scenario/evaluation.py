@@ -21,7 +21,7 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-_RESEARCH_EVALUATION_SCHEMA_VERSION = 6
+_RESEARCH_EVALUATION_SCHEMA_VERSION = 7
 _OBSERVATION_SIZE = 11
 _OPEN_BRANCH_ERROR_SLICE = slice(7, 9)
 _FOLDED_BRANCH_ERROR_SLICE = slice(9, 11)
@@ -121,6 +121,37 @@ def _summarize_branch_diagnostics(
     }
 
 
+def _coerce_policy_output(action: object) -> np.ndarray:
+    """Require the runtime to return exactly one two-joint action."""
+    try:
+        action_array = np.asarray(action, dtype=np.float64)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "runtime policy output must be a numeric two-element vector"
+        ) from exc
+    if action_array.shape != (2,):
+        raise ValueError(
+            f"runtime policy output must have shape (2,), got {action_array.shape}"
+        )
+    if not np.all(np.isfinite(action_array)):
+        raise ValueError("runtime policy output contains non-finite values")
+    return action_array.copy()
+
+
+def _branch_trace_fields(observation: np.ndarray) -> dict[str, object]:
+    open_norm, folded_norm = _extract_branch_error_norms(
+        observation, context="post-step observation"
+    )
+    observation_array = np.asarray(observation, dtype=np.float64)
+    return {
+        "branch_label": "open" if open_norm <= folded_norm else "folded",
+        "open_branch_error": observation_array[7:9].tolist(),
+        "folded_branch_error": observation_array[9:11].tolist(),
+        "open_branch_error_norm": float(open_norm),
+        "folded_branch_error_norm": float(folded_norm),
+    }
+
+
 def evaluate_research_model(
     model_path: Path,
     *,
@@ -137,6 +168,7 @@ def evaluate_research_model(
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
+    episode_traces: list[dict] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         _extract_branch_error_norms(obs, context="reset observation")
@@ -156,9 +188,10 @@ def evaluate_research_model(
         was_in_tolerance = False
         post_step_observations: list[np.ndarray] = []
         held_steps_history: list[int] = []
+        control_trace: list[dict] = []
         while not (terminated or truncated):
-            action = runtime.predict(obs)
-            obs, reward, terminated, truncated, info = env.step(action)
+            policy_output = _coerce_policy_output(runtime.predict(obs))
+            obs, reward, terminated, truncated, info = env.step(policy_output)
             steps += 1
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
@@ -177,6 +210,55 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
+            control_trace.append(
+                {
+                    "control_step": steps,
+                    "policy_output": policy_output.tolist(),
+                    "commanded_action": list(info["post_policy_action"]),
+                    "clipped_action": list(info["clipped_action"]),
+                    "joint_saturation": list(info["joint_saturation"]),
+                    "action_saturated": bool(info["action_saturated"]),
+                    "qpos": list(info["qpos"]),
+                    "qvel": list(info["qvel"]),
+                    "ctrl": list(info["ctrl"]),
+                    "endpoint_distance_m": float(info["endpoint_distance"]),
+                    "held_steps": held_steps,
+                    "first_reach": bool(info["first_reach"]),
+                    "hold_interrupted": bool(info["hold_interrupted"]),
+                    **_branch_trace_fields(obs),
+                    "contact_count": int(info["contact_count"]),
+                    "contact_geom_pairs": [
+                        list(pair) for pair in info["contact_geom_pairs"]
+                    ],
+                    "joint_limit_distance": list(info["joint_limit_distance"]),
+                    "joint_limit_proximity": list(info["joint_limit_proximity"]),
+                    "joint_limit_active": list(info["joint_limit_active"]),
+                    "substep_trace": [
+                        {
+                            "qpos": list(substep["qpos"]),
+                            "qvel": list(substep["qvel"]),
+                            "ctrl": list(substep["ctrl"]),
+                            "endpoint_distance_m": float(
+                                substep["endpoint_distance"]
+                            ),
+                            "contact_count": int(substep["contact_count"]),
+                            "contact_geom_pairs": [
+                                list(pair) for pair in substep["contact_geom_pairs"]
+                            ],
+                            "joint_limit_distance": list(
+                                substep["joint_limit_distance"]
+                            ),
+                            "joint_limit_proximity": list(
+                                substep["joint_limit_proximity"]
+                            ),
+                            "joint_limit_active": list(
+                                substep["joint_limit_active"]
+                            ),
+                        }
+                        for substep in info["substep_trace"]
+                    ],
+                }
+            )
 
         branch_diagnostics = _summarize_branch_diagnostics(
             post_step_observations, held_steps_history
@@ -212,6 +294,13 @@ def evaluate_research_model(
                 **branch_diagnostics,
             }
         )
+        episode_traces.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "control_steps": control_trace,
+            }
+        )
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
@@ -228,10 +317,60 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
+            "episode_traces": episode_traces,
             "units": {
                 "distance": "cm",
                 "time": "control_steps",
                 "branch_error_norm": "radians",
+                "trace_endpoint_distance": "m",
+                "qpos": "radians",
+                "qvel": "radians_per_second",
+                "ctrl": "actuator command units sent to MuJoCo",
+                "joint_limit_distance": "radians",
+                "action": "post-policy actuator command units before/after [-1, 1] clipping",
+            },
+            "trace_definitions": {
+                "policy_output": (
+                    "The finite two-element vector returned by the loaded runtime "
+                    "before the environment policy-I/O mapping."
+                ),
+                "commanded_action": (
+                    "The finite two-element physical command after policy-I/O "
+                    "mapping and before environment clipping."
+                ),
+                "joint_saturation": (
+                    "Per-joint true when commanded_action is outside the inclusive "
+                    "environment action bounds; clipped_action is the value sent "
+                    "to MuJoCo."
+                ),
+                "joint_limit_distance": (
+                    "Minimum angular distance from each limited joint position to "
+                    "its configured lower or upper range edge."
+                ),
+                "joint_limit_proximity": (
+                    "Per-joint indicator true within one degree of a configured "
+                    "range edge; it is diagnostic only and does not affect control."
+                ),
+                "joint_limit_active": (
+                    "Per-joint indicator true when the joint position is at or "
+                    "outside a configured range edge."
+                ),
+                "contact_geom_pairs": (
+                    "MuJoCo contact geom integer pairs at the corresponding "
+                    "control boundary or simulator substep."
+                ),
+                "substep_trace": (
+                    "Ordered post-mj_step snapshots for every simulator step in "
+                    "the control interval; no extra dynamics step is performed."
+                ),
+                "first_reach": (
+                    "True only on the first post-control state in the episode "
+                    "with held_steps greater than zero."
+                ),
+                "hold_interrupted": (
+                    "True when a prior positive held_steps value is followed by "
+                    "a post-control state outside the success tolerance."
+                ),
             },
             "branch_diagnostic_definitions": {
                 "observation_contract": (
