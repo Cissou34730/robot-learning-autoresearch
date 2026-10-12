@@ -5456,47 +5456,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when synchronized matched-policy evidence contains, for the relevant outer-radius and difficult-angle strata and reached failures, joint position/velocity, commanded and clipped action or saturation, endpoint distance, branch attribution, contact/limit indicators, first-reach and hold-interruption traces, and the evidence supports a bounded positive, negative, limited, or inconclusive conclusion about which mechanism should determine the next intervention. If the measurement cannot distinguish the alternatives, close as inconclusive and preserve the unresolved distinction rather than treating the artifact association as causal.",
-          "goal_connection": "The strongest measured candidate is only 136/200 (68.0%), while the targeted candidate is 54/200 (27.0%); both are far below the 196/200 requirement. Distinguishing the failure mechanism can select a goal-linked intervention instead of repeating the already-negative targeted-exposure artifact or prematurely assessing either candidate. The inquiry will compare T1 and T2 on matched target strata while preserving the official task and sampled-hold semantics.",
-          "handoff_conclusion": "Established observations: M1 verified equilibrium, bounded actuation, repeatability, and reset behavior. M2 measured compiled local actuation and passive decay but did not establish learned reach or hold behavior. T1 trained the recorded PPO recipe with 14-20 cm exposure; its late training proxy was high, but M4 measured only 136/200 successes, with M8 finding 56/64 failures were no-reach and concentrated in 6-14 cm and difficult angles, while all 8 reached failures were open-attributed sampled-hold interruptions. For I2, M10 verified that the changed production training path sampled radii over the official 0.06-0.20 m interval with uniform radius-bin frequencies, represented all angle sectors, oversampled the M8-weak [-90,0) sector at 66.2% in the check sample versus 25% under the old uniform sampler, and preserved the reset/step API. T2 then trained a fresh PPO artifact with no exact saved-component matches to T1; its training proxy remained zero until the final checkpoints and reached only 0.01 at 120832 steps. M11 evaluated T2:checkpoint-120832 on a fresh non-overlapping 200-episode panel at 27.0%, and M12 validated its complete schema-6 mechanism artifact. Compared with M4/M8, T2 had 129/146 no-reach failures, improved 6-10 cm success from 34.6% to 52.6% but worsened 10-14 cm from 57.4% to 33.3% and 14-20 cm from 95.4% to 5.8%; reached sampled-hold failures increased from 8 to 17. All 17 reached failures were folded-attributed and folded occupancy was 87.7% among failure control steps, whereas the baseline's failure occupancy was 99.5% open. Interpretation: I2 establishes a negative complete-artifact comparison for this targeted sampler, not a causal verdict against exposure or PPO. The physical model's reset-demand and coupled-dynamics consequences remain consistent with radius/angle dependence. The new folded and outer-radius association makes branch-conditioned trajectory, dynamics/contact, braking, action authority, or runtime behavior consequential, but M12 does not distinguish these from observation, reward/interface, or learned-trajectory effects. The baseline and targeted artifacts also differ in learned weights, normalization/runtime artifacts, and trajectories, so no intended exposure effect alone is established. M2's local authority result does not rule out policy-level braking or configuration-dependent authority limits. The sampled hold remains discrete and continuous between-check containment is still unknown.",
-          "handoff_question": "Which observable mechanism\u2014branch-conditioned plant/contact or action-authority transients, observation/reward/interface or runtime mismatch, or learned trajectory\u2014accounts for T2's folded-attributed reached failures and outer-radius/angular regression relative to T1, and which intervention should be tested next toward 98%?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Which observable mechanism\u2014branch-conditioned plant/contact or action-authority transients, observation/reward/interface or runtime mismatch, or learned trajectory\u2014accounts for T2's folded-attributed reached failures and outer-radius/angular regression relative to T1, and which intervention should be tested next toward 98%?",
-          "rationale": "Open a bounded mechanism test rather than request the protected assessment: T1's 68.0% development result and T2's 27.0% result are both decisively below 98%, with T2 improving 6-10 cm but collapsing at 14-20 cm and producing 17 reached failures. M11/M12 establish the artifact-level regression and folded association, but their schema has only episode aggregates and branch occupancy; it cannot distinguish plant/contact/authority, observation/reward/interface, runtime, or learned-trajectory causes. The training logs add no causal trace: T1's proxy rose to about 0.97 late, whereas T2 stayed at zero until its final checkpoints and reached 0.01 at 120832, so terminal-checkpoint rank is not a sufficient candidate-selection or mechanism explanation. The expected contribution is a direct intervention choice toward the 98% goal; the cost is one bounded trace/evaluation effort, justified because each competing explanation would lead to a materially different next direction. Corrected interpretation: folded attribution is classifier-based association, not proof of folded contact or dynamics causation.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when synchronized matched-policy evidence contains, for the relevant outer-radius and difficult-angle strata and reached failures, joint position/velocity, commanded and clipped action or saturation, endpoint distance, branch attribution, contact/limit indicators, first-reach and hold-interruption traces, and the evidence supports a bounded positive, negative, limited, or inconclusive conclusion about which mechanism should determine the next intervention. If the measurement cannot distinguish the alternatives, close as inconclusive and preserve the unresolved distinction rather than treating the artifact association as causal.",
-        "goal_connection": "The strongest measured candidate is only 136/200 (68.0%), while the targeted candidate is 54/200 (27.0%); both are far below the 196/200 requirement. Distinguishing the failure mechanism can select a goal-linked intervention instead of repeating the already-negative targeted-exposure artifact or prematurely assessing either candidate. The inquiry will compare T1 and T2 on matched target strata while preserving the official task and sampled-hold semantics.",
-        "question": "Which observable mechanism\u2014branch-conditioned plant/contact or action-authority transients, observation/reward/interface or runtime mismatch, or learned trajectory\u2014accounts for T2's folded-attributed reached failures and outer-radius/angular regression relative to T1, and which intervention should be tested next toward 98%?",
-        "rationale": "Open a bounded mechanism test rather than request the protected assessment: T1's 68.0% development result and T2's 27.0% result are both decisively below 98%, with T2 improving 6-10 cm but collapsing at 14-20 cm and producing 17 reached failures. M11/M12 establish the artifact-level regression and folded association, but their schema has only episode aggregates and branch occupancy; it cannot distinguish plant/contact/authority, observation/reward/interface, runtime, or learned-trajectory causes. The training logs add no causal trace: T1's proxy rose to about 0.97 late, whereas T2 stayed at zero until its final checkpoints and reached 0.01 at 120832, so terminal-checkpoint rank is not a sufficient candidate-selection or mechanism explanation. The expected contribution is a direct intervention choice toward the 98% goal; the cost is one bounded trace/evaluation effort, justified because each competing explanation would lead to a materially different next direction. Corrected interpretation: folded attribution is classifier-based association, not proof of folded contact or dynamics causation."
-      }
-    },
-    "request_fingerprint": "7c5f397ef777a8a05ca7f288d86c576d55a7830483ad09ea95c73cdec7d4b897",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 and T2:checkpoint-120832 are archived learned candidates with development measurements M4 and M11 respectively. T1 is the stronger measured development artifact at 68.0%, but remains unassigned to working, best-known, or retained roles because it is far below the 98% goal and no official assessment is justified. T2 is unassigned after its 27.0% result. No candidate is retained and no protected official assessment has been requested.",
     "completed_operations": [
