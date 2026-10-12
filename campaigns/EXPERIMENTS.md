@@ -104,3 +104,4 @@
 | E40 | inquiry | I10 | completed |
 | E41 | checkpoint | - | checkpointed |
 | E42 | restore_recipe | I10 | restored |
+| M54 | measurement | I10 | failed |
