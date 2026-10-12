@@ -89,7 +89,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         condition_number = float(np.linalg.cond(planar_jacobian))
 
         joint_margins = []
-        for joint_id in range(self.model.nj):
+        for joint_id in range(self.model.njnt):
             qpos_index = self.model.jnt_qposadr[joint_id]
             lower, upper = self.model.jnt_range[joint_id]
             joint_position = self.data.qpos[qpos_index]
