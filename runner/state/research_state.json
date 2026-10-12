@@ -839,7 +839,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 6,
+    "measurement": 7,
     "session": 3,
     "training": 1
   },
@@ -1964,6 +1964,37 @@
       "status": "failed",
       "superseded_by": "M6",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T06:11:18Z",
+      "error": "robot_learning.lab.verify_evaluation_diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 302, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 296, in main\n    artifact = _check()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 224, in _check\n    evaluator_output = evaluation_module.evaluate_research_model(\n        Path(\"controlled-policy\"), episodes=1, seed=31415\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\evaluation.py\", line 125, in evaluate_research_model\n    env = make_evaluation_env(policy_runtime=runtime)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 177, in make_evaluation_env\n    env.observation_space = policy_runtime.observation_space\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'ZeroRuntime' object has no attribute 'observation_space'\n",
+      "id": "M6",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Validate the expanded research-evaluation trajectory diagnostics before measuring the learned candidate.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/d55227f5-1cbd-46bc-ac5c-41186b8b4148/evaluation_diagnostics_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/d55227f5-1cbd-46bc-ac5c-41186b8b4148/evaluation_diagnostics_verification.json",
+            "instrument": "python_module",
+            "label": "evaluation_trajectory_diagnostics_integrity",
+            "module": "robot_learning.lab.verify_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "I1 requires evidence beyond pooled success: sampled residual velocity and distance trajectories, posture/branch, Jacobian conditioning, and joint-limit margin. This focused check independently verifies the planar Jacobian, qvel-to-end-effector velocity mapping, limit margins, branch convention, rank-loss condition handling, repeated seeded reset behavior, and evaluator preservation of legacy fields plus full trajectory rows. It is a measurement-integrity check, not policy-performance evidence."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_evaluation_diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 302, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 296, in main\n    artifact = _check()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_evaluation_diagnostics.py\", line 224, in _check\n    evaluator_output = evaluation_module.evaluate_research_model(\n        Path(\"controlled-policy\"), episodes=1, seed=31415\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\evaluation.py\", line 125, in evaluate_research_model\n    env = make_evaluation_env(policy_runtime=runtime)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 177, in make_evaluation_env\n    env.observation_space = policy_runtime.observation_space\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'ZeroRuntime' object has no attribute 'observation_space'\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M7",
+      "supersedes": "M5"
     }
   ],
   "pending_operation": {
@@ -1992,7 +2023,7 @@
             "path": "robot_learning/lab/verify_dynamics_probe.py"
           },
           {
-            "fingerprint": "0abd8212ddc6aa0e19ec94ec9c13753676585e1f927575f1b34473806daf931d",
+            "fingerprint": "c09108c950522efd62234beb94d2abe45bf5a37fd8813ed1a99cf3617e78488a",
             "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
           },
           {
@@ -2029,7 +2060,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "0abd8212ddc6aa0e19ec94ec9c13753676585e1f927575f1b34473806daf931d",
+            "fingerprint": "c09108c950522efd62234beb94d2abe45bf5a37fd8813ed1a99cf3617e78488a",
             "path": "robot_learning/lab/verify_evaluation_diagnostics.py"
           }
         ],
@@ -2054,7 +2085,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M6",
+    "id": "M7",
     "inquiry_id": "I1",
     "kind": "measurement",
     "progress": "accepted",
@@ -2078,7 +2109,7 @@
     },
     "request_fingerprint": "23bda9d3aebc831ae8964393e727b05c679b442f3ea42256b249e3b2bee372cf",
     "session_id": "S3",
-    "supersedes": "M5"
+    "supersedes": "M6"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty; M3 is a system-identification measurement and E2 is an inquiry boundary, neither a policy candidate.",
