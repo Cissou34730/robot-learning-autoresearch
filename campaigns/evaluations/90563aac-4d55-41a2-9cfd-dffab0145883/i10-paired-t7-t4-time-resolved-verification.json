@@ -1,0 +1,10 @@
+{
+  "checked_scope": [],
+  "error": "live endpoint versus independent forward kinematics disagrees with its independent reference: actual=[0.21988856 0.00672873 0.02      ], expected=[0.21984115 0.00803427 0.02      ]",
+  "observed_vs_expected": {},
+  "passed": false,
+  "schema_version": 1,
+  "unchecked_scope": [
+    "The artifact was not fully checked after this defect."
+  ]
+}

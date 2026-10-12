@@ -5756,8 +5756,8 @@
   "counters": {
     "event": 41,
     "inquiry": 10,
-    "measurement": 25,
-    "session": 20,
+    "measurement": 27,
+    "session": 21,
     "training": 7
   },
   "human_goal": {
@@ -15768,9 +15768,241 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T00:25:21Z",
+      "error": "robot_learning.lab.verify_paired_time_resolved_rollout_measurement failed:\n\n",
+      "id": "M26",
+      "inquiry_id": "I10",
+      "kind": "measurement",
+      "request": {
+        "description": "I10 paired time-resolved acquisition mechanism test: compare fresh T7 direct-torque and current-source T4 on the same 12 target seeds, preserving complete 500-step trajectories and actual outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--t7-model",
+              "campaigns\\checkpoints\\candidates\\90563aac-4d55-41a2-9cfd-dffab0145883\\t7\\checkpoint-110592\\model.zip",
+              "--t4-model",
+              "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d\\model.zip",
+              "--seeds",
+              "4200,4201,4202,4203,4204,4205,4206,4207,4208,4209,4210,4261",
+              "--max-steps",
+              "500",
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json",
+            "instrument": "python_module",
+            "label": "I10 paired T7/T4 time-resolved acquisition mechanism test",
+            "module": "robot_learning.lab.paired_time_resolved_rollout_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json",
+              "--output",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved-verification.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved-verification.json",
+            "instrument": "python_module",
+            "label": "I10 independent verification of paired T7/T4 mechanism test",
+            "module": "robot_learning.lab.verify_paired_time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "M25 establishes that T7 fails almost entirely before first reach but cannot distinguish policy/runtime collapse from singular-start, saturation, braking, or compiled-plant limitations. M15's saturation signature belongs to T2 and cannot be promoted to T7. This matched probe uses ten T7 no-first-reach seeds plus the two T7 reach-then-interrupt seeds, with T4 evaluated on the identical target geometries. The result can redirect the next route: plant-like early q/qvel, endpoint velocity, saturation, joint-limit, and braking signatures would justify acquisition/control-timing redesign, while normal plant response with collapsed T7 policy behavior would favor learning exposure, reward credit, or runtime changes. It does not select a candidate or inherit the rejected T6 residual-torque scaffold."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_paired_time_resolved_rollout_measurement failed:\n\n",
+        "status": "failed"
+      },
+      "session_id": "S21",
+      "status": "failed",
+      "superseded_by": "M27",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--t7-model",
+            "campaigns\\checkpoints\\candidates\\90563aac-4d55-41a2-9cfd-dffab0145883\\t7\\checkpoint-110592\\model.zip",
+            "--t4-model",
+            "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d\\model.zip",
+            "--seeds",
+            "4200,4201,4202,4203,4204,4205,4206,4207,4208,4209,4210,4261",
+            "--max-steps",
+            "500",
+            "--artifact",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i10-paired-t7-t4-time-resolved.json",
+          "instrument": "python_module",
+          "label": "I10 paired T7/T4 time-resolved acquisition mechanism test",
+          "module": "robot_learning.lab.paired_time_resolved_rollout_measurement"
+        },
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json",
+            "--output",
+            "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved-verification.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/i10-paired-t7-t4-time-resolved-verification.json",
+          "instrument": "python_module",
+          "label": "I10 independent verification of paired T7/T4 mechanism test",
+          "module": "robot_learning.lab.verify_paired_time_resolved_rollout_measurement"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "96dc19ada1b2a42f2313d6a954263001de0b2fdda83c01140b3dad6ec60c8cf4",
+            "path": "robot_learning/lab/paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "263f34ad5587efe2bb0859535011b27f8c52d065cbdfed77baa461ea0bf87582",
+            "path": "robot_learning/lab/verify_direct_torque_training.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "1e0df4d37a7ac85e342bfaa3dee033e07d3198849addb90186751e654c679bc9",
+            "path": "robot_learning/lab/verify_paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+            "path": "robot_learning/lab/verify_residual_torque_policy.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+            "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "d0292defe0e01daf6b30f10f441a05768212ec72",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "96dc19ada1b2a42f2313d6a954263001de0b2fdda83c01140b3dad6ec60c8cf4",
+            "path": "robot_learning/lab/paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "1e0df4d37a7ac85e342bfaa3dee033e07d3198849addb90186751e654c679bc9",
+            "path": "robot_learning/lab/verify_paired_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/paired_time_resolved_rollout_measurement.py",
+          "robot_learning/lab/verify_paired_time_resolved_rollout_measurement.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M27",
+    "inquiry_id": "I10",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "I10 paired time-resolved acquisition mechanism test: compare fresh T7 direct-torque and current-source T4 on the same 12 target seeds, preserving complete 500-step trajectories and actual outcomes.",
+        "measurements": [
+          {
+            "args": [
+              "--t7-model",
+              "campaigns\\checkpoints\\candidates\\90563aac-4d55-41a2-9cfd-dffab0145883\\t7\\checkpoint-110592\\model.zip",
+              "--t4-model",
+              "campaigns\\checkpoints\\retained\\90563aac-4d55-41a2-9cfd-dffab0145883\\t4-c8cf701d5-cd6777a748e045a86aa86644ad9b5df6b61c1a49dd6605bf86744e44c4b09c1d\\model.zip",
+              "--seeds",
+              "4200,4201,4202,4203,4204,4205,4206,4207,4208,4209,4210,4261",
+              "--max-steps",
+              "500",
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json",
+            "instrument": "python_module",
+            "label": "I10 paired T7/T4 time-resolved acquisition mechanism test",
+            "module": "robot_learning.lab.paired_time_resolved_rollout_measurement"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved.json",
+              "--output",
+              "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved-verification.json"
+            ],
+            "artifact": "campaigns\\evaluations\\90563aac-4d55-41a2-9cfd-dffab0145883\\i10-paired-t7-t4-time-resolved-verification.json",
+            "instrument": "python_module",
+            "label": "I10 independent verification of paired T7/T4 mechanism test",
+            "module": "robot_learning.lab.verify_paired_time_resolved_rollout_measurement"
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "M25 establishes that T7 fails almost entirely before first reach but cannot distinguish policy/runtime collapse from singular-start, saturation, braking, or compiled-plant limitations. M15's saturation signature belongs to T2 and cannot be promoted to T7. This matched probe uses ten T7 no-first-reach seeds plus the two T7 reach-then-interrupt seeds, with T4 evaluated on the identical target geometries. The result can redirect the next route: plant-like early q/qvel, endpoint velocity, saturation, joint-limit, and braking signatures would justify acquisition/control-timing redesign, while normal plant response with collapsed T7 policy behavior would favor learning exposure, reward credit, or runtime changes. It does not select a candidate or inherit the rejected T6 residual-torque scaffold."
+      }
+    },
+    "request_fingerprint": "fd16005e3073e1f13564fc8b659013af0629c429b7a411b778e92476abacc58d",
+    "session_id": "S21",
+    "supersedes": "M26"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known on M23/M25's 153/160 current-source matched result but is not certified for official assessment. T7:checkpoint-110592 is a measured fresh direct-torque artifact at 0/160 and is rejected for candidate selection; its other checkpoints remain unmeasured training artifacts and training proxies do not establish development performance. The T6 persisted residual-torque artifacts remain rejected after 9/160 and 6/160 results. No working or retained role is assigned.",
     "completed_operations": [
@@ -15801,6 +16033,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b14ebddc-ac79-4094-9567-d91392c76882",
+    "id": "S21",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "objective": "Advance I10 toward an evidence-supported answer to its scientific question: What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "d0292defe0e01daf6b30f10f441a05768212ec72"
+  },
   "terminal_state": null
 }

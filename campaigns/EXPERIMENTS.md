@@ -75,3 +75,4 @@
 | E39 | checkpoint | I9 | checkpointed |
 | E40 | inquiry | I10 | completed |
 | E41 | checkpoint | - | checkpointed |
+| M26 | measurement | I10 | failed |
