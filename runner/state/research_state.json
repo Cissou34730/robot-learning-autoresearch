@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close with a positive, negative, limited, or inconclusive bounded answer after complete time-resolved and/or controlled acquisition/braking evidence distinguishes the consequential explanations enough to choose the next route, or after a goal-linked learned artifact implementing the selected route is measured on a matched development panel. The inquiry need not certify the official 196/200 objective; any candidate-selection claim must use complete development episodes and preserve first-reach, hold interruption, and maximum-held-step diagnostics.",
+    "goal_connection": "The best measured learned policy, T4:checkpoint-120832, succeeds on 153/160 matched development episodes and remains below the required 98% complete-hold objective. T7 fails primarily before first reach (158/160 no-first-reach, with only two two-step holds), so resolving whether its acquisition failure reflects a route-specific learning/exposure/runtime artifact or a plant-timing/saturation bottleneck can determine whether a redesigned learned route can recover the three T4 acquisition failures and reduce the four reach-then-interrupt failures without committing the campaign to the rejected T6 residual-torque scaffold.",
+    "handoff_conclusion": "Observed: M24's controlled verification found that the fresh training environment and exported candidate runtimes use DIRECT_CONTROL_PROFILE, while evaluation defaults remained direct and explicitly marked residual runtimes remained distinguishable. The same check observed exact clip-only action transmission across repeated changed states, repeated qpos/qvel/hold resets, unchanged interruption semantics, and separate targeted-reward consequences: acquisition progress/closeness without hold progress, held-step progress with near-target velocity/action regulation, and reset/penalty on interruption. Observed: T7 was a fresh 120,000-step-allocation PPO run over the full official radius range using that direct route and targeted objective; all saved checkpoints had zero training success. Its preserved late trajectory improved reward from approximately -23 to a plateau near -6.4, then remained at zero success, so training proxies nominated T7:checkpoint-110592 as the nonterminal proxy peak rather than the terminal checkpoint. Observed: M25 measured T7:checkpoint-110592 on the current f6bf4b99cf62 160-episode panel at 0/160. Its diagnostics contained 158 no-first-reach episodes and two first-reach events with maximum held steps of 2 and one interruption each; it did not produce a complete hold. The matched T4 control in the same operation achieved 153/160, consistent with M23, with three no-first-reach and four reach-then-interrupt failures. Interpretation: the tested fresh direct-torque PPO implementation did not improve T4 and lost both acquisition and hold capability, so I9 has a negative bounded answer. This does not disprove direct torque, full-radius training, PPO, or separated reward objectives generally; the tested artifact changed control profile, training initialization, and runtime persistence together, and the causal reason for its zero-success acquisition failure remains unresolved. The physical model's consequential predictions remain: singular escape and 20 ms saturation make acquisition/braking distinct from hold regulation, and the 100-step continuity requirement cannot be inferred from first reach. M24 supports the intended hold-aware objective at the controlled reward level, but neither M24 nor T7 establishes that this shaping predicts learned success. The protected official assessment remains distinct and has not been requested.",
+    "handoff_question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+    "handoff_source_session_id": "S19",
+    "id": "I10",
+    "opened_in_session": "S20",
+    "question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+    "rationale": "Opening further work is justified because T4 is materially closer to the goal than T7 but below 98%, while T7's 0/160 result is a route-specific negative result whose aggregate diagnostics expose catastrophic acquisition loss without identifying its cause. Existing M15 evidence supports saturation/joint-limit dynamics for an earlier T2 residual but does not establish that those dynamics caused T7's fresh direct-policy failure; M24 verified the direct route and objective but not the learning mechanism. A bounded discrimination followed by a route-specific capability test can change the candidate's capability, unlike re-ranking T4 or repeating the rejected persisted residual-torque recipe. Official assessment would terminate the campaign on a candidate with seven matched-panel failures and no protected-panel evidence, so it is not the better next action.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -5743,16 +5754,16 @@
     }
   },
   "counters": {
-    "event": 39,
-    "inquiry": 9,
+    "event": 40,
+    "inquiry": 10,
     "measurement": 25,
-    "session": 19,
+    "session": 20,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -15698,9 +15709,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T00:11:35Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive bounded answer after complete time-resolved and/or controlled acquisition/braking evidence distinguishes the consequential explanations enough to choose the next route, or after a goal-linked learned artifact implementing the selected route is measured on a matched development panel. The inquiry need not certify the official 196/200 objective; any candidate-selection claim must use complete development episodes and preserve first-reach, hold interruption, and maximum-held-step diagnostics.",
+        "goal_connection": "The best measured learned policy, T4:checkpoint-120832, succeeds on 153/160 matched development episodes and remains below the required 98% complete-hold objective. T7 fails primarily before first reach (158/160 no-first-reach, with only two two-step holds), so resolving whether its acquisition failure reflects a route-specific learning/exposure/runtime artifact or a plant-timing/saturation bottleneck can determine whether a redesigned learned route can recover the three T4 acquisition failures and reduce the four reach-then-interrupt failures without committing the campaign to the rejected T6 residual-torque scaffold.",
+        "question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+        "rationale": "Opening further work is justified because T4 is materially closer to the goal than T7 but below 98%, while T7's 0/160 result is a route-specific negative result whose aggregate diagnostics expose catastrophic acquisition loss without identifying its cause. Existing M15 evidence supports saturation/joint-limit dynamics for an earlier T2 residual but does not establish that those dynamics caused T7's fresh direct-policy failure; M24 verified the direct route and objective but not the learning mechanism. A bounded discrimination followed by a route-specific capability test can change the candidate's capability, unlike re-ranking T4 or repeating the rejected persisted residual-torque recipe. Official assessment would terminate the campaign on a candidate with seven matched-panel failures and no protected-panel evidence, so it is not the better next action."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close with a positive, negative, limited, or inconclusive bounded answer after complete time-resolved and/or controlled acquisition/braking evidence distinguishes the consequential explanations enough to choose the next route, or after a goal-linked learned artifact implementing the selected route is measured on a matched development panel. The inquiry need not certify the official 196/200 objective; any candidate-selection claim must use complete development episodes and preserve first-reach, hold interruption, and maximum-held-step diagnostics.",
+          "goal_connection": "The best measured learned policy, T4:checkpoint-120832, succeeds on 153/160 matched development episodes and remains below the required 98% complete-hold objective. T7 fails primarily before first reach (158/160 no-first-reach, with only two two-step holds), so resolving whether its acquisition failure reflects a route-specific learning/exposure/runtime artifact or a plant-timing/saturation bottleneck can determine whether a redesigned learned route can recover the three T4 acquisition failures and reduce the four reach-then-interrupt failures without committing the campaign to the rejected T6 residual-torque scaffold.",
+          "handoff_conclusion": "Observed: M24's controlled verification found that the fresh training environment and exported candidate runtimes use DIRECT_CONTROL_PROFILE, while evaluation defaults remained direct and explicitly marked residual runtimes remained distinguishable. The same check observed exact clip-only action transmission across repeated changed states, repeated qpos/qvel/hold resets, unchanged interruption semantics, and separate targeted-reward consequences: acquisition progress/closeness without hold progress, held-step progress with near-target velocity/action regulation, and reset/penalty on interruption. Observed: T7 was a fresh 120,000-step-allocation PPO run over the full official radius range using that direct route and targeted objective; all saved checkpoints had zero training success. Its preserved late trajectory improved reward from approximately -23 to a plateau near -6.4, then remained at zero success, so training proxies nominated T7:checkpoint-110592 as the nonterminal proxy peak rather than the terminal checkpoint. Observed: M25 measured T7:checkpoint-110592 on the current f6bf4b99cf62 160-episode panel at 0/160. Its diagnostics contained 158 no-first-reach episodes and two first-reach events with maximum held steps of 2 and one interruption each; it did not produce a complete hold. The matched T4 control in the same operation achieved 153/160, consistent with M23, with three no-first-reach and four reach-then-interrupt failures. Interpretation: the tested fresh direct-torque PPO implementation did not improve T4 and lost both acquisition and hold capability, so I9 has a negative bounded answer. This does not disprove direct torque, full-radius training, PPO, or separated reward objectives generally; the tested artifact changed control profile, training initialization, and runtime persistence together, and the causal reason for its zero-success acquisition failure remains unresolved. The physical model's consequential predictions remain: singular escape and 20 ms saturation make acquisition/braking distinct from hold regulation, and the 100-step continuity requirement cannot be inferred from first reach. M24 supports the intended hold-aware objective at the controlled reward level, but neither M24 nor T7 establishes that this shaping predicts learned success. The protected official assessment remains distinct and has not been requested.",
+          "handoff_question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+          "handoff_source_session_id": "S19",
+          "id": "I10",
+          "opened_in_session": "S20",
+          "question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+          "rationale": "Opening further work is justified because T4 is materially closer to the goal than T7 but below 98%, while T7's 0/160 result is a route-specific negative result whose aggregate diagnostics expose catastrophic acquisition loss without identifying its cause. Existing M15 evidence supports saturation/joint-limit dynamics for an earlier T2 residual but does not establish that those dynamics caused T7's fresh direct-policy failure; M24 verified the direct route and objective but not the learning mechanism. A bounded discrimination followed by a route-specific capability test can change the candidate's capability, unlike re-ranking T4 or repeating the rejected persisted residual-torque recipe. Official assessment would terminate the campaign on a candidate with seven matched-panel failures and no protected-panel evidence, so it is not the better next action.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive bounded answer after complete time-resolved and/or controlled acquisition/braking evidence distinguishes the consequential explanations enough to choose the next route, or after a goal-linked learned artifact implementing the selected route is measured on a matched development panel. The inquiry need not certify the official 196/200 objective; any candidate-selection claim must use complete development episodes and preserve first-reach, hold interruption, and maximum-held-step diagnostics.",
+        "goal_connection": "The best measured learned policy, T4:checkpoint-120832, succeeds on 153/160 matched development episodes and remains below the required 98% complete-hold objective. T7 fails primarily before first reach (158/160 no-first-reach, with only two two-step holds), so resolving whether its acquisition failure reflects a route-specific learning/exposure/runtime artifact or a plant-timing/saturation bottleneck can determine whether a redesigned learned route can recover the three T4 acquisition failures and reduce the four reach-then-interrupt failures without committing the campaign to the rejected T6 residual-torque scaffold.",
+        "question": "What mechanism prevents the fresh full-radius direct-torque policy from acquiring targets, and can a goal-linked route that addresses that mechanism credibly improve T4's seven-failure current-source residual without inheriting the rejected persisted residual-torque scaffold?",
+        "rationale": "Opening further work is justified because T4 is materially closer to the goal than T7 but below 98%, while T7's 0/160 result is a route-specific negative result whose aggregate diagnostics expose catastrophic acquisition loss without identifying its cause. Existing M15 evidence supports saturation/joint-limit dynamics for an earlier T2 residual but does not establish that those dynamics caused T7's fresh direct-policy failure; M24 verified the direct route and objective but not the learning mechanism. A bounded discrimination followed by a route-specific capability test can change the candidate's capability, unlike re-ranking T4 or repeating the rejected persisted residual-torque recipe. Official assessment would terminate the campaign on a candidate with seven matched-panel failures and no protected-panel evidence, so it is not the better next action."
+      }
+    },
+    "request_fingerprint": "c36f9de24e3fe568c78fcc23eb75cc7f12b7b8fcf787f75b877a60e701040414",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result and is not certified for official assessment. T7:checkpoint-110592 is a measured fresh direct-torque artifact at 0/160 and is rejected for further candidate selection. T7's other checkpoints remain unmeasured training artifacts; their training proxies do not establish development performance. The T6 persisted residual-torque artifacts remain rejected at 9/160 and 6/160 under the matched evaluator. No working or retained role is assigned.",
     "completed_operations": [
@@ -15737,6 +15811,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f0038cfb-175d-4fd6-9a18-715d35f6c352",
+    "id": "S20",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E40"
+    ],
+    "scientific_parent_commit": "645b5f3dd36f6dc53685fd430421618f4acd5b41"
+  },
   "terminal_state": null
 }
