@@ -1,4 +1,4 @@
-"""Paired time-resolved rollout measurement for the T7/T4 comparison."""
+"""Paired time-resolved rollout measurement for a labeled model comparison."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 HOLD_STEPS_REQUIRED = 100
 BRANCH_NEAR_TOLERANCE_RAD = 0.10
 JOINT_LIMIT_TOLERANCE_RAD = 1e-10
@@ -54,12 +54,35 @@ def _parse_seeds(values: Sequence[str], field: str) -> list[int]:
             seed = int(token, 10)
         except ValueError as exc:
             raise ValueError(f"{field} contains malformed seed {token!r}") from exc
-        if seed < 0 or str(seed) != token.lstrip("+"):
+        if seed < 0:
+            raise ValueError(f"{field} contains a negative seed {token!r}")
+        if str(seed) != token:
             raise ValueError(f"{field} contains malformed seed {token!r}")
         seeds.append(seed)
     if len(set(seeds)) != len(seeds):
         raise ValueError(f"{field} contains duplicate seeds")
     return seeds
+
+
+def _validate_seeds(seeds: Sequence[int]) -> list[int]:
+    if not seeds:
+        raise ValueError("seeds must contain at least one integer seed")
+    normalized = []
+    for seed in seeds:
+        if isinstance(seed, bool) or not isinstance(seed, (int, np.integer)):
+            raise ValueError("seeds must contain only integer values")
+        if int(seed) < 0:
+            raise ValueError("seeds must not contain negative values")
+        normalized.append(int(seed))
+    if len(set(normalized)) != len(normalized):
+        raise ValueError("seeds must not contain duplicates")
+    return normalized
+
+
+def _validate_label(label: str, field: str) -> str:
+    if not isinstance(label, str) or not label.strip():
+        raise ValueError(f"{field} must be a non-empty label")
+    return label
 
 
 def _resolve_repository_path(path: Path) -> Path:
@@ -392,7 +415,9 @@ def _rollout(
     }
 
 
-def _candidate_record(label: str, model_path: Path, seeds: Sequence[int], max_steps: int) -> dict[str, Any]:
+def _candidate_record(
+    label: str, model_path: Path, seeds: Sequence[int], max_steps: int
+) -> dict[str, Any]:
     runtime_path = model_path.parent / "policy_runtime.pkl"
     if not model_path.is_file():
         raise FileNotFoundError(f"missing saved model: {model_path}")
@@ -430,35 +455,52 @@ def _candidate_record(label: str, model_path: Path, seeds: Sequence[int], max_st
 
 
 def run_measurement(
-    t7_model: Path,
-    t4_model: Path,
+    candidate_model: Path,
+    reference_model: Path,
+    candidate_label: str,
+    reference_label: str,
     seeds: Sequence[int],
     max_steps: int,
 ) -> dict[str, Any]:
-    if not seeds:
-        raise ValueError("seeds must contain at least one seed")
-    if len(set(seeds)) != len(seeds):
-        raise ValueError("seeds must not contain duplicates")
+    normalized_seeds = _validate_seeds(seeds)
+    candidate_label = _validate_label(candidate_label, "candidate_label")
+    reference_label = _validate_label(reference_label, "reference_label")
+    if candidate_label == reference_label:
+        raise ValueError("candidate and reference labels must be distinct")
     if max_steps != MAX_EPISODE_STEPS:
         raise ValueError("max_steps must be the exact 500-step evaluation horizon")
-    t7_path = _resolve_repository_path(t7_model)
-    t4_path = _resolve_repository_path(t4_model)
-    if t7_path == t4_path:
-        raise ValueError("T7 and T4 model paths must be distinct")
+    candidate_path = _resolve_repository_path(candidate_model)
+    reference_path = _resolve_repository_path(reference_model)
+    if candidate_path == reference_path:
+        raise ValueError("candidate and reference model paths must be distinct")
     candidates = [
-        _candidate_record("t7", t7_path, seeds, max_steps),
-        _candidate_record("t4", t4_path, seeds, max_steps),
+        _candidate_record(candidate_label, candidate_path, normalized_seeds, max_steps),
+        _candidate_record(reference_label, reference_path, normalized_seeds, max_steps),
     ]
-    t7_by_seed = {rollout["seed"]: rollout for rollout in candidates[0]["rollouts"]}
-    t4_by_seed = {rollout["seed"]: rollout for rollout in candidates[1]["rollouts"]}
+    candidate_fingerprints = {
+        candidate["model"]["sha256"] for candidate in candidates
+    }
+    if len(candidate_fingerprints) != 2:
+        raise ValueError("candidate and reference model fingerprints must be distinct")
+    candidate_by_seed = {
+        rollout["seed"]: rollout for rollout in candidates[0]["rollouts"]
+    }
+    reference_by_seed = {
+        rollout["seed"]: rollout for rollout in candidates[1]["rollouts"]
+    }
     target_pairs = []
-    for seed in seeds:
-        t7_target = t7_by_seed[seed]["target"]["position_m"]
-        t4_target = t4_by_seed[seed]["target"]["position_m"]
-        if t7_target != t4_target:
+    for seed in normalized_seeds:
+        candidate_target = candidate_by_seed[seed]["target"]["position_m"]
+        reference_target = reference_by_seed[seed]["target"]["position_m"]
+        if candidate_target != reference_target:
             raise ValueError(f"target geometry differs between candidates at seed {seed}")
         target_pairs.append(
-            {"seed": seed, "t7_target_position_m": t7_target, "t4_target_position_m": t4_target, "exact_match": True}
+            {
+                "seed": seed,
+                "candidate_target_position_m": candidate_target,
+                "reference_target_position_m": reference_target,
+                "exact_match": True,
+            }
         )
     return {
         "schema_version": SCHEMA_VERSION,
@@ -517,7 +559,11 @@ def run_measurement(
             },
             "outcomes": "No candidate role or success expectation is imposed.",
         },
-        "requested_probe_seeds": list(seeds),
+        "requested_probe_seeds": normalized_seeds,
+        "model_roles": {
+            "candidate_label": candidate_label,
+            "reference_label": reference_label,
+        },
         "reset_evidence": {
             "each_candidate_and_seed_reset_independently": True,
             "initial_qpos_rad": [0.0, 0.0],
@@ -534,13 +580,22 @@ def run_measurement(
 
 
 def write_measurement(
-    t7_model: Path,
-    t4_model: Path,
+    candidate_model: Path,
+    reference_model: Path,
+    candidate_label: str,
+    reference_label: str,
     seeds: Sequence[int],
     max_steps: int,
     artifact_path: Path,
 ) -> None:
-    result = run_measurement(t7_model, t4_model, seeds, max_steps)
+    result = run_measurement(
+        candidate_model,
+        reference_model,
+        candidate_label,
+        reference_label,
+        seeds,
+        max_steps,
+    )
     destination = _resolve_repository_path(artifact_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
@@ -551,17 +606,21 @@ def write_measurement(
 
 def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Record paired time-resolved T7 and T4 rollout mechanisms."
+        description="Record paired time-resolved rollout mechanisms for two labeled models."
     )
-    parser.add_argument("--t7-model", required=True, type=Path)
-    parser.add_argument("--t4-model", required=True, type=Path)
+    parser.add_argument("--candidate-model", required=True, type=Path)
+    parser.add_argument("--reference-model", required=True, type=Path)
+    parser.add_argument("--candidate-label", required=True)
+    parser.add_argument("--reference-label", required=True)
     parser.add_argument("--seeds", required=True, nargs="+")
     parser.add_argument("--max-steps", required=True, type=int)
     parser.add_argument("--artifact", required=True, type=Path)
     args = parser.parse_args(argv)
     write_measurement(
-        args.t7_model,
-        args.t4_model,
+        args.candidate_model,
+        args.reference_model,
+        args.candidate_label,
+        args.reference_label,
         _parse_seeds(args.seeds, "seeds"),
         args.max_steps,
         args.artifact,

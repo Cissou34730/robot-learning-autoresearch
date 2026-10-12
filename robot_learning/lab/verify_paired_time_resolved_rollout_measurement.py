@@ -1,11 +1,11 @@
-"""Independent verifier for the paired T7/T4 rollout artifact."""
+"""Independent verifier for a labeled paired time-resolved rollout artifact."""
 
 from __future__ import annotations
 
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import mujoco
 import numpy as np
@@ -19,20 +19,6 @@ from contracts.task_spec import MAX_EPISODE_STEPS, SUCCESS_THRESHOLD
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_SEEDS = [
-    4200,
-    4201,
-    4202,
-    4203,
-    4204,
-    4205,
-    4206,
-    4207,
-    4208,
-    4209,
-    4210,
-    4261,
-]
 HOLD_STEPS_REQUIRED = 100
 BRANCH_NEAR_TOLERANCE_RAD = 0.10
 JOINT_LIMIT_TOLERANCE_RAD = 1e-10
@@ -46,6 +32,36 @@ class VerificationError(ValueError):
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise VerificationError(message)
+
+
+def _parse_seeds(values: Sequence[str], field: str) -> list[int]:
+    tokens: list[str] = []
+    for value in values:
+        tokens.extend(value.replace(",", " ").split())
+    if not tokens:
+        raise VerificationError(f"{field} must contain at least one integer seed")
+    seeds: list[int] = []
+    for token in tokens:
+        try:
+            seed = int(token, 10)
+        except ValueError as exc:
+            raise VerificationError(
+                f"{field} contains malformed seed {token!r}"
+            ) from exc
+        if seed < 0:
+            raise VerificationError(f"{field} contains a negative seed {token!r}")
+        if str(seed) != token:
+            raise VerificationError(f"{field} contains malformed seed {token!r}")
+        seeds.append(seed)
+    if len(set(seeds)) != len(seeds):
+        raise VerificationError(f"{field} contains duplicate seeds")
+    return seeds
+
+
+def _validate_label(label: str, field: str) -> str:
+    if not isinstance(label, str) or not label.strip():
+        raise VerificationError(f"{field} must be a non-empty label")
+    return label
 
 
 def _array(value: Any, shape: tuple[int, ...], field: str) -> np.ndarray:
@@ -418,20 +434,41 @@ def _trace_signature(rollout: dict[str, Any]) -> tuple[Any, ...]:
     )
 
 
-def verify_artifact(artifact_path: Path) -> dict[str, Any]:
+def verify_artifact(
+    artifact_path: Path,
+    candidate_label: str,
+    reference_label: str,
+    expected_seeds: Sequence[int],
+) -> dict[str, Any]:
     path = artifact_path if artifact_path.is_absolute() else REPOSITORY_ROOT / artifact_path
     with path.open("r", encoding="utf-8") as handle:
         artifact = json.load(handle)
-    _require(artifact["schema_version"] == 1, "unsupported artifact schema")
+    candidate_label = _validate_label(candidate_label, "candidate_label")
+    reference_label = _validate_label(reference_label, "reference_label")
+    _require(
+        candidate_label != reference_label,
+        "candidate and reference labels must be distinct",
+    )
+    expected_seeds = list(expected_seeds)
+    _require(bool(expected_seeds), "expected seed list must not be empty")
+    _require(
+        len(set(expected_seeds)) == len(expected_seeds)
+        and all(isinstance(seed, int) and seed >= 0 for seed in expected_seeds),
+        "expected seeds must be distinct non-negative integers",
+    )
+    _require(artifact["schema_version"] == 2, "unsupported artifact schema")
     _require(
         artifact["measurement"]
         == "paired_time_resolved_rollout_mechanism_discrimination",
         "wrong measurement",
     )
     _require(
-        artifact["requested_probe_seeds"] == EXPECTED_SEEDS,
-        "probe seeds are not the exact I10 seed list",
+        artifact["requested_probe_seeds"] == expected_seeds,
+        "probe seeds do not match the explicitly requested seed list",
     )
+    roles = artifact["model_roles"]
+    _require(roles["candidate_label"] == candidate_label, "candidate label metadata is wrong")
+    _require(roles["reference_label"] == reference_label, "reference label metadata is wrong")
     semantics = artifact["evaluation_semantics"]
     _require(
         semantics["frame_skip"] == 10
@@ -482,7 +519,18 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
     candidates = artifact["candidates"]
     _require(isinstance(candidates, list) and len(candidates) == 2, "two candidate records are required")
     by_id = {candidate["candidate_id"]: candidate for candidate in candidates}
-    _require(set(by_id) == {"t7", "t4"}, "candidate IDs are not exactly t7 and t4")
+    _require(
+        set(by_id) == {candidate_label, reference_label},
+        "candidate IDs do not match the expected labels",
+    )
+    for candidate in candidates:
+        model_fingerprint = candidate["model"]["sha256"]
+        _require(
+            isinstance(model_fingerprint, str)
+            and len(model_fingerprint) == 64
+            and all(character in "0123456789abcdef" for character in model_fingerprint),
+            "candidate model fingerprint is missing or malformed",
+        )
     model_fingerprints = {candidate["model"]["sha256"] for candidate in candidates}
     _require(len(model_fingerprints) == 2, "candidate model fingerprints are not distinct")
     for candidate in candidates:
@@ -497,11 +545,11 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
     _require(model.nq == 2 and model.nv == 2 and model.nu == 2, "official XML dimensions are unexpected")
     checked: dict[str, list[dict[str, Any]]] = {}
     rollouts_by_seed: dict[str, dict[int, dict[str, Any]]] = {}
-    for candidate_id in ("t7", "t4"):
+    for candidate_id in (candidate_label, reference_label):
         candidate = by_id[candidate_id]
         rollouts = candidate["rollouts"]
         _require(
-            [int(rollout["seed"]) for rollout in rollouts] == EXPECTED_SEEDS,
+            [int(rollout["seed"]) for rollout in rollouts] == expected_seeds,
             f"{candidate_id} rollouts do not preserve the exact seed order",
         )
         candidate_checked = []
@@ -515,6 +563,10 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
         _require(int(summary["episodes"]) == len(rollouts), f"{candidate_id} episode summary is wrong")
         _require(int(summary["successes"]) == successes, f"{candidate_id} success summary is wrong")
         _require(int(summary["failures"]) == len(rollouts) - successes, f"{candidate_id} failure summary is wrong")
+        _require(
+            bool(summary["success_values_preserved"]),
+            f"{candidate_id} success values were not preserved",
+        )
         checked[candidate_id] = candidate_checked
 
     discrepancy_by_candidate: dict[str, list[dict[str, Any]]] = {}
@@ -556,54 +608,74 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
 
     pairing = artifact["target_pairing"]
     _require(bool(pairing["exact_match_all_seeds"]), "target pairing evidence is false")
-    _require([int(item["seed"]) for item in pairing["by_seed"]] == EXPECTED_SEEDS, "target pairing seed list is wrong")
-    for seed in EXPECTED_SEEDS:
-        t7_target = rollouts_by_seed["t7"][seed]["target"]["position_m"]
-        t4_target = rollouts_by_seed["t4"][seed]["target"]["position_m"]
-        _require(t7_target == t4_target, f"target geometry differs at seed {seed}")
+    _require(
+        [int(item["seed"]) for item in pairing["by_seed"]] == expected_seeds,
+        "target pairing seed list is wrong",
+    )
+    for seed in expected_seeds:
+        candidate_target = rollouts_by_seed[candidate_label][seed]["target"]["position_m"]
+        reference_target = rollouts_by_seed[reference_label][seed]["target"]["position_m"]
+        _require(
+            candidate_target == reference_target,
+            f"target geometry differs at seed {seed}",
+        )
         pair = next(item for item in pairing["by_seed"] if int(item["seed"]) == seed)
         _require(bool(pair["exact_match"]), f"target pairing flag is false at seed {seed}")
-        _require(pair["t7_target_position_m"] == t7_target, f"T7 pairing evidence is stale at seed {seed}")
-        _require(pair["t4_target_position_m"] == t4_target, f"T4 pairing evidence is stale at seed {seed}")
+        _require(
+            pair["candidate_target_position_m"] == candidate_target,
+            f"candidate pairing evidence is stale at seed {seed}",
+        )
+        _require(
+            pair["reference_target_position_m"] == reference_target,
+            f"reference pairing evidence is stale at seed {seed}",
+        )
 
     differences = []
-    for seed in EXPECTED_SEEDS:
-        t7_signature = _trace_signature(rollouts_by_seed["t7"][seed])
-        t4_signature = _trace_signature(rollouts_by_seed["t4"][seed])
-        if t7_signature != t4_signature:
+    for seed in expected_seeds:
+        candidate_signature = _trace_signature(rollouts_by_seed[candidate_label][seed])
+        reference_signature = _trace_signature(rollouts_by_seed[reference_label][seed])
+        if candidate_signature != reference_signature:
             differences.append(seed)
-    _require(differences, "T7 and T4 traces appear silently substituted")
+    _require(differences, "candidate and reference traces appear silently substituted")
 
-    t7_checked = checked["t7"]
+    candidate_checked = checked[candidate_label]
     _require(
-        any(item["first_reach_step"] is None for item in t7_checked),
-        "T7 has no no-first-reach probe",
+        any(item["first_reach_step"] is None for item in candidate_checked),
+        "candidate has no no-first-reach probe",
     )
     _require(
         any(
             item["first_reach_step"] is not None and item["interruptions"] > 0
-            for item in t7_checked
+            for item in candidate_checked
         ),
-        "T7 has no reach-then-interrupt probe",
+        "candidate has no reach-then-interrupt probe",
     )
     _require(
         any(item["saw_continued"] for items in checked.values() for item in items),
         "traces do not exercise repeated in-tolerance updates",
     )
     _require(
-        any(item["interruptions"] > 0 for item in t7_checked),
-        "traces do not exercise a hold interruption",
+        any(item["interruptions"] > 0 for item in candidate_checked),
+        "candidate traces do not exercise a hold interruption",
     )
     return {
-        "checked_candidates": ["t7", "t4"],
-        "checked_seeds": EXPECTED_SEEDS,
-        "checked_rollouts": 2 * len(EXPECTED_SEEDS),
+        "checked_candidates": [candidate_label, reference_label],
+        "checked_seeds": expected_seeds,
+        "checked_rollouts": 2 * len(expected_seeds),
         "checked_steps": sum(
             item["steps"] for items in checked.values() for item in items
         ),
         "target_pairing_checked": True,
         "distinct_model_fingerprints": True,
         "runtime_fingerprints_recorded": True,
+        "actual_outcomes": {
+            label: {
+                "episodes": int(by_id[label]["outcome_summary"]["episodes"]),
+                "successes": int(by_id[label]["outcome_summary"]["successes"]),
+                "failures": int(by_id[label]["outcome_summary"]["failures"]),
+            }
+            for label in (candidate_label, reference_label)
+        },
         "trace_difference_seeds": differences,
         "kinematic_discrepancy": {
             "nonzero_discrepancy_samples": total_nonzero_discrepancy_samples,
@@ -612,12 +684,14 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
             "first_nonzero_discrepancy": first_nonzero_discrepancy,
             "by_candidate": discrepancy_by_candidate,
         },
-        "t7_no_first_reach_seeds": sorted(
-            item["seed"] for item in t7_checked if item["first_reach_step"] is None
-        ),
-        "t7_reach_then_interrupt_seeds": sorted(
+        "candidate_no_first_reach_seeds": sorted(
             item["seed"]
-            for item in t7_checked
+            for item in candidate_checked
+            if item["first_reach_step"] is None
+        ),
+        "candidate_reach_then_interrupt_seeds": sorted(
+            item["seed"]
+            for item in candidate_checked
             if item["first_reach_step"] is not None and item["interruptions"] > 0
         ),
     }
@@ -625,26 +699,44 @@ def verify_artifact(artifact_path: Path) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Verify a paired time-resolved T7/T4 rollout artifact."
+        description="Verify a labeled paired time-resolved rollout artifact."
     )
     parser.add_argument("--artifact", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--candidate-label", required=True)
+    parser.add_argument("--reference-label", required=True)
+    parser.add_argument("--seeds", required=True, nargs="+")
     args = parser.parse_args(argv)
     output = args.output if args.output.is_absolute() else REPOSITORY_ROOT / args.output
     try:
-        observed = verify_artifact(args.artifact)
+        expected_seeds = _parse_seeds(args.seeds, "seeds")
+        observed = verify_artifact(
+            args.artifact,
+            args.candidate_label,
+            args.reference_label,
+            expected_seeds,
+        )
         result = {
-            "schema_version": 1,
+            "schema_version": 2,
             "passed": True,
-            "observed_vs_expected": observed,
+            "observed_vs_expected": {
+                "observed": observed,
+                "expected": {
+                    "candidate_label": args.candidate_label,
+                    "reference_label": args.reference_label,
+                    "seeds": expected_seeds,
+                    "max_control_steps": MAX_EPISODE_STEPS,
+                },
+            },
             "checked_scope": [
-                "exact I10 probe seeds and both independent candidate records",
-                "candidate/model/runtime fingerprints and non-substituted traces",
+                "explicit probe seeds and both independently reset labeled model records",
+                "expected candidate/reference labels, model/runtime fingerprints, and non-substituted traces",
                 "per-candidate reset evidence and repeated qpos/qvel transitions",
                 "official MuJoCo forward kinematics and translational Jacobian-times-qvel endpoint velocity",
                 "live endpoint/reference discrepancy norms, live distance, tolerance, hold, interruption, and termination semantics",
                 "clipped controls, actuator/contact records, bounded IK, and dynamics quantities",
-                "paired target geometry and T7 no-first-reach plus reach-then-interrupt behavior",
+                "paired target geometry, candidate no-first-reach, reach-then-interrupt, and repeated in-tolerance behavior",
+                "actual outcome summaries for both labeled records",
             ],
             "unchecked_scope": [
                 "scientific validity of the proposed mechanism interpretation",
@@ -663,10 +755,22 @@ def main(argv: list[str] | None = None) -> None:
         json.JSONDecodeError,
     ) as exc:
         result = {
-            "schema_version": 1,
+            "schema_version": 2,
             "passed": False,
             "error": str(exc),
-            "observed_vs_expected": {},
+            "observed_vs_expected": {
+                "observed": {},
+                "expected": {
+                    "candidate_label": args.candidate_label,
+                    "reference_label": args.reference_label,
+                    "seeds": (
+                        expected_seeds
+                        if "expected_seeds" in locals()
+                        else []
+                    ),
+                    "max_control_steps": MAX_EPISODE_STEPS,
+                },
+            },
             "checked_scope": [],
             "unchecked_scope": ["The artifact was not fully checked after this defect."],
         }
