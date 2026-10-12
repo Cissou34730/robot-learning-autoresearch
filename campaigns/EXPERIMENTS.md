@@ -66,3 +66,4 @@
 | M29 | measurement | I7 | completed |
 | T6 | training | I7 | completed |
 | M30 | measurement | I7 | completed |
+| M31 | measurement | I7 | failed |
