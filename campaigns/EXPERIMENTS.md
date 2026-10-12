@@ -70,3 +70,4 @@
 | E37 | checkpoint | - | checkpointed |
 | M24 | measurement | I9 | completed |
 | T7 | training | I9 | completed |
+| M25 | measurement | I9 | completed |
