@@ -191,7 +191,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/bbdc5a56-4a10-429b-b02e-db3dc4b30405/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/bbdc5a56-4a10-429b-b02e-db3dc4b30405/evaluation-bbdc5a56-4a10-429b-b02e-db3dc4b30405-m5-T1-checkpoint-120832-160ep-seed4200-2ca65bb66982.json"
+      ],
       "fingerprint": "c3496e6267d396ddec7c32a9f87cabda4a6b4f5bc3bc810ff9fc36a736c5789a",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 4,
+    "measurement": 5,
     "session": 3,
     "training": 1
   },
@@ -2315,9 +2317,610 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T23:09:22Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Goal-relevant development evaluation of T1:checkpoint-120832 under the official target distribution with complete-hold and mechanism diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1-checkpoint-120832-official-exposure-development",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 produced the first learned candidates after exposure to 0.06-0.20 m. The checkpoint-120832 artifact is selected because its recorded training proxy success (0.58) is the highest among the saved checkpoints; this is a candidate-selection rationale, not evidence of development performance or a terminal-checkpoint privilege. The independent 160-episode panel uses the research runtime with the official radius/angle distribution and now records complete episode outcomes, reach versus hold continuity, target geometry, realized branch and branch residuals, action saturation, joint/Cartesian velocity, Jacobian conditioning, joint-limit margin, and all ten-internal-step occupancy diagnostics. These observations directly discriminate the active I1 alternatives while preserving the protected evaluator boundary."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1-checkpoint-120832-official-exposure-development",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/bbdc5a56-4a10-429b-b02e-db3dc4b30405/evaluation-bbdc5a56-4a10-429b-b02e-db3dc4b30405-m5-T1-checkpoint-120832-160ep-seed4200-2ca65bb66982.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_components_observed",
+                      "action_saturated_components",
+                      "action_saturation_fraction",
+                      "cartesian_velocity_max_m_per_s",
+                      "cartesian_velocity_mean_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "ik_folded_branch_residual_final_rad",
+                      "ik_folded_branch_residual_mean_rad",
+                      "ik_folded_branch_residual_min_rad",
+                      "ik_open_branch_residual_final_rad",
+                      "ik_open_branch_residual_mean_rad",
+                      "ik_open_branch_residual_min_rad",
+                      "in_tolerance_steps",
+                      "internal_out_of_tolerance_samples",
+                      "internal_step_max_distance_cm",
+                      "internal_step_min_distance_cm",
+                      "internal_step_samples",
+                      "jacobian_condition_number_max",
+                      "jacobian_condition_number_mean",
+                      "jacobian_determinant_max_m2",
+                      "jacobian_determinant_min_abs_m2",
+                      "jacobian_determinant_min_m2",
+                      "joint_limit_margin_min_rad",
+                      "joint_velocity_max_rad_per_s",
+                      "joint_velocity_mean_rad_per_s",
+                      "max_held_run_control_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "realized_elbow_sign",
+                      "realized_elbow_sign_final",
+                      "realized_elbow_sign_samples",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 13,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/internal_samples",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/qvel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/cartesian_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/ik_branch_residual",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_determinant",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_condition_number",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_limit_margin",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a9efb18b14e250899ce993413f6cd97426c5a4731c6fa531d1e47cce6f84c913",
+              "evaluation_semantics": "2ca65bb66982",
+              "model_fingerprint": "c3496e6267d396ddec7c32a9f87cabda4a6b4f5bc3bc810ff9fc36a736c5789a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "2ca65bb66982",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/bbdc5a56-4a10-429b-b02e-db3dc4b30405/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1-checkpoint-120832-official-exposure-development",
+          "model_fingerprint": "c3496e6267d396ddec7c32a9f87cabda4a6b4f5bc3bc810ff9fc36a736c5789a",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1-checkpoint-120832-official-exposure-development",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/bbdc5a56-4a10-429b-b02e-db3dc4b30405/evaluation-bbdc5a56-4a10-429b-b02e-db3dc4b30405-m5-T1-checkpoint-120832-160ep-seed4200-2ca65bb66982.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "action_components_observed",
+                    "action_saturated_components",
+                    "action_saturation_fraction",
+                    "cartesian_velocity_max_m_per_s",
+                    "cartesian_velocity_mean_m_per_s",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "ik_folded_branch_residual_final_rad",
+                    "ik_folded_branch_residual_mean_rad",
+                    "ik_folded_branch_residual_min_rad",
+                    "ik_open_branch_residual_final_rad",
+                    "ik_open_branch_residual_mean_rad",
+                    "ik_open_branch_residual_min_rad",
+                    "in_tolerance_steps",
+                    "internal_out_of_tolerance_samples",
+                    "internal_step_max_distance_cm",
+                    "internal_step_min_distance_cm",
+                    "internal_step_samples",
+                    "jacobian_condition_number_max",
+                    "jacobian_condition_number_mean",
+                    "jacobian_determinant_max_m2",
+                    "jacobian_determinant_min_abs_m2",
+                    "jacobian_determinant_min_m2",
+                    "joint_limit_margin_min_rad",
+                    "joint_velocity_max_rad_per_s",
+                    "joint_velocity_mean_rad_per_s",
+                    "max_held_run_control_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "realized_elbow_sign",
+                    "realized_elbow_sign_final",
+                    "realized_elbow_sign_samples",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 13,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/target_angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/internal_samples",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/qpos",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/qvel",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/cartesian_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/ik_branch_residual",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/jacobian_determinant",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/jacobian_condition_number",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_limit_margin",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "a9efb18b14e250899ce993413f6cd97426c5a4731c6fa531d1e47cce6f84c913",
+            "evaluation_semantics": "2ca65bb66982",
+            "model_fingerprint": "c3496e6267d396ddec7c32a9f87cabda4a6b4f5bc3bc810ff9fc36a736c5789a",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1-checkpoint-120832-official-exposure-development",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/bbdc5a56-4a10-429b-b02e-db3dc4b30405/evaluation-bbdc5a56-4a10-429b-b02e-db3dc4b30405-m5-T1-checkpoint-120832-160ep-seed4200-2ca65bb66982.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_components_observed",
+                      "action_saturated_components",
+                      "action_saturation_fraction",
+                      "cartesian_velocity_max_m_per_s",
+                      "cartesian_velocity_mean_m_per_s",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "ik_folded_branch_residual_final_rad",
+                      "ik_folded_branch_residual_mean_rad",
+                      "ik_folded_branch_residual_min_rad",
+                      "ik_open_branch_residual_final_rad",
+                      "ik_open_branch_residual_mean_rad",
+                      "ik_open_branch_residual_min_rad",
+                      "in_tolerance_steps",
+                      "internal_out_of_tolerance_samples",
+                      "internal_step_max_distance_cm",
+                      "internal_step_min_distance_cm",
+                      "internal_step_samples",
+                      "jacobian_condition_number_max",
+                      "jacobian_condition_number_mean",
+                      "jacobian_determinant_max_m2",
+                      "jacobian_determinant_min_abs_m2",
+                      "jacobian_determinant_min_m2",
+                      "joint_limit_margin_min_rad",
+                      "joint_velocity_max_rad_per_s",
+                      "joint_velocity_mean_rad_per_s",
+                      "max_held_run_control_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "realized_elbow_sign",
+                      "realized_elbow_sign_final",
+                      "realized_elbow_sign_samples",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 13,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/target_angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/internal_samples",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/qvel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/cartesian_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/ik_branch_residual",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_determinant",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/jacobian_condition_number",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_limit_margin",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a9efb18b14e250899ce993413f6cd97426c5a4731c6fa531d1e47cce6f84c913",
+              "evaluation_semantics": "2ca65bb66982",
+              "model_fingerprint": "c3496e6267d396ddec7c32a9f87cabda4a6b4f5bc3bc810ff9fc36a736c5789a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Goal-relevant development evaluation of T1:checkpoint-120832 under the official target distribution with complete-hold and mechanism diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1-checkpoint-120832-official-exposure-development",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 produced the first learned candidates after exposure to 0.06-0.20 m. The checkpoint-120832 artifact is selected because its recorded training proxy success (0.58) is the highest among the saved checkpoints; this is a candidate-selection rationale, not evidence of development performance or a terminal-checkpoint privilege. The independent 160-episode panel uses the research runtime with the official radius/angle distribution and now records complete episode outcomes, reach versus hold continuity, target geometry, realized branch and branch residuals, action saturation, joint/Cartesian velocity, Jacobian conditioning, joint-limit margin, and all ten-internal-step occupancy diagnostics. These observations directly discriminate the active I1 alternatives while preserving the protected evaluator boundary."
+      }
+    },
+    "request_fingerprint": "a64c20be4b921f44525814e956771375442e725a29bade7970f1cab0478f62db",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
     "completed_operations": [
@@ -2359,7 +2962,8 @@
     "operation_ids": [
       "M3",
       "T1",
-      "M4"
+      "M4",
+      "M5"
     ],
     "scientific_parent_commit": "7cc0dd8733d9181b6f63a52fee05871b0a24da39"
   },
