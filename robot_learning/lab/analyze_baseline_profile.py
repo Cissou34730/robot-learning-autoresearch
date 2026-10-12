@@ -671,8 +671,11 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
         return requested_path, "requested_evaluation"
 
     normalized_path = str(artifact_path).replace("\\", "/")
-    normalized_basename = normalized_path.rsplit("/", 1)[-1]
-    if normalized_basename == M30_T2_REFERENCE_FILENAME:
+    is_exact_m30_input = (
+        normalized_path == M30_T2_REFERENCE_FILENAME
+        or normalized_path.endswith("/" + M30_T2_REFERENCE_FILENAME)
+    )
+    if is_exact_m30_input:
         fallback_parent = requested_path.parent
         if fallback_parent == Path("."):
             fallback_parent = Path(normalized_path).parent

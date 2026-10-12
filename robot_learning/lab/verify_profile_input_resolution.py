@@ -89,19 +89,55 @@ def run_compatibility_check() -> dict[str, Any]:
             "compatibility snapshot provenance",
         )
 
+        leading_dot_m30_text = "./" + M30_T2_REFERENCE_FILENAME
+        leading_dot_m30_path = Path(leading_dot_m30_text)
+        resolved_leading_dot, leading_dot_source_kind = resolve_profile_input(
+            leading_dot_m30_text
+        )
+        _assert_equal(
+            resolved_leading_dot,
+            leading_dot_m30_path,
+            "compatibility leading-dot snapshot resolution",
+        )
+        _assert_equal(
+            leading_dot_source_kind,
+            "m28_profile_snapshot_fallback",
+            "compatibility leading-dot snapshot source kind",
+        )
+        leading_dot_report = analyze_path(leading_dot_m30_text)
+        _assert_equal(
+            leading_dot_report["source_resolution"],
+            {
+                "requested_path": str(leading_dot_m30_path),
+                "resolved_path": str(leading_dot_m30_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_snapshot_fallback",
+                "snapshot_used": True,
+                "source_operation": "M28",
+                "source_artifact_fingerprint": M28_T2_ARTIFACT_FINGERPRINT,
+            },
+            "compatibility leading-dot snapshot provenance",
+        )
+
     return {
         "status": "passed",
         "observed": {
             "source_kind": source_kind,
             "source_resolution": report["source_resolution"],
+            "leading_dot_source_kind": leading_dot_source_kind,
+            "leading_dot_source_resolution": leading_dot_report[
+                "source_resolution"
+            ],
         },
         "expected": {
             "source_kind": "m28_profile_snapshot_fallback",
             "backslash_form_exact_m30_path_is_accepted": True,
+            "leading_dot_exact_m30_path_is_accepted": True,
             "snapshot_provenance_is_emitted": True,
         },
         "checked_scope": [
             "backslash-form exact M30 T2 input at the production resolution boundary",
+            "leading-dot normalized exact M30 T2 input at the production resolution boundary",
             "artifact-independent M28 snapshot fallback selection",
             "snapshot source provenance emitted by analyze_path",
         ],
@@ -356,6 +392,13 @@ def run_check() -> dict[str, Any]:
             lambda: resolve_profile_input(unrelated_missing_path),
             "unrelated missing input",
         )
+        embedded_m30_missing_path = directory / (
+            "prefix-" + M30_T2_REFERENCE_FILENAME
+        )
+        _assert_raises_file_not_found(
+            lambda: resolve_profile_input(embedded_m30_missing_path),
+            "embedded M30 filename missing input",
+        )
 
         observed = {
             "present_resolution": {
@@ -389,7 +432,7 @@ def run_check() -> dict[str, Any]:
                     "first_reach_count"
                 ],
             },
-            "rejected_missing_inputs": 2,
+            "rejected_missing_inputs": 3,
             "analysis_sections": list(required_sections),
         }
 
@@ -408,6 +451,7 @@ def run_check() -> dict[str, Any]:
                 "[-45,0)": 11,
             },
             "unrelated_missing_path_rejected": True,
+            "embedded_m30_filename_path_rejected": True,
             "analysis_sections_preserved": list(required_sections),
         },
         "checked_scope": [
@@ -421,6 +465,7 @@ def run_check() -> dict[str, Any]:
             "M28 snapshot provenance and representative aggregate counts",
             "corrected M28 snapshot first-reach counts for [-180,-135) and [-45,0)",
             "rejection of an unrelated missing input",
+            "rejection of a missing path that only embeds the approved M30 filename",
             "existing aggregate report section presence",
         ],
         "unchecked_scope": [
