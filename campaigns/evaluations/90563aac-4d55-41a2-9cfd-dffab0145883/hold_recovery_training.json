@@ -1,0 +1,40 @@
+{
+  "checked_scope": [
+    "checks up to the first failure"
+  ],
+  "execution_note": "This check was authored but has not been executed by the author.",
+  "expected": {
+    "evaluation_route": {
+      "control_profile": "direct",
+      "reward_profile": "default",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    },
+    "hold_steps_required": 100,
+    "interruption_forfeit": "100% of prior accumulated recovery progress",
+    "recovery_progress": "100 * (held_steps / 100) ** 2",
+    "regulation_activation": "current_distance <= 0.01",
+    "training_route": {
+      "control_profile": "direct",
+      "reward_profile": "hold_recovery",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    }
+  },
+  "observed_vs_expected": {
+    "error": "outside-boundary acquisition was shaped by hold-recovery terms",
+    "error_type": "VerificationFailure"
+  },
+  "status": "failed",
+  "unchecked_scope": [
+    "checks after the first failure",
+    "learned-policy performance, PPO behavior, and official evaluation success",
+    "whether hold-recovery shaping improves complete holds or no-first-reach failures",
+    "causal validity of the route-level intervention",
+    "long-horizon dynamics beyond the controlled synthetic transitions"
+  ]
+}

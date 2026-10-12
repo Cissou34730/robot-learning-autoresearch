@@ -7397,8 +7397,8 @@
   "counters": {
     "event": 57,
     "inquiry": 14,
-    "measurement": 32,
-    "session": 28,
+    "measurement": 34,
+    "session": 29,
     "training": 9
   },
   "human_goal": {
@@ -23009,9 +23009,192 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:57:22Z",
+      "error": "robot_learning.lab.verify_hold_recovery_training failed:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 550, in main\n    report = run_checks()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 523, in run_checks\n    _check_routes_and_acquisition(observed)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 241, in _check_routes_and_acquisition\n    _require(\n    ~~~~~~~~^\n        not RECOVERY_COMPONENTS.intersection(components),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"outside-boundary acquisition was shaped by hold-recovery terms\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 87, in _require\n    raise VerificationFailure(message)\nVerificationFailure: outside-boundary acquisition was shaped by hold-recovery terms\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 582, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 572, in main\n    raise VerificationFailure(str(error))\nVerificationFailure: outside-boundary acquisition was shaped by hold-recovery terms\n",
+      "id": "M33",
+      "inquiry_id": "I14",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the I14 training-only hold-recovery route and its preserved acquisition/evaluation semantics before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json",
+            "instrument": "python_module",
+            "label": "I14 hold-recovery training route verification",
+            "module": "robot_learning.lab.verify_hold_recovery_training"
+          }
+        ],
+        "rationale": "The new route changes only the PPO training objective: full-radius target exposure and direct-control acquisition remain fixed, while late uninterrupted-hold credit, interruption forfeiture, and in-boundary regulation are added. This controlled independent check is necessary to catch route miswiring or an incomplete hold-state implementation before spending the training allocation; it does not claim learned performance or causal validity."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_hold_recovery_training failed:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 550, in main\n    report = run_checks()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 523, in run_checks\n    _check_routes_and_acquisition(observed)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 241, in _check_routes_and_acquisition\n    _require(\n    ~~~~~~~~^\n        not RECOVERY_COMPONENTS.intersection(components),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"outside-boundary acquisition was shaped by hold-recovery terms\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 87, in _require\n    raise VerificationFailure(message)\nVerificationFailure: outside-boundary acquisition was shaped by hold-recovery terms\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 582, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_hold_recovery_training.py\", line 572, in main\n    raise VerificationFailure(str(error))\nVerificationFailure: outside-boundary acquisition was shaped by hold-recovery terms\n",
+        "status": "failed"
+      },
+      "session_id": "S29",
+      "status": "failed",
+      "superseded_by": "M34",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json",
+          "instrument": "python_module",
+          "label": "I14 hold-recovery training route verification",
+          "module": "robot_learning.lab.verify_hold_recovery_training"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "ba8e384192dafd68873e85db7239384e4f6c3935473e1d9fdaea3cef90548652",
+            "path": "robot_learning/lab/paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "310c44fbec1205fb8695c727b2f521b48bcaa90dbbee781683cec8e57bd2bd64",
+            "path": "robot_learning/lab/verify_default_reward_training.py"
+          },
+          {
+            "fingerprint": "263f34ad5587efe2bb0859535011b27f8c52d065cbdfed77baa461ea0bf87582",
+            "path": "robot_learning/lab/verify_direct_torque_training.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "b1f943fa0e99b7c970a1ed50016a20430bdc7c7941da3e1330a73418d791d133",
+            "path": "robot_learning/lab/verify_hold_recovery_training.py"
+          },
+          {
+            "fingerprint": "58c654769a1647eb7c3b162d598bac0c531180fae6ff40784fa0ac3a17782ab6",
+            "path": "robot_learning/lab/verify_paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+            "path": "robot_learning/lab/verify_residual_torque_policy.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+            "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "e2393f07087a7f12a66892e83b6279c1f0f17f16",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "b1f943fa0e99b7c970a1ed50016a20430bdc7c7941da3e1330a73418d791d133",
+            "path": "robot_learning/lab/verify_hold_recovery_training.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_hold_recovery_training.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "d8f82755fc2d3c0a2cc3141fd87ffd8f3982b4ea3ce9b16826f910d9f403520f",
+            "path": "robot_learning/training/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "c253591961fbb646b428cc607ab5a007f723542f6ec1248e78da03fc152d1fc3",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M34",
+    "inquiry_id": "I14",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Verify the I14 training-only hold-recovery route and its preserved acquisition/evaluation semantics before training.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/hold_recovery_training.json",
+            "instrument": "python_module",
+            "label": "I14 hold-recovery training route verification",
+            "module": "robot_learning.lab.verify_hold_recovery_training"
+          }
+        ],
+        "rationale": "The new route changes only the PPO training objective: full-radius target exposure and direct-control acquisition remain fixed, while late uninterrupted-hold credit, interruption forfeiture, and in-boundary regulation are added. This controlled independent check is necessary to catch route miswiring or an incomplete hold-state implementation before spending the training allocation; it does not claim learned performance or causal validity."
+      }
+    },
+    "request_fingerprint": "15c5491d1b555356d61142de06b109bf344500d32ba39d33f3bdbf0986b81e32",
+    "session_id": "S29",
+    "supersedes": "M33"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known and the retained development comparison reference at 153/160, supported by M19, M23, M25, M28, M31, and M32. T5:checkpoint-120832 is not competitive after the M32 tie and is not a route to extend. T9 is below T4; T3 and T6 are rejected for acquisition collapse. No candidate is assigned as working for I14 yet.",
     "completed_operations": [
@@ -23041,6 +23224,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "eb75ca70-f539-47ae-83e0-40b23607d8d0",
+    "id": "S29",
+    "inquiry_id": "I14",
+    "kind": "inquiry",
+    "objective": "Advance I14 toward an evidence-supported answer to its scientific question: Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "e2393f07087a7f12a66892e83b6279c1f0f17f16"
+  },
   "terminal_state": null
 }
