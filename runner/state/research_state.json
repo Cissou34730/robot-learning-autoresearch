@@ -9890,52 +9890,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M21"
-        ],
-        "reason": "T2:checkpoint-120832 is the strongest evidence-backed development candidate: M21 measured 150/160 successes (93.75%) on the fixed 160-episode panel, versus 3/160 for the matched T3 artifact, and its remaining failures are characterized as seven never-reached and three reached-incomplete. This role records comparative development evidence only; it does not certify the 196/200 official goal or resolve continuous-hold equivalence."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/fedcc0f3-5435-4aa3-b839-d2c108082481/t2-c8cf701d5-0c25cf03fdde3b3b0aeb6dfb73fb7291c774818651b56ec7788108882d6933b2",
-        "fingerprint": "0c25cf03fdde3b3b0aeb6dfb73fb7291c774818651b56ec7788108882d6933b2",
-        "source": "campaigns/checkpoints/candidates/fedcc0f3-5435-4aa3-b839-d2c108082481/t2/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M21"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E18",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M21"
-        ],
-        "reason": "T2:checkpoint-120832 is the strongest evidence-backed development candidate: M21 measured 150/160 successes (93.75%) on the fixed 160-episode panel, versus 3/160 for the matched T3 artifact, and its remaining failures are characterized as seven never-reached and three reached-incomplete. This role records comparative development evidence only; it does not certify the 196/200 official goal or resolve continuous-hold equivalence."
-      }
-    },
-    "request_fingerprint": "f3c609eacf0a897bae7c6c29e48ff7401ddefaab421332ed29419826978a03b0",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development reference at 150/160 with 6-14 cm success of 90/93. T3:checkpoint-120832 is a measured negative I4 artifact at 3/160 and is not working, best-known, or retained. No candidate is certified for the official assessment; no model role is assigned.",
     "completed_operations": [
