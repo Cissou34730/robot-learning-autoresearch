@@ -19759,38 +19759,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "negative",
-        "reason": "I7 is negative for the tested targeted-exposure recipe. M41 matched profile analysis under the same 160-episode panel shows T6 at 113/160 complete boundary-sampled successes and 116/160 first reaches versus T2 at 150/160 and 153/160. The selected negative-angle union modestly improved first reach from 56/63 to 57/63 and complete success from 54/63 to 57/63, but the goal-relevant outer-radius strata degraded: 14-20 cm first reach fell from 63/67 to 51/67 and complete success from 60/67 to 50/67. The protected 6-14 cm strata also degraded: complete success fell from 90/93 to 63/93 and first reach from 90/93 to 65/93. Therefore the tested exposure redistribution did not reduce outer-radius never-reach failures while preserving the protected strata; the positive closure condition is not met and the negative condition is met. This is a candidate-level negative for this exact training-only mixture, not a disproof of all exposure shaping or of branch/control interventions. The unresolved physical distinction remains whether residual failures arise from branch feasibility/joint-limit consequences, reset-singular coupled trajectories, or distribution-shift interference; M41 does not causally separate these. Continuous-hold equivalence also remains unresolved, so no official assessment is justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "negative",
-        "reason": "I7 is negative for the tested targeted-exposure recipe. M41 matched profile analysis under the same 160-episode panel shows T6 at 113/160 complete boundary-sampled successes and 116/160 first reaches versus T2 at 150/160 and 153/160. The selected negative-angle union modestly improved first reach from 56/63 to 57/63 and complete success from 54/63 to 57/63, but the goal-relevant outer-radius strata degraded: 14-20 cm first reach fell from 63/67 to 51/67 and complete success from 60/67 to 50/67. The protected 6-14 cm strata also degraded: complete success fell from 90/93 to 63/93 and first reach from 90/93 to 65/93. Therefore the tested exposure redistribution did not reduce outer-radius never-reach failures while preserving the protected strata; the positive closure condition is not met and the negative condition is met. This is a candidate-level negative for this exact training-only mixture, not a disproof of all exposure shaping or of branch/control interventions. The unresolved physical distinction remains whether residual failures arise from branch feasibility/joint-limit consequences, reset-singular coupled trajectories, or distribution-shift interference; M41 does not causally separate these. Continuous-hold equivalence also remains unresolved, so no official assessment is justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E29",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I7 is negative for the tested targeted-exposure recipe. M41 matched profile analysis under the same 160-episode panel shows T6 at 113/160 complete boundary-sampled successes and 116/160 first reaches versus T2 at 150/160 and 153/160. The selected negative-angle union modestly improved first reach from 56/63 to 57/63 and complete success from 54/63 to 57/63, but the goal-relevant outer-radius strata degraded: 14-20 cm first reach fell from 63/67 to 51/67 and complete success from 60/67 to 50/67. The protected 6-14 cm strata also degraded: complete success fell from 90/93 to 63/93 and first reach from 90/93 to 65/93. Therefore the tested exposure redistribution did not reduce outer-radius never-reach failures while preserving the protected strata; the positive closure condition is not met and the negative condition is met. This is a candidate-level negative for this exact training-only mixture, not a disproof of all exposure shaping or of branch/control interventions. The unresolved physical distinction remains whether residual failures arise from branch feasibility/joint-limit consequences, reset-singular coupled trajectories, or distribution-shift interference; M41 does not causally separate these. Continuous-hold equivalence also remains unresolved, so no official assessment is justified."
-      }
-    },
-    "request_fingerprint": "cd2f34c0871d491c95065bcd42f2c9c2442d31d087cd7af493f81f9ce305c854",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains explicit best-known, supported by M10, M11, M14, M21, M23, M27, and M28; it is not certified for official assessment. T5:checkpoint-120832 remains a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. I7 will produce a new complete candidate only if its training and matched development measurement support that role.",
     "completed_operations": [
