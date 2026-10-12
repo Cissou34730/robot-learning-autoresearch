@@ -74,22 +74,13 @@ campaign-level decisions:
 - request the official assessment for the explicit best-known model; or
 - open one bounded inquiry connected directly to the current goal gap.
 
-Compare the strongest candidate's prospect of meeting the human goal with what
-further bounded work can credibly change in capability, selection or the
-commitment decision. Use supporting evidence, residual failures, contrary
-evidence and uncertainty for both alternatives.
+Compare the strongest candidate's prospects with the expected contribution and
+cost of further bounded work. Use completed evidence and its limits for both
+choices. Explain why the chosen action is preferable now.
 
-Further work requires a credible contribution, not merely an untested variant
-or an unresolved method. Assessment requires a reasoned case for committing
-this candidate to the human goal. Its best-known rank, unsuccessful alternatives
-and the fact that only official assessment can certify success are not sufficient
-reasons. Failure of alternatives can strengthen relative selection without
-improving the unchanged candidate's demonstrated capability.
-
-Limitations need not all be resolved. Explain how they affect the chosen action
-and why that action remains justified. Neither acknowledged uncertainty nor
-declining expected research yield automatically selects assessment or another
-inquiry.
+A development score below the goal does not prohibit assessment. An untested
+variant or unresolved cause does not justify another inquiry by itself.
+The PI decides. Neither choice requires complete mechanism resolution.
 
 Official assessment is a terminal commitment: its pass or fail result ends
 this campaign. It is not a development probe followed by another inquiry.
@@ -98,13 +89,9 @@ certification. Assigning that role does not require the goal to be met or
 commit the campaign to assessment; the role may be assigned while choosing
 further work.
 
-A favorable development score or inquiry closure does not automatically justify
-assessment. Residual uncertainty or an incomplete mechanism explanation does
-not automatically justify deferral. PI-selected development criteria and
-research preferences inform the comparison but do not create additional
-eligibility requirements. The comparison requires neither a numerical
-confidence estimate, repeated measurement nor complete mechanism resolution.
-The PI retains the scientific judgment; the Runner does not judge readiness.
+Development criteria inform the comparison; they do not add assessment
+eligibility requirements. No numerical confidence estimate or repeated
+measurement is required. The Runner does not judge readiness.
 
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
@@ -198,6 +185,10 @@ to try another variant.
 Choose among developing the method, investigating a consequential failure, and
 changing direction. Identify what the proposed work can credibly change and why
 its expected contribution remains worthwhile in light of prior results.
+Compare the proposed method with the implementation already tested.
+Use source changes, recorded runtime and saved-component comparisons when
+available. A new description does not establish a new method.
+Repeated work can be useful. State what additional evidence it supplies.
 A candidate comparison may be sufficient when capability or selection is the
 decision. When an explanation determines the next direction, use evidence
 capable of distinguishing the consequential alternatives.
@@ -342,3 +333,10 @@ deeper inspection:
 
 Detailed sources remain available on demand; every session need not reread
 every document.
+
+The brief contains current references and an index of training operations,
+not the complete campaign history or every checkpoint's metadata.
+All checkpoint metadata remains in the candidate artifacts and completed
+training records. No checkpoint is nominated by its position in the index.
+`campaigns/results.jsonl` and `campaigns/EXPERIMENTS.md` preserve full operation
+history. Artifact discovery remains available through the evidence tool.

@@ -1355,7 +1355,11 @@ class Console:
                     pointers.append(compact_artifact_query_spec(arguments))
                 parts = [
                     str(value)
-                    for value in (operation_id, action)
+                    for value in (
+                        operation_id,
+                        f"artifact {arguments.get('artifact_index', 0)}",
+                        action,
+                    )
                     if isinstance(value, (str, int)) and str(value)
                 ]
                 if pointers:
@@ -1461,15 +1465,21 @@ class Console:
     ) -> None:
         target = ""
         if isinstance(arguments, dict):
-            for key in ("path", "filePath", "query", "command", "commandLine"):
-                raw = arguments.get(key)
-                if raw:
-                    target = (
-                        full_console_path(str(raw))
-                        if key in {"path", "filePath"}
-                        else str(raw)
-                    )
-                    break
+            if name == "artifact_evidence_query":
+                target = (
+                    f"{arguments.get('operation_id') or '-'} | "
+                    f"artifact {arguments.get('artifact_index', 0)}"
+                )
+            else:
+                for key in ("path", "filePath", "query", "command", "commandLine"):
+                    raw = arguments.get(key)
+                    if raw:
+                        target = (
+                            full_console_path(str(raw))
+                            if key in {"path", "filePath"}
+                            else str(raw)
+                        )
+                        break
             target = " ".join(target.split())
         reason = " ".join(compact_console_text(error).split())
         operation = f"{name} ({target})" if target else name
@@ -2569,7 +2579,9 @@ def session_options(
             "discover helps learn shape; aggregates are optional. Array paths expand "
             "to rows when selecting/filtering/aggregating. Missing filter fields are "
             "reported separately from zero matches. Page limits are small by default; "
-            "increase limit/max_bytes explicitly for broader retrieval. Filtering occurs "
+            "increase limit explicitly for more rows. Set max_bytes on the request. "
+            "All batch items share that selected-value budget. Query items reject max_bytes. "
+            "Omit select for complete rows; a supplied pointer cannot be empty. Filtering occurs "
             "before data enters PI context. Full reads use byte offset/max_bytes, "
             "UTF-8 content or explicit base64, and fingerprint-bound continuation. "
             "query/batch raw and value_counts use offset paging after selection. "

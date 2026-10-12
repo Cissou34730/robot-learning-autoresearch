@@ -182,7 +182,11 @@ as a valid zero-match result. Missing selected fields include bounded direct-fie
 hints. These hints are not a complete inventory.
 
 Ordinary query pages default to small row and byte limits. `limit` selects the
-row page size; `max_bytes` controls the selected-value budget shared by a batch.
+row page size. Set `max_bytes` on the request, not inside `queries`.
+All batch items share that selected-value budget.
+Unsupported fields are rejected, not silently ignored.
+Omit `select` for complete rows. A supplied pointer cannot be empty.
+Console output includes the operation and artifact index for each request.
 Explicit larger pages and complete original reads remain available.
 
 For `read`, `offset` and `max_bytes` refer to original file bytes.

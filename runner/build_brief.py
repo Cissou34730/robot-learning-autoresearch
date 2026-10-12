@@ -127,45 +127,7 @@ def _measurement_facts(record: object, *, omitted: set[str] | None = None) -> st
     return ", ".join(facts) or "none"
 
 
-def _artifact_inventory_key(contents: object) -> str:
-    if not isinstance(contents, dict):
-        raise TypeError("measurement artifact contents must be an object")
-    return json.dumps(contents, sort_keys=True, separators=(",", ":"))
-
-
-def _artifact_inventory_refs(state: dict) -> dict[str, str]:
-    references: dict[str, str] = {}
-    for event in _completed_events(state):
-        if event["kind"] != "measurement":
-            continue
-        for measurement in (event.get("result") or {}).get("measurements") or []:
-            metrics = measurement.get("metrics")
-            contents = (
-                metrics.get("evaluation_artifact_contents")
-                if isinstance(metrics, dict)
-                else None
-            )
-            if contents is not None:
-                key = _artifact_inventory_key(contents)
-                if key not in references:
-                    references[key] = f"structure-{len(references) + 1}"
-    return references
-
-
-def _artifact_inventory_lines(references: dict[str, str]) -> list[str]:
-    lines: list[str] = []
-    for key, reference in references.items():
-        contents = json.loads(key)
-        scope = (
-            "limited structure-only inventory; no measurement values"
-            if contents["truncated"]
-            else "structure-only inventory; no measurement values"
-        )
-        lines.append(f"- `{reference}` ({scope}): {key}")
-    return lines or ["- No artifact inventories recorded."]
-
-
-def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[str]:
+def _event_detail_lines(event: dict) -> list[str]:
     result = event.get("result")
     if not isinstance(result, dict):
         return []
@@ -196,27 +158,23 @@ def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[
                 )
                 + "."
             )
-            contents = (
-                metrics.get("evaluation_artifact_contents")
-                if isinstance(metrics, dict)
-                else None
-            )
-            if contents is None:
-                lines.append(
-                    "    Artifact contents: no inventory recorded; "
-                    "contents remain in the referenced artifact."
-                )
-            else:
-                reference = inventory_refs[_artifact_inventory_key(contents)]
-                lines.append(
-                    f"    Artifact contents: `{reference}` in the artifact "
-                    "inventory registry below (structure only, not measurement values)."
-                )
         comparisons = result.get("paired_comparisons") or []
         if comparisons:
+            summaries = [
+                {
+                    key: value
+                    for key, value in comparison.items()
+                    if key != "shared_episode_seeds"
+                }
+                for comparison in comparisons
+            ]
             lines.append(
                 "  - Paired comparisons: "
-                + _compact(json.dumps(comparisons, sort_keys=True))
+                + _compact(json.dumps(summaries, sort_keys=True))
+            )
+            lines.append(
+                "    Complete seed panels: `campaigns/results.jsonl`, "
+                f"operation `{event['id']}`."
             )
         return lines
     if event["kind"] == "training":
@@ -235,8 +193,7 @@ def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[
                 f"  - Training: initialization `{result['initialization']}`; "
                 f"parent `{result['parent'] or 'none'}`; seed {result['seed']}; "
                 f"requested steps {result['requested_steps']}; "
-                f"completed steps {result['completed_steps']}. "
-                "All candidates and learning statistics are in the candidate registry above."
+                f"completed steps {result['completed_steps']}."
             ),
             "  - Mechanical provenance: parent `"
             + str((provenance or {}).get("code_parent_commit") or "-")
@@ -261,8 +218,7 @@ def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[
             lines.append(
                 "  - Exact saved-component comparison: "
                 + ("; ".join(exact) if exact else "no exact checkpoint matches")
-                + ". This reports serialized equality only; realization of an "
-                "intended intervention is not determined."
+                + "."
             )
         return lines
     return []
@@ -424,46 +380,48 @@ def _candidate_lines(state: dict) -> list[str]:
     if not state["candidates"]:
         lines.append("- Available candidates: none")
         return lines
-    dynamics = {
-        item["candidate"]: item
-        for event in state["operation_events"]
-        if event.get("status") == "completed" and event.get("kind") == "training"
-        for item in (event.get("result") or {}).get("learning_dynamics", [])
-        if isinstance(item, dict) and isinstance(item.get("candidate"), str)
-    }
+    campaign_id = runner_repository.current_campaign_id(state)
     lines.extend(
         [
             (
-                "- Published candidate metadata: the table below includes every "
-                "candidate and its recorded training and evaluation references. "
-                "Training statistics are not development measurements."
+                f"- Available checkpoints: {len(state['candidates'])}. "
+                "The training index below does not nominate a checkpoint."
             ),
-            "",
+            f"- Candidate archive root: `campaigns/checkpoints/candidates/{campaign_id}/`.",
+            f"- Retained archive root: `campaigns/checkpoints/retained/{campaign_id}/`.",
             (
-                "| Candidate | Origin | Run steps | Total steps | Training success | "
-                "Training reward | Evaluation artifacts |"
+                "- Complete checkpoint metadata and learning statistics: completed "
+                "training records in `campaigns/results.jsonl` and archived "
+                "`artifact.json` files. Training statistics are not development measurements."
             ),
-            "|---|---|---|---|---|---|---|",
+            "- Preserved training trajectories: `training_log_query`, selected by training operation.",
+            (
+                "- Saved-component comparisons report saved-state equality, "
+                "not full artifact equivalence. "
+                "Compare source and runtime changes before claiming a different method."
+            ),
         ]
     )
-    for identifier, candidate in state["candidates"].items():
-        evidence = candidate["evaluation_artifacts"]
-        training = dynamics.get(identifier, {})
-        success = training.get("training_success")
-        reward = training.get("ep_rew_mean")
-        run_steps = training.get("training_steps")
-        cells = [
-            f"`{identifier}`",
-            f"`{candidate['origin_operation']}`",
-            str(run_steps) if run_steps is not None else "not recorded",
-            str(candidate["training_steps"]),
-            str(success) if success is not None else "not recorded",
-            str(reward) if reward is not None else "not recorded",
-            ", ".join(_artifact(path) for path in evidence) if evidence else "none",
+    for event in _completed_events(state):
+        if event["kind"] != "training":
+            continue
+        candidates = [
+            (identifier, candidate)
+            for identifier, candidate in state["candidates"].items()
+            if candidate["origin_operation"] == event["id"]
+        ]
+        measured = [
+            f"`{identifier}`"
+            for identifier, candidate in candidates
+            if candidate["evaluation_artifacts"]
         ]
         lines.append(
-            "| " + " | ".join(cell.replace("|", r"\|") for cell in cells) + " |"
+            f"- `{event['id']}`: {len(candidates)} archived checkpoints. "
+            "Development-measured checkpoints: "
+            + (", ".join(measured) if measured else "none")
+            + "."
         )
+        lines.extend(_event_detail_lines(event))
     return lines
 
 
@@ -475,10 +433,22 @@ def _completed_events(state: dict) -> list[dict]:
     ]
 
 
-def _event_lines(state: dict, *, inventory_refs: dict[str, str]) -> list[str]:
-    events = _completed_events(state)
+def _event_lines(state: dict) -> list[str]:
+    references: set[str] = set()
+    checkpoint = state["pi_checkpoint"]
+    if isinstance(checkpoint, dict):
+        references.update(checkpoint["completed_operations"])
+        references.update(checkpoint["evidence_references"])
+    session = state["scientific_session"]
+    if isinstance(session, dict):
+        references.update(session["operation_ids"])
+    events = [
+        event
+        for event in _completed_events(state)
+        if event["id"] in references and event["kind"] != "training"
+    ]
     if not events:
-        return ["- No completed operations."]
+        return ["- No non-training operations referenced by current work or the latest checkpoint."]
     lines = []
     for event in events:
         inquiry = f" in `{event['inquiry_id']}`" if event["inquiry_id"] else ""
@@ -492,7 +462,7 @@ def _event_lines(state: dict, *, inventory_refs: dict[str, str]) -> list[str]:
             f"- `{event['id']}` `{event['kind']}`{inquiry}: "
             f"{_event_summary(event)}{artifact_note}"
         )
-        lines.extend(_event_detail_lines(event, inventory_refs=inventory_refs))
+        lines.extend(_event_detail_lines(event))
     return lines
 
 
@@ -508,9 +478,10 @@ def _execution_history_lines(state: dict) -> list[str]:
             else "; not yet superseded"
         )
         lines.append(
-            f"- `{event['id']}` `{event['kind']}` failed: "
-            f"{_compact(event.get('error'))}{retry}."
+            f"- `{event['id']}` `{event['kind']}` failed{retry}."
         )
+        if not event.get("superseded_by"):
+            lines.append(f"  - Unresolved error: {_compact(event.get('error'))}.")
     pending = state["pending_operation"]
     if isinstance(pending, dict) and pending.get("failure"):
         lines.append(
@@ -530,8 +501,6 @@ def render_research_brief() -> str:
         raise RuntimeError("research state is missing")
     state = json.loads(state_path.read_text(encoding="utf-8"))
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
-    inventory_refs = _artifact_inventory_refs(state)
-
     lines = [
         "# Research brief",
         "",
@@ -569,13 +538,22 @@ def render_research_brief() -> str:
         "",
         *_candidate_lines(state),
         "",
-        "### Completed operation evidence",
+        "### Evidence referenced by current work",
         "",
-        *_event_lines(state, inventory_refs=inventory_refs),
+        *_event_lines(state),
         "",
-        "### Artifact inventory registry",
+        "### Full evidence sources",
         "",
-        *_artifact_inventory_lines(inventory_refs),
+        (
+            "- Full operation records, including all checkpoint metadata, paired "
+            "comparisons and execution errors: `campaigns/results.jsonl`."
+        ),
+        "- Chronological operation index: `campaigns/EXPERIMENTS.md`.",
+        (
+            "- JSON artifact structure and values: `artifact_evidence_query`, "
+            "selected by operation and artifact index."
+        ),
+        "- These sources remain complete. Their omission here is not absence of evidence.",
         "",
         "### Execution history (not evidence)",
         "",

@@ -41,6 +41,17 @@ class EvidenceFilter(BaseModel):
 class ArtifactEvidenceQuerySpec(BaseModel):
     model_config = {"extra": "forbid"}
 
+    @model_validator(mode="before")
+    @classmethod
+    def reject_nested_byte_budget(cls, value: Any) -> Any:
+        if isinstance(value, dict) and "max_bytes" in value:
+            raise ValueError(
+                "A query item does not accept max_bytes. "
+                "Set max_bytes on the request to limit the entire batch. "
+                "This item was rejected; its query did not run."
+            )
+        return value
+
     path: str = Field(
         max_length=1024,
         description=(
@@ -61,7 +72,8 @@ class ArtifactEvidenceQuerySpec(BaseModel):
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering. Omit to retrieve complete row objects."
+            "where filtering. Omit to retrieve complete row objects. "
+            "A supplied pointer must start with / and cannot be empty."
         ),
     )
     aggregate: (
@@ -133,7 +145,8 @@ class ArtifactEvidenceQueryParams(BaseModel):
             "For batch, related query specifications executed against one "
             "resolved and fingerprint-verified artifact. Prefer one batch over "
             "separate calls for related fields; provenance is returned once. "
-            "Each specification can select subsets or complete objects."
+            "Each specification can select subsets or complete objects. "
+            "Set max_bytes on the request, never inside a query item."
         ),
     )
     path: str | None = Field(
@@ -157,7 +170,8 @@ class ArtifactEvidenceQueryParams(BaseModel):
         max_length=1024,
         description=(
             "Optional JSON Pointer relative to each path match, applied after "
-            "where filtering. Omit to retrieve complete row objects."
+            "where filtering. Omit to retrieve complete row objects. "
+            "A supplied pointer must start with / and cannot be empty."
         ),
     )
     aggregate: Literal["count", "numeric_summary", "value_counts"] | None = Field(
@@ -187,7 +201,9 @@ class ArtifactEvidenceQueryParams(BaseModel):
         ge=1,
         le=MAX_READ_BYTES,
         description=(
-            "Page byte budget: selected query/batch values, or original bytes for read. "
+            "Top-level selected-value byte budget for query and batch. "
+            "All batch items share this budget. "
+            "Query items do not accept max_bytes. For read, it limits original bytes. "
             "Increase explicitly for broader retrieval; follow reported continuation."
         ),
     )

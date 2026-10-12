@@ -903,7 +903,8 @@ function New-ScientificSessionPrompt {
     else {
         @(
             if ($session.kind -eq "goal_review") {
-                "Compare the strongest candidate's prospect of meeting the human goal with what further bounded work can credibly change. Weigh supporting evidence, residual failures, contrary evidence and uncertainty for both alternatives."
+                "Compare the strongest candidate's prospects with the expected contribution and cost of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
+                "A development score below the goal does not prohibit assessment. An untested variant or unresolved cause does not justify another inquiry by itself."
             }
             else {
                 "State the unresolved scientific distinction before selecting an operation."
@@ -912,7 +913,7 @@ function New-ScientificSessionPrompt {
             "Interpret training proxies in the context of the exposure and runtime that produced them. Select checkpoints relevant to the decision when that context changes. Proxy rank alone does not determine which artifacts deserve measurement."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
             "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the implementation tested. A negative result neither disproves the method nor supplies a reason to try another variant."
-            "Choose among developing the method, investigating a consequential failure, and changing direction. Explain what the proposed work can credibly change and why its contribution remains worthwhile in light of prior results."
+            "Compare the proposed method with the implementation already tested. Use source changes, recorded runtime and saved-component comparisons when available. A new description does not establish a new method. Repeated work can be useful. State what additional evidence it supplies."
             "Distinguish candidate selection from mechanism testing. Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives. Choose discriminating evidence when that explanation would change the next direction."
             "Keep an unexplained candidate difference at artifact-comparison level, not as an established cause. Unresolved causes need not block inquiry closure. Preserve their consequences for the next research or commitment decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
             "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
@@ -920,8 +921,6 @@ function New-ScientificSessionPrompt {
                 "For a measurement, explain how its possible outcomes would affect the campaign-level choice."
                 "Record the chosen assessment or inquiry and its evidence-based reason."
                 "Preserve relevant residual failures, counterevidence and uncertainty in the chosen operation's reason."
-                "If requesting official assessment, explain what measured evidence supports committing this candidate to the human goal despite its limitations. Its best-known rank, unsuccessful alternatives and the exclusive authority of official assessment are not sufficient reasons. Failed alternatives can strengthen relative selection without improving the unchanged candidate's demonstrated capability."
-                "Explain how the limitations affect the chosen action and why it remains justified. Neither acknowledged uncertainty nor declining expected research yield automatically selects assessment or another inquiry."
             }
             else {
                 "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."

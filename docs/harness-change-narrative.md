@@ -529,6 +529,31 @@ complete-explanation requirement or Runner scientific judgment was added.
 The corrective wording is implemented/unmeasured. No campaign was launched,
 resumed, reset or mutated by this revision.
 
+#### Capped continuation and the approved OI-005/OI-014 adjustment
+
+Campaign `90563aac` closed 15 inquiries but never requested assessment.
+Its best development result remained 153/160 after another 162.310939 AIU.
+Development-threshold deferral and nominally new methods repeatedly supported
+continuation. T3/T7/T8 and T2/T9 matched saved learning components at all 24
+corresponding checkpoints. Packaged runtimes differed, so this does not prove
+complete artifact equivalence. T7 to T8 also had no scientific-source delta.
+This supports a continuation regression concern, not exclusive prompt causality.
+
+The maintainer approved a bounded adjustment to the implemented repairs.
+OI-005 removes the additional assessment-only burden from the program and
+ordinary prompts. The PI compares candidate prospects with the expected
+contribution and cost of further work. A below-goal development result does
+not prohibit assessment. An untested variant or unresolved cause does not
+justify another inquiry by itself.
+
+OI-014 connects method claims to the implementation already tested, including
+source changes, recorded runtime and available saved-component comparisons.
+A new description does not establish a new method. Repetition remains useful
+when it supplies additional evidence. The Runner does not decide novelty or
+scientific necessity. This is not the unimplemented OI-024 submission safeguard.
+Both adjustments remain implemented/unmeasured, with unchanged terminality
+and inquiry-cap rules.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query
@@ -544,6 +569,35 @@ Preserve separate measures for:
 - scientific usefulness of retrieved evidence.
 
 Primary tracker ownership: OI-008, OI-011, OI-017 and OI-018.
+
+#### Brief replay and strict query feedback
+
+The earlier OI-008 repair compacted completion replies but left a separate
+growth source in `build_brief.py`. The paused `90563aac` state rendered a
+172,738-byte brief. It replayed every checkpoint's metadata, all operation
+details, structural inventories and resolved failure traces.
+
+The approved adjustment preserves the current goal, scientific model,
+checkpoint, roles and session. It indexes all training operations, measured
+checkpoints, source provenance and exact saved-component comparisons.
+Current-work and latest-checkpoint references select the included event facts.
+Paired outcome summaries remain, but complete seed panels do not repeat.
+Full checkpoint metadata and history remain in archived artifacts and
+`campaigns/results.jsonl`. `campaigns/EXPERIMENTS.md` supplies a chronological
+index. The existing query tools retain artifact discovery and complete reads.
+The same stopped state now renders 24,989 bytes, an 85.53% reduction.
+This check demonstrates delivery reduction, not lower campaign cost or better
+scientific judgment. Existing campaign evidence was not rewritten.
+
+OI-018 retains strict rejection rather than accepting unsupported nested
+`max_bytes`. The field controls one top-level selected-value budget shared by
+the batch. Schema and tool guidance now state that location. A specific
+validation error explains the correction. Console output identifies artifact
+index on starts and failures, so the two M31 calls no longer appear identical.
+An actual registered SDK dispatch rejects the malformed batch before its
+handler runs. The corrected request succeeds with its provenance and
+continuation intact. Earlier null-filter and selected-log behavior remains.
+Query-error rates and total context cost still require campaign observation.
 
 ### 7. Operational resilience and publication
 
