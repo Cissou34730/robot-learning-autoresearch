@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when a candidate exposed to the official 0.06-0.20 m target range has been measured on a goal-relevant development panel with complete-hold outcomes and the requested geometry and dynamics diagnostics, sufficient to conclude positively, negatively, or inconclusively whether this route is a credible path and whether the dominant observed failures are conditioning/coverage-related or overshoot/hold-related. Preserve any unresolved evaluator treatment of internal states and any artifact-specific limits.",
     "goal_connection": "The human goal requires at least 196 of 200 official episodes to remain within 1 cm continuously for 2 seconds. No learned candidate has yet been produced or measured. This inquiry directly develops and tests the first candidate under the full official target-radius exposure, while recording reach, hold continuity, geometry, branch, action, velocity, and internal-step occupancy diagnostics needed to choose the next intervention.",
-    "handoff_conclusion": "Observed evidence: M1 passed the production-path compatibility check: the authored XML compiled with njnt=nq=nv=nu=2, zero gravity was applied, and native MjData reset plus mj_step completed. M2 compiled the same XML and measured four deterministic signed pulse trials (both joints and both signs), each with 20 internal pulse steps and 120 coast steps. The compiled model reports 0.002 s timestep, Euler integrator, Newton solver, 5 N m peak actuator generalized torque, and nonzero compiled body masses/inertias; repeated traces matched exactly within the recorded 1e-12 tolerance. Peak joint speed was 7.96 rad/s for the shoulder and 8.46 rad/s for the elbow. After command release, the first sample below 1% of peak speed occurred after 0.118 s and 0.1907 rad for the shoulder, and 0.100 s and 0.1707 rad for the elbow. Interpretation: the authored compiled system is responsive and numerically repeatable, so a blanket lack-of-actuation explanation is weakened. Saturated commands can nevertheless create motion far larger than the 1 cm Cartesian tolerance before damping stops them, supporting hold interruption from overly aggressive approach/braking as a live mechanism. Competing explanation remains that the learned policy has inadequate target coverage, branch/conditioning adaptation, or reward-to-hold alignment; M2 did not measure any learned policy, target bins, Cartesian hold margins, or continuous internal occupancy. The measured masses/inertias are compiled MuJoCo consequences of the authored XML, not evidence about hardware transfer. M1 and M2 therefore establish a reproducible simulation characterization, not goal progress or official performance.",
+    "handoff_conclusion": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints. It recorded 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 rad and 0.1707 rad by the stated threshold. These observations establish reproducible open-loop responsiveness and that saturated pulses can travel far beyond the Cartesian tolerance before damping reduces speed. Correction to the inherited interpretation: M2 weakens a blanket lack-of-actuation explanation, but it does not establish that a learned policy overshoots or that braking is its dominant failure mechanism; no learned policy, target bins, hold margins, branch outcomes, or learned action traces were measured. Competing explanations therefore remain consequential: official-radius exposure and branch/conditioning deficits, reward-to-hold mismatch, and policy overshoot or hold interruption. The initial physical model also predicts that the folded low-radius region is less well conditioned and that endpoint scoring may differ from internal-step occupancy; those are diagnostics and unresolved evaluator limits, not established failure causes. The current learning-first route is a candidate-producing test of these alternatives, not a commitment to a reward or controller intervention.",
     "handoff_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 2,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -733,29 +733,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T22:59:21Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Two completed measurements (M1 compatibility and M2 four-trial dynamics characterization), one completed inquiry opening (E2), two bounded scientific sessions, no training steps, no learned candidates, and no model roles assigned. M2 used four signed trials with 20 pulse and 120 coast internal steps per trial and established repeatability, but did not measure learned behavior.",
+        "current_goal_gap": "No learned candidate, development performance, or official success rate exists. The immediate gap is whether a policy trained with full official target exposure can acquire complete-hold behavior across radius and angle, and whether its failures can be assigned to conditioning/coverage versus overshoot/hold interruption without conflating open-loop dynamics with learned behavior.",
+        "current_synthesis": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints. It recorded 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 rad and 0.1707 rad by the stated threshold. These observations establish reproducible open-loop responsiveness and that saturated pulses can travel far beyond the Cartesian tolerance before damping reduces speed. Correction to the inherited interpretation: M2 weakens a blanket lack-of-actuation explanation, but it does not establish that a learned policy overshoots or that braking is its dominant failure mechanism; no learned policy, target bins, hold margins, branch outcomes, or learned action traces were measured. Competing explanations therefore remain consequential: official-radius exposure and branch/conditioning deficits, reward-to-hold mismatch, and policy overshoot or hold interruption. The initial physical model also predicts that the folded low-radius region is less well conditioned and that endpoint scoring may differ from internal-step occupancy; those are diagnostics and unresolved evaluator limits, not established failure causes. The current learning-first route is a candidate-producing test of these alternatives, not a commitment to a reward or controller intervention.",
+        "decision_frontier": "The next direction depends on complete candidate behavior under official exposure. If failures cluster at low radius or by realized branch with modest action saturation and adequate hold dynamics, prioritize coverage, conditioning, or learning-signal changes. If targets are reached but failures show high action saturation, high joint/Cartesian velocity, large internal-step excursions, and interrupted holds, prioritize braking, control timing, or runtime design. If performance is strong and diagnostics show stable occupancy, compare the complete candidate against the 98% goal before any causal redesign. Internal-step occupancy remains a diagnostic because the protected evaluator's treatment is unresolved; it must not be treated as proof of official failure unless assessment establishes that link.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the official 0.06-0.20 m target distribution, with an uninterrupted 1 cm hold for 2 seconds. E2 directly addresses the missing prerequisite: producing and measuring a learned candidate under official geometry before deciding whether to request protected assessment or change the control/learning direction.",
+        "next_direction_or_closure": "Proceed into the bounded E2 inquiry. Produce a candidate using the available inquiry training allocation with official 0.06-0.20 m exposure, then measure a goal-relevant development panel using the same policy runtime and record complete episode outcomes plus radius/angle, branch, reach-versus-hold, action saturation, velocity, and internal-step distance diagnostics. Select the artifact and checkpoint most informative to the decision rather than assuming the terminal checkpoint is best. Redirect to control/runtime or conditioning/exposure only when the corresponding diagnostics support it; do not request official assessment without an explicit evidence-backed best-known candidate.",
+        "next_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "7a35563da6f3698ce4eee2680086aaaefde07eba",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Two completed measurements (M1 compatibility and M2 four-trial dynamics characterization), one completed inquiry opening (E2), two bounded scientific sessions, no training steps, no learned candidates, and no model roles assigned. M2 used four signed trials with 20 pulse and 120 coast internal steps per trial and established repeatability, but did not measure learned behavior.",
+        "current_goal_gap": "No learned candidate, development performance, or official success rate exists. The immediate gap is whether a policy trained with full official target exposure can acquire complete-hold behavior across radius and angle, and whether its failures can be assigned to conditioning/coverage versus overshoot/hold interruption without conflating open-loop dynamics with learned behavior.",
+        "current_synthesis": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints. It recorded 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 rad and 0.1707 rad by the stated threshold. These observations establish reproducible open-loop responsiveness and that saturated pulses can travel far beyond the Cartesian tolerance before damping reduces speed. Correction to the inherited interpretation: M2 weakens a blanket lack-of-actuation explanation, but it does not establish that a learned policy overshoots or that braking is its dominant failure mechanism; no learned policy, target bins, hold margins, branch outcomes, or learned action traces were measured. Competing explanations therefore remain consequential: official-radius exposure and branch/conditioning deficits, reward-to-hold mismatch, and policy overshoot or hold interruption. The initial physical model also predicts that the folded low-radius region is less well conditioned and that endpoint scoring may differ from internal-step occupancy; those are diagnostics and unresolved evaluator limits, not established failure causes. The current learning-first route is a candidate-producing test of these alternatives, not a commitment to a reward or controller intervention.",
+        "decision_frontier": "The next direction depends on complete candidate behavior under official exposure. If failures cluster at low radius or by realized branch with modest action saturation and adequate hold dynamics, prioritize coverage, conditioning, or learning-signal changes. If targets are reached but failures show high action saturation, high joint/Cartesian velocity, large internal-step excursions, and interrupted holds, prioritize braking, control timing, or runtime design. If performance is strong and diagnostics show stable occupancy, compare the complete candidate against the 98% goal before any causal redesign. Internal-step occupancy remains a diagnostic because the protected evaluator's treatment is unresolved; it must not be treated as proof of official failure unless assessment establishes that link.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the official 0.06-0.20 m target distribution, with an uninterrupted 1 cm hold for 2 seconds. E2 directly addresses the missing prerequisite: producing and measuring a learned candidate under official geometry before deciding whether to request protected assessment or change the control/learning direction.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Proceed into the bounded E2 inquiry. Produce a candidate using the available inquiry training allocation with official 0.06-0.20 m exposure, then measure a goal-relevant development panel using the same policy runtime and record complete episode outcomes plus radius/angle, branch, reach-versus-hold, action saturation, velocity, and internal-step distance diagnostics. Select the artifact and checkpoint most informative to the decision rather than assuming the terminal checkpoint is best. Redirect to control/runtime or conditioning/exposure only when the corresponding diagnostics support it; do not request official assessment without an explicit evidence-backed best-known candidate.",
+        "next_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "abc02f6f-2528-4944-b2b0-486ef4165ae1",
+        "campaign_id": "bbdc5a56-4a10-429b-b02e-db3dc4b30405",
+        "campaign_usage": "6m39s | 11.54 AIU | prompt 1.3m (87% cached) | output 43.5k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "61a01897dd5f56e592d5e95fa02458cff8ed718f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Two completed measurements (M1 compatibility and M2 four-trial dynamics characterization), one completed inquiry opening (E2), two bounded scientific sessions, no training steps, no learned candidates, and no model roles assigned. M2 used four signed trials with 20 pulse and 120 coast internal steps per trial and established repeatability, but did not measure learned behavior.",
+        "current_goal_gap": "No learned candidate, development performance, or official success rate exists. The immediate gap is whether a policy trained with full official target exposure can acquire complete-hold behavior across radius and angle, and whether its failures can be assigned to conditioning/coverage versus overshoot/hold interruption without conflating open-loop dynamics with learned behavior.",
+        "current_synthesis": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints. It recorded 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 rad and 0.1707 rad by the stated threshold. These observations establish reproducible open-loop responsiveness and that saturated pulses can travel far beyond the Cartesian tolerance before damping reduces speed. Correction to the inherited interpretation: M2 weakens a blanket lack-of-actuation explanation, but it does not establish that a learned policy overshoots or that braking is its dominant failure mechanism; no learned policy, target bins, hold margins, branch outcomes, or learned action traces were measured. Competing explanations therefore remain consequential: official-radius exposure and branch/conditioning deficits, reward-to-hold mismatch, and policy overshoot or hold interruption. The initial physical model also predicts that the folded low-radius region is less well conditioned and that endpoint scoring may differ from internal-step occupancy; those are diagnostics and unresolved evaluator limits, not established failure causes. The current learning-first route is a candidate-producing test of these alternatives, not a commitment to a reward or controller intervention.",
+        "decision_frontier": "The next direction depends on complete candidate behavior under official exposure. If failures cluster at low radius or by realized branch with modest action saturation and adequate hold dynamics, prioritize coverage, conditioning, or learning-signal changes. If targets are reached but failures show high action saturation, high joint/Cartesian velocity, large internal-step excursions, and interrupted holds, prioritize braking, control timing, or runtime design. If performance is strong and diagnostics show stable occupancy, compare the complete candidate against the 98% goal before any causal redesign. Internal-step occupancy remains a diagnostic because the protected evaluator's treatment is unresolved; it must not be treated as proof of official failure unless assessment establishes that link.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the official 0.06-0.20 m target distribution, with an uninterrupted 1 cm hold for 2 seconds. E2 directly addresses the missing prerequisite: producing and measuring a learned candidate under official geometry before deciding whether to request protected assessment or change the control/learning direction.",
+        "next_direction_or_closure": "Proceed into the bounded E2 inquiry. Produce a candidate using the available inquiry training allocation with official 0.06-0.20 m exposure, then measure a goal-relevant development panel using the same policy runtime and record complete episode outcomes plus radius/angle, branch, reach-versus-hold, action saturation, velocity, and internal-step distance diagnostics. Select the artifact and checkpoint most informative to the decision rather than assuming the terminal checkpoint is best. Redirect to control/runtime or conditioning/exposure only when the corresponding diagnostics support it; do not request official assessment without an explicit evidence-backed best-known candidate.",
+        "next_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?"
+      }
+    },
+    "request_fingerprint": "dd8d9d6544953afcb1fa2e4973c3b94f4a482dbfd8aea85522114ce30e7d4ea6",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No training candidate exists; working, best-known, and retained roles remain empty. M1 and M2 are measurement operations, not policy artifacts.",
+    "candidates_and_roles": "No training candidate exists and working, best-known, and retained roles remain empty. M1 and M2 are measurements only; E2 opens an inquiry and does not create a candidate.",
     "completed_operations": [
-      "M1",
-      "M2"
+      "E2"
     ],
-    "cumulative_resource_use": "Two completed measurements, no training steps, no learned candidates, and no model roles assigned. M1 was a compatibility check; M2 was a bounded 4-trial repeated pulse/free-response characterization with 140 internal samples per trial.",
-    "current_goal_gap": "No learned candidate exists and no development or official success rate has been measured. The remaining gap is therefore the entire learned-policy capability, with the immediate unknown being whether a policy can enter and remain in the 1 cm region across the official radius and angle distribution.",
-    "current_synthesis": "Observed evidence: M1 passed the production-path compatibility check: the authored XML compiled with njnt=nq=nv=nu=2, zero gravity was applied, and native MjData reset plus mj_step completed. M2 compiled the same XML and measured four deterministic signed pulse trials (both joints and both signs), each with 20 internal pulse steps and 120 coast steps. The compiled model reports 0.002 s timestep, Euler integrator, Newton solver, 5 N m peak actuator generalized torque, and nonzero compiled body masses/inertias; repeated traces matched exactly within the recorded 1e-12 tolerance. Peak joint speed was 7.96 rad/s for the shoulder and 8.46 rad/s for the elbow. After command release, the first sample below 1% of peak speed occurred after 0.118 s and 0.1907 rad for the shoulder, and 0.100 s and 0.1707 rad for the elbow. Interpretation: the authored compiled system is responsive and numerically repeatable, so a blanket lack-of-actuation explanation is weakened. Saturated commands can nevertheless create motion far larger than the 1 cm Cartesian tolerance before damping stops them, supporting hold interruption from overly aggressive approach/braking as a live mechanism. Competing explanation remains that the learned policy has inadequate target coverage, branch/conditioning adaptation, or reward-to-hold alignment; M2 did not measure any learned policy, target bins, Cartesian hold margins, or continuous internal occupancy. The measured masses/inertias are compiled MuJoCo consequences of the authored XML, not evidence about hardware transfer. M1 and M2 therefore establish a reproducible simulation characterization, not goal progress or official performance.",
-    "decision_frontier": "The unresolved decision is whether the first learned-policy route should prioritize a dynamics/control intervention or target-conditioned learning exposure and hold-specific evaluation. M2 makes a pure actuator-authority failure less credible because bounded native actuation produces substantial acceleration and damping-mediated stopping, but the long saturated-pulse stopping distances show that a controller can still overshoot the 1 cm tube. Evidence that would redirect toward control design is repeated learned-policy failure with high action saturation, large internal-step excursions, and adequate target reach; evidence that would redirect toward exposure/conditioning is a lower-radius or branch-specific failure cluster without saturation. Evidence that would support the present learning-first direction is stable control authority with failures varying by target geometry or hold continuity rather than inability to move. The protected evaluator's treatment of internal states remains unresolved, so internal-step distance must remain a diagnostic even though M2 did not test a policy.",
+    "cumulative_resource_use": "Two completed measurements (M1 compatibility and M2 four-trial dynamics characterization), one completed inquiry opening (E2), two bounded scientific sessions, no training steps, no learned candidates, and no model roles assigned. M2 used four signed trials with 20 pulse and 120 coast internal steps per trial and established repeatability, but did not measure learned behavior.",
+    "current_goal_gap": "No learned candidate, development performance, or official success rate exists. The immediate gap is whether a policy trained with full official target exposure can acquire complete-hold behavior across radius and angle, and whether its failures can be assigned to conditioning/coverage versus overshoot/hold interruption without conflating open-loop dynamics with learned behavior.",
+    "current_synthesis": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints. It recorded 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 rad and 0.1707 rad by the stated threshold. These observations establish reproducible open-loop responsiveness and that saturated pulses can travel far beyond the Cartesian tolerance before damping reduces speed. Correction to the inherited interpretation: M2 weakens a blanket lack-of-actuation explanation, but it does not establish that a learned policy overshoots or that braking is its dominant failure mechanism; no learned policy, target bins, hold margins, branch outcomes, or learned action traces were measured. Competing explanations therefore remain consequential: official-radius exposure and branch/conditioning deficits, reward-to-hold mismatch, and policy overshoot or hold interruption. The initial physical model also predicts that the folded low-radius region is less well conditioned and that endpoint scoring may differ from internal-step occupancy; those are diagnostics and unresolved evaluator limits, not established failure causes. The current learning-first route is a candidate-producing test of these alternatives, not a commitment to a reward or controller intervention.",
+    "decision_frontier": "The next direction depends on complete candidate behavior under official exposure. If failures cluster at low radius or by realized branch with modest action saturation and adequate hold dynamics, prioritize coverage, conditioning, or learning-signal changes. If targets are reached but failures show high action saturation, high joint/Cartesian velocity, large internal-step excursions, and interrupted holds, prioritize braking, control timing, or runtime design. If performance is strong and diagnostics show stable occupancy, compare the complete candidate against the 98% goal before any causal redesign. Internal-step occupancy remains a diagnostic because the protected evaluator's treatment is unresolved; it must not be treated as proof of official failure unless assessment establishes that link.",
     "evidence_references": [
       "M1",
-      "M2"
+      "M2",
+      "E2"
     ],
-    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official 6-20 cm target distribution, with uninterrupted 1 cm occupancy for 2 seconds. The startup work selected a direction that treats hold continuity and braking as the measurable objective rather than reach-only reward.",
+    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the official 0.06-0.20 m target distribution, with an uninterrupted 1 cm hold for 2 seconds. E2 directly addresses the missing prerequisite: producing and measuring a learned candidate under official geometry before deciding whether to request protected assessment or change the control/learning direction.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Startup direction: do not yet add a model-based stabilizer or change actuator authority. Proceed to goal review with a learning-first capability question: obtain a candidate exposed to the official 0.06-0.20 m geometry and measure complete episode success with reach-versus-hold, target-radius/angle, branch, action-saturation, velocity, and internal-step excursion diagnostics. Use the measured dynamics as a braking/overshoot comparator; redirect toward control or runtime changes only if candidate evidence shows the corresponding mechanism.",
-    "next_question": "What is the complete-hold performance of a learned policy trained and measured under the official target exposure, and do its failures separate into low-radius/branch conditioning versus overshoot and hold interruption when action, velocity, and internal-step distance diagnostics are recorded?",
-    "scientific_commit": "214d5bbdca61506aaaeb76afc5d1b34704dedfc7",
-    "session_id": "S1"
+    "next_direction_or_closure": "Proceed into the bounded E2 inquiry. Produce a candidate using the available inquiry training allocation with official 0.06-0.20 m exposure, then measure a goal-relevant development panel using the same policy runtime and record complete episode outcomes plus radius/angle, branch, reach-versus-hold, action saturation, velocity, and internal-step distance diagnostics. Select the artifact and checkpoint most informative to the decision rather than assuming the terminal checkpoint is best. Redirect to control/runtime or conditioning/exposure only when the corresponding diagnostics support it; do not request official assessment without an explicit evidence-backed best-known candidate.",
+    "next_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
+    "scientific_commit": "61a01897dd5f56e592d5e95fa02458cff8ed718f",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -763,21 +887,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "abc02f6f-2528-4944-b2b0-486ef4165ae1",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "7a35563da6f3698ce4eee2680086aaaefde07eba"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
