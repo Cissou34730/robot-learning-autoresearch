@@ -14,6 +14,7 @@ from typing import Any
 
 from robot_learning.lab.analyze_baseline_profile import (
     M27_T2_REFERENCE_FILENAME,
+    M28_T2_PROFILE_FILENAME,
     M30_T2_REFERENCE_FILENAME,
     analyze_document,
     analyze_path,
@@ -56,30 +57,96 @@ def _assert_raises_file_not_found(callable_: Any, label: str) -> None:
 
 def run_check() -> dict[str, Any]:
     artifact = _synthetic_artifact()
+    required_sections = (
+        "overall",
+        "radius_strata",
+        "angle_strata",
+        "class_summaries",
+        "branch_context_counts",
+    )
     with TemporaryDirectory() as temporary_directory:
         directory = Path(temporary_directory)
         present_path = directory / "present.json"
         present_path.write_text(json.dumps(artifact), encoding="utf-8")
-        resolved_present, present_fallback = resolve_profile_input(present_path)
+        resolved_present, present_source_kind = resolve_profile_input(present_path)
         _assert_equal(resolved_present, present_path, "present-path resolution")
-        _assert_equal(present_fallback, False, "present-path fallback flag")
-
-        fallback_path = directory / M27_T2_REFERENCE_FILENAME
-        fallback_path.write_text(json.dumps(artifact), encoding="utf-8")
-        requested_m30_path = directory / M30_T2_REFERENCE_FILENAME
-        resolved_fallback, fallback_used = resolve_profile_input(requested_m30_path)
-        _assert_equal(resolved_fallback, fallback_path, "exact M30-to-M27 fallback")
-        _assert_equal(fallback_used, True, "explicit fallback flag")
-
-        fallback_report = analyze_path(requested_m30_path)
         _assert_equal(
-            fallback_report["source_resolution"],
+            present_source_kind,
+            "requested_evaluation",
+            "present-path source kind",
+        )
+
+        m27_fallback_path = directory / M27_T2_REFERENCE_FILENAME
+        m27_fallback_path.write_text(json.dumps(artifact), encoding="utf-8")
+        requested_m30_path = directory / M30_T2_REFERENCE_FILENAME
+        resolved_m27, m27_source_kind = resolve_profile_input(requested_m30_path)
+        _assert_equal(
+            resolved_m27, m27_fallback_path, "exact M30-to-M27 fallback"
+        )
+        _assert_equal(
+            m27_source_kind,
+            "m27_evaluation_fallback",
+            "M27 fallback source kind",
+        )
+
+        m27_report = analyze_path(requested_m30_path)
+        _assert_equal(
+            m27_report["source_resolution"],
             {
                 "requested_path": str(requested_m30_path),
-                "resolved_path": str(fallback_path),
+                "resolved_path": str(m27_fallback_path),
                 "fallback_used": True,
+                "source_kind": "m27_evaluation_fallback",
             },
-            "fallback provenance",
+            "M27 fallback provenance",
+        )
+
+        m28_directory = directory / "with_m28_profile"
+        m28_directory.mkdir()
+        m28_profile_path = m28_directory / M28_T2_PROFILE_FILENAME
+        profile_document = analyze_document(artifact)
+        profile_document["overall"]["count"] = 999
+        profile_document["profile_marker"] = "loaded_without_recomputation"
+        m28_profile_path.write_text(
+            json.dumps(profile_document), encoding="utf-8"
+        )
+        requested_m30_with_m28 = m28_directory / M30_T2_REFERENCE_FILENAME
+        resolved_m28, m28_source_kind = resolve_profile_input(
+            requested_m30_with_m28
+        )
+        _assert_equal(
+            resolved_m28, m28_profile_path, "exact M30-to-M28 profile fallback"
+        )
+        _assert_equal(
+            m28_source_kind,
+            "m28_profile_fallback",
+            "M28 fallback source kind",
+        )
+        m28_report = analyze_path(requested_m30_with_m28)
+        _assert_equal(
+            m28_report["overall"]["count"],
+            999,
+            "M28 profile loaded without recomputation",
+        )
+        _assert_equal(
+            m28_report["profile_marker"],
+            "loaded_without_recomputation",
+            "M28 profile content preserved",
+        )
+        for section in required_sections:
+            if section not in m28_report:
+                raise AssertionError(
+                    f"M28 profile section missing after fallback: {section}"
+                )
+        _assert_equal(
+            m28_report["source_resolution"],
+            {
+                "requested_path": str(requested_m30_with_m28),
+                "resolved_path": str(m28_profile_path),
+                "fallback_used": True,
+                "source_kind": "m28_profile_fallback",
+            },
+            "M28 fallback provenance",
         )
 
         missing_m30_directory = directory / "without_fallback"
@@ -87,7 +154,7 @@ def run_check() -> dict[str, Any]:
         missing_m30_path = missing_m30_directory / M30_T2_REFERENCE_FILENAME
         _assert_raises_file_not_found(
             lambda: resolve_profile_input(missing_m30_path),
-            "M30 fallback requires its M27 sibling",
+            "M30 fallback requires an approved sibling",
         )
 
         unrelated_missing_path = directory / "unrelated.json"
@@ -96,30 +163,27 @@ def run_check() -> dict[str, Any]:
             "unrelated missing input",
         )
 
-        report = analyze_document(artifact)
-        required_sections = (
-            "overall",
-            "radius_strata",
-            "angle_strata",
-            "class_summaries",
-            "branch_context_counts",
-        )
-        for section in required_sections:
-            if section not in report:
-                raise AssertionError(f"analysis section missing: {section}")
-
         observed = {
             "present_resolution": {
                 "resolved_path": str(resolved_present),
-                "fallback_used": present_fallback,
+                "fallback_used": False,
+                "source_kind": present_source_kind,
             },
-            "fallback_resolution": {
-                "resolved_path": str(resolved_fallback),
-                "fallback_used": fallback_used,
+            "m27_fallback_resolution": {
+                "resolved_path": str(resolved_m27),
+                "source_kind": m27_source_kind,
             },
-            "fallback_report_source_resolution": fallback_report[
+            "m27_report_source_resolution": m27_report[
                 "source_resolution"
             ],
+            "m28_fallback_resolution": {
+                "resolved_path": str(resolved_m28),
+                "source_kind": m28_source_kind,
+            },
+            "m28_report_source_resolution": m28_report[
+                "source_resolution"
+            ],
+            "m28_preserved_profile_marker": m28_report["profile_marker"],
             "rejected_missing_inputs": 2,
             "analysis_sections": list(required_sections),
         }
@@ -130,6 +194,8 @@ def run_check() -> dict[str, Any]:
         "expected": {
             "present_path_uses_requested_file": True,
             "exact_m30_path_uses_m27_sibling_only_when_present": True,
+            "exact_m30_path_uses_m28_profile_only_when_m27_is_absent": True,
+            "m28_profile_is_loaded_without_recomputation": True,
             "missing_m30_without_sibling_rejected": True,
             "unrelated_missing_path_rejected": True,
             "analysis_sections_preserved": list(required_sections),
@@ -137,8 +203,10 @@ def run_check() -> dict[str, Any]:
         "checked_scope": [
             "existing requested input resolution",
             "exact M30 T2 to M27 T2 sibling fallback",
-            "fallback provenance in the emitted path report",
-            "rejection of an M30 request without its exact fallback sibling",
+            "exact M30 T2 to M28 T2 profile fallback",
+            "source kind and fallback provenance in emitted path reports",
+            "preservation of a loaded M28 profile without recomputation",
+            "rejection of an M30 request without either exact fallback sibling",
             "rejection of an unrelated missing input",
             "existing aggregate report section presence",
         ],

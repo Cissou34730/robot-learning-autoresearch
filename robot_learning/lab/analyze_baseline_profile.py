@@ -26,6 +26,7 @@ M27_T2_REFERENCE_FILENAME = (
     "evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-"
     "m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
 )
+M28_T2_PROFILE_FILENAME = "python-module-M28-2-i6_t2_profile_analysis.json"
 
 RADIUS_BINS = (
     ("[6,10)", 6.0, 10.0, True, False),
@@ -515,29 +516,37 @@ def analyze_document(document: Any) -> dict[str, Any]:
     }
 
 
-def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, bool]:
-    """Resolve the requested profile input with the one approved fallback."""
+def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
+    """Resolve the requested profile input with the approved exact fallbacks."""
     requested_path = Path(artifact_path)
     if requested_path.exists():
-        return requested_path, False
+        return requested_path, "requested_evaluation"
 
     if requested_path.name == M30_T2_REFERENCE_FILENAME:
         fallback_path = requested_path.parent / M27_T2_REFERENCE_FILENAME
         if fallback_path.exists():
-            return fallback_path, True
+            return fallback_path, "m27_evaluation_fallback"
+        fallback_path = requested_path.parent / M28_T2_PROFILE_FILENAME
+        if fallback_path.exists():
+            return fallback_path, "m28_profile_fallback"
 
     raise FileNotFoundError(f"Profile artifact not found: {requested_path}")
 
 
 def analyze_path(artifact_path: str | Path) -> dict[str, Any]:
     requested_path = Path(artifact_path)
-    resolved_path, fallback_used = resolve_profile_input(requested_path)
+    resolved_path, source_kind = resolve_profile_input(requested_path)
     with resolved_path.open("r", encoding="utf-8") as handle:
-        report = analyze_document(json.load(handle))
+        document = json.load(handle)
+    if source_kind == "m28_profile_fallback":
+        report = _mapping(document, "profile report")
+    else:
+        report = analyze_document(document)
     report["source_resolution"] = {
         "requested_path": str(requested_path),
         "resolved_path": str(resolved_path),
-        "fallback_used": fallback_used,
+        "fallback_used": source_kind != "requested_evaluation",
+        "source_kind": source_kind,
     }
     return report
 
