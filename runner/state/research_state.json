@@ -841,14 +841,14 @@
   "counters": {
     "event": 8,
     "inquiry": 2,
-    "measurement": 6,
-    "session": 4,
+    "measurement": 7,
+    "session": 5,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -2457,9 +2457,745 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T07:10:09Z",
+      "error": null,
+      "id": "M7",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Validate the PI-owned I2 broadened training recipe with an executable controlled check before bounded candidate generation.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json",
+            "instrument": "python_module",
+            "label": "I2 broadened training recipe controlled verification",
+            "module": "robot_learning.lab.verify_broadened_training"
+          }
+        ],
+        "rationale": "The active inquiry compares a complete broadened training artifact against T1:checkpoint-115712. Before spending the maintainer training allocation, the implementation must demonstrate that it actually changes the training exposure and deliberately covers both analytic IK branches with reset-escape shaping while preserving the protected evaluation environment. The check uses repeated resets, controlled joint-state transitions, signed directions, the shaping-window transition, and a real training step; it is designed to fail against the original radius-only training environment and to expose incomplete repairs. A completed check validates implementation behavior only, not learning outcomes or development success."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 broadened training recipe controlled verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M7-1-verify_broadened_training.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check_name",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/branch_sequence",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/checked_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/controlled_branch_shaping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/controlled_escape_shaping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/desired_elbow_signs",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/elbow_sign_sequence",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/evaluation_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/official_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_training_step_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/training_type",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/controlled_branch_shaping/away",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_branch_shaping/toward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/after_window_away",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/after_window_toward",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 26,
+                    "path": "/observed/controlled_escape_shaping/repeated_window_values",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/reverse_direction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/selected_direction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d2f2fd8afa2cda2d2592c556d6c53c5291965e267b1f10b4358e4aedd792d823"
+            },
+            "module": "robot_learning.lab.verify_broadened_training"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+              "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+            },
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+              "path": "robot_learning/lab/verify_broadened_training.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+              "path": "robot_learning/lab/verify_evaluation_stratification.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "9b3bdca46cd05d7ef30d892ce96f752d6f685cec",
+            "fingerprint": "50aba84125a82104f78e690dd9465b38d06acea8cc4b0401fa4e0cb71722fc5a",
+            "manifest": [
+              {
+                "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+                "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+              },
+              {
+                "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+                "path": "robot_learning/lab/verify_broadened_training.py"
+              },
+              {
+                "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+                "path": "robot_learning/lab/verify_evaluation_stratification.py"
+              }
+            ]
+          },
+          "code_parent_commit": "706c373e1a14d8473ba3a6e70d50d54dfa5ae32f",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+              "path": "robot_learning/lab/verify_broadened_training.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_broadened_training.py"
+          ],
+          "scientific_commit": "101a6d032c95b1dd2c004d3cd73a3be25cb556ff",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f21cf1ca147fd09127bd13b439f76b8992417c6f1c744af1e36061c8deb84dc7",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+          ],
+          "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json",
+          "instrument": "python_module",
+          "label": "I2 broadened training recipe controlled verification",
+          "module": "robot_learning.lab.verify_broadened_training"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+            "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+          },
+          {
+            "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+            "path": "robot_learning/lab/verify_broadened_training.py"
+          },
+          {
+            "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+            "path": "robot_learning/lab/verify_compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+            "path": "robot_learning/lab/verify_evaluation_stratification.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "9b3bdca46cd05d7ef30d892ce96f752d6f685cec",
+          "fingerprint": "50aba84125a82104f78e690dd9465b38d06acea8cc4b0401fa4e0cb71722fc5a",
+          "manifest": [
+            {
+              "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+              "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+            },
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+              "path": "robot_learning/lab/verify_broadened_training.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+              "path": "robot_learning/lab/verify_evaluation_stratification.py"
+            }
+          ]
+        },
+        "code_parent_commit": "706c373e1a14d8473ba3a6e70d50d54dfa5ae32f",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+            "path": "robot_learning/lab/verify_broadened_training.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_broadened_training.py"
+        ],
+        "scientific_commit": "101a6d032c95b1dd2c004d3cd73a3be25cb556ff",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f21cf1ca147fd09127bd13b439f76b8992417c6f1c744af1e36061c8deb84dc7",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+          ],
+          "instrument": "python_module",
+          "label": "I2 broadened training recipe controlled verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M7-1-verify_broadened_training.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 4,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check_name",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 11,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/branch_sequence",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/checked_hold_steps",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/controlled_branch_shaping",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/observed/controlled_escape_shaping",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/desired_elbow_signs",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/elbow_sign_sequence",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/evaluation_type",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/official_radius_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/reset_training_step_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/training_radius_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/training_type",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/controlled_branch_shaping/away",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_branch_shaping/toward",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_escape_shaping/after_window_away",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_escape_shaping/after_window_toward",
+                  "type": "number"
+                },
+                {
+                  "entries": 26,
+                  "path": "/observed/controlled_escape_shaping/repeated_window_values",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/controlled_escape_shaping/reverse_direction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_escape_shaping/selected_direction",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "d2f2fd8afa2cda2d2592c556d6c53c5291965e267b1f10b4358e4aedd792d823"
+          },
+          "module": "robot_learning.lab.verify_broadened_training"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 broadened training recipe controlled verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/python-module-M7-1-verify_broadened_training.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check_name",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/branch_sequence",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/checked_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/controlled_branch_shaping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/controlled_escape_shaping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/desired_elbow_signs",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/elbow_sign_sequence",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/evaluation_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/official_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_training_step_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/training_type",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/controlled_branch_shaping/away",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_branch_shaping/toward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/after_window_away",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/after_window_toward",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 26,
+                    "path": "/observed/controlled_escape_shaping/repeated_window_values",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/reverse_direction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_escape_shaping/selected_direction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d2f2fd8afa2cda2d2592c556d6c53c5291965e267b1f10b4358e4aedd792d823"
+            },
+            "module": "robot_learning.lab.verify_broadened_training"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+              "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+            },
+            {
+              "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+              "path": "robot_learning/lab/verify_broadened_training.py"
+            },
+            {
+              "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+              "path": "robot_learning/lab/verify_compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+              "path": "robot_learning/lab/verify_evaluation_stratification.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "9b3bdca46cd05d7ef30d892ce96f752d6f685cec",
+            "fingerprint": "50aba84125a82104f78e690dd9465b38d06acea8cc4b0401fa4e0cb71722fc5a",
+            "manifest": [
+              {
+                "fingerprint": "71b7b9acafd3c048b61876562c5e800591356b00f590b346eb04b7cc384d6835",
+                "path": "robot_learning/lab/analyze_evaluation_stratification.py"
+              },
+              {
+                "fingerprint": "e859442bbe47748d696ba93932e54b7e5d03a412120e2279eb8fec241464b7a8",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+                "path": "robot_learning/lab/verify_broadened_training.py"
+              },
+              {
+                "fingerprint": "8bcc07bec52d80bbf41afe4abb69c1e44c832215b889c7772a4da2038cb290b6",
+                "path": "robot_learning/lab/verify_compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "198f122ba889b8dfb87e6b5b48d33b37f30083c120bbd3b2c38eecfc0602cc97",
+                "path": "robot_learning/lab/verify_evaluation_stratification.py"
+              }
+            ]
+          },
+          "code_parent_commit": "706c373e1a14d8473ba3a6e70d50d54dfa5ae32f",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "bef1f50cc74eb3e1690f01ddb0a91969057cc85513e2772888311739935a78ef",
+              "path": "robot_learning/lab/verify_broadened_training.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_broadened_training.py"
+          ],
+          "scientific_commit": "101a6d032c95b1dd2c004d3cd73a3be25cb556ff",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f21cf1ca147fd09127bd13b439f76b8992417c6f1c744af1e36061c8deb84dc7",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Validate the PI-owned I2 broadened training recipe with an executable controlled check before bounded candidate generation.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json"
+            ],
+            "artifact": "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/verify_broadened_training.json",
+            "instrument": "python_module",
+            "label": "I2 broadened training recipe controlled verification",
+            "module": "robot_learning.lab.verify_broadened_training"
+          }
+        ],
+        "rationale": "The active inquiry compares a complete broadened training artifact against T1:checkpoint-115712. Before spending the maintainer training allocation, the implementation must demonstrate that it actually changes the training exposure and deliberately covers both analytic IK branches with reset-escape shaping while preserving the protected evaluation environment. The check uses repeated resets, controlled joint-state transitions, signed directions, the shaping-window transition, and a real training step; it is designed to fail against the original radius-only training environment and to expose incomplete repairs. A completed check validates implementation behavior only, not learning outcomes or development success."
+      }
+    },
+    "request_fingerprint": "894efd8deead786ab594b1a2b869472965647f9dc886319c0e43fff7701d9e93",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E4 from T1, M4, and M6; it is the only learned candidate with a completed full official-range development measurement and is not an official-success declaration. Working and retained roles remain empty. I2 has not yet produced a candidate. The comparison will be between complete archived artifacts, with candidate selection based on development evidence rather than training-proxy rank or terminal-checkpoint status.",
     "completed_operations": [
@@ -2491,6 +3227,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "43c7b940-555f-4b59-80a6-4711514c0cc6",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M7"
+    ],
+    "scientific_parent_commit": "101a6d032c95b1dd2c004d3cd73a3be25cb556ff"
+  },
   "terminal_state": null
 }
