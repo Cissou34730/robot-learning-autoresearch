@@ -1,0 +1,52 @@
+{
+  "check": "research_evaluation_branch_diagnostics",
+  "checked_scope": [
+    "open/folded norm classification",
+    "occupancy steps and fractions",
+    "consecutive branch-switch counting",
+    "first-reach branch attribution",
+    "maximum-held-run branch attribution",
+    "minimum open/folded error norms",
+    "explicit rejection of a non-11-element observation",
+    "artifact-independent frozen observation compatibility path"
+  ],
+  "expected": {
+    "incompatible_shape_rejection": "ValueError mentioning 11 elements",
+    "summary": {
+      "branch_at_first_reach": "folded",
+      "branch_at_max_held_run": "open",
+      "branch_switches": 2,
+      "folded_branch_occupancy_fraction": 0.4,
+      "folded_branch_occupancy_steps": 2,
+      "min_folded_branch_error_norm": 0.1,
+      "min_open_branch_error_norm": 0.05,
+      "open_branch_occupancy_fraction": 0.6,
+      "open_branch_occupancy_steps": 3
+    },
+    "tie_classification": "open"
+  },
+  "mode": "compatibility",
+  "observed": {
+    "incompatible_shape_rejection": {
+      "error_type": "ValueError",
+      "message": "post-step observation 1 must have shape (11,), got (10,)"
+    },
+    "summary": {
+      "branch_at_first_reach": "folded",
+      "branch_at_max_held_run": "open",
+      "branch_switches": 2,
+      "folded_branch_occupancy_fraction": 0.4,
+      "folded_branch_occupancy_steps": 2,
+      "min_folded_branch_error_norm": 0.10000000149011612,
+      "min_open_branch_error_norm": 0.05000000074505806,
+      "open_branch_occupancy_fraction": 0.6,
+      "open_branch_occupancy_steps": 3
+    },
+    "tie_classification": 1
+  },
+  "unchecked_scope": [
+    "trained-policy behavior",
+    "MuJoCo episode execution and target sampling",
+    "scientific interpretation of branch-stratified outcomes"
+  ]
+}

@@ -839,7 +839,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 1
   },
@@ -1738,9 +1738,823 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:20:12Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Production-path compatibility check for branch-stratified research-evaluation diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-branch-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "The evaluator was extended to record the branch-relevant fields required by I1. Before using those fields on the fresh baseline, this controlled check must verify the production summarizer against known synthetic observations, including branch transitions, occupancy, first reach, maximum held run, tie handling, and explicit rejection of an incompatible observation shape. It does not execute a trained policy or establish scientific performance."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "research-evaluation-branch-diagnostics-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M3-1-research_evaluation_diagnostics_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/incompatible_shape_rejection",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/tie_classification",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/incompatible_shape_rejection",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/tie_classification",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/branch_at_first_reach",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/summary/branch_at_max_held_run",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/folded_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/folded_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/min_folded_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/min_open_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/open_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/open_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/incompatible_shape_rejection/error_type",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/incompatible_shape_rejection/message",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_at_first_reach",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_at_max_held_run",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/folded_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/folded_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/min_folded_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/min_open_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/open_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/open_branch_occupancy_steps",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "56a184d2b337a45068918a9bbe3ab9306e36f6ea149d214f0be2a1fb30520ff8"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "2f951fe16b42726771cadc48929debea329f878a",
+            "fingerprint": "78d026cab60c10cdbe9c1bfa6fda9ac6e77d92f4bccf3b2d010fe744aa7d2650",
+            "manifest": [
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "4c4d8a468948d2cf781ec9b00f64eb9e03363464",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5cc03ea231c0bf6e651495431de2e85a2de858a3feaec5e8a96db905bc80d2ff",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--output",
+            "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json",
+          "instrument": "python_module",
+          "label": "research-evaluation-branch-diagnostics-compatibility",
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          },
+          {
+            "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "2f951fe16b42726771cadc48929debea329f878a",
+          "fingerprint": "78d026cab60c10cdbe9c1bfa6fda9ac6e77d92f4bccf3b2d010fe744aa7d2650",
+          "manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "4c4d8a468948d2cf781ec9b00f64eb9e03363464",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+        ],
+        "scientific_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "5cc03ea231c0bf6e651495431de2e85a2de858a3feaec5e8a96db905bc80d2ff",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--output",
+            "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "research-evaluation-branch-diagnostics-compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M3-1-research_evaluation_diagnostics_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "path": "/mode",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/incompatible_shape_rejection",
+                  "type": "string"
+                },
+                {
+                  "entries": 9,
+                  "path": "/expected/summary",
+                  "type": "object"
+                },
+                {
+                  "path": "/expected/tie_classification",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/incompatible_shape_rejection",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/summary",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/tie_classification",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/branch_at_first_reach",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/summary/branch_at_max_held_run",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/summary/branch_switches",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/folded_branch_occupancy_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/folded_branch_occupancy_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/min_folded_branch_error_norm",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/min_open_branch_error_norm",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/open_branch_occupancy_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/summary/open_branch_occupancy_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/incompatible_shape_rejection/error_type",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/incompatible_shape_rejection/message",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/summary/branch_at_first_reach",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/summary/branch_at_max_held_run",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/summary/branch_switches",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/folded_branch_occupancy_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/folded_branch_occupancy_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/min_folded_branch_error_norm",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/min_open_branch_error_norm",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/open_branch_occupancy_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/summary/open_branch_occupancy_steps",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "56a184d2b337a45068918a9bbe3ab9306e36f6ea149d214f0be2a1fb30520ff8"
+          },
+          "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "research-evaluation-branch-diagnostics-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/python-module-M3-1-research_evaluation_diagnostics_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/mode",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/incompatible_shape_rejection",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/tie_classification",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/incompatible_shape_rejection",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/tie_classification",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/branch_at_first_reach",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/summary/branch_at_max_held_run",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/folded_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/folded_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/min_folded_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/min_open_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/open_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/summary/open_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/incompatible_shape_rejection/error_type",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/incompatible_shape_rejection/message",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_at_first_reach",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_at_max_held_run",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/folded_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/folded_branch_occupancy_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/min_folded_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/min_open_branch_error_norm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/open_branch_occupancy_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/summary/open_branch_occupancy_steps",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "56a184d2b337a45068918a9bbe3ab9306e36f6ea149d214f0be2a1fb30520ff8"
+            },
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            },
+            {
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "2f951fe16b42726771cadc48929debea329f878a",
+            "fingerprint": "78d026cab60c10cdbe9c1bfa6fda9ac6e77d92f4bccf3b2d010fe744aa7d2650",
+            "manifest": [
+              {
+                "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              },
+              {
+                "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "4c4d8a468948d2cf781ec9b00f64eb9e03363464",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          ],
+          "scientific_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5cc03ea231c0bf6e651495431de2e85a2de858a3feaec5e8a96db905bc80d2ff",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Production-path compatibility check for branch-stratified research-evaluation diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--output",
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_diagnostics_compatibility.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-branch-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_evaluation_diagnostics"
+          }
+        ],
+        "rationale": "The evaluator was extended to record the branch-relevant fields required by I1. Before using those fields on the fresh baseline, this controlled check must verify the production summarizer against known synthetic observations, including branch transitions, occupancy, first reach, maximum held run, tie handling, and explicit rejection of an incompatible observation shape. It does not execute a trained policy or establish scientific performance."
+      }
+    },
+    "request_fingerprint": "c341001a7b698b012cea6b5397dfb3fd87fbb2be8d43089a51511ea3a1889715",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists and working, best-known, and retained roles remain empty. E2 is an inquiry boundary, not a policy candidate; M1 and M2 are measurements and cannot fill a candidate role.",
     "completed_operations": [
@@ -1780,9 +2594,10 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M3"
     ],
-    "scientific_parent_commit": "4c4d8a468948d2cf781ec9b00f64eb9e03363464"
+    "scientific_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d"
   },
   "terminal_state": null
 }
