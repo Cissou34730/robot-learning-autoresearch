@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train a fresh full-radius direct-control candidate with the default reward and otherwise retained current training/runtime semantics, then measure a frozen checkpoint on the matched complete-hold development panel with acquisition and interruption diagnostics. Close positively only if the candidate materially exceeds the 153/160 T4 reference while retaining acquisition; close negatively if it again shows acquisition collapse or does not improve the reference; close limited if it recovers acquisition but leaves the hold residual unresolved. In all cases preserve whether the result establishes a reward-specific route property or only an artifact-level comparison, and carry runtime/optimization alternatives forward if not discriminated.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted 100-step holds. T4 is the strongest measured artifact at 153/160, while the reproducible fresh direct full-radius route T7/T8 acquires almost never and scores 0/160; changing reward credit is a plausible way to recover acquisition and still address the remaining hold residual.",
+    "handoff_conclusion": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+    "handoff_question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+    "handoff_source_session_id": "S23",
+    "id": "I12",
+    "opened_in_session": "S24",
+    "question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+    "rationale": "M29 shows T8 0/12 with ten no-first-reach failures and T4 10/12 on paired full traces, while T7 and T8 have matching fresh-route learning trajectories and T2 previously achieved 150/160 on full-radius training. The current training environment explicitly combines full-radius exposure, direct torque, and targeted velocity/action penalties; the logged T7/T8 collapse is present from the first update and is not explained by a terminal checkpoint choice. A fresh default-reward route is therefore the most direct bounded test of reward-credit as the route-specific cause and can credibly change capability, while complete-hold measurement prevents selecting a reach-only improvement.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -6562,16 +6573,16 @@
     }
   },
   "counters": {
-    "event": 47,
-    "inquiry": 11,
+    "event": 48,
+    "inquiry": 12,
     "measurement": 29,
-    "session": 23,
+    "session": 24,
     "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -19263,9 +19274,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:07:53Z",
+      "error": null,
+      "id": "E48",
+      "inquiry_id": "I12",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train a fresh full-radius direct-control candidate with the default reward and otherwise retained current training/runtime semantics, then measure a frozen checkpoint on the matched complete-hold development panel with acquisition and interruption diagnostics. Close positively only if the candidate materially exceeds the 153/160 T4 reference while retaining acquisition; close negatively if it again shows acquisition collapse or does not improve the reference; close limited if it recovers acquisition but leaves the hold residual unresolved. In all cases preserve whether the result establishes a reward-specific route property or only an artifact-level comparison, and carry runtime/optimization alternatives forward if not discriminated.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted 100-step holds. T4 is the strongest measured artifact at 153/160, while the reproducible fresh direct full-radius route T7/T8 acquires almost never and scores 0/160; changing reward credit is a plausible way to recover acquisition and still address the remaining hold residual.",
+        "question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+        "rationale": "M29 shows T8 0/12 with ten no-first-reach failures and T4 10/12 on paired full traces, while T7 and T8 have matching fresh-route learning trajectories and T2 previously achieved 150/160 on full-radius training. The current training environment explicitly combines full-radius exposure, direct torque, and targeted velocity/action penalties; the logged T7/T8 collapse is present from the first update and is not explained by a terminal checkpoint choice. A fresh default-reward route is therefore the most direct bounded test of reward-credit as the route-specific cause and can credibly change capability, while complete-hold measurement prevents selecting a reach-only improvement."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I12",
+        "status": "completed"
+      },
+      "session_id": "S24",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train a fresh full-radius direct-control candidate with the default reward and otherwise retained current training/runtime semantics, then measure a frozen checkpoint on the matched complete-hold development panel with acquisition and interruption diagnostics. Close positively only if the candidate materially exceeds the 153/160 T4 reference while retaining acquisition; close negatively if it again shows acquisition collapse or does not improve the reference; close limited if it recovers acquisition but leaves the hold residual unresolved. In all cases preserve whether the result establishes a reward-specific route property or only an artifact-level comparison, and carry runtime/optimization alternatives forward if not discriminated.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted 100-step holds. T4 is the strongest measured artifact at 153/160, while the reproducible fresh direct full-radius route T7/T8 acquires almost never and scores 0/160; changing reward credit is a plausible way to recover acquisition and still address the remaining hold residual.",
+          "handoff_conclusion": "Established: M25 measured T4 at 153/160 under complete-hold semantics, with a mixed residual spanning no-first-reach and reach-then-interrupt failures. T4's late training proxy drift means terminal checkpoints have no privileged status; T5 also reached 153/160 at an earlier selected checkpoint. M27 showed T7's matched low-action, low-velocity acquisition collapse, while T4 acquired on most probes. I11 tested a fresh full-radius route using the existing direct clipped-torque, complete-hold-aligned training implementation without a persisted residual-torque scaffold. T8's pre-terminal proxy-peak checkpoint failed completely in M28 (0/160 versus T4 153/160). M29 independently verified 24 paired labeled resets over 8,121 steps: T8 had 0/12 successes, ten no-first-reach cases, and two reach-then-interrupt cases with maximum held steps of two; T4 had 10/12 successes on the same probe. The evidence closes I11 negatively at the artifact/route level: this fresh route did not preserve acquisition or improve holding. It does not establish whether reward credit, learning exposure, optimization, runtime, timing, saturation, or plant dynamics caused the collapse. The plant remains reachable and regulatable in the observed T4 behavior, and the negative T8 result is not a general verdict on the method or evidence for persisted residual torque.",
+          "handoff_question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+          "handoff_source_session_id": "S23",
+          "id": "I12",
+          "opened_in_session": "S24",
+          "question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+          "rationale": "M29 shows T8 0/12 with ten no-first-reach failures and T4 10/12 on paired full traces, while T7 and T8 have matching fresh-route learning trajectories and T2 previously achieved 150/160 on full-radius training. The current training environment explicitly combines full-radius exposure, direct torque, and targeted velocity/action penalties; the logged T7/T8 collapse is present from the first update and is not explained by a terminal checkpoint choice. A fresh default-reward route is therefore the most direct bounded test of reward-credit as the route-specific cause and can credibly change capability, while complete-hold measurement prevents selecting a reach-only improvement.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I12",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E48",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train a fresh full-radius direct-control candidate with the default reward and otherwise retained current training/runtime semantics, then measure a frozen checkpoint on the matched complete-hold development panel with acquisition and interruption diagnostics. Close positively only if the candidate materially exceeds the 153/160 T4 reference while retaining acquisition; close negatively if it again shows acquisition collapse or does not improve the reference; close limited if it recovers acquisition but leaves the hold residual unresolved. In all cases preserve whether the result establishes a reward-specific route property or only an artifact-level comparison, and carry runtime/optimization alternatives forward if not discriminated.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted 100-step holds. T4 is the strongest measured artifact at 153/160, while the reproducible fresh direct full-radius route T7/T8 acquires almost never and scores 0/160; changing reward credit is a plausible way to recover acquisition and still address the remaining hold residual.",
+        "question": "Does targeted regulation reward shaping cause the deterministic fresh full-radius acquisition collapse, and can restoring the default reach-and-hold reward while preserving full-radius exposure and direct control improve complete-episode success without sacrificing acquisition?",
+        "rationale": "M29 shows T8 0/12 with ten no-first-reach failures and T4 10/12 on paired full traces, while T7 and T8 have matching fresh-route learning trajectories and T2 previously achieved 150/160 on full-radius training. The current training environment explicitly combines full-radius exposure, direct torque, and targeted velocity/action penalties; the logged T7/T8 collapse is present from the first update and is not explained by a terminal checkpoint choice. A fresh default-reward route is therefore the most direct bounded test of reward-credit as the route-specific cause and can credibly change capability, while complete-hold measurement prevents selecting a reach-only improvement."
+      }
+    },
+    "request_fingerprint": "0b1177d4009ef2dfbb7ca29c098876268edcd4594708ecce71f14bc54e416e71",
+    "session_id": "S24",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T4:checkpoint-120832, measured at 153/160 but not certified for official assessment. T8:checkpoint-110592 is rejected after M28 and M29 because it scored 0/160 and showed acquisition-dominated traces. T7 remains rejected for the same artifact-level collapse pattern. T5:checkpoint-100352 remains a historical 153/160 result and does not supersede T4. No candidate is retained or working; unmeasured checkpoints remain training nominations only.",
     "completed_operations": [
@@ -19302,6 +19376,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "790a2154-3104-433e-9d38-abbc22293bc5",
+    "id": "S24",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E48"
+    ],
+    "scientific_parent_commit": "35bdbd4bb33eb31844addb9453bbefa153fb98dc"
+  },
   "terminal_state": null
 }
