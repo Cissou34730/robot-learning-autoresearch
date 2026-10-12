@@ -29,3 +29,4 @@
 | E11 | checkpoint | - | checkpointed |
 | M13 | measurement | I3 | completed |
 | M14 | measurement | I3 | completed |
+| M15 | measurement | I3 | completed |
