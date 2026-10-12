@@ -12645,38 +12645,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative result",
-        "reason": "M22 verified the implemented follow-on through production reset and step paths: it restored the T2-compatible 11-value observation, preserved finite clipped transitions and reward attribution, and retained the full-radius training environment. T4 then trained fresh for the full 120000-step allocation; its late trajectory peaked at proxy success 0.90 at checkpoint 105472, which was selected for measurement rather than privileging the terminal checkpoint. M23 measured T4:checkpoint-105472 against T2:checkpoint-120832 on the identical fixed 160-seed schema-6 panel: T4 achieved 144/160 (90.0%) versus T2's 150/160 (93.75%), with 144 first reaches versus 153 and a paired net loss of six episodes. M24's matched reducer showed T4 had 16 never-reached and zero reached-but-incomplete failures, while T2 had seven never-reached and three reached-but-incomplete failures. T4 degraded the inner-radius gains (32/40 versus T2's 40/40 at 6-10 cm; 49/53 versus 50/53 at 10-14 cm) but improved outer strata modestly (30/31 versus 28/31 at 14-17 cm; 33/36 versus 32/36 at 17-20 cm). Its boundary hold interruptions fell from T2's 438 to zero, and out-of-tolerance physics substeps during hold fell from 11655 to 8090 overall, with no reached-but-incomplete class; this is evidence of a stabilization shift among reached episodes, not an overall success gain attributable to stabilization because reach was lost. T4's target feasible-branch counts were unchanged and its never-reached class increased, so the candidate did not reduce the targeted single-branch/negative-limit residual sufficiently. The result is an artifact-level conclusion about this restored-observation/soft-shaping implementation, not a causal rejection of reward balancing or terminal stabilization generally. M23/M24 still use boundary-sampled development success and research-only physics-step diagnostics; protected continuous-hold equivalence is unresolved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative result",
-        "reason": "M22 verified the implemented follow-on through production reset and step paths: it restored the T2-compatible 11-value observation, preserved finite clipped transitions and reward attribution, and retained the full-radius training environment. T4 then trained fresh for the full 120000-step allocation; its late trajectory peaked at proxy success 0.90 at checkpoint 105472, which was selected for measurement rather than privileging the terminal checkpoint. M23 measured T4:checkpoint-105472 against T2:checkpoint-120832 on the identical fixed 160-seed schema-6 panel: T4 achieved 144/160 (90.0%) versus T2's 150/160 (93.75%), with 144 first reaches versus 153 and a paired net loss of six episodes. M24's matched reducer showed T4 had 16 never-reached and zero reached-but-incomplete failures, while T2 had seven never-reached and three reached-but-incomplete failures. T4 degraded the inner-radius gains (32/40 versus T2's 40/40 at 6-10 cm; 49/53 versus 50/53 at 10-14 cm) but improved outer strata modestly (30/31 versus 28/31 at 14-17 cm; 33/36 versus 32/36 at 17-20 cm). Its boundary hold interruptions fell from T2's 438 to zero, and out-of-tolerance physics substeps during hold fell from 11655 to 8090 overall, with no reached-but-incomplete class; this is evidence of a stabilization shift among reached episodes, not an overall success gain attributable to stabilization because reach was lost. T4's target feasible-branch counts were unchanged and its never-reached class increased, so the candidate did not reduce the targeted single-branch/negative-limit residual sufficiently. The result is an artifact-level conclusion about this restored-observation/soft-shaping implementation, not a causal rejection of reward balancing or terminal stabilization generally. M23/M24 still use boundary-sampled development success and research-only physics-step diagnostics; protected continuous-hold equivalence is unresolved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E21",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative result",
-        "reason": "M22 verified the implemented follow-on through production reset and step paths: it restored the T2-compatible 11-value observation, preserved finite clipped transitions and reward attribution, and retained the full-radius training environment. T4 then trained fresh for the full 120000-step allocation; its late trajectory peaked at proxy success 0.90 at checkpoint 105472, which was selected for measurement rather than privileging the terminal checkpoint. M23 measured T4:checkpoint-105472 against T2:checkpoint-120832 on the identical fixed 160-seed schema-6 panel: T4 achieved 144/160 (90.0%) versus T2's 150/160 (93.75%), with 144 first reaches versus 153 and a paired net loss of six episodes. M24's matched reducer showed T4 had 16 never-reached and zero reached-but-incomplete failures, while T2 had seven never-reached and three reached-but-incomplete failures. T4 degraded the inner-radius gains (32/40 versus T2's 40/40 at 6-10 cm; 49/53 versus 50/53 at 10-14 cm) but improved outer strata modestly (30/31 versus 28/31 at 14-17 cm; 33/36 versus 32/36 at 17-20 cm). Its boundary hold interruptions fell from T2's 438 to zero, and out-of-tolerance physics substeps during hold fell from 11655 to 8090 overall, with no reached-but-incomplete class; this is evidence of a stabilization shift among reached episodes, not an overall success gain attributable to stabilization because reach was lost. T4's target feasible-branch counts were unchanged and its never-reached class increased, so the candidate did not reduce the targeted single-branch/negative-limit residual sufficiently. The result is an artifact-level conclusion about this restored-observation/soft-shaping implementation, not a causal rejection of reward balancing or terminal stabilization generally. M23/M24 still use boundary-sampled development success and research-only physics-step diagnostics; protected continuous-hold equivalence is unresolved."
-      }
-    },
-    "request_fingerprint": "1fa6089c657e748a4441e88db8546e10b84aa5e4d34772109d763cb87a3a3a5b",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is explicitly assigned best-known based on M21's 150/160 result and paired superiority over T3; it is not certified for the official goal. T1:checkpoint-115712 measured 105/160 and T3:checkpoint-120832 measured 3/160, so neither is best-known or retained. Working and retained roles are empty. I5 is the active inquiry; no candidate is assigned as working.",
     "completed_operations": [
