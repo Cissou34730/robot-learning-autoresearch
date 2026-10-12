@@ -1660,7 +1660,7 @@
   "counters": {
     "event": 11,
     "inquiry": 3,
-    "measurement": 17,
+    "measurement": 18,
     "session": 7,
     "training": 2
   },
@@ -7087,9 +7087,1288 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M16"
+    },
+    {
+      "completed_at": "2026-10-12T15:29:22Z",
+      "error": null,
+      "id": "M18",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Aggregate the complete schema-6 T2 mechanism-profile artifact from M14 across success/failure, reach/hold classes, radius strata, angle strata, and branch context.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json",
+            "instrument": "python_module",
+            "label": "m14-t2-physics-step-profile",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "rationale": "M14 preserved T2's 150/160 development result but its within-physics-step fields are not yet interpreted. This analysis supplies the bounded comparison required by I3: terminal sampled-data instability predicts concentrated held-boundary excursions in reached-but-incomplete failures, whereas branch/joint-limit/trajectory failure predicts never-reached concentration aligned with branch availability and joint-limit margin. The analysis is descriptive and does not redefine protected continuous-hold semantics."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+            ],
+            "instrument": "python_module",
+            "label": "m14-t2-physics-step-profile",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M18-1-analyze-m14-t2-physics-step-profile.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_context_counts/final_boundary_nearest_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts/first_entry_nearest_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts/target_feasible_branch_sets",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/angle_wrapping",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/hold_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/rate_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/complete_hold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/overall/field_availability",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/maximum_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/maximum_min_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_min_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_min_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "808cdd3261d84f26a1362e0072fc1c6102684ff335ce87a279bbc74194fbfa1b"
+            },
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ba322d22758fc75fd2abfbd95d4b993ca45560ed",
+            "fingerprint": "f720be4341e7e0650b0b27674206a91768eae19a89e78bccdc507f9f1194173c",
+            "manifest": [
+              {
+                "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f7713e80c5009a5860c3cebd2ed4ce6ced345216",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_baseline_profile.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json",
+          "instrument": "python_module",
+          "label": "m14-t2-physics-step-profile",
+          "module": "robot_learning.lab.analyze_baseline_profile"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "ba322d22758fc75fd2abfbd95d4b993ca45560ed",
+          "fingerprint": "f720be4341e7e0650b0b27674206a91768eae19a89e78bccdc507f9f1194173c",
+          "manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "f7713e80c5009a5860c3cebd2ed4ce6ced345216",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_baseline_profile.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+          ],
+          "instrument": "python_module",
+          "label": "m14-t2-physics-step-profile",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M18-1-analyze-m14-t2-physics-step-profile.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/angle_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_context_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/class_summaries",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/definitions",
+                  "type": "object"
+                },
+                {
+                  "path": "/input_episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 38,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/radius_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[-135,-90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[-180,-135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[-45,0)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[-90,-45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[0,45)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[135,180)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[45,90)",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/angle_strata/[90,135)",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/branch_context_counts/final_boundary_nearest_branch",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_context_counts/first_entry_nearest_branch",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_context_counts/target_feasible_branch_sets",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/class_summaries/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/class_summaries/never_reached",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/class_summaries/reached_but_not_complete",
+                  "type": "object"
+                },
+                {
+                  "entries": 38,
+                  "path": "/class_summaries/successes",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/angle_sectors_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/definitions/angle_wrapping",
+                  "type": "string"
+                },
+                {
+                  "path": "/definitions/hold_semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/definitions/interpretation",
+                  "type": "string"
+                },
+                {
+                  "path": "/definitions/missing_null_policy",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "label",
+                    "lower",
+                    "lower_inclusive",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/definitions/radius_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/definitions/rate_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/overall/complete_hold_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/failures",
+                  "type": "number"
+                },
+                {
+                  "entries": 14,
+                  "path": "/overall/field_availability",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/first_reach_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/first_reach_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/hold_intervals_with_out_of_tolerance_physics_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/max_max_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/max_max_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/max_max_physics_step_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/max_max_physics_step_distance_during_hold_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/maximum_final_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/maximum_min_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_final_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_entry_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_entry_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_hold_intervals_with_out_of_tolerance_physics_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_cartesian_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_joint_speed_norm_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_physics_step_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_physics_step_distance_during_hold_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_min_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_min_joint_limit_margin_rad",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_out_of_tolerance_physics_substeps_during_hold",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "808cdd3261d84f26a1362e0072fc1c6102684ff335ce87a279bbc74194fbfa1b"
+          },
+          "module": "robot_learning.lab.analyze_baseline_profile"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+            ],
+            "instrument": "python_module",
+            "label": "m14-t2-physics-step-profile",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M18-1-analyze-m14-t2-physics-step-profile.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/angle_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/class_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/definitions",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/input_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-135,-90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-180,-135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-45,0)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[-90,-45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[0,45)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[135,180)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[45,90)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/angle_strata/[90,135)",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/branch_context_counts/final_boundary_nearest_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts/first_entry_nearest_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_context_counts/target_feasible_branch_sets",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/reached_but_not_complete",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 38,
+                    "path": "/class_summaries/successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/angle_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/angle_wrapping",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/hold_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/interpretation",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/definitions/missing_null_policy",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower",
+                      "lower_inclusive",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/definitions/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/definitions/rate_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/complete_hold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/overall/field_availability",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/max_max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/maximum_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/maximum_min_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_entry_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_entry_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_hold_intervals_with_out_of_tolerance_physics_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_cartesian_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_joint_speed_norm_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_physics_step_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_physics_step_distance_during_hold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_min_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_min_joint_limit_margin_rad",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_out_of_tolerance_physics_substeps_during_hold",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "808cdd3261d84f26a1362e0072fc1c6102684ff335ce87a279bbc74194fbfa1b"
+            },
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "ba322d22758fc75fd2abfbd95d4b993ca45560ed",
+            "fingerprint": "f720be4341e7e0650b0b27674206a91768eae19a89e78bccdc507f9f1194173c",
+            "manifest": [
+              {
+                "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "f7713e80c5009a5860c3cebd2ed4ce6ced345216",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_baseline_profile.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M18",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Aggregate the complete schema-6 T2 mechanism-profile artifact from M14 across success/failure, reach/hold classes, radius strata, angle strata, and branch context.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m14-T2-checkpoint-120832-160ep-seed4200-41a072ee3f86.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/analyze-m14-t2-physics-step-profile.json",
+            "instrument": "python_module",
+            "label": "m14-t2-physics-step-profile",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "rationale": "M14 preserved T2's 150/160 development result but its within-physics-step fields are not yet interpreted. This analysis supplies the bounded comparison required by I3: terminal sampled-data instability predicts concentrated held-boundary excursions in reached-but-incomplete failures, whereas branch/joint-limit/trajectory failure predicts never-reached concentration aligned with branch availability and joint-limit margin. The analysis is descriptive and does not redefine protected continuous-hold semantics."
+      }
+    },
+    "request_fingerprint": "966f297d22233e2805eb821a028a584553ed9dd0ed4ff4c6dec9e2ac0076aaab",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate, supported by M10/M11, but no working or best-known role is assigned in this session and no official-assessment candidate is certified. T1:checkpoint-115712 remains the measured baseline reference. T2's other 23 archived checkpoints and T1's unmeasured terminal checkpoint remain unmeasured; their training proxies and terminal positions do not confer privileged status. M1-M11 and E4/E6/E8/E10 are scientific, diagnostic, inquiry, or analysis records rather than candidate roles.",
     "completed_operations": [
@@ -7146,7 +8425,8 @@
       "M12",
       "M13",
       "M14",
-      "M17"
+      "M17",
+      "M18"
     ],
     "scientific_parent_commit": "f7713e80c5009a5860c3cebd2ed4ce6ced345216"
   },

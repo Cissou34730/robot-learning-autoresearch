@@ -32,3 +32,4 @@
 | M15 | measurement | I3 | failed |
 | M16 | measurement | I3 | failed |
 | M17 | measurement | I3 | completed |
+| M18 | measurement | I3 | completed |
