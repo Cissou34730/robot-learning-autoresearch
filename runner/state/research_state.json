@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a completed baseline candidate measurement on a fixed official-distribution development panel provides radius- and angle-stratified success and failure diagnostics that distinguish first reach from convergence/hold loss, including first-tolerance timing, minimum/final distance, maximum uninterrupted hold and interruptions, joint velocity or Cartesian speed, and branch/joint-limit context; conclude positively, negatively, limited, or inconclusively whether the observed profile justifies coverage-focused work, stabilization/control work, or a broader representation/control investigation as the next route toward 98%.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full uninterrupted 2-second hold. No learned candidate has yet been measured, and the baseline training distribution omits official targets at radii 0.06-0.14 m. This inquiry will measure whether the first candidate deficit is concentrated in that omitted region or instead reflects reach, settling, or hold instability across the domain, so the next intervention is directed toward the mechanism most likely to improve official success.",
+    "handoff_conclusion": "Observed evidence: M1 compatibility passed on the production MuJoCo path: the compiled official model loaded with nq=nv=nu=2, reset/forward/step executed, and a [0.25,-0.25] command produced generalized actuator forces [1.25,-1.25]. M2 measured the actual compiled model and a fixed physical design; M3 independently verified its artifact. M2 found Euler integration at 0.002 s, Newton solver defaults, zero gravity, two hinge DOFs with 0.5 damping and 0.01 armature, explicit compiled body masses/inertias, gear 5 with control range [-1,1], and no observed actuator delay or sign inversion in the exercised path. Across 25 radii x 72 azimuths x two analytic elbow branches, 3,051 of 3,600 branch records were within compiled joint limits, both branches occurred, and the largest feasible analytic and compiled forward-kinematics residuals were approximately 9.1e-17 m and 1.0e-16 m. The reset Jacobian had singular values [0.24166, 0], while the two bent configurations had smallest singular values 0.04970 and 0.04315 m/rad. In controlled trials, a full-scale command held for ten physics steps (0.020 s) produced approximately 5.48 and 6.08 rad/s joint velocities from reset; a zero-control free-decay trial reduced an initial [0.35,-0.20] rad/s to [0.0442,-0.0167] rad/s after 25 physics steps. M3 passed independent checks for finite structure, formula-derived IK/Jacobian consequences, reset/step repeatability, actuator sign/bounds, and the free-decay trace. Interpretation: the measured model supports reachability and the reset singularity as physical facts, and makes a hidden compiled-interface or gross geometric impossibility explanation less credible as the first campaign blocker. The command response and damping make arrival velocity, overshoot, and hold stabilization consequential, but the open-loop trials do not establish a policy failure or resolve protected continuous-hold semantics. Competing explanations for future development failure therefore remain: (1) an exposure/coverage deficit from the baseline's omitted inner-radius region, versus (2) a learned sampled-data control/stabilization deficit that may affect all radii; branch/limit effects remain a possible radius-angle interaction but are not yet behaviorally measured. The compatibility and artifact checks support tool reliability, not policy performance or scientific validity beyond their checked scope.",
+    "handoff_question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+    "rationale": "Opening is preferable to official assessment because there is no candidate or evidence-backed best-known policy to submit, so assessment cannot presently answer the goal. The completed M1-M3 evidence establishes production-path compatibility, feasible kinematics, and consequential transient dynamics, but it does not measure learned behavior. The proposed baseline panel directly tests the unresolved decision frontier: a reproducible inner-radius/angle deficit with adequate outer-region holds would support coverage work; a broadly flat radius profile with late interruptions, high arrival speed, or overshoot would support stabilization/control work; failure to enter tolerance broadly would redirect toward trajectory or representation issues. The measurement cost is bounded and materially more informative for route selection than further physical-model characterization, while continuous-hold semantics remain an explicit limitation rather than an unsupported assumption.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 3,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1039,9 +1050,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T14:48:39Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline candidate measurement on a fixed official-distribution development panel provides radius- and angle-stratified success and failure diagnostics that distinguish first reach from convergence/hold loss, including first-tolerance timing, minimum/final distance, maximum uninterrupted hold and interruptions, joint velocity or Cartesian speed, and branch/joint-limit context; conclude positively, negatively, limited, or inconclusively whether the observed profile justifies coverage-focused work, stabilization/control work, or a broader representation/control investigation as the next route toward 98%.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full uninterrupted 2-second hold. No learned candidate has yet been measured, and the baseline training distribution omits official targets at radii 0.06-0.14 m. This inquiry will measure whether the first candidate deficit is concentrated in that omitted region or instead reflects reach, settling, or hold instability across the domain, so the next intervention is directed toward the mechanism most likely to improve official success.",
+        "question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+        "rationale": "Opening is preferable to official assessment because there is no candidate or evidence-backed best-known policy to submit, so assessment cannot presently answer the goal. The completed M1-M3 evidence establishes production-path compatibility, feasible kinematics, and consequential transient dynamics, but it does not measure learned behavior. The proposed baseline panel directly tests the unresolved decision frontier: a reproducible inner-radius/angle deficit with adequate outer-region holds would support coverage work; a broadly flat radius profile with late interruptions, high arrival speed, or overshoot would support stabilization/control work; failure to enter tolerance broadly would redirect toward trajectory or representation issues. The measurement cost is bounded and materially more informative for route selection than further physical-model characterization, while continuous-hold semantics remain an explicit limitation rather than an unsupported assumption."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a completed baseline candidate measurement on a fixed official-distribution development panel provides radius- and angle-stratified success and failure diagnostics that distinguish first reach from convergence/hold loss, including first-tolerance timing, minimum/final distance, maximum uninterrupted hold and interruptions, joint velocity or Cartesian speed, and branch/joint-limit context; conclude positively, negatively, limited, or inconclusively whether the observed profile justifies coverage-focused work, stabilization/control work, or a broader representation/control investigation as the next route toward 98%.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full uninterrupted 2-second hold. No learned candidate has yet been measured, and the baseline training distribution omits official targets at radii 0.06-0.14 m. This inquiry will measure whether the first candidate deficit is concentrated in that omitted region or instead reflects reach, settling, or hold instability across the domain, so the next intervention is directed toward the mechanism most likely to improve official success.",
+          "handoff_conclusion": "Observed evidence: M1 compatibility passed on the production MuJoCo path: the compiled official model loaded with nq=nv=nu=2, reset/forward/step executed, and a [0.25,-0.25] command produced generalized actuator forces [1.25,-1.25]. M2 measured the actual compiled model and a fixed physical design; M3 independently verified its artifact. M2 found Euler integration at 0.002 s, Newton solver defaults, zero gravity, two hinge DOFs with 0.5 damping and 0.01 armature, explicit compiled body masses/inertias, gear 5 with control range [-1,1], and no observed actuator delay or sign inversion in the exercised path. Across 25 radii x 72 azimuths x two analytic elbow branches, 3,051 of 3,600 branch records were within compiled joint limits, both branches occurred, and the largest feasible analytic and compiled forward-kinematics residuals were approximately 9.1e-17 m and 1.0e-16 m. The reset Jacobian had singular values [0.24166, 0], while the two bent configurations had smallest singular values 0.04970 and 0.04315 m/rad. In controlled trials, a full-scale command held for ten physics steps (0.020 s) produced approximately 5.48 and 6.08 rad/s joint velocities from reset; a zero-control free-decay trial reduced an initial [0.35,-0.20] rad/s to [0.0442,-0.0167] rad/s after 25 physics steps. M3 passed independent checks for finite structure, formula-derived IK/Jacobian consequences, reset/step repeatability, actuator sign/bounds, and the free-decay trace. Interpretation: the measured model supports reachability and the reset singularity as physical facts, and makes a hidden compiled-interface or gross geometric impossibility explanation less credible as the first campaign blocker. The command response and damping make arrival velocity, overshoot, and hold stabilization consequential, but the open-loop trials do not establish a policy failure or resolve protected continuous-hold semantics. Competing explanations for future development failure therefore remain: (1) an exposure/coverage deficit from the baseline's omitted inner-radius region, versus (2) a learned sampled-data control/stabilization deficit that may affect all radii; branch/limit effects remain a possible radius-angle interaction but are not yet behaviorally measured. The compatibility and artifact checks support tool reliability, not policy performance or scientific validity beyond their checked scope.",
+          "handoff_question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+          "rationale": "Opening is preferable to official assessment because there is no candidate or evidence-backed best-known policy to submit, so assessment cannot presently answer the goal. The completed M1-M3 evidence establishes production-path compatibility, feasible kinematics, and consequential transient dynamics, but it does not measure learned behavior. The proposed baseline panel directly tests the unresolved decision frontier: a reproducible inner-radius/angle deficit with adequate outer-region holds would support coverage work; a broadly flat radius profile with late interruptions, high arrival speed, or overshoot would support stabilization/control work; failure to enter tolerance broadly would redirect toward trajectory or representation issues. The measurement cost is bounded and materially more informative for route selection than further physical-model characterization, while continuous-hold semantics remain an explicit limitation rather than an unsupported assumption.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline candidate measurement on a fixed official-distribution development panel provides radius- and angle-stratified success and failure diagnostics that distinguish first reach from convergence/hold loss, including first-tolerance timing, minimum/final distance, maximum uninterrupted hold and interruptions, joint velocity or Cartesian speed, and branch/joint-limit context; conclude positively, negatively, limited, or inconclusively whether the observed profile justifies coverage-focused work, stabilization/control work, or a broader representation/control investigation as the next route toward 98%.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full uninterrupted 2-second hold. No learned candidate has yet been measured, and the baseline training distribution omits official targets at radii 0.06-0.14 m. This inquiry will measure whether the first candidate deficit is concentrated in that omitted region or instead reflects reach, settling, or hold instability across the domain, so the next intervention is directed toward the mechanism most likely to improve official success.",
+        "question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
+        "rationale": "Opening is preferable to official assessment because there is no candidate or evidence-backed best-known policy to submit, so assessment cannot presently answer the goal. The completed M1-M3 evidence establishes production-path compatibility, feasible kinematics, and consequential transient dynamics, but it does not measure learned behavior. The proposed baseline panel directly tests the unresolved decision frontier: a reproducible inner-radius/angle deficit with adequate outer-region holds would support coverage work; a broadly flat radius profile with late interruptions, high arrival speed, or overshoot would support stabilization/control work; failure to enter tolerance broadly would redirect toward trajectory or representation issues. The measurement cost is bounded and materially more informative for route selection than further physical-model characterization, while continuous-hold semantics remain an explicit limitation rather than an unsupported assumption."
+      }
+    },
+    "request_fingerprint": "49cecf356d055de8587e0b6875f7fa1b61ff06519c90ea7ea2260bc8c4c915c4",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty. M1-M3 are measurement artifacts and are not candidates.",
     "completed_operations": [
@@ -1071,6 +1145,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "70ccb361-19b2-4e07-a96f-5b8c7877a44a",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "6537f60d6b41856d8a3a3ec12aa31f4bc88348e4"
+  },
   "terminal_state": null
 }
