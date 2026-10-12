@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 3,
+    "measurement": 4,
     "session": 1,
     "training": 0
   },
@@ -210,6 +210,43 @@
       "status": "failed",
       "superseded_by": "M3",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:22:03Z",
+      "error": "robot_learning.lab.verify_physical_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 360, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 350, in main\n    else run_behavioral_check(\n         ~~~~~~~~~~~~~~~~~~~~^\n        radius_count=args.radius_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        angle_count=args.angle_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_steps=args.response_steps,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 190, in run_behavioral_check\n    raise AssertionError(\n        \"the +1/-1 control reversal did not reverse acceleration projection\"\n    )\nAssertionError: the +1/-1 control reversal did not reverse acceleration projection\n",
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Run the defect-sensitive behavioral verification for the physical-characterization tool on a small controlled grid and reversal sequence.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+              "--radius-count",
+              "2",
+              "--angle-count",
+              "4",
+              "--response-steps",
+              "6"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_verification.json",
+            "instrument": "python_module",
+            "label": "physical-characterization behavioral verification",
+            "module": "robot_learning.lab.verify_physical_characterization"
+          }
+        ],
+        "rationale": "M1 established that the exact MuJoCo production calls execute, but not that the measurement detects state transitions and resets. This check independently tests target/configuration changes, both IK branches, repeated +1/-1 response direction, qpos/qvel updates, reset clearing, explicit units, and bounded artifact content before using the full measurement."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_physical_characterization failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 360, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 350, in main\n    else run_behavioral_check(\n         ~~~~~~~~~~~~~~~~~~~~^\n        radius_count=args.radius_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        angle_count=args.angle_count,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        response_steps=args.response_steps,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_physical_characterization.py\", line 190, in run_behavioral_check\n    raise AssertionError(\n        \"the +1/-1 control reversal did not reverse acceleration projection\"\n    )\nAssertionError: the +1/-1 control reversal did not reverse acceleration projection\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M4",
+      "supersedes": "M2"
     }
   ],
   "pending_operation": {
@@ -240,7 +277,7 @@
             "path": "robot_learning/lab/physical_characterization.py"
           },
           {
-            "fingerprint": "76f02469db7e58d95cc3e8cbd802cecb9f7ed4b34fc4ac3ea63256934a61444b",
+            "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
             "path": "robot_learning/lab/verify_physical_characterization.py"
           }
         ],
@@ -273,7 +310,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "76f02469db7e58d95cc3e8cbd802cecb9f7ed4b34fc4ac3ea63256934a61444b",
+            "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
             "path": "robot_learning/lab/verify_physical_characterization.py"
           }
         ],
@@ -290,7 +327,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M3",
+    "id": "M4",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
@@ -320,7 +357,7 @@
     },
     "request_fingerprint": "a17aacdccf216584aaa4fb2074d0f3cf41ed04bc0c04826c8ec314021d139923",
     "session_id": "S1",
-    "supersedes": "M2"
+    "supersedes": "M3"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
