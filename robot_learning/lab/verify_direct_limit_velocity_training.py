@@ -37,6 +37,9 @@ REGULATION_COMPONENTS = {
     "direct_limit_velocity_endpoint_velocity",
     "direct_limit_velocity_action_regulation",
 }
+NON_LIMIT_REGULATION_COMPONENTS = REGULATION_COMPONENTS - {
+    "direct_limit_velocity_joint_limit"
+}
 WEIGHT_COMPONENT = "direct_limit_velocity_weight"
 
 UNCHECKED_SCOPE = [
@@ -186,8 +189,23 @@ def _check_routes_and_direct_control(observed: dict[str, Any]) -> None:
             "outside-boundary acquisition omitted direct regulation terms",
         )
         _require(
-            all(abs(components[name]) > 0.0 for name in REGULATION_COMPONENTS),
-            "outside-boundary acquisition did not activate regulation shaping",
+            np.isfinite(
+                components["direct_limit_velocity_joint_limit"]
+            )
+            and components["direct_limit_velocity_joint_limit"] <= 0.0,
+            "outside-boundary acquisition returned an invalid joint-limit term",
+        )
+        _require(
+            all(
+                np.isfinite(components[name]) and abs(components[name]) > 0.0
+                for name in NON_LIMIT_REGULATION_COMPONENTS
+            ),
+            "controlled acquisition did not activate velocity/action regulation",
+        )
+        _require(
+            np.all(np.isfinite(training.data.qvel[:2]))
+            and np.linalg.norm(training.data.qvel[:2]) > 0.0,
+            "controlled acquisition did not produce nonzero joint velocity",
         )
         _require(
             np.allclose(
@@ -338,8 +356,19 @@ def _check_reward_orderings(observed: dict[str, Any]) -> None:
             "repeated post-step reward update omitted a regulation term",
         )
         _require(
-            all(abs(result.components[name]) > 0.0 for name in REGULATION_COMPONENTS),
-            "repeated post-step update contained an inactive regulation term",
+            np.isfinite(
+                result.components["direct_limit_velocity_joint_limit"]
+            )
+            and result.components["direct_limit_velocity_joint_limit"] <= 0.0,
+            "repeated post-step update returned an invalid joint-limit term",
+        )
+        _require(
+            all(
+                np.isfinite(result.components[name])
+                and abs(result.components[name]) > 0.0
+                for name in NON_LIMIT_REGULATION_COMPONENTS
+            ),
+            "repeated post-step update contained an inactive velocity/action term",
         )
     _require(
         first_hold.components["direct_limit_velocity_weight"]
