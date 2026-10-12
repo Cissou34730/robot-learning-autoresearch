@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train and measure one complete coverage-focused candidate against the same fixed 160-episode development panel and diagnostics used for the baseline. Close when the comparison establishes whether inner-radius first-reach and success improve while outer-radius complete-hold performance is preserved, or instead shows persistent never-reached failures or a newly dominant reached-but-incomplete/hold-instability failure class that redirects the next intervention. Preserve any unresolved branch, joint-limit, sampled-data, and continuous-hold uncertainties in the resulting decision.",
-    "goal_connection": "The strongest measured candidate succeeds on 105/160 official-distribution development episodes (65.625%), far below the required 196/200. Its failures are dominated by never entering tolerance (49/55 failures), concentrated in the omitted 0.06-0.14 m training region, while only 6 failures reached tolerance without completing the hold. A full-domain coverage variant could therefore address the largest observed goal gap without presuming that coverage alone reaches 98%.",
-    "handoff_conclusion": "Established observations: M1-M3 verified the production MuJoCo path, compiled physical quantities, feasible official-domain kinematics, alternative analytic branches, the singular reset Jacobian, bounded actuation, and transient damping/decay. T1 trained the unchanged PPO baseline only on 0.14-0.20 m radii for 120,000 requested steps (120,832 actual); its preserved proxy success fluctuated around 0.93-0.97 late in training and therefore nominates checkpoints but does not establish official-distribution performance. M6/M8 measured checkpoint 115,712 on 160 fixed official-distribution seeds: 105/160 successes, 111/160 first-tolerance entries, 49/160 never reached, 6/160 reached but incomplete, and 272 interruptions; all 105 successes completed the boundary-sampled hold. Success was 9/40 at 6-10 cm, 33/53 at 10-14 cm, 30/31 at 14-17 cm, and 33/36 at 17-20 cm, with material angle variation. The physical model predicts that inward motion from the extended reset is a coupled bend-then-translate maneuver and that bounded sampled-data control can still lose a narrow hold, but the observed failure mix makes never-reaching the leading recipe-specific deficit rather than stabilization the first intervention. Correction to the inherited proposal: evidence already supports performing a coverage comparison; the unresolved scientific question is not whether to train, but whether a coverage-focused artifact actually improves the relevant behavior. Coverage is therefore a prioritized candidate explanation, not an established cause. The unmeasured 120,832-step terminal checkpoint has no privileged status and cannot support assessment without development measurement. The diagnostic path samples 20 ms boundaries and does not resolve within-physics-step excursions or protected evaluator semantics, so complete-hold claims remain limited to the measured evaluator semantics.",
-    "handoff_question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%?",
-    "rationale": "The baseline candidate is not assessment-ready, and the terminal training checkpoint is only a proxy artifact with no development measurement. Existing diagnostics provide a recipe-specific, radius- and angle-stratified failure profile supporting coverage as the next test, but they do not establish causality or rule out trajectory/representation effects. This bounded comparison has a direct measurable contribution toward the goal and a clear redirect criterion; further baseline proxy inspection or official assessment would add less decision value now.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -1657,7 +1646,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 11,
     "session": 5,
@@ -5707,9 +5696,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:15:21Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "positive but limited",
+        "reason": "M9 verified that the implemented coverage recipe changes only the training target-radius exposure to the complete official 0.06-0.20 m range while preserving the production transition path and the official evaluation range. T2 then trained a distinct fresh PPO artifact under that exposure and the same seed-0, 120,000-request-step allocation as T1; its late proxy trajectory continued improving through the selected 120,832-step checkpoint, but proxies were not used as development performance. M10 measured T2:checkpoint-120832 on the identical fixed 160-episode panel, and M11 applied the same verified reducer and diagnostic definitions used for M8. The coverage artifact improved overall success from 105/160 (65.625%) to 150/160 (93.75%) and first-tolerance reach from 111/160 (69.375%) to 153/160 (95.625%). Inner-radius complete success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius holds remained high but were not exactly preserved: 14-17 cm was 28/31 versus 30/31 and 17-20 cm was 32/36 versus 33/36 (60/67 versus 63/67 combined), so the result supports coverage as an artifact-level route without claiming no tradeoff. The remaining 10 failures were 7 never-reached and 3 reached-but-incomplete; never-reached remains the larger class, so reached-but-incomplete instability is not newly dominant, although the three reached failures account for many interruptions and preserve stabilization as a secondary concern. Angle strata improved broadly but remain uneven; target branch feasibility counts are descriptive and unchanged by the fixed panel. The result is recipe-specific and does not establish that radius coverage alone or PPO generally reaches 98%. Both M8 and M11 explicitly limit complete-hold claims to 20 ms control-boundary sampling; intra-physics-step excursions and protected continuous-hold semantics remain unresolved. This satisfies I2's bounded comparison with a positive but limited conclusion and redirects the next decision toward continued coverage development that protects outer/angle strata while monitoring terminal hold stability, rather than toward abandoning coverage."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "positive but limited",
+        "reason": "M9 verified that the implemented coverage recipe changes only the training target-radius exposure to the complete official 0.06-0.20 m range while preserving the production transition path and the official evaluation range. T2 then trained a distinct fresh PPO artifact under that exposure and the same seed-0, 120,000-request-step allocation as T1; its late proxy trajectory continued improving through the selected 120,832-step checkpoint, but proxies were not used as development performance. M10 measured T2:checkpoint-120832 on the identical fixed 160-episode panel, and M11 applied the same verified reducer and diagnostic definitions used for M8. The coverage artifact improved overall success from 105/160 (65.625%) to 150/160 (93.75%) and first-tolerance reach from 111/160 (69.375%) to 153/160 (95.625%). Inner-radius complete success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius holds remained high but were not exactly preserved: 14-17 cm was 28/31 versus 30/31 and 17-20 cm was 32/36 versus 33/36 (60/67 versus 63/67 combined), so the result supports coverage as an artifact-level route without claiming no tradeoff. The remaining 10 failures were 7 never-reached and 3 reached-but-incomplete; never-reached remains the larger class, so reached-but-incomplete instability is not newly dominant, although the three reached failures account for many interruptions and preserve stabilization as a secondary concern. Angle strata improved broadly but remain uneven; target branch feasibility counts are descriptive and unchanged by the fixed panel. The result is recipe-specific and does not establish that radius coverage alone or PPO generally reaches 98%. Both M8 and M11 explicitly limit complete-hold claims to 20 ms control-boundary sampling; intra-physics-step excursions and protected continuous-hold semantics remain unresolved. This satisfies I2's bounded comparison with a positive but limited conclusion and redirects the next decision toward continued coverage development that protects outer/angle strata while monitoring terminal hold stability, rather than toward abandoning coverage.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "positive but limited",
+        "reason": "M9 verified that the implemented coverage recipe changes only the training target-radius exposure to the complete official 0.06-0.20 m range while preserving the production transition path and the official evaluation range. T2 then trained a distinct fresh PPO artifact under that exposure and the same seed-0, 120,000-request-step allocation as T1; its late proxy trajectory continued improving through the selected 120,832-step checkpoint, but proxies were not used as development performance. M10 measured T2:checkpoint-120832 on the identical fixed 160-episode panel, and M11 applied the same verified reducer and diagnostic definitions used for M8. The coverage artifact improved overall success from 105/160 (65.625%) to 150/160 (93.75%) and first-tolerance reach from 111/160 (69.375%) to 153/160 (95.625%). Inner-radius complete success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius holds remained high but were not exactly preserved: 14-17 cm was 28/31 versus 30/31 and 17-20 cm was 32/36 versus 33/36 (60/67 versus 63/67 combined), so the result supports coverage as an artifact-level route without claiming no tradeoff. The remaining 10 failures were 7 never-reached and 3 reached-but-incomplete; never-reached remains the larger class, so reached-but-incomplete instability is not newly dominant, although the three reached failures account for many interruptions and preserve stabilization as a secondary concern. Angle strata improved broadly but remain uneven; target branch feasibility counts are descriptive and unchanged by the fixed panel. The result is recipe-specific and does not establish that radius coverage alone or PPO generally reaches 98%. Both M8 and M11 explicitly limit complete-hold claims to 20 ms control-boundary sampling; intra-physics-step excursions and protected continuous-hold semantics remain unresolved. This satisfies I2's bounded comparison with a positive but limited conclusion and redirects the next decision toward continued coverage development that protects outer/angle strata while monitoring terminal hold stability, rather than toward abandoning coverage."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "positive but limited",
+        "reason": "M9 verified that the implemented coverage recipe changes only the training target-radius exposure to the complete official 0.06-0.20 m range while preserving the production transition path and the official evaluation range. T2 then trained a distinct fresh PPO artifact under that exposure and the same seed-0, 120,000-request-step allocation as T1; its late proxy trajectory continued improving through the selected 120,832-step checkpoint, but proxies were not used as development performance. M10 measured T2:checkpoint-120832 on the identical fixed 160-episode panel, and M11 applied the same verified reducer and diagnostic definitions used for M8. The coverage artifact improved overall success from 105/160 (65.625%) to 150/160 (93.75%) and first-tolerance reach from 111/160 (69.375%) to 153/160 (95.625%). Inner-radius complete success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius holds remained high but were not exactly preserved: 14-17 cm was 28/31 versus 30/31 and 17-20 cm was 32/36 versus 33/36 (60/67 versus 63/67 combined), so the result supports coverage as an artifact-level route without claiming no tradeoff. The remaining 10 failures were 7 never-reached and 3 reached-but-incomplete; never-reached remains the larger class, so reached-but-incomplete instability is not newly dominant, although the three reached failures account for many interruptions and preserve stabilization as a secondary concern. Angle strata improved broadly but remain uneven; target branch feasibility counts are descriptive and unchanged by the fixed panel. The result is recipe-specific and does not establish that radius coverage alone or PPO generally reaches 98%. Both M8 and M11 explicitly limit complete-hold claims to 20 ms control-boundary sampling; intra-physics-step excursions and protected continuous-hold semantics remain unresolved. This satisfies I2's bounded comparison with a positive but limited conclusion and redirects the next decision toward continued coverage development that protects outer/angle strata while monitoring terminal hold stability, rather than toward abandoning coverage.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "positive but limited",
+        "reason": "M9 verified that the implemented coverage recipe changes only the training target-radius exposure to the complete official 0.06-0.20 m range while preserving the production transition path and the official evaluation range. T2 then trained a distinct fresh PPO artifact under that exposure and the same seed-0, 120,000-request-step allocation as T1; its late proxy trajectory continued improving through the selected 120,832-step checkpoint, but proxies were not used as development performance. M10 measured T2:checkpoint-120832 on the identical fixed 160-episode panel, and M11 applied the same verified reducer and diagnostic definitions used for M8. The coverage artifact improved overall success from 105/160 (65.625%) to 150/160 (93.75%) and first-tolerance reach from 111/160 (69.375%) to 153/160 (95.625%). Inner-radius complete success improved from 9/40 to 40/40 at 6-10 cm and from 33/53 to 50/53 at 10-14 cm. Outer-radius holds remained high but were not exactly preserved: 14-17 cm was 28/31 versus 30/31 and 17-20 cm was 32/36 versus 33/36 (60/67 versus 63/67 combined), so the result supports coverage as an artifact-level route without claiming no tradeoff. The remaining 10 failures were 7 never-reached and 3 reached-but-incomplete; never-reached remains the larger class, so reached-but-incomplete instability is not newly dominant, although the three reached failures account for many interruptions and preserve stabilization as a secondary concern. Angle strata improved broadly but remain uneven; target branch feasibility counts are descriptive and unchanged by the fixed panel. The result is recipe-specific and does not establish that radius coverage alone or PPO generally reaches 98%. Both M8 and M11 explicitly limit complete-hold claims to 20 ms control-boundary sampling; intra-physics-step excursions and protected continuous-hold semantics remain unresolved. This satisfies I2's bounded comparison with a positive but limited conclusion and redirects the next decision toward continued coverage development that protects outer/angle strata while monitoring terminal hold stability, rather than toward abandoning coverage."
+      }
+    },
+    "request_fingerprint": "2bc7e08b8d80c04b034cc2711ca688eaf41f90521306001bd02aee87e9ce5290",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
     "completed_operations": [
@@ -5761,7 +5804,8 @@
       "M9",
       "T2",
       "M10",
-      "M11"
+      "M11",
+      "E8"
     ],
     "scientific_parent_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873"
   },
