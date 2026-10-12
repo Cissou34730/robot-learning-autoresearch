@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed training and development measurement of a complete full-distribution candidate (or a completed evidence-based redirect) provide fixed-seed episode success together with first reach, maximum uninterrupted hold, interruptions, residual velocity/distance trajectory, target radius/angle, branch/posture, Jacobian conditioning, and joint-limit diagnostics sufficient to select the next campaign direction or justify comparison with the 98% objective. A negative or inconclusive result closes the bounded question with its recipe-specific limits preserved.",
-    "goal_connection": "The human goal is at least 98% success on the protected official distribution, where each success requires 100 uninterrupted in-tolerance control steps. This inquiry develops and measures the first complete learned candidate under the full official radial exposure, then uses independent development evidence to determine whether the route to 98% is ordinary geometry coverage, dynamic stabilization/braking, or posture/conditioning rather than relying on reward or minimum-distance proxies.",
-    "handoff_conclusion": "Observed in completed operation M3: the compiled two-joint/two-actuator model has finite mass and inertia, 0.002 s physics timing with Euler integration and a Newton solver, controls bounded at \u00b11 with gear 5 and no force-range saturation; signed pulses at reset, orthogonal, and folded configurations produced opposite first accelerations of approximately 414\u2013450 rad/s^2 for the shoulder and 490\u2013492 rad/s^2 for the elbow. Reversal probes contained both control signs and retained substantial velocity after reversal; zero control reduced but did not immediately remove pulse-induced velocity. The integrity artifact passed its declared reset, finite-state, transition, signed-acceleration, and reversal checks, and no joint limit activated in these short probes. These observations support fast, coupled, momentum-bearing dynamics and make anticipatory braking and hold-aware learning consequential. Correction to the inherited interpretation: M3 does not establish that the action range is robustly adequate for braking or fine stabilization; its short reversal and decay traces show response authority and persistence, not reliable 100-step control. Competing unresolved explanations therefore remain: the main gap may be the absent 6\u201314 cm training exposure, sampled-hold stabilization/braking under momentum, posture/conditioning or joint-limit effects, or insufficiency of the memoryless 11-component interface. The current implementation is PPO with a memoryless 11-component exact-state observation, VecNormalize, and a reward whose hold-progress capital is not forfeited on an interruption, trained on 14\u201320 cm only; these are recipe facts, not evidence that the broader method or any causal factor is adequate. No policy outcome currently supports assessment.",
-    "handoff_question": "Can a policy trained on the full official 6\u201320 cm target distribution achieve the 98% episode objective with uninterrupted 100-step holds, and, if it falls short, do fixed-seed trajectory diagnostics distinguish geometry generalization, stabilization/braking, or posture/conditioning as the next direction?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a policy trained on the full official 6\u201320 cm target distribution achieve the 98% episode objective with uninterrupted 100-step holds, and, if it falls short, do fixed-seed trajectory diagnostics distinguish geometry generalization, stabilization/braking, or posture/conditioning as the next direction?",
-    "rationale": "No learned candidate exists, so the campaign cannot request terminal assessment of an explicit best-known model. M3 supports finite, fast, coupled motor response and momentum-bearing reversals, but its short probes do not establish robust braking, fine stabilization, 100-step holds, official radial generalization, or policy performance; I therefore correct the inherited wording that action authority was already adequate for braking. The current implementation trains PPO with the 11-component memoryless observation, VecNormalize, and a reward that increments hold progress without forfeiting accumulated hold capital, while exposing training only to 14\u201320 cm. A bounded full-distribution candidate and fixed-seed diagnostics have high expected contribution because they directly test the largest known exposure mismatch and the actual uninterrupted success mechanism; their cost is justified over assessment because assessment would otherwise terminate the campaign without any candidate evidence.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "584641107fe42c29ea2e2d9f0fb784da8f058426",
     "id": "d55227f5-1cbd-46bc-ac5c-41186b8b4148",
@@ -841,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 9,
     "session": 3,
@@ -850,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -2775,9 +2764,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T06:15:42Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
+        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
+        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
+        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
+        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
+        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO."
+      }
+    },
+    "request_fingerprint": "6fecefd8c6fc67d0ed27ff7d7b331f7da0634efc86b22fd349c98e9ca7aae1d4",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty; M3 is a system-identification measurement and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
@@ -2820,7 +2863,8 @@
       "T1",
       "M8",
       "M9",
-      "E4"
+      "E4",
+      "E5"
     ],
     "scientific_parent_commit": "1817405503e7872287bb9c368e915c84a3efa584"
   },

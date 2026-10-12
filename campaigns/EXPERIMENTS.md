@@ -16,3 +16,4 @@
 | M8 | measurement | I1 | completed |
 | M9 | measurement | I1 | completed |
 | E4 | model_role | I1 | assigned |
+| E5 | inquiry | I1 | completed |
