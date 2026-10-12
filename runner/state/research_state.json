@@ -4936,7 +4936,7 @@
   "counters": {
     "event": 28,
     "inquiry": 7,
-    "measurement": 40,
+    "measurement": 41,
     "session": 15,
     "training": 6
   },
@@ -18229,6 +18229,51 @@
       "status": "failed",
       "superseded_by": "M40",
       "supersedes": "M38"
+    },
+    {
+      "completed_at": "2026-10-12T16:47:32Z",
+      "error": "robot_learning.lab.analyze_baseline_profile failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 753, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 746, in main\n    report = analyze_path(args.artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 714, in analyze_path\n    resolved_path, source_kind = resolve_profile_input(requested_path)\n                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 698, in resolve_profile_input\n    raise FileNotFoundError(\n    ...<10 lines>...\n    )\nFileNotFoundError: Profile artifact not found: normalized_path='campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; allowlisted_m30_filename='evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; normalized_final_component='evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; normalized_final_component_length=100; allowlisted_m30_filename_length=105; normalized_final_component_code_points=[101, 118, 97, 108, 117, 97, 116, 105, 111, 110, 45, 102, 101, 100, 99, 99, 48, 102, 51, 45, 53, 52, 51, 53, 45, 98, 56, 51, 57, 45, 100, 50, 99, 49, 48, 56, 48, 56, 50, 52, 56, 49, 45, 109, 51, 48, 45, 84, 50, 45, 99, 104, 101, 99, 107, 112, 111, 105, 110, 116, 45, 49, 50, 48, 56, 51, 50, 45, 49, 54, 48, 101, 112, 45, 115, 101, 101, 100, 52, 50, 48, 48, 45, 56, 50, 50, 54, 48, 52, 53, 54, 99, 51, 54, 57, 46, 106, 115, 111, 110]; allowlisted_m30_filename_code_points=[101, 118, 97, 108, 117, 97, 116, 105, 111, 110, 45, 102, 101, 100, 99, 99, 48, 102, 51, 45, 53, 52, 51, 53, 45, 52, 97, 97, 51, 45, 98, 56, 51, 57, 45, 100, 50, 99, 49, 48, 56, 48, 56, 50, 52, 56, 49, 45, 109, 51, 48, 45, 84, 50, 45, 99, 104, 101, 99, 107, 112, 111, 105, 110, 116, 45, 49, 50, 48, 56, 51, 50, 45, 49, 54, 48, 101, 112, 45, 115, 101, 101, 100, 52, 50, 48, 48, 45, 56, 50, 50, 54, 48, 52, 53, 54, 99, 51, 54, 57, 46, 106, 115, 111, 110]\n",
+      "id": "M40",
+      "inquiry_id": "I7",
+      "kind": "measurement",
+      "request": {
+        "description": "Stratify the complete M30 matched evaluation artifacts into overall, radius, angle, reach-versus-hold, speed, joint-limit, branch, and physics-step hold summaries for T6 and T2.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m30-T6-checkpoint-120832-160ep-seed4200-82260456c369.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t6_profile_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t6_profile_analysis.json",
+            "instrument": "python_module",
+            "label": "I7-T6-profile-analysis",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          },
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t2_profile_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/i7_t2_profile_analysis.json",
+            "instrument": "python_module",
+            "label": "I7-T2-profile-analysis",
+            "module": "robot_learning.lab.analyze_baseline_profile"
+          }
+        ],
+        "rationale": "M30 establishes a large aggregate loss for T6 but aggregate success cannot determine whether the targeted exposure changed the stated negative-angle or 14-20 cm never-reach mechanisms while preserving 6-14 cm behavior. The existing independently verified analyzer is the appropriate reduction for the complete schema-6 episode diagnostics. Applying it identically to both M30 artifacts supplies the exact closure-condition fields without changing candidate artifacts or evaluator semantics; it remains development evidence and does not certify continuous hold or official success."
+      },
+      "result": {
+        "error": "robot_learning.lab.analyze_baseline_profile failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 753, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 746, in main\n    report = analyze_path(args.artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 714, in analyze_path\n    resolved_path, source_kind = resolve_profile_input(requested_path)\n                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_baseline_profile.py\", line 698, in resolve_profile_input\n    raise FileNotFoundError(\n    ...<10 lines>...\n    )\nFileNotFoundError: Profile artifact not found: normalized_path='campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; allowlisted_m30_filename='evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; normalized_final_component='evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'; normalized_final_component_length=100; allowlisted_m30_filename_length=105; normalized_final_component_code_points=[101, 118, 97, 108, 117, 97, 116, 105, 111, 110, 45, 102, 101, 100, 99, 99, 48, 102, 51, 45, 53, 52, 51, 53, 45, 98, 56, 51, 57, 45, 100, 50, 99, 49, 48, 56, 48, 56, 50, 52, 56, 49, 45, 109, 51, 48, 45, 84, 50, 45, 99, 104, 101, 99, 107, 112, 111, 105, 110, 116, 45, 49, 50, 48, 56, 51, 50, 45, 49, 54, 48, 101, 112, 45, 115, 101, 101, 100, 52, 50, 48, 48, 45, 56, 50, 50, 54, 48, 52, 53, 54, 99, 51, 54, 57, 46, 106, 115, 111, 110]; allowlisted_m30_filename_code_points=[101, 118, 97, 108, 117, 97, 116, 105, 111, 110, 45, 102, 101, 100, 99, 99, 48, 102, 51, 45, 53, 52, 51, 53, 45, 52, 97, 97, 51, 45, 98, 56, 51, 57, 45, 100, 50, 99, 49, 48, 56, 48, 56, 50, 52, 56, 49, 45, 109, 51, 48, 45, 84, 50, 45, 99, 104, 101, 99, 107, 112, 111, 105, 110, 116, 45, 49, 50, 48, 56, 51, 50, 45, 49, 54, 48, 101, 112, 45, 115, 101, 101, 100, 52, 50, 48, 48, 45, 56, 50, 50, 54, 48, 52, 53, 54, 99, 51, 54, 57, 46, 106, 115, 111, 110]\n",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "M41",
+      "supersedes": "M39"
     }
   ],
   "pending_operation": {
@@ -18263,7 +18308,7 @@
       "module_provenance": {
         "campaign_lab_manifest": [
           {
-            "fingerprint": "c70b2662d50c489af75cccb0982c081d1b36858c233af452d6f6d557ad0e9025",
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
             "path": "robot_learning/lab/analyze_baseline_profile.py"
           },
           {
@@ -18287,7 +18332,7 @@
             "path": "robot_learning/lab/verify_initial_model_measurement.py"
           },
           {
-            "fingerprint": "985e36de71ca1f500a9e9202c4dda6eaaf0f3bdf133c3de9f419b77d29d612a9",
+            "fingerprint": "780c290213c9aa80f4d1bff7f51d0a4bdd077a7cdb55ace6ae90bdeb58b256b0",
             "path": "robot_learning/lab/verify_profile_input_resolution.py"
           },
           {
@@ -18332,7 +18377,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "c70b2662d50c489af75cccb0982c081d1b36858c233af452d6f6d557ad0e9025",
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
             "path": "robot_learning/lab/analyze_baseline_profile.py"
           }
         ],
@@ -18349,7 +18394,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M40",
+    "id": "M41",
     "inquiry_id": "I7",
     "kind": "measurement",
     "progress": "accepted",
@@ -18387,7 +18432,7 @@
     },
     "request_fingerprint": "01361d7f6846e540003455a63a55cf2a8e217846f96c13c16109f507a46122f3",
     "session_id": "S15",
-    "supersedes": "M39"
+    "supersedes": "M40"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains explicit best-known, supported by M10, M11, M14, M21, M23, M27, and M28; it is not certified for official assessment. T5:checkpoint-120832 remains a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. I7 will produce a new complete candidate only if its training and matched development measurement support that role.",
