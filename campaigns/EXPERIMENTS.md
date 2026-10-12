@@ -18,3 +18,4 @@
 | M10 | measurement | I1 | completed |
 | E4 | inquiry | I1 | completed |
 | E5 | checkpoint | I1 | checkpointed |
+| E6 | model_role | - | assigned |
