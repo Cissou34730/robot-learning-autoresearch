@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 2,
     "measurement": 9,
     "session": 5,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-105472",
     "retained": {},
@@ -4626,52 +4626,160 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T07:18:22Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known is T2:checkpoint-105472, assigned by E9 using T2, M8, and M9. It is the selected late pre-dip checkpoint from the broadened recipe and is not an official-success declaration. T1:checkpoint-115712 remains the matched baseline artifact. Working and retained roles are empty. M7 is an implementation verification artifact, and M8/M9 are development evidence, not official assessment results.",
+        "completed_operations": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "cumulative_resource_use": "Campaign through I2: M3 physical characterization; T1 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M4 160-episode development evaluation; M6 controlled analysis verification plus T1 stratification; E4 best-known assignment; E5 I1 closure; E7 I2 opening and E8 checkpoint; M7 one controlled implementation verification; T2 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M8 two matched 160-episode development evaluations; M9 two stratification analyses; E9 best-known assignment; E10 I2 closure. No official assessment episodes consumed. Inquiry count is 2 of 15; two training allocations have been used.",
+        "current_goal_gap": "The best-known candidate remains below the 98% objective and the official assessment is still unmeasured. On the matched development panel, T2 improved inner-band success to 75/93 (80.65%) with 18 failures before any reach and no inner post-reach incomplete holds; outer-band success was preserved at 63/67 (94.03%), but one outer post-reach incomplete hold remained. The remaining gap is reliable full-distribution performance, especially residual inner/angle failures and the small outer post-reach stabilization caveat.",
+        "current_synthesis": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+        "decision_frontier": "I2 resolved the bounded artifact question in favor of the complete broadened training artifact: inner pre-reach performance improved and outer binary complete-hold success was preserved on matched seeds. The consequential unresolved distinction is now whether the remaining failures are best addressed by targeted outer post-reach stabilization and angle/branch sequencing refinement, by policy representation or optimization, or by further exposure/coverage changes. The factor bundle was not isolated, and one outer post-reach incomplete hold prevents treating regulation as fully solved. A subsequent matched development measurement with failure timing and angle/radius diagnostics after a targeted refinement would discriminate whether the remaining gap shrinks without eroding T2's inner and outer gains; persistent failures would redirect toward representation/optimization or a more specific mechanism test. The 86.25% development result is far below 98%, so assessment would have low expected value now.",
+        "evidence_references": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-step hold within 1 cm. I2 produced a materially stronger development candidate but did not certify or measure the official goal: T2:checkpoint-105472 achieved 138/160 (86.25%) on a full official-range development panel, so official assessment remains premature.",
+        "next_direction_or_closure": "Closed I2 through E10 with a positive but limited artifact-comparison conclusion: the broadened official-radius, alternating-branch, reset-escape training artifact substantially improved inner approach success while preserving outer-band binary complete-hold success, with one outer post-reach caveat. The next goal review should weigh a targeted refinement against the still-large 98% gap; do not request official assessment from the 86.25% development candidate. Carry unresolved causal attribution and the outer stabilization caveat forward rather than treating I2 as proof of any single mechanism.",
+        "next_question": "Can a targeted refinement of the broadened policy reduce the remaining inner/angle failures and eliminate the new outer post-reach incomplete hold while preserving T2's full-distribution gains?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E4 from T1, M4, and M6; it is the only learned candidate with a completed full official-range development measurement and is not an official-success declaration. Working and retained roles remain empty. I2 has not yet produced a candidate. The comparison will be between complete archived artifacts, with candidate selection based on development evidence rather than training-proxy rank or terminal-checkpoint status.",
-    "completed_operations": [
-      "E7"
-    ],
-    "cumulative_resource_use": "Before I2: M3 physical characterization; T1 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M4 one 160-episode development evaluation; M6 one verification analysis plus one stratification analysis; E4 best-known assignment; E5 closure of I1. E7 opened I2. No official assessment episodes have been consumed. Inquiry budget is 2 of 15; the maintainer training allocation remains 120,000 requested steps for inquiry training.",
-    "current_goal_gap": "The candidate has a large full-distribution gap: 42/93 inner-band successes (45.16%) versus 63/67 outer-band successes (94.03%). Inner failures are primarily before any reach (45), with 6 after reach without a complete hold; outer failures are 4 before reach and none after reach without a complete hold. Official 98% performance is unmeasured and unmet. The next gap is to obtain a candidate with materially improved inner approach/escape success without losing the already strong outer uninterrupted-hold behavior.",
-    "current_synthesis": "Established observations: M3 found 50 Hz control, finite compiled inertial quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and a reset singularity-direction asymmetry in five deterministic postures and bounded command probes. Those probes weaken a blanket nominal torque/inertia impossibility explanation, but do not test learned target-directed behavior. T1 used PPO with 120,832 actual rounded steps, exposed training targets only to radii 0.14-0.20 m, and reached a late training proxy near 0.96-0.97; the proxy is not development performance and the terminal checkpoint is not privileged. M4 measured the archived late-plateau checkpoint on 160 full-range episodes at 65.625% success. M6 verified complete radius and angle coverage; the inner/outer contrast and failure timing show a candidate-level approach/escape deficit, while regulation after successful outer-band arrival is comparatively adequate. Angle-sector success still ranged from 48.39% to 92.11%. Correction to the inherited interpretation: inner-radius/branch coverage and reset escape are a useful first intervention target for this candidate, not an established causal diagnosis. M6 contains aggregate radius/angle and hold diagnostics but no branch or reset-sequence attribution, and T1 did not deliberately vary or balance those factors. The physical model therefore makes several consequential alternatives live: insufficient inner-radius exposure, escape sequencing from the singular reset, analytic branch selection, and angle-dependent coverage; observation sufficiency and hidden hold state remain secondary alternatives because post-reach failures were uncommon in the outer band. The proposed comparison changes the training exposure and deliberate escape/branch coverage together, so any result will establish a property of the complete compared artifacts, not the isolated causal effect of one factor. Protected task mechanics, target distribution, success semantics, and evaluation hold diagnostics will remain unchanged.",
-    "decision_frontier": "The consequential unresolved distinction is whether a candidate trained with full official-radius exposure plus deliberate reset escape and both analytic branches improves the inner pre-reach regime while preserving outer complete-hold regulation. The discriminating evidence is a selected-checkpoint versus T1:checkpoint-115712 comparison on identical full official-range development seeds, reporting overall success, inner and outer success, failures before reach, first-reach timing, post-reach incomplete holds, interruptions, and angle sectors. A rise in inner pre-reach success with preserved outer hold performance supports this artifact direction; persistent inner failure redirects toward representation/optimization or more specific reset/branch investigation; new post-reach interruptions reopen stabilization or hidden temporal-state concerns. M3's plant characterization remains relevant only if the broadened candidate shows bounded, repeatable failures consistent with authority or singularity limits; it does not by itself justify assessment or a plant-level conclusion.",
-    "evidence_references": [
-      "M3",
-      "T1",
-      "M4",
-      "M6",
-      "E4",
-      "E5",
-      "E7"
-    ],
-    "human_goal_connection": "The immutable goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-step hold within 1 cm. The only measured learned candidate, T1:checkpoint-115712, achieved 105/160 (65.625%) on a full-range development panel, so assessment now would be a likely terminal failure rather than evidence of readiness. Inquiry I2 is opened to develop the dominant measured inner-radius approach capability while protecting outer complete-hold behavior.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 is opened by E7. In the fresh inquiry session, implement and train one bounded candidate using the explicitly broadened 0.06-0.20 m training exposure with deliberate reset-escape and two-branch coverage, then select a checkpoint using training context rather than terminal status and compare it against T1:checkpoint-115712 on matched full-range development episodes. Close only after the paired diagnostics establish a positive, negative, limited, or inconclusive artifact-level result; preserve unresolved factor attribution for the next goal decision.",
-    "next_question": "Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution?",
-    "scientific_commit": "03f0444407d80ba4817e0868bd91a22ba089bb5f",
-    "session_id": "S4"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "67c60d768f73270b123cd0ae5177d124eb99228b",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ed7c51d47dbef6796d835ae926ec9ba44fa38112",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known is T2:checkpoint-105472, assigned by E9 using T2, M8, and M9. It is the selected late pre-dip checkpoint from the broadened recipe and is not an official-success declaration. T1:checkpoint-115712 remains the matched baseline artifact. Working and retained roles are empty. M7 is an implementation verification artifact, and M8/M9 are development evidence, not official assessment results.",
+        "completed_operations": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "cumulative_resource_use": "Campaign through I2: M3 physical characterization; T1 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M4 160-episode development evaluation; M6 controlled analysis verification plus T1 stratification; E4 best-known assignment; E5 I1 closure; E7 I2 opening and E8 checkpoint; M7 one controlled implementation verification; T2 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M8 two matched 160-episode development evaluations; M9 two stratification analyses; E9 best-known assignment; E10 I2 closure. No official assessment episodes consumed. Inquiry count is 2 of 15; two training allocations have been used.",
+        "current_goal_gap": "The best-known candidate remains below the 98% objective and the official assessment is still unmeasured. On the matched development panel, T2 improved inner-band success to 75/93 (80.65%) with 18 failures before any reach and no inner post-reach incomplete holds; outer-band success was preserved at 63/67 (94.03%), but one outer post-reach incomplete hold remained. The remaining gap is reliable full-distribution performance, especially residual inner/angle failures and the small outer post-reach stabilization caveat.",
+        "current_synthesis": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+        "decision_frontier": "I2 resolved the bounded artifact question in favor of the complete broadened training artifact: inner pre-reach performance improved and outer binary complete-hold success was preserved on matched seeds. The consequential unresolved distinction is now whether the remaining failures are best addressed by targeted outer post-reach stabilization and angle/branch sequencing refinement, by policy representation or optimization, or by further exposure/coverage changes. The factor bundle was not isolated, and one outer post-reach incomplete hold prevents treating regulation as fully solved. A subsequent matched development measurement with failure timing and angle/radius diagnostics after a targeted refinement would discriminate whether the remaining gap shrinks without eroding T2's inner and outer gains; persistent failures would redirect toward representation/optimization or a more specific mechanism test. The 86.25% development result is far below 98%, so assessment would have low expected value now.",
+        "evidence_references": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-step hold within 1 cm. I2 produced a materially stronger development candidate but did not certify or measure the official goal: T2:checkpoint-105472 achieved 138/160 (86.25%) on a full official-range development panel, so official assessment remains premature.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "Closed I2 through E10 with a positive but limited artifact-comparison conclusion: the broadened official-radius, alternating-branch, reset-escape training artifact substantially improved inner approach success while preserving outer-band binary complete-hold success, with one outer post-reach caveat. The next goal review should weigh a targeted refinement against the still-large 98% gap; do not request official assessment from the 86.25% development candidate. Carry unresolved causal attribution and the outer stabilization caveat forward rather than treating I2 as proof of any single mechanism.",
+        "next_question": "Can a targeted refinement of the broadened policy reduce the remaining inner/angle failures and eliminate the new outer post-reach incomplete hold while preserving T2's full-distribution gains?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "43c7b940-555f-4b59-80a6-4711514c0cc6",
+        "campaign_id": "5da30677-03e6-49ec-98b3-d27252a5530c",
+        "campaign_usage": "19m23s | 33.68 AIU | prompt 4.7m (90% cached) | output 114.5k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "2m50s | 3.05 AIU | prompt 113.2k (71% cached) | output 17.2k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "9c3e9335bdfe7b4cec0f32ab7d29b6c8d32848c6",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "43c7b940-555f-4b59-80a6-4711514c0cc6",
-    "id": "S5",
+    "failure": null,
+    "id": "E11",
     "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can an explicitly broadened official-radius training exposure with deliberate reset-escape and two-branch coverage improve the inner-radius/approach deficit while preserving the candidate's outer-radius uninterrupted-hold performance under the full official distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known is T2:checkpoint-105472, assigned by E9 using T2, M8, and M9. It is the selected late pre-dip checkpoint from the broadened recipe and is not an official-success declaration. T1:checkpoint-115712 remains the matched baseline artifact. Working and retained roles are empty. M7 is an implementation verification artifact, and M8/M9 are development evidence, not official assessment results.",
+        "completed_operations": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "cumulative_resource_use": "Campaign through I2: M3 physical characterization; T1 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M4 160-episode development evaluation; M6 controlled analysis verification plus T1 stratification; E4 best-known assignment; E5 I1 closure; E7 I2 opening and E8 checkpoint; M7 one controlled implementation verification; T2 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M8 two matched 160-episode development evaluations; M9 two stratification analyses; E9 best-known assignment; E10 I2 closure. No official assessment episodes consumed. Inquiry count is 2 of 15; two training allocations have been used.",
+        "current_goal_gap": "The best-known candidate remains below the 98% objective and the official assessment is still unmeasured. On the matched development panel, T2 improved inner-band success to 75/93 (80.65%) with 18 failures before any reach and no inner post-reach incomplete holds; outer-band success was preserved at 63/67 (94.03%), but one outer post-reach incomplete hold remained. The remaining gap is reliable full-distribution performance, especially residual inner/angle failures and the small outer post-reach stabilization caveat.",
+        "current_synthesis": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+        "decision_frontier": "I2 resolved the bounded artifact question in favor of the complete broadened training artifact: inner pre-reach performance improved and outer binary complete-hold success was preserved on matched seeds. The consequential unresolved distinction is now whether the remaining failures are best addressed by targeted outer post-reach stabilization and angle/branch sequencing refinement, by policy representation or optimization, or by further exposure/coverage changes. The factor bundle was not isolated, and one outer post-reach incomplete hold prevents treating regulation as fully solved. A subsequent matched development measurement with failure timing and angle/radius diagnostics after a targeted refinement would discriminate whether the remaining gap shrinks without eroding T2's inner and outer gains; persistent failures would redirect toward representation/optimization or a more specific mechanism test. The 86.25% development result is far below 98%, so assessment would have low expected value now.",
+        "evidence_references": [
+          "M7",
+          "T2",
+          "M8",
+          "M9",
+          "E9",
+          "E10"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-step hold within 1 cm. I2 produced a materially stronger development candidate but did not certify or measure the official goal: T2:checkpoint-105472 achieved 138/160 (86.25%) on a full official-range development panel, so official assessment remains premature.",
+        "next_direction_or_closure": "Closed I2 through E10 with a positive but limited artifact-comparison conclusion: the broadened official-radius, alternating-branch, reset-escape training artifact substantially improved inner approach success while preserving outer-band binary complete-hold success, with one outer post-reach caveat. The next goal review should weigh a targeted refinement against the still-large 98% gap; do not request official assessment from the 86.25% development candidate. Carry unresolved causal attribution and the outer stabilization caveat forward rather than treating I2 as proof of any single mechanism.",
+        "next_question": "Can a targeted refinement of the broadened policy reduce the remaining inner/angle failures and eliminate the new outer post-reach incomplete hold while preserving T2's full-distribution gains?"
+      }
+    },
+    "request_fingerprint": "acfdb4734567bb3871504d022b33b6d71516682ae8aa41c3924232591fc49609",
+    "session_id": "S5",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "Best-known is T2:checkpoint-105472, assigned by E9 using T2, M8, and M9. It is the selected late pre-dip checkpoint from the broadened recipe and is not an official-success declaration. T1:checkpoint-115712 remains the matched baseline artifact. Working and retained roles are empty. M7 is an implementation verification artifact, and M8/M9 are development evidence, not official assessment results.",
+    "completed_operations": [
       "M7",
       "T2",
       "M8",
@@ -4679,7 +4787,31 @@
       "E9",
       "E10"
     ],
-    "scientific_parent_commit": "ed7c51d47dbef6796d835ae926ec9ba44fa38112"
+    "cumulative_resource_use": "Campaign through I2: M3 physical characterization; T1 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M4 160-episode development evaluation; M6 controlled analysis verification plus T1 stratification; E4 best-known assignment; E5 I1 closure; E7 I2 opening and E8 checkpoint; M7 one controlled implementation verification; T2 fresh PPO training with 120,000 requested and 120,832 actual rounded steps; M8 two matched 160-episode development evaluations; M9 two stratification analyses; E9 best-known assignment; E10 I2 closure. No official assessment episodes consumed. Inquiry count is 2 of 15; two training allocations have been used.",
+    "current_goal_gap": "The best-known candidate remains below the 98% objective and the official assessment is still unmeasured. On the matched development panel, T2 improved inner-band success to 75/93 (80.65%) with 18 failures before any reach and no inner post-reach incomplete holds; outer-band success was preserved at 63/67 (94.03%), but one outer post-reach incomplete hold remained. The remaining gap is reliable full-distribution performance, especially residual inner/angle failures and the small outer post-reach stabilization caveat.",
+    "current_synthesis": "Established campaign observations remain: M3 found 50 Hz control, finite compiled quantities, bounded motor authority, damping-related velocity decay, repeatable nonzero responses, and reset singularity-direction asymmetry in bounded deterministic probes; it weakened a blanket nominal plant-impossibility explanation but did not establish learned-policy capability. T1 used fresh PPO training for 120,832 actual rounded steps with 0.14-0.20 m exposure and reached a late proxy near 0.96-0.97; its measured checkpoint T1:checkpoint-115712 achieved 105/160 (65.625%), including inner 42/93 successes, 45 inner pre-reach failures, 6 inner post-reach incomplete holds, and outer 63/67 successes with no outer post-reach incomplete hold. M7 independently verified that the I2 implementation genuinely broadened exposure to 0.06-0.20 m, alternated analytic open/folded IK branches, applied bounded branch-potential shaping and finite signed reset-escape shaping, and preserved evaluation mechanics. T2 was a fresh 120,000-step PPO run (120,832 actual rounded) under that recipe; checkpoint 105,472 was selected from the pre-dip proxy peak of 0.86 rather than by terminal status. M8 evaluated T2 and T1 on identical 160 full-range seeds: T2 reached 138/160 (86.25%), with 36 paired wins and 3 losses. M9 established the required artifact diagnostics: inner success rose from 42/93 to 75/93, inner pre-reach failures fell from 45 to 18, inner post-reach incomplete holds fell from 6 to 0, and outer success stayed 63/67 while outer pre-reach failures fell from 4 to 3. Angle-sector success improved from 48.39%-94.74% for T1 to 60.78%-100% for T2. One outer post-reach incomplete hold appeared for T2 where T1 had none, so the result is positive but limited. This is evidence about the compared complete artifacts, not a causal attribution to radius exposure, reset escape, branch coverage, or any single shaping term. The broadened recipe improved the candidate prospect but did not establish readiness for official assessment.",
+    "decision_frontier": "I2 resolved the bounded artifact question in favor of the complete broadened training artifact: inner pre-reach performance improved and outer binary complete-hold success was preserved on matched seeds. The consequential unresolved distinction is now whether the remaining failures are best addressed by targeted outer post-reach stabilization and angle/branch sequencing refinement, by policy representation or optimization, or by further exposure/coverage changes. The factor bundle was not isolated, and one outer post-reach incomplete hold prevents treating regulation as fully solved. A subsequent matched development measurement with failure timing and angle/radius diagnostics after a targeted refinement would discriminate whether the remaining gap shrinks without eroding T2's inner and outer gains; persistent failures would redirect toward representation/optimization or a more specific mechanism test. The 86.25% development result is far below 98%, so assessment would have low expected value now.",
+    "evidence_references": [
+      "M7",
+      "T2",
+      "M8",
+      "M9",
+      "E9",
+      "E10"
+    ],
+    "human_goal_connection": "The immutable goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-step hold within 1 cm. I2 produced a materially stronger development candidate but did not certify or measure the official goal: T2:checkpoint-105472 achieved 138/160 (86.25%) on a full official-range development panel, so official assessment remains premature.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "Closed I2 through E10 with a positive but limited artifact-comparison conclusion: the broadened official-radius, alternating-branch, reset-escape training artifact substantially improved inner approach success while preserving outer-band binary complete-hold success, with one outer post-reach caveat. The next goal review should weigh a targeted refinement against the still-large 98% gap; do not request official assessment from the 86.25% development candidate. Carry unresolved causal attribution and the outer stabilization caveat forward rather than treating I2 as proof of any single mechanism.",
+    "next_question": "Can a targeted refinement of the broadened policy reduce the remaining inner/angle failures and eliminate the new outer post-reach incomplete hold while preserving T2's full-distribution gains?",
+    "scientific_commit": "9c3e9335bdfe7b4cec0f32ab7d29b6c8d32848c6",
+    "session_id": "S5"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "67c60d768f73270b123cd0ae5177d124eb99228b",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
