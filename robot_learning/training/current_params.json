@@ -1,4 +1,5 @@
 {
+  "training_variant": "hold_aware",
   "algorithm": {
     "name": "ppo"
   },
