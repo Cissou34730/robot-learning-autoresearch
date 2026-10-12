@@ -223,7 +223,10 @@ def _state(
     q = np.asarray([data.qpos[address] for address in q_addresses], dtype=float)
     qdot = np.asarray([data.qvel[address] for address in qdot_addresses], dtype=float)
     position = np.asarray(data.site_xpos[site_id], dtype=float).copy()
-    velocity = np.asarray(data.site_xvelp[site_id], dtype=float).copy()
+    jacp = np.zeros((3, model.nv), dtype=float)
+    jacr = np.zeros((3, model.nv), dtype=float)
+    mujoco.mj_jacSite(model, data, jacp, jacr, site_id)
+    velocity = jacp @ data.qvel
     return q, qdot, position, velocity
 
 
