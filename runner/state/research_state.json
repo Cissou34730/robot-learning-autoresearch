@@ -9822,38 +9822,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative result",
-        "reason": "M19 and M20 verified that the implemented artifact changed the production observation and reward paths as intended. T3 then trained from fresh initialization for the full 120000-step allocation, and M21 measured its terminal checkpoint against T2 on the same fixed 160-episode panel with schema-6 branch, margin, reach, hold, and physics-step diagnostics. T3 achieved 3/160 (1.875%) versus T2's 150/160 (93.75%), with 149 never-reached episodes and only 11 episodes entering tolerance; the measured minimum joint-limit margins were positive for all 160 T3 episodes (0.47 to 2.89 rad). This recovers neither the six targeted failures nor T2's 6-14 cm gains. The result supports only an artifact-level conclusion: this combined explicit-feasibility, margin-observation, and limit/high-speed shaping implementation was overly restrictive or otherwise disrupted learning. It does not establish which component caused the degradation and does not disprove branch-aware or trajectory-aware control broadly. The secondary terminal-stabilization route was exercised through the existing physics-step diagnostics: the degraded T3 artifact had only 11 episodes with any hold, 3 successes, and no newly dominant hold-loss class, so stabilization cannot be prioritized from this comparison. I4's closure condition is therefore satisfied with a limited negative result; preserve protected continuous-hold uncertainty, the one well-margin two-branch T2 failure, and the unresolved causal distinction for the next goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative result",
-        "reason": "M19 and M20 verified that the implemented artifact changed the production observation and reward paths as intended. T3 then trained from fresh initialization for the full 120000-step allocation, and M21 measured its terminal checkpoint against T2 on the same fixed 160-episode panel with schema-6 branch, margin, reach, hold, and physics-step diagnostics. T3 achieved 3/160 (1.875%) versus T2's 150/160 (93.75%), with 149 never-reached episodes and only 11 episodes entering tolerance; the measured minimum joint-limit margins were positive for all 160 T3 episodes (0.47 to 2.89 rad). This recovers neither the six targeted failures nor T2's 6-14 cm gains. The result supports only an artifact-level conclusion: this combined explicit-feasibility, margin-observation, and limit/high-speed shaping implementation was overly restrictive or otherwise disrupted learning. It does not establish which component caused the degradation and does not disprove branch-aware or trajectory-aware control broadly. The secondary terminal-stabilization route was exercised through the existing physics-step diagnostics: the degraded T3 artifact had only 11 episodes with any hold, 3 successes, and no newly dominant hold-loss class, so stabilization cannot be prioritized from this comparison. I4's closure condition is therefore satisfied with a limited negative result; preserve protected continuous-hold uncertainty, the one well-margin two-branch T2 failure, and the unresolved causal distinction for the next goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative result",
-        "reason": "M19 and M20 verified that the implemented artifact changed the production observation and reward paths as intended. T3 then trained from fresh initialization for the full 120000-step allocation, and M21 measured its terminal checkpoint against T2 on the same fixed 160-episode panel with schema-6 branch, margin, reach, hold, and physics-step diagnostics. T3 achieved 3/160 (1.875%) versus T2's 150/160 (93.75%), with 149 never-reached episodes and only 11 episodes entering tolerance; the measured minimum joint-limit margins were positive for all 160 T3 episodes (0.47 to 2.89 rad). This recovers neither the six targeted failures nor T2's 6-14 cm gains. The result supports only an artifact-level conclusion: this combined explicit-feasibility, margin-observation, and limit/high-speed shaping implementation was overly restrictive or otherwise disrupted learning. It does not establish which component caused the degradation and does not disprove branch-aware or trajectory-aware control broadly. The secondary terminal-stabilization route was exercised through the existing physics-step diagnostics: the degraded T3 artifact had only 11 episodes with any hold, 3 successes, and no newly dominant hold-loss class, so stabilization cannot be prioritized from this comparison. I4's closure condition is therefore satisfied with a limited negative result; preserve protected continuous-hold uncertainty, the one well-margin two-branch T2 failure, and the unresolved causal distinction for the next goal review."
-      }
-    },
-    "request_fingerprint": "b6bfce06f4d2162d24c01e38997440efaf667fefc6e967a1dd2644d819fbc26a",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate, with 150/160 success and strong 6-14 cm performance demonstrated by M10/M11/M14/M18. T1:checkpoint-115712 remains the measured baseline reference. No working, best-known, or retained role is assigned; no candidate is certified for official assessment. Other archived checkpoints and training proxies do not have privileged status.",
     "completed_operations": [
