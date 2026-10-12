@@ -23,15 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-TERMINAL_STABILIZATION_DISTANCE = 0.015
-TERMINAL_STABILIZATION_SPEED_THRESHOLD = 1.0
-TERMINAL_STABILIZATION_COEFFICIENT = 0.02
-REACH_PHASE_ACTION_SATURATION_THRESHOLD = 0.8
-REACH_PHASE_ACTION_SATURATION_COEFFICIENT = 0.05
-REACH_PHASE_ACTION_SATURATION_EXCESS_CAP = 0.2
-REACH_PHASE_JOINT_SPEED_THRESHOLD = 2.0
-REACH_PHASE_JOINT_SPEED_COEFFICIENT = 0.01
-REACH_PHASE_JOINT_SPEED_EXCESS_CAP = 5.0
 
 
 @dataclass(frozen=True)
@@ -53,16 +44,6 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
-def _finite_scalar(value: float, name: str) -> float:
-    value_array = np.asarray(value, dtype=np.float64)
-    if value_array.shape != ():
-        raise ValueError(f"{name} must be scalar")
-    value = float(value_array)
-    if not np.isfinite(value):
-        raise ValueError(f"{name} must be finite")
-    return value
-
-
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -72,29 +53,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    joint_velocities: np.ndarray | None = None,
 ) -> RewardResult:
-    previous_distance = _finite_scalar(previous_distance, "previous_distance")
-    current_distance = _finite_scalar(current_distance, "current_distance")
-    success_threshold = _finite_scalar(success_threshold, "success_threshold")
-    if action is not None:
-        action = np.asarray(action, dtype=np.float64)
-        if action.shape != (2,):
-            raise ValueError("action must have shape (2,)")
-        if not np.all(np.isfinite(action)):
-            raise ValueError("action must contain only finite values")
-
-    joint_speed_norm = 0.0
-    if joint_velocities is not None:
-        joint_velocities = np.asarray(joint_velocities, dtype=np.float64)
-        if joint_velocities.shape != (2,):
-            raise ValueError("joint_velocities must have shape (2,)")
-        if not np.all(np.isfinite(joint_velocities)):
-            raise ValueError("joint_velocities must contain only finite values")
-        joint_speed_norm = float(np.linalg.norm(joint_velocities))
-        if not np.isfinite(joint_speed_norm):
-            raise ValueError("joint velocity norm must be finite")
-
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
@@ -131,46 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    reach_phase_action_saturation = 0.0
-    reach_phase_joint_speed = 0.0
-    if current_distance > TERMINAL_STABILIZATION_DISTANCE:
-        if action is not None:
-            action_magnitude = float(np.max(np.abs(action)))
-            action_excess = min(
-                max(
-                    action_magnitude - REACH_PHASE_ACTION_SATURATION_THRESHOLD,
-                    0.0,
-                ),
-                REACH_PHASE_ACTION_SATURATION_EXCESS_CAP,
-            )
-            reach_phase_action_saturation = (
-                -REACH_PHASE_ACTION_SATURATION_COEFFICIENT * action_excess
-            )
-        if joint_velocities is not None:
-            speed_excess = min(
-                max(
-                    joint_speed_norm - REACH_PHASE_JOINT_SPEED_THRESHOLD,
-                    0.0,
-                ),
-                REACH_PHASE_JOINT_SPEED_EXCESS_CAP,
-            )
-            reach_phase_joint_speed = (
-                -REACH_PHASE_JOINT_SPEED_COEFFICIENT * speed_excess
-            )
-    reward += reach_phase_action_saturation
-    reward += reach_phase_joint_speed
-
-    terminal_stabilization = 0.0
-    if (
-        joint_velocities is not None
-        and current_distance <= TERMINAL_STABILIZATION_DISTANCE
-        and joint_speed_norm > TERMINAL_STABILIZATION_SPEED_THRESHOLD
-    ):
-        terminal_stabilization = -TERMINAL_STABILIZATION_COEFFICIENT * (
-            joint_speed_norm - TERMINAL_STABILIZATION_SPEED_THRESHOLD
-        )
-    reward += terminal_stabilization
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -184,9 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "reach_phase_action_saturation": float(reach_phase_action_saturation),
-            "reach_phase_joint_speed": float(reach_phase_joint_speed),
-            "terminal_stabilization": float(terminal_stabilization),
             "action_cost": float(action_cost),
         },
     )

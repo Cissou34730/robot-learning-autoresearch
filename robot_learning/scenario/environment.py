@@ -71,12 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._physics_step_distances: tuple[float, ...] = ()
-
-    @property
-    def physics_step_distances(self) -> tuple[float, ...]:
-        """Distances observed after each MuJoCo step in the latest interval."""
-        return self._physics_step_distances
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -105,30 +99,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
-    def _joint_state_for_reward(
-        self,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        if int(self.model.njnt) < 2:
-            raise ValueError("the reward requires two compiled joints")
-        ranges = np.asarray(self.model.jnt_range[:2], dtype=np.float64)
-        if ranges.shape != (2, 2) or not np.all(np.isfinite(ranges)):
-            raise ValueError("compiled joint ranges are unavailable")
-        qpos = np.asarray(
-            [
-                self.data.qpos[int(self.model.jnt_qposadr[index])]
-                for index in range(2)
-            ],
-            dtype=np.float64,
-        )
-        qvel = np.asarray(
-            [
-                self.data.qvel[int(self.model.jnt_dofadr[index])]
-                for index in range(2)
-            ],
-            dtype=np.float64,
-        )
-        return qpos, qvel, ranges
-
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
@@ -147,7 +117,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        self._physics_step_distances = ()
         return self._observation(), {}
 
     def step(
@@ -159,11 +128,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
-        physics_step_distances: list[float] = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
-            physics_step_distances.append(self._distance_to_target())
-        self._physics_step_distances = tuple(physics_step_distances)
 
         distance = self._distance_to_target()
 
@@ -176,7 +142,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
-        _, joint_velocities, _ = self._joint_state_for_reward()
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -186,7 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            joint_velocities=joint_velocities,
         )
         self._previous_distance = distance
 

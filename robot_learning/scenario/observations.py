@@ -34,7 +34,7 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    base_observation = np.concatenate(
+    return np.concatenate(
         [
             data.qpos,
             data.qvel,
@@ -46,5 +46,4 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
         ]
-    )
-    return base_observation.astype(np.float32)
+    ).astype(np.float32)
