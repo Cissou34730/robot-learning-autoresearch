@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a completed candidate comparison on the unchanged 160-episode full-radius complete-hold panel, with time-resolved acquisition and interruption diagnostics, shows either improvement above 153/160 with no increase in no-first-reach failures, or a bounded negative/inconclusive result for this route. Interpret any difference as a property of the complete artifacts unless a separate mechanism test establishes causality.",
+    "goal_connection": "The current best candidate reaches 153/160 (95.625%) on the full-radius development panel, below the 196/200 official requirement. M32 shows seven residual failures and a T5 tie, so a route that improves post-reach continuity while preserving singular-reset acquisition is the most direct remaining capability opportunity before any official commitment.",
+    "handoff_conclusion": "M32 resolved I13 at the candidate-comparison level. On the identical 160-episode full-radius panel with unchanged complete-hold semantics, T5:checkpoint-120832 and T4:checkpoint-120832 both achieved 153/160 (95.625%), with zero paired success advantage for T5. The paired trace artifact and independent verifier passed: 24 rollouts, 8,120 checked update steps, exact target pairing, independent resets, repeated state transitions, distinct model fingerprints, runtime fingerprints, and forward-kinematic reference checks. On all seven established T4 residual seeds plus five successful controls, T4 had three no-first-reach and four reach-then-interrupt failures; T5 had one no-first-reach and six reach-then-interrupt failures and the same seven total failures. Across the full T5 panel, the seven failures comprised one no-first-reach and six incomplete holds with maximum held steps of 0, 1, 2, or 3. Thus the continuation did not catastrophically lose acquisition, but it did not improve complete capability and shifted the residual toward interruption. This is candidate-level evidence only: it does not establish that reward, runtime, plant dynamics, or any single intervention caused the residual.",
+    "handoff_question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+    "handoff_source_session_id": "S27",
+    "id": "I14",
+    "opened_in_session": "S28",
+    "question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+    "rationale": "Official assessment is not justified by 153/160 development evidence. M32 provides strong candidate-level evidence that extending T5 is exhausted, but it does not identify reward, runtime, plant dynamics, or one intervention as the cause. Existing traces retain both no-first-reach and reach-then-interrupt residuals, so the next route must address interruption without sacrificing acquisition. A T4-initialized, full-radius, direct-control development route with an explicitly hold-recovery-focused objective is distinct from T5 continuation and can credibly change capability; its value will be judged by complete uninterrupted holds and the acquisition constraint, not training proxies.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -7384,16 +7395,16 @@
     }
   },
   "counters": {
-    "event": 55,
-    "inquiry": 13,
+    "event": 56,
+    "inquiry": 14,
     "measurement": 32,
-    "session": 27,
+    "session": 28,
     "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -22940,9 +22951,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T01:48:03Z",
+      "error": null,
+      "id": "E56",
+      "inquiry_id": "I14",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a completed candidate comparison on the unchanged 160-episode full-radius complete-hold panel, with time-resolved acquisition and interruption diagnostics, shows either improvement above 153/160 with no increase in no-first-reach failures, or a bounded negative/inconclusive result for this route. Interpret any difference as a property of the complete artifacts unless a separate mechanism test establishes causality.",
+        "goal_connection": "The current best candidate reaches 153/160 (95.625%) on the full-radius development panel, below the 196/200 official requirement. M32 shows seven residual failures and a T5 tie, so a route that improves post-reach continuity while preserving singular-reset acquisition is the most direct remaining capability opportunity before any official commitment.",
+        "question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+        "rationale": "Official assessment is not justified by 153/160 development evidence. M32 provides strong candidate-level evidence that extending T5 is exhausted, but it does not identify reward, runtime, plant dynamics, or one intervention as the cause. Existing traces retain both no-first-reach and reach-then-interrupt residuals, so the next route must address interruption without sacrificing acquisition. A T4-initialized, full-radius, direct-control development route with an explicitly hold-recovery-focused objective is distinct from T5 continuation and can credibly change capability; its value will be judged by complete uninterrupted holds and the acquisition constraint, not training proxies."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      },
+      "session_id": "S28",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a completed candidate comparison on the unchanged 160-episode full-radius complete-hold panel, with time-resolved acquisition and interruption diagnostics, shows either improvement above 153/160 with no increase in no-first-reach failures, or a bounded negative/inconclusive result for this route. Interpret any difference as a property of the complete artifacts unless a separate mechanism test establishes causality.",
+          "goal_connection": "The current best candidate reaches 153/160 (95.625%) on the full-radius development panel, below the 196/200 official requirement. M32 shows seven residual failures and a T5 tie, so a route that improves post-reach continuity while preserving singular-reset acquisition is the most direct remaining capability opportunity before any official commitment.",
+          "handoff_conclusion": "M32 resolved I13 at the candidate-comparison level. On the identical 160-episode full-radius panel with unchanged complete-hold semantics, T5:checkpoint-120832 and T4:checkpoint-120832 both achieved 153/160 (95.625%), with zero paired success advantage for T5. The paired trace artifact and independent verifier passed: 24 rollouts, 8,120 checked update steps, exact target pairing, independent resets, repeated state transitions, distinct model fingerprints, runtime fingerprints, and forward-kinematic reference checks. On all seven established T4 residual seeds plus five successful controls, T4 had three no-first-reach and four reach-then-interrupt failures; T5 had one no-first-reach and six reach-then-interrupt failures and the same seven total failures. Across the full T5 panel, the seven failures comprised one no-first-reach and six incomplete holds with maximum held steps of 0, 1, 2, or 3. Thus the continuation did not catastrophically lose acquisition, but it did not improve complete capability and shifted the residual toward interruption. This is candidate-level evidence only: it does not establish that reward, runtime, plant dynamics, or any single intervention caused the residual.",
+          "handoff_question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+          "handoff_source_session_id": "S27",
+          "id": "I14",
+          "opened_in_session": "S28",
+          "question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+          "rationale": "Official assessment is not justified by 153/160 development evidence. M32 provides strong candidate-level evidence that extending T5 is exhausted, but it does not identify reward, runtime, plant dynamics, or one intervention as the cause. Existing traces retain both no-first-reach and reach-then-interrupt residuals, so the next route must address interruption without sacrificing acquisition. A T4-initialized, full-radius, direct-control development route with an explicitly hold-recovery-focused objective is distinct from T5 continuation and can credibly change capability; its value will be judged by complete uninterrupted holds and the acquisition constraint, not training proxies.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E56",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a completed candidate comparison on the unchanged 160-episode full-radius complete-hold panel, with time-resolved acquisition and interruption diagnostics, shows either improvement above 153/160 with no increase in no-first-reach failures, or a bounded negative/inconclusive result for this route. Interpret any difference as a property of the complete artifacts unless a separate mechanism test establishes causality.",
+        "goal_connection": "The current best candidate reaches 153/160 (95.625%) on the full-radius development panel, below the 196/200 official requirement. M32 shows seven residual failures and a T5 tie, so a route that improves post-reach continuity while preserving singular-reset acquisition is the most direct remaining capability opportunity before any official commitment.",
+        "question": "Can a T4-initialized PPO route that preserves full-radius exposure and direct-control acquisition while explicitly optimizing uninterrupted-hold recovery, rather than extending T5, raise complete-hold success above 153/160 without increasing no-first-reach failures?",
+        "rationale": "Official assessment is not justified by 153/160 development evidence. M32 provides strong candidate-level evidence that extending T5 is exhausted, but it does not identify reward, runtime, plant dynamics, or one intervention as the cause. Existing traces retain both no-first-reach and reach-then-interrupt residuals, so the next route must address interruption without sacrificing acquisition. A T4-initialized, full-radius, direct-control development route with an explicitly hold-recovery-focused objective is distinct from T5 continuation and can credibly change capability; its value will be judged by complete uninterrupted holds and the acquisition constraint, not training proxies."
+      }
+    },
+    "request_fingerprint": "a940df2463e99fd29a6f601632c689f417b0c9ee07c4f1ca6144cf4982005d83",
+    "session_id": "S28",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known at 153/160 and is the retained comparison reference for future development. T5:checkpoint-120832 was measured at 153/160 and is not competitive. No candidate is working or retained for the next route; T3 and T6 remain rejected for acquisition collapse, and T9 remains below T4 at 150/160.",
     "completed_operations": [
@@ -22973,6 +23047,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a0717a30-bf4f-4df7-bf09-fa2fc47b235a",
+    "id": "S28",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E56"
+    ],
+    "scientific_parent_commit": "f3db01d614c55a64a0b5a2e11f4fbf51433e5df8"
+  },
   "terminal_state": null
 }
