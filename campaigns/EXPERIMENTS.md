@@ -91,3 +91,4 @@
 | M30 | measurement | I12 | completed |
 | T9 | training | I12 | completed |
 | M31 | measurement | I12 | completed |
+| E50 | inquiry | I12 | completed |
