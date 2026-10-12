@@ -41,3 +41,4 @@
 | M20 | measurement | I4 | completed |
 | T3 | training | I4 | completed |
 | M21 | measurement | I4 | completed |
+| E16 | inquiry | I4 | completed |
