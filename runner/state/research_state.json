@@ -677,47 +677,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a fresh baseline candidate has been produced and evaluated with per-episode success, first-reach status and step, maximum uninterrupted held steps, hold interruptions, final and minimum distance, target radius and angle, and branch-relevant stratification; then classify the dominant failure mechanism as reach, sampled-hold regulation, inner-radius/branch-specific generalization, or inconclusive, and record the targeted next change or the evidence that no targeted change is justified within this inquiry.",
-          "goal_connection": "The human goal is at least 196 successful episodes out of 200, with each success requiring an uninterrupted 2 second hold. No candidate has yet been trained or evaluated, so the campaign lacks both a development success rate and evidence about whether failures occur before first reach, during hold, or in specific inner-radius/branch regions. A fresh baseline followed by diagnostic evaluation directly measures the gap and determines whether the next work should change exposure/branch handling, terminal regulation, or the learning interface.",
-          "handoff_conclusion": "Observed evidence: M1 passed all controlled implementation checks: zero-command equilibrium was exact, a bounded command changed state, repeated transitions matched to 0, and resets correctly reached extended, open, and folded configurations. M2 measured the compiled model as 2 ms explicit Euler with Newton solver, two joints each with 0.5 N m s damping and 0.01 kg m^2 armature, and two 5 N m nominal motor limits. Across representative extended, open, and folded postures, saturated 160 ms pulses reached about 10 rad/s joint speed and paired commands about 14.1-14.2 rad/s; single-joint cross-joint speeds were roughly 0.09-0.16 rad/s. A 20 ms half-command pulse displaced the endpoint 2.63-3.20 cm and met the measurement settling criterion after about 0.126-0.132 s. A 0.8 s zero-command free-decay trial reduced the imposed 1.166 rad/s joint-speed norm to below 1e-14 of its initial value in all three postures. Interpretation: the compiled system has substantial actuation and strong passive decay, so the physical plant is not presently shown to be authority-limited or intrinsically unable to stabilize; however, the large transient speeds and 20 ms action holding can still make policy braking and entry timing decisive. The controlled traces do not distinguish reach from hold failures because no learned policy was run, do not cover the official radius-angle panel, do not record contacts or continuous tolerance excursions, and use representative rather than IK-swept postures. Competing explanations remain: (1) a baseline policy can reach and hold once trained on the relevant geometry, making exposure/generalization the main gap; (2) the baseline reaches but overshoots or interrupts the sampled hold, making terminal velocity-aware regulation the main gap; or (3) branch/inner-radius geometry creates selective failures despite adequate local dynamics. M2 supports treating explanation (1)/(2)/(3) as unresolved rather than selecting a control intervention from plant data alone.",
-          "handoff_question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?",
-          "rationale": "Official assessment is not available scientifically because there is no explicit best-known learned candidate, and requesting it would not answer the unresolved mechanism. M1 establishes the measurement path and M2 shows bounded actuation and rapid passive decay in representative postures, but neither tests a policy or the official radius-angle distribution. I therefore do not treat M2 as proof that stabilization is solved: its evidence supports adequate local authority under controlled conditions, while policy entry timing, terminal motion, contacts, branch occupancy, and inner-radius exposure remain untested. Training and evaluating one fixed fresh baseline is expected to provide more goal-relevant information than additional plant characterization now; the resulting mechanism-specific diagnostics will justify a targeted change only if they distinguish the alternatives.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a fresh baseline candidate has been produced and evaluated with per-episode success, first-reach status and step, maximum uninterrupted held steps, hold interruptions, final and minimum distance, target radius and angle, and branch-relevant stratification; then classify the dominant failure mechanism as reach, sampled-hold regulation, inner-radius/branch-specific generalization, or inconclusive, and record the targeted next change or the evidence that no targeted change is justified within this inquiry.",
-        "goal_connection": "The human goal is at least 196 successful episodes out of 200, with each success requiring an uninterrupted 2 second hold. No candidate has yet been trained or evaluated, so the campaign lacks both a development success rate and evidence about whether failures occur before first reach, during hold, or in specific inner-radius/branch regions. A fresh baseline followed by diagnostic evaluation directly measures the gap and determines whether the next work should change exposure/branch handling, terminal regulation, or the learning interface.",
-        "question": "For a fresh baseline candidate, which mechanism limits official-distribution episode success\u2014failure to reach, failure to sustain the sampled uninterrupted hold, or inner-radius/branch-specific generalization\u2014and what targeted change is justified by that diagnosis?",
-        "rationale": "Official assessment is not available scientifically because there is no explicit best-known learned candidate, and requesting it would not answer the unresolved mechanism. M1 establishes the measurement path and M2 shows bounded actuation and rapid passive decay in representative postures, but neither tests a policy or the official radius-angle distribution. I therefore do not treat M2 as proof that stabilization is solved: its evidence supports adequate local authority under controlled conditions, while policy entry timing, terminal motion, contacts, branch occupancy, and inner-radius exposure remain untested. Training and evaluating one fixed fresh baseline is expected to provide more goal-relevant information than additional plant characterization now; the resulting mechanism-specific diagnostics will justify a targeted change only if they distinguish the alternatives."
-      }
-    },
-    "request_fingerprint": "bcaa2ffd613e310e6e44b7a4c14b415106d2296e353a42111e90806dd66c3813",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates exist; working, best-known, and retained roles are empty. M1 is an implementation-check measurement and M2 is a controlled physical-characterization measurement, not a policy candidate.",
     "completed_operations": [
