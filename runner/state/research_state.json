@@ -6575,7 +6575,7 @@
   "counters": {
     "event": 46,
     "inquiry": 11,
-    "measurement": 59,
+    "measurement": 60,
     "session": 23,
     "training": 8
   },
@@ -29111,9 +29111,1375 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:54:04Z",
+      "error": null,
+      "id": "M60",
+      "inquiry_id": "I11",
+      "kind": "measurement",
+      "request": {
+        "description": "Run independent behavioral verification of the I11 reach-phase saturation-aware reward intervention after production compatibility passed.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json",
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward behavioral verification",
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "rationale": "M59 established that the changed reward is callable through the real environment path, but did not independently verify the intended mechanism or repeated state behavior. This check uses controlled scalar references and repeated production transitions to detect omitted or mis-signed action-saturation and joint-speed terms, incorrect pre-entry/terminal gating, non-finite outputs, attribution drift, hold interruption/resumption errors, and reset leakage. It is a verification of the implementation, not evidence of learned-policy performance or protected evaluator validity."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+            ],
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward behavioral verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M60-1-reach_phase_saturation_reward.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/benign_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/stressed_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/terminal_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "action_saturation",
+                      "distance",
+                      "held_steps",
+                      "joint_speed",
+                      "observation_shape",
+                      "reward",
+                      "terminal_stabilization"
+                    ],
+                    "path": "/observed/production_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/hold_steps",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/independent_reference_matches_both_new_terms",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/benign_pre_entry_terms_zero",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/stressed_pre_entry_terms_negative_and_finite",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/terminal_gate_disables_new_terms",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/terminal_stabilization_retained",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/finite_and_shape_validation",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/attribution_keys_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/observation_shape_and_action_clipping_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/hold_interruption_resumption_and_reset_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/reference/terminal_distance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/action_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/action_coefficient",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/speed_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/speed_coefficient",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/action_cost",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/action_cost",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/action_cost",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d9b95aec7d75a79aa326359cdab2fe5bd7d14b68b37e9b7707cf7b69f4a5134c"
+            },
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+            "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+                "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json",
+          "instrument": "python_module",
+          "label": "I11 reach-phase saturation reward behavioral verification",
+          "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+            "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+            "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          },
+          {
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+            "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          },
+          {
+            "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+            "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+          },
+          {
+            "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+            "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+          "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+          "manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ]
+        },
+        "code_parent_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+            "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+          ],
+          "instrument": "python_module",
+          "label": "I11 reach-phase saturation reward behavioral verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M60-1-reach_phase_saturation_reward.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "path": "/execution_note",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/observed/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/benign_components",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/stressed_components",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/terminal_components",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "action_saturation",
+                    "distance",
+                    "held_steps",
+                    "joint_speed",
+                    "observation_shape",
+                    "reward",
+                    "terminal_stabilization"
+                  ],
+                  "path": "/observed/production_records",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/hold_steps",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/reset_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/independent_reference_matches_both_new_terms",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/benign_pre_entry_terms_zero",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/stressed_pre_entry_terms_negative_and_finite",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/terminal_gate_disables_new_terms",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/terminal_stabilization_retained",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/finite_and_shape_validation",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/attribution_keys_present",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/observation_shape_and_action_clipping_unchanged",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/hold_interruption_resumption_and_reset_unchanged",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/reference/terminal_distance",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reference/action_threshold",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reference/action_coefficient",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reference/speed_threshold",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/reference/speed_coefficient",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/closeness",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/hold_progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/outside_band",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/hold_complete",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/reach_phase_action_saturation",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/reach_phase_joint_speed",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/terminal_stabilization",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/benign_components/action_cost",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/closeness",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/hold_progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/outside_band",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/hold_complete",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/reach_phase_action_saturation",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/reach_phase_joint_speed",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/terminal_stabilization",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/stressed_components/action_cost",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/closeness",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/hold_progress",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/outside_band",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/hold_complete",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/reach_phase_action_saturation",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/reach_phase_joint_speed",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/terminal_stabilization",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/terminal_components/action_cost",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "d9b95aec7d75a79aa326359cdab2fe5bd7d14b68b37e9b7707cf7b69f4a5134c"
+          },
+          "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+            ],
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward behavioral verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M60-1-reach_phase_saturation_reward.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/observed/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/benign_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/stressed_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/terminal_components",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "action_saturation",
+                      "distance",
+                      "held_steps",
+                      "joint_speed",
+                      "observation_shape",
+                      "reward",
+                      "terminal_stabilization"
+                    ],
+                    "path": "/observed/production_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/hold_steps",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/reset_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/independent_reference_matches_both_new_terms",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/benign_pre_entry_terms_zero",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/stressed_pre_entry_terms_negative_and_finite",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/terminal_gate_disables_new_terms",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/terminal_stabilization_retained",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/finite_and_shape_validation",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/attribution_keys_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/observation_shape_and_action_clipping_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/hold_interruption_resumption_and_reset_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/reference/terminal_distance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/action_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/action_coefficient",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/speed_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/reference/speed_coefficient",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/benign_components/action_cost",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/stressed_components/action_cost",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/closeness",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/hold_progress",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/outside_band",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/hold_complete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/reach_phase_action_saturation",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/reach_phase_joint_speed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/terminal_stabilization",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/terminal_components/action_cost",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d9b95aec7d75a79aa326359cdab2fe5bd7d14b68b37e9b7707cf7b69f4a5134c"
+            },
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+            "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+                "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M60",
+    "inquiry_id": "I11",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run independent behavioral verification of the I11 reach-phase saturation-aware reward intervention after production compatibility passed.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward.json",
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward behavioral verification",
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "rationale": "M59 established that the changed reward is callable through the real environment path, but did not independently verify the intended mechanism or repeated state behavior. This check uses controlled scalar references and repeated production transitions to detect omitted or mis-signed action-saturation and joint-speed terms, incorrect pre-entry/terminal gating, non-finite outputs, attribution drift, hold interruption/resumption errors, and reset leakage. It is a verification of the implementation, not evidence of learned-policy performance or protected evaluator validity."
+      }
+    },
+    "request_fingerprint": "734cf4066082012ff0961e6e327ad2959e9996c1e403bff1249d739077b0ff23",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on the matched M57/M58 comparison and prior development evidence; it is not an official result. T8:checkpoint-100352 is rejected as the negative I10 terminal-stabilization candidate and is not a replacement. No working or retained candidate is assigned. I11 will compare any new complete candidate against T2 rather than treating a training checkpoint or proxy as performance evidence.",
     "completed_operations": [
@@ -29156,7 +30522,8 @@
     "kind": "inquiry",
     "objective": "Advance I11 toward an evidence-supported answer to its scientific question: Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M59"
+      "M59",
+      "M60"
     ],
     "scientific_parent_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1"
   },

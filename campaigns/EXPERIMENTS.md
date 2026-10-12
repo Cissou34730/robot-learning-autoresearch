@@ -115,3 +115,4 @@
 | E45 | inquiry | I11 | completed |
 | E46 | checkpoint | - | checkpointed |
 | M59 | measurement | I11 | completed |
+| M60 | measurement | I11 | completed |
