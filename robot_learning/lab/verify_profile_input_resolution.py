@@ -455,7 +455,11 @@ def run_check() -> dict[str, Any]:
             "backslash-form M28 snapshot provenance",
         )
 
-        runner_alias_path = directory / M30_T2_RUNNER_ALIAS_FILENAME
+        runner_alias_directory = directory / "runner_alias_snapshot_only"
+        runner_alias_directory.mkdir()
+        runner_alias_path = (
+            runner_alias_directory / M30_T2_RUNNER_ALIAS_FILENAME
+        )
         resolved_runner_alias, runner_alias_source_kind = resolve_profile_input(
             runner_alias_path
         )
