@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after the bounded work has trained at least one fresh candidate with official 0.06\u20130.20 m radial exposure and obtained complete-episode development evidence with the official success definition plus first reach, maximum uninterrupted hold, interruptions, endpoint and joint velocities, action saturation, and radius/angle/branch strata. The inquiry may close with positive, negative, limited, or inconclusive evidence: broad failures with little saturation would support a regulation-focused next direction; localized inner-radius or branch/range failures would support geometry-aware work; widespread saturation or unreachable behavior would reopen the authority/trajectory explanation. If a requested diagnostic is unavailable, preserve that uncertainty rather than treating it as resolved.",
-    "goal_connection": "The human goal requires one frozen learned policy to succeed in at least 196 of 200 official episodes, each with an uninterrupted 100-control-step hold. No candidate exists, so official assessment is not a meaningful terminal choice. This inquiry directly develops and measures the first candidate under the official 0.06\u20130.20 m radial exposure, then uses complete-episode evidence to locate the remaining gap without changing protected mechanics.",
-    "handoff_conclusion": "Observed evidence: M1 verified the physical-characterization production path; M5 independently verified both IK branches, reset clearing, repeated qpos/qvel transitions, sign-changing commands, units, and artifact integrity; M6 loaded the exact XML and measured a 0.002 s physics timestep, 10-step/0.020 s control interval, damping 0.5, armature 0.01, two gear-5 normalized-range motors, and nonzero compiled body masses/inertias. M6 sampled 960 analytical branch records over a deterministic 15-by-32 radius-angle grid: all were geometrically feasible, 910 were within compiled joint ranges, and 50 branch solutions were joint-limit infeasible; the worst feasible Jacobian condition number was 5.29 with smallest singular value 0.0415 m/rad. Three representative bounded +1/-1 open-loop sequences showed no saturated control step and reached up to 10.18 rad/s joint speed and 3.17 m/s endpoint speed. These results weaken a claim of global singularity or an observed saturation bottleneck, but they do not establish target-level reachability, generally sufficient authority, target-conditioned braking, policy capability, between-check behavior, or complete-hold success. Correction to the inherited interpretation: M6 demonstrates fast responses without saturation in those three probes, not generally high effective authority; the distinction matters because braking and hold regulation remain policy-dependent. The consequential competing explanations are now (A) generic regulation/learning failure under 20 ms actions and an underrepresented inner-radius regime, versus (B) failures concentrated in target-angle/radius regions where branch joint limits or conditioning constrain the usable posture. A third authority/trajectory explanation remains possible but is not resolved by open-loop probes and should be reopened only if candidate trajectories show saturation, persistent reach failure, or inadequate braking margin.",
-    "handoff_question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a fresh candidate trained with the full official radial distribution learn stable uninterrupted 100-control-step holds under the measured high-authority 20 ms dynamics, and are its remaining failures generic regulation failures or concentrated in branch/range-limited target geometry?",
-    "rationale": "Requesting official assessment would end the campaign without any trained or evidence-backed candidate, while the current measurement record contains no policy success or failure distribution. M6 makes another global authority or workspace characterization lower value now: its compiled facts and 15-by-32 grid constrain the physical alternatives, and its three bounded open-loop reversal sequences had no saturated control step and reached high velocities. I correct the inherited wording that this establishes generally high effective authority; it establishes only the observed response under those probes, not target-conditioned braking or complete-hold capability. The decisive unresolved distinction is therefore policy regulation versus geometry-concentrated failure. One bounded inquiry is preferable because a fresh official-exposure candidate and complete diagnostics can test both at once, while preserving the official success mechanics and the possibility that saturation, branch limits, or inner-radius behavior redirect the next step.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "2bec27917a8e7d943eb57a4baed1d8139951ecf0",
     "id": "659ac6cb-21fe-440b-bdc8-1ea826cb04fd",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 10,
     "session": 3,
@@ -2981,9 +2970,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T12:38:31Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative: the fresh official-exposure candidate learned substantial reach-and-hold behavior but did not meet the campaign-level success objective, and the remaining failures are mixed geometry-concentrated and authority/regulation-related.",
+        "reason": "M7 and M9 verified the changed production path and diagnostics. T1 trained a fresh PPO candidate with 0.06\u20130.20 m exposure for 120,832 actual steps; its proxies rose to 0.58 but were not treated as development performance. M10 then measured T1:checkpoint-120832 on 160 independent official-distribution development episodes: 150/160 successes (93.75%), 153/160 first reached the tolerance, and the maximum uninterrupted hold averaged 93.79 steps. Seven of the ten failures were in the 14-episode folded_only compiled-range stratum (50% failure), all with negative target angles from -114.5 to -150.6 degrees; the other three failures were in 140 both-branches-feasible episodes. Every episode reached an action bound, with saturation fractions 0.922\u20131.0 and mean 0.977, while peak endpoint and joint speeds reached 2.95 m/s and 14.23 rad/s. Thus the bounded question is answered negatively for this recipe, with geometry-localized failures and widespread saturation/fast motion jointly unresolved; the evidence redirects the next goal-review decision toward geometry-aware branch/range handling together with target-conditioned braking/authority investigation, not official assessment of this candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative: the fresh official-exposure candidate learned substantial reach-and-hold behavior but did not meet the campaign-level success objective, and the remaining failures are mixed geometry-concentrated and authority/regulation-related.",
+        "reason": "M7 and M9 verified the changed production path and diagnostics. T1 trained a fresh PPO candidate with 0.06\u20130.20 m exposure for 120,832 actual steps; its proxies rose to 0.58 but were not treated as development performance. M10 then measured T1:checkpoint-120832 on 160 independent official-distribution development episodes: 150/160 successes (93.75%), 153/160 first reached the tolerance, and the maximum uninterrupted hold averaged 93.79 steps. Seven of the ten failures were in the 14-episode folded_only compiled-range stratum (50% failure), all with negative target angles from -114.5 to -150.6 degrees; the other three failures were in 140 both-branches-feasible episodes. Every episode reached an action bound, with saturation fractions 0.922\u20131.0 and mean 0.977, while peak endpoint and joint speeds reached 2.95 m/s and 14.23 rad/s. Thus the bounded question is answered negatively for this recipe, with geometry-localized failures and widespread saturation/fast motion jointly unresolved; the evidence redirects the next goal-review decision toward geometry-aware branch/range handling together with target-conditioned braking/authority investigation, not official assessment of this candidate.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative: the fresh official-exposure candidate learned substantial reach-and-hold behavior but did not meet the campaign-level success objective, and the remaining failures are mixed geometry-concentrated and authority/regulation-related.",
+        "reason": "M7 and M9 verified the changed production path and diagnostics. T1 trained a fresh PPO candidate with 0.06\u20130.20 m exposure for 120,832 actual steps; its proxies rose to 0.58 but were not treated as development performance. M10 then measured T1:checkpoint-120832 on 160 independent official-distribution development episodes: 150/160 successes (93.75%), 153/160 first reached the tolerance, and the maximum uninterrupted hold averaged 93.79 steps. Seven of the ten failures were in the 14-episode folded_only compiled-range stratum (50% failure), all with negative target angles from -114.5 to -150.6 degrees; the other three failures were in 140 both-branches-feasible episodes. Every episode reached an action bound, with saturation fractions 0.922\u20131.0 and mean 0.977, while peak endpoint and joint speeds reached 2.95 m/s and 14.23 rad/s. Thus the bounded question is answered negatively for this recipe, with geometry-localized failures and widespread saturation/fast motion jointly unresolved; the evidence redirects the next goal-review decision toward geometry-aware branch/range handling together with target-conditioned braking/authority investigation, not official assessment of this candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative: the fresh official-exposure candidate learned substantial reach-and-hold behavior but did not meet the campaign-level success objective, and the remaining failures are mixed geometry-concentrated and authority/regulation-related.",
+        "reason": "M7 and M9 verified the changed production path and diagnostics. T1 trained a fresh PPO candidate with 0.06\u20130.20 m exposure for 120,832 actual steps; its proxies rose to 0.58 but were not treated as development performance. M10 then measured T1:checkpoint-120832 on 160 independent official-distribution development episodes: 150/160 successes (93.75%), 153/160 first reached the tolerance, and the maximum uninterrupted hold averaged 93.79 steps. Seven of the ten failures were in the 14-episode folded_only compiled-range stratum (50% failure), all with negative target angles from -114.5 to -150.6 degrees; the other three failures were in 140 both-branches-feasible episodes. Every episode reached an action bound, with saturation fractions 0.922\u20131.0 and mean 0.977, while peak endpoint and joint speeds reached 2.95 m/s and 14.23 rad/s. Thus the bounded question is answered negatively for this recipe, with geometry-localized failures and widespread saturation/fast motion jointly unresolved; the evidence redirects the next goal-review decision toward geometry-aware branch/range handling together with target-conditioned braking/authority investigation, not official assessment of this candidate.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative: the fresh official-exposure candidate learned substantial reach-and-hold behavior but did not meet the campaign-level success objective, and the remaining failures are mixed geometry-concentrated and authority/regulation-related.",
+        "reason": "M7 and M9 verified the changed production path and diagnostics. T1 trained a fresh PPO candidate with 0.06\u20130.20 m exposure for 120,832 actual steps; its proxies rose to 0.58 but were not treated as development performance. M10 then measured T1:checkpoint-120832 on 160 independent official-distribution development episodes: 150/160 successes (93.75%), 153/160 first reached the tolerance, and the maximum uninterrupted hold averaged 93.79 steps. Seven of the ten failures were in the 14-episode folded_only compiled-range stratum (50% failure), all with negative target angles from -114.5 to -150.6 degrees; the other three failures were in 140 both-branches-feasible episodes. Every episode reached an action bound, with saturation fractions 0.922\u20131.0 and mean 0.977, while peak endpoint and joint speeds reached 2.95 m/s and 14.23 rad/s. Thus the bounded question is answered negatively for this recipe, with geometry-localized failures and widespread saturation/fast motion jointly unresolved; the evidence redirects the next goal-review decision toward geometry-aware branch/range handling together with target-conditioned braking/authority investigation, not official assessment of this candidate."
+      }
+    },
+    "request_fingerprint": "a6c3f6bcfc9a0aa8685f7dfb003846741feecbffef354cd621d417e249204611",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been trained, evaluated, or assigned a working, best-known, or retained role. E2 opened inquiry I1; M1, M5, and M6 are completed measurements only.",
     "completed_operations": [
@@ -3026,7 +3069,8 @@
       "M7",
       "M9",
       "T1",
-      "M10"
+      "M10",
+      "E4"
     ],
     "scientific_parent_commit": "c45601984954464c965aa2e4d156be226e839f20"
   },
