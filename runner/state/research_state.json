@@ -4628,38 +4628,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Positive but limited artifact-comparison result: the selected I2 candidate T2:checkpoint-105472 materially improved inner-radius approach performance and preserved outer-band complete-hold success on the matched full official-range development panel, with a small outer post-reach stabilization caveat.",
-        "reason": "M7 verified that T2 implemented the intended complete training recipe: exact 0.06-0.20 m exposure, deterministic alternating open/folded analytic IK branches, bounded branch-potential shaping, and finite signed reset-escape shaping, without changing evaluation mechanics. T2 was selected at 105,472 steps from its learning trajectory because its 0.86 training proxy was higher than later checkpoints; terminal status was not privileged. M8 compared T2:checkpoint-105472 and T1:checkpoint-115712 on identical 160 episode seeds: T2 achieved 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 established the required diagnostics: inner success rose from 42/93 (45.16%) to 75/93 (80.65%), inner failures before any reach fell from 45 to 18, and inner post-reach incomplete holds fell from 6 to 0. Outer success was preserved exactly at 63/67 (94.03%) and outer pre-reach failures fell from 4 to 3, but T2 had one outer post-reach incomplete hold where T1 had none; angle-sector success also improved from a 48.39%-94.74% range to 60.78%-100%. This establishes a property of the compared complete artifacts, not a causal effect of radius exposure, reset escape, branch coverage, or any single shaping term. The remaining causal split and the outer stabilization caveat carry forward to goal review; the human 98% objective remains unmet and no official assessment is justified by this development result alone."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Positive but limited artifact-comparison result: the selected I2 candidate T2:checkpoint-105472 materially improved inner-radius approach performance and preserved outer-band complete-hold success on the matched full official-range development panel, with a small outer post-reach stabilization caveat.",
-        "reason": "M7 verified that T2 implemented the intended complete training recipe: exact 0.06-0.20 m exposure, deterministic alternating open/folded analytic IK branches, bounded branch-potential shaping, and finite signed reset-escape shaping, without changing evaluation mechanics. T2 was selected at 105,472 steps from its learning trajectory because its 0.86 training proxy was higher than later checkpoints; terminal status was not privileged. M8 compared T2:checkpoint-105472 and T1:checkpoint-115712 on identical 160 episode seeds: T2 achieved 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 established the required diagnostics: inner success rose from 42/93 (45.16%) to 75/93 (80.65%), inner failures before any reach fell from 45 to 18, and inner post-reach incomplete holds fell from 6 to 0. Outer success was preserved exactly at 63/67 (94.03%) and outer pre-reach failures fell from 4 to 3, but T2 had one outer post-reach incomplete hold where T1 had none; angle-sector success also improved from a 48.39%-94.74% range to 60.78%-100%. This establishes a property of the compared complete artifacts, not a causal effect of radius exposure, reset escape, branch coverage, or any single shaping term. The remaining causal split and the outer stabilization caveat carry forward to goal review; the human 98% objective remains unmet and no official assessment is justified by this development result alone.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Positive but limited artifact-comparison result: the selected I2 candidate T2:checkpoint-105472 materially improved inner-radius approach performance and preserved outer-band complete-hold success on the matched full official-range development panel, with a small outer post-reach stabilization caveat.",
-        "reason": "M7 verified that T2 implemented the intended complete training recipe: exact 0.06-0.20 m exposure, deterministic alternating open/folded analytic IK branches, bounded branch-potential shaping, and finite signed reset-escape shaping, without changing evaluation mechanics. T2 was selected at 105,472 steps from its learning trajectory because its 0.86 training proxy was higher than later checkpoints; terminal status was not privileged. M8 compared T2:checkpoint-105472 and T1:checkpoint-115712 on identical 160 episode seeds: T2 achieved 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 established the required diagnostics: inner success rose from 42/93 (45.16%) to 75/93 (80.65%), inner failures before any reach fell from 45 to 18, and inner post-reach incomplete holds fell from 6 to 0. Outer success was preserved exactly at 63/67 (94.03%) and outer pre-reach failures fell from 4 to 3, but T2 had one outer post-reach incomplete hold where T1 had none; angle-sector success also improved from a 48.39%-94.74% range to 60.78%-100%. This establishes a property of the compared complete artifacts, not a causal effect of radius exposure, reset escape, branch coverage, or any single shaping term. The remaining causal split and the outer stabilization caveat carry forward to goal review; the human 98% objective remains unmet and no official assessment is justified by this development result alone."
-      }
-    },
-    "request_fingerprint": "1715e1fc1cc61312a696fef339d02d5cecaead553f12464ae5dd2a64575f1443",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E4 from T1, M4, and M6; it is the only learned candidate with a completed full official-range development measurement and is not an official-success declaration. Working and retained roles remain empty. I2 has not yet produced a candidate. The comparison will be between complete archived artifacts, with candidate selection based on development evidence rather than training-proxy rank or terminal-checkpoint status.",
     "completed_operations": [
