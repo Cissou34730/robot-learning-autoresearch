@@ -18,6 +18,15 @@ from typing import Any
 HOLD_STEPS_REQUIRED = 100
 ANALYSIS_SCHEMA_VERSION = 2
 
+M30_T2_REFERENCE_FILENAME = (
+    "evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-"
+    "m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
+)
+M27_T2_REFERENCE_FILENAME = (
+    "evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-"
+    "m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json"
+)
+
 RADIUS_BINS = (
     ("[6,10)", 6.0, 10.0, True, False),
     ("[10,14)", 10.0, 14.0, True, False),
@@ -506,9 +515,31 @@ def analyze_document(document: Any) -> dict[str, Any]:
     }
 
 
+def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, bool]:
+    """Resolve the requested profile input with the one approved fallback."""
+    requested_path = Path(artifact_path)
+    if requested_path.exists():
+        return requested_path, False
+
+    if requested_path.name == M30_T2_REFERENCE_FILENAME:
+        fallback_path = requested_path.parent / M27_T2_REFERENCE_FILENAME
+        if fallback_path.exists():
+            return fallback_path, True
+
+    raise FileNotFoundError(f"Profile artifact not found: {requested_path}")
+
+
 def analyze_path(artifact_path: str | Path) -> dict[str, Any]:
-    with Path(artifact_path).open("r", encoding="utf-8") as handle:
-        return analyze_document(json.load(handle))
+    requested_path = Path(artifact_path)
+    resolved_path, fallback_used = resolve_profile_input(requested_path)
+    with resolved_path.open("r", encoding="utf-8") as handle:
+        report = analyze_document(json.load(handle))
+    report["source_resolution"] = {
+        "requested_path": str(requested_path),
+        "resolved_path": str(resolved_path),
+        "fallback_used": fallback_used,
+    }
+    return report
 
 
 def main(argv: list[str] | None = None) -> None:
