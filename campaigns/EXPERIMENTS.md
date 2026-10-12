@@ -14,3 +14,4 @@
 | M7 | measurement | I1 | completed |
 | M8 | measurement | I1 | failed |
 | M9 | measurement | I1 | completed |
+| T1 | training | I1 | completed |
