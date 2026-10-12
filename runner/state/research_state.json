@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when one complete stabilization-aware trajectory or branch/limit-conditioned controller candidate has been implemented, trained under the available allocation, and measured against T2 on the same fixed 160-episode panel with matched complete success, first reach, radius and angle strata, branch feasibility and joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold diagnostics. Conclude positive only if the candidate reduces the residual failure classes while preserving T2's 6-14 cm and 14-20 cm development performance and does not worsen physics-step uninterrupted-hold readiness; conclude negative if it fails the targeted residual improvement or materially regresses those protected strata; conclude limited or inconclusive if the comparison cannot distinguish the intervention or protected continuous-hold semantics remain decisive. Carry any remaining mechanism uncertainty and the candidate-versus-T2 assessment choice to goal review.",
+    "goal_connection": "The human goal is at least 196 complete uninterrupted-hold successes in the protected 200-episode assessment. T2:checkpoint-120832 is the strongest measured candidate at 150/160 on the matched development panel, with 90/93 success in the 6-14 cm strata and 60/67 at 14-20 cm, but it remains below the goal and is not protected-assessment evidence. The residual three reached-but-incomplete episodes show 435 boundary interruptions, 436 hold intervals containing out-of-tolerance physics steps, and at most 3 held steps; the seven never-reached episodes show approximately 99.37% actuator saturation, high joint speed, and no held steps. A bounded intervention that improves these coupled-control and stabilization failures while preserving the radius strata could materially advance the goal; a regression or failure to change the residual classes would favor terminal assessment of T2 or a different direction.",
+    "handoff_conclusion": "M50 and M51 established that the reviewed SafeBranchTrajectoryEnv implementation executes and preserves the restored T2 transition mechanics: the safe branch is selected from analytic IK representations within compiled joint limits, the potential difference is bounded, and the delegated transition preserves state, frame-skip physics telemetry, hold accounting, clipping, observation shape, and baseline reward components. T7 trained for 120832 actual steps under this complete artifact. Training proxies did not nominate an earlier stronger checkpoint; terminal T7 had the highest late success proxy at 0.49, still below T2's comparable 0.58. M52 measured T7 at 94/160 complete successes (58.75%) versus T2 at 150/160 (93.75%), with 56 discordant episodes all favoring T2. M53 derived the decision-relevant diagnostics from repeated schema-7 traces. T7 achieved 45/82 negative-angle episodes versus T2's 73/82, 5/67 outer-radius episodes versus 60/67, and 89/93 in the 6-14 cm protected strata versus T2's 90/93. T7 had 64 never-reached episodes versus T2's 7; its never-reached rows had 99.640625% actuator saturation, high joint speed and zero held steps. Resets remained rank-one and all trajectories reached full planar rank at control step 1, so reset singularity is not newly implicated. The complete safe-branch trajectory-potential artifact is therefore a negative candidate result: it does not improve the targeted residuals and materially regresses outer-radius and negative-angle capability. Because training exposure, learned weights and resulting behavior changed together, this is not a causal disproof of branch-conditioned control or trajectory redesign. Physics-step traces remain development diagnostics rather than official continuous-hold certification, and the missing protected assessment remains consequential.",
+    "handoff_question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+    "handoff_source_session_id": "S19",
+    "id": "I10",
+    "opened_in_session": "S20",
+    "question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+    "rationale": "Requesting official assessment now would terminate the campaign on a candidate with a material development deficit and unresolved continuous-hold readiness. The completed M18/M53 traces provide a consequential, evidence-backed route for one further bounded inquiry: T2's reached-but-incomplete failures are directly associated with repeated boundary and physics-step hold loss despite both feasible target branches and substantial mean joint-limit margin, while its never-reached failures are dominated by saturation and high joint speed and therefore remain compatible with a coupled trajectory/controller limitation. This revises the inherited frontier from 'stabilization remains relevant' to a specific intervention test, while preserving the limit that visible physics-step traces are not the protected evaluator. E38's negative result rejects the complete safe-IK potential artifact as a candidate, not stabilization-aware or branch-conditioned control generally; its severe outer-radius and negative-angle regression makes repeating that artifact unjustified. One bounded candidate comparison has higher expected contribution toward 98% than terminally assessing T2 or repeating an undiagnosed coverage change, provided it uses the matched diagnostics and explicit no-regression closure criteria.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -5743,16 +5754,16 @@
     }
   },
   "counters": {
-    "event": 39,
-    "inquiry": 9,
+    "event": 40,
+    "inquiry": 10,
     "measurement": 53,
-    "session": 19,
+    "session": 20,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -25164,9 +25175,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:29:03Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when one complete stabilization-aware trajectory or branch/limit-conditioned controller candidate has been implemented, trained under the available allocation, and measured against T2 on the same fixed 160-episode panel with matched complete success, first reach, radius and angle strata, branch feasibility and joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold diagnostics. Conclude positive only if the candidate reduces the residual failure classes while preserving T2's 6-14 cm and 14-20 cm development performance and does not worsen physics-step uninterrupted-hold readiness; conclude negative if it fails the targeted residual improvement or materially regresses those protected strata; conclude limited or inconclusive if the comparison cannot distinguish the intervention or protected continuous-hold semantics remain decisive. Carry any remaining mechanism uncertainty and the candidate-versus-T2 assessment choice to goal review.",
+        "goal_connection": "The human goal is at least 196 complete uninterrupted-hold successes in the protected 200-episode assessment. T2:checkpoint-120832 is the strongest measured candidate at 150/160 on the matched development panel, with 90/93 success in the 6-14 cm strata and 60/67 at 14-20 cm, but it remains below the goal and is not protected-assessment evidence. The residual three reached-but-incomplete episodes show 435 boundary interruptions, 436 hold intervals containing out-of-tolerance physics steps, and at most 3 held steps; the seven never-reached episodes show approximately 99.37% actuator saturation, high joint speed, and no held steps. A bounded intervention that improves these coupled-control and stabilization failures while preserving the radius strata could materially advance the goal; a regression or failure to change the residual classes would favor terminal assessment of T2 or a different direction.",
+        "question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+        "rationale": "Requesting official assessment now would terminate the campaign on a candidate with a material development deficit and unresolved continuous-hold readiness. The completed M18/M53 traces provide a consequential, evidence-backed route for one further bounded inquiry: T2's reached-but-incomplete failures are directly associated with repeated boundary and physics-step hold loss despite both feasible target branches and substantial mean joint-limit margin, while its never-reached failures are dominated by saturation and high joint speed and therefore remain compatible with a coupled trajectory/controller limitation. This revises the inherited frontier from 'stabilization remains relevant' to a specific intervention test, while preserving the limit that visible physics-step traces are not the protected evaluator. E38's negative result rejects the complete safe-IK potential artifact as a candidate, not stabilization-aware or branch-conditioned control generally; its severe outer-radius and negative-angle regression makes repeating that artifact unjustified. One bounded candidate comparison has higher expected contribution toward 98% than terminally assessing T2 or repeating an undiagnosed coverage change, provided it uses the matched diagnostics and explicit no-regression closure criteria."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when one complete stabilization-aware trajectory or branch/limit-conditioned controller candidate has been implemented, trained under the available allocation, and measured against T2 on the same fixed 160-episode panel with matched complete success, first reach, radius and angle strata, branch feasibility and joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold diagnostics. Conclude positive only if the candidate reduces the residual failure classes while preserving T2's 6-14 cm and 14-20 cm development performance and does not worsen physics-step uninterrupted-hold readiness; conclude negative if it fails the targeted residual improvement or materially regresses those protected strata; conclude limited or inconclusive if the comparison cannot distinguish the intervention or protected continuous-hold semantics remain decisive. Carry any remaining mechanism uncertainty and the candidate-versus-T2 assessment choice to goal review.",
+          "goal_connection": "The human goal is at least 196 complete uninterrupted-hold successes in the protected 200-episode assessment. T2:checkpoint-120832 is the strongest measured candidate at 150/160 on the matched development panel, with 90/93 success in the 6-14 cm strata and 60/67 at 14-20 cm, but it remains below the goal and is not protected-assessment evidence. The residual three reached-but-incomplete episodes show 435 boundary interruptions, 436 hold intervals containing out-of-tolerance physics steps, and at most 3 held steps; the seven never-reached episodes show approximately 99.37% actuator saturation, high joint speed, and no held steps. A bounded intervention that improves these coupled-control and stabilization failures while preserving the radius strata could materially advance the goal; a regression or failure to change the residual classes would favor terminal assessment of T2 or a different direction.",
+          "handoff_conclusion": "M50 and M51 established that the reviewed SafeBranchTrajectoryEnv implementation executes and preserves the restored T2 transition mechanics: the safe branch is selected from analytic IK representations within compiled joint limits, the potential difference is bounded, and the delegated transition preserves state, frame-skip physics telemetry, hold accounting, clipping, observation shape, and baseline reward components. T7 trained for 120832 actual steps under this complete artifact. Training proxies did not nominate an earlier stronger checkpoint; terminal T7 had the highest late success proxy at 0.49, still below T2's comparable 0.58. M52 measured T7 at 94/160 complete successes (58.75%) versus T2 at 150/160 (93.75%), with 56 discordant episodes all favoring T2. M53 derived the decision-relevant diagnostics from repeated schema-7 traces. T7 achieved 45/82 negative-angle episodes versus T2's 73/82, 5/67 outer-radius episodes versus 60/67, and 89/93 in the 6-14 cm protected strata versus T2's 90/93. T7 had 64 never-reached episodes versus T2's 7; its never-reached rows had 99.640625% actuator saturation, high joint speed and zero held steps. Resets remained rank-one and all trajectories reached full planar rank at control step 1, so reset singularity is not newly implicated. The complete safe-branch trajectory-potential artifact is therefore a negative candidate result: it does not improve the targeted residuals and materially regresses outer-radius and negative-angle capability. Because training exposure, learned weights and resulting behavior changed together, this is not a causal disproof of branch-conditioned control or trajectory redesign. Physics-step traces remain development diagnostics rather than official continuous-hold certification, and the missing protected assessment remains consequential.",
+          "handoff_question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+          "handoff_source_session_id": "S19",
+          "id": "I10",
+          "opened_in_session": "S20",
+          "question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+          "rationale": "Requesting official assessment now would terminate the campaign on a candidate with a material development deficit and unresolved continuous-hold readiness. The completed M18/M53 traces provide a consequential, evidence-backed route for one further bounded inquiry: T2's reached-but-incomplete failures are directly associated with repeated boundary and physics-step hold loss despite both feasible target branches and substantial mean joint-limit margin, while its never-reached failures are dominated by saturation and high joint speed and therefore remain compatible with a coupled trajectory/controller limitation. This revises the inherited frontier from 'stabilization remains relevant' to a specific intervention test, while preserving the limit that visible physics-step traces are not the protected evaluator. E38's negative result rejects the complete safe-IK potential artifact as a candidate, not stabilization-aware or branch-conditioned control generally; its severe outer-radius and negative-angle regression makes repeating that artifact unjustified. One bounded candidate comparison has higher expected contribution toward 98% than terminally assessing T2 or repeating an undiagnosed coverage change, provided it uses the matched diagnostics and explicit no-regression closure criteria.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when one complete stabilization-aware trajectory or branch/limit-conditioned controller candidate has been implemented, trained under the available allocation, and measured against T2 on the same fixed 160-episode panel with matched complete success, first reach, radius and angle strata, branch feasibility and joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold diagnostics. Conclude positive only if the candidate reduces the residual failure classes while preserving T2's 6-14 cm and 14-20 cm development performance and does not worsen physics-step uninterrupted-hold readiness; conclude negative if it fails the targeted residual improvement or materially regresses those protected strata; conclude limited or inconclusive if the comparison cannot distinguish the intervention or protected continuous-hold semantics remain decisive. Carry any remaining mechanism uncertainty and the candidate-versus-T2 assessment choice to goal review.",
+        "goal_connection": "The human goal is at least 196 complete uninterrupted-hold successes in the protected 200-episode assessment. T2:checkpoint-120832 is the strongest measured candidate at 150/160 on the matched development panel, with 90/93 success in the 6-14 cm strata and 60/67 at 14-20 cm, but it remains below the goal and is not protected-assessment evidence. The residual three reached-but-incomplete episodes show 435 boundary interruptions, 436 hold intervals containing out-of-tolerance physics steps, and at most 3 held steps; the seven never-reached episodes show approximately 99.37% actuator saturation, high joint speed, and no held steps. A bounded intervention that improves these coupled-control and stabilization failures while preserving the radius strata could materially advance the goal; a regression or failure to change the residual classes would favor terminal assessment of T2 or a different direction.",
+        "question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
+        "rationale": "Requesting official assessment now would terminate the campaign on a candidate with a material development deficit and unresolved continuous-hold readiness. The completed M18/M53 traces provide a consequential, evidence-backed route for one further bounded inquiry: T2's reached-but-incomplete failures are directly associated with repeated boundary and physics-step hold loss despite both feasible target branches and substantial mean joint-limit margin, while its never-reached failures are dominated by saturation and high joint speed and therefore remain compatible with a coupled trajectory/controller limitation. This revises the inherited frontier from 'stabilization remains relevant' to a specific intervention test, while preserving the limit that visible physics-step traces are not the protected evaluator. E38's negative result rejects the complete safe-IK potential artifact as a candidate, not stabilization-aware or branch-conditioned control generally; its severe outer-radius and negative-angle regression makes repeating that artifact unjustified. One bounded candidate comparison has higher expected contribution toward 98% than terminally assessing T2 or repeating an undiagnosed coverage change, provided it uses the matched diagnostics and explicit no-regression closure criteria."
+      }
+    },
+    "request_fingerprint": "733f61258fc680d7b93e252f7beabb4a38d51b09302a2fede9dabc25f9a0729b",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30, M41 and M46 and is not ready for official assessment by development evidence alone. T7:checkpoint-120832 is the complete safe-branch trajectory-potential candidate measured in M52 and is rejected as an inferior candidate by the matched comparison; it is not working, best-known or retained. No candidate is working or retained. M50 and M51 are implementation checks, and M53 is trace-derived analysis rather than a candidate artifact.",
     "completed_operations": [
@@ -25205,6 +25279,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "765b78c7-ccc2-444b-8237-988dc5be5b04",
+    "id": "S20",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E40"
+    ],
+    "scientific_parent_commit": "8e637526ed49dc7e9dea43e08b3faee4774b165d"
+  },
   "terminal_state": null
 }
