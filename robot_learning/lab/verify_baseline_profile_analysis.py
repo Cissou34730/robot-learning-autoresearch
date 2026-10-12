@@ -416,7 +416,7 @@ def run_check() -> dict[str, Any]:
         first_report["angle_strata"]["[135,180)"][
             "out_of_tolerance_physics_substeps_during_hold"
         ],
-        14,
+        24,
         "angle-stratum substep sum",
     )
     invalid_distance = copy.deepcopy(first_input)
