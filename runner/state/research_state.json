@@ -841,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 6,
+    "measurement": 7,
     "session": 3,
     "training": 1
   },
@@ -2229,6 +2229,36 @@
       "status": "failed",
       "superseded_by": "M6",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:26:19Z",
+      "error": "robot_learning.lab.verify_research_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 305, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 301, in main\n    run_check(args.output_json)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 168, in run_check\n    raise AssertionError(f\"radius {label} {field}: {group[field]} != {value}\")\nAssertionError: radius [6,10) failures: 0 != 1\n",
+      "id": "M6",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Synthetic verification of the I1 research-evaluation mechanism analysis.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-mechanism-analysis-verification",
+            "module": "robot_learning.lab.verify_research_evaluation_analysis"
+          }
+        ],
+        "rationale": "Before analyzing M4, verify the new analysis path on controlled schema-6 rows. The check exercises success/no-reach/reached-hold classification, exact radius and angle boundaries, reached-failure summaries, branch aggregation, and explicit rejection of misaligned or incomplete diagnostics. It is independent of the trained candidate and does not alter M4."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_research_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 305, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 301, in main\n    run_check(args.output_json)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 168, in run_check\n    raise AssertionError(f\"radius {label} {field}: {group[field]} != {value}\")\nAssertionError: radius [6,10) failures: 0 != 1\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M7",
+      "supersedes": "M5"
     }
   ],
   "pending_operation": {
@@ -2260,7 +2290,7 @@
             "path": "robot_learning/lab/verify_physical_characterization.py"
           },
           {
-            "fingerprint": "b507ff74d783d3476b7706e5a009f9fbef646511fac4fb0cd4dc38df16ebf326",
+            "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
             "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
           },
           {
@@ -2297,7 +2327,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "b507ff74d783d3476b7706e5a009f9fbef646511fac4fb0cd4dc38df16ebf326",
+            "fingerprint": "500c53270ee021490a7c027abcf124f851ce34fea83b160e69ab64e1f687228b",
             "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
           }
         ],
@@ -2314,7 +2344,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M6",
+    "id": "M7",
     "inquiry_id": "I1",
     "kind": "measurement",
     "progress": "accepted",
@@ -2337,7 +2367,7 @@
     },
     "request_fingerprint": "4ba4c951be014d3db582f477e92bf6d06cf165b00c67bf84242580b4d4f8ba6c",
     "session_id": "S3",
-    "supersedes": "M5"
+    "supersedes": "M6"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists and working, best-known, and retained roles remain empty. E2 is an inquiry boundary, not a policy candidate; M1 and M2 are measurements and cannot fill a candidate role.",
