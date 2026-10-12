@@ -111,3 +111,4 @@
 | M57 | measurement | I10 | completed |
 | M58 | measurement | I10 | completed |
 | E43 | inquiry | I10 | completed |
+| E44 | checkpoint | I10 | checkpointed |
