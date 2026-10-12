@@ -7532,38 +7532,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
-        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
-        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M14 and M18 distinguish the residual mechanisms sufficiently to select branch/joint-limit/trajectory-aware treatment as the next bounded intervention direction, while retaining terminal stabilization as a secondary residual mechanism.",
-        "reason": "The schema-6 T2 profile reproduced 150/160 success and separates the ten failures into seven never-reached and three reached-but-incomplete. The reached-incomplete class accounts for 435 of 438 boundary interruptions and 3,919 observed out-of-tolerance physics substeps during boundary-held intervals, versus zero such intervals for never-reached episodes, supporting sampled-data terminal loss for that class. Conversely, six of seven never-reached episodes are single folded-branch targets with negative minimum joint-limit margin and no hold excursions; the seventh has both feasible branches and ample margin, so branch/limit context is consequential but not complete. A terminal-only intervention could address at most three of ten failures and cannot reach the seven additional successes needed for 98% on this 160-episode panel. This resolves the inquiry's mechanism-selection condition while preserving the evaluator's authoritative continuous-hold semantics and the unresolved causal status of the one well-margin never-reached case."
-      }
-    },
-    "request_fingerprint": "bd6958e7a76bab4678f8db5ce239c642ed3cbc6cffa84bc9540e6964430d801e",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate, supported by M10/M11, but no working or best-known role is assigned in this session and no official-assessment candidate is certified. T1:checkpoint-115712 remains the measured baseline reference. T2's other 23 archived checkpoints and T1's unmeasured terminal checkpoint remain unmeasured; their training proxies and terminal positions do not confer privileged status. M1-M11 and E4/E6/E8/E10 are scientific, diagnostic, inquiry, or analysis records rather than candidate roles.",
     "completed_operations": [
