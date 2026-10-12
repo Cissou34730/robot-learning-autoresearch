@@ -23,11 +23,16 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-JOINT_LIMIT_SAFE_MARGIN = 0.25
-JOINT_LIMIT_PENALTY_COEFFICIENT = 0.5
-JOINT_SPEED_SAFE_NORM = 1.0
-JOINT_SPEED_PENALTY_NORM = 5.0
-JOINT_SPEED_PENALTY_COEFFICIENT = 0.05
+# These terms are deliberately terminal-focused: ordinary reaching remains
+# unshaped, while a narrow limit margin or extreme arrival speed gets a small
+# stabilizing signal.  The 10% normalized margin and 2.5-to-10 speed window
+# leave routine motion untouched while reserving the bounded penalties for
+# near-boundary or unusually fast arrival states.
+JOINT_LIMIT_SAFE_MARGIN = 0.10
+JOINT_LIMIT_PENALTY_COEFFICIENT = 0.05
+JOINT_SPEED_SAFE_NORM = 2.5
+JOINT_SPEED_PENALTY_NORM = 10.0
+JOINT_SPEED_PENALTY_COEFFICIENT = 0.005
 
 
 @dataclass(frozen=True)
