@@ -13,6 +13,7 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
+import mujoco
 import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
@@ -21,7 +22,7 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario research-evaluation artifact changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 6
+RESEARCH_EVALUATION_SUMMARY_VERSION = 7
 
 
 def _joint_state(model, data) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -50,6 +51,120 @@ def _compiled_joint_ranges(model) -> np.ndarray:
     if ranges.shape != (2, 2) or not np.all(np.isfinite(ranges)):
         raise ValueError("compiled joint ranges are unavailable")
     return ranges
+
+
+def _planar_site_jacobian(model, data) -> np.ndarray:
+    """Return the compiled end-effector position Jacobian in the xy plane."""
+    site_id = int(
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "end_effector")
+    )
+    if site_id < 0:
+        raise ValueError("the compiled end-effector site is unavailable")
+    jacobian = np.zeros((3, int(model.nv)), dtype=np.float64)
+    mujoco.mj_jacSite(model, data, jacobian, None, site_id)
+    dof_addresses = [
+        int(model.jnt_dofadr[index]) for index in range(2)
+    ]
+    return np.asarray(jacobian[:2, dof_addresses], dtype=np.float64)
+
+
+def _jacobian_summary(model, data) -> dict:
+    """Summarize planar conditioning with an explicit deficient representation."""
+    jacobian = _planar_site_jacobian(model, data)
+    singular_values = np.linalg.svd(jacobian, compute_uv=False)
+    largest = float(np.max(singular_values))
+    rank_tolerance = (
+        max(jacobian.shape) * np.finfo(np.float64).eps * largest
+    )
+    rank = int(np.count_nonzero(singular_values > rank_tolerance))
+    rank_deficient = rank < min(jacobian.shape)
+    condition_number = (
+        None
+        if rank_deficient
+        else float(singular_values[0] / singular_values[-1])
+    )
+    return {
+        "singular_values": [float(value) for value in singular_values],
+        "rank": rank,
+        "rank_deficient": rank_deficient,
+        "condition_number": condition_number,
+    }
+
+
+def _trajectory_snapshot(
+    state: dict,
+    model,
+    data,
+    *,
+    control_step: int,
+    applied_action: np.ndarray | None,
+    held_steps: int,
+    in_tolerance: bool,
+    physics_step_distances: np.ndarray | tuple[float, ...] | None,
+) -> dict:
+    """Create one bounded, JSON-compatible control-boundary trace record."""
+    qpos, qvel, ranges = _joint_state(model, data)
+    end_effector_position = np.asarray(
+        data.site("end_effector").xpos, dtype=np.float64
+    ).copy()
+    target_position = np.asarray(state["target_position"], dtype=np.float64)
+    target_relative_position = target_position[:3] - end_effector_position[:3]
+    target_relative_xy = target_relative_position[:2]
+    target_direction_norm = float(np.linalg.norm(target_relative_xy))
+    cartesian_velocity = _planar_site_jacobian(model, data) @ qvel
+    if target_direction_norm > 1e-12:
+        target_direction = target_relative_xy / target_direction_norm
+        tangent_direction = np.asarray(
+            [-target_direction[1], target_direction[0]], dtype=np.float64
+        )
+        radial_velocity = float(np.dot(cartesian_velocity, target_direction))
+        tangential_velocity = float(
+            np.dot(cartesian_velocity, tangent_direction)
+        )
+    else:
+        radial_velocity = None
+        tangential_velocity = None
+
+    if applied_action is None:
+        action_values = None
+    else:
+        action_values = [
+            float(value)
+            for value in np.asarray(applied_action, dtype=np.float64).reshape(-1)
+        ]
+    if physics_step_distances is None:
+        physics_distances = []
+    else:
+        physics_distances = [
+            float(value)
+            for value in np.asarray(physics_step_distances, dtype=np.float64)
+        ]
+    return {
+        "control_step": int(control_step),
+        "qpos_rad": [float(value) for value in qpos],
+        "qvel_rad_per_s": [float(value) for value in qvel],
+        "applied_clipped_action": action_values,
+        "end_effector_position_m": [
+            float(value) for value in end_effector_position
+        ],
+        "target_relative_position_m": [
+            float(value) for value in target_relative_position
+        ],
+        "target_relative_distance_m": float(
+            np.linalg.norm(target_relative_position)
+        ),
+        "jacobian": _jacobian_summary(model, data),
+        "radial_cartesian_velocity_m_per_s": radial_velocity,
+        "tangential_cartesian_velocity_m_per_s": tangential_velocity,
+        "joint_limit_margin_rad": float(
+            np.min(np.minimum(qpos - ranges[:, 0], ranges[:, 1] - qpos))
+        ),
+        "held_steps": int(held_steps),
+        "in_tolerance": bool(in_tolerance),
+        "physics_step_distances_cm": [
+            100.0 * value for value in physics_distances
+        ],
+    }
 
 
 def _angle_candidates(angle: float, lower: float, upper: float) -> list[float]:
@@ -204,6 +319,22 @@ def initialize_episode_diagnostics(
         "target_branch_context": analytic_ik_branch_context(
             target_position, model
         ),
+        "trajectory_trace": [
+            _trajectory_snapshot(
+                {
+                    "target_position": np.asarray(
+                        target_position, dtype=np.float64
+                    ).copy()
+                },
+                model,
+                data,
+                control_step=0,
+                applied_action=None,
+                held_steps=0,
+                in_tolerance=False,
+                physics_step_distances=None,
+            )
+        ],
     }
 
 
@@ -215,6 +346,8 @@ def update_episode_diagnostics(
     in_tolerance: bool,
     physics_step_distances: np.ndarray | tuple[float, ...] | None = None,
     success_threshold: float | None = None,
+    applied_action: np.ndarray | None = None,
+    held_steps: int | None = None,
 ) -> None:
     """Record one post-step control-boundary state without changing it."""
     qpos, qvel, ranges = _joint_state(model, data)
@@ -276,6 +409,22 @@ def update_episode_diagnostics(
                 state["out_of_tolerance_physics_substeps_during_hold"] += int(
                     np.count_nonzero(out_of_tolerance)
                 )
+    state["trajectory_trace"].append(
+        _trajectory_snapshot(
+            state,
+            model,
+            data,
+            control_step=len(state["trajectory_trace"]),
+            applied_action=applied_action,
+            held_steps=(
+                int(held_steps)
+                if held_steps is not None
+                else int(in_tolerance)
+            ),
+            in_tolerance=in_tolerance,
+            physics_step_distances=physics_step_distances,
+        )
+    )
     if in_tolerance and state["first_entry"] is None:
         state["first_entry"] = boundary
     state["final_boundary"] = boundary
@@ -331,6 +480,7 @@ def finalize_episode_diagnostics(state: dict) -> dict:
             "first_entry": branch(first_entry),
             "final_boundary": branch(final_boundary),
         },
+        "trajectory_trace": state["trajectory_trace"],
     }
 
 
@@ -410,6 +560,8 @@ def evaluate_research_model(
                 in_tolerance=held_steps > 0,
                 physics_step_distances=physics_step_distances,
                 success_threshold=env.success_threshold,
+                applied_action=np.asarray(env.data.ctrl, dtype=np.float64).copy(),
+                held_steps=held_steps,
             )
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -470,6 +622,22 @@ def evaluate_research_model(
                 "cartesian_speed": "m/s",
                 "joint_limit_margin": "rad",
                 "ik_branch_angles": "rad",
+                "trajectory_qpos": "rad",
+                "trajectory_qvel": "rad/s",
+                "trajectory_distance": "m",
+                "trajectory_cartesian_velocity": "m/s",
+                "trajectory_jacobian": "m/rad",
+                "trajectory_physics_step_distance": "cm",
+            },
+            "trajectory_conventions": {
+                "radial_velocity": "positive toward the target",
+                "tangential_velocity": (
+                    "signed counterclockwise from the target direction"
+                ),
+                "jacobian_condition_number": (
+                    "null when the planar Jacobian is rank deficient"
+                ),
+                "reset_control_step": 0,
             },
         },
     }
