@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one complete stabilization-aware trajectory or branch/limit-conditioned controller candidate has been implemented, trained under the available allocation, and measured against T2 on the same fixed 160-episode panel with matched complete success, first reach, radius and angle strata, branch feasibility and joint-limit margin, arrival speed, actuator saturation, boundary interruptions, and physics-step hold diagnostics. Conclude positive only if the candidate reduces the residual failure classes while preserving T2's 6-14 cm and 14-20 cm development performance and does not worsen physics-step uninterrupted-hold readiness; conclude negative if it fails the targeted residual improvement or materially regresses those protected strata; conclude limited or inconclusive if the comparison cannot distinguish the intervention or protected continuous-hold semantics remain decisive. Carry any remaining mechanism uncertainty and the candidate-versus-T2 assessment choice to goal review.",
-    "goal_connection": "The human goal is at least 196 complete uninterrupted-hold successes in the protected 200-episode assessment. T2:checkpoint-120832 is the strongest measured candidate at 150/160 on the matched development panel, with 90/93 success in the 6-14 cm strata and 60/67 at 14-20 cm, but it remains below the goal and is not protected-assessment evidence. The residual three reached-but-incomplete episodes show 435 boundary interruptions, 436 hold intervals containing out-of-tolerance physics steps, and at most 3 held steps; the seven never-reached episodes show approximately 99.37% actuator saturation, high joint speed, and no held steps. A bounded intervention that improves these coupled-control and stabilization failures while preserving the radius strata could materially advance the goal; a regression or failure to change the residual classes would favor terminal assessment of T2 or a different direction.",
-    "handoff_conclusion": "Observed evidence: The initial physical model and M1-M5 support feasible official-domain kinematics, alternative analytic branches, a rank-one fully extended reset, direct bounded actuation, and transient dynamics that make coupled reaching and stabilization consequential. T2 was a fresh seed-0 PPO artifact trained for 120832 actual steps with full 0.06-0.20 m exposure; M10/M11 measured 150/160 successes and 153/160 first reaches on the fixed panel, correcting the baseline's dominant inner-radius deficit but losing 3 outer-radius successes relative to T1. M14/M18 and M53 provide the residual mechanism profile: 7 never-reached cases had zero held steps, high joint speed, and about 99.37% updated-row actuator saturation; 3 reached-but-incomplete cases had both feasible target branches, mean minimum joint-limit margin about 1.15 rad, 435 boundary hold interruptions, 436 hold intervals with physics-step out-of-tolerance samples, and maximum held steps of only 3. Across T2 successes, the visible boundary hold still contained 7,736 out-of-tolerance physics substeps in the recorded development trace, so boundary success is not evidence of continuous containment. M50/M51 established that the SafeBranchTrajectoryEnv implementation was compatible and preserved the restored T2 transition mechanics, but T7's complete artifact comparison in M52/M53/E38 regressed to 94/160, with 45/82 negative-angle and 5/67 outer-radius successes and 64 never-reached cases; this is a negative result for that coupled artifact, not a causal disproof of stabilization-aware or branch-conditioned control. Interpretation: full-radius coverage was a strong artifact-level improvement, but its simple continuation is no longer the decisive next step. The reached-but-incomplete residual is directly consistent with sampled-data stabilization failure, while saturation and never-reaching keep coupled trajectory/branch/limit control consequential. This is an artifact-level and diagnostic interpretation, not an isolated causal attribution; protected evaluator semantics remain unknown. Correction to the inherited frontier: the completed M18/M53 evidence narrows the question from 'whether stabilization remains relevant' to whether a concrete stabilization-aware and/or branch/limit-conditioned intervention can improve the residual classes without sacrificing T2's protected strata and continuous-hold readiness. Correction to the inherited claim that assessment versus inquiry was still an undifferentiated choice: the evidence-backed residual mechanism and the large conservative continuous-hold risk make one bounded intervention comparison scientifically preferable now, although official assessment remains the terminal authority and could still be the correct next choice after I10.",
-    "handoff_question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
-    "handoff_source_session_id": "S20",
-    "id": "I10",
-    "opened_in_session": "S20",
-    "question": "Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness?",
-    "rationale": "Requesting official assessment now would terminate the campaign on a candidate with a material development deficit and unresolved continuous-hold readiness. The completed M18/M53 traces provide a consequential, evidence-backed route for one further bounded inquiry: T2's reached-but-incomplete failures are directly associated with repeated boundary and physics-step hold loss despite both feasible target branches and substantial mean joint-limit margin, while its never-reached failures are dominated by saturation and high joint speed and therefore remain compatible with a coupled trajectory/controller limitation. This revises the inherited frontier from 'stabilization remains relevant' to a specific intervention test, while preserving the limit that visible physics-step traces are not the protected evaluator. E38's negative result rejects the complete safe-IK potential artifact as a candidate, not stabilization-aware or branch-conditioned control generally; its severe outer-radius and negative-angle regression makes repeating that artifact unjustified. One bounded candidate comparison has higher expected contribution toward 98% than terminally assessing T2 or repeating an undiagnosed coverage change, provided it uses the matched diagnostics and explicit no-regression closure criteria.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -6573,7 +6562,7 @@
     }
   },
   "counters": {
-    "event": 42,
+    "event": 43,
     "inquiry": 10,
     "measurement": 58,
     "session": 21,
@@ -28668,9 +28657,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:46:12Z",
+      "error": null,
+      "id": "E43",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review.",
+        "status": "completed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E43",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "The complete T8 terminal-only stabilization candidate reduced reached-but-not-complete failures from 3 to 1, but it increased never-reached failures from 7 to 20, reduced first reaches from 153 to 140, regressed all protected radius strata, and slightly worsened the successful-hold mean maximum physics-step excursion. M57 and M58 therefore satisfy the matched closure diagnostics and fail I10's targeted-improvement/no-regression criteria. This rejects the tested T8 recipe as a candidate, not stabilization-aware or branch-conditioned control as a broader method; T2 remains best-known and the assessment-versus-new-inquiry decision moves to goal review."
+      }
+    },
+    "request_fingerprint": "b12cb8134fc42649ec309619c789697891eeeb31548389b5323a4c664db315f4",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, based on M10, M11, M14, M18, M21, M23, M27, M30, M46 and M52 comparisons and analyses; it is not a protected official-assessment result. T7:checkpoint-120832 is rejected as an inferior complete safe-IK trajectory-potential artifact by M52/M53 and E38. No candidate is working or retained. E35/E37/E40 are inquiry-boundary or restoration records; M50/M51 are implementation checks; M53 is trace-derived analysis; none are learned candidates.",
     "completed_operations": [
@@ -28721,7 +28764,8 @@
       "M56",
       "T8",
       "M57",
-      "M58"
+      "M58",
+      "E43"
     ],
     "scientific_parent_commit": "1f13488be7eae899f5927af1efc45a74513a3765"
   },
