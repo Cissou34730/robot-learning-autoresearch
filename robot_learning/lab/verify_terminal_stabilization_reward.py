@@ -302,6 +302,7 @@ def _compatibility_check(output: Path) -> None:
     direct = reach_reward(
         previous_distance=0.02,
         current_distance=REFERENCE_TERMINAL_DISTANCE,
+        success_threshold=0.01,
         action=np.zeros(2),
         joint_velocities=np.asarray([2.0, 0.0]),
     )
