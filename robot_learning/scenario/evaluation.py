@@ -20,8 +20,8 @@ from contracts.policy_runtime import load_runtime
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
-# Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
+# Bumped when the meaning of a scenario research-evaluation artifact changes.
+RESEARCH_EVALUATION_SUMMARY_VERSION = 6
 
 
 def _joint_state(model, data) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -174,10 +174,15 @@ def initialize_episode_diagnostics(
     data,
     target_position: np.ndarray,
     control_interval_seconds: float,
+    success_threshold: float | None = None,
 ) -> dict:
     """Create observational state for one episode at its reset boundary."""
     if control_interval_seconds <= 0.0:
         raise ValueError("the control interval must be positive")
+    if success_threshold is not None and (
+        not np.isfinite(success_threshold) or success_threshold < 0.0
+    ):
+        raise ValueError("the success threshold must be finite and nonnegative")
     return {
         "previous_end_effector_position": np.asarray(
             data.site("end_effector").xpos, dtype=np.float64
@@ -187,6 +192,13 @@ def initialize_episode_diagnostics(
         "max_joint_speed_norm": 0.0,
         "max_cartesian_speed": 0.0,
         "min_joint_limit_margin": float("inf"),
+        "success_threshold": (
+            None if success_threshold is None else float(success_threshold)
+        ),
+        "max_physics_step_distance": 0.0,
+        "max_physics_step_distance_during_hold": 0.0,
+        "hold_intervals_with_out_of_tolerance_physics_step": 0,
+        "out_of_tolerance_physics_substeps_during_hold": 0,
         "first_entry": None,
         "final_boundary": None,
         "target_branch_context": analytic_ik_branch_context(
@@ -201,6 +213,8 @@ def update_episode_diagnostics(
     data,
     *,
     in_tolerance: bool,
+    physics_step_distances: np.ndarray | tuple[float, ...] | None = None,
+    success_threshold: float | None = None,
 ) -> None:
     """Record one post-step control-boundary state without changing it."""
     qpos, qvel, ranges = _joint_state(model, data)
@@ -233,6 +247,35 @@ def update_episode_diagnostics(
     state["min_joint_limit_margin"] = min(
         state["min_joint_limit_margin"], joint_limit_margin
     )
+    if physics_step_distances is not None:
+        distances = np.asarray(physics_step_distances, dtype=np.float64)
+        if distances.ndim != 1 or distances.size == 0:
+            raise ValueError("physics-step telemetry must be a nonempty vector")
+        if not np.all(np.isfinite(distances)) or np.any(distances < 0.0):
+            raise ValueError(
+                "physics-step telemetry must be finite and nonnegative"
+            )
+        threshold = success_threshold
+        if threshold is None:
+            threshold = state.get("success_threshold")
+        if threshold is None or not np.isfinite(threshold) or threshold < 0.0:
+            raise ValueError(
+                "physics-step telemetry requires a finite nonnegative threshold"
+            )
+        state["max_physics_step_distance"] = max(
+            state["max_physics_step_distance"], float(np.max(distances))
+        )
+        if in_tolerance:
+            state["max_physics_step_distance_during_hold"] = max(
+                state["max_physics_step_distance_during_hold"],
+                float(np.max(distances)),
+            )
+            out_of_tolerance = distances > threshold
+            if np.any(out_of_tolerance):
+                state["hold_intervals_with_out_of_tolerance_physics_step"] += 1
+                state["out_of_tolerance_physics_substeps_during_hold"] += int(
+                    np.count_nonzero(out_of_tolerance)
+                )
     if in_tolerance and state["first_entry"] is None:
         state["first_entry"] = boundary
     state["final_boundary"] = boundary
@@ -271,12 +314,36 @@ def finalize_episode_diagnostics(state: dict) -> dict:
         "final_joint_limit_margin_rad": value(
             final_boundary, "joint_limit_margin"
         ),
+        "max_physics_step_distance_cm": float(
+            100.0 * state["max_physics_step_distance"]
+        ),
+        "max_physics_step_distance_during_hold_cm": float(
+            100.0 * state["max_physics_step_distance_during_hold"]
+        ),
+        "hold_intervals_with_out_of_tolerance_physics_step": int(
+            state["hold_intervals_with_out_of_tolerance_physics_step"]
+        ),
+        "out_of_tolerance_physics_substeps_during_hold": int(
+            state["out_of_tolerance_physics_substeps_during_hold"]
+        ),
         "ik_branch_context": {
             "target": state["target_branch_context"],
             "first_entry": branch(first_entry),
             "final_boundary": branch(final_boundary),
         },
     }
+
+
+def _validated_physics_step_distances(env) -> np.ndarray:
+    """Validate the latest interval telemetry supplied by the environment."""
+    distances = np.asarray(env.physics_step_distances, dtype=np.float64)
+    if distances.ndim != 1 or distances.size != int(env.frame_skip):
+        raise ValueError("environment physics-step telemetry has the wrong length")
+    if not np.all(np.isfinite(distances)) or np.any(distances < 0.0):
+        raise ValueError(
+            "environment physics-step telemetry must be finite and nonnegative"
+        )
+    return distances
 
 
 def evaluate_research_model(
@@ -316,12 +383,14 @@ def evaluate_research_model(
             env.data,
             target_position,
             env.model.opt.timestep * env.frame_skip,
+            success_threshold=env.success_threshold,
         )
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
+            physics_step_distances = _validated_physics_step_distances(env)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
@@ -339,6 +408,8 @@ def evaluate_research_model(
                 env.model,
                 env.data,
                 in_tolerance=held_steps > 0,
+                physics_step_distances=physics_step_distances,
+                success_threshold=env.success_threshold,
             )
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -379,7 +450,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": RESEARCH_EVALUATION_SUMMARY_VERSION,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -392,6 +463,7 @@ def evaluate_research_model(
             "episode_diagnostics": episode_diagnostics,
             "units": {
                 "distance": "cm",
+                "physics_step_distance": "cm",
                 "time": "control_steps",
                 "control_interval": "s",
                 "joint_speed": "rad/s",
