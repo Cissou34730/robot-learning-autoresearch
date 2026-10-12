@@ -907,7 +907,7 @@
       "training_steps": 10240
     },
     "T2:checkpoint-105472": {
-      "artifact": "campaigns/checkpoints/candidates/5da30677-03e6-49ec-98b3-d27252a5530c/t2/checkpoint-105472",
+      "artifact": "campaigns/checkpoints/retained/5da30677-03e6-49ec-98b3-d27252a5530c/t2-ca3d05779-5e5ac5652fb6568a7470cd47d7e41965aea8b7006dfa33fdbeefed782e903718",
       "evaluation_artifacts": [
         "campaigns/evaluations/5da30677-03e6-49ec-98b3-d27252a5530c/evaluation-5da30677-03e6-49ec-98b3-d27252a5530c-m8-T2-checkpoint-105472-160ep-seed4200-604d52985c97.json"
       ],
@@ -1658,7 +1658,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 9,
     "session": 5,
@@ -1667,9 +1667,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-115712",
+    "best_known": "T2:checkpoint-105472",
     "retained": {},
     "working": null
   },
@@ -4583,9 +4583,88 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T07:17:32Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-105472",
+        "evidence": [
+          "T2",
+          "M8",
+          "M9"
+        ],
+        "reason": "T2:checkpoint-105472 is now the strongest evidence-backed learned candidate. M8 measured it on the same 160-episode full official-range development panel as T1:checkpoint-115712: 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 shows the decisive artifact diagnostics: inner success improved from 42/93 to 75/93 and inner failures before any reach fell from 45 to 18, while outer success remained 63/67 (94.03%). The candidate is not an official-success declaration; one outer post-reach incomplete hold appeared and causal attribution among exposure, escape, branch, and angle factors remains unresolved."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-105472",
+        "evidence": [
+          "T2",
+          "M8",
+          "M9"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T2:checkpoint-105472",
+        "evidence": [
+          "T2",
+          "M8",
+          "M9"
+        ],
+        "reason": "T2:checkpoint-105472 is now the strongest evidence-backed learned candidate. M8 measured it on the same 160-episode full official-range development panel as T1:checkpoint-115712: 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 shows the decisive artifact diagnostics: inner success improved from 42/93 to 75/93 and inner failures before any reach fell from 45 to 18, while outer success remained 63/67 (94.03%). The candidate is not an official-success declaration; one outer post-reach incomplete hold appeared and causal attribution among exposure, escape, branch, and angle factors remains unresolved."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/5da30677-03e6-49ec-98b3-d27252a5530c/t2-ca3d05779-5e5ac5652fb6568a7470cd47d7e41965aea8b7006dfa33fdbeefed782e903718",
+        "fingerprint": "5e5ac5652fb6568a7470cd47d7e41965aea8b7006dfa33fdbeefed782e903718",
+        "source": "campaigns/checkpoints/candidates/5da30677-03e6-49ec-98b3-d27252a5530c/t2/checkpoint-105472"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-105472",
+        "evidence": [
+          "T2",
+          "M8",
+          "M9"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-105472",
+        "evidence": [
+          "T2",
+          "M8",
+          "M9"
+        ],
+        "reason": "T2:checkpoint-105472 is now the strongest evidence-backed learned candidate. M8 measured it on the same 160-episode full official-range development panel as T1:checkpoint-115712: 138/160 successes (86.25%) versus 105/160 (65.625%), with 36 paired wins and 3 losses. M9 shows the decisive artifact diagnostics: inner success improved from 42/93 to 75/93 and inner failures before any reach fell from 45 to 18, while outer success remained 63/67 (94.03%). The candidate is not an official-success declaration; one outer post-reach incomplete hold appeared and causal attribution among exposure, escape, branch, and angle factors remains unresolved."
+      }
+    },
+    "request_fingerprint": "009e4eef7891d2ad19c897437de63b44ea76fea5da89db6984e5a538ca8fba1c",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E4 from T1, M4, and M6; it is the only learned candidate with a completed full official-range development measurement and is not an official-success declaration. Working and retained roles remain empty. I2 has not yet produced a candidate. The comparison will be between complete archived artifacts, with candidate selection based on development evidence rather than training-proxy rank or terminal-checkpoint status.",
     "completed_operations": [
@@ -4632,7 +4711,8 @@
       "M7",
       "T2",
       "M8",
-      "M9"
+      "M9",
+      "E9"
     ],
     "scientific_parent_commit": "ed7c51d47dbef6796d835ae926ec9ba44fa38112"
   },
