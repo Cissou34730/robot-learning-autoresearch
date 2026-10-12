@@ -26,12 +26,21 @@ HOLD_COMPLETE_BONUS = 50.0
 
 DEFAULT_REWARD_PROFILE = "default"
 TARGETED_REGULATION_PROFILE = "targeted_regulation"
+HOLD_RECOVERY_PROFILE = "hold_recovery"
 BRAKING_DISTANCE = 0.05
 TARGETED_JOINT_VELOCITY_COEFFICIENT = 0.01
 TARGETED_JOINT_VELOCITY_SCALE = 4.0
 TARGETED_ENDPOINT_VELOCITY_COEFFICIENT = 0.05
 TARGETED_ENDPOINT_VELOCITY_SCALE = 0.25
 TARGETED_ACTION_REGULATION_COEFFICIENT = 0.03
+HOLD_RECOVERY_PROGRESS_BONUS = 100.0
+HOLD_RECOVERY_PROGRESS_EXPONENT = 2.0
+HOLD_RECOVERY_EXIT_FORFEIT_FRACTION = 1.0
+HOLD_RECOVERY_JOINT_VELOCITY_COEFFICIENT = 0.01
+HOLD_RECOVERY_JOINT_VELOCITY_SCALE = 4.0
+HOLD_RECOVERY_ENDPOINT_VELOCITY_COEFFICIENT = 0.05
+HOLD_RECOVERY_ENDPOINT_VELOCITY_SCALE = 0.25
+HOLD_RECOVERY_ACTION_REGULATION_COEFFICIENT = 0.03
 
 
 @dataclass(frozen=True)
@@ -51,6 +60,17 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
         raise ValueError("hold_steps_required must be positive")
     progress = np.clip(held_steps / hold_steps_required, 0.0, 1.0)
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
+
+
+def _hold_recovery_progress_potential(
+    held_steps: int, hold_steps_required: int
+) -> float:
+    if hold_steps_required <= 0:
+        raise ValueError("hold_steps_required must be positive")
+    progress = np.clip(held_steps / hold_steps_required, 0.0, 1.0)
+    return HOLD_RECOVERY_PROGRESS_BONUS * float(
+        progress**HOLD_RECOVERY_PROGRESS_EXPONENT
+    )
 
 
 def _smoothstep(value: float) -> float:
@@ -84,6 +104,7 @@ def reach_reward(
     if reward_profile not in {
         DEFAULT_REWARD_PROFILE,
         TARGETED_REGULATION_PROFILE,
+        HOLD_RECOVERY_PROFILE,
     }:
         raise ValueError(f"unknown reward profile: {reward_profile}")
 
@@ -95,14 +116,34 @@ def reach_reward(
     )
     reward += closeness
 
-    current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
-    previous_hold_capital = _hold_progress_potential(
-        previous_held_steps, hold_steps_required
-    )
+    if reward_profile == HOLD_RECOVERY_PROFILE:
+        current_hold_capital = _hold_recovery_progress_potential(
+            held_steps, hold_steps_required
+        )
+        previous_hold_capital = _hold_recovery_progress_potential(
+            previous_held_steps, hold_steps_required
+        )
+    else:
+        current_hold_capital = _hold_progress_potential(
+            held_steps, hold_steps_required
+        )
+        previous_hold_capital = _hold_progress_potential(
+            previous_held_steps, hold_steps_required
+        )
     if held_steps == 0 and previous_held_steps > 0:
-        if not 0 <= HOLD_EXIT_FORFEIT_FRACTION <= 1:
-            raise ValueError("HOLD_EXIT_FORFEIT_FRACTION must be between 0 and 1")
-        hold_progress = -(HOLD_EXIT_FORFEIT_FRACTION * previous_hold_capital)
+        if reward_profile == HOLD_RECOVERY_PROFILE:
+            forfeiture_fraction = HOLD_RECOVERY_EXIT_FORFEIT_FRACTION
+            if not 0 <= forfeiture_fraction <= 1:
+                raise ValueError(
+                    "HOLD_RECOVERY_EXIT_FORFEIT_FRACTION must be between 0 and 1"
+                )
+        else:
+            forfeiture_fraction = HOLD_EXIT_FORFEIT_FRACTION
+            if not 0 <= forfeiture_fraction <= 1:
+                raise ValueError(
+                    "HOLD_EXIT_FORFEIT_FRACTION must be between 0 and 1"
+                )
+        hold_progress = -(forfeiture_fraction * previous_hold_capital)
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
@@ -183,6 +224,54 @@ def reach_reward(
                 "targeted_joint_velocity": float(joint_velocity_penalty),
                 "targeted_endpoint_velocity": float(endpoint_velocity_penalty),
                 "targeted_action_regulation": float(action_regulation_penalty),
+            }
+        )
+
+    if reward_profile == HOLD_RECOVERY_PROFILE:
+        if joint_velocity is None or endpoint_velocity is None:
+            raise ValueError(
+                "hold recovery requires joint and endpoint velocity"
+            )
+
+        joint_velocity_penalty = 0.0
+        endpoint_velocity_penalty = 0.0
+        action_regulation_penalty = 0.0
+        if current_distance <= success_threshold:
+            joint_velocity_penalty = -(
+                HOLD_RECOVERY_JOINT_VELOCITY_COEFFICIENT
+                * _bounded_squared_magnitude(
+                    joint_velocity, HOLD_RECOVERY_JOINT_VELOCITY_SCALE
+                )
+            )
+            endpoint_velocity_penalty = -(
+                HOLD_RECOVERY_ENDPOINT_VELOCITY_COEFFICIENT
+                * _bounded_squared_magnitude(
+                    endpoint_velocity, HOLD_RECOVERY_ENDPOINT_VELOCITY_SCALE
+                )
+            )
+            action_regulation_penalty = -(
+                HOLD_RECOVERY_ACTION_REGULATION_COEFFICIENT
+                * _bounded_squared_magnitude(
+                    np.zeros(1, dtype=np.float64)
+                    if action is None
+                    else action,
+                    1.0,
+                )
+            )
+        reward += (
+            joint_velocity_penalty
+            + endpoint_velocity_penalty
+            + action_regulation_penalty
+        )
+        components.update(
+            {
+                "hold_recovery_joint_velocity": float(joint_velocity_penalty),
+                "hold_recovery_endpoint_velocity": float(
+                    endpoint_velocity_penalty
+                ),
+                "hold_recovery_action_regulation": float(
+                    action_regulation_penalty
+                ),
             }
         )
 
