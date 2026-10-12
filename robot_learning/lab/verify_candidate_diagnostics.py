@@ -141,6 +141,9 @@ def _check_geometry_classification() -> dict:
 def _check_behavior() -> dict:
     result, controlled_env, runtime = _run_controlled_evaluation(episodes=2)
     diagnostics = result["research_evidence"]["episode_diagnostics"]
+    episode_results = result["episode_results"]
+    if len(diagnostics) != len(episode_results):
+        raise AssertionError("diagnostic rows do not match episode outcomes")
     required = {
         "target_radius_cm",
         "target_angle_degrees",
@@ -159,13 +162,13 @@ def _check_behavior() -> dict:
         "trajectory_branch_label",
         "ik_branches",
     }
-    for item in diagnostics:
+    for item, outcome in zip(diagnostics, episode_results):
         missing = required.difference(item)
         if missing:
             raise AssertionError(f"diagnostic keys missing: {sorted(missing)}")
         if item["action_saturation"]["any"] is not True:
             raise AssertionError("the bounded action was not marked saturated")
-        if item["action_saturation"]["steps"] != item["steps"]:
+        if item["action_saturation"]["steps"] != outcome["steps"]:
             raise AssertionError("saturation step count did not follow transitions")
         if item["endpoint_velocity"]["final_m_per_s"] < 0.0:
             raise AssertionError("endpoint velocity has an invalid sign")
