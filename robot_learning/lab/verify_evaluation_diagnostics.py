@@ -15,6 +15,7 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.scenario import evaluation as evaluation_module
 from robot_learning.scenario.evaluation import build_step_diagnostic
+from robot_learning.scenario.policy_io import make_policy_io
 
 
 def _reference_jacobian(qpos: np.ndarray) -> np.ndarray:
@@ -208,6 +209,9 @@ def _check() -> dict:
             )
 
     class ZeroRuntime:
+        def __init__(self) -> None:
+            self.io = make_policy_io()
+
         def reset(self) -> None:
             return None
 
