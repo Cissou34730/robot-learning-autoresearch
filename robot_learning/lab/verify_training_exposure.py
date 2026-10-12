@@ -178,9 +178,11 @@ def _behavior_result() -> dict[str, Any]:
         if represented_sectors != expected_sectors:
             failures.append("not every official angular sector was represented")
 
-        difficult_count = sum(
-            DIFFICULT_SECTOR_DEGREES[0] <= angle < DIFFICULT_SECTOR_DEGREES[1]
-            for angle in angles
+        difficult_count = int(
+            sum(
+                DIFFICULT_SECTOR_DEGREES[0] <= angle < DIFFICULT_SECTOR_DEGREES[1]
+                for angle in angles
+            )
         )
         difficult_fraction = difficult_count / SAMPLE_COUNT
         one_sided_epsilon = math.sqrt(
