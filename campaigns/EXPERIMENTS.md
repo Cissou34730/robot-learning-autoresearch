@@ -97,3 +97,4 @@
 | M50 | measurement | I9 | completed |
 | M51 | measurement | I9 | completed |
 | T7 | training | I9 | completed |
+| M52 | measurement | I9 | completed |
