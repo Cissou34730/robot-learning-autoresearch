@@ -38,3 +38,4 @@
 | E14 | inquiry | I4 | completed |
 | E15 | checkpoint | - | checkpointed |
 | M19 | measurement | I4 | completed |
+| M20 | measurement | I4 | completed |

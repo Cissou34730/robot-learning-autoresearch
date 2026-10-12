@@ -1660,7 +1660,7 @@
   "counters": {
     "event": 15,
     "inquiry": 4,
-    "measurement": 19,
+    "measurement": 20,
     "session": 9,
     "training": 2
   },
@@ -7915,9 +7915,856 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:37:11Z",
+      "error": null,
+      "id": "M20",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Execute the independent controlled-input verification for the branch/limit/trajectory-aware intervention.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json",
+            "instrument": "python_module",
+            "label": "branch-limit-trajectory-intervention-verification",
+            "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+          }
+        ],
+        "rationale": "The compatibility check passed, but it did not exercise the causal signals that motivate I4. This matched production check independently verifies one- versus two-branch feasibility flags, normalized joint-limit margins including clipping, bounded near-limit/high-speed reward responses, repeated physics updates, hold transition/reset behavior, and action clipping before training. It distinguishes an active implementation from a shape-only or inactive change; it remains a software and mechanism check, not a performance result."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch-limit-trajectory-intervention-verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M20-1-branch_limit_trajectory_intervention.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/observation_size",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/one_branch_flags",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/two_branch_flags",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/center_margins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/near_limit_margins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/outside_limit_margins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/safe_reward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/near_limit_reward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/high_velocity_reward",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/clipped_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/hold_steps_before_exit",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/hold_steps_after_exit",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/observation_size",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/one_branch_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/two_branch_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/near_limit_margins_below_center",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/outside_limit_margins_clipped",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/safe_shaping_components_zero",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/near_limit_and_high_velocity_penalized",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/clipped_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/hold_steps_before_exit",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/hold_steps_after_exit",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ad698532fbf2fe89e3b9280e6e9125e255d69509dfb37f0d7c4c342e07b93244"
+            },
+            "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "c7527e130f729e65628a61b0691b191b98ba5912",
+            "fingerprint": "101688eaf7f2cb9ab46833225c5a79750dacaa6e4bc612088c9e6e1cc6977945",
+            "manifest": [
+              {
+                "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "702e0d24ae68f9728407489e53a4b85162979302",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json",
+          "instrument": "python_module",
+          "label": "branch-limit-trajectory-intervention-verification",
+          "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "c7527e130f729e65628a61b0691b191b98ba5912",
+          "fingerprint": "101688eaf7f2cb9ab46833225c5a79750dacaa6e4bc612088c9e6e1cc6977945",
+          "manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "702e0d24ae68f9728407489e53a4b85162979302",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+          ],
+          "instrument": "python_module",
+          "label": "branch-limit-trajectory-intervention-verification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M20-1-branch_limit_trajectory_intervention.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "path": "/execution_note",
+                  "type": "string"
+                },
+                {
+                  "entries": 12,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/observation_size",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/one_branch_flags",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/two_branch_flags",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/center_margins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/near_limit_margins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/outside_limit_margins",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/safe_reward",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/near_limit_reward",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/high_velocity_reward",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/clipped_control",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/hold_steps_before_exit",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/hold_steps_after_exit",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/observation_size",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/one_branch_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/two_branch_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/near_limit_margins_below_center",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/outside_limit_margins_clipped",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/safe_shaping_components_zero",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/near_limit_and_high_velocity_penalized",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/clipped_control",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/hold_steps_before_exit",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/hold_steps_after_exit",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "ad698532fbf2fe89e3b9280e6e9125e255d69509dfb37f0d7c4c342e07b93244"
+          },
+          "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch-limit-trajectory-intervention-verification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M20-1-branch_limit_trajectory_intervention.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/observation_size",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/one_branch_flags",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/two_branch_flags",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/center_margins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/near_limit_margins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/outside_limit_margins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/safe_reward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/near_limit_reward",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/high_velocity_reward",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/clipped_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/hold_steps_before_exit",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/hold_steps_after_exit",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/observation_size",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/one_branch_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/two_branch_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/near_limit_margins_below_center",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/outside_limit_margins_clipped",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/safe_shaping_components_zero",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/near_limit_and_high_velocity_penalized",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/clipped_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/hold_steps_before_exit",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/hold_steps_after_exit",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ad698532fbf2fe89e3b9280e6e9125e255d69509dfb37f0d7c4c342e07b93244"
+            },
+            "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "c7527e130f729e65628a61b0691b191b98ba5912",
+            "fingerprint": "101688eaf7f2cb9ab46833225c5a79750dacaa6e4bc612088c9e6e1cc6977945",
+            "manifest": [
+              {
+                "fingerprint": "62cf02be86798a1fb656923c0a9040b37d379273515ec1d2e17a947ff66b8801",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "702e0d24ae68f9728407489e53a4b85162979302",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M20",
+    "inquiry_id": "I4",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Execute the independent controlled-input verification for the branch/limit/trajectory-aware intervention.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/branch_limit_trajectory_intervention.json",
+            "instrument": "python_module",
+            "label": "branch-limit-trajectory-intervention-verification",
+            "module": "robot_learning.lab.verify_branch_limit_trajectory_intervention"
+          }
+        ],
+        "rationale": "The compatibility check passed, but it did not exercise the causal signals that motivate I4. This matched production check independently verifies one- versus two-branch feasibility flags, normalized joint-limit margins including clipping, bounded near-limit/high-speed reward responses, repeated physics updates, hold transition/reset behavior, and action clipping before training. It distinguishes an active implementation from a shape-only or inactive change; it remains a software and mechanism check, not a performance result."
+      }
+    },
+    "request_fingerprint": "9bd4d18df8d07b0a6b6c6715bbc9f12ee74311e9cad871e9cd8697503d483fb1",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate, with 150/160 success and strong 6-14 cm performance demonstrated by M10/M11/M14/M18. T1:checkpoint-115712 remains the measured baseline reference. No working, best-known, or retained role is assigned; no candidate is certified for official assessment. Other archived checkpoints and training proxies do not have privileged status.",
     "completed_operations": [
@@ -7980,7 +8827,8 @@
     "kind": "inquiry",
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M19"
+      "M19",
+      "M20"
     ],
     "scientific_parent_commit": "702e0d24ae68f9728407489e53a4b85162979302"
   },
