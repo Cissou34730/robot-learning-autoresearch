@@ -80,38 +80,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
-    def _endpoint_velocity(self) -> np.ndarray:
-        site_id = mujoco.mj_name2id(
-            self.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
-        )
-        velocity = np.zeros(6, dtype=np.float64)
-        mujoco.mj_objectVelocity(
-            self.model,
-            self.data,
-            mujoco.mjtObj.mjOBJ_SITE,
-            site_id,
-            velocity,
-            0,
-        )
-        # MuJoCo returns object velocity in rotational, then linear order.
-        return velocity[3:6].copy()
-
-    def _joint_velocity(self) -> np.ndarray:
-        joint_names = ("shoulder", "elbow")
-        joint_ids = [
-            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, name)
-            for name in joint_names
-        ]
-        if any(joint_id < 0 for joint_id in joint_ids):
-            raise RuntimeError("the compiled model is missing a task joint")
-        return np.asarray(
-            [
-                self.data.qvel[int(self.model.jnt_dofadr[joint_id])]
-                for joint_id in joint_ids
-            ],
-            dtype=np.float64,
-        )
-
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
@@ -183,8 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            endpoint_velocity=self._endpoint_velocity(),
-            joint_velocity=self._joint_velocity(),
         )
         self._previous_distance = distance
 

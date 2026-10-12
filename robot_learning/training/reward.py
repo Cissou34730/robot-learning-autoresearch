@@ -23,12 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-# The exponential gate is approximately 0.61 at the 1 cm success boundary and
-# rapidly suppresses speed shaping for targets that are still far away.
-SPEED_GATE_LENGTH_SCALE = 0.02
-SPEED_PENALTY_COEFFICIENT = 1.0
-ENDPOINT_SPEED_SCALE = 0.10
-JOINT_SPEED_SCALE = 1.0
 
 
 @dataclass(frozen=True)
@@ -50,44 +44,6 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
-def _speed_penalty(
-    distance: float,
-    endpoint_velocity: np.ndarray | None,
-    joint_velocity: np.ndarray | None,
-) -> tuple[float, float, float]:
-    if SPEED_GATE_LENGTH_SCALE <= 0:
-        raise ValueError("SPEED_GATE_LENGTH_SCALE must be positive")
-    if ENDPOINT_SPEED_SCALE <= 0 or JOINT_SPEED_SCALE <= 0:
-        raise ValueError("speed scales must be positive")
-    distance_value = float(distance)
-    if not np.isfinite(distance_value):
-        raise ValueError("distance must be finite")
-    endpoint_speed = (
-        0.0
-        if endpoint_velocity is None
-        else float(np.linalg.norm(np.asarray(endpoint_velocity, dtype=np.float64)))
-    )
-    joint_speed = (
-        0.0
-        if joint_velocity is None
-        else float(np.linalg.norm(np.asarray(joint_velocity, dtype=np.float64)))
-    )
-    if not np.isfinite(endpoint_speed) or not np.isfinite(joint_speed):
-        raise ValueError("velocity inputs must be finite")
-    gate = float(np.exp(-max(distance_value, 0.0) / SPEED_GATE_LENGTH_SCALE))
-    endpoint_penalty = -(
-        SPEED_PENALTY_COEFFICIENT
-        * gate
-        * float(np.tanh(endpoint_speed / ENDPOINT_SPEED_SCALE))
-    )
-    joint_penalty = -(
-        SPEED_PENALTY_COEFFICIENT
-        * gate
-        * float(np.tanh(joint_speed / JOINT_SPEED_SCALE))
-    )
-    return endpoint_penalty, joint_penalty, endpoint_penalty + joint_penalty
-
-
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -97,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    endpoint_velocity: np.ndarray | None = None,
-    joint_velocity: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -136,11 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    endpoint_speed_penalty, joint_speed_penalty, speed_penalty = _speed_penalty(
-        current_distance, endpoint_velocity, joint_velocity
-    )
-    reward += speed_penalty
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -154,9 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "endpoint_speed_penalty": float(endpoint_speed_penalty),
-            "joint_speed_penalty": float(joint_speed_penalty),
-            "speed_penalty": float(speed_penalty),
             "action_cost": float(action_cost),
         },
     )
