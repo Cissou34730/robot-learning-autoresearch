@@ -77,3 +77,4 @@
 | M39 | measurement | I7 | failed |
 | M40 | measurement | I7 | failed |
 | M41 | measurement | I7 | completed |
+| M42 | measurement | I7 | failed |

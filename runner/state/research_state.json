@@ -4936,7 +4936,7 @@
   "counters": {
     "event": 28,
     "inquiry": 7,
-    "measurement": 41,
+    "measurement": 43,
     "session": 15,
     "training": 6
   },
@@ -19059,9 +19059,202 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M40"
+    },
+    {
+      "completed_at": "2026-10-12T16:48:46Z",
+      "error": "robot_learning.lab.verify_profile_input_resolution failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 612, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 605, in main\n    result = run_compatibility_check() if args.compatibility else run_check()\n                                                                  ~~~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 462, in run_check\n    _assert_equal(\n    ~~~~~~~~~~~~~^\n        resolved_runner_alias,\n        ^^^^^^^^^^^^^^^^^^^^^^\n        runner_alias_path,\n        ^^^^^^^^^^^^^^^^^^\n        \"exact Runner alias snapshot resolution\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 49, in _assert_equal\n    raise AssertionError(f\"{label}: observed {observed!r}, expected {expected!r}\")\nAssertionError: exact Runner alias snapshot resolution: observed WindowsPath('C:/Users/CYRIL~1.BEU/AppData/Local/Temp/tmpzeh63ssl/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'), expected WindowsPath('C:/Users/CYRIL~1.BEU/AppData/Local/Temp/tmpzeh63ssl/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json')\n",
+      "id": "M42",
+      "inquiry_id": "I7",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the repaired profile-input resolver and its explicit M28 T2 snapshot fallback before interpreting M41. Exercise both the production path boundary used by Runner and the full controlled fallback/aggregate invariants.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json",
+            "instrument": "python_module",
+            "label": "I7 profile resolver production-path compatibility",
+            "module": "robot_learning.lab.verify_profile_input_resolution"
+          },
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json",
+            "instrument": "python_module",
+            "label": "I7 profile resolver behavioral verification",
+            "module": "robot_learning.lab.verify_profile_input_resolution"
+          }
+        ],
+        "rationale": "M31-M40 were execution-history failures caused by unavailable prior files and a malformed transported M30 filename. M41 now completed using the reviewed exact Runner alias and provenance-bound M28 snapshot. The compatibility check must establish that the changed path resolution accepts only the canonical or exact observed alias, preserves explicit snapshot provenance, and rejects unrelated or embedded names; the behavioral check must verify fallback ordering and the corrected M28 first-reach values before profile evidence is used for the I7 decision."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_profile_input_resolution failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 612, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 605, in main\n    result = run_compatibility_check() if args.compatibility else run_check()\n                                                                  ~~~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 462, in run_check\n    _assert_equal(\n    ~~~~~~~~~~~~~^\n        resolved_runner_alias,\n        ^^^^^^^^^^^^^^^^^^^^^^\n        runner_alias_path,\n        ^^^^^^^^^^^^^^^^^^\n        \"exact Runner alias snapshot resolution\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_profile_input_resolution.py\", line 49, in _assert_equal\n    raise AssertionError(f\"{label}: observed {observed!r}, expected {expected!r}\")\nAssertionError: exact Runner alias snapshot resolution: observed WindowsPath('C:/Users/CYRIL~1.BEU/AppData/Local/Temp/tmpzeh63ssl/evaluation-fedcc0f3-5435-4aa3-b839-d2c108082481-m27-T2-checkpoint-120832-160ep-seed4200-82260456c369.json'), expected WindowsPath('C:/Users/CYRIL~1.BEU/AppData/Local/Temp/tmpzeh63ssl/evaluation-fedcc0f3-5435-b839-d2c108082481-m30-T2-checkpoint-120832-160ep-seed4200-82260456c369.json')\n",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "M43",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json",
+          "instrument": "python_module",
+          "label": "I7 profile resolver production-path compatibility",
+          "module": "robot_learning.lab.verify_profile_input_resolution"
+        },
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json",
+          "instrument": "python_module",
+          "label": "I7 profile resolver behavioral verification",
+          "module": "robot_learning.lab.verify_profile_input_resolution"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "a4fba44548b1a17a3448f112b9716bdad5283b12ad401bfd55e4892a8e0bcc5a",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "05b38cfc37b489da65650ddf64360c5976beff0c",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_profile_input_resolution.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M43",
+    "inquiry_id": "I7",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Verify the repaired profile-input resolver and its explicit M28 T2 snapshot fallback before interpreting M41. Exercise both the production path boundary used by Runner and the full controlled fallback/aggregate invariants.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution-compatibility.json",
+            "instrument": "python_module",
+            "label": "I7 profile resolver production-path compatibility",
+            "module": "robot_learning.lab.verify_profile_input_resolution"
+          },
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/profile-input-resolution.json",
+            "instrument": "python_module",
+            "label": "I7 profile resolver behavioral verification",
+            "module": "robot_learning.lab.verify_profile_input_resolution"
+          }
+        ],
+        "rationale": "M31-M40 were execution-history failures caused by unavailable prior files and a malformed transported M30 filename. M41 now completed using the reviewed exact Runner alias and provenance-bound M28 snapshot. The compatibility check must establish that the changed path resolution accepts only the canonical or exact observed alias, preserves explicit snapshot provenance, and rejects unrelated or embedded names; the behavioral check must verify fallback ordering and the corrected M28 first-reach values before profile evidence is used for the I7 decision."
+      }
+    },
+    "request_fingerprint": "99523aa7111080c6bf3893b85aa04ab6bcf9999d11a11186e688e6cd61adb896",
+    "session_id": "S15",
+    "supersedes": "M42"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains explicit best-known, supported by M10, M11, M14, M21, M23, M27, and M28; it is not certified for official assessment. T5:checkpoint-120832 remains a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. I7 will produce a new complete candidate only if its training and matched development measurement support that role.",
     "completed_operations": [
