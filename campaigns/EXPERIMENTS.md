@@ -29,3 +29,4 @@
 | M12 | measurement | I3 | completed |
 | M13 | measurement | I3 | completed |
 | M14 | measurement | I3 | completed |
+| M15 | measurement | I3 | failed |
