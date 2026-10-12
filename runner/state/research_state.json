@@ -2789,38 +2789,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
-        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
-        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Full-distribution exposure produced a measurable but insufficient candidate: T1:checkpoint-120832 achieved 150/160 successes (93.75%) on the fixed-seed research panel, below the 98% objective, while outperforming the paired late checkpoint (142/160, 88.75%). The diagnostics distinguish a mixed, direction-relevant failure mechanism. Inner-radius performance was 90/93 (96.77%) and its three failures were non-reaches; outer-radius performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included high first-reach end-effector speeds of about 42-45 cm/s, all-open posture with condition-number maxima about 74-76 and no limit contact in two cases, and a separate limit-margin violation. This supports prioritizing sampled-hold braking/stabilization together with posture/conditioning and limit-aware analysis; it does not establish that geometry exposure alone or any single mechanism is sufficient.",
-        "reason": "I1 closure condition is met by completed full-distribution training, independent fixed-seed development measurement, candidate comparison, and trajectory diagnostics covering success, first reach, maximum hold, interruptions, target radius, branch, conditioning, joint-limit margin, and velocity/distance behavior. The evidence supports comparison with the 98% goal and a next direction, but not official certification: the panel is a 160-episode research panel, the candidate is at 93.75%, and the tested recipe remains PPO with the memoryless 11-component interface and its existing reward. The next inquiry should test hold-aware braking/stabilization and posture/limit effects against the observed outer-radius deficit rather than treating the result as a generic failure of PPO."
-      }
-    },
-    "request_fingerprint": "6fecefd8c6fc67d0ed27ff7d7b331f7da0634efc86b22fd349c98e9ca7aae1d4",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty; M3 is a system-identification measurement and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
