@@ -694,7 +694,11 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
             return fallback_path, "m28_profile_fallback"
         return requested_path, "m28_profile_snapshot_fallback"
 
-    raise FileNotFoundError(f"Profile artifact not found: {requested_path}")
+    raise FileNotFoundError(
+        "Profile artifact not found: "
+        f"normalized_path={normalized_path!r}; "
+        f"allowlisted_m30_filename={M30_T2_REFERENCE_FILENAME!r}"
+    )
 
 
 def analyze_path(artifact_path: str | Path) -> dict[str, Any]:
