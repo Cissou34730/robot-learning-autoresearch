@@ -25,7 +25,6 @@ from contracts.task_spec import FRAME_SKIP, TARGET_RADIUS_RANGE
 
 
 JOINT_NAMES = ("shoulder", "elbow")
-ACTUATOR_NAMES = ("shoulder", "elbow")
 REPRESENTATIVE_CONFIGURATIONS = (
     (0.0, 0.0),
     (0.65, -0.9),
@@ -167,15 +166,39 @@ def _compiled_facts(model: mujoco.MjModel) -> dict[str, Any]:
             }
         )
 
+    if model.nu != len(JOINT_NAMES):
+        raise ValueError(
+            f"expected {len(JOINT_NAMES)} compiled motor actuators, got {model.nu}"
+        )
+    joint_names_by_id = {
+        int(joint_id): name for joint_id, name in zip(joint_ids, JOINT_NAMES, strict=True)
+    }
     actuators = []
-    for name in ACTUATOR_NAMES:
-        actuator_id = int(model.actuator(name).id)
-        if actuator_id < 0:
-            raise ValueError(f"required actuator is missing from compiled model: {name}")
+    transmitted_joint_ids = []
+    for actuator_id in range(model.nu):
+        transmission_type = int(model.actuator_trntype[actuator_id])
+        if transmission_type != int(mujoco.mjtTrn.mjTRN_JOINT):
+            raise ValueError(
+                f"actuator {actuator_id} does not transmit to a joint "
+                f"(transmission type {transmission_type})"
+            )
+        transmitted_joint_id = int(model.actuator_trnid[actuator_id, 0])
+        transmitted_joint_name = joint_names_by_id.get(transmitted_joint_id)
+        if transmitted_joint_name is None:
+            raise ValueError(
+                f"actuator {actuator_id} transmits to unexpected joint id "
+                f"{transmitted_joint_id}"
+            )
+        transmitted_joint_ids.append(transmitted_joint_id)
         actuators.append(
             {
-                "name": name,
+                "label": f"actuator_{actuator_id}",
                 "id": actuator_id,
+                "transmission": {
+                    "type": "joint",
+                    "joint_id": transmitted_joint_id,
+                    "joint_name": transmitted_joint_name,
+                },
                 "gear": {
                     "values": np.asarray(model.actuator_gear[actuator_id], dtype=float).tolist(),
                     "unit": "dimensionless gear coefficients",
@@ -187,6 +210,10 @@ def _compiled_facts(model: mujoco.MjModel) -> dict[str, Any]:
                     "unit": "normalized control",
                 },
             }
+        )
+    if set(transmitted_joint_ids) != set(joint_ids.tolist()):
+        raise ValueError(
+            "compiled actuator transmissions must cover shoulder and elbow exactly once"
         )
 
     bodies = []
