@@ -53,7 +53,15 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    joint_positions: np.ndarray | None = None,
+    joint_velocities: np.ndarray | None = None,
+    joint_ranges: np.ndarray | None = None,
 ) -> RewardResult:
+    # The scenario environment supplies these state values through its shared
+    # reward interface.  Restored T2 reward semantics intentionally do not use
+    # them.
+    del joint_positions, joint_velocities, joint_ranges
+
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
