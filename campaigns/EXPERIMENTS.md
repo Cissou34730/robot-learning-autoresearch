@@ -102,3 +102,4 @@
 | E57 | checkpoint | - | checkpointed |
 | M33 | measurement | I14 | failed |
 | M34 | measurement | I14 | completed |
+| T10 | training | I14 | completed |
