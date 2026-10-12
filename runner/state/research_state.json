@@ -3093,38 +3093,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Closed with a limited development-artifact conclusion: the baseline's dominant failure mechanism is inner-radius and angle-dependent failure to reach, not sampled-hold regulation. In M4, 56 of 64 failures were no-reach and 8 were reached-hold failures; no-reach failures were concentrated at 6-10 cm (30/34 failures) and 10-14 cm (22/26), while the trained 14-20 cm region had 4/87 failures. All reached failures interrupted the sampled hold, but they were a minority. Branch diagnostics did not support folded-branch-specific failure: every reached episode was open-branch attributed and failure occupancy was 99.5% open. The result is an artifact-level association from one baseline, not a causal proof that radius exposure caused the deficit, and the sampled checks do not certify continuous containment.",
-        "reason": "The closure condition is met: a fresh baseline was trained and evaluated on a fresh 200-episode development panel with per-episode reach, held-run, interruptions, distances, radius, angle, and branch diagnostics, then analyzed by a validated strict tool. The next targeted direction is to train and compare a candidate with official inner-radius coverage and trajectory/angle exposure, preserving branch diagnostics; terminal velocity-aware hold regulation remains a secondary issue because reached-hold failures were only 8/200."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Closed with a limited development-artifact conclusion: the baseline's dominant failure mechanism is inner-radius and angle-dependent failure to reach, not sampled-hold regulation. In M4, 56 of 64 failures were no-reach and 8 were reached-hold failures; no-reach failures were concentrated at 6-10 cm (30/34 failures) and 10-14 cm (22/26), while the trained 14-20 cm region had 4/87 failures. All reached failures interrupted the sampled hold, but they were a minority. Branch diagnostics did not support folded-branch-specific failure: every reached episode was open-branch attributed and failure occupancy was 99.5% open. The result is an artifact-level association from one baseline, not a causal proof that radius exposure caused the deficit, and the sampled checks do not certify continuous containment.",
-        "reason": "The closure condition is met: a fresh baseline was trained and evaluated on a fresh 200-episode development panel with per-episode reach, held-run, interruptions, distances, radius, angle, and branch diagnostics, then analyzed by a validated strict tool. The next targeted direction is to train and compare a candidate with official inner-radius coverage and trajectory/angle exposure, preserving branch diagnostics; terminal velocity-aware hold regulation remains a secondary issue because reached-hold failures were only 8/200.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Closed with a limited development-artifact conclusion: the baseline's dominant failure mechanism is inner-radius and angle-dependent failure to reach, not sampled-hold regulation. In M4, 56 of 64 failures were no-reach and 8 were reached-hold failures; no-reach failures were concentrated at 6-10 cm (30/34 failures) and 10-14 cm (22/26), while the trained 14-20 cm region had 4/87 failures. All reached failures interrupted the sampled hold, but they were a minority. Branch diagnostics did not support folded-branch-specific failure: every reached episode was open-branch attributed and failure occupancy was 99.5% open. The result is an artifact-level association from one baseline, not a causal proof that radius exposure caused the deficit, and the sampled checks do not certify continuous containment.",
-        "reason": "The closure condition is met: a fresh baseline was trained and evaluated on a fresh 200-episode development panel with per-episode reach, held-run, interruptions, distances, radius, angle, and branch diagnostics, then analyzed by a validated strict tool. The next targeted direction is to train and compare a candidate with official inner-radius coverage and trajectory/angle exposure, preserving branch diagnostics; terminal velocity-aware hold regulation remains a secondary issue because reached-hold failures were only 8/200."
-      }
-    },
-    "request_fingerprint": "c3e7953dcdcde4d145c9dbeef25421d503b00d718795578b5c6ea6a2947cdcf8",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists and working, best-known, and retained roles remain empty. E2 is an inquiry boundary, not a policy candidate; M1 and M2 are measurements and cannot fill a candidate role.",
     "completed_operations": [
