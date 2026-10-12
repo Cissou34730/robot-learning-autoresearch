@@ -64,3 +64,4 @@
 | E27 | inquiry | I7 | completed |
 | E28 | checkpoint | - | checkpointed |
 | M29 | measurement | I7 | completed |
+| T6 | training | I7 | completed |
