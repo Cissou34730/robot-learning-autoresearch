@@ -3691,38 +3691,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "positive but limited",
-        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "positive but limited",
-        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "positive but limited",
-        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review."
-      }
-    },
-    "request_fingerprint": "e31d10337fcb64365dfba9337cca721ee6631a8f2ae59e2da393ecff7b02ca46",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. M1-M3 are completed physical measurements, not policy candidates; E2 records the bounded inquiry opening. Working, best-known, and retained roles remain empty, so official assessment is not currently supportable.",
     "completed_operations": [
