@@ -4104,7 +4104,7 @@
     }
   },
   "counters": {
-    "event": 25,
+    "event": 26,
     "inquiry": 6,
     "measurement": 28,
     "session": 13,
@@ -4113,7 +4113,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -15627,67 +15627,197 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T16:16:56Z",
+      "error": null,
+      "id": "E26",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T5:checkpoint-120832 is a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. The I6 implementation remains a recipe-specific scientific artifact, not a broader method claim.",
+        "completed_operations": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25"
+        ],
+        "cumulative_resource_use": "Six inquiries have completed, including I6; this session closes S13 after 13 bounded scientific sessions. The campaign has completed 25 measurements and five full 120000-request-step training allocations (120832 actual steps each), with five candidate families and zero protected official-assessment episodes consumed. I6 used one compatibility measurement, one full training allocation, one matched development evaluation, one matched profile analysis, and one inquiry-close event.",
+        "current_goal_gap": "T2:checkpoint-120832 remains best-known at 150/160 successes (93.75%) and 153/160 first reaches on the fixed boundary-sampled development panel, below the 196/200 official goal and without evidence of protected continuous-hold equivalence. T5:checkpoint-120832 achieved 96/160 and 103/160 first reaches under the terminal-gated stabilization recipe. The dominant remaining measured gap is reach, especially at 14-20 cm: T5 achieved 7/31 and 0/36 in the outer strata versus T2's 28/31 and 32/36. Protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "The physical model continues to support feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. Across I1-I5, full-radius exposure made the material improvement from T1 to T2, while stronger branch/limit/speed shaping and the I5 weak stabilization recipe produced artifact-level reach/stabilization tradeoffs rather than a general method conclusion. M26 verified that I6 preserved T2's 11-value observation and production semantics while gating the existing weak joint-limit/high-speed penalties to the 0.02 m terminal neighborhood. T5 was trained for the full allocation with unchanged full-radius exposure and runtime. M27/M28 show that this exact terminal-gated recipe preserved the 6-10 cm stratum at 40/40 and nearly preserved 10-14 cm success at 49/53 versus T2's 50/53, but collapsed overall first reach to 103/160 versus 153/160, increased never-reached failures to 57 versus 7, and reduced complete success to 96/160 versus 150/160. T5 also had 7 reached-incomplete failures versus T2's 3; its lower absolute boundary interruptions (225 versus 438) and physics-step excursions (7247 versus 11655) occurred with 50 fewer reached episodes and did not yield a complete-success gain. I6 therefore establishes only that this terminal-distance-gated weak-shaping implementation failed the required reach-preserving stabilization test. It does not disprove terminal stabilization or reward shaping generally. Physics-step traces remain research diagnostics, and disagreement between boundary-sampled evidence and protected continuous-hold semantics remains an explicit readiness limitation.",
+        "decision_frontier": "The terminal-gated I6 recipe does not justify reconsidering the protected official assessment: it failed to preserve T2-level first reach and increased never-reached failures, while the apparent hold-diagnostic reductions were confounded by fewer reached episodes and reached-incomplete failures did not improve. The next consequential distinction is whether T2's remaining failures arise from learnable reach trajectory, branch/limit representation, or radius/angle distribution coverage rather than terminal stabilization pressure. Evidence should be judged by complete success and first reach across the outer 14-20 cm strata, with hold/interruption diagnostics retained; physics-step improvements alone are insufficient. A future candidate would also need a credible path around the unresolved protected continuous-hold semantics before official assessment becomes preferable.",
+        "evidence_references": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25",
+          "M10",
+          "M11",
+          "M14",
+          "M21",
+          "M23"
+        ],
+        "human_goal_connection": "The immutable human goal remains one learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. I6 tested whether terminal stabilization could be improved without sacrificing the reach and inner-radius behavior underlying T2's strongest development result. I6 is now closed with a recipe-specific limited-negative result; no protected official-assessment episodes have been consumed or requested.",
+        "next_direction_or_closure": "I6 is closed with a limited-negative result under E25. Return to goal review rather than requesting the protected official assessment: T2 is materially below the target, and its boundary-sampled development evidence does not resolve continuous-hold semantics. The next goal review should compare a reach-focused bounded inquiry against assessment using the established T2 reference and the newly demonstrated outer-radius reach failure; it should not continue terminal-gating work solely because T5 showed lower absolute hold diagnostics.",
+        "next_question": "Which reach-focused intervention or distribution/representation change can reduce T2's outer-radius never-reached failures while preserving its 6-14 cm performance and complete-hold success, and thereby make the protected official assessment more credible?"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "fef819db9cd62d960a0250a938a6887de089b848",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T5:checkpoint-120832 is a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. The I6 implementation remains a recipe-specific scientific artifact, not a broader method claim.",
+        "completed_operations": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25"
+        ],
+        "cumulative_resource_use": "Six inquiries have completed, including I6; this session closes S13 after 13 bounded scientific sessions. The campaign has completed 25 measurements and five full 120000-request-step training allocations (120832 actual steps each), with five candidate families and zero protected official-assessment episodes consumed. I6 used one compatibility measurement, one full training allocation, one matched development evaluation, one matched profile analysis, and one inquiry-close event.",
+        "current_goal_gap": "T2:checkpoint-120832 remains best-known at 150/160 successes (93.75%) and 153/160 first reaches on the fixed boundary-sampled development panel, below the 196/200 official goal and without evidence of protected continuous-hold equivalence. T5:checkpoint-120832 achieved 96/160 and 103/160 first reaches under the terminal-gated stabilization recipe. The dominant remaining measured gap is reach, especially at 14-20 cm: T5 achieved 7/31 and 0/36 in the outer strata versus T2's 28/31 and 32/36. Protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "The physical model continues to support feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. Across I1-I5, full-radius exposure made the material improvement from T1 to T2, while stronger branch/limit/speed shaping and the I5 weak stabilization recipe produced artifact-level reach/stabilization tradeoffs rather than a general method conclusion. M26 verified that I6 preserved T2's 11-value observation and production semantics while gating the existing weak joint-limit/high-speed penalties to the 0.02 m terminal neighborhood. T5 was trained for the full allocation with unchanged full-radius exposure and runtime. M27/M28 show that this exact terminal-gated recipe preserved the 6-10 cm stratum at 40/40 and nearly preserved 10-14 cm success at 49/53 versus T2's 50/53, but collapsed overall first reach to 103/160 versus 153/160, increased never-reached failures to 57 versus 7, and reduced complete success to 96/160 versus 150/160. T5 also had 7 reached-incomplete failures versus T2's 3; its lower absolute boundary interruptions (225 versus 438) and physics-step excursions (7247 versus 11655) occurred with 50 fewer reached episodes and did not yield a complete-success gain. I6 therefore establishes only that this terminal-distance-gated weak-shaping implementation failed the required reach-preserving stabilization test. It does not disprove terminal stabilization or reward shaping generally. Physics-step traces remain research diagnostics, and disagreement between boundary-sampled evidence and protected continuous-hold semantics remains an explicit readiness limitation.",
+        "decision_frontier": "The terminal-gated I6 recipe does not justify reconsidering the protected official assessment: it failed to preserve T2-level first reach and increased never-reached failures, while the apparent hold-diagnostic reductions were confounded by fewer reached episodes and reached-incomplete failures did not improve. The next consequential distinction is whether T2's remaining failures arise from learnable reach trajectory, branch/limit representation, or radius/angle distribution coverage rather than terminal stabilization pressure. Evidence should be judged by complete success and first reach across the outer 14-20 cm strata, with hold/interruption diagnostics retained; physics-step improvements alone are insufficient. A future candidate would also need a credible path around the unresolved protected continuous-hold semantics before official assessment becomes preferable.",
+        "evidence_references": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25",
+          "M10",
+          "M11",
+          "M14",
+          "M21",
+          "M23"
+        ],
+        "human_goal_connection": "The immutable human goal remains one learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. I6 tested whether terminal stabilization could be improved without sacrificing the reach and inner-radius behavior underlying T2's strongest development result. I6 is now closed with a recipe-specific limited-negative result; no protected official-assessment episodes have been consumed or requested.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "I6 is closed with a limited-negative result under E25. Return to goal review rather than requesting the protected official assessment: T2 is materially below the target, and its boundary-sampled development evidence does not resolve continuous-hold semantics. The next goal review should compare a reach-focused bounded inquiry against assessment using the established T2 reference and the newly demonstrated outer-radius reach failure; it should not continue terminal-gating work solely because T5 showed lower absolute hold diagnostics.",
+        "next_question": "Which reach-focused intervention or distribution/representation change can reduce T2's outer-radius never-reached failures while preserving its 6-14 cm performance and complete-hold success, and thereby make the protected official assessment more credible?",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "74f4ae29-2ec2-4640-bc0f-6a17695902d0",
+        "campaign_id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
+        "campaign_usage": "45m55s | 106.06 AIU | prompt 18m (91% cached) | output 261.2k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "1m55s | 2.97 AIU | prompt 348.8k (89% cached) | output 11.9k"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "bc8e4f1bcc91cec381126fee1ddae3a8a6a6250d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E26",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T5:checkpoint-120832 is a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. The I6 implementation remains a recipe-specific scientific artifact, not a broader method claim.",
+        "completed_operations": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25"
+        ],
+        "cumulative_resource_use": "Six inquiries have completed, including I6; this session closes S13 after 13 bounded scientific sessions. The campaign has completed 25 measurements and five full 120000-request-step training allocations (120832 actual steps each), with five candidate families and zero protected official-assessment episodes consumed. I6 used one compatibility measurement, one full training allocation, one matched development evaluation, one matched profile analysis, and one inquiry-close event.",
+        "current_goal_gap": "T2:checkpoint-120832 remains best-known at 150/160 successes (93.75%) and 153/160 first reaches on the fixed boundary-sampled development panel, below the 196/200 official goal and without evidence of protected continuous-hold equivalence. T5:checkpoint-120832 achieved 96/160 and 103/160 first reaches under the terminal-gated stabilization recipe. The dominant remaining measured gap is reach, especially at 14-20 cm: T5 achieved 7/31 and 0/36 in the outer strata versus T2's 28/31 and 32/36. Protected continuous-hold semantics remain unresolved.",
+        "current_synthesis": "The physical model continues to support feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. Across I1-I5, full-radius exposure made the material improvement from T1 to T2, while stronger branch/limit/speed shaping and the I5 weak stabilization recipe produced artifact-level reach/stabilization tradeoffs rather than a general method conclusion. M26 verified that I6 preserved T2's 11-value observation and production semantics while gating the existing weak joint-limit/high-speed penalties to the 0.02 m terminal neighborhood. T5 was trained for the full allocation with unchanged full-radius exposure and runtime. M27/M28 show that this exact terminal-gated recipe preserved the 6-10 cm stratum at 40/40 and nearly preserved 10-14 cm success at 49/53 versus T2's 50/53, but collapsed overall first reach to 103/160 versus 153/160, increased never-reached failures to 57 versus 7, and reduced complete success to 96/160 versus 150/160. T5 also had 7 reached-incomplete failures versus T2's 3; its lower absolute boundary interruptions (225 versus 438) and physics-step excursions (7247 versus 11655) occurred with 50 fewer reached episodes and did not yield a complete-success gain. I6 therefore establishes only that this terminal-distance-gated weak-shaping implementation failed the required reach-preserving stabilization test. It does not disprove terminal stabilization or reward shaping generally. Physics-step traces remain research diagnostics, and disagreement between boundary-sampled evidence and protected continuous-hold semantics remains an explicit readiness limitation.",
+        "decision_frontier": "The terminal-gated I6 recipe does not justify reconsidering the protected official assessment: it failed to preserve T2-level first reach and increased never-reached failures, while the apparent hold-diagnostic reductions were confounded by fewer reached episodes and reached-incomplete failures did not improve. The next consequential distinction is whether T2's remaining failures arise from learnable reach trajectory, branch/limit representation, or radius/angle distribution coverage rather than terminal stabilization pressure. Evidence should be judged by complete success and first reach across the outer 14-20 cm strata, with hold/interruption diagnostics retained; physics-step improvements alone are insufficient. A future candidate would also need a credible path around the unresolved protected continuous-hold semantics before official assessment becomes preferable.",
+        "evidence_references": [
+          "M26",
+          "T5",
+          "M27",
+          "M28",
+          "E25",
+          "M10",
+          "M11",
+          "M14",
+          "M21",
+          "M23"
+        ],
+        "human_goal_connection": "The immutable human goal remains one learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. I6 tested whether terminal stabilization could be improved without sacrificing the reach and inner-radius behavior underlying T2's strongest development result. I6 is now closed with a recipe-specific limited-negative result; no protected official-assessment episodes have been consumed or requested.",
+        "next_direction_or_closure": "I6 is closed with a limited-negative result under E25. Return to goal review rather than requesting the protected official assessment: T2 is materially below the target, and its boundary-sampled development evidence does not resolve continuous-hold semantics. The next goal review should compare a reach-focused bounded inquiry against assessment using the established T2 reference and the newly demonstrated outer-radius reach failure; it should not continue terminal-gating work solely because T5 showed lower absolute hold diagnostics.",
+        "next_question": "Which reach-focused intervention or distribution/representation change can reduce T2's outer-radius never-reached failures while preserving its 6-14 cm performance and complete-hold success, and thereby make the protected official assessment more credible?"
+      }
+    },
+    "request_fingerprint": "ffecb4d4246c40631651e3d74c8023fa770991ead7c19ffdbd936cfc122e9743",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 is the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T4:checkpoint-105472 is a measured limited-negative I5 artifact and is not best-known or retained. T1 and T3 remain earlier measured references. No working or retained candidate exists. The 96 archived checkpoints include unmeasured artifacts, but proxy rank and terminal position do not confer candidate status; the inspected T2 and T4 trajectories provide no stronger unmeasured candidate than T2.",
+    "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, supported by M10, M11, M14, M21, and M23; it is not certified for official assessment. T5:checkpoint-120832 is a measured limited-negative I6 artifact and is not best-known, working, or retained. No working or retained candidate is assigned. The I6 implementation remains a recipe-specific scientific artifact, not a broader method claim.",
     "completed_operations": [
-      "E23"
+      "M26",
+      "T5",
+      "M27",
+      "M28",
+      "E25"
     ],
-    "cumulative_resource_use": "Before this goal review: five completed inquiries (I1-I5), 11 bounded scientific sessions, 22 completed measurements, four completed 120,000-request-step training allocations (120,832 actual steps each), four candidate families, and zero protected official-assessment episodes. This goal-review session consumed no training, measurement, or assessment allocation and recorded E23, opening I6. Inquiry budget is now 6/15; the fresh I6 session must begin after this checkpoint.",
-    "current_goal_gap": "T2:checkpoint-120832 remains the strongest measured artifact at 150/160 successes (93.75%) and 153/160 first reaches on the fixed boundary-sampled development panel, leaving seven never-reached and three reached-but-incomplete failures. It achieved 40/40 at 6-10 cm and 50/53 at 10-14 cm. T4 measured 144/160 with 16 never-reached failures and no reached-incomplete failures, so neither candidate meets the 98% development reference and neither establishes protected continuous-hold performance.",
-    "current_synthesis": "Established observations: the physical model supports feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. T1's omitted-inner-radius baseline measured 105/160; T2's validated full-radius exposure artifact measured 150/160 with 153 first reaches and strong 6-14 cm performance. T3 changed observation representation and stronger branch/limit/speed shaping together and measured 3/160, so that coupled result cannot identify a component cause or reject branch-aware control generally. M22 verified the I5 implementation restored T2's 11-value observation and used weak near-limit/high-speed penalties while preserving production semantics. T4 was a fresh full-allocation artifact under that implementation and was measured against T2 on identical seeds: it achieved 144/160 versus 150/160 and 144 versus 153 first reaches. M24 found zero reached-incomplete failures for T4 versus three for T2, zero boundary interruptions versus 438, and fewer physics-step out-of-tolerance hold substeps (8090 versus 11655 overall), but T4 also had 16 never-reached failures and degraded the 6-10 cm and 10-14 cm strata to 32/40 and 49/53. Correction to the inherited interpretation: T4 establishes a recipe-specific stabilization/reach tradeoff among compared artifacts, not a campaign-level stabilization gain or evidence that terminal stabilization is dominant. Its higher late proxy cannot be privileged because development measurement contradicted it. The remaining evidence supports testing stabilization only in a design explicitly constrained to preserve T2 reach; if that constraint fails, the result redirects toward reach trajectory/branch/distribution work. Physics-step traces remain research diagnostics, and the boundary-versus-protected-continuous hold equivalence remains unresolved.",
-    "decision_frontier": "The consequential unresolved distinction is whether T4's reduced reached-episode hold losses can be retained while preserving T2's 153/160 first reach and inner-radius gains, or whether the stabilization pressure necessarily trades away reach under this learning setup. Evidence that preserves T2-level first reach and 6-14 cm success while reducing reached-incomplete failures, entry/final velocity, interruptions, and physics-step excursions would make a protected assessment materially more credible. Persistent never-reached failures, renewed inner-radius loss, or no complete-success gain would redirect toward reach trajectory, branch/limit representation, or distribution balancing. The result must remain implementation-specific; unresolved protected continuous-hold semantics can still reverse readiness even if boundary and physics-step diagnostics improve.",
+    "cumulative_resource_use": "Six inquiries have completed, including I6; this session closes S13 after 13 bounded scientific sessions. The campaign has completed 25 measurements and five full 120000-request-step training allocations (120832 actual steps each), with five candidate families and zero protected official-assessment episodes consumed. I6 used one compatibility measurement, one full training allocation, one matched development evaluation, one matched profile analysis, and one inquiry-close event.",
+    "current_goal_gap": "T2:checkpoint-120832 remains best-known at 150/160 successes (93.75%) and 153/160 first reaches on the fixed boundary-sampled development panel, below the 196/200 official goal and without evidence of protected continuous-hold equivalence. T5:checkpoint-120832 achieved 96/160 and 103/160 first reaches under the terminal-gated stabilization recipe. The dominant remaining measured gap is reach, especially at 14-20 cm: T5 achieved 7/31 and 0/36 in the outer strata versus T2's 28/31 and 32/36. Protected continuous-hold semantics remain unresolved.",
+    "current_synthesis": "The physical model continues to support feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. Across I1-I5, full-radius exposure made the material improvement from T1 to T2, while stronger branch/limit/speed shaping and the I5 weak stabilization recipe produced artifact-level reach/stabilization tradeoffs rather than a general method conclusion. M26 verified that I6 preserved T2's 11-value observation and production semantics while gating the existing weak joint-limit/high-speed penalties to the 0.02 m terminal neighborhood. T5 was trained for the full allocation with unchanged full-radius exposure and runtime. M27/M28 show that this exact terminal-gated recipe preserved the 6-10 cm stratum at 40/40 and nearly preserved 10-14 cm success at 49/53 versus T2's 50/53, but collapsed overall first reach to 103/160 versus 153/160, increased never-reached failures to 57 versus 7, and reduced complete success to 96/160 versus 150/160. T5 also had 7 reached-incomplete failures versus T2's 3; its lower absolute boundary interruptions (225 versus 438) and physics-step excursions (7247 versus 11655) occurred with 50 fewer reached episodes and did not yield a complete-success gain. I6 therefore establishes only that this terminal-distance-gated weak-shaping implementation failed the required reach-preserving stabilization test. It does not disprove terminal stabilization or reward shaping generally. Physics-step traces remain research diagnostics, and disagreement between boundary-sampled evidence and protected continuous-hold semantics remains an explicit readiness limitation.",
+    "decision_frontier": "The terminal-gated I6 recipe does not justify reconsidering the protected official assessment: it failed to preserve T2-level first reach and increased never-reached failures, while the apparent hold-diagnostic reductions were confounded by fewer reached episodes and reached-incomplete failures did not improve. The next consequential distinction is whether T2's remaining failures arise from learnable reach trajectory, branch/limit representation, or radius/angle distribution coverage rather than terminal stabilization pressure. Evidence should be judged by complete success and first reach across the outer 14-20 cm strata, with hold/interruption diagnostics retained; physics-step improvements alone are insufficient. A future candidate would also need a credible path around the unresolved protected continuous-hold semantics before official assessment becomes preferable.",
     "evidence_references": [
-      "M1",
-      "M2",
-      "M3",
-      "M4",
-      "M5",
-      "T1",
-      "M6",
-      "M7",
-      "M8",
-      "E4",
-      "E6",
-      "M9",
-      "T2",
+      "M26",
+      "T5",
+      "M27",
+      "M28",
+      "E25",
       "M10",
       "M11",
-      "E8",
-      "E10",
-      "E11",
-      "M12",
-      "M13",
       "M14",
-      "M17",
-      "M18",
-      "E12",
-      "E13",
-      "E14",
-      "E15",
-      "M19",
-      "M20",
-      "T3",
       "M21",
-      "E16",
-      "E17",
-      "E18",
-      "E19",
-      "M22",
-      "T4",
-      "M23",
-      "M24",
-      "E21",
-      "E23"
+      "M23"
     ],
-    "human_goal_connection": "The immutable human goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. I6 tests whether the strongest measured development artifact can be improved without sacrificing the reach and inner-radius behavior that produced its current 150/160 result; the protected assessment remains terminal and has not been requested.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open I6 as one bounded goal-linked inquiry rather than request official assessment. The inquiry will compare a reach-preserving terminal-stabilization implementation with T2 using the established fixed development panel and diagnostics. Its closure condition permits positive, limited, negative, or redirecting evidence. This is preferable now because T2 is materially sub-threshold but close enough that a small residual hold improvement could change the assessment decision, while the official assessment would terminate the campaign on unresolved boundary/continuous-hold semantics; the bounded cost is one available full training allocation and matched measurement, with explicit reach-preservation gates.",
-    "next_question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
-    "scientific_commit": "6722704c32d533f90cfae04ad9361d82c5c9329b",
-    "session_id": "S12"
+    "human_goal_connection": "The immutable human goal remains one learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. I6 tested whether terminal stabilization could be improved without sacrificing the reach and inner-radius behavior underlying T2's strongest development result. I6 is now closed with a recipe-specific limited-negative result; no protected official-assessment episodes have been consumed or requested.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "I6 is closed with a limited-negative result under E25. Return to goal review rather than requesting the protected official assessment: T2 is materially below the target, and its boundary-sampled development evidence does not resolve continuous-hold semantics. The next goal review should compare a reach-focused bounded inquiry against assessment using the established T2 reference and the newly demonstrated outer-radius reach failure; it should not continue terminal-gating work solely because T5 showed lower absolute hold diagnostics.",
+    "next_question": "Which reach-focused intervention or distribution/representation change can reduce T2's outer-radius never-reached failures while preserving its 6-14 cm performance and complete-hold success, and thereby make the protected official assessment more credible?",
+    "scientific_commit": "bc8e4f1bcc91cec381126fee1ddae3a8a6a6250d",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -15695,25 +15825,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "74f4ae29-2ec2-4640-bc0f-6a17695902d0",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M26",
-      "T5",
-      "M27",
-      "M28",
-      "E25"
-    ],
-    "scientific_parent_commit": "fef819db9cd62d960a0250a938a6887de089b848"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
