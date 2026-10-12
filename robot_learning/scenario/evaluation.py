@@ -89,7 +89,7 @@ def _geometry_diagnostics(model, target_position: np.ndarray) -> dict:
             )
             margin = (
                 min(
-                    angle - lower
+                    min(angle - lower, upper - angle)
                     for angle, (lower, upper) in zip(joint_angles, joint_ranges)
                 )
                 if feasible
