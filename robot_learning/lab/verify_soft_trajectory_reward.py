@@ -15,7 +15,10 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import TwoJointArmReachEnv
-from robot_learning.training.reward import reach_reward
+from robot_learning.training.reward import (
+    TERMINAL_SHAPING_DISTANCE,
+    reach_reward,
+)
 
 
 def _reference_observation(data) -> np.ndarray:
@@ -125,59 +128,100 @@ def _behavioral_check(output: Path) -> None:
     near_limit = joint_ranges[:, 0] + 0.02 * (
         joint_ranges[:, 1] - joint_ranges[:, 0]
     )
-    base_kwargs = {
+    approach_kwargs = {
         "previous_distance": 0.10,
         "current_distance": 0.09,
         "success_threshold": 0.01,
         "action": np.zeros(2),
     }
-    baseline_reward = reach_reward(**base_kwargs)
-    safe_reward = reach_reward(
-        **base_kwargs,
-        joint_positions=center,
-        joint_velocities=np.zeros(2),
-        joint_ranges=joint_ranges,
-    )
-    safe_speed_reward = reach_reward(
-        **base_kwargs,
-        joint_positions=center,
-        joint_velocities=np.asarray([2.49, 0.0]),
-        joint_ranges=joint_ranges,
-    )
-    near_limit_reward = reach_reward(
-        **base_kwargs,
+    approach_reward = reach_reward(**approach_kwargs)
+    approach_near_limit_reward = reach_reward(
+        **approach_kwargs,
         joint_positions=near_limit,
         joint_velocities=np.zeros(2),
         joint_ranges=joint_ranges,
     )
-    high_speed_reward = reach_reward(
-        **base_kwargs,
+    approach_high_speed_reward = reach_reward(
+        **approach_kwargs,
         joint_positions=center,
         joint_velocities=np.asarray([8.0, 0.0]),
         joint_ranges=joint_ranges,
     )
+    terminal_kwargs = {
+        "previous_distance": 0.03,
+        "current_distance": 0.015,
+        "success_threshold": 0.01,
+        "action": np.zeros(2),
+    }
+    terminal_reward = reach_reward(**terminal_kwargs)
+    terminal_near_limit_reward = reach_reward(
+        **terminal_kwargs,
+        joint_positions=near_limit,
+        joint_velocities=np.zeros(2),
+        joint_ranges=joint_ranges,
+    )
+    terminal_high_speed_reward = reach_reward(
+        **terminal_kwargs,
+        joint_positions=center,
+        joint_velocities=np.asarray([8.0, 0.0]),
+        joint_ranges=joint_ranges,
+    )
+    terminal_boundary_reward = reach_reward(
+        previous_distance=0.03,
+        current_distance=TERMINAL_SHAPING_DISTANCE,
+        success_threshold=0.01,
+        action=np.zeros(2),
+        joint_positions=near_limit,
+        joint_velocities=np.zeros(2),
+        joint_ranges=joint_ranges,
+    )
+    just_outside_terminal_reward = reach_reward(
+        previous_distance=0.03,
+        current_distance=TERMINAL_SHAPING_DISTANCE + 1e-6,
+        success_threshold=0.01,
+        action=np.zeros(2),
+        joint_positions=near_limit,
+        joint_velocities=np.zeros(2),
+        joint_ranges=joint_ranges,
+    )
+    safe_reward = reach_reward(
+        **approach_kwargs,
+        joint_positions=center,
+        joint_velocities=np.zeros(2),
+        joint_ranges=joint_ranges,
+    )
     assert np.isfinite(
         [
-            baseline_reward.total,
+            approach_reward.total,
+            approach_near_limit_reward.total,
+            approach_high_speed_reward.total,
+            terminal_reward.total,
+            terminal_near_limit_reward.total,
+            terminal_high_speed_reward.total,
+            terminal_boundary_reward.total,
+            just_outside_terminal_reward.total,
             safe_reward.total,
-            safe_speed_reward.total,
-            near_limit_reward.total,
-            high_speed_reward.total,
         ]
     ).all()
+    assert TERMINAL_SHAPING_DISTANCE > 0.0
     assert safe_reward.components["joint_limit"] == 0.0
     assert safe_reward.components["joint_speed"] == 0.0
-    assert safe_speed_reward.components["joint_speed"] == 0.0
-    assert near_limit_reward.components["joint_limit"] < 0.0
-    assert high_speed_reward.components["joint_speed"] < 0.0
-    assert abs(near_limit_reward.components["joint_limit"]) <= 0.25 * abs(
-        baseline_reward.total
+    assert approach_near_limit_reward.components["joint_limit"] == 0.0
+    assert approach_high_speed_reward.components["joint_speed"] == 0.0
+    assert approach_near_limit_reward.total == approach_reward.total
+    assert approach_high_speed_reward.total == approach_reward.total
+    assert terminal_near_limit_reward.components["joint_limit"] < 0.0
+    assert terminal_high_speed_reward.components["joint_speed"] < 0.0
+    assert terminal_boundary_reward.components["joint_limit"] < 0.0
+    assert just_outside_terminal_reward.components["joint_limit"] == 0.0
+    assert terminal_near_limit_reward.total < terminal_reward.total
+    assert terminal_high_speed_reward.total < terminal_reward.total
+    assert abs(terminal_near_limit_reward.components["joint_limit"]) <= 0.25 * abs(
+        terminal_reward.total
     )
-    assert abs(high_speed_reward.components["joint_speed"]) <= 0.25 * abs(
-        baseline_reward.total
+    assert abs(terminal_high_speed_reward.components["joint_speed"]) <= 0.25 * abs(
+        terminal_reward.total
     )
-    assert near_limit_reward.total < baseline_reward.total
-    assert high_speed_reward.total < baseline_reward.total
     assert set(safe_reward.components) == {
         "progress",
         "closeness",
@@ -225,17 +269,34 @@ def _behavioral_check(output: Path) -> None:
             "transition_count": len(transition_observations),
             "physics_step_count": len(env.physics_step_distances),
             "clipped_control": env.data.ctrl.tolist(),
-            "baseline_reward": float(baseline_reward.total),
+            "terminal_shaping_distance": TERMINAL_SHAPING_DISTANCE,
+            "approach_reward": float(approach_reward.total),
+            "approach_stress_shaping": {
+                "joint_limit": float(
+                    approach_near_limit_reward.components["joint_limit"]
+                ),
+                "joint_speed": float(
+                    approach_high_speed_reward.components["joint_speed"]
+                ),
+            },
             "safe_shaping": {
                 "joint_limit": float(safe_reward.components["joint_limit"]),
                 "joint_speed": float(safe_reward.components["joint_speed"]),
             },
-            "near_limit_penalty": float(
-                near_limit_reward.components["joint_limit"]
-            ),
-            "high_speed_penalty": float(
-                high_speed_reward.components["joint_speed"]
-            ),
+            "terminal_shaping": {
+                "joint_limit": float(
+                    terminal_near_limit_reward.components["joint_limit"]
+                ),
+                "joint_speed": float(
+                    terminal_high_speed_reward.components["joint_speed"]
+                ),
+                "boundary_joint_limit": float(
+                    terminal_boundary_reward.components["joint_limit"]
+                ),
+                "just_outside_joint_limit": float(
+                    just_outside_terminal_reward.components["joint_limit"]
+                ),
+            },
             "hold_steps": [
                 int(first_hold["held_steps"]),
                 int(second_hold["held_steps"]),
@@ -252,15 +313,18 @@ def _behavioral_check(output: Path) -> None:
             "physics_step_count_equals_frame_skip": True,
             "clipped_control": [1.0, -1.0],
             "safe_shaping_components_zero": True,
-            "near_limit_and_high_speed_penalized": True,
-            "stress_penalties_bounded_relative_to_reach": True,
+            "approach_stress_components_zero": True,
+            "terminal_near_limit_and_high_speed_penalized": True,
+            "terminal_boundary_active_and_just_outside_inactive": True,
+            "terminal_penalties_bounded_relative_to_reach": True,
             "hold_steps": [1, 2, 0, 1],
             "reset_held_steps": 0,
         },
         "checked_scope": [
             "T2 eleven-value observation reconstructed independently from production MuJoCo state",
             "repeated seeded resets and several production transitions",
-            "safe, near-limit, and high-speed reward shaping with finite bounded penalties",
+            "approach shaping suppression and terminal-gated near-limit/high-speed penalties",
+            "inclusive terminal gate boundary and just-outside inactivity",
             "public reward attribution keys and partial-input validation",
             "action clipping, physics-step telemetry, hold interruption, resumption, and reset",
         ],
@@ -297,6 +361,56 @@ def _compatibility_check(output: Path) -> None:
         "joint_limit",
         "joint_speed",
     }
+
+    joint_ranges = _joint_ranges(env)
+    near_limit = joint_ranges[:, 0] + 0.02 * (
+        joint_ranges[:, 1] - joint_ranges[:, 0]
+    )
+    approach = reach_reward(
+        previous_distance=0.03,
+        current_distance=TERMINAL_SHAPING_DISTANCE + 0.005,
+        success_threshold=0.01,
+        action=np.zeros(2),
+        joint_positions=near_limit,
+        joint_velocities=np.asarray([8.0, 0.0]),
+        joint_ranges=joint_ranges,
+    )
+    terminal = reach_reward(
+        previous_distance=0.03,
+        current_distance=TERMINAL_SHAPING_DISTANCE * 0.5,
+        success_threshold=0.01,
+        action=np.zeros(2),
+        joint_positions=near_limit,
+        joint_velocities=np.asarray([8.0, 0.0]),
+        joint_ranges=joint_ranges,
+    )
+    assert approach.components["joint_limit"] == 0.0
+    assert approach.components["joint_speed"] == 0.0
+    assert terminal.components["joint_limit"] < 0.0
+    assert terminal.components["joint_speed"] < 0.0
+
+    env.reset(seed=23)
+    env.data.qpos[:2] = near_limit
+    env.data.qvel[:2] = 0.0
+    mujoco.mj_forward(env.model, env.data)
+    _set_target_at_end_effector(env)
+    env._previous_distance = env._distance_to_target()
+    _, _, _, _, terminal_info = env.step(np.zeros(2))
+    assert terminal_info["distance"] <= TERMINAL_SHAPING_DISTANCE
+    assert terminal_info["reward_components"]["joint_limit"] < 0.0
+
+    env.reset(seed=23)
+    env.data.qpos[:2] = near_limit
+    env.data.qvel[:2] = 0.0
+    mujoco.mj_forward(env.model, env.data)
+    _set_target_at_end_effector(env)
+    _set_target_offset(env, np.asarray([0.05, 0.0]))
+    env._previous_distance = env._distance_to_target()
+    _, _, _, _, approach_info = env.step(np.zeros(2))
+    assert approach_info["distance"] > TERMINAL_SHAPING_DISTANCE
+    assert approach_info["reward_components"]["joint_limit"] == 0.0
+    assert approach_info["reward_components"]["joint_speed"] == 0.0
+
     artifact = {
         "check": "soft_trajectory_reward_compatibility",
         "execution_note": "The author did not execute this verification.",
@@ -307,6 +421,23 @@ def _compatibility_check(output: Path) -> None:
             "step_reward": float(reward),
             "clipped_control": env.data.ctrl.tolist(),
             "reward_component_keys": sorted(info["reward_components"]),
+            "terminal_shaping_distance": TERMINAL_SHAPING_DISTANCE,
+            "direct_approach_shaping": {
+                "joint_limit": float(approach.components["joint_limit"]),
+                "joint_speed": float(approach.components["joint_speed"]),
+            },
+            "direct_terminal_shaping": {
+                "joint_limit": float(terminal.components["joint_limit"]),
+                "joint_speed": float(terminal.components["joint_speed"]),
+            },
+            "production_terminal_distance": float(terminal_info["distance"]),
+            "production_approach_distance": float(approach_info["distance"]),
+            "production_terminal_joint_limit": float(
+                terminal_info["reward_components"]["joint_limit"]
+            ),
+            "production_approach_joint_limit": float(
+                approach_info["reward_components"]["joint_limit"]
+            ),
         },
         "expected": {
             "observation_space_shape": [11],
@@ -315,10 +446,16 @@ def _compatibility_check(output: Path) -> None:
             "finite_step_reward_and_observation": True,
             "clipped_control": [1.0, -1.0],
             "stable_reward_component_keys": True,
+            "direct_approach_shaping_zero": True,
+            "direct_terminal_shaping_active": True,
+            "production_terminal_shaping_active": True,
+            "production_approach_shaping_zero": True,
         },
         "checked_scope": [
             "production reset and step through the restored observation path",
             "production reward call with controlled clipped action",
+            "direct reward gate outside and inside the terminal neighborhood",
+            "integrated production reward gate at a controlled joint-limit state",
             "finite integrated outputs and stable attribution keys",
         ],
         "unchecked_scope": [
