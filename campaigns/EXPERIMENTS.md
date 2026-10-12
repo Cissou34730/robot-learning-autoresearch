@@ -48,3 +48,4 @@
 | E20 | checkpoint | - | checkpointed |
 | M22 | measurement | I5 | completed |
 | T4 | training | I5 | completed |
+| M23 | measurement | I5 | completed |
