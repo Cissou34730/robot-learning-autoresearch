@@ -68,7 +68,7 @@ def _synthetic_artifact() -> dict[str, Any]:
         # The four radius and angle boundaries are intentional.
         (0, 100, True, 6.0, -180.0, 5, [0, 3, 5, 4, 0], ["open", "open", "folded", "folded", "open"], 2, 5, 0),
         (1, 101, False, 10.0, -90.0, 4, [0, 0, 0, 0], ["open"] * 4, None, 0, 0),
-        (2, 102, False, 14.0, 0.0, 3, [1, 4, 0], ["folded"] * 3, 1, 4, 2),
+        (2, 102, False, 14.0, 0.0, 3, [1, 3, 0], ["folded"] * 3, 1, 3, 2),
         (3, 103, False, 20.0, 90.0, 3, [1, 2, 0], ["open", "folded", "open"], 1, 2, 1),
     )
     outcomes = []
@@ -180,7 +180,7 @@ def run_check(output_path: Path) -> None:
     reached = observed["reached_failure_summaries"]
     if reached["denominator"] != 2:
         raise AssertionError("reached-failure denominator omitted a hold failure")
-    if reached["max_held_steps"]["total"] != 6 or reached["hold_interruptions"]["total"] != 3:
+    if reached["max_held_steps"]["total"] != 5 or reached["hold_interruptions"]["total"] != 3:
         raise AssertionError("reached-failure mechanism summaries are incomplete")
 
     branches = observed["branch_summaries"]
