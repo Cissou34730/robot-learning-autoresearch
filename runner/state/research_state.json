@@ -8216,8 +8216,8 @@
   "counters": {
     "event": 61,
     "inquiry": 15,
-    "measurement": 35,
-    "session": 30,
+    "measurement": 37,
+    "session": 31,
     "training": 10
   },
   "human_goal": {
@@ -25375,9 +25375,196 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T02:25:21Z",
+      "error": "robot_learning.lab.verify_direct_limit_velocity_training failed:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 646, in main\n    report = run_checks()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 617, in run_checks\n    _check_routes_and_direct_control(observed)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 188, in _check_routes_and_direct_control\n    _require(\n    ~~~~~~~~^\n        all(abs(components[name]) > 0.0 for name in REGULATION_COMPONENTS),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"outside-boundary acquisition did not activate regulation shaping\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 78, in _require\n    raise VerificationFailure(message)\nVerificationFailure: outside-boundary acquisition did not activate regulation shaping\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 678, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 668, in main\n    raise VerificationFailure(str(error))\nVerificationFailure: outside-boundary acquisition did not activate regulation shaping\n",
+      "id": "M36",
+      "inquiry_id": "I15",
+      "kind": "measurement",
+      "request": {
+        "description": "Independent verification of the I15 full-radius direct-control training route with explicit joint-limit proximity and approach-velocity shaping.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json",
+            "instrument": "python_module",
+            "label": "I15 direct limit and approach velocity training route verification",
+            "module": "robot_learning.lab.verify_direct_limit_velocity_training"
+          }
+        ],
+        "rationale": "Before training, verify that the intended intervention is actually exercised and that the controlled route preserves direct action semantics, full-radius exposure, evaluation defaults, repeated reward attribution, and uninterrupted hold/reset behavior. The check uses independent reference orderings and controlled transitions; it does not claim learned performance."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_direct_limit_velocity_training failed:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 646, in main\n    report = run_checks()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 617, in run_checks\n    _check_routes_and_direct_control(observed)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 188, in _check_routes_and_direct_control\n    _require(\n    ~~~~~~~~^\n        all(abs(components[name]) > 0.0 for name in REGULATION_COMPONENTS),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"outside-boundary acquisition did not activate regulation shaping\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 78, in _require\n    raise VerificationFailure(message)\nVerificationFailure: outside-boundary acquisition did not activate regulation shaping\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 678, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_direct_limit_velocity_training.py\", line 668, in main\n    raise VerificationFailure(str(error))\nVerificationFailure: outside-boundary acquisition did not activate regulation shaping\n",
+        "status": "failed"
+      },
+      "session_id": "S31",
+      "status": "failed",
+      "superseded_by": "M37",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json"
+          ],
+          "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json",
+          "instrument": "python_module",
+          "label": "I15 direct limit and approach velocity training route verification",
+          "module": "robot_learning.lab.verify_direct_limit_velocity_training"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "4c7564e9951790eeba2cf135bde5c4e6d213d7edbe0189d0d700f3044a1aa9ac",
+            "path": "robot_learning/lab/compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "ba8e384192dafd68873e85db7239384e4f6c3935473e1d9fdaea3cef90548652",
+            "path": "robot_learning/lab/paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "9b3350cf6242a858e000abb9e47b266d82880e6986c300194b3cec19345f090c",
+            "path": "robot_learning/lab/time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "4073a7207e839a858a982974e9122726a76d811461a312e470301964dfca69d6",
+            "path": "robot_learning/lab/verify_compiled_dynamics_measurement.py"
+          },
+          {
+            "fingerprint": "310c44fbec1205fb8695c727b2f521b48bcaa90dbbee781683cec8e57bd2bd64",
+            "path": "robot_learning/lab/verify_default_reward_training.py"
+          },
+          {
+            "fingerprint": "2e0c78e9ad2391808ede4ea88a54731687afb924b0e4ad91cca0efee0fc7bb36",
+            "path": "robot_learning/lab/verify_direct_limit_velocity_training.py"
+          },
+          {
+            "fingerprint": "263f34ad5587efe2bb0859535011b27f8c52d065cbdfed77baa461ea0bf87582",
+            "path": "robot_learning/lab/verify_direct_torque_training.py"
+          },
+          {
+            "fingerprint": "60a7962152cbf131266bae23ec53141d52aebd266eccf987f817faa28c2fcfe6",
+            "path": "robot_learning/lab/verify_full_radius_training_exposure.py"
+          },
+          {
+            "fingerprint": "b1f943fa0e99b7c970a1ed50016a20430bdc7c7941da3e1330a73418d791d133",
+            "path": "robot_learning/lab/verify_hold_recovery_training.py"
+          },
+          {
+            "fingerprint": "58c654769a1647eb7c3b162d598bac0c531180fae6ff40784fa0ac3a17782ab6",
+            "path": "robot_learning/lab/verify_paired_time_resolved_rollout_measurement.py"
+          },
+          {
+            "fingerprint": "d719fee80fc94e81c93800aecfa60a345db334aa2320fbfd4ede20a662bbdf1d",
+            "path": "robot_learning/lab/verify_residual_torque_policy.py"
+          },
+          {
+            "fingerprint": "c1684802638bb273e4af65e12a647802376aba196523afad091268d09c83d6fd",
+            "path": "robot_learning/lab/verify_targeted_regulation_intervention.py"
+          },
+          {
+            "fingerprint": "e084c53230c665c9a8decf3d88d4bcb9be19969ae206a8870956db8649d1ccfe",
+            "path": "robot_learning/lab/verify_time_resolved_candidate_mode.py"
+          },
+          {
+            "fingerprint": "a21e4e77ec677367fd4816c6e4054a9d15b7e19f95948423adbb98cbbf72610d",
+            "path": "robot_learning/lab/verify_time_resolved_rollout_measurement.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "66037e7c18dbaeedf979dc3154cb445889d98288",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "2e0c78e9ad2391808ede4ea88a54731687afb924b0e4ad91cca0efee0fc7bb36",
+            "path": "robot_learning/lab/verify_direct_limit_velocity_training.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_direct_limit_velocity_training.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "78f0c12d9a203abc4e94b5dd392bba95305438cd0b7942104c8a2a96c8215838",
+            "path": "robot_learning/training/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "2b306859246b0e7536e87113a853435693c0afd30ef8aa45f8840f3d3768c1fe",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M37",
+    "inquiry_id": "I15",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Independent verification of the I15 full-radius direct-control training route with explicit joint-limit proximity and approach-velocity shaping.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/90563aac-4d55-41a2-9cfd-dffab0145883/direct_limit_velocity_training_verification.json",
+            "instrument": "python_module",
+            "label": "I15 direct limit and approach velocity training route verification",
+            "module": "robot_learning.lab.verify_direct_limit_velocity_training"
+          }
+        ],
+        "rationale": "Before training, verify that the intended intervention is actually exercised and that the controlled route preserves direct action semantics, full-radius exposure, evaluation defaults, repeated reward attribution, and uninterrupted hold/reset behavior. The check uses independent reference orderings and controlled transitions; it does not claim learned performance."
+      }
+    },
+    "request_fingerprint": "dc88f8bd96cb35ea1542e8e88989653ce2e96bdd1259bde06b0d2e4a9a75d951",
+    "session_id": "S31",
+    "supersedes": "M36"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known from M19/M23/M28/M31/M32/M35 at 153/160; T10:checkpoint-95232 is a tied rejected route-level candidate, not working or retained. T2 remains an earlier candidate and is not current best-known. No working or retained candidate is assigned. The active inquiry is I15; no new candidate has yet been produced.",
     "completed_operations": [
@@ -25407,6 +25594,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0e4e87a5-628b-4896-98c1-8fbf245fb8a3",
+    "id": "S31",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "66037e7c18dbaeedf979dc3154cb445889d98288"
+  },
   "terminal_state": null
 }

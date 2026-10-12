@@ -1,0 +1,45 @@
+{
+  "checked_scope": [
+    "checks up to the first failure"
+  ],
+  "execution_note": "This check was authored but has not been executed by the author.",
+  "expected": {
+    "approach_reference": "a bounded decreasing function of distance, with greater weight near the 0.01 m boundary",
+    "evaluation_route": {
+      "control_profile": "direct",
+      "reward_profile": "default",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    },
+    "hold_steps_required": 100,
+    "limit_reference": "negative bounded mean proximity to the nearer lower or upper limit",
+    "regulation_terms": [
+      "direct_limit_velocity_action_regulation",
+      "direct_limit_velocity_endpoint_velocity",
+      "direct_limit_velocity_joint_limit",
+      "direct_limit_velocity_joint_velocity"
+    ],
+    "training_route": {
+      "control_profile": "direct",
+      "reward_profile": "direct_limit_velocity",
+      "target_radius_range": [
+        0.06,
+        0.2
+      ]
+    }
+  },
+  "observed_vs_expected": {
+    "error": "outside-boundary acquisition did not activate regulation shaping",
+    "error_type": "VerificationFailure"
+  },
+  "status": "failed",
+  "unchecked_scope": [
+    "checks after the first failure",
+    "learned-policy behavior, PPO optimization, and episode performance",
+    "official evaluation success and the fixed 200-episode assessment",
+    "causal improvement in acquisition or hold failures",
+    "compiled dynamics beyond the controlled post-step transitions"
+  ]
+}
