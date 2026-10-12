@@ -19835,47 +19835,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close with a positive, negative, limited, or inconclusive mechanism conclusion after controlled evidence links the T2 never-reach pattern to analytic branch feasibility and joint-limit margin, reset-singular trajectory/Jacobian and coupled-motion behavior, and\u2014only where the diagnostic comparison leaves those physical explanations insufficient\u2014a matched exposure or candidate comparison. The evidence must state whether one explanation dominates enough to choose or reject a next policy direction, preserve residual failures and continuous-hold uncertainty, and may close inconclusively if the available diagnostics do not discriminate the alternatives.",
-          "goal_connection": "T2 is the strongest available candidate but reaches only 150/160 complete boundary-sampled successes and leaves seven never-reached failures concentrated in difficult negative-angle sectors, far below the 196/200 official threshold. Resolving whether those failures arise mainly from feasible-branch and limit constraints, the reset-singular bend-then-translate trajectory, or the tested exposure shift determines whether the next intervention can plausibly improve the goal without repeating T6's protected 6-14 cm degradation. The official continuous-hold semantics also remain uncertified, so assessment now would terminate the campaign without resolving a decision-relevant risk.",
-          "handoff_conclusion": "I7 is a completed negative candidate-level test of a distinct training-only distribution intervention. M29 verified that T6 retained the official 0.06-0.20 m radius range, T2's 11-value production observation, action/runtime and hold semantics while enriching the identified negative-angle union. M41 profile analysis used the matched 160-episode panel and verified T6 at 113/160 complete holds, 116/160 first reaches and 44/160 never-reached episodes versus T2 at 150/160, 153/160 and 7/160. In the selected negative-angle union, T6 modestly improved first reach from 56/63 to 57/63 and complete success from 54/63 to 57/63, but it degraded the goal-relevant 14-20 cm first reach from 63/67 to 51/67 and complete success from 60/67 to 50/67. It also degraded the protected 6-14 cm complete success from 90/93 to 63/93 and first reach from 90/93 to 65/93. Thus this exact exposure mixture did not reduce outer-radius never-reach failures while preserving the protected behavior. The result redirects rather than disproves all exposure shaping: the small negative-angle gain alongside broad radius and overall losses is consistent with distribution-shift interference or an unresolved coupled-control mechanism, but M41 does not causally identify branch feasibility, joint-limit pressure, reset-singular trajectories, or training interference. The physical model's competing consequences therefore remain decision-relevant. Physics-step excursions and boundary-sampled holds remain diagnostics only; continuous uninterrupted hold equivalence is unresolved.",
-          "handoff_question": "Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention?",
-          "handoff_source_session_id": "S15",
-          "id": "I8",
-          "opened_in_session": "S16",
-          "question": "Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention?",
-          "rationale": "Opening bounded mechanism work is preferable to requesting the official assessment: T2 is below goal by six development successes even under the less stringent boundary-sampled measure, has seven never-reaches, and has no protected continuous-hold evidence. I7 shows that its exact targeted-angle exposure recipe is not a viable candidate route because it modestly helped a narrow negative-angle union while losing 27 protected inner/mid-radius complete successes and worsening the outer 14-20 cm reach stratum; this does not identify whether exposure, reset-singular control, or branch/limit feasibility caused the failures. A controlled diagnostic is therefore more decision-relevant and cheaper than another unmotivated training mixture or a terminal assessment likely to fail. The inquiry will not treat T6's artifact difference as causal and will retain official assessment as a later choice if a stronger candidate and hold evidence emerge.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I8",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E31",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close with a positive, negative, limited, or inconclusive mechanism conclusion after controlled evidence links the T2 never-reach pattern to analytic branch feasibility and joint-limit margin, reset-singular trajectory/Jacobian and coupled-motion behavior, and\u2014only where the diagnostic comparison leaves those physical explanations insufficient\u2014a matched exposure or candidate comparison. The evidence must state whether one explanation dominates enough to choose or reject a next policy direction, preserve residual failures and continuous-hold uncertainty, and may close inconclusively if the available diagnostics do not discriminate the alternatives.",
-        "goal_connection": "T2 is the strongest available candidate but reaches only 150/160 complete boundary-sampled successes and leaves seven never-reached failures concentrated in difficult negative-angle sectors, far below the 196/200 official threshold. Resolving whether those failures arise mainly from feasible-branch and limit constraints, the reset-singular bend-then-translate trajectory, or the tested exposure shift determines whether the next intervention can plausibly improve the goal without repeating T6's protected 6-14 cm degradation. The official continuous-hold semantics also remain uncertified, so assessment now would terminate the campaign without resolving a decision-relevant risk.",
-        "question": "Which unresolved mechanism\u2014branch/joint-limit feasibility, reset-singular coupled trajectory control, or training-distribution interference\u2014dominates T2's negative-angle and outer-radius never-reach failures, as distinguished by controlled trajectory/limit evidence before selecting the next policy intervention?",
-        "rationale": "Opening bounded mechanism work is preferable to requesting the official assessment: T2 is below goal by six development successes even under the less stringent boundary-sampled measure, has seven never-reaches, and has no protected continuous-hold evidence. I7 shows that its exact targeted-angle exposure recipe is not a viable candidate route because it modestly helped a narrow negative-angle union while losing 27 protected inner/mid-radius complete successes and worsening the outer 14-20 cm reach stratum; this does not identify whether exposure, reset-singular control, or branch/limit feasibility caused the failures. A controlled diagnostic is therefore more decision-relevant and cheaper than another unmotivated training mixture or a terminal assessment likely to fail. The inquiry will not treat T6's artifact difference as causal and will retain official assessment as a later choice if a stronger candidate and hold evidence emerge."
-      }
-    },
-    "request_fingerprint": "f2e94145d9fb86f68eecdb3ff2e51d8faab126805a2e5e4074bce406fe48bfd0",
-    "session_id": "S16",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains explicit best-known, supported by the prior matched development evidence and M41's T2 profile; it is not certified for official assessment. T6:checkpoint-120832 is a complete but negative I7 artifact and is not best-known, working, or retained. No candidate is assigned working or retained status. The exact targeted-angle implementation remains in the repository as tested scientific code, but its candidate result does not justify carrying it forward as a route to the goal.",
     "completed_operations": [
