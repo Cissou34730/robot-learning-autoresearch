@@ -1,0 +1,107 @@
+{
+  "check": "synthetic research-evaluation mechanism analysis",
+  "checked_scope": [
+    "schema version and development-artifact guard",
+    "episode and episode-seed alignment",
+    "required M4 diagnostic fields",
+    "success, no-reach, and reached-hold failure classification",
+    "radius boundaries 6, 10, 14, and 20 cm",
+    "four source-angle sector boundaries in [-180,180] degrees",
+    "reached-failure max-held-step and interruption summaries",
+    "overall and failure branch occupancy, attribution, and switches"
+  ],
+  "expected": {
+    "all_rejection_checks": "rejected",
+    "angle_sectors": [
+      "[-180,-90)",
+      "[-90,0)",
+      "[0,90)",
+      "[90,180]"
+    ],
+    "branch_occupancy_steps": {
+      "folded": 6,
+      "open": 9
+    },
+    "failure_branch_occupancy_steps": {
+      "folded": 4,
+      "open": 6
+    },
+    "failure_branch_switch_total": 2,
+    "failure_classes": {
+      "no_reach_failures": 1,
+      "sampled_hold_failures": 2
+    },
+    "radius_bins": [
+      "[6,10)",
+      "[10,14)",
+      "[14,20]"
+    ]
+  },
+  "observed": {
+    "angle_sector_denominators": {
+      "[-180,-90)": 1,
+      "[-90,0)": 1,
+      "[0,90)": 1,
+      "[90,180]": 1
+    },
+    "failure_branch_at_first_reach": {
+      "folded": 1,
+      "null": 1,
+      "open": 1
+    },
+    "failure_branch_at_max_held_run": {
+      "folded": 2,
+      "null": 1,
+      "open": 0
+    },
+    "failure_branch_occupancy": {
+      "folded_fraction": 0.4,
+      "folded_steps": 4,
+      "open_fraction": 0.6,
+      "open_steps": 6
+    },
+    "failure_branch_switch_total": 2,
+    "overall": {
+      "denominator": 4,
+      "failures": 3,
+      "no_reach_failures": 1,
+      "sampled_hold_failures": 2,
+      "successes": 1
+    },
+    "radius_bins": {
+      "[10,14)": {
+        "denominator": 1,
+        "failures": 1,
+        "no_reach_failures": 1,
+        "sampled_hold_failures": 0,
+        "successes": 0
+      },
+      "[14,20]": {
+        "denominator": 2,
+        "failures": 2,
+        "no_reach_failures": 0,
+        "sampled_hold_failures": 2,
+        "successes": 0
+      },
+      "[6,10)": {
+        "denominator": 1,
+        "failures": 0,
+        "no_reach_failures": 0,
+        "sampled_hold_failures": 0,
+        "successes": 1
+      }
+    },
+    "reached_failure_interruptions_total": 3,
+    "reached_failure_max_held_total": 5,
+    "rejection_checks": {
+      "inconsistent_outcome": "rejected",
+      "misaligned_rows": "rejected",
+      "missing_m4_field": "rejected"
+    }
+  },
+  "unchecked_scope": [
+    "the completed M4 artifact's scientific validity",
+    "policy behavior outside the synthetic rows",
+    "causal interpretation or official certification"
+  ]
+}
