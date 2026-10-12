@@ -95,3 +95,4 @@
 | E37 | restore_recipe | I9 | restored |
 | M49 | measurement | I9 | failed |
 | M50 | measurement | I9 | completed |
+| M51 | measurement | I9 | completed |
