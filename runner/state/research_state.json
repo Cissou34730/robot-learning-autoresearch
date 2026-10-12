@@ -5754,16 +5754,16 @@
     }
   },
   "counters": {
-    "event": 41,
+    "event": 42,
     "inquiry": 10,
     "measurement": 53,
-    "session": 20,
+    "session": 21,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -25237,9 +25237,123 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:32:18Z",
+      "error": null,
+      "id": "E42",
+      "inquiry_id": "I10",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T2:checkpoint-120832",
+        "paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "reason": "Re-establish the exact measured T2 learning recipe before implementing I10's stabilization-aware intervention. The current working training environment is the rejected T7 SafeBranchTrajectoryEnv, so training without restoration would combine branch-potential shaping with the new stabilization change and would not provide a matched, interpretable candidate comparison against T2."
+      },
+      "result": {
+        "candidate": "T2:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "scientific_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873",
+        "status": "restored"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T2:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "session_id": "S21"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "cfe124768ac105d053b83c7dced0285cb24f23e71571f781a5804db174cb3d0c",
+          "path": "robot_learning/training/current_params.json"
+        },
+        {
+          "exists": true,
+          "fingerprint": "db9c09c73d5ad1aa3ab8e1eb8b3b73f5044aa8cacb8dece6157b1bdcfe12a232",
+          "path": "robot_learning/training/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "5e564e9e5eb7259e53ce36160e73db2493ffe983a2f919f9d39c5013c4761e52",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T2:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "scientific_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E42",
+    "inquiry_id": "I10",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T2:checkpoint-120832",
+        "paths": [
+          "robot_learning/training/environment.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "reason": "Re-establish the exact measured T2 learning recipe before implementing I10's stabilization-aware intervention. The current working training environment is the rejected T7 SafeBranchTrajectoryEnv, so training without restoration would combine branch-potential shaping with the new stabilization change and would not provide a matched, interpretable candidate comparison against T2."
+      }
+    },
+    "request_fingerprint": "49721e1a638eeb4a55b6f1b2de935fafa24d9f37339b9c5693816785bffed963",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the explicit best-known candidate, based on M10, M11, M14, M18, M21, M23, M27, M30, M46 and M52 comparisons and analyses; it is not a protected official-assessment result. T7:checkpoint-120832 is rejected as an inferior complete safe-IK trajectory-potential artifact by M52/M53 and E38. No candidate is working or retained. E35/E37/E40 are inquiry-boundary or restoration records; M50/M51 are implementation checks; M53 is trace-derived analysis; none are learned candidates.",
     "completed_operations": [
@@ -25273,6 +25387,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "67304954-96ee-4e1e-9102-946cbfdfc467",
+    "id": "S21",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "objective": "Advance I10 toward an evidence-supported answer to its scientific question: Which stabilization-aware trajectory or branch-conditioned controller intervention can reduce T2's reached-but-not-complete and remaining coupled-control failures toward the 98% goal without regressing the protected radius strata or continuous uninterrupted-hold readiness? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E42"
+    ],
+    "scientific_parent_commit": "a41be0409e4fdb9ef3030a5aade12b9ef9b65873"
+  },
   "terminal_state": null
 }
