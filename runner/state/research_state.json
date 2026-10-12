@@ -2913,47 +2913,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when matched development evidence under the same target seeds and official exposure compares the unmodified policy with at least one PI-owned action-timing/braking variant using complete-hold success, first reach, hold interruptions, saturation, velocity, internal-step diagnostics, realized branch and joint-limit margin. A positive conclusion requires higher complete-hold success with preserved first reach and a diagnostic reduction consistent with stabilization; a negative or limited conclusion is sufficient if success does not improve or gains in hold continuity are offset by reach loss, with residual no-reach geometry/branch associations carried to goal review. Internal-step excursions remain diagnostic unless authoritative evaluator evidence establishes them as scored failures.",
-          "goal_connection": "The best-known official-exposure policy achieved 150/160 (93.75%) on an independent panel, leaving ten failures where at least six conversions are needed to approach the 98% requirement. Four failures reached tolerance but were interrupted, while six never reached tolerance across radii 10.66-18.83 cm; a matched runtime/control intervention could address transient motion while the same diagnostics test whether the no-reach residual is a branch/limit-conditioned policy failure. This is lower-risk than terminating on a candidate with a 6.25 percentage-point development gap, provided the intervention is evaluated as a complete artifact and reach is not traded for hold continuity.",
-          "handoff_conclusion": "Established observations: M1 verified that the authored XML compiles in the production path, applies zero gravity, and supports native reset and stepping. M2 measured four deterministic signed pulse/free-response trials on both joints, with 0.002 s integration, Euler/Newton settings, nonzero compiled masses/inertias, 5 N m peak actuator generalized torque, repeatability within 1e-12, peak joint speeds of 7.96 and 8.46 rad/s, and post-release stopping distances of about 0.1907 and 0.1707 rad. These establish reproducible open-loop responsiveness and weaken a blanket actuator-authority explanation, but do not establish learned overshoot. Implementation evidence: M3 verified that the PI-owned training factory now samples the exact 0.06-0.20 m official radius interval while preserving reset/step semantics; T1 then ran fresh PPO for the full 120,000-step allocation with that exposure and produced 24 archived checkpoints. Its training proxy rose to a maximum recorded 0.58 at checkpoint-120832, but training proxies are not development performance. M4 and M6 verified the opt-in evaluation diagnostics and paired transition/reset invariance; they establish measurement implementation compatibility, not policy validity. Candidate evidence: M5 measured T1:checkpoint-120832 on the independent 160-episode panel: 150 successes and 10 failures (93.75%). Six failures never reached tolerance; four reached tolerance but did not complete the uninterrupted hold. Failure radii spanned about 10.66-18.83 cm rather than clustering only in the newly exposed low-radius region. Across the ten failures, action saturation fractions were 0.492-0.990 and joint-speed maxima were approximately 12.1-14.2 rad/s, with large internal-step distance excursions; hold-failure cases included 1, 192 and 242 interruptions after entry. Successful episodes also sometimes contained internal-step out-of-tolerance samples, so endpoint-scored success and physical continuous occupancy are not interchangeable. Interpretation: for this PPO/reward/runtime/seed/artifact, full official exposure alone did not reach the goal and the observed failure signature gives control/runtime stabilization a higher immediate priority than a pure low-radius coverage explanation. This is an artifact-level result, not a disproof of PPO, reward shaping, official exposure, or learning in general. The protected evaluator's treatment of intermediate states remains unresolved, so internal occupancy remains diagnostic only. Evidence limits: the development panel is not the official 200-episode panel; no controlled action-shaping or timing intervention has yet been compared; the current diagnostics summarize trajectories but do not establish a causal effect of saturation or latency.",
-          "handoff_question": "Can a matched PI-owned action-timing or braking intervention applied to T1:checkpoint-120832 improve complete-hold success toward the 98% goal without sacrificing target reach, and do residual no-reach failures remain associated with realized IK branch or joint-limit geometry rather than the intervention?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a matched PI-owned action-timing or braking intervention applied to T1:checkpoint-120832 improve complete-hold success toward the 98% goal without sacrificing target reach, and do residual no-reach failures remain associated with realized IK branch or joint-limit geometry rather than the intervention?",
-          "rationale": "The prior interpretation that hold continuity is the first bottleneck is too strong: the four reached-but-interrupted failures support a stabilization mechanism, but the six no-reach failures occur across the radius range and include high saturation and negative joint-limit margins, so they may dominate the achievable gain. M2 establishes responsive compiled dynamics but is not a causal policy intervention, and T1 training proxies do not establish candidate performance. A matched artifact comparison with the existing diagnostic fields is the most direct bounded test of whether timing/braking can recover failures without sacrificing reach; if it cannot, the next decision should shift toward branch/limit conditioning or learning-signal changes rather than repeat the same runtime hypothesis.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when matched development evidence under the same target seeds and official exposure compares the unmodified policy with at least one PI-owned action-timing/braking variant using complete-hold success, first reach, hold interruptions, saturation, velocity, internal-step diagnostics, realized branch and joint-limit margin. A positive conclusion requires higher complete-hold success with preserved first reach and a diagnostic reduction consistent with stabilization; a negative or limited conclusion is sufficient if success does not improve or gains in hold continuity are offset by reach loss, with residual no-reach geometry/branch associations carried to goal review. Internal-step excursions remain diagnostic unless authoritative evaluator evidence establishes them as scored failures.",
-        "goal_connection": "The best-known official-exposure policy achieved 150/160 (93.75%) on an independent panel, leaving ten failures where at least six conversions are needed to approach the 98% requirement. Four failures reached tolerance but were interrupted, while six never reached tolerance across radii 10.66-18.83 cm; a matched runtime/control intervention could address transient motion while the same diagnostics test whether the no-reach residual is a branch/limit-conditioned policy failure. This is lower-risk than terminating on a candidate with a 6.25 percentage-point development gap, provided the intervention is evaluated as a complete artifact and reach is not traded for hold continuity.",
-        "question": "Can a matched PI-owned action-timing or braking intervention applied to T1:checkpoint-120832 improve complete-hold success toward the 98% goal without sacrificing target reach, and do residual no-reach failures remain associated with realized IK branch or joint-limit geometry rather than the intervention?",
-        "rationale": "The prior interpretation that hold continuity is the first bottleneck is too strong: the four reached-but-interrupted failures support a stabilization mechanism, but the six no-reach failures occur across the radius range and include high saturation and negative joint-limit margins, so they may dominate the achievable gain. M2 establishes responsive compiled dynamics but is not a causal policy intervention, and T1 training proxies do not establish candidate performance. A matched artifact comparison with the existing diagnostic fields is the most direct bounded test of whether timing/braking can recover failures without sacrificing reach; if it cannot, the next decision should shift toward branch/limit conditioning or learning-signal changes rather than repeat the same runtime hypothesis."
-      }
-    },
-    "request_fingerprint": "081624f57beacdc4ff5e96dbd7692b34df4a1ca6c07ea3f4f2501a1a83616d78",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E4. It is the strongest currently measured candidate but remains below goal. Working: none. Retained: none. T1 produced 24 candidate checkpoints; no other checkpoint has development evidence, and no candidate is officially assessed.",
     "completed_operations": [
