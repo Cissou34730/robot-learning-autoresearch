@@ -192,7 +192,7 @@
       "training_steps": 115712
     },
     "T1:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/d55227f5-1cbd-46bc-ac5c-41186b8b4148/t1/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/d55227f5-1cbd-46bc-ac5c-41186b8b4148/t1-c8cf701d5-6cc10d0828075bbebefce84ca07159cab87c0840f2940b6a08eee56f291b6e59",
       "evaluation_artifacts": [
         "campaigns/evaluations/d55227f5-1cbd-46bc-ac5c-41186b8b4148/evaluation-d55227f5-1cbd-46bc-ac5c-41186b8b4148-m9-T1-checkpoint-120832-160ep-seed4200-144c4edbda99.json"
       ],
@@ -841,7 +841,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 9,
     "session": 3,
@@ -850,9 +850,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -2746,9 +2746,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T06:15:20Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M9"
+        ],
+        "reason": "On the identical fixed-seed research panel, this full-distribution candidate achieved 150/160 successes (93.75%), exceeding the late nonterminal checkpoint-115712 at 142/160 (88.75%) with 10 paired wins versus 2. It is the strongest complete artifact currently measured, while remaining below the 98% objective and not certified by development evidence."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M9"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M9"
+        ],
+        "reason": "On the identical fixed-seed research panel, this full-distribution candidate achieved 150/160 successes (93.75%), exceeding the late nonterminal checkpoint-115712 at 142/160 (88.75%) with 10 paired wins versus 2. It is the strongest complete artifact currently measured, while remaining below the 98% objective and not certified by development evidence."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/d55227f5-1cbd-46bc-ac5c-41186b8b4148/t1-c8cf701d5-6cc10d0828075bbebefce84ca07159cab87c0840f2940b6a08eee56f291b6e59",
+        "fingerprint": "6cc10d0828075bbebefce84ca07159cab87c0840f2940b6a08eee56f291b6e59",
+        "source": "campaigns/checkpoints/candidates/d55227f5-1cbd-46bc-ac5c-41186b8b4148/t1/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M9"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M9"
+        ],
+        "reason": "On the identical fixed-seed research panel, this full-distribution candidate achieved 150/160 successes (93.75%), exceeding the late nonterminal checkpoint-115712 at 142/160 (88.75%) with 10 paired wins versus 2. It is the strongest complete artifact currently measured, while remaining below the 98% objective and not certified by development evidence."
+      }
+    },
+    "request_fingerprint": "8fc6c212477335c5f0dba82d8e5206eef5411a199128fe6cf723a6a8236f461b",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty; M3 is a system-identification measurement and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
@@ -2790,7 +2864,8 @@
       "M4",
       "T1",
       "M8",
-      "M9"
+      "M9",
+      "E4"
     ],
     "scientific_parent_commit": "1817405503e7872287bb9c368e915c84a3efa584"
   },

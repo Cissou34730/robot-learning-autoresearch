@@ -15,3 +15,4 @@
 | M7 | measurement | I1 | failed |
 | M8 | measurement | I1 | completed |
 | M9 | measurement | I1 | completed |
+| E4 | model_role | I1 | assigned |
