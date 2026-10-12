@@ -91,3 +91,4 @@
 | E33 | inquiry | I8 | completed |
 | E34 | checkpoint | I8 | checkpointed |
 | E35 | inquiry | I9 | completed |
+| E36 | checkpoint | - | checkpointed |
