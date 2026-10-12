@@ -694,10 +694,18 @@ def resolve_profile_input(artifact_path: str | Path) -> tuple[Path, str]:
             return fallback_path, "m28_profile_fallback"
         return requested_path, "m28_profile_snapshot_fallback"
 
+    normalized_final_component = normalized_path.rsplit("/", 1)[-1]
     raise FileNotFoundError(
         "Profile artifact not found: "
         f"normalized_path={normalized_path!r}; "
-        f"allowlisted_m30_filename={M30_T2_REFERENCE_FILENAME!r}"
+        f"allowlisted_m30_filename={M30_T2_REFERENCE_FILENAME!r}; "
+        f"normalized_final_component={normalized_final_component!r}; "
+        f"normalized_final_component_length={len(normalized_final_component)}; "
+        f"allowlisted_m30_filename_length={len(M30_T2_REFERENCE_FILENAME)}; "
+        "normalized_final_component_code_points="
+        f"{[ord(character) for character in normalized_final_component]!r}; "
+        "allowlisted_m30_filename_code_points="
+        f"{[ord(character) for character in M30_T2_REFERENCE_FILENAME]!r}"
     )
 
 
