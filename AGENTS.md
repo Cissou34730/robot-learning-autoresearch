@@ -17,6 +17,9 @@ installed stack but may not install packages or modify `pyproject.toml` or
 The locked runtime APIs are native `mujoco==3.12.0` (not legacy `mujoco-py`),
 `gymnasium==1.3.0` and `stable-baselines3==2.9.0`. PI-owned integrations
 must target those packages and versions.
+`scientific_api_reference` supplies bounded, read-only definitions from those
+installed libraries to the PI and authorized coding child. It does not expose
+arbitrary paths, private attributes or API execution.
 
 The Copilot agent runtime uses `github-copilot-sdk==1.0.19`. Its native
 subagents, hooks and custom tools are harness integration, not an interchangeable
@@ -57,6 +60,11 @@ receives scoped `view` and `apply_patch`. Its readable and writable files are
 bound mechanically to the explicit request. Copilot main and coding agents
 have no shell tools. Native start instructions remind the coder of the locked
 scientific API versions above; it cannot install or change dependencies.
+Both roles can inspect installed APIs through `scientific_api_reference`.
+For changed library/runtime integration, the child proposes a small
+artifact-independent compatibility mode in its scoped verification module.
+The PI reviews actual production-path coverage. Runner executes the reviewed
+proposal through the existing `python_module` instrument before larger work.
 Analysis code is authored in the PI laboratory and executed by Runner.
 The preliminary analyst retains its existing tools and scientific-model
 publication permission; coding delegation is not exposed in that phase.

@@ -317,6 +317,37 @@ remain unavailable. An identity failure reports a harness authorization error.
 An inert replay exercises the actual SDK dispatcher without model inference,
 source writes or Runner execution. Campaign reliability remains unmeasured.
 
+#### Installed API reference and early compatibility proposal
+
+In `5da30677`, characterization attempts used nonexistent
+`MjData.site_xvelp` and `MjModel.jnt_damping`. The PI repaired those accesses
+and M3 completed. Installed-version reminders did not prevent the guesses.
+The existing verification consumed a generated artifact, so it could not
+exercise the production API calls before artifact generation failed.
+
+The second approved tactical repair exposes `scientific_api_reference` to
+both main PI and authorized coder. It reads definitions from the three
+installed scientific libraries, including native MuJoCo field and function
+declarations. It reports actual versions, missing symbols, unavailable source
+or signatures, and explicit continuation. It accepts neither arbitrary paths
+nor supplied code and does not call scientific functions or constructors.
+Repository read/write scopes and execution authority remain unchanged.
+
+For changed library or runtime integration, the coding handoff can include
+an artifact-independent compatibility mode of its existing scoped verification
+module. The main PI reviews production-call coverage. The returned
+`proposed_compatibility_check` uses the existing `python_module` instrument
+and a separate artifact from the behavioral check. Runner remains the sole
+executor; no automatic scientific gate or verification framework is added.
+The program requires a proportional early check before larger integration work.
+
+Targeted checks read the installed MuJoCo, Gymnasium and Stable-Baselines3
+definitions and reproduce both missing API names. A synthetic one-joint
+fixture exercises corrected native calls through Runner's process helper and
+rejects both original bad accesses. This is engineering validation, not a
+measurement of the campaign robot. No campaign source, state or evidence
+was edited. Campaign error rates and cost improvement remain unmeasured.
+
 Copilot is the selected agent runtime, not a drop-in model-provider interface.
 Scientific operations, evidence resolution and parsing remain ordinary harness
 functions, exposed through SDK wrappers. OpenCode keeps its legacy interfaces,

@@ -116,7 +116,7 @@ RESEARCH_TOOLS = [
     "list_powershell",
 ]
 MAIN_PI_TOOLS = ["view", "rg", "glob"]
-CODING_TOOLS = ["view", "apply_patch"]
+CODING_TOOLS = ["view", "apply_patch", "scientific_api_reference"]
 MAIN_WRITE_DENIAL = (
     "Ordinary PI sessions have no file-write tools. Use submit_operation for actions. "
     "Use scientific_coding for bounded scientific source changes."
@@ -520,7 +520,7 @@ def scoped_tool_hook(
             if coding_paths is not None
             else [*(RESEARCH_TOOLS if preliminary else MAIN_PI_TOOLS),
                   "artifact_evidence_query", "training_log_query", "scientific_coding",
-                  "submit_operation"]
+                  "scientific_api_reference", "submit_operation"]
         )
         reason = None
         if operations is not None and (operations.busy or operations.closed):
@@ -1389,6 +1389,11 @@ class Console:
                 detail = " | ".join(part for part in parts if part)
             elif name == "scientific_coding":
                 detail = "bounded coding / PI source review required"
+            elif name == "scientific_api_reference":
+                detail = " | ".join(str(value) for value in (
+                    arguments.get("library", "-"), arguments.get("symbol") or "library root",
+                    arguments.get("action", "definition"), arguments.get("contains"),
+                ) if value)
             elif name == "powershell":
                 description = arguments.get("description")
                 command = arguments.get("command")
@@ -1473,6 +1478,11 @@ class Console:
                 target = (
                     f"{arguments.get('operation_id') or '-'} | "
                     f"artifact {arguments.get('artifact_index', 0)}"
+                )
+            elif name == "scientific_api_reference":
+                target = (
+                    f"{arguments.get('library') or '-'} | "
+                    f"{arguments.get('symbol') or 'library root'}"
                 )
             else:
                 for key in ("path", "filePath", "query", "command", "commandLine"):
@@ -1718,14 +1728,18 @@ class ScientificCodingParams(BaseModel):
     session_handle: str | None = None
 
 
-class CodingReport(BaseModel):
+class CodingCheck(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    summary: str
     check_args: list[str]
     artifact_filename: str
     check_description: str = Field(min_length=1)
+
+
+class CodingReport(CodingCheck):
+    summary: str
     unchecked_scope: list[str] = Field(min_length=1)
+    compatibility_check: CodingCheck | None = None
 
 
 class CodingConsole(Console):
@@ -1835,7 +1849,8 @@ def coding_changes(before: dict[str, bytes | None]) -> tuple[list[dict], str]:
 CODING_INSTRUCTIONS = """
 You are a narrow scientific coding author, not the campaign PI or Runner.
 Implement only the supplied intent within the exact writable file list.
-The separate read list and supplied source context are your only background.
+The separate read list and supplied source context are your scientific background.
+scientific_api_reference provides read-only installed library definitions.
 Do not retrieve campaign history, memory, other sessions, or unrelated files.
 Do not delegate, submit operations, edit request files, campaign evidence/state,
 human tests, contracts, harness, dependencies, or protected package initializers.
@@ -1846,6 +1861,13 @@ Do not ask the user for confirmation or expand the supplied scope.
 Target the installed APIs: native mujoco==3.12.0 (not mujoco-py),
 gymnasium==1.3.0 and stable-baselines3==2.9.0. Python execution, when later
 requested by the PI through Runner, uses uv run; never install dependencies.
+Resolve unfamiliar library APIs with scientific_api_reference rather than guessing.
+For changed library or runtime integration, propose a small compatibility mode
+in the same verification module. It must call the actual changed production
+paths with controlled inputs before full or artifact-dependent measurement.
+An import-only check or inspection of existing JSON does not exercise API calls.
+Keep it short and proportional; use reset and a few steps only where relevant.
+The compatibility mode must not require a future measurement artifact.
 Make the smallest complete change, preserve unrelated behavior, and do not add
 adjacent fixes, generic verification infrastructure, or scenario-specific gates.
 Author a proportionate executable verification module at verification_path.
@@ -1862,7 +1884,11 @@ Explain the proposed checks; never certify scientific validity.
 Finish with one JSON object, no markdown fences, containing exactly:
 summary (string), check_args (list of strings, use {artifact} as the output
 path placeholder), artifact_filename (simple .json basename), check_description
-(nonempty string), unchecked_scope (nonempty list of strings). Include that
+(nonempty string), unchecked_scope (nonempty list of strings),
+compatibility_check (null when no integration changed, otherwise an object
+with check_args, artifact_filename, and check_description of the same types).
+Use different artifact basenames for compatibility and behavioral checks.
+Include that
 the check has not been executed. The main PI will inspect actual source and
 diffs, review the executable check, and decide what Runner should execute.
 check_args contains only module arguments, not a uv/python launch command.
@@ -1935,6 +1961,11 @@ class ScientificCoding:
                 "and demonstrate detection of the original defect and an incomplete "
                 "repair. Review observed versus expected results and checked scope "
                 "after Runner execution, and report what remains unchecked. "
+                "For changed API/runtime integration, review the returned "
+                "proposed_compatibility_check and execute that small production-path "
+                "check through Runner before a larger or artifact-dependent measurement. "
+                "Installed library definitions are available to both PI and child "
+                "through scientific_api_reference; guessing API names is not verification. "
                 "Handles are native agent IDs valid only in this bounded parent context; "
                 "they are not SDK sessions and cannot be resumed across checkpoints. "
                 "No result is a scientific-validity certificate."
@@ -2047,6 +2078,9 @@ class ScientificCoding:
                 "are fixed and human-owned. SDK 1.0.19 is a harness runtime detail, "
                 "not permission to edit the harness. Author scoped source and a "
                 "defect-sensitive laboratory verification proposal only; execute nothing. "
+                "Use scientific_api_reference for unfamiliar installed APIs. "
+                "Changed integration needs a small artifact-independent production-path "
+                "compatibility proposal, not just an import or saved-JSON check. "
                 "The parent PI must review actual diffs and executable checks. "
                 "No engineering handoff certifies science or Runner acceptance.\n"
                 + json.dumps(self.binding, ensure_ascii=False)
@@ -2055,15 +2089,31 @@ class ScientificCoding:
 
     def report(self, response: str) -> CodingReport:
         report = CodingReport.model_validate_json(response)
-        filename = report.artifact_filename
         if (
-            not re.fullmatch(r"[A-Za-z0-9_-]+\.json", filename)
-            or not any("{artifact}" in argument for argument in report.check_args)
-            or self.binding is None
+            self.binding is None
             or not (ROOT / self.binding["verification_path"]).is_file()
         ):
-            raise ValueError("Missing verification module or invalid executable check proposal.")
+            raise ValueError("Missing scoped verification module.")
+        checks: list[CodingCheck] = [report]
+        if report.compatibility_check is not None:
+            checks.append(report.compatibility_check)
+        for check in checks:
+            if (
+                not re.fullmatch(r"[A-Za-z0-9_-]+\.json", check.artifact_filename)
+                or not any("{artifact}" in argument for argument in check.check_args)
+            ):
+                raise ValueError("Invalid executable check proposal or artifact basename.")
+        if len({check.artifact_filename for check in checks}) != len(checks):
+            raise ValueError("Compatibility and behavioral checks need distinct artifact basenames.")
         return report
+
+    def check_proposal(self, check: CodingCheck, module: str) -> dict:
+        artifact = f"campaigns/evaluations/{self.args.campaign_id}/{check.artifact_filename}"
+        return {
+            "instrument": "python_module", "module": module,
+            "args": [argument.replace("{artifact}", artifact) for argument in check.check_args],
+            "artifact": artifact,
+        }
 
     def stop_hook(self, request, invocation):
         if (
@@ -2217,18 +2267,13 @@ class ScientificCoding:
             if self.child_error or child_console.session_error:
                 raise RuntimeError(self.child_error or child_console.session_error)
             report = self.report(self.stop_response)
-            artifact = f"campaigns/evaluations/{self.args.campaign_id}/{report.artifact_filename}"
             result.update({
                 "status": "completed", "summary": report.summary,
-                "proposed_check": {
-                    "instrument": "python_module",
-                    "module": result["verification_module"],
-                    "args": [
-                        argument.replace("{artifact}", artifact)
-                        for argument in report.check_args
-                    ],
-                    "artifact": artifact,
-                },
+                "proposed_check": self.check_proposal(report, result["verification_module"]),
+                "proposed_compatibility_check": (
+                    self.check_proposal(report.compatibility_check, result["verification_module"])
+                    if report.compatibility_check is not None else None
+                ),
                 "check_description": report.check_description,
                 "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
             })
@@ -2568,6 +2613,7 @@ def session_options(
     )
     from runner.copilot_scoped_search import ScopedSearch
     from runner.query_training_log import TrainingLogQueryParams, query_training_log
+    from runner.scientific_api_reference import ScientificAPIReferenceParams, read_reference
 
     def authorize_reader(invocation) -> None:
         if (
@@ -2638,6 +2684,39 @@ def session_options(
         defer="auto",
         skip_permission=True,
     )
+
+    async def scientific_api_reference(params, invocation) -> str:
+        if getattr(invocation, "agent_id", None) is None:
+            authorize_reader(invocation)
+        elif (
+            invocation.session_id != args.session_id or coding is None
+            or not coding.busy or coding.closed or coding.binding is None
+            or invocation.agent_id != coding.active_handle
+            or (operations is not None and (operations.busy or operations.closed))
+        ):
+            raise ValueError("Only the active main PI or its authorized coding child may read APIs.")
+        return json.dumps(await asyncio.to_thread(read_reference, params), ensure_ascii=False)
+
+    api_reference_tool = define_tool(
+        "scientific_api_reference",
+        description=(
+            "Read-only installed API definitions for mujoco, gymnasium or stable_baselines3. "
+            "Select library and a public dotted symbol relative to that library. "
+            "No filesystem paths, private attributes, arbitrary code, constructors, "
+            "or scientific API calls are accepted. Imports load only the fixed library roots. "
+            "action=members lists public names with optional contains filtering; "
+            "offset/limit page member rows. action=definition returns installed signature, "
+            "documentation, available Python source and native MuJoCo declaration; "
+            "offset/max_bytes page UTF-8 definition bytes. Missing symbols and unavailable "
+            "source/signatures are explicit, not guessed. Follow next_offset for complete "
+            "retrieval. Main PI and its exact-scope coding child can both use this reader. "
+            "Reference availability is not proof that a production integration executes."
+        ),
+        handler=scientific_api_reference,
+        params_type=ScientificAPIReferenceParams,
+        defer="auto",
+        skip_permission=True,
+    )
     # The pinned SDK exposes the actual spawned runtime connection. Locate its
     # bundled rg, rather than invoking a model-controlled shell or directory search.
     runtime_path = getattr(getattr(client, "_connection", None), "path", None)
@@ -2655,7 +2734,7 @@ def session_options(
     on_event, on_permission_request = build_handlers(
         console, finished, preliminary=args.preliminary, operations=operations, coding=coding
     )
-    tools = [*search.tools(), artifact_evidence_tool, training_log_tool]
+    tools = [*search.tools(), artifact_evidence_tool, training_log_tool, api_reference_tool]
     available = (
         ToolSet()
         .add_builtin([
@@ -2665,6 +2744,7 @@ def session_options(
         .add_custom("rg").add_custom("glob")
         .add_custom("artifact_evidence_query")
         .add_custom("training_log_query")
+        .add_custom("scientific_api_reference")
     )
     if not args.preliminary and coding is not None:
         tools.append(coding.tool())

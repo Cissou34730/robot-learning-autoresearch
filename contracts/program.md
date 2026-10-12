@@ -14,6 +14,14 @@ actor. The PI retains scientific intent, interpretation and review authority.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
 
+For changed library or runtime integration, resolve unfamiliar APIs from the
+installed definitions rather than memory. Review and run a small production-path
+compatibility check through Runner before larger or artifact-dependent work.
+The check uses controlled inputs and exercises the changed calls, not only
+module imports or existing JSON. Keep its scope proportional to the integration.
+Successful execution establishes compatibility within that scope, not scientific
+validity or goal progress.
+
 The Runner is not a scientific actor. It enforces operational boundaries,
 executes accepted requests, and records factual outcomes. It does not choose
 scientific questions or methods, interpret evidence, judge adequacy, or decide

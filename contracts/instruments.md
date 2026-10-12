@@ -68,8 +68,9 @@ A rejected proposal remains available for correction.
 Ordinary Copilot main PI sessions expose `scientific_coding` and
 `submit_operation` alongside source readers, `artifact_evidence_query` and
 `training_log_query`. They have no `apply_patch`, other file-write tools or
-shell tools. The preliminary scientific-model session retains its existing
-publication interface and does not expose coding.
+shell tools. `scientific_api_reference` reads installed library definitions
+for both PI and authorized coding child. The preliminary scientific-model
+session retains its existing publication interface and does not expose coding.
 
 `scientific_coding` accepts:
 
@@ -99,14 +100,14 @@ SDK's model/tool configuration before dispatch; unavailable capabilities are
 reported rather than falling back to manual coding sessions.
 
 The default/main agent excludes file-write tools. The registered coder has
-scoped `view` and `apply_patch` only; it cannot execute code, delegate further
-or submit campaign operations. Hooks and permission callbacks bind its calls
-to the authorized native child and file scope.
+scoped `view`, `apply_patch` and `scientific_api_reference`. It cannot execute
+code, delegate further or submit campaign operations. Hooks and permission
+callbacks bind its calls to the authorized native child and file scope.
 Permission callbacks use the native permission event's identity and current
 file binding, not the arrival of a tool-start event. Unknown or stale identities
 fail closed with a harness authorization error.
-Native start instructions
-include the installed scientific API versions and dependency restrictions.
+Native start instructions include the installed scientific API versions and
+dependency restrictions.
 Completion handling challenges an incomplete engineering handoff, not
 scientific adequacy or research direction.
 The stop hook applies to corrections as well as the initial invocation.
@@ -115,8 +116,13 @@ unlocking operation submission.
 
 The result returns the child handle, actual per-invocation changed-file manifest
 and diff, verification module, proposed `python_module` entry and unchecked
-scope. Large review output is offloaded with a file pointer. Errors and timeouts
-return partial changes when available; cancellation preserves review output.
+scope. A `compatibility_check` handoff supplies its own `check_args`,
+`artifact_filename` and `check_description`, or null for unchanged integration.
+It uses a separate mode of the same scoped verification module, with a distinct
+artifact basename. The result exposes this entry as
+`proposed_compatibility_check` alongside `proposed_check`. Both are unexecuted
+proposals. Large review output is offloaded with a file pointer. Errors and
+timeouts return partial changes when available; cancellation preserves review output.
 The proposed check is not executed by this tool. The main PI reviews the actual
 changed source and executable check before scientific reliance or submission.
 Runner executes the reviewed check through the existing measurement instrument.
@@ -144,7 +150,46 @@ available for content that exceeds search-preview limits.
 
 The preliminary analyst retains exact permitted shell file reads, but shell
 traversal and wildcard readers are denied. Coding children have only the
-exact-file `view` and `apply_patch` binding described above, not search tools.
+exact-file `view` and `apply_patch` binding described above, not repository search
+tools. Their installed-library access uses the separate API reader below.
+
+## Installed scientific API reference
+
+`scientific_api_reference` reads definitions from the installed `mujoco`,
+`gymnasium` and `stable_baselines3` libraries. It loads only those fixed library
+roots. It does not call scientific functions or constructors, run supplied
+code, inspect arbitrary paths or expose private attributes.
+
+```json
+{
+  "library": {"type": "string"},
+  "symbol": {"type": "string"},
+  "action": {"type": "string"},
+  "contains": {"type": "string"},
+  "offset": {"type": "integer"},
+  "limit": {"type": "integer"},
+  "max_bytes": {"type": "integer"}
+}
+```
+
+`library` selects one of the three installed libraries. `symbol` selects a
+public dotted name relative to that library. An omitted symbol selects the
+library root. Names imported from another library are not definition targets.
+
+`action=members` returns public member names and their kinds. `contains`
+filters names by a case-insensitive substring. `offset` and `limit` select
+member rows. The result reports the matching count and `next_offset`.
+
+`action=definition` returns the installed signature, documentation, available
+Python source and native MuJoCo declaration. `offset` and `max_bytes` select
+UTF-8 definition bytes. The result reports version, content fingerprint,
+complete byte count and `next_offset`. Unavailable signatures and source are
+explicit. A missing symbol returns `symbol_not_found`, not a guessed substitute.
+Definition availability does not establish execution compatibility.
+
+The active PI or its authorized native coding child can use this reader.
+Coding and Runner locks still apply. It does not widen repository file scopes
+or give either actor execution permissions.
 
 ## JSON evidence interface
 
