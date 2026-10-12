@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a completed baseline candidate measurement on a fixed official-distribution development panel provides radius- and angle-stratified success and failure diagnostics that distinguish first reach from convergence/hold loss, including first-tolerance timing, minimum/final distance, maximum uninterrupted hold and interruptions, joint velocity or Cartesian speed, and branch/joint-limit context; conclude positively, negatively, limited, or inconclusively whether the observed profile justifies coverage-focused work, stabilization/control work, or a broader representation/control investigation as the next route toward 98%.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full uninterrupted 2-second hold. No learned candidate has yet been measured, and the baseline training distribution omits official targets at radii 0.06-0.14 m. This inquiry will measure whether the first candidate deficit is concentrated in that omitted region or instead reflects reach, settling, or hold instability across the domain, so the next intervention is directed toward the mechanism most likely to improve official success.",
-    "handoff_conclusion": "Completed observations: M1 verified the production MuJoCo compatibility path; M2 measured the compiled model and controlled dynamics; M3 independently verified the physical artifact. Together they support feasible official-domain kinematics, alternative analytic branches, a reset Jacobian singularity, direct bounded actuation, and transient velocity/decay behavior that can make arrival and stabilization consequential. They do not measure a learned policy, establish a candidate's success, or resolve protected continuous-hold semantics. Correction to the inherited interpretation: the static feasibility and compatibility results make hidden interface failure and gross geometric impossibility less credible as the first blocker, but they do not establish dynamic branch competence, trajectory success, or hold stability; branch/limit interactions therefore remain behaviorally unresolved rather than dismissed. The competing goal-relevant explanations are (a) baseline exposure omits official radii 0.06-0.14 m and creates an inner-radius/angle deficit, (b) sampled-data control produces high arrival speed, overshoot, or late interruptions across radii, and (c) failure to enter tolerance broadly would indicate a trajectory or representation limitation rather than coverage alone. A fixed-seed baseline profile with reach-versus-hold diagnostics is the direct discriminator.",
-    "handoff_question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "What is the baseline policy's official-distribution failure profile, stratified by radius/angle and reach-versus-hold dynamics, and does that profile justify coverage-focused training or stabilization/control work as the next route toward 98% success?",
-    "rationale": "Opening is preferable to official assessment because there is no candidate or evidence-backed best-known policy to submit, so assessment cannot presently answer the goal. The completed M1-M3 evidence establishes production-path compatibility, feasible kinematics, and consequential transient dynamics, but it does not measure learned behavior. The proposed baseline panel directly tests the unresolved decision frontier: a reproducible inner-radius/angle deficit with adequate outer-region holds would support coverage work; a broadly flat radius profile with late interruptions, high arrival speed, or overshoot would support stabilization/control work; failure to enter tolerance broadly would redirect toward trajectory or representation issues. The measurement cost is bounded and materially more informative for route selection than further physical-model characterization, while continuous-hold semantics remain an explicit limitation rather than an unsupported assumption.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 8,
     "session": 3,
@@ -3677,9 +3666,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:03:53Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "positive but limited",
+        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "positive but limited",
+        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "positive but limited",
+        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "positive but limited",
+        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "positive but limited",
+        "reason": "M6 measured the baseline candidate T1:checkpoint-115712 on 160 fixed official-distribution development seeds, and M8 completed the required profile analysis. The deficit is strongly concentrated in the baseline's omitted inner-radius region: success was 9/40 (22.5%) at 6-10 cm and 33/53 (62.26%) at 10-14 cm, compared with 30/31 (96.77%) at 14-17 cm and 33/36 (91.67%) at 17-20 cm. Across all radii, 49/55 failures never entered tolerance and only 6/55 reached tolerance without completing the 100-step boundary hold; the failure class had mean maximum hold 2.2 steps and 270 hold interruptions, while successes all completed 100 steps. This supports coverage-focused training as the next route, with radius-angle and branch/limit-aware exposure, rather than making stabilization the first intervention. The conclusion is limited: the baseline panel does not establish that coverage alone reaches 98%, angle sectors remain uneven, the target branch distribution is 140 open+folded, 14 folded-only and 6 open-only, and diagnostics are control-boundary sampled rather than proof of protected continuous containment. Stabilization, branch selection, and joint-limit effects remain consequential secondary mechanisms for the next goal review."
+      }
+    },
+    "request_fingerprint": "e31d10337fcb64365dfba9337cca721ee6631a8f2ae59e2da393ecff7b02ca46",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. M1-M3 are completed physical measurements, not policy candidates; E2 records the bounded inquiry opening. Working, best-known, and retained roles remain empty, so official assessment is not currently supportable.",
     "completed_operations": [
@@ -3725,7 +3768,8 @@
       "T1",
       "M6",
       "M7",
-      "M8"
+      "M8",
+      "E4"
     ],
     "scientific_parent_commit": "cdfecb67799cdf0744c0bf8e63edd5ff2bc38181"
   },
