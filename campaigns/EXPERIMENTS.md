@@ -88,3 +88,4 @@
 | E47 | checkpoint | I11 | checkpointed |
 | E48 | inquiry | I12 | completed |
 | E49 | checkpoint | - | checkpointed |
+| M30 | measurement | I12 | completed |
