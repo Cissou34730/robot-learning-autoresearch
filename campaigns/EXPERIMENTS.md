@@ -18,3 +18,4 @@
 | E5 | checkpoint | I1 | checkpointed |
 | E6 | inquiry | I2 | completed |
 | E7 | checkpoint | - | checkpointed |
+| M9 | measurement | I2 | completed |

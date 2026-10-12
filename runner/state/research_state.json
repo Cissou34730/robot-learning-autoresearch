@@ -841,14 +841,14 @@
   "counters": {
     "event": 7,
     "inquiry": 2,
-    "measurement": 8,
-    "session": 4,
+    "measurement": 9,
+    "session": 5,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3812,9 +3812,658 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:08:34Z",
+      "error": null,
+      "id": "M9",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Compatibility verification of the coverage-focused training environment before training: construct the real training environment, verify its exact full official radius range, perform controlled seeded resets and two production transitions, and confirm the evaluation constructor remains unchanged.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json",
+            "instrument": "python_module",
+            "label": "coverage-training-environment-compatibility",
+            "module": "robot_learning.lab.verify_coverage_training_environment"
+          }
+        ],
+        "rationale": "I2 requires a genuine exposure change, not a new description of the baseline. The reviewed source changes only the training sampler lower bound from 0.14 m to 0.06 m, preserving scenario mechanics, angle sampling, PPO parameters, and evaluation semantics. This bounded production-path check exercises repeated reset/transition behavior and explicitly fails for the old or partial range change before consuming the full training allocation. It is implementation compatibility evidence, not policy performance or official success evidence."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "coverage-training-environment-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M9-1-coverage_training_environment_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/configured_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/seeded_reset_radii_within",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/configured_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/seeded_reset_radii",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/target_held_during_transitions",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/transition_output_lengths",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f9bcf4c193846183af6e891de4ce513f13ca490aecf9c6b083408c07c479ae8b"
+            },
+            "module": "robot_learning.lab.verify_coverage_training_environment"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6a64af73abeae3991e7a9e27172ff40803f17b47",
+            "fingerprint": "cdc30a5875ec46100e939c04b3ef3154fc12263c2bc81c55f7dedbad53255e94",
+            "manifest": [
+              {
+                "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6d4e92720a309aef273d66894b8d797bf65f6147",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_coverage_training_environment.py"
+          ],
+          "scientific_commit": "ee967c2f423c76ac4b4020cdc76bdd7d788f0adf",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e271ecc4194e709cae73dbc481b80ae74724c013fe84c1351dc3862112917ad0",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json",
+          "instrument": "python_module",
+          "label": "coverage-training-environment-compatibility",
+          "module": "robot_learning.lab.verify_coverage_training_environment"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "6a64af73abeae3991e7a9e27172ff40803f17b47",
+          "fingerprint": "cdc30a5875ec46100e939c04b3ef3154fc12263c2bc81c55f7dedbad53255e94",
+          "manifest": [
+            {
+              "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "6d4e92720a309aef273d66894b8d797bf65f6147",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_coverage_training_environment.py"
+        ],
+        "scientific_commit": "ee967c2f423c76ac4b4020cdc76bdd7d788f0adf",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "e271ecc4194e709cae73dbc481b80ae74724c013fe84c1351dc3862112917ad0",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "coverage-training-environment-compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M9-1-coverage_training_environment_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 0,
+                  "path": "/failures",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/configured_training_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/seeded_reset_radii_within",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/configured_training_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/seeded_reset_radii",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/target_held_during_transitions",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/transition_output_lengths",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "f9bcf4c193846183af6e891de4ce513f13ca490aecf9c6b083408c07c479ae8b"
+          },
+          "module": "robot_learning.lab.verify_coverage_training_environment"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "coverage-training-environment-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M9-1-coverage_training_environment_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 0,
+                    "path": "/failures",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/configured_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/seeded_reset_radii_within",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/configured_training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/seeded_reset_radii",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/target_held_during_transitions",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/transition_output_lengths",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f9bcf4c193846183af6e891de4ce513f13ca490aecf9c6b083408c07c479ae8b"
+            },
+            "module": "robot_learning.lab.verify_coverage_training_environment"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6a64af73abeae3991e7a9e27172ff40803f17b47",
+            "fingerprint": "cdc30a5875ec46100e939c04b3ef3154fc12263c2bc81c55f7dedbad53255e94",
+            "manifest": [
+              {
+                "fingerprint": "146138974b19790b1d77781332fc313d5204352d459dabe0724554046e950951",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "31c1922cc350d4c61fc8a51bfe1f9ee9d9e7266ce2523dc08922b962714e94f1",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "8ee4c8303b90235e9c73aa38ccd733a2fd5b7a2967bca19aab143fde08820b43",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6d4e92720a309aef273d66894b8d797bf65f6147",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_coverage_training_environment.py"
+          ],
+          "scientific_commit": "ee967c2f423c76ac4b4020cdc76bdd7d788f0adf",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e271ecc4194e709cae73dbc481b80ae74724c013fe84c1351dc3862112917ad0",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Compatibility verification of the coverage-focused training environment before training: construct the real training environment, verify its exact full official radius range, perform controlled seeded resets and two production transitions, and confirm the evaluation constructor remains unchanged.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/coverage_training_environment_compatibility.json",
+            "instrument": "python_module",
+            "label": "coverage-training-environment-compatibility",
+            "module": "robot_learning.lab.verify_coverage_training_environment"
+          }
+        ],
+        "rationale": "I2 requires a genuine exposure change, not a new description of the baseline. The reviewed source changes only the training sampler lower bound from 0.14 m to 0.06 m, preserving scenario mechanics, angle sampling, PPO parameters, and evaluation semantics. This bounded production-path check exercises repeated reset/transition behavior and explicitly fails for the old or partial range change before consuming the full training allocation. It is implementation compatibility evidence, not policy performance or official success evidence."
+      }
+    },
+    "request_fingerprint": "db45ba8048af1c93eef5a6518ac2ce70902ce297f480c4a6a796e8897520a5db",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 archived 24 baseline checkpoints. M6 measured T1:checkpoint-115712 and provides the strongest completed candidate evidence, but no working or best-known role is assigned. The T1:checkpoint-120832 terminal artifact remains unmeasured; its late proxy values do not elevate it over the measured checkpoint and no official-assessment candidate is certified. M1-M5 and M7-M8 are physical, diagnostic, or analysis artifacts rather than learned candidates.",
     "completed_operations": [
@@ -3851,6 +4500,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5b15bf40-5dc4-4dad-9949-193b22ca12b7",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does a coverage-focused variant that includes the full official 0.06-0.20 m radius range with preserved angle/branch diversity improve inner-radius first reach and complete hold enough to justify continued coverage work toward 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M9"
+    ],
+    "scientific_parent_commit": "ee967c2f423c76ac4b4020cdc76bdd7d788f0adf"
+  },
   "terminal_state": null
 }
