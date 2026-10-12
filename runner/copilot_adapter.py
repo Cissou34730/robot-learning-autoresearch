@@ -3161,15 +3161,35 @@ async def serve(args) -> int:
                 except (OSError, ValueError) as exc:
                     print(f"Session usage could not be recorded: {exc}", file=sys.stderr)
             operations = getattr(invocation_args, "operation_submission", None)
+            outcome_status = operations.status if operations is not None else "preliminary"
+            outcome_error = (
+                error
+                or (operations.error if operations is not None else None)
+                or invocation_args.usage_console.session_error
+            )
+            if exit_code == EXIT_TIMEOUT:
+                outcome_status = "controller_fatal"
+                outcome_error = (
+                    f"Copilot bounded session timed out after {invocation_args.timeout}s."
+                )
+            elif exit_code == EXIT_INTERRUPTED:
+                outcome_status = "interrupted"
+                outcome_error = "Copilot bounded session interrupted."
+            elif exit_code != EXIT_OK and outcome_status in {
+                None, "preliminary", "completed", "rejected",
+                "implementation_error", "session_ended",
+            }:
+                outcome_status = "controller_fatal"
+                outcome_error = outcome_error or (
+                    f"Copilot bounded session exited with code {exit_code} "
+                    "without a successful session outcome."
+                )
             await channel.send({
                 "type": "session_result",
                 "invocation_id": command["invocation_id"],
                 "exit_code": exit_code,
-                "status": operations.status if operations is not None else "preliminary",
-                "error": error or (
-                    operations.error if operations is not None else
-                    invocation_args.usage_console.session_error
-                ),
+                "status": outcome_status,
+                "error": outcome_error,
             })
             if exit_code not in {EXIT_OK, EXIT_SESSION_ERROR}:
                 break

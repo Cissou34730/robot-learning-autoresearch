@@ -21,6 +21,11 @@ from pathlib import Path, PureWindowsPath
 
 from runner import paths
 
+
+class PublicationError(RuntimeError):
+    """Local commits could not be published to origin."""
+
+
 STATE_SCHEMA_VERSION = 6
 DEFAULT_MAX_INQUIRIES = 15
 WINDOWS_COMMAND_LINE_LIMIT = 32_767
@@ -484,7 +489,7 @@ def push_head() -> None:
     try:
         git("push", "origin", "HEAD")
     except RuntimeError as error:
-        raise RuntimeError(
+        raise PublicationError(
             "local commits could not be pushed to origin; refusing unpublished state\n"
             + str(error)
         ) from error

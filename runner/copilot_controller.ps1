@@ -1,5 +1,6 @@
 # Trusted launcher transport. Only this controller selects Runner arguments.
 $script:CopilotRepositoryRoot = Split-Path -Parent $PSScriptRoot
+$script:RunnerPublicationFailureExitCode = 3
 
 function Get-CopilotOperationState {
     param([Parameter(Mandatory)]$State)
@@ -226,6 +227,7 @@ function Invoke-CopilotOperationSubmission {
         $current.pending_operation.id
     } elseif ($newCompleted.Count) { $newCompleted[-1].id } else { $null }
     if (
+        $exitCode -eq $script:RunnerPublicationFailureExitCode -or
         $current.pending_operation.progress -in @("result_ready", "completed") -or
         ($exitCode -ne 0 -and $newCompleted.Count -gt 0)
     ) {

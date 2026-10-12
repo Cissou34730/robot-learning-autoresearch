@@ -28,6 +28,7 @@ PROPOSAL_ERRORS = (
 ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
 TIMESTEPS = 120_000
+PUBLICATION_FAILURE_EXIT_CODE = 3
 
 
 class FrozenOperationMismatch(ValueError):
@@ -2264,6 +2265,8 @@ def main() -> int:
                     return 1
                 accept_operation(request, state)
                 return execute_pending_operation()
+            except repository.PublicationError:
+                raise
             except PROPOSAL_ERRORS as error:
                 print(f"ERROR: invalid replacement operation: {error}")
                 return 1
@@ -2278,14 +2281,20 @@ def main() -> int:
         request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
         accept_operation(request, state)
         return execute_pending_operation()
+    except repository.PublicationError:
+        raise
     except PROPOSAL_ERRORS as error:
         print(f"ERROR: invalid operation: {error}")
         return 1
 
 
 def run_with_stop_control() -> int:
-    with interrupt_on_stop_request():
-        return main()
+    try:
+        with interrupt_on_stop_request():
+            return main()
+    except repository.PublicationError as error:
+        print(f"ERROR: publication failed: {error}", file=sys.stderr)
+        return PUBLICATION_FAILURE_EXIT_CODE
 
 
 if __name__ == "__main__":
