@@ -109,3 +109,4 @@
 | E60 | inquiry | I15 | completed |
 | E61 | checkpoint | - | checkpointed |
 | M36 | measurement | I15 | failed |
+| M37 | measurement | I15 | completed |
