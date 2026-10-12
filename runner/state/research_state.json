@@ -841,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 4,
+    "measurement": 6,
     "session": 3,
     "training": 1
   },
@@ -2199,9 +2199,146 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T08:25:42Z",
+      "error": "robot_learning.lab.verify_research_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 305, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 301, in main\n    run_check(args.output_json)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 138, in run_check\n    observed = write_analysis(input_path, Path(directory) / \"analysis.json\")\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 405, in write_analysis\n    result = analyze_artifact(input_path)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 366, in analyze_artifact\n    rows = _validate_artifact(artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 225, in _validate_artifact\n    raise ValueError(f\"episode {episode} max held run exceeds episode length\")\nValueError: episode 2 max held run exceeds episode length\n",
+      "id": "M5",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Synthetic verification of the I1 research-evaluation mechanism analysis.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-mechanism-analysis-verification",
+            "module": "robot_learning.lab.verify_research_evaluation_analysis"
+          }
+        ],
+        "rationale": "Before analyzing M4, verify the new analysis path on controlled schema-6 rows. The check exercises success/no-reach/reached-hold classification, exact radius and angle boundaries, reached-failure summaries, branch aggregation, and explicit rejection of misaligned or incomplete diagnostics. It is independent of the trained candidate and does not alter M4."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_research_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 305, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 301, in main\n    run_check(args.output_json)\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_research_evaluation_analysis.py\", line 138, in run_check\n    observed = write_analysis(input_path, Path(directory) / \"analysis.json\")\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 405, in write_analysis\n    result = analyze_artifact(input_path)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 366, in analyze_artifact\n    rows = _validate_artifact(artifact)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\analyze_research_evaluation.py\", line 225, in _validate_artifact\n    raise ValueError(f\"episode {episode} max held run exceeds episode length\")\nValueError: episode 2 max held run exceeds episode length\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M6",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json"
+          ],
+          "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json",
+          "instrument": "python_module",
+          "label": "research-evaluation-mechanism-analysis-verification",
+          "module": "robot_learning.lab.verify_research_evaluation_analysis"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "fd4a7a85fedd93078ab08c67415c34848e609cab04749e5fd7e545395062f215",
+            "path": "robot_learning/lab/analyze_research_evaluation.py"
+          },
+          {
+            "fingerprint": "bb66a3c3fe25c3f17a01ba8f91b33848f355c9aff7fb1ecb781df74d60d87049",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "265291920ef5912c6411e0a3294b37a3f7236c0af0c2495f0265a92c072e731b",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          },
+          {
+            "fingerprint": "b507ff74d783d3476b7706e5a009f9fbef646511fac4fb0cd4dc38df16ebf326",
+            "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+          },
+          {
+            "fingerprint": "18159e6ed722a7bcee30ad993acd83d43bba44bfd0f955935285c7e60d843d5d",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "e9bce6893c0891937238e1e4aabb491869c21c5d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "b507ff74d783d3476b7706e5a009f9fbef646511fac4fb0cd4dc38df16ebf326",
+            "path": "robot_learning/lab/verify_research_evaluation_analysis.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_evaluation_analysis.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Synthetic verification of the I1 research-evaluation mechanism analysis.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json"
+            ],
+            "artifact": "campaigns/evaluations/4702776a-0b97-4740-85d4-a1b52a96b10a/research_evaluation_analysis_verification.json",
+            "instrument": "python_module",
+            "label": "research-evaluation-mechanism-analysis-verification",
+            "module": "robot_learning.lab.verify_research_evaluation_analysis"
+          }
+        ],
+        "rationale": "Before analyzing M4, verify the new analysis path on controlled schema-6 rows. The check exercises success/no-reach/reached-hold classification, exact radius and angle boundaries, reached-failure summaries, branch aggregation, and explicit rejection of misaligned or incomplete diagnostics. It is independent of the trained candidate and does not alter M4."
+      }
+    },
+    "request_fingerprint": "4ba4c951be014d3db582f477e92bf6d06cf165b00c67bf84242580b4d4f8ba6c",
+    "session_id": "S3",
+    "supersedes": "M5"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists and working, best-known, and retained roles remain empty. E2 is an inquiry boundary, not a policy candidate; M1 and M2 are measurements and cannot fill a candidate role.",
     "completed_operations": [
