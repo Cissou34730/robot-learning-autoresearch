@@ -91,8 +91,9 @@ def _compiled_fields(model: mujoco.MjModel) -> dict[str, Any]:
     body_mass = _required_attribute(model, "body_mass", "MjModel")
     body_inertia = _required_attribute(model, "body_inertia", "MjModel")
     body_ipos = _required_attribute(model, "body_ipos", "MjModel")
-    jnt_damping = _required_attribute(model, "jnt_damping", "MjModel")
-    jnt_armature = _required_attribute(model, "jnt_armature", "MjModel")
+    dof_damping = _required_attribute(model, "dof_damping", "MjModel")
+    dof_armature = _required_attribute(model, "dof_armature", "MjModel")
+    jnt_dofadr = _required_attribute(model, "jnt_dofadr", "MjModel")
     actuator_ctrlrange = _required_attribute(model, "actuator_ctrlrange", "MjModel")
     actuator_gear = _required_attribute(model, "actuator_gear", "MjModel")
     actuator_trnid = _required_attribute(model, "actuator_trnid", "MjModel")
@@ -126,11 +127,12 @@ def _compiled_fields(model: mujoco.MjModel) -> dict[str, Any]:
 
     joints = []
     for joint_id in range(model.njnt):
+        dof_id = int(jnt_dofadr[joint_id])
         joints.append(
             {
                 "name": _name(model, mujoco.mjtObj.mjOBJ_JOINT, joint_id),
-                "damping": _json_value(jnt_damping[joint_id]),
-                "armature": _json_value(jnt_armature[joint_id]),
+                "damping": _json_value(dof_damping[dof_id]),
+                "armature": _json_value(dof_armature[dof_id]),
             }
         )
 
