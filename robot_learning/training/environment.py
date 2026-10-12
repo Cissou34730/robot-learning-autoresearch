@@ -21,13 +21,16 @@ from robot_learning.scenario.policy_io import (
     DIRECT_CONTROL_PROFILE,
     RESIDUAL_TORQUE_PROFILE,
 )
-from robot_learning.training.reward import HOLD_RECOVERY_PROFILE, reach_reward
+from robot_learning.training.reward import (
+    DIRECT_LIMIT_VELOCITY_PROFILE,
+    reach_reward,
+)
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 
 
-class HoldRecoveryTrainingEnv(TwoJointArmReachEnv):
-    """Scenario mechanics with training-only hold-recovery reward inputs."""
+class DirectLimitVelocityTrainingEnv(TwoJointArmReachEnv):
+    """Full-radius direct-control route with live regulation inputs."""
 
     def step(
         self, action: np.ndarray
@@ -71,6 +74,8 @@ class HoldRecoveryTrainingEnv(TwoJointArmReachEnv):
             reward_profile=self.reward_profile,
             joint_velocity=self.data.qvel[:2].copy(),
             endpoint_velocity=self._endpoint_linear_velocity(),
+            joint_position=self.data.qpos[:2].copy(),
+            joint_ranges=self.model.jnt_range[:2].copy(),
         )
         self._previous_distance = distance
 
@@ -86,10 +91,14 @@ class HoldRecoveryTrainingEnv(TwoJointArmReachEnv):
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
+# Preserve the previous import name while the factory selects the new route.
+HoldRecoveryTrainingEnv = DirectLimitVelocityTrainingEnv
+
+
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return HoldRecoveryTrainingEnv(
+    return DirectLimitVelocityTrainingEnv(
         target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        reward_profile=HOLD_RECOVERY_PROFILE,
+        reward_profile=DIRECT_LIMIT_VELOCITY_PROFILE,
         control_profile=DIRECT_CONTROL_PROFILE,
     )
