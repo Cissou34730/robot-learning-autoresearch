@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when one bounded reach-preserving terminal-stabilization implementation has been compatibility-verified, trained within the available allocation, and compared with T2 on the fixed non-overlapping development panel using the established success, first-reach, radius/angle, reached-incomplete, interruption, entry/final-velocity, and physics-step diagnostics. A positive conclusion requires preserved T2-level first reach and inner-radius performance together with a material reduction in reached-incomplete or hold-loss failures sufficient to make official assessment a credible next choice; a negative or limited conclusion is sufficient if reach or inner-radius performance is not preserved, if the stabilization shift does not improve complete success, or if evidence redirects toward reach trajectory/branch/distribution work. The result must not claim a broader method effect beyond the implemented recipe, and any disagreement between boundary and physics-step hold evidence must remain an explicit readiness limitation.",
+    "goal_connection": "The immutable goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is the strongest measured development artifact at 150/160 successes and 153/160 first reaches, with 40/40 success at 6-10 cm and 50/53 at 10-14 cm, but it remains below the 98% reference with seven never-reached and three reached-but-incomplete failures. T4 shows that the tested weak terminal-focused design can remove reached-incomplete and boundary interruptions among reached episodes, but it also falls to 144/160 and 144/160 first reaches, so the unresolved campaign-level opportunity is specifically stabilization without sacrificing T2's reach and inner-radius coverage. Any result remains development evidence; protected continuous-hold semantics remain authoritative and unresolved.",
+    "handoff_conclusion": "Established observations: the physical model supports feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. T1's omitted-inner-radius baseline had 105/160 successes; T2's validated full-radius exposure artifact improved to 150/160 with 153 first reaches, 40/40 success at 6-10 cm, 50/53 at 10-14 cm, seven never-reached failures, and three reached-incomplete failures. T3 then changed the observation representation and added stronger branch/limit/speed shaping together; M21 measured 3/160 with 149 never-reached, so that coupled result cannot identify a component-level cause and does not reject branch-aware control generally. M22 verified the I5 implementation: it restored T2's 11-value observation, kept the full-radius exposure, and reduced shaping to weak near-limit/high-speed penalties while preserving production reset, clipping, reward attribution, and hold telemetry. T4 was a fresh full-allocation artifact; its late proxy trajectory peaked at 0.90 at 105472 steps, so that nonterminal checkpoint was measured without granting terminal status privilege. M23 measured T4 against T2 on identical fixed seeds: T4 achieved 144/160 versus 150/160, with 144 versus 153 first reaches and a paired net loss of six. M24 showed T4 had 16 never-reached and zero reached-incomplete failures, while T2 had seven and three respectively. T4 reduced boundary hold interruptions from 438 to zero and physics-step out-of-tolerance substeps during hold from 11655 to 8090 overall, indicating a stabilization shift among reached episodes, but it lost reach and degraded T2's inner-radius gains to 32/40 and 49/53; therefore no overall success gain can be attributed to stabilization. T4's feasible-branch counts were unchanged and its never-reached class increased, so this specific soft reward/representation design did not address the targeted residual. Claims remain recipe-specific and artifact-level: the result does not disprove less restrictive reward balancing, terminal stabilization, or branch/trajectory methods broadly. Physics-step traces are research diagnostics, not protected semantics; continuous-hold equivalence remains unresolved. Training proxies and checkpoint position were used only to nominate T4 and do not establish development readiness.",
+    "handoff_question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+    "handoff_source_session_id": "S11",
+    "id": "I6",
+    "opened_in_session": "S12",
+    "question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+    "rationale": "The inherited interpretation that stabilization had become the dominant residual is unsupported at campaign level: T4's zero reached-incomplete failures and reduced boundary/physics-step interruptions occurred with 16 never-reached failures, loss of nine first reaches relative to T2, degradation in the 6-10 cm and 10-14 cm strata, and six fewer paired successes. This is a recipe-specific tradeoff, not evidence against terminal stabilization generally. The current question remains consequential because T2 is close enough to the objective that eliminating only a small residual class could materially change the assessment decision, while the protected assessment would terminate the campaign on a candidate measured at 150/160 under boundary-sampled semantics and with unresolved continuous-hold equivalence. The expected contribution of one bounded inquiry is therefore higher than spending the terminal assessment now: it can test whether T4's stabilization signal is compatible with T2's reach, while the closure condition explicitly redirects if reach is lost. The cost is one bounded full training allocation and matched development measurement; five inquiries have been used of fifteen, and no official-assessment episodes have been consumed. Existing training proxies and unmeasured checkpoints do not justify selecting another artifact: T2's 0.58 terminal proxy nominated the measured candidate, whereas T4's late 0.90 proxy did not predict its 144/160 result.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -3285,16 +3296,16 @@
     }
   },
   "counters": {
-    "event": 22,
-    "inquiry": 5,
+    "event": 23,
+    "inquiry": 6,
     "measurement": 24,
-    "session": 11,
+    "session": 12,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -12717,9 +12728,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T16:03:07Z",
+      "error": null,
+      "id": "E23",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when one bounded reach-preserving terminal-stabilization implementation has been compatibility-verified, trained within the available allocation, and compared with T2 on the fixed non-overlapping development panel using the established success, first-reach, radius/angle, reached-incomplete, interruption, entry/final-velocity, and physics-step diagnostics. A positive conclusion requires preserved T2-level first reach and inner-radius performance together with a material reduction in reached-incomplete or hold-loss failures sufficient to make official assessment a credible next choice; a negative or limited conclusion is sufficient if reach or inner-radius performance is not preserved, if the stabilization shift does not improve complete success, or if evidence redirects toward reach trajectory/branch/distribution work. The result must not claim a broader method effect beyond the implemented recipe, and any disagreement between boundary and physics-step hold evidence must remain an explicit readiness limitation.",
+        "goal_connection": "The immutable goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is the strongest measured development artifact at 150/160 successes and 153/160 first reaches, with 40/40 success at 6-10 cm and 50/53 at 10-14 cm, but it remains below the 98% reference with seven never-reached and three reached-but-incomplete failures. T4 shows that the tested weak terminal-focused design can remove reached-incomplete and boundary interruptions among reached episodes, but it also falls to 144/160 and 144/160 first reaches, so the unresolved campaign-level opportunity is specifically stabilization without sacrificing T2's reach and inner-radius coverage. Any result remains development evidence; protected continuous-hold semantics remain authoritative and unresolved.",
+        "question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+        "rationale": "The inherited interpretation that stabilization had become the dominant residual is unsupported at campaign level: T4's zero reached-incomplete failures and reduced boundary/physics-step interruptions occurred with 16 never-reached failures, loss of nine first reaches relative to T2, degradation in the 6-10 cm and 10-14 cm strata, and six fewer paired successes. This is a recipe-specific tradeoff, not evidence against terminal stabilization generally. The current question remains consequential because T2 is close enough to the objective that eliminating only a small residual class could materially change the assessment decision, while the protected assessment would terminate the campaign on a candidate measured at 150/160 under boundary-sampled semantics and with unresolved continuous-hold equivalence. The expected contribution of one bounded inquiry is therefore higher than spending the terminal assessment now: it can test whether T4's stabilization signal is compatible with T2's reach, while the closure condition explicitly redirects if reach is lost. The cost is one bounded full training allocation and matched development measurement; five inquiries have been used of fifteen, and no official-assessment episodes have been consumed. Existing training proxies and unmeasured checkpoints do not justify selecting another artifact: T2's 0.58 terminal proxy nominated the measured candidate, whereas T4's late 0.90 proxy did not predict its 144/160 result."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when one bounded reach-preserving terminal-stabilization implementation has been compatibility-verified, trained within the available allocation, and compared with T2 on the fixed non-overlapping development panel using the established success, first-reach, radius/angle, reached-incomplete, interruption, entry/final-velocity, and physics-step diagnostics. A positive conclusion requires preserved T2-level first reach and inner-radius performance together with a material reduction in reached-incomplete or hold-loss failures sufficient to make official assessment a credible next choice; a negative or limited conclusion is sufficient if reach or inner-radius performance is not preserved, if the stabilization shift does not improve complete success, or if evidence redirects toward reach trajectory/branch/distribution work. The result must not claim a broader method effect beyond the implemented recipe, and any disagreement between boundary and physics-step hold evidence must remain an explicit readiness limitation.",
+          "goal_connection": "The immutable goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is the strongest measured development artifact at 150/160 successes and 153/160 first reaches, with 40/40 success at 6-10 cm and 50/53 at 10-14 cm, but it remains below the 98% reference with seven never-reached and three reached-but-incomplete failures. T4 shows that the tested weak terminal-focused design can remove reached-incomplete and boundary interruptions among reached episodes, but it also falls to 144/160 and 144/160 first reaches, so the unresolved campaign-level opportunity is specifically stabilization without sacrificing T2's reach and inner-radius coverage. Any result remains development evidence; protected continuous-hold semantics remain authoritative and unresolved.",
+          "handoff_conclusion": "Established observations: the physical model supports feasible two-branch kinematics, a fully extended reset singularity requiring coupled bend-then-translate trajectories, bounded direct actuation, and a causal separation between reach, convergence, and uninterrupted hold. T1's omitted-inner-radius baseline had 105/160 successes; T2's validated full-radius exposure artifact improved to 150/160 with 153 first reaches, 40/40 success at 6-10 cm, 50/53 at 10-14 cm, seven never-reached failures, and three reached-incomplete failures. T3 then changed the observation representation and added stronger branch/limit/speed shaping together; M21 measured 3/160 with 149 never-reached, so that coupled result cannot identify a component-level cause and does not reject branch-aware control generally. M22 verified the I5 implementation: it restored T2's 11-value observation, kept the full-radius exposure, and reduced shaping to weak near-limit/high-speed penalties while preserving production reset, clipping, reward attribution, and hold telemetry. T4 was a fresh full-allocation artifact; its late proxy trajectory peaked at 0.90 at 105472 steps, so that nonterminal checkpoint was measured without granting terminal status privilege. M23 measured T4 against T2 on identical fixed seeds: T4 achieved 144/160 versus 150/160, with 144 versus 153 first reaches and a paired net loss of six. M24 showed T4 had 16 never-reached and zero reached-incomplete failures, while T2 had seven and three respectively. T4 reduced boundary hold interruptions from 438 to zero and physics-step out-of-tolerance substeps during hold from 11655 to 8090 overall, indicating a stabilization shift among reached episodes, but it lost reach and degraded T2's inner-radius gains to 32/40 and 49/53; therefore no overall success gain can be attributed to stabilization. T4's feasible-branch counts were unchanged and its never-reached class increased, so this specific soft reward/representation design did not address the targeted residual. Claims remain recipe-specific and artifact-level: the result does not disprove less restrictive reward balancing, terminal stabilization, or branch/trajectory methods broadly. Physics-step traces are research diagnostics, not protected semantics; continuous-hold equivalence remains unresolved. Training proxies and checkpoint position were used only to nominate T4 and do not establish development readiness.",
+          "handoff_question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+          "handoff_source_session_id": "S11",
+          "id": "I6",
+          "opened_in_session": "S12",
+          "question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+          "rationale": "The inherited interpretation that stabilization had become the dominant residual is unsupported at campaign level: T4's zero reached-incomplete failures and reduced boundary/physics-step interruptions occurred with 16 never-reached failures, loss of nine first reaches relative to T2, degradation in the 6-10 cm and 10-14 cm strata, and six fewer paired successes. This is a recipe-specific tradeoff, not evidence against terminal stabilization generally. The current question remains consequential because T2 is close enough to the objective that eliminating only a small residual class could materially change the assessment decision, while the protected assessment would terminate the campaign on a candidate measured at 150/160 under boundary-sampled semantics and with unresolved continuous-hold equivalence. The expected contribution of one bounded inquiry is therefore higher than spending the terminal assessment now: it can test whether T4's stabilization signal is compatible with T2's reach, while the closure condition explicitly redirects if reach is lost. The cost is one bounded full training allocation and matched development measurement; five inquiries have been used of fifteen, and no official-assessment episodes have been consumed. Existing training proxies and unmeasured checkpoints do not justify selecting another artifact: T2's 0.58 terminal proxy nominated the measured candidate, whereas T4's late 0.90 proxy did not predict its 144/160 result.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E23",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when one bounded reach-preserving terminal-stabilization implementation has been compatibility-verified, trained within the available allocation, and compared with T2 on the fixed non-overlapping development panel using the established success, first-reach, radius/angle, reached-incomplete, interruption, entry/final-velocity, and physics-step diagnostics. A positive conclusion requires preserved T2-level first reach and inner-radius performance together with a material reduction in reached-incomplete or hold-loss failures sufficient to make official assessment a credible next choice; a negative or limited conclusion is sufficient if reach or inner-radius performance is not preserved, if the stabilization shift does not improve complete success, or if evidence redirects toward reach trajectory/branch/distribution work. The result must not claim a broader method effect beyond the implemented recipe, and any disagreement between boundary and physics-step hold evidence must remain an explicit readiness limitation.",
+        "goal_connection": "The immutable goal is one frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success completing the full uninterrupted 2-second hold. T2:checkpoint-120832 is the strongest measured development artifact at 150/160 successes and 153/160 first reaches, with 40/40 success at 6-10 cm and 50/53 at 10-14 cm, but it remains below the 98% reference with seven never-reached and three reached-but-incomplete failures. T4 shows that the tested weak terminal-focused design can remove reached-incomplete and boundary interruptions among reached episodes, but it also falls to 144/160 and 144/160 first reaches, so the unresolved campaign-level opportunity is specifically stabilization without sacrificing T2's reach and inner-radius coverage. Any result remains development evidence; protected continuous-hold semantics remain authoritative and unresolved.",
+        "question": "Can a reach-preserving terminal-stabilization design retain T2's inner-radius and first-reach performance while reducing reached-incomplete and uninterrupted-hold failures enough to justify reconsidering the protected official assessment?",
+        "rationale": "The inherited interpretation that stabilization had become the dominant residual is unsupported at campaign level: T4's zero reached-incomplete failures and reduced boundary/physics-step interruptions occurred with 16 never-reached failures, loss of nine first reaches relative to T2, degradation in the 6-10 cm and 10-14 cm strata, and six fewer paired successes. This is a recipe-specific tradeoff, not evidence against terminal stabilization generally. The current question remains consequential because T2 is close enough to the objective that eliminating only a small residual class could materially change the assessment decision, while the protected assessment would terminate the campaign on a candidate measured at 150/160 under boundary-sampled semantics and with unresolved continuous-hold equivalence. The expected contribution of one bounded inquiry is therefore higher than spending the terminal assessment now: it can test whether T4's stabilization signal is compatible with T2's reach, while the closure condition explicitly redirects if reach is lost. The cost is one bounded full training allocation and matched development measurement; five inquiries have been used of fifteen, and no official-assessment episodes have been consumed. Existing training proxies and unmeasured checkpoints do not justify selecting another artifact: T2's 0.58 terminal proxy nominated the measured candidate, whereas T4's late 0.90 proxy did not predict its 144/160 result."
+      }
+    },
+    "request_fingerprint": "17b347c42c2f890299aa42201e7125b2a606c940369bd03e5caf38974d13ca24",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known by E18 and M21, at 150/160 on the fixed development panel; it is not certified for the official goal. T4:checkpoint-105472 is a measured limited-negative I5 artifact at 144/160 and is not working, best-known, or retained. T1 remains the earlier baseline reference and T3 remains the I4 negative artifact. No working or retained candidate exists; no official-assessment candidate is certified.",
     "completed_operations": [
@@ -12788,6 +12862,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "3dd3bdb8-97c1-4813-9c5f-15ca3f71499f",
+    "id": "S12",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E23"
+    ],
+    "scientific_parent_commit": "28c3aa66912b5660dfffe328556f02e9541ae0f3"
+  },
   "terminal_state": null
 }
