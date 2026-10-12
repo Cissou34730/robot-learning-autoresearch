@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "After one full-allocation training and matched complete-hold evaluation, close positively only if the selected candidate exceeds 153/160 and does not increase no-first-reach failures relative to T4, with time-resolved diagnostics showing the intended limit/velocity-related failure reduction. Close negatively or inconclusively if it fails to exceed 153/160, increases acquisition failures, or lacks evidence that the tested implementation exercised the intended shaping. Any result remains development evidence and cannot substitute for the protected 196/200 official assessment.",
+    "goal_connection": "The best-known complete artifact remains 153/160, leaving four reach-then-interrupt failures and three no-first-reach failures, far below the 196/200 official commitment. M15 independently verified that the residual acquisition failures enter joint-limit/saturated-velocity regimes and that the post-reach failures cross the tolerance boundary with nonzero velocity; M35 shows the tied hold-recovery artifact changes neither class. A direct policy route that addresses both mechanisms while retaining the verified full-radius exposure can change capability without sacrificing the acquisition gain, and its complete-hold evaluation can determine whether further development remains credible.",
+    "handoff_conclusion": "Established observations: M15 separated singular-reset acquisition failures from post-reach interruptions; M19 and M31 measured the prior candidates; M32 showed that extending T5 tied T4 at 153/160 with no paired advantage; M34 independently verified the hold-recovery route's implementation invariant; and M35 measured the new candidate against T4 on the unchanged paired 160-episode panel. T10:checkpoint-95232 matched T4 exactly at 153/160, with zero paired wins, zero discordant episodes, and the same 3 no-first-reach/4 reach-then-interrupt split. The candidate comparison is negative/inconclusive for this route and does not identify reward, runtime, plant dynamics, or any single intervention as the cause. The physical model's distinction between singular escape/acquisition and dynamic uninterrupted regulation remains consequential: both residual mechanisms persist, while bounded IK feasibility and absent contact keep geometric impossibility and contact intervention from leading the next decision.",
+    "handoff_question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+    "handoff_source_session_id": "S29",
+    "id": "I15",
+    "opened_in_session": "S30",
+    "question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+    "rationale": "Official assessment is not justified by 153/160: the unchanged candidate is 43 successes short of the official threshold, and T10's identical 153/160 result has zero paired wins and the same residual failure split. The inherited proposed question asks which class must be discriminated next, but that distinction is already consequentially resolved at the class/signature level by M15 and reproduced at the candidate level by M35; another broad mechanism survey would not by itself improve capability. The unresolved decision is whether a mechanism-supported direct-policy intervention can remove both residual classes without repeating the acquisition collapse seen in other routes. The proposed work is narrower than another generic PPO variant: it preserves full-radius exposure and direct actuation, adds targeted limits and approach-velocity signals to the training objective, and requires complete uninterrupted holds plus diagnostics for selection. A negative result would close this route without disproving the broader learning method, while a positive result would provide a credible candidate to retain and, only if justified after measurement, consider for official assessment.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7bf73f073a9d76745a6bd0df7a442b3f43f5146d",
     "id": "90563aac-4d55-41a2-9cfd-dffab0145883",
@@ -8203,16 +8214,16 @@
     }
   },
   "counters": {
-    "event": 59,
-    "inquiry": 14,
+    "event": 60,
+    "inquiry": 15,
     "measurement": 35,
-    "session": 29,
+    "session": 30,
     "training": 10
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-120832",
     "retained": {},
@@ -25306,9 +25317,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T02:14:28Z",
+      "error": null,
+      "id": "E60",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "After one full-allocation training and matched complete-hold evaluation, close positively only if the selected candidate exceeds 153/160 and does not increase no-first-reach failures relative to T4, with time-resolved diagnostics showing the intended limit/velocity-related failure reduction. Close negatively or inconclusively if it fails to exceed 153/160, increases acquisition failures, or lacks evidence that the tested implementation exercised the intended shaping. Any result remains development evidence and cannot substitute for the protected 196/200 official assessment.",
+        "goal_connection": "The best-known complete artifact remains 153/160, leaving four reach-then-interrupt failures and three no-first-reach failures, far below the 196/200 official commitment. M15 independently verified that the residual acquisition failures enter joint-limit/saturated-velocity regimes and that the post-reach failures cross the tolerance boundary with nonzero velocity; M35 shows the tied hold-recovery artifact changes neither class. A direct policy route that addresses both mechanisms while retaining the verified full-radius exposure can change capability without sacrificing the acquisition gain, and its complete-hold evaluation can determine whether further development remains credible.",
+        "question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+        "rationale": "Official assessment is not justified by 153/160: the unchanged candidate is 43 successes short of the official threshold, and T10's identical 153/160 result has zero paired wins and the same residual failure split. The inherited proposed question asks which class must be discriminated next, but that distinction is already consequentially resolved at the class/signature level by M15 and reproduced at the candidate level by M35; another broad mechanism survey would not by itself improve capability. The unresolved decision is whether a mechanism-supported direct-policy intervention can remove both residual classes without repeating the acquisition collapse seen in other routes. The proposed work is narrower than another generic PPO variant: it preserves full-radius exposure and direct actuation, adds targeted limits and approach-velocity signals to the training objective, and requires complete uninterrupted holds plus diagnostics for selection. A negative result would close this route without disproving the broader learning method, while a positive result would provide a credible candidate to retain and, only if justified after measurement, consider for official assessment."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "After one full-allocation training and matched complete-hold evaluation, close positively only if the selected candidate exceeds 153/160 and does not increase no-first-reach failures relative to T4, with time-resolved diagnostics showing the intended limit/velocity-related failure reduction. Close negatively or inconclusively if it fails to exceed 153/160, increases acquisition failures, or lacks evidence that the tested implementation exercised the intended shaping. Any result remains development evidence and cannot substitute for the protected 196/200 official assessment.",
+          "goal_connection": "The best-known complete artifact remains 153/160, leaving four reach-then-interrupt failures and three no-first-reach failures, far below the 196/200 official commitment. M15 independently verified that the residual acquisition failures enter joint-limit/saturated-velocity regimes and that the post-reach failures cross the tolerance boundary with nonzero velocity; M35 shows the tied hold-recovery artifact changes neither class. A direct policy route that addresses both mechanisms while retaining the verified full-radius exposure can change capability without sacrificing the acquisition gain, and its complete-hold evaluation can determine whether further development remains credible.",
+          "handoff_conclusion": "Established observations: M15 separated singular-reset acquisition failures from post-reach interruptions; M19 and M31 measured the prior candidates; M32 showed that extending T5 tied T4 at 153/160 with no paired advantage; M34 independently verified the hold-recovery route's implementation invariant; and M35 measured the new candidate against T4 on the unchanged paired 160-episode panel. T10:checkpoint-95232 matched T4 exactly at 153/160, with zero paired wins, zero discordant episodes, and the same 3 no-first-reach/4 reach-then-interrupt split. The candidate comparison is negative/inconclusive for this route and does not identify reward, runtime, plant dynamics, or any single intervention as the cause. The physical model's distinction between singular escape/acquisition and dynamic uninterrupted regulation remains consequential: both residual mechanisms persist, while bounded IK feasibility and absent contact keep geometric impossibility and contact intervention from leading the next decision.",
+          "handoff_question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+          "handoff_source_session_id": "S29",
+          "id": "I15",
+          "opened_in_session": "S30",
+          "question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+          "rationale": "Official assessment is not justified by 153/160: the unchanged candidate is 43 successes short of the official threshold, and T10's identical 153/160 result has zero paired wins and the same residual failure split. The inherited proposed question asks which class must be discriminated next, but that distinction is already consequentially resolved at the class/signature level by M15 and reproduced at the candidate level by M35; another broad mechanism survey would not by itself improve capability. The unresolved decision is whether a mechanism-supported direct-policy intervention can remove both residual classes without repeating the acquisition collapse seen in other routes. The proposed work is narrower than another generic PPO variant: it preserves full-radius exposure and direct actuation, adds targeted limits and approach-velocity signals to the training objective, and requires complete uninterrupted holds plus diagnostics for selection. A negative result would close this route without disproving the broader learning method, while a positive result would provide a credible candidate to retain and, only if justified after measurement, consider for official assessment.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E60",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "After one full-allocation training and matched complete-hold evaluation, close positively only if the selected candidate exceeds 153/160 and does not increase no-first-reach failures relative to T4, with time-resolved diagnostics showing the intended limit/velocity-related failure reduction. Close negatively or inconclusively if it fails to exceed 153/160, increases acquisition failures, or lacks evidence that the tested implementation exercised the intended shaping. Any result remains development evidence and cannot substitute for the protected 196/200 official assessment.",
+        "goal_connection": "The best-known complete artifact remains 153/160, leaving four reach-then-interrupt failures and three no-first-reach failures, far below the 196/200 official commitment. M15 independently verified that the residual acquisition failures enter joint-limit/saturated-velocity regimes and that the post-reach failures cross the tolerance boundary with nonzero velocity; M35 shows the tied hold-recovery artifact changes neither class. A direct policy route that addresses both mechanisms while retaining the verified full-radius exposure can change capability without sacrificing the acquisition gain, and its complete-hold evaluation can determine whether further development remains credible.",
+        "question": "Can a full-radius direct-control policy with explicit joint-limit and approach-velocity shaping preserve acquisition while improving dynamic regulation enough to exceed T4:checkpoint-120832's 153/160 complete-hold result toward the 196/200 official objective?",
+        "rationale": "Official assessment is not justified by 153/160: the unchanged candidate is 43 successes short of the official threshold, and T10's identical 153/160 result has zero paired wins and the same residual failure split. The inherited proposed question asks which class must be discriminated next, but that distinction is already consequentially resolved at the class/signature level by M15 and reproduced at the candidate level by M35; another broad mechanism survey would not by itself improve capability. The unresolved decision is whether a mechanism-supported direct-policy intervention can remove both residual classes without repeating the acquisition collapse seen in other routes. The proposed work is narrower than another generic PPO variant: it preserves full-radius exposure and direct actuation, adds targeted limits and approach-velocity signals to the training objective, and requires complete uninterrupted holds plus diagnostics for selection. A negative result would close this route without disproving the broader learning method, while a positive result would provide a credible candidate to retain and, only if justified after measurement, consider for official assessment."
+      }
+    },
+    "request_fingerprint": "8c59430b7db82287c2551d2333cf687446d9c158057f9e27c64042f291321593",
+    "session_id": "S30",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known and the measured development reference at 153/160. T10:checkpoint-95232 is a completed hold-recovery candidate tied with T4 and is not assigned best-known or working. T5 remains rejected as a continuation route after M32. No candidate is assigned as working or retained.",
     "completed_operations": [
@@ -25345,6 +25419,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "18c14be1-cf82-4066-a3a9-955139a0073a",
+    "id": "S30",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E60"
+    ],
+    "scientific_parent_commit": "53bb1f9736238d5ce52fbb42031ce20b149da6bc"
+  },
   "terminal_state": null
 }

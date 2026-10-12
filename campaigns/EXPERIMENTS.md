@@ -106,3 +106,4 @@
 | M35 | measurement | I14 | completed |
 | E58 | inquiry | I14 | completed |
 | E59 | checkpoint | I14 | checkpointed |
+| E60 | inquiry | I15 | completed |
