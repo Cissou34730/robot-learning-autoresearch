@@ -21,3 +21,4 @@
 | E7 | inquiry | I2 | completed |
 | E8 | checkpoint | - | checkpointed |
 | M10 | measurement | I2 | failed |
+| M11 | measurement | I2 | completed |

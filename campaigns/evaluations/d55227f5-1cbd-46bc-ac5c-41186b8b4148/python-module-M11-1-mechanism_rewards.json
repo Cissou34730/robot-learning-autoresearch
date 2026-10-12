@@ -1,0 +1,125 @@
+{
+  "check": "mechanism_rewards",
+  "status": "passed",
+  "observed": {
+    "configured_training_variant": "hold_aware",
+    "unknown_variant_rejected": true,
+    "baseline_interruption": {
+      "progress": -0.15,
+      "closeness": -0.9380694880012812,
+      "hold_progress": -0.0,
+      "outside_band": -0.1,
+      "hold_complete": 0.0,
+      "action_cost": 0.0
+    },
+    "hold_aware_interruption": {
+      "progress": -0.15,
+      "closeness": -0.9380694880012812,
+      "hold_progress": -15.0,
+      "outside_band": -5.0,
+      "hold_complete": 0.0,
+      "action_cost": 0.0
+    },
+    "repeated_hold_progress": [
+      5.0,
+      5.0,
+      5.0
+    ],
+    "post_interruption_reentry_progress": 5.0,
+    "transition": {
+      "in_tolerance_held_steps": 1,
+      "outside_held_steps": 0,
+      "outside_hold_progress": -0.5,
+      "outside_band": -5.0,
+      "reset_held_steps": 0,
+      "reset_outside_after_hold": false
+    },
+    "compiled_posture_metrics": {
+      "safe_condition": 2.4601947867166247,
+      "safe_margin": 1.3962634015954638,
+      "risky_condition": 486.66272297789374,
+      "risky_margin": 0.017059728390360185
+    },
+    "posture_rewards": {
+      "safe": {
+        "progress": 0.0,
+        "closeness": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "hold_complete": 0.0,
+        "action_cost": 0.0,
+        "posture_condition": -0.0,
+        "posture_limit": -0.0
+      },
+      "baseline_risky": {
+        "progress": 0.0,
+        "closeness": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "hold_complete": 0.0,
+        "action_cost": 0.0
+      },
+      "risky": {
+        "progress": 0.0,
+        "closeness": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "hold_complete": 0.0,
+        "action_cost": 0.0,
+        "posture_condition": -23.33313614889469,
+        "posture_limit": -1.8294027160963982
+      },
+      "far": {
+        "progress": 0.0,
+        "closeness": 0.0,
+        "hold_progress": 0.0,
+        "outside_band": 0.0,
+        "hold_complete": 0.0,
+        "action_cost": 0.0,
+        "posture_condition": 0.0,
+        "posture_limit": 0.0
+      }
+    },
+    "posture_environment_wiring": {
+      "progress": 2.977377190751349,
+      "closeness": 3.989626076947095,
+      "hold_progress": 0.5,
+      "outside_band": 0.0,
+      "hold_complete": 0.0,
+      "action_cost": -0.0,
+      "posture_condition": -23.33313614889469,
+      "posture_limit": -1.8294027160963982
+    }
+  },
+  "expected": {
+    "profiles": [
+      "baseline",
+      "hold_aware",
+      "posture_limit_aware"
+    ],
+    "configured_training_variant": "hold_aware",
+    "baseline_interruption": {
+      "hold_progress": 0.0,
+      "outside_band": -0.1
+    },
+    "hold_aware_interruption": {
+      "hold_progress": -15.0,
+      "outside_band": -5.0
+    },
+    "posture_scope": "near-target condition and joint-limit penalties only"
+  },
+  "checked_scope": [
+    "explicit training-variant configuration wiring and unknown-profile rejection",
+    "baseline versus hold-aware interruption consequences",
+    "repeated hold updates, interruption re-entry, compiled transitions, and reset",
+    "compiled-arm Jacobian conditioning and joint-limit metrics",
+    "posture penalties for safe, risky, and far controls"
+  ],
+  "errors": [],
+  "unchecked_scope": [
+    "PPO learning behavior and candidate performance",
+    "long-horizon distributional effects across the official target range",
+    "scientific validity of the chosen coefficients",
+    "official evaluation outcomes"
+  ]
+}
