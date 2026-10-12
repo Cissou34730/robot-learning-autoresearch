@@ -107,6 +107,7 @@ PYTHON_MODULE_ENTRY_FIELDS = {
     "args",
     "artifact",
     "label",
+    "inputs",
 }
 OPERATION_KEYS = {
     "inquiry",
@@ -430,6 +431,7 @@ def validate_measurement_request(request: dict) -> None:
                 isinstance(item, str) for item in arguments
             ):
                 raise TypeError("python_module args must be a list of strings")
+            validate_measurement_inputs(entry)
             artifact = repository.canonical_repo_path(
                 _nonempty(entry, "artifact", "python_module artifact")
             )
@@ -455,6 +457,31 @@ def validate_measurement_request(request: dict) -> None:
         _nonempty(comparison, "reference", "paired comparison reference")
 
 
+def validate_measurement_inputs(entry: dict) -> None:
+    from runner.artifact_evidence_query import ArtifactReference
+
+    inputs = entry.get("inputs", {})
+    if not isinstance(inputs, dict):
+        raise TypeError("python_module inputs must be a named reference object")
+    for name, reference in inputs.items():
+        if not isinstance(name, str) or not name.isidentifier():
+            raise ValueError("python_module input names must be identifiers")
+        ArtifactReference.model_validate(reference)
+    used_inputs = set()
+    for argument in entry["args"]:
+        matches = list(re.finditer(r"\{input:([^{}]+)\}", argument))
+        remainder = re.sub(r"\{input:([^{}]+)\}", "", argument)
+        if "{input:" in remainder:
+            raise ValueError("Malformed python_module input placeholder")
+        used_inputs.update(match[1] for match in matches)
+    if used_inputs != set(inputs):
+        raise ValueError(
+            "python_module input placeholders must match declared inputs: "
+            f"undeclared={sorted(used_inputs - set(inputs))}, "
+            f"unused={sorted(set(inputs) - used_inputs)}"
+        )
+
+
 def planned_measurements(request: dict, state: dict) -> list[dict]:
     validate_measurement_request(request)
     planned: list[dict] = []
@@ -472,13 +499,26 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
                     "python_module artifact must be scoped to the current campaign "
                     f"and start with {campaign_prefix}"
                 )
-            planned.append(
-                {
-                    **entry,
-                    "artifact": artifact,
-                    "label": str(entry.get("label") or f"measurement {index}").strip(),
-                }
-            )
+            spec = {
+                **entry, "artifact": artifact,
+                "label": str(entry.get("label") or f"measurement {index}").strip(),
+            }
+            if "inputs" in entry:
+                spec["input_artifacts"] = resolved_measurement_inputs(entry, state)
+                for name, binding in spec["input_artifacts"].items():
+                    if binding["artifact_path"] == artifact:
+                        raise ValueError(
+                            f"python_module output artifact would overwrite input '{name}'"
+                        )
+                spec["args"] = [
+                    re.sub(
+                        r"\{input:([^{}]+)\}",
+                        lambda match, inputs=spec["input_artifacts"]: inputs[match[1]]["artifact_path"],
+                        argument,
+                    )
+                    for argument in entry["args"]
+                ]
+            planned.append(spec)
             continue
         candidate_name = str(entry["candidate"]).strip()
         candidate = resolve_candidate(state, candidate_name)
@@ -493,6 +533,22 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
             }
         )
     return planned
+
+
+def resolved_measurement_inputs(spec: dict, state: dict) -> dict:
+    from runner.artifact_evidence_query import (
+        ArtifactUnavailableError,
+        FingerprintMismatchError,
+        resolve_artifact_reference,
+    )
+
+    resolved = {}
+    for name, reference in spec.get("inputs", {}).items():
+        try:
+            resolved[name] = resolve_artifact_reference(state, reference)
+        except (ArtifactUnavailableError, FingerprintMismatchError, OSError, ValueError) as error:
+            raise ValueError(f"python_module input '{name}' could not be resolved: {error}") from error
+    return resolved
 
 
 def planned_paired_comparisons(

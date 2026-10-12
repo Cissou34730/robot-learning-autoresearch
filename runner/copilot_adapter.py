@@ -1362,7 +1362,10 @@ class Console:
                     str(value)
                     for value in (
                         operation_id,
-                        f"artifact {arguments.get('artifact_index', 0)}",
+                        (
+                            f"artifact {arguments.get('artifact_index', 0)}"
+                            if action not in {"operations", "metadata"} else None
+                        ),
                         action,
                     )
                     if isinstance(value, (str, int)) and str(value)
@@ -2706,9 +2709,10 @@ def session_options(
         ):
             raise ValueError("Only the active, unlocked main/preliminary PI may query.")
 
-    def artifact_evidence_query(params, invocation) -> str:
+    async def artifact_evidence_query(params, invocation) -> str:
         authorize_reader(invocation)
-        return query_artifact(
+        return await asyncio.to_thread(
+            query_artifact,
             params.model_dump(),
             campaign_id=str(args.campaign_id or ""),
         )
@@ -2717,7 +2721,12 @@ def session_options(
         "artifact_evidence_query",
         description=(
             "Read-only campaign-bound JSON evidence. Provide operation identity, "
-            "not a filesystem path. YOU choose full original content (action=read) "
+            "not a filesystem path. operations pages the operation index; metadata "
+            "selects an operation's record, artifact references or checkpoint metadata "
+            "without loading artifact contents. Metadata paths are /operation, /record, "
+            "/artifacts/* and /checkpoints/*. Use recorded operation_id/artifact_index "
+            "as named python_module inputs instead of transcribing filenames. "
+            "YOU choose full original content (action=read) "
             "or any selected subsets (query/batch path/where/select), including "
             "several distinct subsets; no summary or projection is compulsory. "
             "discover helps learn shape; aggregates are optional. Array paths expand "

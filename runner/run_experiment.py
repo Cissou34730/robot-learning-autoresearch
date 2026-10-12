@@ -930,6 +930,7 @@ def _validate_partial_measurement(
         if (
             partial.get("module") != spec["module"]
             or partial.get("args") != spec["args"]
+            or metrics.get("input_artifacts") != spec.get("input_artifacts")
         ):
             raise FrozenOperationMismatch("partial python_module invocation changed")
         return evidence
@@ -1065,6 +1066,12 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         "sealed python_module measurement artifact",
                     )
                 else:
+                    try:
+                        inputs = protocol.resolved_measurement_inputs(spec, state)
+                    except ValueError as error:
+                        raise FrozenOperationMismatch(str(error)) from error
+                    if inputs != spec.get("input_artifacts", {}):
+                        raise FrozenOperationMismatch("accepted python_module inputs changed")
                     output_path = repository.resolve_repo_path(spec["artifact"])
                     output_path.parent.mkdir(parents=True, exist_ok=True)
                     output_path.unlink(missing_ok=True)
@@ -1089,6 +1096,10 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         "args": list(spec["args"]),
                         "label": spec["label"],
                         "metrics": {
+                            **(
+                                {"input_artifacts": spec["input_artifacts"]}
+                                if "input_artifacts" in spec else {}
+                            ),
                             "evaluation_artifact": repository.repo_relative_path(
                                 archived_path
                             ),

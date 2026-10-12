@@ -882,11 +882,15 @@ def _validate_operation_request_shape(kind: str, request: object) -> None:
             ):
                 raise ValueError("measurement request has an invalid instrument")
             fields = entry_fields[entry["instrument"]]
-            if frozenset(entry) not in {
-                frozenset(fields),
-                frozenset(fields - {"label"}),
-            }:
+            allowed = fields | (
+                {"inputs"} if entry["instrument"] == "python_module" else set()
+            )
+            if not fields - {"label"} <= set(entry) <= allowed:
                 raise ValueError("measurement request entry fields are invalid")
+            if entry["instrument"] == "python_module":
+                from runner.protocol import validate_measurement_inputs
+
+                validate_measurement_inputs(entry)
         comparisons = request.get("paired_comparisons", [])
         if not isinstance(comparisons, list) or any(
             not isinstance(item, dict) or set(item) != {"candidate", "reference"}
@@ -1118,9 +1122,18 @@ def _validate_pending_data(kind: str, data: object) -> None:
                 or entry.get("instrument") not in planned_fields
             ):
                 raise ValueError("pending measurement has an invalid instrument")
+            fields = planned_fields[entry["instrument"]]
+            if entry["instrument"] == "python_module" and "inputs" in entry:
+                fields = fields | {"inputs", "input_artifacts"}
+                if (
+                    not isinstance(entry["inputs"], dict)
+                    or not isinstance(entry.get("input_artifacts"), dict)
+                    or set(entry["inputs"]) != set(entry["input_artifacts"])
+                ):
+                    raise ValueError("pending measurement input bindings are invalid")
             _require_exact_fields(
                 entry,
-                planned_fields[entry["instrument"]],
+                fields,
                 "pending measurement entry",
             )
         comparison_fields = {

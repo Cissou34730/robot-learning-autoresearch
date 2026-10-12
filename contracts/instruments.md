@@ -217,6 +217,15 @@ The interface supports:
 - `query`: select one path, with optional filtering, projection or aggregation;
 - `batch`: apply related query specifications to the same verified artifact;
 - `read`: retrieve the artifact's complete content through successive pages.
+- `operations`: query compact operation metadata without opening artifacts;
+- `metadata`: query one operation's record, artifact references, or checkpoints.
+
+`operations` does not take `operation_id`. Its default path selects operation
+rows. `metadata` requires `operation_id`. Its paths are `/operation`, `/record`,
+`/artifacts`, and `/checkpoints`. Its default path selects the operation summary.
+Both actions support the existing query filters, selection, aggregates, and pages.
+They report `artifact_contents_inspected` as false. Recorded metadata is not
+an inspection of measurement contents.
 
 The PI selects the requested scope. A complete artifact is permitted;
 selected fields, summaries and repeated requests for different subsets are
@@ -235,6 +244,14 @@ after filtering and projection, or distinct values for `value_counts`.
 remaining selection. Oversized individual objects remain available through
 `read` even when they cannot fit in a query page.
 
+Large JSON artifacts use a temporary, fingerprint-verified file-backed view.
+The tool validates the complete JSON syntax before it selects evidence.
+It does not load the complete JSON tree. Query and output limits remain.
+Decoded individual scalars and field indexes have explicit memory limits.
+An exhausted limit is reported, not silently truncated input.
+The temporary snapshot is removed after the request. Original-byte paging
+continues to use the recorded source bytes, not the normalized snapshot.
+
 Filtering uses a typed object with required `path` and `equals` fields.
 `path` is relative to each selected row; `equals` can be null.
 An array selected for filtering, projection or aggregation is expanded into
@@ -248,7 +265,7 @@ row page size. Set `max_bytes` on the request, not inside `queries`.
 All batch items share that selected-value budget.
 Unsupported fields are rejected, not silently ignored.
 Omit `select` for complete rows. A supplied pointer cannot be empty.
-Console output includes the operation and artifact index for each request.
+Artifact-content requests show the operation and artifact index in the console.
 Explicit larger pages and complete original reads remain available.
 
 For `read`, `offset` and `max_bytes` refer to original file bytes.
@@ -425,18 +442,43 @@ Use this interface:
   "module": {"type": "string"},
   "args": {"type": "array", "items": {"type": "string"}},
   "artifact": {"type": "string"},
-  "label": {"type": "string"}
+  "label": {"type": "string"},
+  "inputs": {
+    "type": "object",
+    "additionalProperties": {
+      "type": "object",
+      "properties": {
+        "operation_id": {"type": "string"},
+        "artifact_index": {"type": "integer"}
+      },
+      "required": ["operation_id", "artifact_index"],
+      "additionalProperties": false
+    }
+  }
 }
 ```
 
 Set `instrument` to `python_module`.
 The `module`, `args`, and `artifact` fields are required.
-The `label` field is optional.
+The `label` and `inputs` fields are optional.
 The module must be under `robot_learning.lab`, `robot_learning.scenario`, or
 `robot_learning.training`.
 The artifact must be a campaign JSON path under
 `campaigns/evaluations/<current-campaign-id>/`.
 `campaigns/brief.md` gives the exact evaluation root for the current campaign.
+
+`inputs` binds PI-selected names to recorded JSON artifacts from completed
+measurements in the current campaign. Names must be identifiers.
+Each argument placeholder `{input:NAME}` uses a declared name.
+Every declared input must appear in the arguments.
+The output artifact cannot overwrite a named input.
+The Runner resolves the selected operation and artifact index, verifies the
+recorded fingerprint, and replaces the placeholder with its canonical path.
+Acceptance freezes the resolved identities. Execution checks them again before
+the module runs. Results retain the input identities in their compact metadata.
+Missing, changed, or unavailable inputs are errors. The Runner never chooses
+another artifact, changes the module, or decides how the PI repairs the request.
+Arguments without input placeholders remain unchanged.
 
 A paired-comparison entry uses this interface:
 

@@ -390,9 +390,11 @@ def _candidate_lines(state: dict) -> list[str]:
             f"- Candidate archive root: `campaigns/checkpoints/candidates/{campaign_id}/`.",
             f"- Retained archive root: `campaigns/checkpoints/retained/{campaign_id}/`.",
             (
-                "- Complete checkpoint metadata and learning statistics: completed "
-                "training records in `campaigns/results.jsonl` and archived "
-                "`artifact.json` files. Training statistics are not development measurements."
+                "- Operation index: `artifact_evidence_query` action=operations. "
+                "Checkpoint metadata and learning statistics: action=metadata, "
+                "selected by training operation, paths /checkpoints and /record. "
+                "Archived `artifact.json` files remain available. "
+                "Training statistics are not development measurements."
             ),
             "- Preserved training trajectories: `training_log_query`, selected by training operation.",
             (

@@ -296,5 +296,66 @@ remain unchanged. No human tests were inspected or executed.
 
 The SDK factory preserves the wrapper schema. No live provider invocation or
 new campaign observation establishes model adherence after compaction.
-OI-031/OI-032 remain later batches. The discarded engineering loop remains
-excluded, regardless of later cost observations.
+OI-031/OI-032 are mandatory remaining implementation batches, not deferred
+proposals. The maintainer required completion of both before another campaign.
+The discarded engineering loop remains excluded, regardless of cost observations.
+
+Batch 2: **implemented / campaign effect unmeasured**.
+
+The existing evidence tool adds `operations` and `metadata`. Both use the
+existing query engine and limits. Metadata exposes the selected operation,
+its full record, indexed artifact identities, and origin-bound checkpoints.
+It explicitly reports that artifact contents were not inspected.
+The generated brief points to these interfaces instead of routine raw-history
+searches. The existing campaign brief is not regenerated during maintenance.
+
+`python_module` gains optional named `inputs`. Each reference contains only
+the chosen operation ID and artifact index. `{input:NAME}` arguments use these
+names. Acceptance resolves and fingerprints the exact selections. Execution
+checks the frozen inputs before launching the module. Compact result metadata
+retains these identities. Recovery reuses already sealed outputs without
+executing them again. Literal arguments keep their existing behavior.
+
+Request, pending-state, execution and recovery validation share the new
+mechanics. Unavailable, changed, undeclared, unused or malformed references
+reject explicitly. No filename fallback, substitute evidence, automatic
+diagnosis, or PI-source correction is added.
+The output cannot overwrite a declared input.
+
+Batch 3: **implemented / campaign effect unmeasured**.
+
+The in-memory ceiling is now a parse-mode threshold, not an artifact-size
+rejection. Larger sources use one temporary UTF-8 snapshot and a read-only
+memory map. The original-byte fingerprint binds the snapshot to the recorded
+artifact. Full syntax validation includes unselected content and invalid
+suffixes. Temporary resources close on success and failure.
+
+The private `runner\json_artifact_view.py` helper supplies lazy objects, arrays
+and scalars. The existing query engine keeps its JSON Pointer, filter,
+selection, aggregate, pagination, batch and output-budget behavior.
+Only selected output is materialized. Large complete selections report the
+existing byte-budget continuation. Explicit scalar and field-index limits
+bound decoding. Original-byte reads remain unchanged. No persistent index,
+package installation, alternate scientific query engine or generic projection
+API is added.
+
+Controlled validation passed 482 assertions. It covers complete JSON syntax,
+duplicate keys, escaped pointers, UTF encodings, scalar types, query parity,
+filters, aggregates, pagination, byte budgets, snapshot cleanup, fingerprint
+failures and named inputs. Exact shallow and deep selections also matched
+ordinary JSON decoding on recorded 38,704,733-, 46,322,796- and
+77,838,375-byte artifacts. These were read-only checks, not campaign operations.
+
+Large-file parsing uses the adapter's existing worker-thread pattern.
+Reader authorization still occurs before dispatch. Parsing does not block
+the SDK event loop or add permission to query from a coding child.
+The installed SDK's actual handler passed inert checks for result transport,
+event-loop responsiveness, foreign-session rejection and child rejection.
+Additional targeted checks cover stored input bindings, wide-object budgets,
+unused metadata selectors and output/input collision rejection.
+
+All approved interface and evidence-access batches are implemented.
+Equivalent-work cost and campaign-effect comparisons remain observations,
+not authority to execute a campaign. The rejected engineering loop remains
+excluded. No claim of universal model adherence or scientific correctness
+follows from these implementation checks.
