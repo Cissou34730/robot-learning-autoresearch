@@ -15,3 +15,4 @@
 | E4 | model_role | I1 | assigned |
 | E5 | inquiry | I1 | completed |
 | E6 | checkpoint | I1 | checkpointed |
+| E7 | inquiry | I2 | completed |
