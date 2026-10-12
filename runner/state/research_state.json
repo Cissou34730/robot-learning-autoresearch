@@ -25122,38 +25122,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "I9 is closed negatively after a complete safe-IK trajectory-potential candidate was trained and measured against T2 on the matched schema-7 development panel. The reviewed implementation passed M50 compatibility and M51 behavioral preservation checks, and T7 trained for 120832 actual steps; its selected terminal checkpoint was the strongest available late proxy but still had a lower training success proxy than T2. M52 measured T7 at 94/160 complete successes (58.75%) versus T2 at 150/160 (93.75%), with all 56 discordant episodes favoring T2. M53 trace-derived analysis found no targeted benefit: T7 achieved 45/82 negative-angle episodes versus T2's 73/82, and 5/67 outer-radius (14-20 cm) episodes versus T2's 60/67. The protected 6-14 cm strata were also slightly lower, 89/93 versus 90/93. T7 had 64 never-reached episodes versus T2's 7; never-reached T7 traces showed 99.640625% updated-row actuator saturation, high joint speed, and zero held steps, so the observed failure is a coupled reach/control artifact rather than evidence that branch-aware trajectory methods broadly fail. All T7 resets still began rank-one and reached full planar rank at control step 1, so the prior reset interpretation is unchanged. Physics-step traces are development diagnostics and do not certify continuous uninterrupted hold; T7's absence of successful hold in the outer stratum is adverse evidence for this artifact, not official assessment. The bounded closure condition is satisfied negatively: the compared complete intervention failed to improve the targeted strata and regressed the candidate substantially, so no further work under this exact artifact is justified. Mechanism attribution remains limited because the intervention changed the learned artifact and its training dynamics together; the result does not disprove other branch-conditioned controllers or trajectory designs. The unresolved consequence carried to goal review is that T2 remains best-known at 93.75% development success, below the human 98% goal, with stabilization and coupled-control alternatives still relevant if a future inquiry is opened."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "I9 is closed negatively after a complete safe-IK trajectory-potential candidate was trained and measured against T2 on the matched schema-7 development panel. The reviewed implementation passed M50 compatibility and M51 behavioral preservation checks, and T7 trained for 120832 actual steps; its selected terminal checkpoint was the strongest available late proxy but still had a lower training success proxy than T2. M52 measured T7 at 94/160 complete successes (58.75%) versus T2 at 150/160 (93.75%), with all 56 discordant episodes favoring T2. M53 trace-derived analysis found no targeted benefit: T7 achieved 45/82 negative-angle episodes versus T2's 73/82, and 5/67 outer-radius (14-20 cm) episodes versus T2's 60/67. The protected 6-14 cm strata were also slightly lower, 89/93 versus 90/93. T7 had 64 never-reached episodes versus T2's 7; never-reached T7 traces showed 99.640625% updated-row actuator saturation, high joint speed, and zero held steps, so the observed failure is a coupled reach/control artifact rather than evidence that branch-aware trajectory methods broadly fail. All T7 resets still began rank-one and reached full planar rank at control step 1, so the prior reset interpretation is unchanged. Physics-step traces are development diagnostics and do not certify continuous uninterrupted hold; T7's absence of successful hold in the outer stratum is adverse evidence for this artifact, not official assessment. The bounded closure condition is satisfied negatively: the compared complete intervention failed to improve the targeted strata and regressed the candidate substantially, so no further work under this exact artifact is justified. Mechanism attribution remains limited because the intervention changed the learned artifact and its training dynamics together; the result does not disprove other branch-conditioned controllers or trajectory designs. The unresolved consequence carried to goal review is that T2 remains best-known at 93.75% development success, below the human 98% goal, with stabilization and coupled-control alternatives still relevant if a future inquiry is opened.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E38",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I9 is closed negatively after a complete safe-IK trajectory-potential candidate was trained and measured against T2 on the matched schema-7 development panel. The reviewed implementation passed M50 compatibility and M51 behavioral preservation checks, and T7 trained for 120832 actual steps; its selected terminal checkpoint was the strongest available late proxy but still had a lower training success proxy than T2. M52 measured T7 at 94/160 complete successes (58.75%) versus T2 at 150/160 (93.75%), with all 56 discordant episodes favoring T2. M53 trace-derived analysis found no targeted benefit: T7 achieved 45/82 negative-angle episodes versus T2's 73/82, and 5/67 outer-radius (14-20 cm) episodes versus T2's 60/67. The protected 6-14 cm strata were also slightly lower, 89/93 versus 90/93. T7 had 64 never-reached episodes versus T2's 7; never-reached T7 traces showed 99.640625% updated-row actuator saturation, high joint speed, and zero held steps, so the observed failure is a coupled reach/control artifact rather than evidence that branch-aware trajectory methods broadly fail. All T7 resets still began rank-one and reached full planar rank at control step 1, so the prior reset interpretation is unchanged. Physics-step traces are development diagnostics and do not certify continuous uninterrupted hold; T7's absence of successful hold in the outer stratum is adverse evidence for this artifact, not official assessment. The bounded closure condition is satisfied negatively: the compared complete intervention failed to improve the targeted strata and regressed the candidate substantially, so no further work under this exact artifact is justified. Mechanism attribution remains limited because the intervention changed the learned artifact and its training dynamics together; the result does not disprove other branch-conditioned controllers or trajectory designs. The unresolved consequence carried to goal review is that T2 remains best-known at 93.75% development success, below the human 98% goal, with stabilization and coupled-control alternatives still relevant if a future inquiry is opened."
-      }
-    },
-    "request_fingerprint": "4b6cbcd01d2cedf755c2c1ada0e1f233b875168a3a97d7522f56b701dbb57552",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on M30, M41 and M46; it is not ready for official assessment. T6:checkpoint-120832 is an inferior complete I7 artifact from M30 and is not working, retained or best-known. No candidate is working or retained. M44, M45, M47 and M48 are measurement tools, not candidate artifacts. The already-tested T6 implementation included targeted negative-angle exposure, branch/margin observations and terminal joint-limit/speed shaping; its complete artifact comparison is retained as a negative candidate result without a broad causal claim.",
     "completed_operations": [
