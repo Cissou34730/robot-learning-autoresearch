@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 5,
+    "measurement": 6,
     "session": 1,
     "training": 0
   },
@@ -663,9 +663,1141 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M4"
+    },
+    {
+      "completed_at": "2026-10-12T12:24:22Z",
+      "error": null,
+      "id": "M6",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled two-joint arm across the official radius-angle domain and representative bounded control reversals.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json",
+            "instrument": "python_module",
+            "label": "full compiled dynamics and official geometry characterization",
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "rationale": "The verified M5 probe shows that the compiled arm responds quickly and is not saturated at bounded commands, but its 2-by-4 grid and six-step sequences cannot resolve rare geometry or longer braking behavior. The full deterministic characterization directly tests whether range-constrained IK/Jacobian conditioning or 20 ms regulation authority should determine the next learning direction; it does not evaluate a policy or alter official mechanics."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+            ],
+            "instrument": "python_module",
+            "label": "full compiled dynamics and official geometry characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M6-1-physical_characterization_full.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/compiled_facts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/controlled_responses",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/ik_jacobian_grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_range",
+                      "gear",
+                      "id",
+                      "label",
+                      "transmission"
+                    ],
+                    "path": "/compiled_facts/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia",
+                      "mass",
+                      "name"
+                    ],
+                    "path": "/compiled_facts/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_facts/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "dof_index",
+                      "id",
+                      "name",
+                      "qpos_index",
+                      "range"
+                    ],
+                    "path": "/compiled_facts/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_facts/timestep",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_facts/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/controlled_responses/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "command_schedule",
+                      "control_interval",
+                      "frame_skip",
+                      "initial_qpos_rad",
+                      "steps",
+                      "summary"
+                    ],
+                    "path": "/controlled_responses/sequences",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/controlled_responses/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 960,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "endpoint_reconstruction_error_m",
+                      "geometric_feasible",
+                      "infeasibility_reason",
+                      "jacobian_singular_values_m_per_rad",
+                      "joint_limit_margins_rad",
+                      "qpos_rad",
+                      "radius_m",
+                      "range_feasible",
+                      "target_position_m"
+                    ],
+                    "path": "/ik_jacobian_grid/records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/ik_jacobian_grid/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/ik_jacobian_grid/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement/deterministic",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement/purpose",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/source_xml",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/value",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/timestep/unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/timestep/value",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/control_interval_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/endpoint_speed_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/finite_difference_acceleration_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/qpos_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/qvel_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/sequence_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/steps_per_sequence",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "post_reversal_acceleration_projection_rad_per_s2",
+                      "post_reversal_qvel_norm_rad_per_s",
+                      "pre_reversal_qvel_norm_rad_per_s"
+                    ],
+                    "path": "/controlled_responses/summary/braking_response",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_abs_acceleration_rad_per_s2",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_abs_velocity_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_endpoint_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/saturated_control_step_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/sequence_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/angle_endpoint",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_jacobian_grid/sampling/angle_range_rad",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/radius_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_jacobian_grid/sampling/radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/geometrically_feasible_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 50,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "radius_m",
+                      "reason"
+                    ],
+                    "path": "/ik_jacobian_grid/summary/infeasible_target_branch_regions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/range_feasible_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/range_infeasible_count",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "a087bc789c789e7c2bc457e95678337b44e383affdc0cbe7e8bbbfb393c35622"
+            },
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7b369859cf3fa8e61b90fab33366dc80f92465d4",
+            "fingerprint": "53c3152ed8032b65a7b2119466946c773fe71d5d6eb70d8302b59a2229b4b69f",
+            "manifest": [
+              {
+                "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/physical_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+          ],
+          "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json",
+          "instrument": "python_module",
+          "label": "full compiled dynamics and official geometry characterization",
+          "module": "robot_learning.lab.physical_characterization"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+            "path": "robot_learning/lab/physical_characterization.py"
+          },
+          {
+            "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+            "path": "robot_learning/lab/verify_physical_characterization.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "7b369859cf3fa8e61b90fab33366dc80f92465d4",
+          "fingerprint": "53c3152ed8032b65a7b2119466946c773fe71d5d6eb70d8302b59a2229b4b69f",
+          "manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ]
+        },
+        "code_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+            "path": "robot_learning/lab/physical_characterization.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/physical_characterization.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+          ],
+          "instrument": "python_module",
+          "label": "full compiled dynamics and official geometry characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M6-1-physical_characterization_full.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/compiled_facts",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/controlled_responses",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/ik_jacobian_grid",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/measurement",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "control_range",
+                    "gear",
+                    "id",
+                    "label",
+                    "transmission"
+                  ],
+                  "path": "/compiled_facts/actuators",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "id",
+                    "inertia",
+                    "mass",
+                    "name"
+                  ],
+                  "path": "/compiled_facts/bodies",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/compiled_facts/control_interval",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "armature",
+                    "damping",
+                    "dof_index",
+                    "id",
+                    "name",
+                    "qpos_index",
+                    "range"
+                  ],
+                  "path": "/compiled_facts/joints",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_facts/timestep",
+                  "type": "object"
+                },
+                {
+                  "path": "/compiled_facts/xml_path",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/controlled_responses/sampling",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "command_schedule",
+                    "control_interval",
+                    "frame_skip",
+                    "initial_qpos_rad",
+                    "steps",
+                    "summary"
+                  ],
+                  "path": "/controlled_responses/sequences",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/controlled_responses/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 960,
+                  "field_names": [
+                    "angle_rad",
+                    "branch",
+                    "endpoint_reconstruction_error_m",
+                    "geometric_feasible",
+                    "infeasibility_reason",
+                    "jacobian_singular_values_m_per_rad",
+                    "joint_limit_margins_rad",
+                    "qpos_rad",
+                    "radius_m",
+                    "range_feasible",
+                    "target_position_m"
+                  ],
+                  "path": "/ik_jacobian_grid/records",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/ik_jacobian_grid/sampling",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/ik_jacobian_grid/summary",
+                  "type": "object"
+                },
+                {
+                  "path": "/measurement/deterministic",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/measurement/purpose",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement/source_xml",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/control_interval/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/control_interval/unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/control_interval/value",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_facts/timestep/unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/compiled_facts/timestep/value",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/sampling/control_interval_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/controlled_responses/sampling/endpoint_speed_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/controlled_responses/sampling/finite_difference_acceleration_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/controlled_responses/sampling/qpos_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/controlled_responses/sampling/qvel_unit",
+                  "type": "string"
+                },
+                {
+                  "path": "/controlled_responses/sampling/sequence_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/sampling/steps_per_sequence",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "post_reversal_acceleration_projection_rad_per_s2",
+                    "post_reversal_qvel_norm_rad_per_s",
+                    "pre_reversal_qvel_norm_rad_per_s"
+                  ],
+                  "path": "/controlled_responses/summary/braking_response",
+                  "type": "array"
+                },
+                {
+                  "path": "/controlled_responses/summary/max_abs_acceleration_rad_per_s2",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/summary/max_abs_velocity_rad_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/summary/max_endpoint_speed_m_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/summary/saturated_control_step_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/controlled_responses/summary/sequence_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_jacobian_grid/sampling/angle_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_jacobian_grid/sampling/angle_endpoint",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/ik_jacobian_grid/sampling/angle_range_rad",
+                  "type": "array"
+                },
+                {
+                  "path": "/ik_jacobian_grid/sampling/radius_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/ik_jacobian_grid/sampling/radius_range_m",
+                  "type": "array"
+                },
+                {
+                  "path": "/ik_jacobian_grid/summary/geometrically_feasible_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 50,
+                  "field_names": [
+                    "angle_rad",
+                    "branch",
+                    "radius_m",
+                    "reason"
+                  ],
+                  "path": "/ik_jacobian_grid/summary/infeasible_target_branch_regions",
+                  "type": "array"
+                },
+                {
+                  "path": "/ik_jacobian_grid/summary/range_feasible_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_jacobian_grid/summary/range_infeasible_count",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "a087bc789c789e7c2bc457e95678337b44e383affdc0cbe7e8bbbfb393c35622"
+          },
+          "module": "robot_learning.lab.physical_characterization"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+            ],
+            "instrument": "python_module",
+            "label": "full compiled dynamics and official geometry characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/python-module-M6-1-physical_characterization_full.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/compiled_facts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/controlled_responses",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/ik_jacobian_grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/measurement",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_range",
+                      "gear",
+                      "id",
+                      "label",
+                      "transmission"
+                    ],
+                    "path": "/compiled_facts/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia",
+                      "mass",
+                      "name"
+                    ],
+                    "path": "/compiled_facts/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_facts/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "dof_index",
+                      "id",
+                      "name",
+                      "qpos_index",
+                      "range"
+                    ],
+                    "path": "/compiled_facts/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_facts/timestep",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_facts/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/controlled_responses/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "command_schedule",
+                      "control_interval",
+                      "frame_skip",
+                      "initial_qpos_rad",
+                      "steps",
+                      "summary"
+                    ],
+                    "path": "/controlled_responses/sequences",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/controlled_responses/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 960,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "endpoint_reconstruction_error_m",
+                      "geometric_feasible",
+                      "infeasibility_reason",
+                      "jacobian_singular_values_m_per_rad",
+                      "joint_limit_margins_rad",
+                      "qpos_rad",
+                      "radius_m",
+                      "range_feasible",
+                      "target_position_m"
+                    ],
+                    "path": "/ik_jacobian_grid/records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/ik_jacobian_grid/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/ik_jacobian_grid/summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/measurement/deterministic",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement/purpose",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/source_xml",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/control_interval/value",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_facts/timestep/unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/compiled_facts/timestep/value",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/control_interval_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/endpoint_speed_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/finite_difference_acceleration_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/qpos_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/qvel_unit",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/sequence_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/sampling/steps_per_sequence",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "post_reversal_acceleration_projection_rad_per_s2",
+                      "post_reversal_qvel_norm_rad_per_s",
+                      "pre_reversal_qvel_norm_rad_per_s"
+                    ],
+                    "path": "/controlled_responses/summary/braking_response",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_abs_acceleration_rad_per_s2",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_abs_velocity_rad_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/max_endpoint_speed_m_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/saturated_control_step_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/controlled_responses/summary/sequence_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/angle_endpoint",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_jacobian_grid/sampling/angle_range_rad",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/sampling/radius_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_jacobian_grid/sampling/radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/geometrically_feasible_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 50,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "radius_m",
+                      "reason"
+                    ],
+                    "path": "/ik_jacobian_grid/summary/infeasible_target_branch_regions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/range_feasible_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_jacobian_grid/summary/range_infeasible_count",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "a087bc789c789e7c2bc457e95678337b44e383affdc0cbe7e8bbbfb393c35622"
+            },
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            },
+            {
+              "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+              "path": "robot_learning/lab/verify_physical_characterization.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7b369859cf3fa8e61b90fab33366dc80f92465d4",
+            "fingerprint": "53c3152ed8032b65a7b2119466946c773fe71d5d6eb70d8302b59a2229b4b69f",
+            "manifest": [
+              {
+                "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+                "path": "robot_learning/lab/physical_characterization.py"
+              },
+              {
+                "fingerprint": "35546b186d221611dc279a8c6d39411e5579e3205269e9865a5de0b5a40ac4c0",
+                "path": "robot_learning/lab/verify_physical_characterization.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "cf12123a043d9e69d5f13148bdd9f8559b4c7d754a3dd797d21ae7cc1b005508",
+              "path": "robot_learning/lab/physical_characterization.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/physical_characterization.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Characterize the compiled two-joint arm across the official radius-angle domain and representative bounded control reversals.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json"
+            ],
+            "artifact": "campaigns/evaluations/659ac6cb-21fe-440b-bdc8-1ea826cb04fd/physical_characterization_full.json",
+            "instrument": "python_module",
+            "label": "full compiled dynamics and official geometry characterization",
+            "module": "robot_learning.lab.physical_characterization"
+          }
+        ],
+        "rationale": "The verified M5 probe shows that the compiled arm responds quickly and is not saturated at bounded commands, but its 2-by-4 grid and six-step sequences cannot resolve rare geometry or longer braking behavior. The full deterministic characterization directly tests whether range-constrained IK/Jacobian conditioning or 20 ms regulation authority should determine the next learning direction; it does not evaluate a policy or alter official mechanics."
+      }
+    },
+    "request_fingerprint": "910daa2f928c5cdec5a0bda6d1c80a0a5c9215d9ff1fa160a6c33e07524bb927",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -686,7 +1818,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "M1",
-      "M5"
+      "M5",
+      "M6"
     ],
     "scientific_parent_commit": "5274ab458896c55209ccfd8effabf43e782c9abb"
   },
