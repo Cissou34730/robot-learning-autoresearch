@@ -1,0 +1,45 @@
+{
+  "author_execution_note": "This behavioral check has not been executed by the author.",
+  "check": "training_exposure_behavior",
+  "checked_scope": [
+    "production make_training_env construction",
+    "deterministic seeded reset sequence",
+    "all sampled radii in the official 0.06-0.20 m interval",
+    "radius-bin frequencies consistent with uniform sampling",
+    "representation of all four official angular sectors",
+    "difficult-sector fraction versus uniform-only and targeted-mixture finite-sample bounds"
+  ],
+  "expected": {
+    "angle_sectors": [
+      "[-180,-90)",
+      "[-90,0)",
+      "[0,90)",
+      "[90,180]"
+    ],
+    "confidence_failure_probability": 0.01,
+    "difficult_fraction_lower_bound_against_uniform": 0.5950479366784579,
+    "difficult_fraction_one_sided_epsilon": 0.0670614383215421,
+    "difficult_fraction_two_sided_interval": [
+      0.5530685183437074,
+      0.6969314816562926
+    ],
+    "official_radius_interval_m": [
+      0.06,
+      0.2
+    ],
+    "radius_sampling": "uniform; each of three equal-width bins is within 0.079038 of 1/3",
+    "targeted_difficult_fraction": 0.625,
+    "uniform_only_difficult_fraction": 0.25
+  },
+  "failures": [],
+  "observed": {
+    "all_radii_in_official_interval": true,
+    "angle_max_degrees": 179.65647170695547,
+    "angle_min_degrees": -177.17076292578955,
+    "angle_sector_counts": {
+      "[-180,-90)": 56,
+      "[-90,0)": 339,
+      "[0,90)": 63,
+      "[90,180]": 54
+    },
+    "difficult_sector_count": 
