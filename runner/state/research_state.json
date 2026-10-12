@@ -6575,14 +6575,14 @@
   "counters": {
     "event": 46,
     "inquiry": 11,
-    "measurement": 58,
-    "session": 22,
+    "measurement": 59,
+    "session": 23,
     "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -28794,9 +28794,946 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T17:53:38Z",
+      "error": null,
+      "id": "M59",
+      "inquiry_id": "I11",
+      "kind": "measurement",
+      "request": {
+        "description": "Run the reviewed production-path compatibility check for the I11 reach-phase saturation-aware reward intervention before allocating training.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json",
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward production compatibility",
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "rationale": "The implementation changes the scenario-owned reward path by adding two pre-entry terms: bounded action-saturation pressure and bounded excess joint-speed pressure outside the existing terminal neighborhood. The reviewed check exercises the real TwoJointArmReachEnv with repeated reset/step transitions and controlled direct reward calls, and must establish finite outputs, unchanged 11-value observations, unchanged action clipping, activation of both new terms, and stable reward attribution before a learned candidate is created. This is implementation compatibility evidence only; it does not establish learning benefit, development success, or protected continuous-hold validity."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward production compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M59-1-reach_phase_saturation_reward_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "clipped_control",
+                      "distance",
+                      "new_terms",
+                      "observation_shape",
+                      "reward"
+                    ],
+                    "path": "/observed/production_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/direct_new_terms",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/production_component_keys",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/production_path_executes",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/observation_shapes_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/finite_outputs",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/action_clipping_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/both_new_attribution_keys_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/both_new_terms_activate_pre_entry",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/direct_new_terms/action",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/direct_new_terms/speed",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "523eabe28840a6423dcaae29df4798641ff46adf59b233252f92b78250190fb3"
+            },
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+            "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+                "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1ccd643f4264a94c560cf9b5d96595027d201b02",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          ],
+          "scientific_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "6df87938cd4ae23d47816418e09c4ecae2bab8bd589e28d1b34853537d3bbfed",
+              "path": "robot_learning/training/reward.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/reward.py"
+          ]
+        }
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json",
+          "instrument": "python_module",
+          "label": "I11 reach-phase saturation reward production compatibility",
+          "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+            "path": "robot_learning/lab/analyze_baseline_profile.py"
+          },
+          {
+            "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+            "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+          },
+          {
+            "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+            "path": "robot_learning/lab/initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+            "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+          },
+          {
+            "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+            "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+          },
+          {
+            "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+            "path": "robot_learning/lab/verify_coverage_training_environment.py"
+          },
+          {
+            "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+            "path": "robot_learning/lab/verify_initial_model_measurement.py"
+          },
+          {
+            "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+            "path": "robot_learning/lab/verify_profile_input_resolution.py"
+          },
+          {
+            "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+            "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          },
+          {
+            "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+            "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+          },
+          {
+            "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+            "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+          },
+          {
+            "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+            "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+          },
+          {
+            "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+            "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+          },
+          {
+            "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+            "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+          },
+          {
+            "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+            "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+          "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+          "manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ]
+        },
+        "code_parent_commit": "1ccd643f4264a94c560cf9b5d96595027d201b02",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+            "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+        ],
+        "scientific_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "6df87938cd4ae23d47816418e09c4ecae2bab8bd589e28d1b34853537d3bbfed",
+            "path": "robot_learning/training/reward.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/reward.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--compatibility",
+            "--output",
+            "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "I11 reach-phase saturation reward production compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M59-1-reach_phase_saturation_reward_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "path": "/execution_note",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "clipped_control",
+                    "distance",
+                    "new_terms",
+                    "observation_shape",
+                    "reward"
+                  ],
+                  "path": "/observed/production_records",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/direct_new_terms",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/observed/production_component_keys",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/production_path_executes",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/observation_shapes_unchanged",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/finite_outputs",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/action_clipping_unchanged",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/both_new_attribution_keys_present",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/both_new_terms_activate_pre_entry",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/direct_new_terms/action",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/direct_new_terms/speed",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "523eabe28840a6423dcaae29df4798641ff46adf59b233252f92b78250190fb3"
+          },
+          "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward production compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/python-module-M59-1-reach_phase_saturation_reward_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/execution_note",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "clipped_control",
+                      "distance",
+                      "new_terms",
+                      "observation_shape",
+                      "reward"
+                    ],
+                    "path": "/observed/production_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/direct_new_terms",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/observed/production_component_keys",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/production_path_executes",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/observation_shapes_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/finite_outputs",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/action_clipping_unchanged",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/both_new_attribution_keys_present",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/both_new_terms_activate_pre_entry",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/direct_new_terms/action",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/direct_new_terms/speed",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "523eabe28840a6423dcaae29df4798641ff46adf59b233252f92b78250190fb3"
+            },
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+              "path": "robot_learning/lab/analyze_baseline_profile.py"
+            },
+            {
+              "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+              "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+            },
+            {
+              "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+              "path": "robot_learning/lab/initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+              "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+            },
+            {
+              "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+              "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+            },
+            {
+              "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+              "path": "robot_learning/lab/verify_coverage_training_environment.py"
+            },
+            {
+              "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+              "path": "robot_learning/lab/verify_initial_model_measurement.py"
+            },
+            {
+              "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+              "path": "robot_learning/lab/verify_profile_input_resolution.py"
+            },
+            {
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            },
+            {
+              "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+              "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+            },
+            {
+              "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+              "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+            },
+            {
+              "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+              "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+            },
+            {
+              "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+              "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+            },
+            {
+              "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+              "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+            },
+            {
+              "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+              "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "fb4e3f9e12c381cff859819c7164752238a39871",
+            "fingerprint": "d4b9113796ec21bfe82c17938b16a83a993ab199b7d50a12d3b153f07ff7ecd1",
+            "manifest": [
+              {
+                "fingerprint": "92435c4dc79c7a93c35ea9200e910ed489b56a2275a3c3eb00a00f117f67ba15",
+                "path": "robot_learning/lab/analyze_baseline_profile.py"
+              },
+              {
+                "fingerprint": "8f3ad6e597f779ed73ca12c1b3727f44146524c15a45aaccbf163bacd3f80d23",
+                "path": "robot_learning/lab/analyze_trajectory_mechanism.py"
+              },
+              {
+                "fingerprint": "1136e9c3a35d4a7e15dfe15977a36d37a2d12ca1fb61ead46d2c7f2f48eb7991",
+                "path": "robot_learning/lab/initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "dc34aa1303f3c9c995b6f78144ab837eb4cfeec4268cac50587096a47f83c37f",
+                "path": "robot_learning/lab/verify_baseline_profile_analysis.py"
+              },
+              {
+                "fingerprint": "5ce33f58be858f478c02b6089b50f616d4a4bc4556db4c86c8be75110f466f2d",
+                "path": "robot_learning/lab/verify_branch_limit_trajectory_intervention.py"
+              },
+              {
+                "fingerprint": "9eab86c14a9b16b8f9cbbbc6218b4e951a3d1590c4c65c4fd8e30cfdba0d8806",
+                "path": "robot_learning/lab/verify_coverage_training_environment.py"
+              },
+              {
+                "fingerprint": "f8578ca44ef51607cf0f3a7b957f5fbb6daaa4440866d0276ea7cd3faa9063ae",
+                "path": "robot_learning/lab/verify_initial_model_measurement.py"
+              },
+              {
+                "fingerprint": "fc8f24c7b668bb2e85bc63297403eb8a8ffebe5e94f400f10c7a0979d1e9d0ae",
+                "path": "robot_learning/lab/verify_profile_input_resolution.py"
+              },
+              {
+                "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+                "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+              },
+              {
+                "fingerprint": "ca463018babce640b6eff6f4c9a915b75918db3d67bb068050f0998aacf9c683",
+                "path": "robot_learning/lab/verify_research_evaluation_diagnostics.py"
+              },
+              {
+                "fingerprint": "f73edc5f2ebd6e22601c9c5b7f23f948f700698ddba298cb0ee8c787119c6605",
+                "path": "robot_learning/lab/verify_safe_branch_trajectory.py"
+              },
+              {
+                "fingerprint": "bf1c106aadf54ba9f88d2bc8ef559ca6b9c72683d0914fa8d5cd3c66561653d8",
+                "path": "robot_learning/lab/verify_soft_trajectory_reward.py"
+              },
+              {
+                "fingerprint": "89df4cd35204054b08c3845069339523c2688d1632047cae34500af2ca2c73e2",
+                "path": "robot_learning/lab/verify_targeted_angle_training_environment.py"
+              },
+              {
+                "fingerprint": "07a5636c63ee9feb0c0e3ca6eeb3c240e66e146703a7898b3a272482c956b8f0",
+                "path": "robot_learning/lab/verify_terminal_stabilization_reward.py"
+              },
+              {
+                "fingerprint": "c8e8e98f71139b79ab641cde4c0498cdb6da7ef996fea4fd5643d5731cd4b144",
+                "path": "robot_learning/lab/verify_trajectory_mechanism_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "1ccd643f4264a94c560cf9b5d96595027d201b02",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "e0da370f2bf255456b5c9a99e97baaf05e6d5bb48b681fb47cfd97aedcc999b8",
+              "path": "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_reach_phase_saturation_reward.py"
+          ],
+          "scientific_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "6df87938cd4ae23d47816418e09c4ecae2bab8bd589e28d1b34853537d3bbfed",
+              "path": "robot_learning/training/reward.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/reward.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M59",
+    "inquiry_id": "I11",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run the reviewed production-path compatibility check for the I11 reach-phase saturation-aware reward intervention before allocating training.",
+        "measurements": [
+          {
+            "args": [
+              "--compatibility",
+              "--output",
+              "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/fedcc0f3-5435-4aa3-b839-d2c108082481/reach_phase_saturation_reward_compatibility.json",
+            "instrument": "python_module",
+            "label": "I11 reach-phase saturation reward production compatibility",
+            "module": "robot_learning.lab.verify_reach_phase_saturation_reward"
+          }
+        ],
+        "rationale": "The implementation changes the scenario-owned reward path by adding two pre-entry terms: bounded action-saturation pressure and bounded excess joint-speed pressure outside the existing terminal neighborhood. The reviewed check exercises the real TwoJointArmReachEnv with repeated reset/step transitions and controlled direct reward calls, and must establish finite outputs, unchanged 11-value observations, unchanged action clipping, activation of both new terms, and stable reward attribution before a learned candidate is created. This is implementation compatibility evidence only; it does not establish learning benefit, development success, or protected continuous-hold validity."
+      }
+    },
+    "request_fingerprint": "b57acaaa5562426afdd407c2132e9417818aeefb2418a68fcb6cdecd7899cbd0",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains best-known based on the matched M57/M58 comparison and prior development evidence; it is not an official result. T8:checkpoint-100352 is rejected as the negative I10 terminal-stabilization candidate and is not a replacement. No working or retained candidate is assigned. I11 will compare any new complete candidate against T2 rather than treating a training checkpoint or proxy as performance evidence.",
     "completed_operations": [
@@ -28827,6 +29764,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "6924510b-6255-4336-8a79-68f593b2a6e8",
+    "id": "S23",
+    "inquiry_id": "I11",
+    "kind": "inquiry",
+    "objective": "Advance I11 toward an evidence-supported answer to its scientific question: Can a reach-phase, saturation-aware trajectory/controller intervention improve T2's high-speed never-reached failures without reducing radius-stratified development success or continuous-hold readiness? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M59"
+    ],
+    "scientific_parent_commit": "2e3d7647e211937e9a46fed142496f00cb473eb1"
+  },
   "terminal_state": null
 }
