@@ -15658,38 +15658,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "Negative bounded answer for the tested route.",
-        "reason": "M24 verified that training and exported runtimes used direct torque and that the targeted objective separated acquisition progress/closeness from uninterrupted-hold and near-target regulation consequences. T7 then trained a fresh policy over the full 0.06-0.20 m radius range for the full allocation; its late training plateau still had zero training success. M25 measured the nonterminal proxy-peak artifact T7:checkpoint-110592 on the current f6bf4b99cf62 development panel: 0/160 complete episodes, with 158 episodes never reaching tolerance and only two reaching for at most two held steps. The matched T4 control achieved 153/160 with three no-first-reach and four post-reach interruption failures. Thus this tested direct-torque route did not improve T4 and lost its acquisition/hold capability, satisfying I9's negative closure condition. The result is limited to this fresh PPO recipe, targeted reward, and direct-control implementation; it does not establish that direct torque or separated objectives cannot work with another design. The remaining decision is whether another mechanism-informed route can credibly change capability or whether T4 should be considered for official assessment in goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "Negative bounded answer for the tested route.",
-        "reason": "M24 verified that training and exported runtimes used direct torque and that the targeted objective separated acquisition progress/closeness from uninterrupted-hold and near-target regulation consequences. T7 then trained a fresh policy over the full 0.06-0.20 m radius range for the full allocation; its late training plateau still had zero training success. M25 measured the nonterminal proxy-peak artifact T7:checkpoint-110592 on the current f6bf4b99cf62 development panel: 0/160 complete episodes, with 158 episodes never reaching tolerance and only two reaching for at most two held steps. The matched T4 control achieved 153/160 with three no-first-reach and four post-reach interruption failures. Thus this tested direct-torque route did not improve T4 and lost its acquisition/hold capability, satisfying I9's negative closure condition. The result is limited to this fresh PPO recipe, targeted reward, and direct-control implementation; it does not establish that direct torque or separated objectives cannot work with another design. The remaining decision is whether another mechanism-informed route can credibly change capability or whether T4 should be considered for official assessment in goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E38",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative bounded answer for the tested route.",
-        "reason": "M24 verified that training and exported runtimes used direct torque and that the targeted objective separated acquisition progress/closeness from uninterrupted-hold and near-target regulation consequences. T7 then trained a fresh policy over the full 0.06-0.20 m radius range for the full allocation; its late training plateau still had zero training success. M25 measured the nonterminal proxy-peak artifact T7:checkpoint-110592 on the current f6bf4b99cf62 development panel: 0/160 complete episodes, with 158 episodes never reaching tolerance and only two reaching for at most two held steps. The matched T4 control achieved 153/160 with three no-first-reach and four post-reach interruption failures. Thus this tested direct-torque route did not improve T4 and lost its acquisition/hold capability, satisfying I9's negative closure condition. The result is limited to this fresh PPO recipe, targeted reward, and direct-control implementation; it does not establish that direct torque or separated objectives cannot work with another design. The remaining decision is whether another mechanism-informed route can credibly change capability or whether T4 should be considered for official assessment in goal review."
-      }
-    },
-    "request_fingerprint": "f7ed9ce3d65fe2624ef4b3c82c99ffb139fb8bd6f725596e2500e903e6f421cd",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 remains best-known based on M23's 153/160 current-source result, with its seven residual failures and the historical/current fingerprint limitation retained. T6:checkpoint-115712 and T6:checkpoint-120832 remain rejected tested persisted residual-torque artifacts at 9/160 and 6/160 under the matched current evaluator. No candidate is certified for official assessment and no new working or retained role is assigned.",
     "completed_operations": [
