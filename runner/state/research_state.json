@@ -735,47 +735,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a candidate exposed to the official 0.06-0.20 m target range has been measured on a goal-relevant development panel with complete-hold outcomes and the requested geometry and dynamics diagnostics, sufficient to conclude positively, negatively, or inconclusively whether this route is a credible path and whether the dominant observed failures are conditioning/coverage-related or overshoot/hold-related. Preserve any unresolved evaluator treatment of internal states and any artifact-specific limits.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to remain within 1 cm continuously for 2 seconds. No learned candidate has yet been produced or measured. This inquiry directly develops and tests the first candidate under the full official target-radius exposure, while recording reach, hold continuity, geometry, branch, action, velocity, and internal-step occupancy diagnostics needed to choose the next intervention.",
-          "handoff_conclusion": "Observed evidence: M1 passed the production-path compatibility check: the authored XML compiled with njnt=nq=nv=nu=2, zero gravity was applied, and native MjData reset plus mj_step completed. M2 compiled the same XML and measured four deterministic signed pulse trials (both joints and both signs), each with 20 internal pulse steps and 120 coast steps. The compiled model reports 0.002 s timestep, Euler integrator, Newton solver, 5 N m peak actuator generalized torque, and nonzero compiled body masses/inertias; repeated traces matched exactly within the recorded 1e-12 tolerance. Peak joint speed was 7.96 rad/s for the shoulder and 8.46 rad/s for the elbow. After command release, the first sample below 1% of peak speed occurred after 0.118 s and 0.1907 rad for the shoulder, and 0.100 s and 0.1707 rad for the elbow. Interpretation: the authored compiled system is responsive and numerically repeatable, so a blanket lack-of-actuation explanation is weakened. Saturated commands can nevertheless create motion far larger than the 1 cm Cartesian tolerance before damping stops them, supporting hold interruption from overly aggressive approach/braking as a live mechanism. Competing explanation remains that the learned policy has inadequate target coverage, branch/conditioning adaptation, or reward-to-hold alignment; M2 did not measure any learned policy, target bins, Cartesian hold margins, or continuous internal occupancy. The measured masses/inertias are compiled MuJoCo consequences of the authored XML, not evidence about hardware transfer. M1 and M2 therefore establish a reproducible simulation characterization, not goal progress or official performance.",
-          "handoff_question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
-          "rationale": "The strongest completed evidence is M2: bounded signed saturated pulses generated substantial repeatable motion and measurable damping-mediated stopping, weakening a blanket actuator-authority explanation but not testing a policy. The campaign has no candidate, so another dynamics-only measurement would not resolve the immediate goal gap. A learning-first inquiry is preferable to assessment because it can produce the missing candidate and directly test the consequential alternatives. It remains revisable: high saturation and large internal excursions with adequate target reach would redirect toward control/runtime design, while low-radius or branch-specific failures without saturation would support exposure/conditioning work.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a candidate exposed to the official 0.06-0.20 m target range has been measured on a goal-relevant development panel with complete-hold outcomes and the requested geometry and dynamics diagnostics, sufficient to conclude positively, negatively, or inconclusively whether this route is a credible path and whether the dominant observed failures are conditioning/coverage-related or overshoot/hold-related. Preserve any unresolved evaluator treatment of internal states and any artifact-specific limits.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to remain within 1 cm continuously for 2 seconds. No learned candidate has yet been produced or measured. This inquiry directly develops and tests the first candidate under the full official target-radius exposure, while recording reach, hold continuity, geometry, branch, action, velocity, and internal-step occupancy diagnostics needed to choose the next intervention.",
-        "question": "Can a policy trained with official 0.06-0.20 m target exposure achieve complete-hold success, and do matched development failures implicate radius/branch conditioning or overshoot/hold interruption?",
-        "rationale": "The strongest completed evidence is M2: bounded signed saturated pulses generated substantial repeatable motion and measurable damping-mediated stopping, weakening a blanket actuator-authority explanation but not testing a policy. The campaign has no candidate, so another dynamics-only measurement would not resolve the immediate goal gap. A learning-first inquiry is preferable to assessment because it can produce the missing candidate and directly test the consequential alternatives. It remains revisable: high saturation and large internal excursions with adequate target reach would redirect toward control/runtime design, while low-radius or branch-specific failures without saturation would support exposure/conditioning work."
-      }
-    },
-    "request_fingerprint": "a054fc7e035458536b135eaae4bb4092eb86a408c854d1e6b7968d7afab35403",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists; working, best-known, and retained roles remain empty. M1 and M2 are measurement operations, not policy artifacts.",
     "completed_operations": [
