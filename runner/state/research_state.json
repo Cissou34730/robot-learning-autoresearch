@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when one bounded branch/joint-limit/trajectory-aware intervention has been implemented and its complete candidate artifact is measured on the same fixed 160-episode development panel with the T2 diagnostic schema, including radius and angle success, first reach, never-reached versus reached-incomplete classes, analytic branch feasibility/context, joint-limit margin, and hold interruptions. The inquiry must also test terminal stabilization as a secondary route through the existing physics-step evidence or a proportionate matched diagnostic. A positive conclusion requires recovery of the targeted residuals with no degradation of T2's 6-14 cm success and no newly dominant hold-loss class; a negative, limited, or inconclusive comparison must preserve the one well-margin two-branch never-reached case and protected continuous-hold uncertainty while redirecting the next goal review.",
+    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every episode completing the uninterrupted 2-second hold. T2 is the strongest measured development candidate at 150/160 (93.75%) under the visible boundary-sampled evaluator, leaving ten failures and no official result. Recovering the six single-branch, negative-margin never-reached cases is the largest identified residual opportunity, while the three reached-but-incomplete cases keep terminal stabilization consequential; the intervention must preserve T2's demonstrated 6-14 cm gains and be judged on a complete fixed-panel artifact before assessment is reconsidered.",
+    "handoff_conclusion": "M12 and M13 independently verified that schema-6 within-physics-step telemetry preserves production control, reset, clipping, hold-transition, and bookkeeping behavior. M14 reproduced T2 at 150/160 and M17 verified the aggregate analysis. M18 showed two consequential residual classes: the three reached-but-incomplete failures produced 435/438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, supporting sampled-data terminal loss for that class; the seven never-reached failures had no hold excursions, and six of those seven were single folded-branch targets with negative minimum joint-limit margin, supporting branch/joint-limit/trajectory failure as the higher-leverage next direction. The seventh never-reached case had both feasible branches and ample margin, so the branch/limit explanation is not complete. The evidence distinguishes the mechanisms sufficiently for prioritization but does not establish causality or protected continuous-hold equivalence.",
+    "handoff_question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+    "handoff_source_session_id": "S7",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+    "rationale": "Official assessment is not preferred now because the strongest measured candidate is 150/160, materially below the 196/200 requirement, and its development evaluator samples only control boundaries rather than proving protected continuous containment. Further undiagnosed coverage work is also not preferred: M10/M11 already showed a strong artifact-level improvement from T1 to T2, including 40/40 at 6-10 cm and 50/53 at 10-14 cm, while outer-radius performance fell slightly (60/67 versus 63/67), so the simple inherited interpretation that more radius coverage is sufficient is no longer supported. M14/M18 provide a consequential residual split: all three reached-but-incomplete failures account for 435 of 438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, whereas six of seven never-reached failures are single folded-branch targets with negative minimum joint-limit margin and no hold excursions. This makes branch/limit/trajectory treatment the higher-leverage bounded direction and terminal stabilization a secondary test. The interpretation is not causal: the seventh never-reached case has both feasible branches and ample margin, and the descriptive branch/limit alignment could reflect trajectory or policy-selection effects. The intervention comparison therefore must measure complete artifacts and retain branch, limit, angle, reach, and hold diagnostics; failure to improve the targeted class or degradation of the 6-14 cm gains will redirect rather than justify another unmeasured variant. The expected contribution is up to the seven additional development successes needed to reach the 98% reference, at the cost of one bounded intervention allocation and matched measurement, which is more decision-relevant than terminating on a known sub-threshold candidate.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de7b7c83a33dc3fd3f1f8ac1aa365c96b6e0f75a",
     "id": "fedcc0f3-5435-4aa3-b839-d2c108082481",
@@ -1647,16 +1658,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 18,
-    "session": 7,
+    "session": 8,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7571,9 +7582,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T15:31:51Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when one bounded branch/joint-limit/trajectory-aware intervention has been implemented and its complete candidate artifact is measured on the same fixed 160-episode development panel with the T2 diagnostic schema, including radius and angle success, first reach, never-reached versus reached-incomplete classes, analytic branch feasibility/context, joint-limit margin, and hold interruptions. The inquiry must also test terminal stabilization as a secondary route through the existing physics-step evidence or a proportionate matched diagnostic. A positive conclusion requires recovery of the targeted residuals with no degradation of T2's 6-14 cm success and no newly dominant hold-loss class; a negative, limited, or inconclusive comparison must preserve the one well-margin two-branch never-reached case and protected continuous-hold uncertainty while redirecting the next goal review.",
+        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every episode completing the uninterrupted 2-second hold. T2 is the strongest measured development candidate at 150/160 (93.75%) under the visible boundary-sampled evaluator, leaving ten failures and no official result. Recovering the six single-branch, negative-margin never-reached cases is the largest identified residual opportunity, while the three reached-but-incomplete cases keep terminal stabilization consequential; the intervention must preserve T2's demonstrated 6-14 cm gains and be judged on a complete fixed-panel artifact before assessment is reconsidered.",
+        "question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+        "rationale": "Official assessment is not preferred now because the strongest measured candidate is 150/160, materially below the 196/200 requirement, and its development evaluator samples only control boundaries rather than proving protected continuous containment. Further undiagnosed coverage work is also not preferred: M10/M11 already showed a strong artifact-level improvement from T1 to T2, including 40/40 at 6-10 cm and 50/53 at 10-14 cm, while outer-radius performance fell slightly (60/67 versus 63/67), so the simple inherited interpretation that more radius coverage is sufficient is no longer supported. M14/M18 provide a consequential residual split: all three reached-but-incomplete failures account for 435 of 438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, whereas six of seven never-reached failures are single folded-branch targets with negative minimum joint-limit margin and no hold excursions. This makes branch/limit/trajectory treatment the higher-leverage bounded direction and terminal stabilization a secondary test. The interpretation is not causal: the seventh never-reached case has both feasible branches and ample margin, and the descriptive branch/limit alignment could reflect trajectory or policy-selection effects. The intervention comparison therefore must measure complete artifacts and retain branch, limit, angle, reach, and hold diagnostics; failure to improve the targeted class or degradation of the 6-14 cm gains will redirect rather than justify another unmeasured variant. The expected contribution is up to the seven additional development successes needed to reach the 98% reference, at the cost of one bounded intervention allocation and matched measurement, which is more decision-relevant than terminating on a known sub-threshold candidate."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when one bounded branch/joint-limit/trajectory-aware intervention has been implemented and its complete candidate artifact is measured on the same fixed 160-episode development panel with the T2 diagnostic schema, including radius and angle success, first reach, never-reached versus reached-incomplete classes, analytic branch feasibility/context, joint-limit margin, and hold interruptions. The inquiry must also test terminal stabilization as a secondary route through the existing physics-step evidence or a proportionate matched diagnostic. A positive conclusion requires recovery of the targeted residuals with no degradation of T2's 6-14 cm success and no newly dominant hold-loss class; a negative, limited, or inconclusive comparison must preserve the one well-margin two-branch never-reached case and protected continuous-hold uncertainty while redirecting the next goal review.",
+          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every episode completing the uninterrupted 2-second hold. T2 is the strongest measured development candidate at 150/160 (93.75%) under the visible boundary-sampled evaluator, leaving ten failures and no official result. Recovering the six single-branch, negative-margin never-reached cases is the largest identified residual opportunity, while the three reached-but-incomplete cases keep terminal stabilization consequential; the intervention must preserve T2's demonstrated 6-14 cm gains and be judged on a complete fixed-panel artifact before assessment is reconsidered.",
+          "handoff_conclusion": "M12 and M13 independently verified that schema-6 within-physics-step telemetry preserves production control, reset, clipping, hold-transition, and bookkeeping behavior. M14 reproduced T2 at 150/160 and M17 verified the aggregate analysis. M18 showed two consequential residual classes: the three reached-but-incomplete failures produced 435/438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, supporting sampled-data terminal loss for that class; the seven never-reached failures had no hold excursions, and six of those seven were single folded-branch targets with negative minimum joint-limit margin, supporting branch/joint-limit/trajectory failure as the higher-leverage next direction. The seventh never-reached case had both feasible branches and ample margin, so the branch/limit explanation is not complete. The evidence distinguishes the mechanisms sufficiently for prioritization but does not establish causality or protected continuous-hold equivalence.",
+          "handoff_question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+          "handoff_source_session_id": "S7",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+          "rationale": "Official assessment is not preferred now because the strongest measured candidate is 150/160, materially below the 196/200 requirement, and its development evaluator samples only control boundaries rather than proving protected continuous containment. Further undiagnosed coverage work is also not preferred: M10/M11 already showed a strong artifact-level improvement from T1 to T2, including 40/40 at 6-10 cm and 50/53 at 10-14 cm, while outer-radius performance fell slightly (60/67 versus 63/67), so the simple inherited interpretation that more radius coverage is sufficient is no longer supported. M14/M18 provide a consequential residual split: all three reached-but-incomplete failures account for 435 of 438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, whereas six of seven never-reached failures are single folded-branch targets with negative minimum joint-limit margin and no hold excursions. This makes branch/limit/trajectory treatment the higher-leverage bounded direction and terminal stabilization a secondary test. The interpretation is not causal: the seventh never-reached case has both feasible branches and ample margin, and the descriptive branch/limit alignment could reflect trajectory or policy-selection effects. The intervention comparison therefore must measure complete artifacts and retain branch, limit, angle, reach, and hold diagnostics; failure to improve the targeted class or degradation of the 6-14 cm gains will redirect rather than justify another unmeasured variant. The expected contribution is up to the seven additional development successes needed to reach the 98% reference, at the cost of one bounded intervention allocation and matched measurement, which is more decision-relevant than terminating on a known sub-threshold candidate.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when one bounded branch/joint-limit/trajectory-aware intervention has been implemented and its complete candidate artifact is measured on the same fixed 160-episode development panel with the T2 diagnostic schema, including radius and angle success, first reach, never-reached versus reached-incomplete classes, analytic branch feasibility/context, joint-limit margin, and hold interruptions. The inquiry must also test terminal stabilization as a secondary route through the existing physics-step evidence or a proportionate matched diagnostic. A positive conclusion requires recovery of the targeted residuals with no degradation of T2's 6-14 cm success and no newly dominant hold-loss class; a negative, limited, or inconclusive comparison must preserve the one well-margin two-branch never-reached case and protected continuous-hold uncertainty while redirecting the next goal review.",
+        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every episode completing the uninterrupted 2-second hold. T2 is the strongest measured development candidate at 150/160 (93.75%) under the visible boundary-sampled evaluator, leaving ten failures and no official result. Recovering the six single-branch, negative-margin never-reached cases is the largest identified residual opportunity, while the three reached-but-incomplete cases keep terminal stabilization consequential; the intervention must preserve T2's demonstrated 6-14 cm gains and be judged on a complete fixed-panel artifact before assessment is reconsidered.",
+        "question": "Which bounded branch/joint-limit/trajectory-aware intervention can recover the six single-branch, negative-margin never-reached T2 failures without degrading T2's 6-14 cm gains, and how should terminal stabilization be tested as a secondary residual route?",
+        "rationale": "Official assessment is not preferred now because the strongest measured candidate is 150/160, materially below the 196/200 requirement, and its development evaluator samples only control boundaries rather than proving protected continuous containment. Further undiagnosed coverage work is also not preferred: M10/M11 already showed a strong artifact-level improvement from T1 to T2, including 40/40 at 6-10 cm and 50/53 at 10-14 cm, while outer-radius performance fell slightly (60/67 versus 63/67), so the simple inherited interpretation that more radius coverage is sufficient is no longer supported. M14/M18 provide a consequential residual split: all three reached-but-incomplete failures account for 435 of 438 boundary interruptions and 3,919 held-interval out-of-tolerance physics substeps, whereas six of seven never-reached failures are single folded-branch targets with negative minimum joint-limit margin and no hold excursions. This makes branch/limit/trajectory treatment the higher-leverage bounded direction and terminal stabilization a secondary test. The interpretation is not causal: the seventh never-reached case has both feasible branches and ample margin, and the descriptive branch/limit alignment could reflect trajectory or policy-selection effects. The intervention comparison therefore must measure complete artifacts and retain branch, limit, angle, reach, and hold diagnostics; failure to improve the targeted class or degradation of the 6-14 cm gains will redirect rather than justify another unmeasured variant. The expected contribution is up to the seven additional development successes needed to reach the 98% reference, at the cost of one bounded intervention allocation and matched measurement, which is more decision-relevant than terminating on a known sub-threshold candidate."
+      }
+    },
+    "request_fingerprint": "f07742d9d3325b035919017defcce3cb7b72105a7b601e09f1ae08ba86bd93e7",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 150/160, with demonstrated 40/40 success at 6-10 cm and 50/53 at 10-14 cm. No new candidate or model role was assigned; the candidate remains a development artifact, not an official result.",
     "completed_operations": [
@@ -7609,6 +7683,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "9a5deb13-579f-44d8-b263-2c93006dc9de",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "1baa78f7386577fe5019242e9f82321e1414c8e8"
+  },
   "terminal_state": null
 }
