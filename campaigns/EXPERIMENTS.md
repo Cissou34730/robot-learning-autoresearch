@@ -79,3 +79,4 @@
 | M41 | measurement | I7 | completed |
 | M42 | measurement | I7 | failed |
 | M43 | measurement | I7 | completed |
+| E29 | inquiry | I7 | completed |
