@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when a controlled, fixed-seed development comparison of complete artifacts implementing hold-aware stabilization and posture/conditioning/limit-aware alternatives has been trained or otherwise produced and measured with success, first reach, maximum uninterrupted hold, interruptions, target radius/angle, sampled velocity and distance trajectories, branch/posture, Jacobian conditioning, and joint-limit margin, sufficient to determine whether the observed gap is improved by those mechanisms or to redirect toward temporal/action-rate or another consequential limitation. A positive, negative, or inconclusive result closes the bounded question with recipe-specific claims and residual uncertainties preserved.",
     "goal_connection": "The protected goal requires at least 196 successes in 200 official episodes, with each success requiring 100 uninterrupted sampled control steps within 1 cm. The best measured full-distribution candidate is 150/160 on a distinct development panel, so further bounded work can still materially improve the route to the goal before terminal assessment. This inquiry will compare complete, independently measured policy artifacts under the unchanged official task rather than optimize a proxy alone.",
-    "handoff_conclusion": "Observed facts: M4 verified that the training sampler covered the official 6\u201320 cm radius range. T1 trained the existing PPO recipe (memoryless 11-component exact-state observation, VecNormalize, existing reward and action mapping) for 120,832 completed steps with only the radial exposure changed from 14\u201320 cm to 6\u201320 cm. M9 evaluated two late T1 checkpoints on the same 160-episode fixed-seed research panel: checkpoint-120832 achieved 150/160 (93.75%), while checkpoint-115712 achieved 142/160 (88.75%); paired outcomes favored the later checkpoint 10 to 2, so checkpoint-120832 is the best measured artifact, not merely the terminal checkpoint by convention. On checkpoint-120832, the panel contained 93 inner-radius and 67 outer-radius episodes: inner performance was 90/93 (96.77%) with all three failures being non-reaches; outer performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included first-reach end-effector speeds around 42\u201345 cm/s, two all-open-posture cases with condition-number maxima around 74\u201376 and positive joint-limit margins, and one separate trajectory with negative joint-limit margin. M8 established that the evaluator's velocity, Jacobian conditioning, branch, and limit diagnostics are wired and computed against independent analytic checks. Interpretation: full-distribution exposure materially improved the measured candidate but did not close the goal gap; the outer-radius deficit and interrupted holds implicate sampled-hold braking/stabilization, while the inspected limit and conditioning patterns keep posture/conditioning and limits consequential. The evidence does not establish one exclusive cause, does not test recurrent or alternative temporal methods, and does not support a general claim about PPO. M3 still supports fast coupled momentum-bearing dynamics but did not establish robust 100-step braking authority.",
+    "handoff_conclusion": "M4 verified training over the official 6-20 cm radius range. T1 used the existing PPO recipe: memoryless 11-component exact-state observation, VecNormalize, existing reward/action mapping, and 120,832 completed steps. M9 measured T1:checkpoint-120832 at 150/160 and checkpoint-115712 at 142/160 on the same panel; paired outcomes favored the former 10 to 2, so it is best by measured evidence rather than terminal status. For checkpoint-120832, inner performance was 90/93 with all three failures being non-reaches; outer performance was 60/67 with four non-reaches and three reach-then-hold failures. Inspected hold failures included first-reach speeds around 42-45 cm/s, two open-posture cases with condition maxima around 74-76 and positive limit margins, and one separate negative limit-margin case. M8 independently verified velocity, branch, Jacobian-conditioning, and limit diagnostics. M3 found fast coupled momentum-bearing responses and velocity persistence after reversal, but not robust 100-step braking. Correction: the inherited 46-point gap is wrong; the correct gap is 4.25 points. Also, outer failures are mixed rather than primarily reach-and-hold by count, so stabilization is consequential but not an established dominant cause. Competing explanations remain sampled-hold braking/stabilization, posture/conditioning/joint-limit interactions, their interaction with geometry, and possibly temporal/action-rate limitations. These are recipe-specific findings and do not establish a general claim about PPO.",
     "handoff_question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?",
@@ -841,7 +841,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 9,
     "session": 4,
@@ -850,7 +850,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -2863,23 +2863,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-12T06:18:02Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 using T1 and M9 because it achieved 150/160 and won 10 versus 2 paired episodes against checkpoint-115712. No working or retained candidate is assigned. This is provisional development status, not official certification.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Two inquiries have been opened: I1 completed and I2 opened by E7. Four completed measurements inform the record (M3, M4, M8, M9); failed execution attempts M1-M2 and M5-M7 are not evidence. One 120,000-step-allocation training run produced 24 archived checkpoints and one best-known role assignment. I1 was closed by E5. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 150/160 successes (93.75%) on a distinct fixed-seed development panel. The gap to 98% is 4.25 percentage points; the nearest 98%-equivalent count on 160 episodes is 157, requiring seven additional successes. This is not the official 200-episode assessment, whose threshold remains 196 successes.",
+        "current_synthesis": "M4 verified training over the official 6-20 cm radius range. T1 used the existing PPO recipe: memoryless 11-component exact-state observation, VecNormalize, existing reward/action mapping, and 120,832 completed steps. M9 measured T1:checkpoint-120832 at 150/160 and checkpoint-115712 at 142/160 on the same panel; paired outcomes favored the former 10 to 2, so it is best by measured evidence rather than terminal status. For checkpoint-120832, inner performance was 90/93 with all three failures being non-reaches; outer performance was 60/67 with four non-reaches and three reach-then-hold failures. Inspected hold failures included first-reach speeds around 42-45 cm/s, two open-posture cases with condition maxima around 74-76 and positive limit margins, and one separate negative limit-margin case. M8 independently verified velocity, branch, Jacobian-conditioning, and limit diagnostics. M3 found fast coupled momentum-bearing responses and velocity persistence after reversal, but not robust 100-step braking. Correction: the inherited 46-point gap is wrong; the correct gap is 4.25 points. Also, outer failures are mixed rather than primarily reach-and-hold by count, so stabilization is consequential but not an established dominant cause. Competing explanations remain sampled-hold braking/stabilization, posture/conditioning/joint-limit interactions, their interaction with geometry, and possibly temporal/action-rate limitations. These are recipe-specific findings and do not establish a general claim about PPO.",
+        "decision_frontier": "Determine whether complete policy artifacts improve through hold-aware braking/stabilization, posture/conditioning/limit-aware behavior, or neither. A matched fixed-seed comparison under the unchanged task must preserve success, first reach, maximum hold, interruptions, radius/angle, velocity/distance traces, branch/posture, Jacobian condition, and limit margin. Complete-candidate improvement supports development; selective improvement in the associated failure strata supports the corresponding mechanism; failure of both redirects toward temporal or action-rate limitations. Reward proxies or a method description alone cannot resolve this distinction.",
+        "evidence_references": [
+          "M3",
+          "M4",
+          "T1",
+          "M8",
+          "M9",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The goal is at least 196 successes in 200 official episodes, each with 100 uninterrupted sampled control steps within 1 cm. E7 opens I2 to develop and measure mechanism-focused alternatives before terminal assessment because the best measured candidate is below the goal and the residual mechanism is unresolved.",
+        "next_direction_or_closure": "E7 opens bounded inquiry I2. After this checkpoint, inspect and implement where warranted a controlled hold-aware stabilization comparison against posture/conditioning/limit-aware alternatives, then measure complete artifacts with the stated diagnostics. Do not request official assessment now: the best-known candidate is below the objective and the unresolved mechanism can change the route to 98%.",
+        "next_question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "4da9fc59622a82dd9dc8c301fcc949c0d6e40b8f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 using T1 and M9 because it achieved 150/160 and won 10 versus 2 paired episodes against checkpoint-115712. No working or retained candidate is assigned. This is provisional development status, not official certification.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Two inquiries have been opened: I1 completed and I2 opened by E7. Four completed measurements inform the record (M3, M4, M8, M9); failed execution attempts M1-M2 and M5-M7 are not evidence. One 120,000-step-allocation training run produced 24 archived checkpoints and one best-known role assignment. I1 was closed by E5. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 150/160 successes (93.75%) on a distinct fixed-seed development panel. The gap to 98% is 4.25 percentage points; the nearest 98%-equivalent count on 160 episodes is 157, requiring seven additional successes. This is not the official 200-episode assessment, whose threshold remains 196 successes.",
+        "current_synthesis": "M4 verified training over the official 6-20 cm radius range. T1 used the existing PPO recipe: memoryless 11-component exact-state observation, VecNormalize, existing reward/action mapping, and 120,832 completed steps. M9 measured T1:checkpoint-120832 at 150/160 and checkpoint-115712 at 142/160 on the same panel; paired outcomes favored the former 10 to 2, so it is best by measured evidence rather than terminal status. For checkpoint-120832, inner performance was 90/93 with all three failures being non-reaches; outer performance was 60/67 with four non-reaches and three reach-then-hold failures. Inspected hold failures included first-reach speeds around 42-45 cm/s, two open-posture cases with condition maxima around 74-76 and positive limit margins, and one separate negative limit-margin case. M8 independently verified velocity, branch, Jacobian-conditioning, and limit diagnostics. M3 found fast coupled momentum-bearing responses and velocity persistence after reversal, but not robust 100-step braking. Correction: the inherited 46-point gap is wrong; the correct gap is 4.25 points. Also, outer failures are mixed rather than primarily reach-and-hold by count, so stabilization is consequential but not an established dominant cause. Competing explanations remain sampled-hold braking/stabilization, posture/conditioning/joint-limit interactions, their interaction with geometry, and possibly temporal/action-rate limitations. These are recipe-specific findings and do not establish a general claim about PPO.",
+        "decision_frontier": "Determine whether complete policy artifacts improve through hold-aware braking/stabilization, posture/conditioning/limit-aware behavior, or neither. A matched fixed-seed comparison under the unchanged task must preserve success, first reach, maximum hold, interruptions, radius/angle, velocity/distance traces, branch/posture, Jacobian condition, and limit margin. Complete-candidate improvement supports development; selective improvement in the associated failure strata supports the corresponding mechanism; failure of both redirects toward temporal or action-rate limitations. Reward proxies or a method description alone cannot resolve this distinction.",
+        "evidence_references": [
+          "M3",
+          "M4",
+          "T1",
+          "M8",
+          "M9",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The goal is at least 196 successes in 200 official episodes, each with 100 uninterrupted sampled control steps within 1 cm. E7 opens I2 to develop and measure mechanism-focused alternatives before terminal assessment because the best measured candidate is below the goal and the residual mechanism is unresolved.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "E7 opens bounded inquiry I2. After this checkpoint, inspect and implement where warranted a controlled hold-aware stabilization comparison against posture/conditioning/limit-aware alternatives, then measure complete artifacts with the stated diagnostics. Do not request official assessment now: the best-known candidate is below the objective and the unresolved mechanism can change the route to 98%.",
+        "next_question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "f0c1731f-d95a-44fa-8fba-4278580800c6",
+        "campaign_id": "d55227f5-1cbd-46bc-ac5c-41186b8b4148",
+        "campaign_usage": "17m55s | 39.39 AIU | prompt 6.2m (90% cached) | output 104.6k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "090ca494a602f78d02d2e2ba388d3169a4cc7d88",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 using T1 and M9 because it achieved 150/160 and won 10 versus 2 paired episodes against checkpoint-115712. No working or retained candidate is assigned. This is provisional development status, not official certification.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Two inquiries have been opened: I1 completed and I2 opened by E7. Four completed measurements inform the record (M3, M4, M8, M9); failed execution attempts M1-M2 and M5-M7 are not evidence. One 120,000-step-allocation training run produced 24 archived checkpoints and one best-known role assignment. I1 was closed by E5. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 150/160 successes (93.75%) on a distinct fixed-seed development panel. The gap to 98% is 4.25 percentage points; the nearest 98%-equivalent count on 160 episodes is 157, requiring seven additional successes. This is not the official 200-episode assessment, whose threshold remains 196 successes.",
+        "current_synthesis": "M4 verified training over the official 6-20 cm radius range. T1 used the existing PPO recipe: memoryless 11-component exact-state observation, VecNormalize, existing reward/action mapping, and 120,832 completed steps. M9 measured T1:checkpoint-120832 at 150/160 and checkpoint-115712 at 142/160 on the same panel; paired outcomes favored the former 10 to 2, so it is best by measured evidence rather than terminal status. For checkpoint-120832, inner performance was 90/93 with all three failures being non-reaches; outer performance was 60/67 with four non-reaches and three reach-then-hold failures. Inspected hold failures included first-reach speeds around 42-45 cm/s, two open-posture cases with condition maxima around 74-76 and positive limit margins, and one separate negative limit-margin case. M8 independently verified velocity, branch, Jacobian-conditioning, and limit diagnostics. M3 found fast coupled momentum-bearing responses and velocity persistence after reversal, but not robust 100-step braking. Correction: the inherited 46-point gap is wrong; the correct gap is 4.25 points. Also, outer failures are mixed rather than primarily reach-and-hold by count, so stabilization is consequential but not an established dominant cause. Competing explanations remain sampled-hold braking/stabilization, posture/conditioning/joint-limit interactions, their interaction with geometry, and possibly temporal/action-rate limitations. These are recipe-specific findings and do not establish a general claim about PPO.",
+        "decision_frontier": "Determine whether complete policy artifacts improve through hold-aware braking/stabilization, posture/conditioning/limit-aware behavior, or neither. A matched fixed-seed comparison under the unchanged task must preserve success, first reach, maximum hold, interruptions, radius/angle, velocity/distance traces, branch/posture, Jacobian condition, and limit margin. Complete-candidate improvement supports development; selective improvement in the associated failure strata supports the corresponding mechanism; failure of both redirects toward temporal or action-rate limitations. Reward proxies or a method description alone cannot resolve this distinction.",
+        "evidence_references": [
+          "M3",
+          "M4",
+          "T1",
+          "M8",
+          "M9",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The goal is at least 196 successes in 200 official episodes, each with 100 uninterrupted sampled control steps within 1 cm. E7 opens I2 to develop and measure mechanism-focused alternatives before terminal assessment because the best measured candidate is below the goal and the residual mechanism is unresolved.",
+        "next_direction_or_closure": "E7 opens bounded inquiry I2. After this checkpoint, inspect and implement where warranted a controlled hold-aware stabilization comparison against posture/conditioning/limit-aware alternatives, then measure complete artifacts with the stated diagnostics. Do not request official assessment now: the best-known candidate is below the objective and the unresolved mechanism can change the route to 98%.",
+        "next_question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?"
+      }
+    },
+    "request_fingerprint": "d4195021b18f60e6f4390607c7055b82c33d3f9e954ead3c2fceaf2d3ef4edbe",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 using T1 and M9 because it achieved 150/160 and won 10 versus 2 paired episodes against checkpoint-115712. No working or retained candidate is assigned. This role is provisional development status and is not an official certification.",
+    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 using T1 and M9 because it achieved 150/160 and won 10 versus 2 paired episodes against checkpoint-115712. No working or retained candidate is assigned. This is provisional development status, not official certification.",
     "completed_operations": [
-      "M4",
-      "T1",
-      "M8",
-      "M9",
-      "E4",
-      "E5"
+      "E7"
     ],
-    "cumulative_resource_use": "Campaign totals at this checkpoint: 1 completed inquiry (I1), 4 completed measurement operations in the inquiry (M4, M8, M9 plus prior campaign measurement M3 reflected in the accumulated record), 1 completed 120,000-step-allocation training run (T1; 120,832 completed steps), 1 best-known role assignment (E4), and 1 inquiry closure (E5). M5\u2013M7 remain execution history only and are not scientific evidence. No official assessment has been requested.",
-    "current_goal_gap": "Best-known candidate T1:checkpoint-120832 achieved 150/160 successes (93.75%) on a non-overlapping fixed-seed research panel, below the 98% objective. This is development evidence only, not an official 200-episode assessment. The candidate remains 46 percentage points short of the panel-equivalent 98% threshold (196/200 is the official requirement), and no policy is yet assessment-ready.",
-    "current_synthesis": "Observed facts: M4 verified that the training sampler covered the official 6\u201320 cm radius range. T1 trained the existing PPO recipe (memoryless 11-component exact-state observation, VecNormalize, existing reward and action mapping) for 120,832 completed steps with only the radial exposure changed from 14\u201320 cm to 6\u201320 cm. M9 evaluated two late T1 checkpoints on the same 160-episode fixed-seed research panel: checkpoint-120832 achieved 150/160 (93.75%), while checkpoint-115712 achieved 142/160 (88.75%); paired outcomes favored the later checkpoint 10 to 2, so checkpoint-120832 is the best measured artifact, not merely the terminal checkpoint by convention. On checkpoint-120832, the panel contained 93 inner-radius and 67 outer-radius episodes: inner performance was 90/93 (96.77%) with all three failures being non-reaches; outer performance was 60/67 (89.55%) with four non-reaches and three reach-then-hold failures. Representative reach-then-hold failures included first-reach end-effector speeds around 42\u201345 cm/s, two all-open-posture cases with condition-number maxima around 74\u201376 and positive joint-limit margins, and one separate trajectory with negative joint-limit margin. M8 established that the evaluator's velocity, Jacobian conditioning, branch, and limit diagnostics are wired and computed against independent analytic checks. Interpretation: full-distribution exposure materially improved the measured candidate but did not close the goal gap; the outer-radius deficit and interrupted holds implicate sampled-hold braking/stabilization, while the inspected limit and conditioning patterns keep posture/conditioning and limits consequential. The evidence does not establish one exclusive cause, does not test recurrent or alternative temporal methods, and does not support a general claim about PPO. M3 still supports fast coupled momentum-bearing dynamics but did not establish robust 100-step braking authority.",
-    "decision_frontier": "The unresolved direction-setting distinction is whether the remaining gap is chiefly a sampled-hold braking/stabilization problem under momentum, a posture/conditioning/joint-limit problem concentrated near outer reach, or an interaction of these with geometry. Full-radius exposure alone is not sufficient evidence of adequacy. A fixed-seed, matched development comparison that preserves the task and reports success, first reach, hold interruptions, velocity/distance traces, branch, Jacobian condition, and limit margin for complete artifacts implementing hold-aware stabilization versus posture/limit-aware alternatives would discriminate the mechanisms; persistent failure despite both would elevate temporal representation or action-rate limitations. An official assessment remains premature until a candidate is near the protected threshold on independent development evidence.",
+    "cumulative_resource_use": "Two inquiries have been opened: I1 completed and I2 opened by E7. Four completed measurements inform the record (M3, M4, M8, M9); failed execution attempts M1-M2 and M5-M7 are not evidence. One 120,000-step-allocation training run produced 24 archived checkpoints and one best-known role assignment. I1 was closed by E5. No official assessment has been requested.",
+    "current_goal_gap": "T1:checkpoint-120832 achieved 150/160 successes (93.75%) on a distinct fixed-seed development panel. The gap to 98% is 4.25 percentage points; the nearest 98%-equivalent count on 160 episodes is 157, requiring seven additional successes. This is not the official 200-episode assessment, whose threshold remains 196 successes.",
+    "current_synthesis": "M4 verified training over the official 6-20 cm radius range. T1 used the existing PPO recipe: memoryless 11-component exact-state observation, VecNormalize, existing reward/action mapping, and 120,832 completed steps. M9 measured T1:checkpoint-120832 at 150/160 and checkpoint-115712 at 142/160 on the same panel; paired outcomes favored the former 10 to 2, so it is best by measured evidence rather than terminal status. For checkpoint-120832, inner performance was 90/93 with all three failures being non-reaches; outer performance was 60/67 with four non-reaches and three reach-then-hold failures. Inspected hold failures included first-reach speeds around 42-45 cm/s, two open-posture cases with condition maxima around 74-76 and positive limit margins, and one separate negative limit-margin case. M8 independently verified velocity, branch, Jacobian-conditioning, and limit diagnostics. M3 found fast coupled momentum-bearing responses and velocity persistence after reversal, but not robust 100-step braking. Correction: the inherited 46-point gap is wrong; the correct gap is 4.25 points. Also, outer failures are mixed rather than primarily reach-and-hold by count, so stabilization is consequential but not an established dominant cause. Competing explanations remain sampled-hold braking/stabilization, posture/conditioning/joint-limit interactions, their interaction with geometry, and possibly temporal/action-rate limitations. These are recipe-specific findings and do not establish a general claim about PPO.",
+    "decision_frontier": "Determine whether complete policy artifacts improve through hold-aware braking/stabilization, posture/conditioning/limit-aware behavior, or neither. A matched fixed-seed comparison under the unchanged task must preserve success, first reach, maximum hold, interruptions, radius/angle, velocity/distance traces, branch/posture, Jacobian condition, and limit margin. Complete-candidate improvement supports development; selective improvement in the associated failure strata supports the corresponding mechanism; failure of both redirects toward temporal or action-rate limitations. Reward proxies or a method description alone cannot resolve this distinction.",
     "evidence_references": [
       "M3",
       "M4",
@@ -2887,14 +3021,15 @@
       "M8",
       "M9",
       "E4",
-      "E5"
+      "E5",
+      "E7"
     ],
-    "human_goal_connection": "The protected objective requires at least 196 successes in 200 official episodes, with every success consisting of 100 uninterrupted sampled control steps within 1 cm. I1 developed and independently measured the first full-distribution candidate against that objective without requesting terminal assessment.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed because its closure condition is satisfied: a complete full-distribution candidate was trained, compared with a late alternative, and independently measured with the required success and trajectory diagnostics sufficient to choose the next direction. The result is negative relative to the 98% objective but informative: do not treat generic full-distribution PPO exposure as solved; direct the next goal review toward a mechanism-focused comparison of hold-aware braking/stabilization and posture/conditioning/limit effects, while preserving the recipe-specific limits and postponing official assessment.",
+    "human_goal_connection": "The goal is at least 196 successes in 200 official episodes, each with 100 uninterrupted sampled control steps within 1 cm. E7 opens I2 to develop and measure mechanism-focused alternatives before terminal assessment because the best measured candidate is below the goal and the residual mechanism is unresolved.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "E7 opens bounded inquiry I2. After this checkpoint, inspect and implement where warranted a controlled hold-aware stabilization comparison against posture/conditioning/limit-aware alternatives, then measure complete artifacts with the stated diagnostics. Do not request official assessment now: the best-known candidate is below the objective and the unresolved mechanism can change the route to 98%.",
     "next_question": "Do the selected full-distribution candidate's outer-radius reach-and-hold failures arise primarily from sampled-hold braking/stabilization and posture/conditioning/joint-limit interactions, such that a controlled development comparison of hold-aware stabilization against posture/limit-aware alternatives can raise fixed-seed success toward the 98% objective?",
-    "scientific_commit": "38ede01ee7fc3b387dd1fe3460b611db4dde2daa",
-    "session_id": "S3"
+    "scientific_commit": "090ca494a602f78d02d2e2ba388d3169a4cc7d88",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2902,21 +3037,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "f0c1731f-d95a-44fa-8fba-4278580800c6",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E7"
-    ],
-    "scientific_parent_commit": "4da9fc59622a82dd9dc8c301fcc949c0d6e40b8f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
