@@ -6410,55 +6410,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M10",
-          "M15"
-        ],
-        "reason": "T2 is the strongest complete development artifact measured on the official full-radius geometry: 150/160 successes (93.75%), versus 105/160 for T1. The result is candidate-level evidence, not certification or proof that radius exposure alone caused the improvement. The remaining failures are still consequential for the human goal: seven never reached the tolerance, three reached but never completed the hold, and three interrupted an attempted hold."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/t2-c8cf701d5-a47d0c7779bdf3e6e55c91a59df417d71ed7e34623550a4e75f1af77d6dcd422",
-        "fingerprint": "a47d0c7779bdf3e6e55c91a59df417d71ed7e34623550a4e75f1af77d6dcd422",
-        "source": "campaigns/checkpoints/candidates/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/t2/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M10",
-          "M15"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M10",
-          "M15"
-        ],
-        "reason": "T2 is the strongest complete development artifact measured on the official full-radius geometry: 150/160 successes (93.75%), versus 105/160 for T1. The result is candidate-level evidence, not certification or proof that radius exposure alone caused the improvement. The remaining failures are still consequential for the human goal: seven never reached the tolerance, three reached but never completed the hold, and three interrupted an attempted hold."
-      }
-    },
-    "request_fingerprint": "9899e73959af99ef5762f480ec108664e59d89e2b536ac12a6c606bb4a2de3c4",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Two learned candidates exist: T1 is the outer-only baseline trained over 0.14-0.20 m and measured by M8 at 105/160; T2 is the full-radius candidate trained over 0.06-0.20 m and measured by M10 at 150/160. No working, best-known, or retained role has been assigned. The T2 artifact is the strongest measured development candidate, but role assignment belongs to the next goal-review decision and does not itself certify the human goal.",
     "completed_operations": [
