@@ -1660,7 +1660,7 @@
   "counters": {
     "event": 4,
     "inquiry": 1,
-    "measurement": 4,
+    "measurement": 6,
     "session": 3,
     "training": 2
   },
@@ -3324,9 +3324,264 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T16:31:51Z",
+      "error": "robot_learning.lab.verify_full_radius_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 256, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 251, in main\n    result = run_compatibility_check() if args.compatibility else run_checks()\n                                                                  ~~~~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 167, in run_checks\n    raise AssertionError(\"stratum [6,10) arithmetic is incorrect\")\nAssertionError: stratum [6,10) arithmetic is incorrect\n",
+      "id": "M5",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify and analyze the completed matched T1/T2 evaluation artifacts.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json",
+            "instrument": "python_module",
+            "label": "full-radius-analysis-check",
+            "module": "robot_learning.lab.verify_full_radius_analysis"
+          },
+          {
+            "args": [
+              "--compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json",
+            "instrument": "python_module",
+            "label": "full-radius-analysis-compatibility",
+            "module": "robot_learning.lab.verify_full_radius_analysis"
+          },
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M4"
+              },
+              "reference": {
+                "artifact_index": 0,
+                "operation_id": "M4"
+              }
+            },
+            "instrument": "python_module",
+            "label": "full-radius-matched-panel-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "rationale": "This operation converts the preserved M4 episode-level evidence into the decision-relevant comparison required by I1. The artifact-independent checks validate boundary and null handling first; the bound-input analysis then computes radius-stratified outcomes and failure-mechanism summaries from the exact recorded M4 artifacts without rerunning or altering evaluation."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_full_radius_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 256, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 251, in main\n    result = run_compatibility_check() if args.compatibility else run_checks()\n                                                                  ~~~~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\verify_full_radius_analysis.py\", line 167, in run_checks\n    raise AssertionError(\"stratum [6,10) arithmetic is incorrect\")\nAssertionError: stratum [6,10) arithmetic is incorrect\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M6",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json",
+          "instrument": "python_module",
+          "label": "full-radius-analysis-check",
+          "module": "robot_learning.lab.verify_full_radius_analysis"
+        },
+        {
+          "args": [
+            "--compatibility",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json",
+          "instrument": "python_module",
+          "label": "full-radius-analysis-compatibility",
+          "module": "robot_learning.lab.verify_full_radius_analysis"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m4-T2-checkpoint-120832-160ep-seed5000-2e23d2a8c04c.json",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m4-T1-checkpoint-115712-160ep-seed5000-2e23d2a8c04c.json",
+            "--output",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m4-T2-checkpoint-120832-160ep-seed5000-2e23d2a8c04c.json",
+              "operation_id": "M4",
+              "recorded_artifact_fingerprint": "51839cea7a376375bb62198894222509454df18be59d8af19aea13ebee8df5d4"
+            },
+            "reference": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m4-T1-checkpoint-115712-160ep-seed5000-2e23d2a8c04c.json",
+              "operation_id": "M4",
+              "recorded_artifact_fingerprint": "ea2058d9d34891a3b1627964639fb01a48893511aabc030596d959de4031f5a4"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 1,
+              "operation_id": "M4"
+            },
+            "reference": {
+              "artifact_index": 0,
+              "operation_id": "M4"
+            }
+          },
+          "instrument": "python_module",
+          "label": "full-radius-matched-panel-analysis",
+          "module": "robot_learning.lab.analyze_full_radius_comparison"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+            "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+          },
+          {
+            "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+            "path": "robot_learning/lab/verify_full_radius_analysis.py"
+          },
+          {
+            "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+            "path": "robot_learning/lab/verify_full_radius_training.py"
+          },
+          {
+            "fingerprint": "fb8698aedaeb13fca5249759dd191bd469a02355514b12cb7c011efccb9461db",
+            "path": "robot_learning/lab/verify_research_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "dcc19dce6d9ebe24bebb8d3cbc8f4decc08fcf2b",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+            "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+            "path": "robot_learning/lab/verify_full_radius_analysis.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_full_radius_comparison.py",
+          "robot_learning/lab/verify_full_radius_analysis.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Verify and analyze the completed matched T1/T2 evaluation artifacts.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_check.json",
+            "instrument": "python_module",
+            "label": "full-radius-analysis-check",
+            "module": "robot_learning.lab.verify_full_radius_analysis"
+          },
+          {
+            "args": [
+              "--compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_analysis_compatibility.json",
+            "instrument": "python_module",
+            "label": "full-radius-analysis-compatibility",
+            "module": "robot_learning.lab.verify_full_radius_analysis"
+          },
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_comparison_analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M4"
+              },
+              "reference": {
+                "artifact_index": 0,
+                "operation_id": "M4"
+              }
+            },
+            "instrument": "python_module",
+            "label": "full-radius-matched-panel-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "rationale": "This operation converts the preserved M4 episode-level evidence into the decision-relevant comparison required by I1. The artifact-independent checks validate boundary and null handling first; the bound-input analysis then computes radius-stratified outcomes and failure-mechanism summaries from the exact recorded M4 artifacts without rerunning or altering evaluation."
+      }
+    },
+    "request_fingerprint": "3db565bd2cfc36768c3bab58352c262380b6aff43dc4516e6fb16160cdc2279d",
+    "session_id": "S3",
+    "supersedes": "M5"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E1 from T1 and M1. There is no working or retained candidate. E3 is the active inquiry boundary; no new candidate exists yet. The terminal T1 checkpoint has no privileged status among the 24 archived checkpoints, and unmeasured checkpoints are not treated as development evidence.",
     "completed_operations": [
