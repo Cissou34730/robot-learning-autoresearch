@@ -7596,41 +7596,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T3:checkpoint-90112",
-        "reason": "Request the protected 200-episode official assessment for the explicitly assigned best-known artifact T3:checkpoint-90112. On the fresh non-overlapping M10 panel it achieved 158/160 = 98.75%, above the 98% development threshold; M11 showed exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, recovery of [14,17) to 41/41 and [17,20] to 31/32, and only one no-entry plus one post-entry failure, with hold interruptions reduced from nine to one. The transfer used a complete artifact with no exact saved-component matches to T2, while T3:checkpoint-120832 tied the measured result; E10 correctly selected the proxy-nominated 90112 checkpoint without granting terminal-checkpoint privilege. We do not claim the reward terms, PPO, full-radius exposure, or transfer recipe caused the improvement: the evidence supports only the complete-artifact result. Residual branch/limit uncertainty, persistent hold-window action saturation, one transfer seed, and the two development failures remain explicit limitations, but they do not identify a tested variant or mechanism whose expected contribution justifies delaying the irreversible goal test. Further inquiry would add characterization rather than direct certification and could not remove the protected-panel generalization uncertainty. The official assessment now directly determines whether the human criterion of at least 196/200 uninterrupted 100-step holds is met; its distinct fixed panel preserves the required assessment boundary.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "7504b21b-ea26-4f66-9615-5f353ba76bae",
-        "campaign_id": "dc48cc2f-7672-4843-9be3-94851fc35aed",
-        "campaign_usage": "4h26m | 44.00 AIU | prompt 7.1m (91% cached) | output 120.2k",
-        "session_id": "S6",
-        "session_kind": "goal_review",
-        "session_usage": "usage unavailable"
-      },
-      "result": {
-        "model": "T3:checkpoint-90112",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "Request the protected 200-episode official assessment for the explicitly assigned best-known artifact T3:checkpoint-90112. On the fresh non-overlapping M10 panel it achieved 158/160 = 98.75%, above the 98% development threshold; M11 showed exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, recovery of [14,17) to 41/41 and [17,20] to 31/32, and only one no-entry plus one post-entry failure, with hold interruptions reduced from nine to one. The transfer used a complete artifact with no exact saved-component matches to T2, while T3:checkpoint-120832 tied the measured result; E10 correctly selected the proxy-nominated 90112 checkpoint without granting terminal-checkpoint privilege. We do not claim the reward terms, PPO, full-radius exposure, or transfer recipe caused the improvement: the evidence supports only the complete-artifact result. Residual branch/limit uncertainty, persistent hold-window action saturation, one transfer seed, and the two development failures remain explicit limitations, but they do not identify a tested variant or mechanism whose expected contribution justifies delaying the irreversible goal test. Further inquiry would add characterization rather than direct certification and could not remove the protected-panel generalization uncertainty. The official assessment now directly determines whether the human criterion of at least 196/200 uninterrupted 100-step holds is met; its distinct fixed panel preserves the required assessment boundary."
-      }
-    },
-    "request_fingerprint": "67398f0103bbfcc5c13de49695a3a0fbbdbac99e691f66db70f05b4162af3aaa",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T3:checkpoint-90112, assigned by E10 from M10/M11. T3:checkpoint-120832 is an equally performing measured checkpoint on the M10 panel but is not best-known because 90112 was the proxy-nominated nonterminal artifact and terminal status has no privileged role. T2:checkpoint-120832 remains the prior measured reference. T3 was transferred from T2 under the modified reward and is not complete-artifact equivalent to T2; no exact saved-component matches were reported. No working or retained candidate is assigned.",
     "completed_operations": [
