@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
-    "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
-    "handoff_conclusion": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
-    "handoff_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
-    "rationale": "Requesting assessment now would terminally spend the protected 200-episode panel on a candidate whose only development result is 93.75%, below the 98% target, with seven never-reached and three reached-but-never-completed episodes. The expected value of one bounded development inquiry is high because the candidate is close enough to expose a specific residual failure gap and the full-radius route already resolved the dominant coverage deficit. The inquiry is not justified by an untested cause alone: it is bounded by a direct candidate comparison and a closure rule tied to the official success criterion. If it cannot materially improve complete holds, the campaign will retain T2 as best-known and face the protected assessment with the uncertainty explicitly preserved.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "19d463316654368e418a6d149ad8a3a577a5e141",
     "id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
@@ -2476,7 +2465,7 @@
     }
   },
   "counters": {
-    "event": 9,
+    "event": 10,
     "inquiry": 2,
     "measurement": 18,
     "session": 5,
@@ -2485,7 +2474,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T3:checkpoint-110592",
     "retained": {},
@@ -8698,9 +8687,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T09:06:30Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
+        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
+        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
+        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
+        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
+        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent."
+      }
+    },
+    "request_fingerprint": "6ab284658d39c999554e121643fb3585622a7994c067c389458ca197c80d2587",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
     "completed_operations": [
@@ -8751,7 +8794,8 @@
       "M17",
       "T3",
       "M18",
-      "E9"
+      "E9",
+      "E10"
     ],
     "scientific_parent_commit": "a0bc7ce75000b463147d95a8d3459d29bbddfcfc"
   },
