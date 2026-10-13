@@ -998,7 +998,7 @@
       "training_steps": 115712
     },
     "T2:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/dc48cc2f-7672-4843-9be3-94851fc35aed/t2/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t2-c8cf701d5-4561f2c849c76a1ea08b8701f1988f7f959388e0ae4b150d322d2694672a4b8a",
       "evaluation_artifacts": [
         "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m4-T2-checkpoint-120832-160ep-seed5000-2e23d2a8c04c.json"
       ],
@@ -1647,18 +1647,18 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 6,
-    "session": 3,
+    "session": 4,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-115712",
+    "best_known": "T2:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -3974,9 +3974,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T16:35:11Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M4",
+          "M6"
+        ],
+        "reason": "Correct the inherited best-known role because the completed matched development measurement directly compares the two complete artifacts: T2 achieves 154/160 = 96.25% versus T1's 115/160 = 71.875%, with 44 candidate-only wins and 5 reference-only wins. T2 preserves the decisive inner-radius gain but remains below the 98% objective and loses performance in the 14-20 cm strata, so this role assignment identifies the strongest evidence-backed candidate without certifying readiness for official assessment."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M4",
+          "M6"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T2:checkpoint-120832",
+        "evidence": [
+          "M4",
+          "M6"
+        ],
+        "reason": "Correct the inherited best-known role because the completed matched development measurement directly compares the two complete artifacts: T2 achieves 154/160 = 96.25% versus T1's 115/160 = 71.875%, with 44 candidate-only wins and 5 reference-only wins. T2 preserves the decisive inner-radius gain but remains below the 98% objective and loses performance in the 14-20 cm strata, so this role assignment identifies the strongest evidence-backed candidate without certifying readiness for official assessment."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t2-c8cf701d5-4561f2c849c76a1ea08b8701f1988f7f959388e0ae4b150d322d2694672a4b8a",
+        "fingerprint": "4561f2c849c76a1ea08b8701f1988f7f959388e0ae4b150d322d2694672a4b8a",
+        "source": "campaigns/checkpoints/candidates/dc48cc2f-7672-4843-9be3-94851fc35aed/t2/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M4",
+          "M6"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "M4",
+          "M6"
+        ],
+        "reason": "Correct the inherited best-known role because the completed matched development measurement directly compares the two complete artifacts: T2 achieves 154/160 = 96.25% versus T1's 115/160 = 71.875%, with 44 candidate-only wins and 5 reference-only wins. T2 preserves the decisive inner-radius gain but remains below the 98% objective and loses performance in the 14-20 cm strata, so this role assignment identifies the strongest evidence-backed candidate without certifying readiness for official assessment."
+      }
+    },
+    "request_fingerprint": "4cec99eb017c63311d30821623dc32d54f5d40562cfb41aef1741f305d795e25",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the explicitly assigned best-known role from E1 because no role reassignment was permitted after inquiry closure; T2:checkpoint-120832 is the strongest newly measured development candidate at 154/160 = 96.25% but has not yet been assigned a model role. There is no working or retained candidate. Candidate selection and mechanism interpretation remain separate: T2 is favored by M4/M6 for development evidence, not certified for the official goal.",
     "completed_operations": [
@@ -4012,6 +4086,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "3dae357b-94ca-44b2-becd-3f2873563a95",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "71d0299ed3fdb96d4b9eda74efa094860c467401"
+  },
   "terminal_state": null
 }
