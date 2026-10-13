@@ -129,6 +129,83 @@ def nearest_target_ik_branch(
     }
 
 
+def _empty_hold_window_diagnostics() -> dict[str, float | int | None]:
+    return {
+        "hold_window_control_steps": 0,
+        "hold_window_max_joint_speed_norm_rad_per_s": None,
+        "hold_window_max_absolute_action": None,
+        "hold_window_max_internal_substep_distance_cm": None,
+        "hold_window_max_internal_substep_distance_above_threshold_cm": None,
+        "hold_window_internal_substeps_above_threshold": 0,
+    }
+
+
+def _accumulate_hold_window_diagnostics(
+    diagnostics: dict[str, float | int | None],
+    *,
+    previous_held_steps: int,
+    held_steps: int,
+    joint_speed_norm_rad_per_s: float | None,
+    absolute_action: float | None,
+    substep_distances: np.ndarray,
+) -> None:
+    """Accumulate measurements for a hold entry, continuation, or exit step."""
+    if previous_held_steps <= 0 and held_steps <= 0:
+        return
+
+    diagnostics["hold_window_control_steps"] = (
+        int(diagnostics["hold_window_control_steps"]) + 1
+    )
+    if joint_speed_norm_rad_per_s is not None:
+        current_max_speed = diagnostics["hold_window_max_joint_speed_norm_rad_per_s"]
+        if (
+            current_max_speed is None
+            or joint_speed_norm_rad_per_s > float(current_max_speed)
+        ):
+            diagnostics["hold_window_max_joint_speed_norm_rad_per_s"] = (
+                joint_speed_norm_rad_per_s
+            )
+    if absolute_action is not None:
+        current_max_action = diagnostics["hold_window_max_absolute_action"]
+        if current_max_action is None or absolute_action > float(current_max_action):
+            diagnostics["hold_window_max_absolute_action"] = absolute_action
+
+    finite_substeps = np.asarray(substep_distances, dtype=np.float64)
+    finite_substeps = finite_substeps[np.isfinite(finite_substeps)]
+    if not finite_substeps.size:
+        return
+
+    current_max_substep_cm = float(np.max(finite_substeps) * 100.0)
+    previous_max_substep_cm = diagnostics[
+        "hold_window_max_internal_substep_distance_cm"
+    ]
+    if (
+        previous_max_substep_cm is None
+        or current_max_substep_cm > float(previous_max_substep_cm)
+    ):
+        diagnostics["hold_window_max_internal_substep_distance_cm"] = (
+            current_max_substep_cm
+        )
+
+    above_threshold = finite_substeps[finite_substeps > SUCCESS_THRESHOLD]
+    diagnostics["hold_window_internal_substeps_above_threshold"] = (
+        int(diagnostics["hold_window_internal_substeps_above_threshold"])
+        + int(above_threshold.size)
+    )
+    if above_threshold.size:
+        current_max_above_cm = float(np.max(above_threshold) * 100.0)
+        previous_max_above_cm = diagnostics[
+            "hold_window_max_internal_substep_distance_above_threshold_cm"
+        ]
+        if (
+            previous_max_above_cm is None
+            or current_max_above_cm > float(previous_max_above_cm)
+        ):
+            diagnostics[
+                "hold_window_max_internal_substep_distance_above_threshold_cm"
+            ] = current_max_above_cm
+
+
 def _build_episode_diagnostics(
     *,
     episode: int,
@@ -147,6 +224,12 @@ def _build_episode_diagnostics(
     max_internal_substep_distance_cm: float | None,
     max_internal_substep_distance_above_threshold_cm: float | None,
     internal_substeps_above_threshold: int,
+    hold_window_control_steps: int,
+    hold_window_max_joint_speed_norm_rad_per_s: float | None,
+    hold_window_max_absolute_action: float | None,
+    hold_window_max_internal_substep_distance_cm: float | None,
+    hold_window_max_internal_substep_distance_above_threshold_cm: float | None,
+    hold_window_internal_substeps_above_threshold: int,
     nearest_branch_at_first_entry: dict | None,
 ) -> dict:
     """Assemble one JSON-compatible diagnostic record from measured values."""
@@ -175,6 +258,20 @@ def _build_episode_diagnostics(
             max_internal_substep_distance_above_threshold_cm
         ),
         "internal_substeps_above_threshold": internal_substeps_above_threshold,
+        "hold_window_control_steps": hold_window_control_steps,
+        "hold_window_max_joint_speed_norm_rad_per_s": (
+            hold_window_max_joint_speed_norm_rad_per_s
+        ),
+        "hold_window_max_absolute_action": hold_window_max_absolute_action,
+        "hold_window_max_internal_substep_distance_cm": (
+            hold_window_max_internal_substep_distance_cm
+        ),
+        "hold_window_max_internal_substep_distance_above_threshold_cm": (
+            hold_window_max_internal_substep_distance_above_threshold_cm
+        ),
+        "hold_window_internal_substeps_above_threshold": (
+            hold_window_internal_substeps_above_threshold
+        ),
     }
 
 
@@ -224,8 +321,11 @@ def evaluate_research_model(
         max_internal_substep_distance_cm: float | None = None
         max_internal_substep_distance_above_threshold_cm: float | None = None
         internal_substeps_above_threshold = 0
+        hold_window_diagnostics = _empty_hold_window_diagnostics()
+        previous_held_steps = 0
         nearest_branch_at_first_entry: dict | None = None
         while not (terminated or truncated):
+            previous_held_steps_before_step = previous_held_steps
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
@@ -261,6 +361,14 @@ def evaluate_research_model(
                 max_absolute_action = max(max_absolute_action, current_max_action)
             substep_distances = np.asarray(
                 env.last_substep_distances, dtype=np.float64
+            )
+            _accumulate_hold_window_diagnostics(
+                hold_window_diagnostics,
+                previous_held_steps=previous_held_steps_before_step,
+                held_steps=held_steps,
+                joint_speed_norm_rad_per_s=current_speed_norm,
+                absolute_action=current_max_action,
+                substep_distances=substep_distances,
             )
             if substep_distances.size:
                 finite_substeps = substep_distances[np.isfinite(substep_distances)]
@@ -302,6 +410,7 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
+            previous_held_steps = held_steps
 
         episode_results.append(
             {
@@ -335,6 +444,32 @@ def evaluate_research_model(
                     max_internal_substep_distance_above_threshold_cm
                 ),
                 internal_substeps_above_threshold=internal_substeps_above_threshold,
+                hold_window_control_steps=int(
+                    hold_window_diagnostics["hold_window_control_steps"]
+                ),
+                hold_window_max_joint_speed_norm_rad_per_s=(
+                    hold_window_diagnostics[
+                        "hold_window_max_joint_speed_norm_rad_per_s"
+                    ]
+                ),
+                hold_window_max_absolute_action=hold_window_diagnostics[
+                    "hold_window_max_absolute_action"
+                ],
+                hold_window_max_internal_substep_distance_cm=(
+                    hold_window_diagnostics[
+                        "hold_window_max_internal_substep_distance_cm"
+                    ]
+                ),
+                hold_window_max_internal_substep_distance_above_threshold_cm=(
+                    hold_window_diagnostics[
+                        "hold_window_max_internal_substep_distance_above_threshold_cm"
+                    ]
+                ),
+                hold_window_internal_substeps_above_threshold=int(
+                    hold_window_diagnostics[
+                        "hold_window_internal_substeps_above_threshold"
+                    ]
+                ),
                 nearest_branch_at_first_entry=nearest_branch_at_first_entry,
             )
         )
