@@ -17,7 +17,9 @@ import numpy as np
 from contracts.task_spec import FRAME_SKIP, SUCCESS_THRESHOLD
 from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.scenario.evaluation import (
+    _accumulate_hold_window_diagnostics,
     _build_episode_diagnostics,
+    _empty_hold_window_diagnostics,
     minimum_joint_limit_margin,
     nearest_target_ik_branch,
     target_ik_branch_diagnostics,
@@ -68,6 +70,12 @@ def _controlled_numeric_checks() -> dict:
         max_internal_substep_distance_cm=13.0,
         max_internal_substep_distance_above_threshold_cm=13.0,
         internal_substeps_above_threshold=FRAME_SKIP,
+        hold_window_control_steps=0,
+        hold_window_max_joint_speed_norm_rad_per_s=None,
+        hold_window_max_absolute_action=None,
+        hold_window_max_internal_substep_distance_cm=None,
+        hold_window_max_internal_substep_distance_above_threshold_cm=None,
+        hold_window_internal_substeps_above_threshold=0,
         nearest_branch_at_first_entry=None,
     )
     if no_entry["nearest_target_ik_branch_at_first_entry"] is not None:
@@ -76,10 +84,97 @@ def _controlled_numeric_checks() -> dict:
         raise AssertionError("substep count must remain an integer diagnostic")
     if no_entry["max_internal_substep_distance_above_threshold_cm"] != 13.0:
         raise AssertionError("the maximum above-threshold distance was not retained")
+    for field in (
+        "hold_window_max_joint_speed_norm_rad_per_s",
+        "hold_window_max_absolute_action",
+        "hold_window_max_internal_substep_distance_cm",
+        "hold_window_max_internal_substep_distance_above_threshold_cm",
+    ):
+        if no_entry[field] is not None:
+            raise AssertionError(f"no-entry {field} must be null")
+    if no_entry["hold_window_control_steps"] != 0:
+        raise AssertionError("no-entry hold-window steps must be zero")
+    if no_entry["hold_window_internal_substeps_above_threshold"] != 0:
+        raise AssertionError("no-entry hold-window substep count must be zero")
+
+    hold_window = _empty_hold_window_diagnostics()
+    _accumulate_hold_window_diagnostics(
+        hold_window,
+        previous_held_steps=0,
+        held_steps=0,
+        joint_speed_norm_rad_per_s=9.0,
+        absolute_action=0.9,
+        substep_distances=np.asarray([0.03], dtype=np.float64),
+    )
+    if any(
+        hold_window[field] is not None
+        for field in (
+            "hold_window_max_joint_speed_norm_rad_per_s",
+            "hold_window_max_absolute_action",
+            "hold_window_max_internal_substep_distance_cm",
+            "hold_window_max_internal_substep_distance_above_threshold_cm",
+        )
+    ):
+        raise AssertionError("no-entry accumulation must leave maxima null")
+    if (
+        hold_window["hold_window_control_steps"] != 0
+        or hold_window["hold_window_internal_substeps_above_threshold"] != 0
+    ):
+        raise AssertionError("no-entry accumulation must leave counts at zero")
+    _accumulate_hold_window_diagnostics(
+        hold_window,
+        previous_held_steps=0,
+        held_steps=1,
+        joint_speed_norm_rad_per_s=1.5,
+        absolute_action=0.2,
+        substep_distances=np.asarray([0.005, 0.012], dtype=np.float64),
+    )
+    _accumulate_hold_window_diagnostics(
+        hold_window,
+        previous_held_steps=1,
+        held_steps=2,
+        joint_speed_norm_rad_per_s=2.0,
+        absolute_action=0.4,
+        substep_distances=np.asarray([0.02], dtype=np.float64),
+    )
+    _accumulate_hold_window_diagnostics(
+        hold_window,
+        previous_held_steps=2,
+        held_steps=0,
+        joint_speed_norm_rad_per_s=3.0,
+        absolute_action=0.6,
+        substep_distances=np.asarray([0.03], dtype=np.float64),
+    )
+    if hold_window["hold_window_control_steps"] != 3:
+        raise AssertionError("hold entry, continuation, and exit must be included")
+    _assert_close(
+        hold_window["hold_window_max_joint_speed_norm_rad_per_s"],
+        3.0,
+        label="hold-window maximum speed",
+    )
+    _assert_close(
+        hold_window["hold_window_max_absolute_action"],
+        0.6,
+        label="hold-window maximum action",
+    )
+    _assert_close(
+        hold_window["hold_window_max_internal_substep_distance_cm"],
+        3.0,
+        label="hold-window maximum substep distance",
+    )
+    _assert_close(
+        hold_window["hold_window_max_internal_substep_distance_above_threshold_cm"],
+        3.0,
+        label="hold-window maximum above-threshold distance",
+    )
+    if hold_window["hold_window_internal_substeps_above_threshold"] != 3:
+        raise AssertionError("hold-window above-threshold substeps were not counted")
     return {
         "branches_checked": sorted(branches),
         "nearest_branch": nearest["branch"],
         "null_first_entry_checked": True,
+        "no_entry_hold_window_null_zero_checked": True,
+        "hold_window_boundary_steps_checked": 3,
         "threshold_m": SUCCESS_THRESHOLD,
     }
 
