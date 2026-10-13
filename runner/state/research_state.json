@@ -3297,7 +3297,7 @@
   "counters": {
     "event": 17,
     "inquiry": 4,
-    "measurement": 25,
+    "measurement": 26,
     "session": 9,
     "training": 4
   },
@@ -11472,6 +11472,43 @@
       "status": "failed",
       "superseded_by": "M25",
       "supersedes": "M23"
+    },
+    {
+      "completed_at": "2026-10-13T09:34:10Z",
+      "error": "robot_learning.lab.folded_residual_trace failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 416, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 405, in main\n    write_panel(\n    ~~~~~~~~~~~^\n        args.model,\n        ^^^^^^^^^^^\n    ...<4 lines>...\n        output=args.output,\n        ^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 382, in write_panel\n    panel = collect_panel(\n        model_path,\n    ...<3 lines>...\n        algorithm=algorithm,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 273, in collect_panel\n    runtime = load_runtime(Path(model_path), algorithm)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing campaigns\\checkpoints\\retained\\5ff87d6b-5501-48f6-9b8f-bc6c1cda5323\\policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+      "id": "M25",
+      "inquiry_id": "I4",
+      "kind": "measurement",
+      "request": {
+        "description": "Capture synchronized ten-internal-substep production-path traces for frozen T3:checkpoint-110592 across the 160-episode official-geometry development panel, retaining all failed folded_only episodes and deterministic matched successful folded_only controls.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/retained/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/t3-c720dc389-54488f830c167d85074571c7eae2bfaa2c2349919442997a7645e9df49bd46aa",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/folded_residual_trace_T3_160ep_seed4200.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/folded_residual_trace_T3_160ep_seed4200.json",
+            "instrument": "python_module",
+            "label": "T3_folded_residual_substep_actuation_trace",
+            "module": "robot_learning.lab.folded_residual_trace"
+          }
+        ],
+        "rationale": "I4's closure condition requires policy-level evidence that endpoint diagnostics cannot provide. M21 established the recurring residual on T3 at the identical 160 seeds, while M22 independently verified the new trace path and its sampled-hold semantics. This measurement keeps the candidate, official geometry, and seed panel fixed; it is a mechanism test rather than a candidate comparison. The detailed traces align each selected episode's control frames and ten internal MuJoCo substeps with qpos/qvel, Cartesian error and distance, commanded/transformed/applied action and saturation, qacc, qfrc_actuator where available, endpoint held state, first reach, interruptions, and hidden excursions. If failures show geometry-local repeatable low-saturation behavior with approach/stall signatures, a coverage/route or representation intervention remains credible; if saturation, high velocity, or braking/authority signatures dominate, control/trajectory work is the bounded direction; if endpoint exits follow first reach or hidden excursions characterize sampled transitions, hold stabilization is implicated. If the trace does not separate these signatures, I4 should close inconclusive and the protected assessment should be weighed rather than repeating the tested route. The artifact is not the protected 200-episode assessment."
+      },
+      "result": {
+        "error": "robot_learning.lab.folded_residual_trace failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 416, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 405, in main\n    write_panel(\n    ~~~~~~~~~~~^\n        args.model,\n        ^^^^^^^^^^^\n    ...<4 lines>...\n        output=args.output,\n        ^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 382, in write_panel\n    panel = collect_panel(\n        model_path,\n    ...<3 lines>...\n        algorithm=algorithm,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\folded_residual_trace.py\", line 273, in collect_panel\n    runtime = load_runtime(Path(model_path), algorithm)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing campaigns\\checkpoints\\retained\\5ff87d6b-5501-48f6-9b8f-bc6c1cda5323\\policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+        "status": "failed"
+      },
+      "session_id": "S9",
+      "status": "failed",
+      "superseded_by": "M26",
+      "supersedes": "M24"
     }
   ],
   "pending_operation": {
@@ -11514,7 +11551,7 @@
             "path": "robot_learning/lab/evaluation_diagnostics_check.py"
           },
           {
-            "fingerprint": "0fd4bd3a6d143ac8cca131cc23b3c8f9a5d49cd5c8b497f922c2a02f818e0c96",
+            "fingerprint": "4a2cb7e67bfcf839c8f0822c40dbbc624f0b13b4403b64f0a3d641815bdb0365",
             "path": "robot_learning/lab/folded_residual_trace.py"
           },
           {
@@ -11563,7 +11600,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "0fd4bd3a6d143ac8cca131cc23b3c8f9a5d49cd5c8b497f922c2a02f818e0c96",
+            "fingerprint": "4a2cb7e67bfcf839c8f0822c40dbbc624f0b13b4403b64f0a3d641815bdb0365",
             "path": "robot_learning/lab/folded_residual_trace.py"
           }
         ],
@@ -11580,7 +11617,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M25",
+    "id": "M26",
     "inquiry_id": "I4",
     "kind": "measurement",
     "progress": "accepted",
@@ -11610,7 +11647,7 @@
     },
     "request_fingerprint": "36b5b544b728565c6dbf91b5d773c4a64621b736e00ea101e82c152085d0d48b",
     "session_id": "S9",
-    "supersedes": "M24"
+    "supersedes": "M25"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T3:checkpoint-110592, supported by M18 and the earlier T3 evidence. T4:checkpoint-5120 is the complete artifact from I3's branch/geometry route and remains noncompetitive with zero paired wins against T3; it is not promoted. No working or retained role is assigned. Best-known status is not a claim that the human goal is met or that official assessment should be requested.",

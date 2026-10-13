@@ -47,3 +47,4 @@
 | M22 | measurement | I4 | completed |
 | M23 | measurement | I4 | failed |
 | M24 | measurement | I4 | failed |
+| M25 | measurement | I4 | failed |
