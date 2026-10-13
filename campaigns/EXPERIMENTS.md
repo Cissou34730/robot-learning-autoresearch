@@ -50,3 +50,4 @@
 | M25 | measurement | I4 | failed |
 | M26 | measurement | I4 | completed |
 | E18 | inquiry | I4 | completed |
+| E19 | checkpoint | I4 | checkpointed |
