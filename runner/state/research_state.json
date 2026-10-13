@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a completed production-path measurement on the residual folded-only episodes, with matched successful folded-only controls, preserves ten-internal-substep traces aligned to endpoint distance and hold state, joint position and velocity, commanded/applied action and saturation, acceleration, and actuator force/torque where available. A positive, negative, limited, or inconclusive conclusion is sufficient, but it must state whether the observed signatures support one further bounded intervention or make the protected assessment preferable. Hidden within-frame excursions that return inside the tolerance must be reported as unobserved by the official criterion rather than counted as failures; endpoint exits remain the authoritative hold interruptions.",
-    "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. The best-known T3 policy and the tested T4 branch/geometry artifact each achieved 153/160 on the separate development panel, leaving seven recurring folded-only failures. A synchronized diagnostic can determine whether a final bounded intervention should target learned coverage/route representation, configuration-dependent control authority and braking, or endpoint hold stabilization; it can also establish whether the current candidate is sufficiently understood to justify terminal assessment.",
-    "handoff_conclusion": "Established observations: M19 passed production compatibility for the branch/geometry training environment and M20 independently verified its realized 50/50 full-radius plus focused folded_only exposure route; T4 was a complete 120,000-step transfer with a changed exposure route and no exact saved-component matches; M21 measured T4:checkpoint-5120 against frozen T3:checkpoint-110592 on identical official geometry, and both achieved 153/160 with the same seven failure seeds. M5 established the compiled 20 ms policy interval, finite dynamics, control limits [-1,1], gear 5, no actuator force limit, strong opposing-command braking in a controlled trajectory, and a 6.70 mm within-frame distance change in one saturated transition. M18/M21 provide target geometry, branch classification, endpoint distance, reach, hold, action, saturation, and velocity summaries but not policy trajectories at the ten internal MuJoCo substeps. Correction to the inherited interpretation: the matching failure seeds do not imply matching failure decomposition. The inspected M21 T4 artifact has six never-reached failures and one 3-step hold failure; frozen T3 has five never-reached, one 1-step, and one 3-step failure. Therefore the route comparison establishes identical binary residual seeds, not identical within-failure dynamics. A second correction is semantic: an excursion outside the tolerance between endpoint samples that returns inside is not an official failure; only an outside endpoint resets the authoritative sampled hold. Competing explanations remain consequential: learned coverage/route behavior may be inadequate in the folded negative-bearing sector; configuration-dependent velocity, braking, or authority may prevent approach or deceleration despite adequate nominal actuator capability; or endpoint-sampled reach-and-hold may interrupt after first reach. M5 cannot choose among these because its transitions were controlled rather than policy-generated. The failed T4 intervention is negative for that complete artifact and route implementation, not for branch-aware coverage or geometry conditioning generally.",
-    "handoff_question": "Can synchronized production-path substep, actuation, and state-action traces for the folded-only residual episodes distinguish a learned coverage/route limitation from configuration-dependent reach/braking failure or endpoint-sampled hold interruption well enough to choose between one further bounded intervention and the protected assessment?",
-    "handoff_source_session_id": "S8",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can synchronized production-path substep, actuation, and state-action traces for the folded-only residual episodes distinguish a learned coverage/route limitation from configuration-dependent reach/braking failure or endpoint-sampled hold interruption well enough to choose between one further bounded intervention and the protected assessment?",
-    "rationale": "Opening is preferable to requesting the terminal assessment now because the current candidate is below the goal on development evidence and the prior intervention produced the identical seven failure seeds with zero paired wins, while the decisive policy-level mechanism remains unmeasured. M5 already established finite compiled dynamics, no actuator force limit, strong opposing-command braking in a controlled trajectory, and a 6.70 mm within-frame distance change, but it did not test the learned policy in the failing configurations. M18/M21 endpoint diagnostics show the residual is folded-only and includes both never-reached and short-hold behavior, with high velocity/saturation summaries; however, they cannot distinguish stalled coverage from configuration-dependent authority/braking or endpoint timing. Correction to the inherited interpretation: the failure seeds are identical, but M21's T4 artifact contains six never-reached and one 3-step failure, while frozen T3 contains five never-reached, one 1-step, and one 3-step failure, so the decomposition is not preserved; and a between-sample excursion alone is not an official failure. This bounded measurement is the lowest-cost evidence that can change the final route before irreversibly spending the 200-episode assessment; repeating the already-tested exposure route would not add that discrimination.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "19d463316654368e418a6d149ad8a3a577a5e141",
     "id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
@@ -3295,7 +3284,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 26,
     "session": 9,
@@ -11867,9 +11856,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M25"
+    },
+    {
+      "completed_at": "2026-10-13T09:43:54Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M26 completed the I4 closure measurement on frozen T3:checkpoint-110592 over all seven recurring failed folded_only episodes and seven matched successful folded_only controls. It preserves synchronized production-path traces at the 20 ms policy interval and all ten MuJoCo substeps, including qpos/qvel, Cartesian error and distance, commanded/transformed/applied action, saturation, qacc, actuator generalized force/torque where available, endpoint hold state, first reach, interruption, and hidden within-frame excursions. The trace distinguishes the residual structure: five failures never achieve an authoritative in-tolerance endpoint, although late approach actions are unsaturated and the policy substantially reduces distance; two failures first reach and then lose the sampled endpoint hold, including an endpoint exit after a hidden within-frame excursion. Successful controls exhibit the same broad early saturation and configuration-dependent acceleration, so nominal actuator incapacity is not supported, and hidden excursions that return inside are not official failures. The evidence supports mixed learned route/terminal-precision and trajectory/hold-timing signatures, but does not causally separate learned folded-sector coverage from configuration-dependent braking for the never-reached cases or establish a single credible repair. T4 already tied T3 at 153/160 with zero paired wins, and the development result remains 95.625%, below the 98% objective; therefore a further unvalidated intervention is not supported by this bounded inquiry and protected assessment is preferable at goal review. Preserve the unresolved route-versus-braking consequence for the next research or commitment decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited",
+        "reason": "M26 completed the I4 closure measurement on frozen T3:checkpoint-110592 over all seven recurring failed folded_only episodes and seven matched successful folded_only controls. It preserves synchronized production-path traces at the 20 ms policy interval and all ten MuJoCo substeps, including qpos/qvel, Cartesian error and distance, commanded/transformed/applied action, saturation, qacc, actuator generalized force/torque where available, endpoint hold state, first reach, interruption, and hidden within-frame excursions. The trace distinguishes the residual structure: five failures never achieve an authoritative in-tolerance endpoint, although late approach actions are unsaturated and the policy substantially reduces distance; two failures first reach and then lose the sampled endpoint hold, including an endpoint exit after a hidden within-frame excursion. Successful controls exhibit the same broad early saturation and configuration-dependent acceleration, so nominal actuator incapacity is not supported, and hidden excursions that return inside are not official failures. The evidence supports mixed learned route/terminal-precision and trajectory/hold-timing signatures, but does not causally separate learned folded-sector coverage from configuration-dependent braking for the never-reached cases or establish a single credible repair. T4 already tied T3 at 153/160 with zero paired wins, and the development result remains 95.625%, below the 98% objective; therefore a further unvalidated intervention is not supported by this bounded inquiry and protected assessment is preferable at goal review. Preserve the unresolved route-versus-braking consequence for the next research or commitment decision.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited",
+        "reason": "M26 completed the I4 closure measurement on frozen T3:checkpoint-110592 over all seven recurring failed folded_only episodes and seven matched successful folded_only controls. It preserves synchronized production-path traces at the 20 ms policy interval and all ten MuJoCo substeps, including qpos/qvel, Cartesian error and distance, commanded/transformed/applied action, saturation, qacc, actuator generalized force/torque where available, endpoint hold state, first reach, interruption, and hidden within-frame excursions. The trace distinguishes the residual structure: five failures never achieve an authoritative in-tolerance endpoint, although late approach actions are unsaturated and the policy substantially reduces distance; two failures first reach and then lose the sampled endpoint hold, including an endpoint exit after a hidden within-frame excursion. Successful controls exhibit the same broad early saturation and configuration-dependent acceleration, so nominal actuator incapacity is not supported, and hidden excursions that return inside are not official failures. The evidence supports mixed learned route/terminal-precision and trajectory/hold-timing signatures, but does not causally separate learned folded-sector coverage from configuration-dependent braking for the never-reached cases or establish a single credible repair. T4 already tied T3 at 153/160 with zero paired wins, and the development result remains 95.625%, below the 98% objective; therefore a further unvalidated intervention is not supported by this bounded inquiry and protected assessment is preferable at goal review. Preserve the unresolved route-versus-braking consequence for the next research or commitment decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited",
+        "reason": "M26 completed the I4 closure measurement on frozen T3:checkpoint-110592 over all seven recurring failed folded_only episodes and seven matched successful folded_only controls. It preserves synchronized production-path traces at the 20 ms policy interval and all ten MuJoCo substeps, including qpos/qvel, Cartesian error and distance, commanded/transformed/applied action, saturation, qacc, actuator generalized force/torque where available, endpoint hold state, first reach, interruption, and hidden within-frame excursions. The trace distinguishes the residual structure: five failures never achieve an authoritative in-tolerance endpoint, although late approach actions are unsaturated and the policy substantially reduces distance; two failures first reach and then lose the sampled endpoint hold, including an endpoint exit after a hidden within-frame excursion. Successful controls exhibit the same broad early saturation and configuration-dependent acceleration, so nominal actuator incapacity is not supported, and hidden excursions that return inside are not official failures. The evidence supports mixed learned route/terminal-precision and trajectory/hold-timing signatures, but does not causally separate learned folded-sector coverage from configuration-dependent braking for the never-reached cases or establish a single credible repair. T4 already tied T3 at 153/160 with zero paired wins, and the development result remains 95.625%, below the 98% objective; therefore a further unvalidated intervention is not supported by this bounded inquiry and protected assessment is preferable at goal review. Preserve the unresolved route-versus-braking consequence for the next research or commitment decision.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M26 completed the I4 closure measurement on frozen T3:checkpoint-110592 over all seven recurring failed folded_only episodes and seven matched successful folded_only controls. It preserves synchronized production-path traces at the 20 ms policy interval and all ten MuJoCo substeps, including qpos/qvel, Cartesian error and distance, commanded/transformed/applied action, saturation, qacc, actuator generalized force/torque where available, endpoint hold state, first reach, interruption, and hidden within-frame excursions. The trace distinguishes the residual structure: five failures never achieve an authoritative in-tolerance endpoint, although late approach actions are unsaturated and the policy substantially reduces distance; two failures first reach and then lose the sampled endpoint hold, including an endpoint exit after a hidden within-frame excursion. Successful controls exhibit the same broad early saturation and configuration-dependent acceleration, so nominal actuator incapacity is not supported, and hidden excursions that return inside are not official failures. The evidence supports mixed learned route/terminal-precision and trajectory/hold-timing signatures, but does not causally separate learned folded-sector coverage from configuration-dependent braking for the never-reached cases or establish a single credible repair. T4 already tied T3 at 153/160 with zero paired wins, and the development result remains 95.625%, below the 98% objective; therefore a further unvalidated intervention is not supported by this bounded inquiry and protected assessment is preferable at goal review. Preserve the unresolved route-versus-braking consequence for the next research or commitment decision."
+      }
+    },
+    "request_fingerprint": "9d7c44cdc15b44346ccc67eb19fd72b3f96ee2e0ea7edb204b33ccb52ec84420",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T3:checkpoint-110592, supported by M18 and the earlier T3 evidence. T4:checkpoint-5120 is the complete artifact from I3's branch/geometry route and remains noncompetitive with zero paired wins against T3; it is not promoted. No working or retained role is assigned. Best-known status is not a claim that the human goal is met or that official assessment should be requested.",
     "completed_operations": [
@@ -11914,7 +11957,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can synchronized production-path substep, actuation, and state-action traces for the folded-only residual episodes distinguish a learned coverage/route limitation from configuration-dependent reach/braking failure or endpoint-sampled hold interruption well enough to choose between one further bounded intervention and the protected assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "M22",
-      "M26"
+      "M26",
+      "E18"
     ],
     "scientific_parent_commit": "6ae991fbd8bc3d6082f116506f1cfbfc34e39251"
   },
