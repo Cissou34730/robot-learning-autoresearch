@@ -14,3 +14,4 @@
 | M4 | measurement | I1 | completed |
 | M5 | measurement | I1 | failed |
 | M6 | measurement | I1 | completed |
+| E5 | inquiry | I1 | completed |
