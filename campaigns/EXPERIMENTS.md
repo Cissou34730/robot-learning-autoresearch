@@ -14,3 +14,4 @@
 | M6 | measurement | I1 | completed |
 | M7 | measurement | I1 | completed |
 | M8 | measurement | I1 | completed |
+| M9 | measurement | I1 | completed |
