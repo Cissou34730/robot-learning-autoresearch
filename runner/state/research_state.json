@@ -2478,7 +2478,7 @@
   "counters": {
     "event": 13,
     "inquiry": 3,
-    "measurement": 19,
+    "measurement": 20,
     "session": 7,
     "training": 3
   },
@@ -9061,9 +9061,907 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T09:14:39Z",
+      "error": null,
+      "id": "M20",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the realized branch-and-geometry-focused training reset mixture and its separation from official evaluation construction.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json",
+            "instrument": "python_module",
+            "label": "branch_geometry_training_behavior",
+            "module": "robot_learning.lab.branch_geometry_training_check"
+          }
+        ],
+        "rationale": "M19 established production compatibility but did not test the scientific route predicate. This behavioral check exercises repeated seeded resets, independently recomputes compiled-limit IK legality, verifies focused negative-bearing folded-only targets across the full radius range, confirms the uniform component remains present, and checks that official evaluation remains full-radius and unchanged."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch_geometry_training_behavior",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M20-1-branch_geometry_training_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training_constant",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/focused_bearing_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/focused_route_probability",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/route_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 64,
+                    "path": "/observed/sampled_radii",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/observed/focused_radii",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 36,
+                    "path": "/observed/uniform_bearings_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/observed/focused_classifications",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluation_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/evaluation_environment_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluation_space_shapes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/official_evaluation_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/focused_bearing_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/focused_classification",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/mixture_probability",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/sample_bounds",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/route_counts/uniform",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/route_counts/focused",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/evaluation_space_shapes/observation",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/evaluation_space_shapes/action",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/sample_bounds/minimum_inclusive",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/sample_bounds/maximum_inclusive",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "70d6e4049efb081ded5a1b8e53805bf482ead2ff367ff4aad9118940de21e66c"
+            },
+            "module": "robot_learning.lab.branch_geometry_training_check"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+              "path": "robot_learning/lab/branch_geometry_training_check.py"
+            },
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+              "path": "robot_learning/lab/stabilization_reward_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7f55e0925c752931c478543abd45e7b597b377c8",
+            "fingerprint": "38a3d4bfff627c0cb73788c694acaeffb68afaa043c4ec623480e11dafbfc1bb",
+            "manifest": [
+              {
+                "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+                "path": "robot_learning/lab/branch_geometry_training_check.py"
+              },
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+                "path": "robot_learning/lab/stabilization_reward_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "541ce84a2e6254737304dde361a5222a86667161",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+              "path": "robot_learning/lab/branch_geometry_training_check.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/branch_geometry_training_check.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--mode",
+            "behavioral",
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+          ],
+          "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json",
+          "instrument": "python_module",
+          "label": "branch_geometry_training_behavior",
+          "module": "robot_learning.lab.branch_geometry_training_check"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+            "path": "robot_learning/lab/branch_geometry_training_check.py"
+          },
+          {
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+            "path": "robot_learning/lab/compiled_dynamics_check.py"
+          },
+          {
+            "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+            "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+          },
+          {
+            "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+            "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+          },
+          {
+            "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+            "path": "robot_learning/lab/paired_evaluation_analysis.py"
+          },
+          {
+            "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+            "path": "robot_learning/lab/stabilization_reward_check.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "7f55e0925c752931c478543abd45e7b597b377c8",
+          "fingerprint": "38a3d4bfff627c0cb73788c694acaeffb68afaa043c4ec623480e11dafbfc1bb",
+          "manifest": [
+            {
+              "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+              "path": "robot_learning/lab/branch_geometry_training_check.py"
+            },
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+              "path": "robot_learning/lab/stabilization_reward_check.py"
+            }
+          ]
+        },
+        "code_parent_commit": "541ce84a2e6254737304dde361a5222a86667161",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+            "path": "robot_learning/lab/branch_geometry_training_check.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/branch_geometry_training_check.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--mode",
+            "behavioral",
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+          ],
+          "instrument": "python_module",
+          "label": "branch_geometry_training_behavior",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M20-1-branch_geometry_training_check.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 12,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/training_constant",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/focused_bearing_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/focused_route_probability",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/sample_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/route_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 64,
+                  "path": "/observed/sampled_radii",
+                  "type": "array"
+                },
+                {
+                  "entries": 28,
+                  "path": "/observed/focused_radii",
+                  "type": "array"
+                },
+                {
+                  "entries": 36,
+                  "path": "/observed/uniform_bearings_degrees",
+                  "type": "array"
+                },
+                {
+                  "entries": 28,
+                  "path": "/observed/focused_classifications",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/evaluation_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/observed/evaluation_environment_type",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/evaluation_space_shapes",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/training_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/official_evaluation_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/focused_bearing_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/focused_classification",
+                  "type": "string"
+                },
+                {
+                  "path": "/expected/mixture_probability",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/sample_bounds",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/route_counts/uniform",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/route_counts/focused",
+                  "type": "number"
+                },
+                {
+                  "entries": 1,
+                  "path": "/observed/evaluation_space_shapes/observation",
+                  "type": "array"
+                },
+                {
+                  "entries": 1,
+                  "path": "/observed/evaluation_space_shapes/action",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/sample_bounds/minimum_inclusive",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/sample_bounds/maximum_inclusive",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "70d6e4049efb081ded5a1b8e53805bf482ead2ff367ff4aad9118940de21e66c"
+          },
+          "module": "robot_learning.lab.branch_geometry_training_check"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "branch_geometry_training_behavior",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M20-1-branch_geometry_training_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/training_constant",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/focused_bearing_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/focused_route_probability",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/route_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 64,
+                    "path": "/observed/sampled_radii",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/observed/focused_radii",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 36,
+                    "path": "/observed/uniform_bearings_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/observed/focused_classifications",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluation_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/observed/evaluation_environment_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/evaluation_space_shapes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/training_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/official_evaluation_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/focused_bearing_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/focused_classification",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/expected/mixture_probability",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/sample_bounds",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/route_counts/uniform",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/route_counts/focused",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/evaluation_space_shapes/observation",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/observed/evaluation_space_shapes/action",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/sample_bounds/minimum_inclusive",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/sample_bounds/maximum_inclusive",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "70d6e4049efb081ded5a1b8e53805bf482ead2ff367ff4aad9118940de21e66c"
+            },
+            "module": "robot_learning.lab.branch_geometry_training_check"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+              "path": "robot_learning/lab/branch_geometry_training_check.py"
+            },
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            },
+            {
+              "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+              "path": "robot_learning/lab/stabilization_reward_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7f55e0925c752931c478543abd45e7b597b377c8",
+            "fingerprint": "38a3d4bfff627c0cb73788c694acaeffb68afaa043c4ec623480e11dafbfc1bb",
+            "manifest": [
+              {
+                "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+                "path": "robot_learning/lab/branch_geometry_training_check.py"
+              },
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              },
+              {
+                "fingerprint": "22d5d0c27d3411cb6bd09ee1393614afcecac452ad6452aff9c618587f5aece0",
+                "path": "robot_learning/lab/stabilization_reward_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "541ce84a2e6254737304dde361a5222a86667161",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "154ddf734a8fc3ff10dbd650ebbc149ef3918c8d2df9d9f752c0fac1eb5d1d16",
+              "path": "robot_learning/lab/branch_geometry_training_check.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/branch_geometry_training_check.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M20",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify the realized branch-and-geometry-focused training reset mixture and its separation from official evaluation construction.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "behavioral",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/branch_geometry_training_check.json",
+            "instrument": "python_module",
+            "label": "branch_geometry_training_behavior",
+            "module": "robot_learning.lab.branch_geometry_training_check"
+          }
+        ],
+        "rationale": "M19 established production compatibility but did not test the scientific route predicate. This behavioral check exercises repeated seeded resets, independently recomputes compiled-limit IK legality, verifies focused negative-bearing folded-only targets across the full radius range, confirms the uniform component remains present, and checks that official evaluation remains full-radius and unchanged."
+      }
+    },
+    "request_fingerprint": "52bf153c81686e0c2743fe66a3dd51579861e6d5c452193579716a89e189c631",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-110592 remains best-known by E9, supported by T3 and M18. T2:checkpoint-120832 remains the reference candidate. No working or retained role is assigned. Neither T3's best-known role nor its 153/160 development result certifies the human goal.",
     "completed_operations": [
@@ -9107,7 +10005,8 @@
     "kind": "inquiry",
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M19"
+      "M19",
+      "M20"
     ],
     "scientific_parent_commit": "541ce84a2e6254737304dde361a5222a86667161"
   },
