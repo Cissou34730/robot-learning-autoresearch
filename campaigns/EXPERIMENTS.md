@@ -7,3 +7,4 @@
 | M3 | measurement | - | completed |
 | M4 | measurement | - | completed |
 | M5 | measurement | - | completed |
+| E1 | checkpoint | - | checkpointed |
