@@ -1659,7 +1659,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 10,
+    "measurement": 12,
     "session": 3,
     "training": 2
   },
@@ -4578,9 +4578,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T08:44:43Z",
+      "error": "robot_learning.lab.paired_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 875, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 867, in main\n    _run_check(args.check)\n    ~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 753, in _run_check\n    raise AssertionError(f\"outer-only failure-mode mismatch for {mode}\")\nAssertionError: outer-only failure-mode mismatch for reached_but_never_completed\n",
+      "id": "M11",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run the controlled verification for the paired evaluation analysis before applying it to M8 and M10.",
+        "measurements": [
+          {
+            "args": [
+              "--check",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json",
+            "instrument": "python_module",
+            "label": "paired_evaluation_analysis_check",
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "rationale": "The analysis module is the instrument that will close I1. Its independent fixture check exercises strict episode/seed joins, radius-bin boundaries, all branch strata, success aggregation, failure-mode predicates, paired differences, and rejection of malformed inputs. It is a software-analysis validity check, not a policy-performance claim."
+      },
+      "result": {
+        "error": "robot_learning.lab.paired_evaluation_analysis failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 875, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 867, in main\n    _run_check(args.check)\n    ~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\paired_evaluation_analysis.py\", line 753, in _run_check\n    raise AssertionError(f\"outer-only failure-mode mismatch for {mode}\")\nAssertionError: outer-only failure-mode mismatch for reached_but_never_completed\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M12",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--check",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+          ],
+          "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json",
+          "instrument": "python_module",
+          "label": "paired_evaluation_analysis_check",
+          "module": "robot_learning.lab.paired_evaluation_analysis"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+            "path": "robot_learning/lab/compiled_dynamics_check.py"
+          },
+          {
+            "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+            "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+          },
+          {
+            "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+            "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+          },
+          {
+            "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+            "path": "robot_learning/lab/paired_evaluation_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+            "path": "robot_learning/lab/paired_evaluation_analysis.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/paired_evaluation_analysis.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M12",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Run the controlled verification for the paired evaluation analysis before applying it to M8 and M10.",
+        "measurements": [
+          {
+            "args": [
+              "--check",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json",
+            "instrument": "python_module",
+            "label": "paired_evaluation_analysis_check",
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "rationale": "The analysis module is the instrument that will close I1. Its independent fixture check exercises strict episode/seed joins, radius-bin boundaries, all branch strata, success aggregation, failure-mode predicates, paired differences, and rejection of malformed inputs. It is a software-analysis validity check, not a policy-performance claim."
+      }
+    },
+    "request_fingerprint": "e7a0b2785383d09f0aa23d118f814dff7b95ba4945f164c5f3ec3c75423ca506",
+    "session_id": "S3",
+    "supersedes": "M11"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty. M5 is a physical characterization, not a learned candidate; the inquiry must produce and measure candidate artifacts before a role can be assigned.",
     "completed_operations": [
