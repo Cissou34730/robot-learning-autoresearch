@@ -86,6 +86,10 @@ def _check_normal(result: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
     zero_poses = 0
     saturated_motion = False
     opposing_controls = False
+    saturated_qpos_samples = []
+    saturated_qvel_samples = []
+    braking_velocity_changes = 0
+    braking_replicates = 0
     for trajectory in trajectories:
         replicates = trajectory.get("replicates", [])
         if len(replicates) != 2:
@@ -121,28 +125,54 @@ def _check_normal(result: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
                 arrays = [np.asarray(step[field], dtype=float) for field in fields]
                 if not all(np.isfinite(array).all() for array in arrays):
                     errors.append("a repeated transition produced a non-finite diagnostic")
-                if any(array.shape != (2,) for array in arrays):
+                joint_arrays_valid = all(array.shape == (2,) for array in arrays)
+                if not joint_arrays_valid:
                     errors.append("joint diagnostic dimensions are not synchronized")
                 synchronized_steps += 1
-                if trajectory.get("name") == "zero" and np.max(
-                    np.abs(arrays[0]) + np.abs(arrays[1])
-                ) > 1e-10:
+                if (
+                    trajectory.get("name") == "zero"
+                    and joint_arrays_valid
+                    and np.max(np.abs(arrays[0]) + np.abs(arrays[1])) > 1e-10
+                ):
                     errors.append("zero-action transition did not preserve the zero state")
-                if trajectory.get("name") == "single_joint_saturated" and not np.allclose(
-                    arrays[3], [1.0, 0.0], atol=1e-12
+                if (
+                    trajectory.get("name") == "single_joint_saturated"
+                    and joint_arrays_valid
+                ):
+                    saturated_qpos_samples.append(arrays[0].copy())
+                    saturated_qvel_samples.append(arrays[1].copy())
+                if (
+                    trajectory.get("name") == "single_joint_saturated"
+                    and joint_arrays_valid
+                    and not np.allclose(arrays[3], [1.0, 0.0], atol=1e-12)
                 ):
                     errors.append("single-joint saturated control was not preserved")
-                if trajectory.get("name") == "single_joint_saturated" and np.max(
-                    np.abs(arrays[0]) + np.abs(arrays[1])
-                ) > 1e-9:
+                if (
+                    trajectory.get("name") == "single_joint_saturated"
+                    and joint_arrays_valid
+                    and np.max(np.abs(arrays[0]) + np.abs(arrays[1])) > 1e-9
+                ):
                     saturated_motion = True
-                if trajectory.get("name") == "braking_opposing":
+                if trajectory.get("name") == "braking_opposing" and joint_arrays_valid:
                     if arrays[3][0] < 0.0:
                         opposing_controls = True
                     if len(steps) >= 5 and step is steps[-1] and not np.allclose(
                         arrays[3], [-1.0, 0.0], atol=1e-12
                     ):
                         errors.append("braking control was not preserved")
+            if trajectory.get("name") == "braking_opposing":
+                braking_replicates += 1
+                if len(steps) > 5:
+                    positive_qvel = np.asarray(steps[4].get("qvel", []), dtype=float)
+                    opposing_qvel = np.asarray(steps[5].get("qvel", []), dtype=float)
+                    if (
+                        positive_qvel.shape == (2,)
+                        and opposing_qvel.shape == (2,)
+                        and np.isfinite(positive_qvel).all()
+                        and np.isfinite(opposing_qvel).all()
+                        and np.max(np.abs(opposing_qvel - positive_qvel)) > 1e-12
+                    ):
+                        braking_velocity_changes += 1
             if len(replicates) == 2:
                 first_steps = replicates[0].get("steps", [])
                 second_steps = replicates[1].get("steps", [])
@@ -176,8 +206,22 @@ def _check_normal(result: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
         errors.append("no synchronized repeated step transitions were checked")
     if not saturated_motion:
         errors.append("single-joint saturation did not cause a controlled transition")
+    if len(saturated_qpos_samples) < 2 or not any(
+        np.max(np.abs(sample - saturated_qpos_samples[0])) > 1e-12
+        for sample in saturated_qpos_samples[1:]
+    ):
+        errors.append("saturated updates do not contain at least two distinct qpos samples")
+    if len(saturated_qvel_samples) < 2 or not any(
+        np.max(np.abs(sample - saturated_qvel_samples[0])) > 1e-12
+        for sample in saturated_qvel_samples[1:]
+    ):
+        errors.append("saturated updates do not contain at least two distinct qvel samples")
     if not opposing_controls:
         errors.append("braking trajectory omitted an opposing control transition")
+    if braking_velocity_changes != braking_replicates or braking_replicates == 0:
+        errors.append(
+            "braking qvel did not change between the last positive and first opposing samples"
+        )
 
     distances = substep.get("internal_substep_distances_m", [])
     if (

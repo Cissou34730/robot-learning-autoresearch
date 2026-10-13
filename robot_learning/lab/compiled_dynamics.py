@@ -59,7 +59,7 @@ def _compiled_context(model: mujoco.MjModel) -> dict[str, Any]:
         "policy_step_seconds": float(option.timestep * FRAME_SKIP),
         "integrator": int(option.integrator),
         "solver": int(option.solver),
-        "gravity": np.asarray(option.gravity, dtype=np.float64),
+        "gravity": np.array(option.gravity, dtype=np.float64, copy=True),
         "solver_iterations": int(option.iterations),
         "solver_tolerance": float(option.tolerance),
         "nq": int(model.nq),
@@ -76,8 +76,12 @@ def _geometry_summary(model: mujoco.MjModel, data: mujoco.MjData) -> dict[str, A
                 "id": body_id,
                 "name": _object_name(model, mujoco.mjtObj.mjOBJ_BODY, body_id),
                 "mass": float(model.body_mass[body_id]),
-                "inertia": np.asarray(model.body_inertia[body_id], dtype=np.float64),
-                "position": np.asarray(model.body_pos[body_id], dtype=np.float64),
+                "inertia": np.array(
+                    model.body_inertia[body_id], dtype=np.float64, copy=True
+                ),
+                "position": np.array(
+                    model.body_pos[body_id], dtype=np.float64, copy=True
+                ),
             }
         )
 
@@ -89,7 +93,7 @@ def _geometry_summary(model: mujoco.MjModel, data: mujoco.MjData) -> dict[str, A
                 "name": _object_name(model, mujoco.mjtObj.mjOBJ_GEOM, geom_id),
                 "body_id": int(model.geom_bodyid[geom_id]),
                 "type": int(model.geom_type[geom_id]),
-                "size": np.asarray(model.geom_size[geom_id], dtype=np.float64),
+                "size": np.array(model.geom_size[geom_id], dtype=np.float64, copy=True),
                 "contype": int(model.geom_contype[geom_id]),
                 "conaffinity": int(model.geom_conaffinity[geom_id]),
             }
@@ -101,8 +105,8 @@ def _geometry_summary(model: mujoco.MjModel, data: mujoco.MjData) -> dict[str, A
             "forearm_m": FOREARM_LENGTH,
             "maximum_reach_m": MAX_REACH,
         },
-        "initial_end_effector_position": np.asarray(
-            data.site("end_effector").xpos, dtype=np.float64
+        "initial_end_effector_position": np.array(
+            data.site("end_effector").xpos, dtype=np.float64, copy=True
         ),
         "bodies": bodies,
         "geoms": geoms,
@@ -118,7 +122,7 @@ def _joint_summary(model: mujoco.MjModel) -> list[dict[str, Any]]:
                 "id": joint_id,
                 "name": _object_name(model, mujoco.mjtObj.mjOBJ_JOINT, joint_id),
                 "type": int(model.jnt_type[joint_id]),
-                "range": np.asarray(model.jnt_range[joint_id], dtype=np.float64),
+                "range": np.array(model.jnt_range[joint_id], dtype=np.float64, copy=True),
                 "limited": bool(model.jnt_limited[joint_id]),
                 "damping": float(model.dof_damping[dof_id]),
                 "armature": float(model.dof_armature[dof_id]),
@@ -139,24 +143,34 @@ def _actuator_summary(model: mujoco.MjModel) -> list[dict[str, Any]]:
                     model, mujoco.mjtObj.mjOBJ_ACTUATOR, actuator_id
                 ),
                 "transmission_type": int(model.actuator_trntype[actuator_id]),
-                "transmission_id": np.asarray(
-                    model.actuator_trnid[actuator_id], dtype=np.int64
+                "transmission_id": np.array(
+                    model.actuator_trnid[actuator_id], dtype=np.int64, copy=True
                 ),
-                "gear": np.asarray(model.actuator_gear[actuator_id], dtype=np.float64),
-                "control_range": np.asarray(
-                    model.actuator_ctrlrange[actuator_id], dtype=np.float64
+                "gear": np.array(
+                    model.actuator_gear[actuator_id], dtype=np.float64, copy=True
+                ),
+                "control_range": np.array(
+                    model.actuator_ctrlrange[actuator_id],
+                    dtype=np.float64,
+                    copy=True,
                 ),
                 "control_limited": bool(model.actuator_ctrllimited[actuator_id]),
                 "gain_type": int(model.actuator_gaintype[actuator_id]),
-                "gain_parameters": np.asarray(
-                    model.actuator_gainprm[actuator_id], dtype=np.float64
+                "gain_parameters": np.array(
+                    model.actuator_gainprm[actuator_id],
+                    dtype=np.float64,
+                    copy=True,
                 ),
                 "bias_type": int(model.actuator_biastype[actuator_id]),
-                "bias_parameters": np.asarray(
-                    model.actuator_biasprm[actuator_id], dtype=np.float64
+                "bias_parameters": np.array(
+                    model.actuator_biasprm[actuator_id],
+                    dtype=np.float64,
+                    copy=True,
                 ),
-                "force_range": np.asarray(
-                    model.actuator_forcerange[actuator_id], dtype=np.float64
+                "force_range": np.array(
+                    model.actuator_forcerange[actuator_id],
+                    dtype=np.float64,
+                    copy=True,
                 ),
                 "force_limited": bool(model.actuator_forcelimited[actuator_id]),
             }
@@ -307,12 +321,12 @@ def _snapshot(
     return {
         "time_seconds": float(data.time),
         "distance_m": _distance(data, target),
-        "qpos": np.asarray(data.qpos, dtype=np.float64),
-        "qvel": np.asarray(data.qvel, dtype=np.float64),
-        "qacc": np.asarray(data.qacc, dtype=np.float64),
-        "ctrl": np.asarray(action, dtype=np.float64),
-        "actuator_force": np.asarray(data.actuator_force, dtype=np.float64),
-        "actuator_torque": np.asarray(data.qfrc_actuator, dtype=np.float64),
+        "qpos": np.array(data.qpos, dtype=np.float64, copy=True),
+        "qvel": np.array(data.qvel, dtype=np.float64, copy=True),
+        "qacc": np.array(data.qacc, dtype=np.float64, copy=True),
+        "ctrl": np.array(action, dtype=np.float64, copy=True),
+        "actuator_force": np.array(data.actuator_force, dtype=np.float64, copy=True),
+        "actuator_torque": np.array(data.qfrc_actuator, dtype=np.float64, copy=True),
     }
 
 
@@ -365,8 +379,8 @@ def _substep_trace(model: mujoco.MjModel, data: mujoco.MjData) -> dict[str, Any]
         times.append(float(data.time))
     endpoint_distance = float(distances[-1])
     return {
-        "target": np.asarray(data.mocap_pos[0], dtype=np.float64),
-        "action": action,
+        "target": np.array(data.mocap_pos[0], dtype=np.float64, copy=True),
+        "action": np.array(action, dtype=np.float64, copy=True),
         "initial_distance_m": initial_distance,
         "internal_substep_times_seconds": times,
         "internal_substep_distances_m": distances,
