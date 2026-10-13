@@ -1660,8 +1660,8 @@
   "counters": {
     "event": 9,
     "inquiry": 2,
-    "measurement": 6,
-    "session": 4,
+    "measurement": 8,
+    "session": 5,
     "training": 2
   },
   "human_goal": {
@@ -4076,9 +4076,207 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T20:47:34Z",
+      "error": "robot_learning.lab.verify_research_diagnostics failed:\n\nusage: verify_research_diagnostics.py [-h] --artifact ARTIFACT\n                                      [--compatibility]\nverify_research_diagnostics.py: error: the following arguments are required: --artifact\n",
+      "id": "M7",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Validate the hold-window research diagnostics and remeasure the best-known T2 artifact on a fresh official-distribution development panel.",
+        "measurements": [
+          {
+            "args": [
+              "python -m robot_learning.lab.verify_research_diagnostics --artifact campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "hold-window-diagnostics-check",
+            "module": "robot_learning.lab.verify_research_diagnostics"
+          },
+          {
+            "args": [
+              "python -m robot_learning.lab.verify_research_diagnostics --artifact campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json --compatibility"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json",
+            "instrument": "python_module",
+            "label": "hold-window-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_diagnostics"
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2-fresh-hold-window-panel",
+            "seed": 6000
+          }
+        ],
+        "rationale": "The decisive unresolved distinction is whether T2's residual failures are geometry/branch/limit failures or post-entry control failures. Existing M6 diagnostics aggregate speed, action, and substep excursions across the rollout, so they cannot test the stabilization explanation. The scoped evaluator change preserves benchmark semantics and policy inputs while isolating intervals with pre-step or post-step hold activity, including the exit step. Execute both artifact-independent checks before using the new fields in a fresh, non-overlapping T2 measurement. This is a mechanism measurement of the existing complete artifact, not a claim that hold-window instrumentation causes performance or that T2 meets the official goal. A fresh panel can show whether the six-failure pattern and outer-radius deficit persist and whether failures carry hold-specific velocity/action/intersample signatures; those outcomes determine whether to train a candidate, pursue branch/limit work, or redirect toward dynamics/action authority."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_research_diagnostics failed:\n\nusage: verify_research_diagnostics.py [-h] --artifact ARTIFACT\n                                      [--compatibility]\nverify_research_diagnostics.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S5",
+      "status": "failed",
+      "superseded_by": "M8",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "c8781b3d608c",
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json",
+          "instrument": "python_module",
+          "label": "hold-window-diagnostics-check",
+          "module": "robot_learning.lab.verify_research_diagnostics"
+        },
+        {
+          "args": [
+            "--compatibility",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json",
+          "instrument": "python_module",
+          "label": "hold-window-diagnostics-compatibility",
+          "module": "robot_learning.lab.verify_research_diagnostics"
+        },
+        {
+          "artifact": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t2-c8cf701d5-4561f2c849c76a1ea08b8701f1988f7f959388e0ae4b150d322d2694672a4b8a",
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T2-fresh-hold-window-panel",
+          "model_fingerprint": "4561f2c849c76a1ea08b8701f1988f7f959388e0ae4b150d322d2694672a4b8a",
+          "seed": 6000
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+            "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+          },
+          {
+            "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+            "path": "robot_learning/lab/verify_full_radius_analysis.py"
+          },
+          {
+            "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+            "path": "robot_learning/lab/verify_full_radius_training.py"
+          },
+          {
+            "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+            "path": "robot_learning/lab/verify_research_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "e6ff6c1d79fde8009a558ff9eff1ad490b1e3226",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+            "path": "robot_learning/lab/verify_research_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_diagnostics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "6088a235c31f341ce1a47de4018ac814a7db27c3a790706f8c11b8e87214cf6c",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M8",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Validate the hold-window research diagnostics and remeasure the best-known T2 artifact on a fresh official-distribution development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "hold-window-diagnostics-check",
+            "module": "robot_learning.lab.verify_research_diagnostics"
+          },
+          {
+            "args": [
+              "--compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/research_diagnostics_compatibility_check.json",
+            "instrument": "python_module",
+            "label": "hold-window-diagnostics-compatibility",
+            "module": "robot_learning.lab.verify_research_diagnostics"
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2-fresh-hold-window-panel",
+            "seed": 6000
+          }
+        ],
+        "rationale": "The decisive unresolved distinction is whether T2's residual failures are geometry/branch/limit failures or post-entry control failures. Existing M6 diagnostics aggregate speed, action, and substep excursions across the rollout, so they cannot test the stabilization explanation. The scoped evaluator change preserves benchmark semantics and policy inputs while isolating intervals with pre-step or post-step hold activity, including the exit step. Execute both artifact-independent checks before using the new fields in a fresh, non-overlapping T2 measurement. This is a mechanism measurement of the existing complete artifact, not a claim that hold-window instrumentation causes performance or that T2 meets the official goal. A fresh panel can show whether the six-failure pattern and outer-radius deficit persist and whether failures carry hold-specific velocity/action/intersample signatures; those outcomes determine whether to train a candidate, pursue branch/limit work, or redirect toward dynamics/action authority."
+      }
+    },
+    "request_fingerprint": "16f96543dab85ecf60c6651959872dcb4f0d0c07f2dc8f146fe804cf2e1d240a",
+    "session_id": "S5",
+    "supersedes": "M7"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T2:checkpoint-120832 by E7, supported by M4 and M6: 154/160 = 96.25% versus T1's 115/160 = 71.875% on the matched panel. T1:checkpoint-115712 remains retained under its existing label from the prior inquiry, but is no longer best-known. There is no working candidate. T1 and T2 each have 24 archived checkpoints; only T1:checkpoint-115712 and T2:checkpoint-120832 have development measurements. Saved-component equality and training proxies do not establish complete-artifact equivalence or development performance.",
     "completed_operations": [
@@ -4112,6 +4310,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "124fddc6-e8e8-4afb-bcdb-e241bc1eb792",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "e6ff6c1d79fde8009a558ff9eff1ad490b1e3226"
+  },
   "terminal_state": null
 }

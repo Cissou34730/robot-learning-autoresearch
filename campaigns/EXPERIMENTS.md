@@ -19,3 +19,4 @@
 | E7 | model_role | - | assigned |
 | E8 | inquiry | I2 | completed |
 | E9 | checkpoint | - | checkpointed |
+| M7 | measurement | I2 | failed |
