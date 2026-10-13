@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 4,
+    "measurement": 5,
     "session": 1,
     "training": 0
   },
@@ -858,9 +858,1213 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T06:48:40Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Re-run the full compiled-dynamics characterization after verified snapshot isolation.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json",
+            "instrument": "python_module",
+            "label": "compiled_dynamics_repaired_characterization",
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "rationale": "M4 established that the repaired production path preserves independent repeated transitions and the required diagnostic coverage. This rerun supplies the first scientifically interpretable candidate-free evidence for actuation authority, branch feasibility, and sampled hold timing; the earlier aliased M3 artifact is not used as evidence."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled_dynamics_repaired_characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M5-1-compiled_dynamics_repaired.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "bias_parameters",
+                      "bias_type",
+                      "control_limited",
+                      "control_range",
+                      "force_limited",
+                      "force_range",
+                      "gain_parameters",
+                      "gain_type",
+                      "gear",
+                      "id",
+                      "name",
+                      "transmission_id",
+                      "transmission_type"
+                    ],
+                    "path": "/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compatibility_mode",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/compiled_context",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "name",
+                      "replicates"
+                    ],
+                    "path": "/control_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/geometry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "dof_id",
+                      "frictionloss",
+                      "id",
+                      "limited",
+                      "name",
+                      "range",
+                      "type"
+                    ],
+                    "path": "/joints",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/substep_trace",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_context/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_context/gravity",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_context/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/policy_step_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia",
+                      "mass",
+                      "name",
+                      "position"
+                    ],
+                    "path": "/geometry/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "body_id",
+                      "conaffinity",
+                      "contype",
+                      "id",
+                      "name",
+                      "size",
+                      "type"
+                    ],
+                    "path": "/geometry/geoms",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/geometry/initial_end_effector_position",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/geometry/reference_link_lengths",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/ik_branch_feasibility/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/ik_branch_feasibility/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/substep_trace/action",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/substep_trace/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/initial_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_distance_max_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_distance_min_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_minus_endpoint_max_abs_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_outside_tolerance_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/substep_trace/internal_substep_distances_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/substep_trace/internal_substep_times_seconds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/substep_trace/sampled_endpoint_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/substep_trace/target",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/forearm_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/maximum_reach_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/upper_arm_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/bearing_samples",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/evaluated_samples",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "bearing_rad",
+                      "cosine_elbow",
+                      "jacobian_condition",
+                      "legal",
+                      "qpos",
+                      "radius_m"
+                    ],
+                    "path": "/ik_branch_feasibility/folded/examples",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/geometrically_valid_samples",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_condition_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_condition_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/open/branch",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "cf0c98a6cedc83d75a771b1d85f209a9524399ddf40dbfc01cc59b7b4803315f"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "a04d17f360eb30e777ca35e3ec47bc91dc6ba759",
+            "fingerprint": "20be4979301cb251fac8fbfd9a2ab87dd424a3d2a8ad44fc465b83497634f9a3",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "b438c65a6a1e8587726c3f6ff8d3daddebc04dfd",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+          ],
+          "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json",
+          "instrument": "python_module",
+          "label": "compiled_dynamics_repaired_characterization",
+          "module": "robot_learning.lab.compiled_dynamics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+            "path": "robot_learning/lab/compiled_dynamics_check.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "a04d17f360eb30e777ca35e3ec47bc91dc6ba759",
+          "fingerprint": "20be4979301cb251fac8fbfd9a2ab87dd424a3d2a8ad44fc465b83497634f9a3",
+          "manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            }
+          ]
+        },
+        "code_parent_commit": "b438c65a6a1e8587726c3f6ff8d3daddebc04dfd",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/compiled_dynamics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled_dynamics_repaired_characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M5-1-compiled_dynamics_repaired.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 9,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "bias_parameters",
+                    "bias_type",
+                    "control_limited",
+                    "control_range",
+                    "force_limited",
+                    "force_range",
+                    "gain_parameters",
+                    "gain_type",
+                    "gear",
+                    "id",
+                    "name",
+                    "transmission_id",
+                    "transmission_type"
+                  ],
+                  "path": "/actuators",
+                  "type": "array"
+                },
+                {
+                  "path": "/compatibility_mode",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 12,
+                  "path": "/compiled_context",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "name",
+                    "replicates"
+                  ],
+                  "path": "/control_trajectories",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/geometry",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/ik_branch_feasibility",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "armature",
+                    "damping",
+                    "dof_id",
+                    "frictionloss",
+                    "id",
+                    "limited",
+                    "name",
+                    "range",
+                    "type"
+                  ],
+                  "path": "/joints",
+                  "type": "array"
+                },
+                {
+                  "path": "/schema",
+                  "type": "string"
+                },
+                {
+                  "entries": 11,
+                  "path": "/substep_trace",
+                  "type": "object"
+                },
+                {
+                  "path": "/compiled_context/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/compiled_context/gravity",
+                  "type": "array"
+                },
+                {
+                  "path": "/compiled_context/integrator",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/nu",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/nv",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/policy_step_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/solver",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/solver_iterations",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/solver_tolerance",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/timestep_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_context/xml_path",
+                  "type": "string"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "id",
+                    "inertia",
+                    "mass",
+                    "name",
+                    "position"
+                  ],
+                  "path": "/geometry/bodies",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "body_id",
+                    "conaffinity",
+                    "contype",
+                    "id",
+                    "name",
+                    "size",
+                    "type"
+                  ],
+                  "path": "/geometry/geoms",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/geometry/initial_end_effector_position",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/geometry/reference_link_lengths",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/ik_branch_feasibility/folded",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/ik_branch_feasibility/open",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/substep_trace/action",
+                  "type": "array"
+                },
+                {
+                  "path": "/substep_trace/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/substep_trace/initial_distance_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/substep_trace/internal_distance_max_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/substep_trace/internal_distance_min_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/substep_trace/internal_minus_endpoint_max_abs_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/substep_trace/internal_outside_tolerance_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 10,
+                  "path": "/substep_trace/internal_substep_distances_m",
+                  "type": "array"
+                },
+                {
+                  "entries": 10,
+                  "path": "/substep_trace/internal_substep_times_seconds",
+                  "type": "array"
+                },
+                {
+                  "path": "/substep_trace/sampled_endpoint_distance_m",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/substep_trace/target",
+                  "type": "array"
+                },
+                {
+                  "path": "/geometry/reference_link_lengths/forearm_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/geometry/reference_link_lengths/maximum_reach_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/geometry/reference_link_lengths/upper_arm_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/bearing_samples",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/branch",
+                  "type": "string"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/evaluated_samples",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "bearing_rad",
+                    "cosine_elbow",
+                    "jacobian_condition",
+                    "legal",
+                    "qpos",
+                    "radius_m"
+                  ],
+                  "path": "/ik_branch_feasibility/folded/examples",
+                  "type": "array"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/geometrically_valid_samples",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_min",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_condition_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_condition_min",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_min",
+                  "type": "number"
+                },
+                {
+                  "path": "/ik_branch_feasibility/open/branch",
+                  "type": "string"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "cf0c98a6cedc83d75a771b1d85f209a9524399ddf40dbfc01cc59b7b4803315f"
+          },
+          "module": "robot_learning.lab.compiled_dynamics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled_dynamics_repaired_characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M5-1-compiled_dynamics_repaired.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "bias_parameters",
+                      "bias_type",
+                      "control_limited",
+                      "control_range",
+                      "force_limited",
+                      "force_range",
+                      "gain_parameters",
+                      "gain_type",
+                      "gear",
+                      "id",
+                      "name",
+                      "transmission_id",
+                      "transmission_type"
+                    ],
+                    "path": "/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compatibility_mode",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/compiled_context",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "name",
+                      "replicates"
+                    ],
+                    "path": "/control_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/geometry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/ik_branch_feasibility",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature",
+                      "damping",
+                      "dof_id",
+                      "frictionloss",
+                      "id",
+                      "limited",
+                      "name",
+                      "range",
+                      "type"
+                    ],
+                    "path": "/joints",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/substep_trace",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_context/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_context/gravity",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_context/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/policy_step_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver_iterations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/solver_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_context/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia",
+                      "mass",
+                      "name",
+                      "position"
+                    ],
+                    "path": "/geometry/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "body_id",
+                      "conaffinity",
+                      "contype",
+                      "id",
+                      "name",
+                      "size",
+                      "type"
+                    ],
+                    "path": "/geometry/geoms",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/geometry/initial_end_effector_position",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/geometry/reference_link_lengths",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/ik_branch_feasibility/folded",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/ik_branch_feasibility/open",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/substep_trace/action",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/substep_trace/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/initial_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_distance_max_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_distance_min_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_minus_endpoint_max_abs_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/substep_trace/internal_outside_tolerance_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/substep_trace/internal_substep_distances_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/substep_trace/internal_substep_times_seconds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/substep_trace/sampled_endpoint_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/substep_trace/target",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/forearm_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/maximum_reach_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/geometry/reference_link_lengths/upper_arm_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/bearing_samples",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/branch",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/evaluated_samples",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "bearing_rad",
+                      "cosine_elbow",
+                      "jacobian_condition",
+                      "legal",
+                      "qpos",
+                      "radius_m"
+                    ],
+                    "path": "/ik_branch_feasibility/folded/examples",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/geometrically_valid_samples",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_abs_determinant_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_condition_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_condition_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/folded/jacobian_sigma_min_min",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/ik_branch_feasibility/open/branch",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "cf0c98a6cedc83d75a771b1d85f209a9524399ddf40dbfc01cc59b7b4803315f"
+            },
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "a04d17f360eb30e777ca35e3ec47bc91dc6ba759",
+            "fingerprint": "20be4979301cb251fac8fbfd9a2ab87dd424a3d2a8ad44fc465b83497634f9a3",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "b438c65a6a1e8587726c3f6ff8d3daddebc04dfd",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/compiled_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Re-run the full compiled-dynamics characterization after verified snapshot isolation.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/compiled_dynamics_repaired.json",
+            "instrument": "python_module",
+            "label": "compiled_dynamics_repaired_characterization",
+            "module": "robot_learning.lab.compiled_dynamics"
+          }
+        ],
+        "rationale": "M4 established that the repaired production path preserves independent repeated transitions and the required diagnostic coverage. This rerun supplies the first scientifically interpretable candidate-free evidence for actuation authority, branch feasibility, and sampled hold timing; the earlier aliased M3 artifact is not used as evidence."
+      }
+    },
+    "request_fingerprint": "16eb94fcec54508aad31998d1493285c3d195e7f3da65d8ba54998e1d4c4ae0e",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -882,7 +2086,8 @@
     "operation_ids": [
       "M1",
       "M3",
-      "M4"
+      "M4",
+      "M5"
     ],
     "scientific_parent_commit": "b438c65a6a1e8587726c3f6ff8d3daddebc04dfd"
   },
