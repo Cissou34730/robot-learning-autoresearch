@@ -10989,38 +10989,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "negative",
-        "reason": "I3's bounded route did not improve complete official-geometry development success. M19 verified the changed production training path; M20 verified a realized 50/50 mixture of uniform full-radius resets and negative-bearing folded_only focused resets spanning the full radius range while preserving official evaluation construction. T4 transferred from T3:checkpoint-110592 with no exact saved-component matches and produced a distinct complete candidate. M21 measured the highest-proxy nonterminal T4:checkpoint-5120 against frozen T3:checkpoint-110592 on identical 160-episode seeds: both achieved 153/160 (95.625%), with zero discordant episodes and zero paired wins. The same seven episode seeds remained failures; the candidate diagnostics retain the same folded-only residual structure, five never reached tolerance and two reached only 1-3 held steps. This answers the bounded question negatively for this 50/50 [-160,-105] folded-only exposure route. It does not establish that branch-aware coverage or other geometry routes cannot work. The implementation changed training exposure, not official mechanics, and the T4 learning proxy was lower and measured under altered exposure, so no causal claim beyond this complete-artifact comparison is warranted. Carry to goal review the unresolved alternatives: the selected route may have been too concentrated or poorly matched to the reachable policy, while configuration-dependent actuation/braking and sampled-hold instability remain unmeasured as causal mechanisms."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "negative",
-        "reason": "I3's bounded route did not improve complete official-geometry development success. M19 verified the changed production training path; M20 verified a realized 50/50 mixture of uniform full-radius resets and negative-bearing folded_only focused resets spanning the full radius range while preserving official evaluation construction. T4 transferred from T3:checkpoint-110592 with no exact saved-component matches and produced a distinct complete candidate. M21 measured the highest-proxy nonterminal T4:checkpoint-5120 against frozen T3:checkpoint-110592 on identical 160-episode seeds: both achieved 153/160 (95.625%), with zero discordant episodes and zero paired wins. The same seven episode seeds remained failures; the candidate diagnostics retain the same folded-only residual structure, five never reached tolerance and two reached only 1-3 held steps. This answers the bounded question negatively for this 50/50 [-160,-105] folded-only exposure route. It does not establish that branch-aware coverage or other geometry routes cannot work. The implementation changed training exposure, not official mechanics, and the T4 learning proxy was lower and measured under altered exposure, so no causal claim beyond this complete-artifact comparison is warranted. Carry to goal review the unresolved alternatives: the selected route may have been too concentrated or poorly matched to the reachable policy, while configuration-dependent actuation/braking and sampled-hold instability remain unmeasured as causal mechanisms.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I3's bounded route did not improve complete official-geometry development success. M19 verified the changed production training path; M20 verified a realized 50/50 mixture of uniform full-radius resets and negative-bearing folded_only focused resets spanning the full radius range while preserving official evaluation construction. T4 transferred from T3:checkpoint-110592 with no exact saved-component matches and produced a distinct complete candidate. M21 measured the highest-proxy nonterminal T4:checkpoint-5120 against frozen T3:checkpoint-110592 on identical 160-episode seeds: both achieved 153/160 (95.625%), with zero discordant episodes and zero paired wins. The same seven episode seeds remained failures; the candidate diagnostics retain the same folded-only residual structure, five never reached tolerance and two reached only 1-3 held steps. This answers the bounded question negatively for this 50/50 [-160,-105] folded-only exposure route. It does not establish that branch-aware coverage or other geometry routes cannot work. The implementation changed training exposure, not official mechanics, and the T4 learning proxy was lower and measured under altered exposure, so no causal claim beyond this complete-artifact comparison is warranted. Carry to goal review the unresolved alternatives: the selected route may have been too concentrated or poorly matched to the reachable policy, while configuration-dependent actuation/braking and sampled-hold instability remain unmeasured as causal mechanisms."
-      }
-    },
-    "request_fingerprint": "a614e0b3fa6341d442bcb5b6d59a2a3b9ca53faca8cf12e20e24b40cd11669da",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-110592 remains best-known by E9, supported by T3 and M18. T2:checkpoint-120832 remains the reference candidate. No working or retained role is assigned. Neither T3's best-known role nor its 153/160 development result certifies the human goal.",
     "completed_operations": [
