@@ -38,3 +38,4 @@
 | E13 | checkpoint | - | checkpointed |
 | M19 | measurement | I3 | completed |
 | M20 | measurement | I3 | completed |
+| T4 | training | I3 | completed |
