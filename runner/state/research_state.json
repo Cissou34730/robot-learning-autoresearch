@@ -4039,47 +4039,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after completed evidence compares the best available candidate against T2 on a fresh non-overlapping official-distribution development panel with radius-stratified success and hold-specific diagnostics, and either (a) shows a candidate that preserves the T2 inner strata, recovers the 14\u201320 cm strata, and materially reduces post-entry interruptions toward the 98% goal, (b) reproducibly concentrates the remaining failures in a geometry/branch/limit class or a post-entry stabilization/dynamic class sufficient to redirect the next intervention, or (c) shows that the bounded candidate direction does not improve the decisive gap, yielding a limited or inconclusive result without claiming a broader PPO or exposure-curriculum conclusion.",
-          "goal_connection": "The official objective requires at least 196/200 uninterrupted successes over 6\u201320 cm. T2 is the strongest measured artifact at 154/160 = 96.25%, but its six failures include both no-entry and post-entry classes and its measured 14\u201320 cm success is below T1. A candidate that preserves T2's inner-radius coverage while recovering the outer regime could close the 1.75-point development gap; diagnostics would determine whether the next change should target branch/limits, post-entry regulation, or dynamic/action authority rather than relying on aggregate reward or first entry.",
-          "handoff_conclusion": "Observed facts: M2 verified that the training source changed the target-radius exposure to exactly the official 6\u201320 cm interval while evaluation remained unchanged; T2 then trained the existing PPO implementation with that source change and no exact saved-component matches to T1. M3 verified the added research diagnostics and unchanged control path. On the non-overlapping matched M4 panel, T1:checkpoint-115712 achieved 115/160 = 71.875% and T2:checkpoint-120832 achieved 154/160 = 96.25%, with 44 candidate-only wins, 5 reference-only wins, and 49 discordant episodes. M6 shows T2/T1 success by radius: [6,10) 100.0/34.78% (46 episodes), [10,14) 100.0/68.18% (44), [14,17) 91.67/97.22% (36), and [17,20] 91.18/100.0% (34). T2 first-entry rate is 98.75% versus 76.25%, so the tested artifact comparison strongly supports a coverage-related candidate difference for the inner deficit, but it does not prove exposure alone is causal and it does not preserve outer-radius behavior. T2 residuals are mixed: two no-entry failures and four post-entry unsuccessful episodes. The candidate enters on 158/160 episodes and is assigned the open branch at first entry in all non-null cases; folded branch use is zero. One no-entry target has an open IK solution outside the shoulder limit while the folded solution has positive margin, whereas another no-entry target has ample margins; post-entry failures include a negative-margin open-branch target and well-margin cases with repeated hold interruptions. Aggregate candidate/reference max speed and action summaries are similar, with maximum absolute action saturated at 1.0; rollout limit margins can become slightly negative. Internal substep distances are preserved, but the current aggregate counts span the whole rollout rather than isolating only the hold interval, so they support a sampled-motion limit but not a complete continuous-hold causal claim. Interpretation: full-radius exposure is a productive candidate-selection change, yet the outer-radius regression and mixed residual classes redirect mechanism work toward branch-aware control and stabilization/trajectory regulation, while effective dynamics and action authority remain unmeasured alternatives. The result is limited to the existing PPO implementation, its one fresh seed, and the matched 160-episode development panel.",
-          "handoff_question": "Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal?",
-          "rationale": "Opening one bounded inquiry is preferable to requesting the terminal official assessment now. T2 is 1.75 percentage points below the development target on 160 held-out episodes and has a concrete outer-radius regression, while its high first-entry rate and six residual failures leave a plausible, actionable route to improvement. The expected contribution is a complete candidate comparison plus diagnostics that can recover enough success to make the official assessment more credible or redirect work to the dominant failure mechanism. The cost is bounded to the inquiry allocation and measurements; it is justified by the proximity to the goal and by residuals that are not yet explained. This does not treat full-radius exposure as causal: source and training changed together only at the artifact level, and the result remains limited to the tested fresh PPO implementation and one seed.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after completed evidence compares the best available candidate against T2 on a fresh non-overlapping official-distribution development panel with radius-stratified success and hold-specific diagnostics, and either (a) shows a candidate that preserves the T2 inner strata, recovers the 14\u201320 cm strata, and materially reduces post-entry interruptions toward the 98% goal, (b) reproducibly concentrates the remaining failures in a geometry/branch/limit class or a post-entry stabilization/dynamic class sufficient to redirect the next intervention, or (c) shows that the bounded candidate direction does not improve the decisive gap, yielding a limited or inconclusive result without claiming a broader PPO or exposure-curriculum conclusion.",
-        "goal_connection": "The official objective requires at least 196/200 uninterrupted successes over 6\u201320 cm. T2 is the strongest measured artifact at 154/160 = 96.25%, but its six failures include both no-entry and post-entry classes and its measured 14\u201320 cm success is below T1. A candidate that preserves T2's inner-radius coverage while recovering the outer regime could close the 1.75-point development gap; diagnostics would determine whether the next change should target branch/limits, post-entry regulation, or dynamic/action authority rather than relying on aggregate reward or first entry.",
-        "question": "Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal?",
-        "rationale": "Opening one bounded inquiry is preferable to requesting the terminal official assessment now. T2 is 1.75 percentage points below the development target on 160 held-out episodes and has a concrete outer-radius regression, while its high first-entry rate and six residual failures leave a plausible, actionable route to improvement. The expected contribution is a complete candidate comparison plus diagnostics that can recover enough success to make the official assessment more credible or redirect work to the dominant failure mechanism. The cost is bounded to the inquiry allocation and measurements; it is justified by the proximity to the goal and by residuals that are not yet explained. This does not treat full-radius exposure as causal: source and training changed together only at the artifact level, and the result remains limited to the tested fresh PPO implementation and one seed."
-      }
-    },
-    "request_fingerprint": "a745ab245c06b81b69b43980c17ad0ea7b6852912a3ecaa27f4a6dcd77a1812f",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the explicitly assigned best-known role from E1 because no role reassignment was permitted after inquiry closure; T2:checkpoint-120832 is the strongest newly measured development candidate at 154/160 = 96.25% but has not yet been assigned a model role. There is no working or retained candidate. Candidate selection and mechanism interpretation remain separate: T2 is favored by M4/M6 for development evidence, not certified for the official goal.",
     "completed_operations": [
