@@ -19,7 +19,8 @@ CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 0.0
+HOLD_EXIT_FORFEIT_FRACTION = 1.0
+HOLD_ACTION_COST_COEFFICIENT = 0.05
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
@@ -54,6 +55,10 @@ def reach_reward(
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
 ) -> RewardResult:
+    if ACTION_COST_COEFFICIENT < 0:
+        raise ValueError("ACTION_COST_COEFFICIENT must be nonnegative")
+    if HOLD_ACTION_COST_COEFFICIENT < 0:
+        raise ValueError("HOLD_ACTION_COST_COEFFICIENT must be nonnegative")
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
@@ -91,9 +96,15 @@ def reach_reward(
     reward += hold_complete
 
     action_cost = 0.0
+    hold_action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
+        if held_steps > 0 or previous_held_steps > 0:
+            hold_action_cost = -(
+                HOLD_ACTION_COST_COEFFICIENT * float(np.sum(np.square(action)))
+            )
     reward += action_cost
+    reward += hold_action_cost
 
     return RewardResult(
         total=float(reward),
@@ -104,5 +115,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "hold_action_cost": float(hold_action_cost),
         },
     )
