@@ -265,12 +265,15 @@ def collect_panel(
     algorithm: str | None = None,
 ) -> dict:
     """Collect the full outcome panel, retaining detailed frames after selection."""
+    model_path = Path(model_path)
+    if model_path.is_dir():
+        model_path = model_path / "model.zip"
     if episodes < 1:
         raise ValueError("episodes must be positive")
     if controls is not None and controls < 0:
         raise ValueError("controls must be non-negative")
 
-    runtime = load_runtime(Path(model_path), algorithm)
+    runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
     production_timing = {
         "frame_skip": int(env.frame_skip),
