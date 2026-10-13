@@ -24,3 +24,4 @@
 | M9 | measurement | I2 | completed |
 | T3 | training | I2 | completed |
 | M10 | measurement | I2 | completed |
+| M11 | measurement | I2 | completed |

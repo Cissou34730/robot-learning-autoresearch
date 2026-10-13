@@ -2482,7 +2482,7 @@
   "counters": {
     "event": 9,
     "inquiry": 2,
-    "measurement": 10,
+    "measurement": 11,
     "session": 5,
     "training": 3
   },
@@ -6704,9 +6704,2372 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T21:00:03Z",
+      "error": null,
+      "id": "M11",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Compute radius-stratified and branch/failure summaries for both T3 checkpoints against the matched T2 panel.",
+        "measurements": [
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 0,
+                "operation_id": "M10"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M10"
+              }
+            },
+            "instrument": "python_module",
+            "label": "T3-proxy-radius-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          },
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M10"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M10"
+              }
+            },
+            "instrument": "python_module",
+            "label": "T3-terminal-radius-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "rationale": "M10 establishes complete-artifact success improvement and a large reduction in hold interruptions, but the I2 requirement is specifically to preserve T2's inner-radius success while recovering 14-20 cm. The existing validated analysis module will consume the exact M10 artifacts without rerunning policies, producing radius strata, first-entry/failure classes, branch margins, speed/action, and substep summaries for each matched comparison. This adds the missing stratified candidate-selection evidence and keeps mechanism interpretation separate from the complete-artifact result."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "T3-proxy-radius-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-1-m11-T3-90112-vs-T2-analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluator",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "reference",
+                      "stratum"
+                    ],
+                    "path": "/radius_strata",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_discordance",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/null",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/hold_interruption_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/no_entry_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/post_entry_unsuccessful",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/above_threshold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_limit_margin/rollout",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin/target",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/candidate/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/candidate/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/candidate/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/reference/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/reference/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/reference/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/candidate_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/discordant",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/ties",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "51ad5d03daad2e43fa6909fbd50eedccef4c6a823fb3aa1cf4ca288e9f9f3969",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "ad73165ab4acb579e727c33a570504a6b843190533e3a4989abdb2c742ff3d88"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "T3-terminal-radius-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-2-m11-T3-120832-vs-T2-analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluator",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "reference",
+                      "stratum"
+                    ],
+                    "path": "/radius_strata",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_discordance",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/null",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/hold_interruption_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/no_entry_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/post_entry_unsuccessful",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/above_threshold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_limit_margin/rollout",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin/target",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/candidate/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/candidate/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/candidate/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/reference/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/reference/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/reference/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/candidate_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/discordant",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/ties",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "504d7ea66b0488c7254bb30e888a0fb1893265e44277a1ab0732255cc4e3c939",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "923dba1d32115fe561aaa4338512c8b79ed20ef83aa19909acc87d0baa8c5afc"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+              "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+            },
+            {
+              "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+              "path": "robot_learning/lab/verify_full_radius_analysis.py"
+            },
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            },
+            {
+              "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+              "path": "robot_learning/lab/verify_hold_reward.py"
+            },
+            {
+              "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+              "path": "robot_learning/lab/verify_research_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "118e71e11eb2250fc1e786fd3f36e5543f482288",
+            "fingerprint": "488b77c93ecd1effd104f0eb34631a90d5c725af19f28110153fe601f5985a94",
+            "manifest": [
+              {
+                "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+                "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+              },
+              {
+                "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+                "path": "robot_learning/lab/verify_full_radius_analysis.py"
+              },
+              {
+                "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+                "path": "robot_learning/lab/verify_full_radius_training.py"
+              },
+              {
+                "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+                "path": "robot_learning/lab/verify_hold_reward.py"
+              },
+              {
+                "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+                "path": "robot_learning/lab/verify_research_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+              "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_full_radius_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "--output",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+              "operation_id": "M10",
+              "recorded_artifact_fingerprint": "ad73165ab4acb579e727c33a570504a6b843190533e3a4989abdb2c742ff3d88"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "operation_id": "M10",
+              "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 0,
+              "operation_id": "M10"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "operation_id": "M10"
+            }
+          },
+          "instrument": "python_module",
+          "label": "T3-proxy-radius-analysis",
+          "module": "robot_learning.lab.analyze_full_radius_comparison"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "--output",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "operation_id": "M10",
+              "recorded_artifact_fingerprint": "923dba1d32115fe561aaa4338512c8b79ed20ef83aa19909acc87d0baa8c5afc"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "operation_id": "M10",
+              "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 1,
+              "operation_id": "M10"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "operation_id": "M10"
+            }
+          },
+          "instrument": "python_module",
+          "label": "T3-terminal-radius-analysis",
+          "module": "robot_learning.lab.analyze_full_radius_comparison"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+            "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+          },
+          {
+            "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+            "path": "robot_learning/lab/verify_full_radius_analysis.py"
+          },
+          {
+            "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+            "path": "robot_learning/lab/verify_full_radius_training.py"
+          },
+          {
+            "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+            "path": "robot_learning/lab/verify_hold_reward.py"
+          },
+          {
+            "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+            "path": "robot_learning/lab/verify_research_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "118e71e11eb2250fc1e786fd3f36e5543f482288",
+          "fingerprint": "488b77c93ecd1effd104f0eb34631a90d5c725af19f28110153fe601f5985a94",
+          "manifest": [
+            {
+              "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+              "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+            },
+            {
+              "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+              "path": "robot_learning/lab/verify_full_radius_analysis.py"
+            },
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            },
+            {
+              "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+              "path": "robot_learning/lab/verify_hold_reward.py"
+            },
+            {
+              "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+              "path": "robot_learning/lab/verify_research_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+            "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_full_radius_comparison.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "--output",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "T3-proxy-radius-analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-1-m11-T3-90112-vs-T2-analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/evaluator",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "candidate",
+                    "reference",
+                    "stratum"
+                  ],
+                  "path": "/radius_strata",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/reference",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/source_artifacts",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate/branch_at_first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/candidate/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate/first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/candidate/internal_substeps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_limit_margin",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_speed_and_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/evaluator/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/evaluator/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/overall/paired_discordance",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/branch_at_first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reference/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reference/internal_substeps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reference/joint_limit_margin",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reference/joint_speed_and_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/source_artifacts/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/source_artifacts/reference",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/folded",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/null",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/open",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/episodes_with_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/hold_interruption_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/no_entry_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/post_entry_unsuccessful",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/rate_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/internal_substeps/above_threshold_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/internal_substeps/max_distance_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_limit_margin/rollout",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_limit_margin/target",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                  "type": "object"
+                },
+                {
+                  "path": "/evaluator/candidate/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluator/candidate/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/evaluator/candidate/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/evaluator/reference/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluator/reference/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/evaluator/reference/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/candidate/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/candidate_wins",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/discordant",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/reference_wins",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/ties",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/success_percent",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "51ad5d03daad2e43fa6909fbd50eedccef4c6a823fb3aa1cf4ca288e9f9f3969",
+            "input_artifacts": {
+              "candidate": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+                "operation_id": "M10",
+                "recorded_artifact_fingerprint": "ad73165ab4acb579e727c33a570504a6b843190533e3a4989abdb2c742ff3d88"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                "operation_id": "M10",
+                "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_full_radius_comparison"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+            "--output",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+          ],
+          "instrument": "python_module",
+          "label": "T3-terminal-radius-analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-2-m11-T3-120832-vs-T2-analysis.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/evaluator",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "candidate",
+                    "reference",
+                    "stratum"
+                  ],
+                  "path": "/radius_strata",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/reference",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/source_artifacts",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate/branch_at_first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/candidate/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate/first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/candidate/internal_substeps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_limit_margin",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_speed_and_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/evaluator/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/evaluator/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/overall/paired_discordance",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/branch_at_first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reference/failures",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/first_entry",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reference/internal_substeps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reference/joint_limit_margin",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/reference/joint_speed_and_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/source_artifacts/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/source_artifacts/reference",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/folded",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/null",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/branch_at_first_entry/open",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/episodes_with_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/hold_interruption_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/no_entry_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/failures/post_entry_unsuccessful",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/first_entry/rate_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/internal_substeps/above_threshold_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/internal_substeps/max_distance_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_limit_margin/rollout",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate/joint_limit_margin/target",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                  "type": "object"
+                },
+                {
+                  "path": "/evaluator/candidate/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluator/candidate/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/evaluator/candidate/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/evaluator/reference/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/evaluator/reference/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/evaluator/reference/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/overall/candidate/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/candidate_wins",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/discordant",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/reference_wins",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_discordance/ties",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/success_percent",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "504d7ea66b0488c7254bb30e888a0fb1893265e44277a1ab0732255cc4e3c939",
+            "input_artifacts": {
+              "candidate": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                "operation_id": "M10",
+                "recorded_artifact_fingerprint": "923dba1d32115fe561aaa4338512c8b79ed20ef83aa19909acc87d0baa8c5afc"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                "operation_id": "M10",
+                "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_full_radius_comparison"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "T3-proxy-radius-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-1-m11-T3-90112-vs-T2-analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluator",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "reference",
+                      "stratum"
+                    ],
+                    "path": "/radius_strata",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_discordance",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/null",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/hold_interruption_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/no_entry_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/post_entry_unsuccessful",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/above_threshold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_limit_margin/rollout",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin/target",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/candidate/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/candidate/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/candidate/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/reference/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/reference/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/reference/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/candidate_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/discordant",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/ties",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "51ad5d03daad2e43fa6909fbd50eedccef4c6a823fb3aa1cf4ca288e9f9f3969",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-90112-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "ad73165ab4acb579e727c33a570504a6b843190533e3a4989abdb2c742ff3d88"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+            ],
+            "instrument": "python_module",
+            "label": "T3-terminal-radius-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M11-2-m11-T3-120832-vs-T2-analysis.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluator",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "reference",
+                      "stratum"
+                    ],
+                    "path": "/radius_strata",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/evaluator/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_discordance",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_at_first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/failures",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/first_entry",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/internal_substeps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_limit_margin",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/reference/joint_speed_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/source_artifacts/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/null",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/branch_at_first_entry/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/episodes_with_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/hold_interruption_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/no_entry_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/failures/post_entry_unsuccessful",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/first_entry/rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/above_threshold_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/internal_substeps/episodes_with_above_threshold",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_above_threshold_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/internal_substeps/max_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_limit_margin/rollout",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate/joint_limit_margin/target",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_absolute_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/candidate/joint_speed_and_action/max_joint_speed_norm_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/candidate/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/candidate/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/candidate/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/evaluator/reference/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/evaluator/reference/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/evaluator/reference/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/candidate_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/discordant",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_discordance/ties",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "504d7ea66b0488c7254bb30e888a0fb1893265e44277a1ab0732255cc4e3c939",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T3-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "923dba1d32115fe561aaa4338512c8b79ed20ef83aa19909acc87d0baa8c5afc"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m10-T2-checkpoint-120832-160ep-seed7000-c8781b3d608c.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "3fec900efda6fb85ca0cb954c84a66a853a2a09945ca88798ae1f664208fbd0a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+              "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+            },
+            {
+              "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+              "path": "robot_learning/lab/verify_full_radius_analysis.py"
+            },
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            },
+            {
+              "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+              "path": "robot_learning/lab/verify_hold_reward.py"
+            },
+            {
+              "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+              "path": "robot_learning/lab/verify_research_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "118e71e11eb2250fc1e786fd3f36e5543f482288",
+            "fingerprint": "488b77c93ecd1effd104f0eb34631a90d5c725af19f28110153fe601f5985a94",
+            "manifest": [
+              {
+                "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+                "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+              },
+              {
+                "fingerprint": "42f12022c2ec5028e3af76f4fb06459d07afa79114e61b0fd66d3c025fda5cc1",
+                "path": "robot_learning/lab/verify_full_radius_analysis.py"
+              },
+              {
+                "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+                "path": "robot_learning/lab/verify_full_radius_training.py"
+              },
+              {
+                "fingerprint": "b8f2dc84234f404703cf8a0df3462f25f884daa22897484f75e553b542b7e655",
+                "path": "robot_learning/lab/verify_hold_reward.py"
+              },
+              {
+                "fingerprint": "605a3635932fd8ca576c2a8a3b28bcdb8b421ab0045eac45f83ee421376fa91c",
+                "path": "robot_learning/lab/verify_research_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "0b918c15ba9149659bcba14dd59e848137a8aa703a46a6babf7b112003252b7e",
+              "path": "robot_learning/lab/analyze_full_radius_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_full_radius_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M11",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Compute radius-stratified and branch/failure summaries for both T3 checkpoints against the matched T2 panel.",
+        "measurements": [
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-90112-vs-T2-analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 0,
+                "operation_id": "M10"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M10"
+              }
+            },
+            "instrument": "python_module",
+            "label": "T3-proxy-radius-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          },
+          {
+            "args": [
+              "{input:candidate}",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/m11-T3-120832-vs-T2-analysis.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M10"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M10"
+              }
+            },
+            "instrument": "python_module",
+            "label": "T3-terminal-radius-analysis",
+            "module": "robot_learning.lab.analyze_full_radius_comparison"
+          }
+        ],
+        "rationale": "M10 establishes complete-artifact success improvement and a large reduction in hold interruptions, but the I2 requirement is specifically to preserve T2's inner-radius success while recovering 14-20 cm. The existing validated analysis module will consume the exact M10 artifacts without rerunning policies, producing radius strata, first-entry/failure classes, branch margins, speed/action, and substep summaries for each matched comparison. This adds the missing stratified candidate-selection evidence and keeps mechanism interpretation separate from the complete-artifact result."
+      }
+    },
+    "request_fingerprint": "f15e16fb81e51aae6f3d1bf902bc2dd4cf0e6b2be962c04dce40255e8376c7a9",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T2:checkpoint-120832 by E7, supported by M4 and M6: 154/160 = 96.25% versus T1's 115/160 = 71.875% on the matched panel. T1:checkpoint-115712 remains retained under its existing label from the prior inquiry, but is no longer best-known. There is no working candidate. T1 and T2 each have 24 archived checkpoints; only T1:checkpoint-115712 and T2:checkpoint-120832 have development measurements. Saved-component equality and training proxies do not establish complete-artifact equivalence or development performance.",
     "completed_operations": [
@@ -6755,7 +9118,8 @@
       "M8",
       "M9",
       "T3",
-      "M10"
+      "M10",
+      "M11"
     ],
     "scientific_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a"
   },
