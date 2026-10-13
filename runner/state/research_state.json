@@ -839,7 +839,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 6,
+    "measurement": 7,
     "session": 3,
     "training": 1
   },
@@ -2634,9 +2634,1015 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T06:59:21Z",
+      "error": null,
+      "id": "M7",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Execute the deterministic evaluation-diagnostics regression check covering all branch-union classes and controlled action/velocity summaries.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "evaluation_diagnostics_check",
+            "module": "robot_learning.lab.evaluation_diagnostics_check"
+          }
+        ],
+        "rationale": "M6 established production-path compatibility on representative targets. This normal check adds the discriminating controlled cases: both, open-only, folded-only, and no legal IK branch, plus known changes in saturation and velocity summaries and post-clipped environment controls. It validates the new evidence fields before candidate measurement; it is not policy evidence."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "evaluation_diagnostics_check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M7-1-evaluation_diagnostics_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compatibility_mode",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/branch_union_labels",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/diagnostic_values_are_finite",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/saturated_controls_are_at_unit_bounds",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/applied_control_after_clipping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/branch_classifications",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/controlled_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/joint_velocity_after_step",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed/controlled_summaries/active",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed/controlled_summaries/quiet",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_element_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_elements",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/control_steps_recorded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_final",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_max_abs",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_element_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_elements",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/control_steps_recorded",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "e08f53c351b9acc4fd0d4b336dd9ab268073aa0a403647f3eb1d6b70e1c463d2"
+            },
+            "module": "robot_learning.lab.evaluation_diagnostics_check"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "983f8cff43e33cbb45c72eed06c7ea75c88c8442",
+            "fingerprint": "870e29b09b78b877fd3be8b8be7e54cc5016937d72c3a664eeef7fb0d395d21e",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "293d3cf155a2fa28aefba868b32458c198b66345",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/evaluation_diagnostics_check.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+          ],
+          "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json",
+          "instrument": "python_module",
+          "label": "evaluation_diagnostics_check",
+          "module": "robot_learning.lab.evaluation_diagnostics_check"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+            "path": "robot_learning/lab/compiled_dynamics_check.py"
+          },
+          {
+            "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+            "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "983f8cff43e33cbb45c72eed06c7ea75c88c8442",
+          "fingerprint": "870e29b09b78b877fd3be8b8be7e54cc5016937d72c3a664eeef7fb0d395d21e",
+          "manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            }
+          ]
+        },
+        "code_parent_commit": "293d3cf155a2fa28aefba868b32458c198b66345",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+            "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/evaluation_diagnostics_check.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+          ],
+          "instrument": "python_module",
+          "label": "evaluation_diagnostics_check",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M7-1-evaluation_diagnostics_check.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "path": "/compatibility_mode",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/branch_union_labels",
+                  "type": "array"
+                },
+                {
+                  "path": "/expected/diagnostic_values_are_finite",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/saturated_controls_are_at_unit_bounds",
+                  "type": "boolean"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/applied_control_after_clipping",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/branch_classifications",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/controlled_summaries",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/joint_velocity_after_step",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/branch_classifications/both",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/branch_classifications/folded_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/branch_classifications/none",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/branch_classifications/open_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 11,
+                  "path": "/observed/controlled_summaries/active",
+                  "type": "object"
+                },
+                {
+                  "entries": 11,
+                  "path": "/observed/controlled_summaries/quiet",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/branch_classifications/both/folded_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/both/open_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/both/union",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/branch_classifications/folded_only/folded_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/folded_only/open_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/folded_only/union",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/branch_classifications/none/folded_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/none/open_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/none/union",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/branch_classifications/open_only/folded_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/open_only/open_legal",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/branch_classifications/open_only/union",
+                  "type": "string"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_magnitude_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_magnitude_mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_saturation_element_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_saturation_elements",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_saturation_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/applied_action_saturation_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/control_steps_recorded",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_final",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/active/joint_velocity_max_abs",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_saturation_element_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_saturation_elements",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_saturation_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/applied_action_saturation_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/controlled_summaries/quiet/control_steps_recorded",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "e08f53c351b9acc4fd0d4b336dd9ab268073aa0a403647f3eb1d6b70e1c463d2"
+          },
+          "module": "robot_learning.lab.evaluation_diagnostics_check"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "evaluation_diagnostics_check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M7-1-evaluation_diagnostics_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compatibility_mode",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/branch_union_labels",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/expected/diagnostic_values_are_finite",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/saturated_controls_are_at_unit_bounds",
+                    "type": "boolean"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/applied_control_after_clipping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/branch_classifications",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/controlled_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/joint_velocity_after_step",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/branch_classifications/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed/controlled_summaries/active",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 11,
+                    "path": "/observed/controlled_summaries/quiet",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/both/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/folded_only/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/none/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/folded_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/open_legal",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/branch_classifications/open_only/union",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_element_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_elements",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/applied_action_saturation_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/control_steps_recorded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_final",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/active/joint_velocity_max_abs",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_magnitude_mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_element_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_elements",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/applied_action_saturation_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/controlled_summaries/quiet/control_steps_recorded",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "e08f53c351b9acc4fd0d4b336dd9ab268073aa0a403647f3eb1d6b70e1c463d2"
+            },
+            "module": "robot_learning.lab.evaluation_diagnostics_check"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "983f8cff43e33cbb45c72eed06c7ea75c88c8442",
+            "fingerprint": "870e29b09b78b877fd3be8b8be7e54cc5016937d72c3a664eeef7fb0d395d21e",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              }
+            ]
+          },
+          "code_parent_commit": "293d3cf155a2fa28aefba868b32458c198b66345",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/evaluation_diagnostics_check.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Execute the deterministic evaluation-diagnostics regression check covering all branch-union classes and controlled action/velocity summaries.",
+        "measurements": [
+          {
+            "args": [
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation_diagnostics_check.json",
+            "instrument": "python_module",
+            "label": "evaluation_diagnostics_check",
+            "module": "robot_learning.lab.evaluation_diagnostics_check"
+          }
+        ],
+        "rationale": "M6 established production-path compatibility on representative targets. This normal check adds the discriminating controlled cases: both, open-only, folded-only, and no legal IK branch, plus known changes in saturation and velocity summaries and post-clipped environment controls. It validates the new evidence fields before candidate measurement; it is not policy evidence."
+      }
+    },
+    "request_fingerprint": "2b5943ac3f7f3ebc029f830f5719cd7ebf67caf0dacdd8d2d6c54588c03b33cb",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty. M5 is a physical characterization, not a learned candidate; the inquiry must produce and measure candidate artifacts before a role can be assigned.",
     "completed_operations": [
@@ -2678,7 +3684,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M6"
+      "M6",
+      "M7"
     ],
     "scientific_parent_commit": "293d3cf155a2fa28aefba868b32458c198b66345"
   },
