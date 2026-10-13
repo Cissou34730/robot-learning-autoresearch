@@ -841,14 +841,14 @@
   "counters": {
     "event": 4,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1322,9 +1322,667 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T16:17:46Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Verify the changed training production path before full-radius PPO training.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "full",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json",
+            "instrument": "python_module",
+            "label": "full-radius-training-range-check",
+            "module": "robot_learning.lab.verify_full_radius_training"
+          },
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json",
+            "instrument": "python_module",
+            "label": "full-radius-production-path-compatibility",
+            "module": "robot_learning.lab.verify_full_radius_training"
+          }
+        ],
+        "rationale": "The next scientific action depends on the training environment actually sampling the official 6\u201320 cm radius range while evaluation remains unchanged. These artifact-independent checks validate that exact source behavior and the Gym reset/step path; they do not provide performance evidence or resolve the reach-versus-stabilization distinction."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "full",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "full-radius-training-range-check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-1-full_radius_training_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/all_samples_within_training_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluation_target_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/sample_seed_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sampled_radius_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/sampled_radius_min",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/training_target_radius_range",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6f5e6b3834c9edd5b283424db9a07aa28dd59f695f5ba94b73df7e398e45df7b"
+            },
+            "module": "robot_learning.lab.verify_full_radius_training"
+          },
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "full-radius-production-path-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-2-full_radius_training_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/artifact_independent",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/evaluation_reset_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluation_target_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/training_reset_and_step_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/training_target_radius_range",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b2b9de74cd27b845dad2a26e43b0a4c83bbba8fb002f2c3a01d2a1b93c6610c0"
+            },
+            "module": "robot_learning.lab.verify_full_radius_training"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "75eb423d8d7992ef4ec08b108189b924cb7735b4",
+            "fingerprint": "551a6d285705d94533d45f939b30fea3316657e47543a30cfac125c7f4501af4",
+            "manifest": [
+              {
+                "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+                "path": "robot_learning/lab/verify_full_radius_training.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e243bb2909a8db1f15f84993d10b7b764975bb20",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_full_radius_training.py"
+          ],
+          "scientific_commit": "2b1e684efdeee6a9d3e4764f766b2052a8bb6667",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "082b5c82a037cf40071415274a1058848862cca9c30ec2694a8a15bcf01c4337",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--mode",
+            "full",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json",
+          "instrument": "python_module",
+          "label": "full-radius-training-range-check",
+          "module": "robot_learning.lab.verify_full_radius_training"
+        },
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+          ],
+          "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json",
+          "instrument": "python_module",
+          "label": "full-radius-production-path-compatibility",
+          "module": "robot_learning.lab.verify_full_radius_training"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+            "path": "robot_learning/lab/verify_full_radius_training.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "75eb423d8d7992ef4ec08b108189b924cb7735b4",
+          "fingerprint": "551a6d285705d94533d45f939b30fea3316657e47543a30cfac125c7f4501af4",
+          "manifest": [
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            }
+          ]
+        },
+        "code_parent_commit": "e243bb2909a8db1f15f84993d10b7b764975bb20",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+            "path": "robot_learning/lab/verify_full_radius_training.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_full_radius_training.py"
+        ],
+        "scientific_commit": "2b1e684efdeee6a9d3e4764f766b2052a8bb6667",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "082b5c82a037cf40071415274a1058848862cca9c30ec2694a8a15bcf01c4337",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--mode",
+            "full",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+          ],
+          "instrument": "python_module",
+          "label": "full-radius-training-range-check",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-1-full_radius_training_check.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/all_samples_within_training_range",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/evaluation_target_radius_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/sample_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/sample_seed_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/sampled_radius_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/sampled_radius_min",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/training_target_radius_range",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "6f5e6b3834c9edd5b283424db9a07aa28dd59f695f5ba94b73df7e398e45df7b"
+          },
+          "module": "robot_learning.lab.verify_full_radius_training"
+        },
+        {
+          "args": [
+            "--mode",
+            "compatibility",
+            "--artifact",
+            "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+          ],
+          "instrument": "python_module",
+          "label": "full-radius-production-path-compatibility",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-2-full_radius_training_compatibility.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/artifact_independent",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "path": "/evaluation_reset_api",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/evaluation_target_radius_range",
+                  "type": "array"
+                },
+                {
+                  "path": "/training_reset_and_step_api",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/training_target_radius_range",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b2b9de74cd27b845dad2a26e43b0a4c83bbba8fb002f2c3a01d2a1b93c6610c0"
+          },
+          "module": "robot_learning.lab.verify_full_radius_training"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "full",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "full-radius-training-range-check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-1-full_radius_training_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/all_samples_within_training_range",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluation_target_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/sample_seed_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sampled_radius_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/sampled_radius_min",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/training_target_radius_range",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6f5e6b3834c9edd5b283424db9a07aa28dd59f695f5ba94b73df7e398e45df7b"
+            },
+            "module": "robot_learning.lab.verify_full_radius_training"
+          },
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+            ],
+            "instrument": "python_module",
+            "label": "full-radius-production-path-compatibility",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/python-module-M2-2-full_radius_training_compatibility.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/artifact_independent",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/evaluation_reset_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/evaluation_target_radius_range",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/training_reset_and_step_api",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/training_target_radius_range",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b2b9de74cd27b845dad2a26e43b0a4c83bbba8fb002f2c3a01d2a1b93c6610c0"
+            },
+            "module": "robot_learning.lab.verify_full_radius_training"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "75eb423d8d7992ef4ec08b108189b924cb7735b4",
+            "fingerprint": "551a6d285705d94533d45f939b30fea3316657e47543a30cfac125c7f4501af4",
+            "manifest": [
+              {
+                "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+                "path": "robot_learning/lab/verify_full_radius_training.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e243bb2909a8db1f15f84993d10b7b764975bb20",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f4c43dc6e123de9723e54a334a06f6bf71a52960bcf9711ea8810392cb932c74",
+              "path": "robot_learning/lab/verify_full_radius_training.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/verify_full_radius_training.py"
+          ],
+          "scientific_commit": "2b1e684efdeee6a9d3e4764f766b2052a8bb6667",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "082b5c82a037cf40071415274a1058848862cca9c30ec2694a8a15bcf01c4337",
+              "path": "robot_learning/training/environment.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/training/environment.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Verify the changed training production path before full-radius PPO training.",
+        "measurements": [
+          {
+            "args": [
+              "--mode",
+              "full",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_check.json",
+            "instrument": "python_module",
+            "label": "full-radius-training-range-check",
+            "module": "robot_learning.lab.verify_full_radius_training"
+          },
+          {
+            "args": [
+              "--mode",
+              "compatibility",
+              "--artifact",
+              "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json"
+            ],
+            "artifact": "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/full_radius_training_compatibility.json",
+            "instrument": "python_module",
+            "label": "full-radius-production-path-compatibility",
+            "module": "robot_learning.lab.verify_full_radius_training"
+          }
+        ],
+        "rationale": "The next scientific action depends on the training environment actually sampling the official 6\u201320 cm radius range while evaluation remains unchanged. These artifact-independent checks validate that exact source behavior and the Gym reset/step path; they do not provide performance evidence or resolve the reach-versus-stabilization distinction."
+      }
+    },
+    "request_fingerprint": "1ea6ba513201cb499aecb0dac15ac99d2e56c629711c605d8b381ad68e8d746a",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E1 from T1 and M1. There is no working or retained candidate. E3 is the active inquiry boundary; no new candidate exists yet. The terminal T1 checkpoint has no privileged status among the 24 archived checkpoints, and unmeasured checkpoints are not treated as development evidence.",
     "completed_operations": [
@@ -1353,6 +2011,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "327152f7-947b-433f-823a-9e3b61e49a4c",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does training the existing PPO implementation with target-radius exposure expanded from 14\u201320 cm to the full official 6\u201320 cm range produce a materially higher uninterrupted held-out success rate toward the 98% goal, while failure diagnostics distinguish residual branch/geometry reach failures from post-entry stabilization failures? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "2b1e684efdeee6a9d3e4764f766b2052a8bb6667"
+  },
   "terminal_state": null
 }
