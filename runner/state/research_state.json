@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed candidate measurements and diagnostics provide a bounded conclusion about the comparison: for both exposure variants, inspect official-geometry success, maximum consecutive hold, interruption structure, first reach, minimum/final distance, action saturation or velocity where available, and radius/bearing/IK-branch strata. A positive, negative, limited, or inconclusive result is sufficient if it states whether full-radius exposure is supported as the next route, whether stabilization or another mechanism should lead, or whether the comparison cannot discriminate. Keep the 200-episode official assessment distinct from development evidence.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step, 2-second sampled hold. No learned candidate has yet been measured, so the campaign cannot assess goal progress or identify a best-known policy. Comparing an outer-only baseline exposure with official full-radius exposure under the official geometry can determine whether the omitted 0.06-0.14 m regime is a dominant failure source or whether failures persist across radii and instead implicate braking and sampled stabilization.",
+    "handoff_conclusion": "Observed evidence: M1 compatibility verification passed for the new candidate-free MuJoCo characterization path, and M4 independently passed the repaired behavioral checks with six deterministic resets, 36 synchronized transitions, both IK branch summaries, and ten internal substeps. These are implementation-validity evidence, not policy-performance evidence. M3 completed after an initial serialization repair but its artifact is not used scientifically because inspection found NumPy view aliasing: distinct trajectory rows were not preserved. M5 is the repaired characterization and is the first interpretable physical evidence. It compiled the official XML at 0.002 s with frame_skip 10 (0.020 s policy interval), zero gravity, two joints and two actuators. Compiled bodies have finite masses and inertias; the actuator summaries show control limits [-1,1], gain 1, gear 5, no force limit, and controlled saturated input produced +/-5 actuator torque. From zero state, five 20 ms saturated shoulder updates reached qvel about 9.81 rad/s; changing to the opposing saturated command changed qvel from about 9.81 to -1.05 rad/s in one further control interval and produced about -400 rad/s^2 acceleration. This supports a consequential braking/timing and stabilization mechanism, not an initial claim of insufficient authority. The repaired trace also confirms the compiled zero-pose end effector is [0.22, 0, 0.02]. A deterministic substep trace changed distance by about 6.70 mm within one 20 ms action, while the official endpoint samples only the final distance; all ten substeps in that controlled trace were outside the 1 cm band. This demonstrates that endpoint statistics do not establish continuous-time stability, but it does not establish policy failure. On a 29-by-360 official radius/bearing grid, each named open and folded IK branch had 9860/10440 (94.44%) samples within compiled joint limits; among legal samples the Jacobian condition number ranged up to about 5.29 and the minimum singular value was at least about 0.0415. This makes branch and limit effects consequential, but the artifact does not compute the union of feasible branches, so it cannot establish that 5.56% of targets are infeasible. Competing explanations remain: (1) the baseline exposure omits radii below 0.14 m and may cause an inner-radius coverage/branch failure; (2) high actuation authority and sampled braking transients may cause generic hold interruptions; (3) exact branch-union feasibility or bearing concentration may impose a geometry-related ceiling; and (4) observation/runtime realization may still matter. Current evidence favors first measuring a complete learned candidate under official geometry with hold-interruption and radius/branch diagnostics, not altering physics or assuming reach-only reward is adequate. The evidence does not establish a training-method effect or any official success rate.",
+    "handoff_question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+    "rationale": "Opening is preferable to terminal assessment because no candidate exists and the goal gap is unmeasured; an official assessment would neither select a model nor provide a meaningful policy result. M1 and M4 establish that the characterization path is compatible and behaviorally repaired, while M5 supplies the first interpretable physical evidence: finite compiled dynamics, +/-5 saturated actuator torque, and strong opposing-command braking response. Those results make insufficient initial authority a weaker first explanation, but they do not measure a learned policy, establish generic hold interruptions, compute branch-union feasibility, or establish a training-method effect. The bounded comparison is therefore the lowest-cost evidence capable of separating the consequential coverage and stabilization routes. Any unexplained difference will remain an artifact-level comparison rather than a causal claim about exposure alone.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "19d463316654368e418a6d149ad8a3a577a5e141",
     "id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 5,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1300,9 +1311,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T06:50:38Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed candidate measurements and diagnostics provide a bounded conclusion about the comparison: for both exposure variants, inspect official-geometry success, maximum consecutive hold, interruption structure, first reach, minimum/final distance, action saturation or velocity where available, and radius/bearing/IK-branch strata. A positive, negative, limited, or inconclusive result is sufficient if it states whether full-radius exposure is supported as the next route, whether stabilization or another mechanism should lead, or whether the comparison cannot discriminate. Keep the 200-episode official assessment distinct from development evidence.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step, 2-second sampled hold. No learned candidate has yet been measured, so the campaign cannot assess goal progress or identify a best-known policy. Comparing an outer-only baseline exposure with official full-radius exposure under the official geometry can determine whether the omitted 0.06-0.14 m regime is a dominant failure source or whether failures persist across radii and instead implicate braking and sampled stabilization.",
+        "question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+        "rationale": "Opening is preferable to terminal assessment because no candidate exists and the goal gap is unmeasured; an official assessment would neither select a model nor provide a meaningful policy result. M1 and M4 establish that the characterization path is compatible and behaviorally repaired, while M5 supplies the first interpretable physical evidence: finite compiled dynamics, +/-5 saturated actuator torque, and strong opposing-command braking response. Those results make insufficient initial authority a weaker first explanation, but they do not measure a learned policy, establish generic hold interruptions, compute branch-union feasibility, or establish a training-method effect. The bounded comparison is therefore the lowest-cost evidence capable of separating the consequential coverage and stabilization routes. Any unexplained difference will remain an artifact-level comparison rather than a causal claim about exposure alone."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed candidate measurements and diagnostics provide a bounded conclusion about the comparison: for both exposure variants, inspect official-geometry success, maximum consecutive hold, interruption structure, first reach, minimum/final distance, action saturation or velocity where available, and radius/bearing/IK-branch strata. A positive, negative, limited, or inconclusive result is sufficient if it states whether full-radius exposure is supported as the next route, whether stabilization or another mechanism should lead, or whether the comparison cannot discriminate. Keep the 200-episode official assessment distinct from development evidence.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step, 2-second sampled hold. No learned candidate has yet been measured, so the campaign cannot assess goal progress or identify a best-known policy. Comparing an outer-only baseline exposure with official full-radius exposure under the official geometry can determine whether the omitted 0.06-0.14 m regime is a dominant failure source or whether failures persist across radii and instead implicate braking and sampled stabilization.",
+          "handoff_conclusion": "Observed evidence: M1 compatibility verification passed for the new candidate-free MuJoCo characterization path, and M4 independently passed the repaired behavioral checks with six deterministic resets, 36 synchronized transitions, both IK branch summaries, and ten internal substeps. These are implementation-validity evidence, not policy-performance evidence. M3 completed after an initial serialization repair but its artifact is not used scientifically because inspection found NumPy view aliasing: distinct trajectory rows were not preserved. M5 is the repaired characterization and is the first interpretable physical evidence. It compiled the official XML at 0.002 s with frame_skip 10 (0.020 s policy interval), zero gravity, two joints and two actuators. Compiled bodies have finite masses and inertias; the actuator summaries show control limits [-1,1], gain 1, gear 5, no force limit, and controlled saturated input produced +/-5 actuator torque. From zero state, five 20 ms saturated shoulder updates reached qvel about 9.81 rad/s; changing to the opposing saturated command changed qvel from about 9.81 to -1.05 rad/s in one further control interval and produced about -400 rad/s^2 acceleration. This supports a consequential braking/timing and stabilization mechanism, not an initial claim of insufficient authority. The repaired trace also confirms the compiled zero-pose end effector is [0.22, 0, 0.02]. A deterministic substep trace changed distance by about 6.70 mm within one 20 ms action, while the official endpoint samples only the final distance; all ten substeps in that controlled trace were outside the 1 cm band. This demonstrates that endpoint statistics do not establish continuous-time stability, but it does not establish policy failure. On a 29-by-360 official radius/bearing grid, each named open and folded IK branch had 9860/10440 (94.44%) samples within compiled joint limits; among legal samples the Jacobian condition number ranged up to about 5.29 and the minimum singular value was at least about 0.0415. This makes branch and limit effects consequential, but the artifact does not compute the union of feasible branches, so it cannot establish that 5.56% of targets are infeasible. Competing explanations remain: (1) the baseline exposure omits radii below 0.14 m and may cause an inner-radius coverage/branch failure; (2) high actuation authority and sampled braking transients may cause generic hold interruptions; (3) exact branch-union feasibility or bearing concentration may impose a geometry-related ceiling; and (4) observation/runtime realization may still matter. Current evidence favors first measuring a complete learned candidate under official geometry with hold-interruption and radius/branch diagnostics, not altering physics or assuming reach-only reward is adequate. The evidence does not establish a training-method effect or any official success rate.",
+          "handoff_question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+          "rationale": "Opening is preferable to terminal assessment because no candidate exists and the goal gap is unmeasured; an official assessment would neither select a model nor provide a meaningful policy result. M1 and M4 establish that the characterization path is compatible and behaviorally repaired, while M5 supplies the first interpretable physical evidence: finite compiled dynamics, +/-5 saturated actuator torque, and strong opposing-command braking response. Those results make insufficient initial authority a weaker first explanation, but they do not measure a learned policy, establish generic hold interruptions, compute branch-union feasibility, or establish a training-method effect. The bounded comparison is therefore the lowest-cost evidence capable of separating the consequential coverage and stabilization routes. Any unexplained difference will remain an artifact-level comparison rather than a causal claim about exposure alone.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed candidate measurements and diagnostics provide a bounded conclusion about the comparison: for both exposure variants, inspect official-geometry success, maximum consecutive hold, interruption structure, first reach, minimum/final distance, action saturation or velocity where available, and radius/bearing/IK-branch strata. A positive, negative, limited, or inconclusive result is sufficient if it states whether full-radius exposure is supported as the next route, whether stabilization or another mechanism should lead, or whether the comparison cannot discriminate. Keep the 200-episode official assessment distinct from development evidence.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step, 2-second sampled hold. No learned candidate has yet been measured, so the campaign cannot assess goal progress or identify a best-known policy. Comparing an outer-only baseline exposure with official full-radius exposure under the official geometry can determine whether the omitted 0.06-0.14 m regime is a dominant failure source or whether failures persist across radii and instead implicate braking and sampled stabilization.",
+        "question": "At goal review, should the campaign open a bounded inquiry comparing an outer-only baseline exposure with official full-radius exposure, using complete uninterrupted-hold and radius/branch diagnostics to determine whether the 98% route is primarily coverage or stabilization?",
+        "rationale": "Opening is preferable to terminal assessment because no candidate exists and the goal gap is unmeasured; an official assessment would neither select a model nor provide a meaningful policy result. M1 and M4 establish that the characterization path is compatible and behaviorally repaired, while M5 supplies the first interpretable physical evidence: finite compiled dynamics, +/-5 saturated actuator torque, and strong opposing-command braking response. Those results make insufficient initial authority a weaker first explanation, but they do not measure a learned policy, establish generic hold interruptions, compute branch-union feasibility, or establish a training-method effect. The bounded comparison is therefore the lowest-cost evidence capable of separating the consequential coverage and stabilization routes. Any unexplained difference will remain an artifact-level comparison rather than a causal claim about exposure alone."
+      }
+    },
+    "request_fingerprint": "e4c90c56d0afd393c87661785010d56b6b0b7d85648d132d71cb5856340455e3",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles are empty. M3's completed artifact is retained only as execution history with its aliasing limitation and is not used as scientific evidence; M5 is the current physical characterization, not a learned candidate.",
     "completed_operations": [
@@ -1333,6 +1407,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "35e2de08-b008-49dd-bff2-6381cf2c369c",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "5fc6807113be6817327473fa67363945dd5c003d"
+  },
   "terminal_state": null
 }
