@@ -16,3 +16,4 @@
 | M8 | measurement | I1 | completed |
 | M9 | measurement | I1 | completed |
 | T2 | training | I1 | completed |
+| M10 | measurement | I1 | completed |
