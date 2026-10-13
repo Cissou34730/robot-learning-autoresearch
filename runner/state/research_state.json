@@ -7530,38 +7530,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Positive bounded candidate result with a mechanism-based redirect preserved for goal review.",
-        "reason": "I2 closure condition is met. The hold-window diagnostics were validated by M8, and the fresh M10 matched panel measured both T3 checkpoints at 158/160 (98.75%) versus T2 at 153/160 (95.625%), with five T3-only wins and no T2-only wins for each checkpoint. M11 shows that T3 preserves T2's inner-radius strata exactly on this panel ([6,10): 52/53 and [10,14): 34/34), improves [14,17) from 39/41 to 41/41, and improves [17,20] from 28/32 to 31/32. T3 has one no-entry and one post-entry failure, and one hold-interruption episode, versus T2's seven failures and nine interruption episodes. The post-entry hold-window signature supports stabilization/action-authority as a consequential mechanism, while the remaining no-entry case and prior T2 low-margin alternate-branch cases keep branch/limit geometry unresolved. The result is an artifact-level comparison of a transferred full-radius recipe with hold-specific reward terms; it does not establish reward terms as causal, generalize beyond the tested seed/panel, or certify the protected 200-episode official assessment. T3:checkpoint-90112 is assigned best-known by E10."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Positive bounded candidate result with a mechanism-based redirect preserved for goal review.",
-        "reason": "I2 closure condition is met. The hold-window diagnostics were validated by M8, and the fresh M10 matched panel measured both T3 checkpoints at 158/160 (98.75%) versus T2 at 153/160 (95.625%), with five T3-only wins and no T2-only wins for each checkpoint. M11 shows that T3 preserves T2's inner-radius strata exactly on this panel ([6,10): 52/53 and [10,14): 34/34), improves [14,17) from 39/41 to 41/41, and improves [17,20] from 28/32 to 31/32. T3 has one no-entry and one post-entry failure, and one hold-interruption episode, versus T2's seven failures and nine interruption episodes. The post-entry hold-window signature supports stabilization/action-authority as a consequential mechanism, while the remaining no-entry case and prior T2 low-margin alternate-branch cases keep branch/limit geometry unresolved. The result is an artifact-level comparison of a transferred full-radius recipe with hold-specific reward terms; it does not establish reward terms as causal, generalize beyond the tested seed/panel, or certify the protected 200-episode official assessment. T3:checkpoint-90112 is assigned best-known by E10.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Positive bounded candidate result with a mechanism-based redirect preserved for goal review.",
-        "reason": "I2 closure condition is met. The hold-window diagnostics were validated by M8, and the fresh M10 matched panel measured both T3 checkpoints at 158/160 (98.75%) versus T2 at 153/160 (95.625%), with five T3-only wins and no T2-only wins for each checkpoint. M11 shows that T3 preserves T2's inner-radius strata exactly on this panel ([6,10): 52/53 and [10,14): 34/34), improves [14,17) from 39/41 to 41/41, and improves [17,20] from 28/32 to 31/32. T3 has one no-entry and one post-entry failure, and one hold-interruption episode, versus T2's seven failures and nine interruption episodes. The post-entry hold-window signature supports stabilization/action-authority as a consequential mechanism, while the remaining no-entry case and prior T2 low-margin alternate-branch cases keep branch/limit geometry unresolved. The result is an artifact-level comparison of a transferred full-radius recipe with hold-specific reward terms; it does not establish reward terms as causal, generalize beyond the tested seed/panel, or certify the protected 200-episode official assessment. T3:checkpoint-90112 is assigned best-known by E10."
-      }
-    },
-    "request_fingerprint": "1fdf0f1123bb317d80d5451fc66d8c2b2a87df2e9fdca04ba12a59886f681e18",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T2:checkpoint-120832 by E7, supported by M4 and M6: 154/160 = 96.25% versus T1's 115/160 = 71.875% on the matched panel. T1:checkpoint-115712 remains retained under its existing label from the prior inquiry, but is no longer best-known. There is no working candidate. T1 and T2 each have 24 archived checkpoints; only T1:checkpoint-115712 and T2:checkpoint-120832 have development measurements. Saved-component equality and training proxies do not establish complete-artifact equivalence or development performance.",
     "completed_operations": [
