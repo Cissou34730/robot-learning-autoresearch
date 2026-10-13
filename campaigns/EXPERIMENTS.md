@@ -31,3 +31,4 @@
 | M17 | measurement | I2 | completed |
 | T3 | training | I2 | completed |
 | M18 | measurement | I2 | completed |
+| E9 | model_role | I2 | assigned |
