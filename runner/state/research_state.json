@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train and evaluate one complete candidate route against frozen T3 on an independent same-seed official-geometry development panel, retaining complete success, target radius and bearing, IK branch legality/classification, first reach, maximum held steps, hold interruptions, velocity, and saturation diagnostics. Close positive if the candidate reaches at least 157/160 successes (the 98% development equivalent) with a corresponding reduction in folded-only failures; close limited if it improves complete success or the folded-only failure decomposition but remains below 157/160; close negative if it does not improve T3 or shifts failures without reducing the residual gap. In every case carry the result to goal review and keep the protected assessment separate.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode panel. T3 is best-known at 153/160, leaving seven failures. M18 shows all seven T3 failures are folded-only, with five never reaching tolerance and two reaching only 1-3 held steps, concentrated at negative target bearings across the radius range. A bounded route that specifically tests this residual failure structure could increase complete success toward the 98% objective before the terminal assessment; assessment of T3 now would spend the protected panel without testing an actionable, observed deficit.",
+    "handoff_conclusion": "Established observations: M16 and M17 verified the implemented route's production compatibility and controlled behavior. The route adds a near-target joint-velocity penalty with smooth tapering over a 0.5 cm band, receives post-step joint velocities, and leaves target sampling, 20 ms frame skip, 1 cm tolerance, sampled 100-step hold counter and evaluator success logic unchanged. T3 was a transfer from T2 with changed scientific source code, no exact saved-component matches, and a learning-proxy peak of 0.93 at 105472 and 110592 steps; the terminal proxy was lower at 0.90, so 110592 was selected for measurement. M18 is the independent same-seed candidate comparison: T3 won 3 discordant episodes and T2 won none, improving 150/160 to 153/160. The failure decomposition changed from T2's 7 never-reached and 3 reached-but-incomplete episodes to T3's 5 never-reached and 2 reached-but-incomplete episodes, with hold interruptions also reduced. Interpretation: this tested implementation supplies limited positive candidate-selection evidence for velocity-aware near-target reward shaping on a full-radius T2 transfer, not proof that the shaping term alone caused the gain; exposure, initialization, changed reward and learning trajectory are jointly part of the T3 artifact. The remaining deficit is consequential, and endpoint diagnostics still do not measure excursions during the ten internal MuJoCo steps. The route therefore improves the best-known artifact without making official assessment the better next decision on current evidence.",
+    "handoff_question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+    "rationale": "The inherited choice between assessment and further work can now be revised using completed M18 diagnostics rather than unresolved possibilities alone. T3 improved over T2 by 3 discordant wins, but its remaining failures are structured: every failure is folded-only, five are never-reached, and two are reached-but-incomplete. This supports investigating a branch/geometry-specific route as a consequential alternative to immediate assessment, while preserving the limit that endpoint diagnostics do not establish within-frame-skip excursions or causal attribution to the prior velocity shaping. The inquiry is bounded to one candidate route and one independent development comparison; it does not treat the development panel as official evidence.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "19d463316654368e418a6d149ad8a3a577a5e141",
     "id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
@@ -2465,16 +2476,16 @@
     }
   },
   "counters": {
-    "event": 11,
-    "inquiry": 2,
+    "event": 12,
+    "inquiry": 3,
     "measurement": 18,
-    "session": 5,
+    "session": 6,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T3:checkpoint-110592",
     "retained": {},
@@ -8751,9 +8762,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T09:08:54Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train and evaluate one complete candidate route against frozen T3 on an independent same-seed official-geometry development panel, retaining complete success, target radius and bearing, IK branch legality/classification, first reach, maximum held steps, hold interruptions, velocity, and saturation diagnostics. Close positive if the candidate reaches at least 157/160 successes (the 98% development equivalent) with a corresponding reduction in folded-only failures; close limited if it improves complete success or the folded-only failure decomposition but remains below 157/160; close negative if it does not improve T3 or shifts failures without reducing the residual gap. In every case carry the result to goal review and keep the protected assessment separate.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode panel. T3 is best-known at 153/160, leaving seven failures. M18 shows all seven T3 failures are folded-only, with five never reaching tolerance and two reaching only 1-3 held steps, concentrated at negative target bearings across the radius range. A bounded route that specifically tests this residual failure structure could increase complete success toward the 98% objective before the terminal assessment; assessment of T3 now would spend the protected panel without testing an actionable, observed deficit.",
+        "question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+        "rationale": "The inherited choice between assessment and further work can now be revised using completed M18 diagnostics rather than unresolved possibilities alone. T3 improved over T2 by 3 discordant wins, but its remaining failures are structured: every failure is folded-only, five are never-reached, and two are reached-but-incomplete. This supports investigating a branch/geometry-specific route as a consequential alternative to immediate assessment, while preserving the limit that endpoint diagnostics do not establish within-frame-skip excursions or causal attribution to the prior velocity shaping. The inquiry is bounded to one candidate route and one independent development comparison; it does not treat the development panel as official evidence."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train and evaluate one complete candidate route against frozen T3 on an independent same-seed official-geometry development panel, retaining complete success, target radius and bearing, IK branch legality/classification, first reach, maximum held steps, hold interruptions, velocity, and saturation diagnostics. Close positive if the candidate reaches at least 157/160 successes (the 98% development equivalent) with a corresponding reduction in folded-only failures; close limited if it improves complete success or the folded-only failure decomposition but remains below 157/160; close negative if it does not improve T3 or shifts failures without reducing the residual gap. In every case carry the result to goal review and keep the protected assessment separate.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode panel. T3 is best-known at 153/160, leaving seven failures. M18 shows all seven T3 failures are folded-only, with five never reaching tolerance and two reaching only 1-3 held steps, concentrated at negative target bearings across the radius range. A bounded route that specifically tests this residual failure structure could increase complete success toward the 98% objective before the terminal assessment; assessment of T3 now would spend the protected panel without testing an actionable, observed deficit.",
+          "handoff_conclusion": "Established observations: M16 and M17 verified the implemented route's production compatibility and controlled behavior. The route adds a near-target joint-velocity penalty with smooth tapering over a 0.5 cm band, receives post-step joint velocities, and leaves target sampling, 20 ms frame skip, 1 cm tolerance, sampled 100-step hold counter and evaluator success logic unchanged. T3 was a transfer from T2 with changed scientific source code, no exact saved-component matches, and a learning-proxy peak of 0.93 at 105472 and 110592 steps; the terminal proxy was lower at 0.90, so 110592 was selected for measurement. M18 is the independent same-seed candidate comparison: T3 won 3 discordant episodes and T2 won none, improving 150/160 to 153/160. The failure decomposition changed from T2's 7 never-reached and 3 reached-but-incomplete episodes to T3's 5 never-reached and 2 reached-but-incomplete episodes, with hold interruptions also reduced. Interpretation: this tested implementation supplies limited positive candidate-selection evidence for velocity-aware near-target reward shaping on a full-radius T2 transfer, not proof that the shaping term alone caused the gain; exposure, initialization, changed reward and learning trajectory are jointly part of the T3 artifact. The remaining deficit is consequential, and endpoint diagnostics still do not measure excursions during the ten internal MuJoCo steps. The route therefore improves the best-known artifact without making official assessment the better next decision on current evidence.",
+          "handoff_question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+          "rationale": "The inherited choice between assessment and further work can now be revised using completed M18 diagnostics rather than unresolved possibilities alone. T3 improved over T2 by 3 discordant wins, but its remaining failures are structured: every failure is folded-only, five are never-reached, and two are reached-but-incomplete. This supports investigating a branch/geometry-specific route as a consequential alternative to immediate assessment, while preserving the limit that endpoint diagnostics do not establish within-frame-skip excursions or causal attribution to the prior velocity shaping. The inquiry is bounded to one candidate route and one independent development comparison; it does not treat the development panel as official evidence.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train and evaluate one complete candidate route against frozen T3 on an independent same-seed official-geometry development panel, retaining complete success, target radius and bearing, IK branch legality/classification, first reach, maximum held steps, hold interruptions, velocity, and saturation diagnostics. Close positive if the candidate reaches at least 157/160 successes (the 98% development equivalent) with a corresponding reduction in folded-only failures; close limited if it improves complete success or the folded-only failure decomposition but remains below 157/160; close negative if it does not improve T3 or shifts failures without reducing the residual gap. In every case carry the result to goal review and keep the protected assessment separate.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode panel. T3 is best-known at 153/160, leaving seven failures. M18 shows all seven T3 failures are folded-only, with five never reaching tolerance and two reaching only 1-3 held steps, concentrated at negative target bearings across the radius range. A bounded route that specifically tests this residual failure structure could increase complete success toward the 98% objective before the terminal assessment; assessment of T3 now would spend the protected panel without testing an actionable, observed deficit.",
+        "question": "Can one bounded branch- and geometry-focused route, chosen to address T3's folded-only residual failures, produce a candidate whose complete uninterrupted success improves enough over T3 on an independent official-geometry development panel to justify the protected assessment?",
+        "rationale": "The inherited choice between assessment and further work can now be revised using completed M18 diagnostics rather than unresolved possibilities alone. T3 improved over T2 by 3 discordant wins, but its remaining failures are structured: every failure is folded-only, five are never-reached, and two are reached-but-incomplete. This supports investigating a branch/geometry-specific route as a consequential alternative to immediate assessment, while preserving the limit that endpoint diagnostics do not establish within-frame-skip excursions or causal attribution to the prior velocity shaping. The inquiry is bounded to one candidate route and one independent development comparison; it does not treat the development panel as official evidence."
+      }
+    },
+    "request_fingerprint": "40ae6e8532716d018679caa6027ae279a4c639f6ac8214357ea8860a7d82f89f",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T3:checkpoint-110592, assigned by E9 using T3 and M18 because it is the strongest measured development artifact. T2:checkpoint-120832 remains the reference candidate. No working or retained role is assigned. T3 is not certified against the human goal; its 153/160 development result is below the 98% objective.",
     "completed_operations": [
@@ -8789,6 +8863,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b1e629d6-eec5-4d0e-9dc6-11262dcbebf2",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E12"
+    ],
+    "scientific_parent_commit": "7b8c3c83f3f2cb5940fd0ac297a98604241c769b"
+  },
   "terminal_state": null
 }
