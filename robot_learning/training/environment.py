@@ -1,5 +1,6 @@
-"""Training-only environment construction for the baseline recipe.
+"""Training-only environment construction for the full-radius comparison recipe.
 
+The next I1 comparison trains on the official full-radius target distribution.
 Only the target distribution the policy trains on lives here. Task mechanics,
 success semantics and evaluation behavior stay in
 `robot_learning/scenario/environment.py`. Changing this module changes what the
@@ -11,7 +12,7 @@ import gymnasium as gym
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 
 
 def make_training_env() -> gym.Env:
