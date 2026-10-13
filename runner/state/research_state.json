@@ -8700,52 +8700,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T3:checkpoint-110592",
-        "evidence": [
-          "T3",
-          "M18"
-        ],
-        "reason": "M18 is an independent same-seed official-geometry development comparison in which the stabilization-route candidate achieved 153/160 (95.625%) versus T2 at 150/160 (93.75%), with three candidate-only wins and no reference-only wins. Its diagnostics reduced never-reached failures from 7 to 5 and reached-but-incomplete failures from 3 to 2. This makes T3 the strongest evidence-backed development candidate, while remaining below the 98% objective and not assessment-ready."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/t3-c720dc389-54488f830c167d85074571c7eae2bfaa2c2349919442997a7645e9df49bd46aa",
-        "fingerprint": "54488f830c167d85074571c7eae2bfaa2c2349919442997a7645e9df49bd46aa",
-        "source": "campaigns/checkpoints/candidates/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/t3/checkpoint-110592"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-110592",
-        "evidence": [
-          "T3",
-          "M18"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-110592",
-        "evidence": [
-          "T3",
-          "M18"
-        ],
-        "reason": "M18 is an independent same-seed official-geometry development comparison in which the stabilization-route candidate achieved 153/160 (95.625%) versus T2 at 150/160 (93.75%), with three candidate-only wins and no reference-only wins. Its diagnostics reduced never-reached failures from 7 to 5 and reached-but-incomplete failures from 3 to 2. This makes T3 the strongest evidence-backed development candidate, while remaining below the 98% objective and not assessment-ready."
-      }
-    },
-    "request_fingerprint": "7e598844345405c07fa65b00f51257e139f5e3a351e6efc0322b00ca84f69957",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
     "completed_operations": [
