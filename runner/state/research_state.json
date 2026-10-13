@@ -8712,38 +8712,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
-        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
-        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited positive candidate improvement, insufficient for assessment readiness.",
-        "reason": "I2 closure condition is met: the complete T3 stabilization-route artifact was produced, and M18 independently compared T3:checkpoint-110592 with T2:checkpoint-120832 on the identical 160-episode official-geometry panel with complete-hold and failure diagnostics. T3 improved complete success from 150/160 (93.75%) to 153/160 (95.625%), won all three discordant episodes, reduced never-reached failures from 7 to 5, reduced reached-but-incomplete failures from 3 to 2, and reduced hold interruptions. This is a candidate-level improvement and T3 is now best-known (E9), but 153/160 remains below the 98% target-equivalent development threshold and leaves seven failures, so the evidence does not make the protected 200-episode assessment the better next decision. The route's causal mechanism remains unresolved because the change was a reward-shaping transfer and no internal-substep traces were measured; preserve that limit rather than claim stabilization causality. Return to goal review with T3 as best-known and the protected assessment unspent."
-      }
-    },
-    "request_fingerprint": "6ab284658d39c999554e121643fb3585622a7994c067c389458ca197c80d2587",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
     "completed_operations": [
