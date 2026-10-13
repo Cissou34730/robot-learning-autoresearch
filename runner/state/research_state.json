@@ -11942,41 +11942,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T3:checkpoint-110592",
-        "reason": "Request the protected official assessment for the explicit best-known candidate T3:checkpoint-110592. The human goal requires at least 196 complete uninterrupted 100-step holds in the fixed 200-episode official panel; this candidate has not yet been assessed on that protected panel. It is the strongest evidence-backed artifact, not a claim of goal attainment: T3:checkpoint-110592 was selected from T3's learning trajectory because its recorded training proxy was 0.93 versus 0.90 at the terminal checkpoint, and M18 measured 153/160 (95.625%) on the official-geometry development panel, improving over T2 by 3 paired wins to 0. T4 tested a documented branch-and-geometry-focused route from T3, but M21 measured the same 153/160 with zero discordant episodes and zero paired wins; this is a negative result for that complete route implementation, not for every possible branch-aware method. I4 is closed with decision-sufficient but non-unique mechanism evidence: M26's production-path traces cover all seven recurring folded_only failures and matched successes, show finite configuration-dependent dynamics and braking authority, and distinguish two reach-then-sampled-endpoint interruptions from five never-reached or missed-tolerance cases, but do not identify one repair capable of closing the development gap. The inherited proposal to ask whether to request assessment is therefore corrected: it is a settled campaign-level choice, not an unresolved inquiry question. Further bounded work would require a new, deliberately specified intervention and another full development comparison, with uncertain expected contribution and one maintainer allocation cost; repeating the tested exposure route is not supported. The protected assessment is preferable because it directly measures the immutable human objective, preserves the possibility that development-panel residuals overstate the official result, and ends the campaign with the required pass/fail outcome. Development evidence remains separate from official certification, and the residual failure mechanisms and uncertainty are explicitly preserved rather than treated as resolved.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "35147aee-2e0b-4853-8545-3b2c65e3b678",
-        "campaign_id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
-        "campaign_usage": "53m12s | 100.39 AIU | prompt 19.2m (92% cached) | output 231.7k",
-        "session_id": "S10",
-        "session_kind": "goal_review",
-        "session_usage": "usage unavailable"
-      },
-      "result": {
-        "model": "T3:checkpoint-110592",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E20",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "Request the protected official assessment for the explicit best-known candidate T3:checkpoint-110592. The human goal requires at least 196 complete uninterrupted 100-step holds in the fixed 200-episode official panel; this candidate has not yet been assessed on that protected panel. It is the strongest evidence-backed artifact, not a claim of goal attainment: T3:checkpoint-110592 was selected from T3's learning trajectory because its recorded training proxy was 0.93 versus 0.90 at the terminal checkpoint, and M18 measured 153/160 (95.625%) on the official-geometry development panel, improving over T2 by 3 paired wins to 0. T4 tested a documented branch-and-geometry-focused route from T3, but M21 measured the same 153/160 with zero discordant episodes and zero paired wins; this is a negative result for that complete route implementation, not for every possible branch-aware method. I4 is closed with decision-sufficient but non-unique mechanism evidence: M26's production-path traces cover all seven recurring folded_only failures and matched successes, show finite configuration-dependent dynamics and braking authority, and distinguish two reach-then-sampled-endpoint interruptions from five never-reached or missed-tolerance cases, but do not identify one repair capable of closing the development gap. The inherited proposal to ask whether to request assessment is therefore corrected: it is a settled campaign-level choice, not an unresolved inquiry question. Further bounded work would require a new, deliberately specified intervention and another full development comparison, with uncertain expected contribution and one maintainer allocation cost; repeating the tested exposure route is not supported. The protected assessment is preferable because it directly measures the immutable human objective, preserves the possibility that development-panel residuals overstate the official result, and ends the campaign with the required pass/fail outcome. Development evidence remains separate from official certification, and the residual failure mechanisms and uncertainty are explicitly preserved rather than treated as resolved."
-      }
-    },
-    "request_fingerprint": "08608b2d7963b75098d1a1c71678b2de7ab88bf3c4f16320934c6f07a22035fb",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T3:checkpoint-110592, supported by M18, M21, and M26. T4:checkpoint-5120 is not promoted because M21 found zero paired wins and no discordant episodes against T3. No working or retained candidate is assigned. Best-known status is not a claim that the 98% human goal has been met or that official assessment will pass.",
     "completed_operations": [
