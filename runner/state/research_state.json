@@ -7518,52 +7518,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T3:checkpoint-90112",
-        "evidence": [
-          "M10",
-          "M11"
-        ],
-        "reason": "T3:checkpoint-90112 is the strongest measured complete artifact on the fresh matched M10 panel: 158/160 (98.75%) versus T2's 153/160 (95.625%), with five candidate-only wins and no T2-only wins. M11 shows exact preservation of T2's measured inner strata ([6,10): 52/53 and [10,14): 34/34) while recovering the outer strata ([14,17): 41/41 versus 39/41; [17,20]: 31/32 versus 28/32). Its failures are 1 no-entry and 1 post-entry, with one hold-interruption episode versus T2's nine. T3:checkpoint-90112 is selected over the terminal T3 checkpoint because both have identical measured M10/M11 results, while 90112 is the proxy-nominated nonterminal artifact and terminal status has no privileged scientific status. This role certifies candidate selection only; it does not certify the official goal or causality of the reward intervention."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t3-cfad5f12a-e7043a7ed87b4e4bb05a92c3df900652be315585b462751585dd2740ee15d8c1",
-        "fingerprint": "e7043a7ed87b4e4bb05a92c3df900652be315585b462751585dd2740ee15d8c1",
-        "source": "campaigns/checkpoints/candidates/dc48cc2f-7672-4843-9be3-94851fc35aed/t3/checkpoint-90112"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-90112",
-        "evidence": [
-          "M10",
-          "M11"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-90112",
-        "evidence": [
-          "M10",
-          "M11"
-        ],
-        "reason": "T3:checkpoint-90112 is the strongest measured complete artifact on the fresh matched M10 panel: 158/160 (98.75%) versus T2's 153/160 (95.625%), with five candidate-only wins and no T2-only wins. M11 shows exact preservation of T2's measured inner strata ([6,10): 52/53 and [10,14): 34/34) while recovering the outer strata ([14,17): 41/41 versus 39/41; [17,20]: 31/32 versus 28/32). Its failures are 1 no-entry and 1 post-entry, with one hold-interruption episode versus T2's nine. T3:checkpoint-90112 is selected over the terminal T3 checkpoint because both have identical measured M10/M11 results, while 90112 is the proxy-nominated nonterminal artifact and terminal status has no privileged scientific status. This role certifies candidate selection only; it does not certify the official goal or causality of the reward intervention."
-      }
-    },
-    "request_fingerprint": "8de7f78a0f4f324793e8926e06ea47878d11531dadde8a6991e64043a123ff1e",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T2:checkpoint-120832 by E7, supported by M4 and M6: 154/160 = 96.25% versus T1's 115/160 = 71.875% on the matched panel. T1:checkpoint-115712 remains retained under its existing label from the prior inquiry, but is no longer best-known. There is no working candidate. T1 and T2 each have 24 archived checkpoints; only T1:checkpoint-115712 and T2:checkpoint-120832 have development measurements. Saved-component equality and training proxies do not establish complete-artifact equivalence or development performance.",
     "completed_operations": [
