@@ -32,6 +32,8 @@ _TARGET = np.array([0.14, 0.04, 0.02], dtype=np.float64)
 
 def _as_json(value: Any) -> Any:
     """Convert MuJoCo/numpy scalars and arrays into JSON-native values."""
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
     if isinstance(value, np.ndarray):
         return value.tolist()
     if isinstance(value, (np.floating, np.integer)):

@@ -234,12 +234,19 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     result = characterize(compatibility=args.compatibility)
+    serialization_error = None
+    try:
+        json.dumps(result)
+    except (TypeError, ValueError) as exc:
+        serialization_error = f"{type(exc).__name__}: {exc}"
     if args.compatibility:
         errors, observations = _check_compatibility(result)
         mode = "compatibility"
     else:
         errors, observations = _check_normal(result)
         mode = "behavioral"
+    if serialization_error is not None:
+        errors.append(f"full characterization JSON serialization failed: {serialization_error}")
     artifact = {
         "check": "compiled_dynamics_check",
         "mode": mode,
@@ -250,6 +257,7 @@ def main(argv: list[str] | None = None) -> None:
             "compiled_geometry_and_actuator_summaries": True,
             "both_ik_branch_feasibility_summaries": not args.compatibility,
             "substep_endpoint_comparison": True,
+            "full_result_json_serializable": True,
         },
         "errors": errors,
         "checked_scope": [
