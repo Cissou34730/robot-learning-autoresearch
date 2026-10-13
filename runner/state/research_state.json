@@ -2469,7 +2469,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 2,
     "measurement": 11,
     "session": 5,
@@ -2478,7 +2478,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T3:checkpoint-90112",
     "retained": {},
@@ -7528,54 +7528,178 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T21:01:55Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known is T3:checkpoint-90112, assigned by E10 from M10/M11. T3:checkpoint-120832 is an equally performing measured checkpoint on the M10 panel but is not best-known because 90112 was the proxy-nominated nonterminal artifact and terminal status has no privileged role. T2:checkpoint-120832 remains the prior measured reference. T3 was transferred from T2 under the modified reward and is not complete-artifact equivalent to T2; no exact saved-component matches were reported. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Before I2: T1 and T2 each used one fresh 120000-step training request; I1 used its recorded measurements and T2 was assigned best-known by E7; E8 opened I2. During I2: M8 used two diagnostic checks plus one fresh 160-episode T2 panel at seed 6000; M9 used two reward-intervention checks; T3 used one 120000-step transfer request from T2 with seed 1 and completed 120832 steps; M10 used three matched 160-episode evaluations at seed 7000; M11 used two bound-input analyses; E10 assigned best-known; E11 closed I2. The M7 implementation-error attempt was superseded by completed M8 and is not scientific evidence. No protected official assessment has been requested.",
+        "current_goal_gap": "The best-known candidate is T3:checkpoint-90112 at 158/160 = 98.75% on the M10 development panel, two failures below perfect development performance and above the 98% development threshold. It has not undergone the protected 200-episode assessment, so the campaign-level goal is not certified. Remaining scientific uncertainty includes one no-entry/geometry failure, one post-entry failure, persistent hold-window action saturation in aggregate diagnostics, one fresh transfer recipe/seed, and the generalization from 160 development episodes to the fixed official panel.",
+        "current_synthesis": "M8 validated the new hold-window diagnostics and measured T2 on a fresh non-overlapping 160-episode panel at 149/160 = 93.125%, with seven no-entry and four post-entry failures. Every post-entry failure showed hold-window maximum action 1.0, joint-speed norm approximately 5.7-6.6 rad/s, and repeated hold-window intersample excursions above 1 cm, supporting post-entry stabilization/action authority as consequential. The no-entry cases included both low-margin open-branch targets with positive-margin folded alternatives and well-margin cases, so branch/limit geometry contributes but is not sufficient. M9 verified a training-only intervention that set full hold-progress forfeiture on exit and added a 0.05 hold-window squared-action cost while preserving the full official target-radius exposure and general action-cost term. T3 transferred T2 under that recipe for the full 120000-step allocation; its checkpoints had no exact saved-component matches to T2. M10 compared proxy-nominated T3:checkpoint-90112 and terminal T3:checkpoint-120832 with T2 on the same fresh 160-episode panel: both T3 checkpoints achieved 158/160 = 98.75%, while T2 achieved 153/160 = 95.625%; each had five candidate-only wins and no T2-only wins. M11 showed for both T3 checkpoints exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, improvement of [14,17) from 39/41 to 41/41, and improvement of [17,20] from 28/32 to 31/32. T3 reduced failures to one no-entry and one post-entry and reduced episodes with hold interruptions from nine for T2 to one. The candidate improvement is a property of the complete transferred artifact and reward recipe; the evidence does not establish the reward terms, full-radius exposure, PPO, or any broader method as causal. The remaining post-entry action saturation means action/dynamics authority is not resolved even though interruption frequency improved. E10 assigned T3:checkpoint-90112 as best-known because it tied the terminal T3 result while avoiding terminal-checkpoint privilege; E11 closed I2 under its positive closure condition.",
+        "decision_frontier": "The campaign must now choose at goal review between requesting the irreversible protected official assessment for T3:checkpoint-90112 and opening another bounded inquiry. The positive M10/M11 development result makes official assessment credible: T3 exceeds the 98% development threshold, preserves inner coverage, and recovers the measured 14-20 cm deficit. Assessment remains uncertain because the evidence is one fresh 160-episode panel, T3 has two residual failures, hold-window action remains saturated, and the official panel is distinct and protected. Further inquiry would target the remaining no-entry branch/limit case and the unresolved action/dynamics authority, but closure of I2 does not itself justify that continuation.",
+        "evidence_references": [
+          "M2",
+          "T2",
+          "M4",
+          "M6",
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196/200 uninterrupted 100-step holds under the official uniform 6-20 cm full-angle distribution. I2 directly advanced that goal: the best-known T3 artifact reached 158/160 = 98.75% on a fresh development panel, preserved T2's inner-radius performance, recovered both measured outer strata, and sharply reduced post-entry interruptions. This is development evidence only; the protected 200-episode official result remains unknown.",
+        "next_direction_or_closure": "I2 is closed by E11 with a positive bounded candidate result. The next direction is goal review of official assessment readiness, not an automatic new intervention. If the goal review selects assessment, it must use the frozen T3:checkpoint-90112 artifact and the protected 200-episode panel. If it selects further work, the consequential targets are remaining branch/limit-aware no-entry handling and the persistent hold-window action/dynamics authority signature; neither is claimed resolved by I2.",
+        "next_question": "At goal review, should the campaign request the protected 200-episode official assessment for T3:checkpoint-90112, or does the remaining branch/limit and hold-window action-authority uncertainty justify one further bounded inquiry before terminal commitment?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "Best-known is T2:checkpoint-120832 by E7, supported by M4 and M6: 154/160 = 96.25% versus T1's 115/160 = 71.875% on the matched panel. T1:checkpoint-115712 remains retained under its existing label from the prior inquiry, but is no longer best-known. There is no working candidate. T1 and T2 each have 24 archived checkpoints; only T1:checkpoint-115712 and T2:checkpoint-120832 have development measurements. Saved-component equality and training proxies do not establish complete-artifact equivalence or development performance.",
-    "completed_operations": [
-      "E7",
-      "E8"
-    ],
-    "cumulative_resource_use": "Before this goal review: T1 used one fresh 120000-step request and completed 120832 steps; M1 used 160 episodes; E1 assigned the prior best-known role; E3 opened I1; E4 checkpointed; M2 used two artifact-independent production checks; T2 used one fresh 120000-step request and completed 120832 steps with seed 0; M3 used two diagnostic checks; M4 used a matched 160-episode panel at seed 5000 for T1 and T2; M5 failed and was superseded by M6; M6 used three completed analysis checks; E5 closed I1; E6 checkpointed. Current goal review used E7 to assign T2 as best-known and E8 to open I2. No protected official assessment has been requested.",
-    "current_goal_gap": "T2 remains 1.75 percentage points below the 98% development target and has six failures on the 160-episode panel: two without first entry and four after entry, with 158/160 first entries. Its stratified success is 100.0% in [6,10) cm, 100.0% in [10,14) cm, 91.67% in [14,17) cm, and 91.18% in [17,20] cm. It has not been evaluated on the protected 200-episode panel. T2 is the strongest measured candidate, but its outer-radius regression, one fresh seed, and unresolved action/dynamics and hold-specific causes leave official success uncertain.",
-    "current_synthesis": "Observed facts: M2 verified that the training source changed target-radius exposure to exactly the official 6-20 cm interval while evaluation remained unchanged. T2 trained the existing PPO architecture, reward, observation, normalization, and runtime under that source change, with no exact saved-component matches to T1; the production path and research diagnostics were separately checked by M3. On the non-overlapping matched M4 panel, T2 achieved 154/160 and T1 achieved 115/160, with 44 T2-only wins, 5 T1-only wins, and 49 discordant episodes. M6 reports the radius strata above, T2 first entry on 158/160 episodes, open-branch assignment at all non-null first entries, zero folded-branch use, two no-entry failures, four post-entry failures, and six episodes with hold interruptions. The artifact diagnostics include a no-entry case where the open IK solution violates the shoulder limit while the folded solution has positive margin, another no-entry case with ample margins, a negative-margin open-branch post-entry case, and well-margin post-entry cases with repeated interruptions. Aggregate speed and action summaries are similar and maximum absolute action reaches 1.0; internal substep diagnostics were preserved, but current aggregate counts span the whole rollout rather than isolating the hold interval. Training logs show different learning dynamics: at 120832 steps T1's rolling success proxy was 0.96 and T2's was 0.58, so proxy rank or terminal status cannot select an unmeasured checkpoint when exposure and runtime context differ. Metadata shows 24 checkpoints for each run, but no later or earlier unmeasured checkpoint has development evidence; they remain available artifacts, not performance claims. Correction to the inherited interpretation: M4/M6 support a large artifact-level improvement from the tested full-radius training recipe relative to the tested baseline and are consistent with a coverage explanation for the inner deficit, but they do not establish exposure alone as causal because training source and resulting policy changed together, under one fresh seed. Correction to the inherited role: T2 is assigned best-known by E7 because it is directly better on the matched development comparison; this role does not certify the goal. Physical consequences remain consequential: branch/limit geometry can redirect work if failures concentrate on infeasible or poorly selected branches and improve when the alternate has margin; sampled-control stabilization can redirect work if high first entry coexists with repeated hold exits, high velocity/action, or hold-window intersample excursions; unknown effective inertia and actuator/limit authority can redirect work if failure episodes are associated with saturation, configuration-dependent acceleration, or constraint response; observation conditioning can redirect work if matched state/target observations produce inconsistent actions or history-dependent transitions. Evidence that would weaken these explanations is respectively well-margin failure without branch concentration, low hold-window motion despite failures, non-concentrated saturation with smooth dynamic response, or consistent state-conditioned policy action. No broader claim about PPO, exposure curricula, or a causal intervention is made. M5 is execution history superseded by completed M6 and is not scientific evidence.",
-    "decision_frontier": "The campaign must choose between continuing candidate development and terminal official assessment; because T2 is below 98% and has a concrete outer-radius loss with actionable residual classes, I2 tests development before that irreversible choice. The main competing explanations and decision rules are: (1) coverage/conditioning: the T2 artifact may preserve inner-radius success while a better candidate restores outer radii; support requires a fresh matched comparison retaining the inner strata and recovering 14-20 cm, but any conclusion remains recipe- and artifact-level; (2) branch/limit geometry: support requires reproducible failures at low-margin or wrongly selected branches, especially where the alternate branch has positive margin, and would favor branch-aware trajectory selection; well-margin failures would redirect away from a pure geometry explanation; (3) post-entry stabilization: support requires high first entry with hold-window interruptions, velocity/action near exits, or hold-specific intersample excursions, and would favor trajectory/hold regulation; absence of that signature would weaken it; (4) dynamics/action authority: support requires failure-concentrated saturation or measured configuration/limit-dependent acceleration or constraint behavior, and would favor system-identification or action-scaling work; if these are absent, this unknown is lower priority; (5) observation conditioning: matched-state action inconsistency or measurable history dependence would favor representation/conditioning work, while consistent state-conditioned responses would deprioritize memory or new sensors. The present whole-rollout substep aggregate cannot establish continuous-hold causality, so hold-window isolation is required before making that claim. The current evidence does not justify official assessment as the preferred action now, although a below-goal development score would not mechanically prohibit it.",
-    "evidence_references": [
-      "M2",
-      "T2",
-      "M3",
-      "M4",
-      "M6",
-      "E5",
-      "E7",
-      "E8"
-    ],
-    "human_goal_connection": "The immutable human goal is at least 196 successful episodes out of 200 under the official uniform 6-20 cm, full-angle distribution, with 100 consecutive in-tolerance control steps. The strongest measured development artifact is now explicitly T2:checkpoint-120832, at 154/160 = 96.25% on a fresh matched panel; this is below the goal and is not an official assessment. I2 is directly goal-linked because it seeks a candidate that retains T2's inner-radius coverage while recovering outer-radius uninterrupted holds and resolves which residual mechanism can plausibly close the gap.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open bounded inquiry I2 and checkpoint this goal-review decision. The next inquiry session should select the highest-value supported operation for a fresh candidate comparison and/or hold-specific mechanism measurement, then close with positive, negative, limited, or inconclusive evidence under the stated closure condition. The inquiry is preferred to terminal assessment because T2 is close to the target but below it, outer-radius degradation is concrete, and the residual failure classes provide a credible route to either improvement or a mechanism-based redirect; it is not preferred because the goal is already achieved, which it is not.",
-    "next_question": "Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal?",
-    "scientific_commit": "eae1ddabd3b2f872ecb67c97da77a24f231087e1",
-    "session_id": "S4"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "3d5bdb8c3d9800d522af80b43e83dd41b914a656",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known is T3:checkpoint-90112, assigned by E10 from M10/M11. T3:checkpoint-120832 is an equally performing measured checkpoint on the M10 panel but is not best-known because 90112 was the proxy-nominated nonterminal artifact and terminal status has no privileged role. T2:checkpoint-120832 remains the prior measured reference. T3 was transferred from T2 under the modified reward and is not complete-artifact equivalent to T2; no exact saved-component matches were reported. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Before I2: T1 and T2 each used one fresh 120000-step training request; I1 used its recorded measurements and T2 was assigned best-known by E7; E8 opened I2. During I2: M8 used two diagnostic checks plus one fresh 160-episode T2 panel at seed 6000; M9 used two reward-intervention checks; T3 used one 120000-step transfer request from T2 with seed 1 and completed 120832 steps; M10 used three matched 160-episode evaluations at seed 7000; M11 used two bound-input analyses; E10 assigned best-known; E11 closed I2. The M7 implementation-error attempt was superseded by completed M8 and is not scientific evidence. No protected official assessment has been requested.",
+        "current_goal_gap": "The best-known candidate is T3:checkpoint-90112 at 158/160 = 98.75% on the M10 development panel, two failures below perfect development performance and above the 98% development threshold. It has not undergone the protected 200-episode assessment, so the campaign-level goal is not certified. Remaining scientific uncertainty includes one no-entry/geometry failure, one post-entry failure, persistent hold-window action saturation in aggregate diagnostics, one fresh transfer recipe/seed, and the generalization from 160 development episodes to the fixed official panel.",
+        "current_synthesis": "M8 validated the new hold-window diagnostics and measured T2 on a fresh non-overlapping 160-episode panel at 149/160 = 93.125%, with seven no-entry and four post-entry failures. Every post-entry failure showed hold-window maximum action 1.0, joint-speed norm approximately 5.7-6.6 rad/s, and repeated hold-window intersample excursions above 1 cm, supporting post-entry stabilization/action authority as consequential. The no-entry cases included both low-margin open-branch targets with positive-margin folded alternatives and well-margin cases, so branch/limit geometry contributes but is not sufficient. M9 verified a training-only intervention that set full hold-progress forfeiture on exit and added a 0.05 hold-window squared-action cost while preserving the full official target-radius exposure and general action-cost term. T3 transferred T2 under that recipe for the full 120000-step allocation; its checkpoints had no exact saved-component matches to T2. M10 compared proxy-nominated T3:checkpoint-90112 and terminal T3:checkpoint-120832 with T2 on the same fresh 160-episode panel: both T3 checkpoints achieved 158/160 = 98.75%, while T2 achieved 153/160 = 95.625%; each had five candidate-only wins and no T2-only wins. M11 showed for both T3 checkpoints exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, improvement of [14,17) from 39/41 to 41/41, and improvement of [17,20] from 28/32 to 31/32. T3 reduced failures to one no-entry and one post-entry and reduced episodes with hold interruptions from nine for T2 to one. The candidate improvement is a property of the complete transferred artifact and reward recipe; the evidence does not establish the reward terms, full-radius exposure, PPO, or any broader method as causal. The remaining post-entry action saturation means action/dynamics authority is not resolved even though interruption frequency improved. E10 assigned T3:checkpoint-90112 as best-known because it tied the terminal T3 result while avoiding terminal-checkpoint privilege; E11 closed I2 under its positive closure condition.",
+        "decision_frontier": "The campaign must now choose at goal review between requesting the irreversible protected official assessment for T3:checkpoint-90112 and opening another bounded inquiry. The positive M10/M11 development result makes official assessment credible: T3 exceeds the 98% development threshold, preserves inner coverage, and recovers the measured 14-20 cm deficit. Assessment remains uncertain because the evidence is one fresh 160-episode panel, T3 has two residual failures, hold-window action remains saturated, and the official panel is distinct and protected. Further inquiry would target the remaining no-entry branch/limit case and the unresolved action/dynamics authority, but closure of I2 does not itself justify that continuation.",
+        "evidence_references": [
+          "M2",
+          "T2",
+          "M4",
+          "M6",
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196/200 uninterrupted 100-step holds under the official uniform 6-20 cm full-angle distribution. I2 directly advanced that goal: the best-known T3 artifact reached 158/160 = 98.75% on a fresh development panel, preserved T2's inner-radius performance, recovered both measured outer strata, and sharply reduced post-entry interruptions. This is development evidence only; the protected 200-episode official result remains unknown.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed by E11 with a positive bounded candidate result. The next direction is goal review of official assessment readiness, not an automatic new intervention. If the goal review selects assessment, it must use the frozen T3:checkpoint-90112 artifact and the protected 200-episode panel. If it selects further work, the consequential targets are remaining branch/limit-aware no-entry handling and the persistent hold-window action/dynamics authority signature; neither is claimed resolved by I2.",
+        "next_question": "At goal review, should the campaign request the protected 200-episode official assessment for T3:checkpoint-90112, or does the remaining branch/limit and hold-window action-authority uncertainty justify one further bounded inquiry before terminal commitment?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "124fddc6-e8e8-4afb-bcdb-e241bc1eb792",
+        "campaign_id": "dc48cc2f-7672-4843-9be3-94851fc35aed",
+        "campaign_usage": "4h22m | 32.96 AIU | prompt 4.3m (88% cached) | output 102.8k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "4h07m | 5.22 AIU | prompt 411k (77% cached) | output 18.3k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "031f6937907ba40cbe1499a52827640c31939c99",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "124fddc6-e8e8-4afb-bcdb-e241bc1eb792",
-    "id": "S5",
+    "failure": null,
+    "id": "E12",
     "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a next candidate preserve the full-radius T2 inner-radius success while recovering the degraded 14\u201320 cm uninterrupted hold, with branch/limit-aware and hold-specific stabilization diagnostics distinguishing geometry/branch failures from post-entry control failures toward the 98% goal? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known is T3:checkpoint-90112, assigned by E10 from M10/M11. T3:checkpoint-120832 is an equally performing measured checkpoint on the M10 panel but is not best-known because 90112 was the proxy-nominated nonterminal artifact and terminal status has no privileged role. T2:checkpoint-120832 remains the prior measured reference. T3 was transferred from T2 under the modified reward and is not complete-artifact equivalent to T2; no exact saved-component matches were reported. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Before I2: T1 and T2 each used one fresh 120000-step training request; I1 used its recorded measurements and T2 was assigned best-known by E7; E8 opened I2. During I2: M8 used two diagnostic checks plus one fresh 160-episode T2 panel at seed 6000; M9 used two reward-intervention checks; T3 used one 120000-step transfer request from T2 with seed 1 and completed 120832 steps; M10 used three matched 160-episode evaluations at seed 7000; M11 used two bound-input analyses; E10 assigned best-known; E11 closed I2. The M7 implementation-error attempt was superseded by completed M8 and is not scientific evidence. No protected official assessment has been requested.",
+        "current_goal_gap": "The best-known candidate is T3:checkpoint-90112 at 158/160 = 98.75% on the M10 development panel, two failures below perfect development performance and above the 98% development threshold. It has not undergone the protected 200-episode assessment, so the campaign-level goal is not certified. Remaining scientific uncertainty includes one no-entry/geometry failure, one post-entry failure, persistent hold-window action saturation in aggregate diagnostics, one fresh transfer recipe/seed, and the generalization from 160 development episodes to the fixed official panel.",
+        "current_synthesis": "M8 validated the new hold-window diagnostics and measured T2 on a fresh non-overlapping 160-episode panel at 149/160 = 93.125%, with seven no-entry and four post-entry failures. Every post-entry failure showed hold-window maximum action 1.0, joint-speed norm approximately 5.7-6.6 rad/s, and repeated hold-window intersample excursions above 1 cm, supporting post-entry stabilization/action authority as consequential. The no-entry cases included both low-margin open-branch targets with positive-margin folded alternatives and well-margin cases, so branch/limit geometry contributes but is not sufficient. M9 verified a training-only intervention that set full hold-progress forfeiture on exit and added a 0.05 hold-window squared-action cost while preserving the full official target-radius exposure and general action-cost term. T3 transferred T2 under that recipe for the full 120000-step allocation; its checkpoints had no exact saved-component matches to T2. M10 compared proxy-nominated T3:checkpoint-90112 and terminal T3:checkpoint-120832 with T2 on the same fresh 160-episode panel: both T3 checkpoints achieved 158/160 = 98.75%, while T2 achieved 153/160 = 95.625%; each had five candidate-only wins and no T2-only wins. M11 showed for both T3 checkpoints exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, improvement of [14,17) from 39/41 to 41/41, and improvement of [17,20] from 28/32 to 31/32. T3 reduced failures to one no-entry and one post-entry and reduced episodes with hold interruptions from nine for T2 to one. The candidate improvement is a property of the complete transferred artifact and reward recipe; the evidence does not establish the reward terms, full-radius exposure, PPO, or any broader method as causal. The remaining post-entry action saturation means action/dynamics authority is not resolved even though interruption frequency improved. E10 assigned T3:checkpoint-90112 as best-known because it tied the terminal T3 result while avoiding terminal-checkpoint privilege; E11 closed I2 under its positive closure condition.",
+        "decision_frontier": "The campaign must now choose at goal review between requesting the irreversible protected official assessment for T3:checkpoint-90112 and opening another bounded inquiry. The positive M10/M11 development result makes official assessment credible: T3 exceeds the 98% development threshold, preserves inner coverage, and recovers the measured 14-20 cm deficit. Assessment remains uncertain because the evidence is one fresh 160-episode panel, T3 has two residual failures, hold-window action remains saturated, and the official panel is distinct and protected. Further inquiry would target the remaining no-entry branch/limit case and the unresolved action/dynamics authority, but closure of I2 does not itself justify that continuation.",
+        "evidence_references": [
+          "M2",
+          "T2",
+          "M4",
+          "M6",
+          "M8",
+          "M9",
+          "T3",
+          "M10",
+          "M11",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The immutable goal is at least 196/200 uninterrupted 100-step holds under the official uniform 6-20 cm full-angle distribution. I2 directly advanced that goal: the best-known T3 artifact reached 158/160 = 98.75% on a fresh development panel, preserved T2's inner-radius performance, recovered both measured outer strata, and sharply reduced post-entry interruptions. This is development evidence only; the protected 200-episode official result remains unknown.",
+        "next_direction_or_closure": "I2 is closed by E11 with a positive bounded candidate result. The next direction is goal review of official assessment readiness, not an automatic new intervention. If the goal review selects assessment, it must use the frozen T3:checkpoint-90112 artifact and the protected 200-episode panel. If it selects further work, the consequential targets are remaining branch/limit-aware no-entry handling and the persistent hold-window action/dynamics authority signature; neither is claimed resolved by I2.",
+        "next_question": "At goal review, should the campaign request the protected 200-episode official assessment for T3:checkpoint-90112, or does the remaining branch/limit and hold-window action-authority uncertainty justify one further bounded inquiry before terminal commitment?"
+      }
+    },
+    "request_fingerprint": "56bc43e47e87b0be9941b409746b8db1546f540a785e7b17efe15a9c37620da4",
+    "session_id": "S5",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "Best-known is T3:checkpoint-90112, assigned by E10 from M10/M11. T3:checkpoint-120832 is an equally performing measured checkpoint on the M10 panel but is not best-known because 90112 was the proxy-nominated nonterminal artifact and terminal status has no privileged role. T2:checkpoint-120832 remains the prior measured reference. T3 was transferred from T2 under the modified reward and is not complete-artifact equivalent to T2; no exact saved-component matches were reported. No working or retained candidate is assigned.",
+    "completed_operations": [
       "M8",
       "M9",
       "T3",
@@ -7584,7 +7708,36 @@
       "E10",
       "E11"
     ],
-    "scientific_parent_commit": "2ab2b371f68c22c81c0fb67d72fe492c081b474a"
+    "cumulative_resource_use": "Before I2: T1 and T2 each used one fresh 120000-step training request; I1 used its recorded measurements and T2 was assigned best-known by E7; E8 opened I2. During I2: M8 used two diagnostic checks plus one fresh 160-episode T2 panel at seed 6000; M9 used two reward-intervention checks; T3 used one 120000-step transfer request from T2 with seed 1 and completed 120832 steps; M10 used three matched 160-episode evaluations at seed 7000; M11 used two bound-input analyses; E10 assigned best-known; E11 closed I2. The M7 implementation-error attempt was superseded by completed M8 and is not scientific evidence. No protected official assessment has been requested.",
+    "current_goal_gap": "The best-known candidate is T3:checkpoint-90112 at 158/160 = 98.75% on the M10 development panel, two failures below perfect development performance and above the 98% development threshold. It has not undergone the protected 200-episode assessment, so the campaign-level goal is not certified. Remaining scientific uncertainty includes one no-entry/geometry failure, one post-entry failure, persistent hold-window action saturation in aggregate diagnostics, one fresh transfer recipe/seed, and the generalization from 160 development episodes to the fixed official panel.",
+    "current_synthesis": "M8 validated the new hold-window diagnostics and measured T2 on a fresh non-overlapping 160-episode panel at 149/160 = 93.125%, with seven no-entry and four post-entry failures. Every post-entry failure showed hold-window maximum action 1.0, joint-speed norm approximately 5.7-6.6 rad/s, and repeated hold-window intersample excursions above 1 cm, supporting post-entry stabilization/action authority as consequential. The no-entry cases included both low-margin open-branch targets with positive-margin folded alternatives and well-margin cases, so branch/limit geometry contributes but is not sufficient. M9 verified a training-only intervention that set full hold-progress forfeiture on exit and added a 0.05 hold-window squared-action cost while preserving the full official target-radius exposure and general action-cost term. T3 transferred T2 under that recipe for the full 120000-step allocation; its checkpoints had no exact saved-component matches to T2. M10 compared proxy-nominated T3:checkpoint-90112 and terminal T3:checkpoint-120832 with T2 on the same fresh 160-episode panel: both T3 checkpoints achieved 158/160 = 98.75%, while T2 achieved 153/160 = 95.625%; each had five candidate-only wins and no T2-only wins. M11 showed for both T3 checkpoints exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, improvement of [14,17) from 39/41 to 41/41, and improvement of [17,20] from 28/32 to 31/32. T3 reduced failures to one no-entry and one post-entry and reduced episodes with hold interruptions from nine for T2 to one. The candidate improvement is a property of the complete transferred artifact and reward recipe; the evidence does not establish the reward terms, full-radius exposure, PPO, or any broader method as causal. The remaining post-entry action saturation means action/dynamics authority is not resolved even though interruption frequency improved. E10 assigned T3:checkpoint-90112 as best-known because it tied the terminal T3 result while avoiding terminal-checkpoint privilege; E11 closed I2 under its positive closure condition.",
+    "decision_frontier": "The campaign must now choose at goal review between requesting the irreversible protected official assessment for T3:checkpoint-90112 and opening another bounded inquiry. The positive M10/M11 development result makes official assessment credible: T3 exceeds the 98% development threshold, preserves inner coverage, and recovers the measured 14-20 cm deficit. Assessment remains uncertain because the evidence is one fresh 160-episode panel, T3 has two residual failures, hold-window action remains saturated, and the official panel is distinct and protected. Further inquiry would target the remaining no-entry branch/limit case and the unresolved action/dynamics authority, but closure of I2 does not itself justify that continuation.",
+    "evidence_references": [
+      "M2",
+      "T2",
+      "M4",
+      "M6",
+      "M8",
+      "M9",
+      "T3",
+      "M10",
+      "M11",
+      "E10",
+      "E11"
+    ],
+    "human_goal_connection": "The immutable goal is at least 196/200 uninterrupted 100-step holds under the official uniform 6-20 cm full-angle distribution. I2 directly advanced that goal: the best-known T3 artifact reached 158/160 = 98.75% on a fresh development panel, preserved T2's inner-radius performance, recovered both measured outer strata, and sharply reduced post-entry interruptions. This is development evidence only; the protected 200-episode official result remains unknown.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed by E11 with a positive bounded candidate result. The next direction is goal review of official assessment readiness, not an automatic new intervention. If the goal review selects assessment, it must use the frozen T3:checkpoint-90112 artifact and the protected 200-episode panel. If it selects further work, the consequential targets are remaining branch/limit-aware no-entry handling and the persistent hold-window action/dynamics authority signature; neither is claimed resolved by I2.",
+    "next_question": "At goal review, should the campaign request the protected 200-episode official assessment for T3:checkpoint-90112, or does the remaining branch/limit and hold-window action-authority uncertainty justify one further bounded inquiry before terminal commitment?",
+    "scientific_commit": "031f6937907ba40cbe1499a52827640c31939c99",
+    "session_id": "S5"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "3d5bdb8c3d9800d522af80b43e83dd41b914a656",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
