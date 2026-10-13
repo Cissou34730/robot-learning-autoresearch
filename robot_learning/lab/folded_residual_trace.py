@@ -399,7 +399,7 @@ def main() -> None:
     parser.add_argument("--episodes", type=int, default=160)
     parser.add_argument("--seed", type=int, default=4200)
     parser.add_argument("--controls", type=int, default=None)
-    parser.add_argument("--algorithm", default=None)
+    parser.add_argument("--algorithm", default="ppo")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     write_panel(
