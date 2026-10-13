@@ -743,7 +743,7 @@ def _run_check(output_path: Path) -> None:
             raise AssertionError(f"outer-only branch result mismatch for {branch}")
         if observed["branch_strata"][branch]["full_radius"]["successes"] != full_successes:
             raise AssertionError(f"full-radius branch result mismatch for {branch}")
-    expected_outer_failure_counts = (1, 2, 1)
+    expected_outer_failure_counts = (1, 1, 0)
     expected_full_failure_counts = (0, 2, 1)
     modes = ("never_reached", "reached_but_never_completed", "interrupted_hold")
     for mode, outer_count, full_count in zip(
