@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
+    "handoff_conclusion": "M1 compatibility verification and M4 repaired behavioral checks establish implementation validity of the candidate-free MuJoCo characterization path, not policy performance. M3 remains execution history only because its serialized trajectory rows were aliased. M5 established finite compiled dynamics, 20 ms policy intervals, approximately +/-5 saturated actuator torque, and a strong opposing-command braking response; absent actuation authority is therefore a weaker first explanation, but braking does not by itself explain learned-policy failures and endpoint samples do not establish continuous within-step stability. The repository exposure difference was initially only a hypothesis. T1 trained the established outer-only 0.14-0.20 m exposure and M8 measured 105/160 (65.625%) on official full-radius geometry. T2 changed the training exposure to 0.06-0.20 m while keeping the PPO recipe, runtime, reward, observations, normalization, and nominal seed unchanged; M10 measured 150/160 (93.75%) on the exact paired panel. M12 and M14 validated the paired-analysis implementation, including strict episode/seed/geometry joins, radius and bearing boundaries, branch strata, hold-step aggregation, failure predicates, and malformed-input rejection. M15 inspected the complete paired artifacts. There were 48 full-radius-only successes, 3 outer-only-only successes, 102 both successes, and 7 both failures. Full-radius versus outer-only success was 100.0% versus 22.5% in [0.06,0.10), 94.3% versus 62.3% in [0.10,0.14), 89.7% versus 94.9% in [0.14,0.18), and 89.3% versus 92.9% in [0.18,0.20]. Never-reached failures fell from 49 to 7; mean minimum distance fell from 2.807 cm to 0.376 cm; mean maximum held steps rose from 66.38 to 93.79; and mean total in-tolerance steps rose from 68.05 to 96.575. Full-radius improved all four bearing sectors (86.3-100.0% versus 48.4-92.2%). The both-branch stratum improved from 69.3% to 97.9%, and open-only was 100% for both; folded-only improved from 14.3% to 50.0% but remains small at 14 episodes, while no none-branch episodes occurred. These observations support full-radius exposure as the next route at artifact-comparison level, not as a causal training-method claim: exposure, saved policy, and learning trajectory changed together. Stabilization/control timing remains a secondary route for the remaining failures, and branch labels do not establish union infeasibility. I1 was closed with a positive, limited conclusion in E4.",
+    "handoff_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+    "rationale": "Requesting assessment now would terminally spend the protected 200-episode panel on a candidate whose only development result is 93.75%, below the 98% target, with seven never-reached and three reached-but-never-completed episodes. The expected value of one bounded development inquiry is high because the candidate is close enough to expose a specific residual failure gap and the full-radius route already resolved the dominant coverage deficit. The inquiry is not justified by an untested cause alone: it is bounded by a direct candidate comparison and a closure rule tied to the official success criterion. If it cannot materially improve complete holds, the campaign will retain T2 as best-known and face the protected assessment with the uncertainty explicitly preserved.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "19d463316654368e418a6d149ad8a3a577a5e141",
     "id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
@@ -1646,8 +1657,8 @@
     }
   },
   "counters": {
-    "event": 6,
-    "inquiry": 1,
+    "event": 7,
+    "inquiry": 2,
     "measurement": 15,
     "session": 4,
     "training": 2
@@ -1655,7 +1666,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -6408,9 +6419,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T08:52:31Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
+        "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+        "rationale": "Requesting assessment now would terminally spend the protected 200-episode panel on a candidate whose only development result is 93.75%, below the 98% target, with seven never-reached and three reached-but-never-completed episodes. The expected value of one bounded development inquiry is high because the candidate is close enough to expose a specific residual failure gap and the full-radius route already resolved the dominant coverage deficit. The inquiry is not justified by an untested cause alone: it is bounded by a direct candidate comparison and a closure rule tied to the official success criterion. If it cannot materially improve complete holds, the campaign will retain T2 as best-known and face the protected assessment with the uncertainty explicitly preserved."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
+          "handoff_conclusion": "M1 compatibility verification and M4 repaired behavioral checks establish implementation validity of the candidate-free MuJoCo characterization path, not policy performance. M3 remains execution history only because its serialized trajectory rows were aliased. M5 established finite compiled dynamics, 20 ms policy intervals, approximately +/-5 saturated actuator torque, and a strong opposing-command braking response; absent actuation authority is therefore a weaker first explanation, but braking does not by itself explain learned-policy failures and endpoint samples do not establish continuous within-step stability. The repository exposure difference was initially only a hypothesis. T1 trained the established outer-only 0.14-0.20 m exposure and M8 measured 105/160 (65.625%) on official full-radius geometry. T2 changed the training exposure to 0.06-0.20 m while keeping the PPO recipe, runtime, reward, observations, normalization, and nominal seed unchanged; M10 measured 150/160 (93.75%) on the exact paired panel. M12 and M14 validated the paired-analysis implementation, including strict episode/seed/geometry joins, radius and bearing boundaries, branch strata, hold-step aggregation, failure predicates, and malformed-input rejection. M15 inspected the complete paired artifacts. There were 48 full-radius-only successes, 3 outer-only-only successes, 102 both successes, and 7 both failures. Full-radius versus outer-only success was 100.0% versus 22.5% in [0.06,0.10), 94.3% versus 62.3% in [0.10,0.14), 89.7% versus 94.9% in [0.14,0.18), and 89.3% versus 92.9% in [0.18,0.20]. Never-reached failures fell from 49 to 7; mean minimum distance fell from 2.807 cm to 0.376 cm; mean maximum held steps rose from 66.38 to 93.79; and mean total in-tolerance steps rose from 68.05 to 96.575. Full-radius improved all four bearing sectors (86.3-100.0% versus 48.4-92.2%). The both-branch stratum improved from 69.3% to 97.9%, and open-only was 100% for both; folded-only improved from 14.3% to 50.0% but remains small at 14 episodes, while no none-branch episodes occurred. These observations support full-radius exposure as the next route at artifact-comparison level, not as a causal training-method claim: exposure, saved policy, and learning trajectory changed together. Stabilization/control timing remains a secondary route for the remaining failures, and branch labels do not establish union infeasibility. I1 was closed with a positive, limited conclusion in E4.",
+          "handoff_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+          "rationale": "Requesting assessment now would terminally spend the protected 200-episode panel on a candidate whose only development result is 93.75%, below the 98% target, with seven never-reached and three reached-but-never-completed episodes. The expected value of one bounded development inquiry is high because the candidate is close enough to expose a specific residual failure gap and the full-radius route already resolved the dominant coverage deficit. The inquiry is not justified by an untested cause alone: it is bounded by a direct candidate comparison and a closure rule tied to the official success criterion. If it cannot materially improve complete holds, the campaign will retain T2 as best-known and face the protected assessment with the uncertainty explicitly preserved.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
+        "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+        "rationale": "Requesting assessment now would terminally spend the protected 200-episode panel on a candidate whose only development result is 93.75%, below the 98% target, with seven never-reached and three reached-but-never-completed episodes. The expected value of one bounded development inquiry is high because the candidate is close enough to expose a specific residual failure gap and the full-radius route already resolved the dominant coverage deficit. The inquiry is not justified by an untested cause alone: it is bounded by a direct candidate comparison and a closure rule tied to the official success criterion. If it cannot materially improve complete holds, the campaign will retain T2 as best-known and face the protected assessment with the uncertainty explicitly preserved."
+      }
+    },
+    "request_fingerprint": "fdcd126f629e0da401ec91e1fc3e9ced80beb65a968e24f3f0ce83cf4798e3e0",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Two learned candidates exist: T1 is the outer-only baseline trained over 0.14-0.20 m and measured by M8 at 105/160; T2 is the full-radius candidate trained over 0.06-0.20 m and measured by M10 at 150/160. No working, best-known, or retained role has been assigned. The T2 artifact is the strongest measured development candidate, but role assignment belongs to the next goal-review decision and does not itself certify the human goal.",
     "completed_operations": [
@@ -6473,7 +6547,8 @@
     "kind": "goal_review",
     "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
     "operation_ids": [
-      "E6"
+      "E6",
+      "E7"
     ],
     "scientific_parent_commit": "64f868ab7ce82223832153fc6e614e8394572d80"
   },
