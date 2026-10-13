@@ -3935,38 +3935,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited positive: the verified full-radius PPO artifact materially improves uninterrupted held-out success, especially below 14 cm, but does not reach the 98% goal and degrades the measured outer-radius strata; residual failures are mixed between no-entry and post-entry interruption classes.",
-        "reason": "The closure condition is met by M4\u2019s matched non-overlapping 160-episode panel and M6\u2019s complete artifact analysis. T2:checkpoint-120832 achieves 154/160 = 96.25% versus T1:checkpoint-115712 at 115/160 = 71.875%, with 44 candidate-only wins, 5 reference-only wins, and 49 discordant episodes. Radius-stratified success is T2/T1: [6,10) 100.0/34.78% (46 episodes), [10,14) 100.0/68.18% (44), [14,17) 91.67/97.22% (36), and [17,20] 91.18/100.0% (34). T2 first-entry rate is 98.75% versus 76.25%; its six failures comprise two no-entry and four post-entry unsuccessful episodes, while target branch, limit, speed/action, and intersample diagnostics are preserved. The residual cases do not support a single causal explanation: one no-entry case has an infeasible open IK branch but a feasible folded branch, another has ample target and rollout margins, and post-entry failures include both a negative-margin open-branch case and well-margin cases with repeated hold interruptions. The tested result therefore supports continuing coverage-oriented development only as a candidate-selection finding, while redirecting the next decision toward preserving outer-radius behavior and discriminating branch-aware control from stabilization/trajectory regulation; it does not establish coverage causality or certify the human goal."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited positive: the verified full-radius PPO artifact materially improves uninterrupted held-out success, especially below 14 cm, but does not reach the 98% goal and degrades the measured outer-radius strata; residual failures are mixed between no-entry and post-entry interruption classes.",
-        "reason": "The closure condition is met by M4\u2019s matched non-overlapping 160-episode panel and M6\u2019s complete artifact analysis. T2:checkpoint-120832 achieves 154/160 = 96.25% versus T1:checkpoint-115712 at 115/160 = 71.875%, with 44 candidate-only wins, 5 reference-only wins, and 49 discordant episodes. Radius-stratified success is T2/T1: [6,10) 100.0/34.78% (46 episodes), [10,14) 100.0/68.18% (44), [14,17) 91.67/97.22% (36), and [17,20] 91.18/100.0% (34). T2 first-entry rate is 98.75% versus 76.25%; its six failures comprise two no-entry and four post-entry unsuccessful episodes, while target branch, limit, speed/action, and intersample diagnostics are preserved. The residual cases do not support a single causal explanation: one no-entry case has an infeasible open IK branch but a feasible folded branch, another has ample target and rollout margins, and post-entry failures include both a negative-margin open-branch case and well-margin cases with repeated hold interruptions. The tested result therefore supports continuing coverage-oriented development only as a candidate-selection finding, while redirecting the next decision toward preserving outer-radius behavior and discriminating branch-aware control from stabilization/trajectory regulation; it does not establish coverage causality or certify the human goal.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited positive: the verified full-radius PPO artifact materially improves uninterrupted held-out success, especially below 14 cm, but does not reach the 98% goal and degrades the measured outer-radius strata; residual failures are mixed between no-entry and post-entry interruption classes.",
-        "reason": "The closure condition is met by M4\u2019s matched non-overlapping 160-episode panel and M6\u2019s complete artifact analysis. T2:checkpoint-120832 achieves 154/160 = 96.25% versus T1:checkpoint-115712 at 115/160 = 71.875%, with 44 candidate-only wins, 5 reference-only wins, and 49 discordant episodes. Radius-stratified success is T2/T1: [6,10) 100.0/34.78% (46 episodes), [10,14) 100.0/68.18% (44), [14,17) 91.67/97.22% (36), and [17,20] 91.18/100.0% (34). T2 first-entry rate is 98.75% versus 76.25%; its six failures comprise two no-entry and four post-entry unsuccessful episodes, while target branch, limit, speed/action, and intersample diagnostics are preserved. The residual cases do not support a single causal explanation: one no-entry case has an infeasible open IK branch but a feasible folded branch, another has ample target and rollout margins, and post-entry failures include both a negative-margin open-branch case and well-margin cases with repeated hold interruptions. The tested result therefore supports continuing coverage-oriented development only as a candidate-selection finding, while redirecting the next decision toward preserving outer-radius behavior and discriminating branch-aware control from stabilization/trajectory regulation; it does not establish coverage causality or certify the human goal."
-      }
-    },
-    "request_fingerprint": "dfd521c0a59aa13dbbac5dbf8414547275e59efb736ac6cabaa75c7729d1a2bc",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, assigned by E1 from T1 and M1. There is no working or retained candidate. E3 is the active inquiry boundary; no new candidate exists yet. The terminal T1 checkpoint has no privileged status among the 24 archived checkpoints, and unmeasured checkpoints are not treated as development evidence.",
     "completed_operations": [
