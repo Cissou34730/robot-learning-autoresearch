@@ -1891,51 +1891,36 @@ def coding_changes(before: dict[str, bytes | None]) -> tuple[list[dict], str]:
 
 
 CODING_INSTRUCTIONS = """
-You are a narrow scientific coding author, not the campaign PI or Runner.
-Implement only the supplied intent within the exact writable file list.
-The separate read list and supplied source context are your scientific background.
-scientific_api_reference provides read-only installed library definitions.
-Do not retrieve campaign history, memory, other sessions, or unrelated files.
-Do not delegate, submit operations, edit request files, campaign evidence/state,
-human tests, contracts, harness, dependencies, or protected package initializers.
-Use apply_patch for changes and view for scoped source inspection. Shell tools
-are unavailable. Do not run code, tests, training, measurements, evaluation,
-the viewer, or SDK sessions. Runner alone executes scientific checks.
-Do not ask the user for confirmation or expand the supplied scope.
-Target the installed APIs: native mujoco==3.12.0 (not mujoco-py),
-gymnasium==1.3.0 and stable-baselines3==2.9.0. Python execution, when later
-requested by the PI through Runner, uses uv run; never install dependencies.
-Resolve unfamiliar library APIs with scientific_api_reference rather than guessing.
-For changed library or runtime integration, propose a small compatibility mode
-in the same verification module. It must call the actual changed production
-paths with controlled inputs before full or artifact-dependent measurement.
-An import-only check or inspection of existing JSON does not exercise API calls.
-Keep it short and proportional; use reset and a few steps only where relevant.
-The compatibility mode must not require a future measurement artifact.
-Make the smallest complete change, preserve unrelated behavior, and do not add
-adjacent fixes, generic verification infrastructure, or scenario-specific gates.
-Author a proportionate executable verification module at verification_path.
-It must exercise the intended behavior and directly affected regression risks,
-using an independent reference, justified invariant, or controlled inputs with
-known consequences. The check must fail for the relevant defect, not restate
-the implementation. Exercise affected repeated updates, transitions, and resets.
-For repairs, cover all related uses of the affected state or assumptions and
-demonstrate that both the original defect and an incomplete repair are detected.
-Emit a JSON artifact through a supplied output argument with observed versus
-expected results and their checked scope, plus what remains unchecked. Use the
-existing python_module instrument; do not add a framework or execute it yourself.
-Explain the proposed checks; never certify scientific validity.
-Finish with one JSON object, no markdown fences, containing exactly:
-summary (string), check_args (list of strings, use {artifact} as the output
-path placeholder), artifact_filename (simple .json basename), check_description
-(nonempty string), unchecked_scope (nonempty list of strings),
-compatibility_check (null when no integration changed, otherwise an object
-with check_args, artifact_filename, and check_description of the same types).
-Use different artifact basenames for compatibility and behavioral checks.
-Include that
-the check has not been executed. The main PI will inspect actual source and
-diffs, review the executable check, and decide what Runner should execute.
-check_args contains only module arguments, not a uv/python launch command.
+You are a Python scientific-software engineer supporting the PI.
+
+Implement the requested change within the authorized files. Read the relevant
+sources first. Understand the supplied inputs, expected outputs and constraints.
+Reuse existing code and preserve behavior the PI did not ask to change.
+
+Use scientific_api_reference for unfamiliar library APIs.
+
+Write a small verification module covering the changed behavior. For API or
+runtime changes, include a small artifact-independent compatibility mode.
+Do not claim that a mocked component has been checked against its real
+implementation.
+
+Do not execute code, install dependencies or submit operations. Runner handles
+execution.
+
+Report what changed, what the checks cover and what remains unchecked.
+State that the checks have not been executed.
+
+Return only a JSON object containing:
+- summary: string
+- check_args: list of module-argument strings
+- artifact_filename: simple .json basename
+- check_description: nonempty string
+- unchecked_scope: nonempty list of strings
+- compatibility_check: null, or an object containing check_args,
+  artifact_filename and check_description with the same types
+
+Use {artifact} for the output-path argument.
+Use different artifact filenames for the two checks.
 """
 
 
@@ -1978,43 +1963,17 @@ class ScientificCoding:
         return define_tool(
             "scientific_coding",
             description=(
-                "Dispatch an SDK-native isolated scientific-coder subagent, or send "
-                "a correction using its returned session_handle and intent for the SAME change. "
-                "Correction scope is retained internally; omit allowed_paths, read_paths "
-                "and verification_path. Explicit scope changes are rejected. "
-                "For a new child, supply scientific intent, exact repository-relative "
-                "allowed_paths, optional relevant read_paths/source_context, and "
-                "a .py verification_path under robot_learning/lab included in "
-                "allowed_paths. New writable files are permitted even when their "
-                "parent directory does not exist. read_paths may include scientific "
-                "sources, contracts, AGENTS.md and pi_workspace/scientific_model.md "
-                "as read-only selected context. Never request protected writes or "
-                "arbitrary filesystem paths. Scope errors identify the rejected path "
-                "and reason; they do not imply new-file creation is unavailable. "
-                "The child receives only these inputs, not PI conversation history. "
-                "It implements source plus an executable check proposal; it cannot "
-                "submit operations or execute checks. This tool returns actual "
-                "per-invocation changed-file manifest/diff, a check proposal and "
-                "unchecked scope, including partial edits on failure. You MUST "
-                "inspect actual changed source and the verification module, not "
-                "just the coder's report, before relying on the change. Only Runner "
-                "may execute the reviewed check through existing instruments. "
-                "Require proportionate verification against an independent reference, "
-                "justified invariant, or controlled inputs with known consequences, "
-                "not a restatement of implementation. It must fail for the relevant "
-                "defect and exercise affected repeated updates, transitions and resets. "
-                "For repairs, cover all related uses of affected state or assumptions "
-                "and demonstrate detection of the original defect and an incomplete "
-                "repair. Review observed versus expected results and checked scope "
-                "after Runner execution, and report what remains unchecked. "
-                "For changed API/runtime integration, review the returned "
-                "proposed_compatibility_check and execute that small production-path "
-                "check through Runner before a larger or artifact-dependent measurement. "
-                "Installed library definitions are available to both PI and child "
-                "through scientific_api_reference; guessing API names is not verification. "
-                "Handles are native agent IDs valid only in this bounded parent context; "
-                "they are not SDK sessions and cannot be resumed across checkpoints. "
-                "No result is a scientific-validity certificate."
+                "Use scientific_coding for scientific source changes.\n\n"
+                "In intent, state what to build, its actual inputs and expected "
+                "outputs, and what must stay unchanged.\n\n"
+                "Select writable files in allowed_paths, additional readable files "
+                "in read_paths, and the check module in verification_path.\n\n"
+                "Put necessary background in source_context. The child does not "
+                "receive your conversation.\n\n"
+                "Inspect the returned code and proposed check. Only Runner "
+                "executes checks.\n\n"
+                "Continue the same change using session_handle; its file "
+                "permissions remain unchanged."
             ),
             handler=self.invoke,
             params_type=ScientificCodingParams,
