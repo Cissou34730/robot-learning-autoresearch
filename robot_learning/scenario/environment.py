@@ -42,13 +42,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
-        evaluation_diagnostics: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.evaluation_diagnostics = evaluation_diagnostics
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -130,20 +128,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
-        if self.evaluation_diagnostics:
-            internal_distances: list[float] = []
-            internal_qpos: list[np.ndarray] = []
-            internal_qvel: list[np.ndarray] = []
-            internal_actions: list[np.ndarray] = []
-            for _ in range(self.frame_skip):
-                mujoco.mj_step(self.model, self.data)
-                internal_distances.append(self._distance_to_target())
-                internal_qpos.append(self.data.qpos.copy())
-                internal_qvel.append(self.data.qvel.copy())
-                internal_actions.append(action.copy())
-        else:
-            for _ in range(self.frame_skip):
-                mujoco.mj_step(self.model, self.data)
+        for _ in range(self.frame_skip):
+            mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
 
@@ -179,32 +165,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
-        if self.evaluation_diagnostics:
-            info["evaluation_diagnostics"] = {
-                "internal_distance_m": np.asarray(
-                    internal_distances, dtype=np.float64
-                ),
-                "internal_qpos_rad": np.asarray(
-                    internal_qpos, dtype=np.float64
-                ),
-                "internal_qvel_rad_per_s": np.asarray(
-                    internal_qvel, dtype=np.float64
-                ),
-                "internal_applied_action": np.asarray(
-                    internal_actions, dtype=np.float64
-                ),
-            }
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
-def make_evaluation_env(
-    *, policy_runtime=None, evaluation_diagnostics: bool = False
-) -> gym.Env:
+def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE,
-        policy_runtime=policy_runtime,
-        evaluation_diagnostics=evaluation_diagnostics,
+        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space
