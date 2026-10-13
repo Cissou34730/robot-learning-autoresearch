@@ -1290,47 +1290,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a full-radius-trained candidate and the measured baseline have comparable held-out evaluation evidence on a non-overlapping panel, including radius-stratified success and preserved first-entry, hold-interruption, velocity/action, branch/limit, and intersample-distance diagnostics where available. A reproducible improvement concentrated below 14 cm with stable outer-radius behavior supports coverage-oriented continuation; little or no improvement, broad-radius degradation, or predominantly post-entry failures redirects the next decision toward the implicated stabilization, representation, dynamics, or geometry mechanism. An implementation or diagnostic limitation may yield a limited or inconclusive closure while preserving the unresolved distinction.",
-          "goal_connection": "The only measured candidate succeeds on 105/160 held-out official-distribution episodes (65.625%), with the largest observed deficit below the 14 cm training lower bound. A full-radius candidate could directly reduce that gap, and matched held-out diagnostics can determine whether remaining failures are reach/geometry failures or interruptions after entry. The result will choose between continuing coverage-oriented development and redirecting effort toward stabilization, representation, dynamics, or geometry.",
-          "handoff_conclusion": "Observed facts: T1 trained the existing PPO recipe with 14-20 cm target exposure and produced checkpoints whose training proxy rose to 0.96 by 115712 steps; these proxies are exposure-limited and are not development performance. M1 evaluated the complete T1:checkpoint-115712 artifact on 160 held-out official-distribution episodes and recorded 65.625% success. Its preserved diagnostics show repeated inner-radius failures with first_reach_step null and minimum distances well outside tolerance, alongside successful inner-radius episodes; some reached episodes show hold interruptions, but uninterrupted completion is common when the target is reached. E1 therefore assigns this candidate as best-known only because it is the sole measured candidate, not because it is near the goal. Interpretation: the strongest current explanation is an exposure/geometry mismatch between 14-20 cm training and the official 6-14 cm folded-arm regime. This is supported by the radius-linked reach failures and by the model's prediction that the official annulus is reachable. A consequential alternative is stabilization or policy conditioning: interruption cases demonstrate that reaching is not sufficient, and the observation may not be used robustly in folded configurations. Branch selection, joint-limit margin, Jacobian conditioning, effective inertia, actuator authority, and intersample motion were not measured by M1, so no causal claim about those mechanisms is established. The candidate comparison is single-artifact evidence; it establishes the tested baseline behavior, not that coverage expansion alone will solve the task or that dynamics are irrelevant.",
-          "handoff_question": "Does training the existing PPO implementation with target-radius exposure expanded from 14\u201320 cm to the full official 6\u201320 cm range produce a materially higher uninterrupted held-out success rate toward the 98% goal, while failure diagnostics distinguish residual branch/geometry reach failures from post-entry stabilization failures?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does training the existing PPO implementation with target-radius exposure expanded from 14\u201320 cm to the full official 6\u201320 cm range produce a materially higher uninterrupted held-out success rate toward the 98% goal, while failure diagnostics distinguish residual branch/geometry reach failures from post-entry stabilization failures?",
-          "rationale": "The measured baseline is substantially below goal and is the sole evaluated candidate, so official assessment would terminate the campaign on weak evidence. The radius-linked failures make full-radius exposure the highest-value bounded candidate test, but successful reaches followed by hold interruptions and unmeasured branch/dynamic quantities are consequential counterevidence. This inquiry tests the complete changed artifact against the existing measured baseline and preserves diagnostics needed to avoid over-attributing any improvement to coverage alone.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E3",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a full-radius-trained candidate and the measured baseline have comparable held-out evaluation evidence on a non-overlapping panel, including radius-stratified success and preserved first-entry, hold-interruption, velocity/action, branch/limit, and intersample-distance diagnostics where available. A reproducible improvement concentrated below 14 cm with stable outer-radius behavior supports coverage-oriented continuation; little or no improvement, broad-radius degradation, or predominantly post-entry failures redirects the next decision toward the implicated stabilization, representation, dynamics, or geometry mechanism. An implementation or diagnostic limitation may yield a limited or inconclusive closure while preserving the unresolved distinction.",
-        "goal_connection": "The only measured candidate succeeds on 105/160 held-out official-distribution episodes (65.625%), with the largest observed deficit below the 14 cm training lower bound. A full-radius candidate could directly reduce that gap, and matched held-out diagnostics can determine whether remaining failures are reach/geometry failures or interruptions after entry. The result will choose between continuing coverage-oriented development and redirecting effort toward stabilization, representation, dynamics, or geometry.",
-        "question": "Does training the existing PPO implementation with target-radius exposure expanded from 14\u201320 cm to the full official 6\u201320 cm range produce a materially higher uninterrupted held-out success rate toward the 98% goal, while failure diagnostics distinguish residual branch/geometry reach failures from post-entry stabilization failures?",
-        "rationale": "The measured baseline is substantially below goal and is the sole evaluated candidate, so official assessment would terminate the campaign on weak evidence. The radius-linked failures make full-radius exposure the highest-value bounded candidate test, but successful reaches followed by hold interruptions and unmeasured branch/dynamic quantities are consequential counterevidence. This inquiry tests the complete changed artifact against the existing measured baseline and preserves diagnostics needed to avoid over-attributing any improvement to coverage alone."
-      }
-    },
-    "request_fingerprint": "1361e85eb106a96993be2adff4f6cdd3b94ea934be78a1a092b0c96d907286c4",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E1 using T1 and M1. No working or retained candidate. T1 produced a family of checkpoints, but only T1:checkpoint-115712 has completed development evaluation; its late-training proxy rank does not certify superiority over unmeasured checkpoints.",
     "completed_operations": [
