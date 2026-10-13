@@ -23,6 +23,8 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+STABILIZATION_BAND_WIDTH = 0.005
+STABILIZATION_VELOCITY_COST_COEFFICIENT = 0.02
 
 
 @dataclass(frozen=True)
@@ -44,6 +46,27 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _stabilization_band_weight(
+    distance: float, success_threshold: float
+) -> float:
+    """Weight velocity cost near the tolerance boundary.
+
+    The cost is full inside the tolerance and tapers smoothly to zero over a
+    narrow outside band.  The outside portion supplies a braking signal before
+    the hold counter can start, without changing the binary success test.
+    """
+    if STABILIZATION_BAND_WIDTH <= 0:
+        raise ValueError("STABILIZATION_BAND_WIDTH must be positive")
+    if distance <= success_threshold:
+        return 1.0
+    if distance >= success_threshold + STABILIZATION_BAND_WIDTH:
+        return 0.0
+
+    fraction = (distance - success_threshold) / STABILIZATION_BAND_WIDTH
+    smoothstep = fraction * fraction * (3.0 - 2.0 * fraction)
+    return float(1.0 - smoothstep)
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,6 +76,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    joint_velocities: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -95,6 +119,18 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    stabilization_penalty = 0.0
+    if joint_velocities is not None:
+        velocity_energy = float(
+            np.sum(np.square(np.asarray(joint_velocities, dtype=np.float64)))
+        )
+        stabilization_penalty = -(
+            STABILIZATION_VELOCITY_COST_COEFFICIENT
+            * _stabilization_band_weight(current_distance, success_threshold)
+            * velocity_energy
+        )
+    reward += stabilization_penalty
+
     return RewardResult(
         total=float(reward),
         components={
@@ -104,5 +140,6 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "stabilization_penalty": float(stabilization_penalty),
         },
     )
