@@ -4609,6 +4609,404 @@
       "status": "failed",
       "superseded_by": "M12",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T08:44:55Z",
+      "error": null,
+      "id": "M12",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run the controlled verification for the paired evaluation analysis before applying it to M8 and M10.",
+        "measurements": [
+          {
+            "args": [
+              "--check",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json",
+            "instrument": "python_module",
+            "label": "paired_evaluation_analysis_check",
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "rationale": "The analysis module is the instrument that will close I1. Its independent fixture check exercises strict episode/seed joins, radius-bin boundaries, all branch strata, success aggregation, failure-mode predicates, paired differences, and rejection of malformed inputs. It is a software-analysis validity check, not a policy-performance claim."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--check",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "paired_evaluation_analysis_check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M12-1-paired_evaluation_analysis_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/branch_successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/candidate_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/full_failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/negative_cases",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/outer_failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/radius_bin_full_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/radius_bin_outer_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/branch_successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/candidate_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/negative_cases",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "outer_only"
+                    ],
+                    "path": "/observed/radius_bin_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/both",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/folded_only",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/none",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/open_only",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected/candidate_summaries/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected/candidate_summaries/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/reached_but_never_completed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/negative_cases/invalid_branch_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/negative_cases/mismatched_join_seed_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/reached_but_never_completed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/candidate_summaries/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/candidate_summaries/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/failure_mode_counts/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/failure_mode_counts/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/negative_cases/invalid_branch_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/negative_cases/mismatched_join_seed_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "5bd1e9a3fcb864decfcf17239093d019d20b830ca432608c794458b33f8bc935"
+            },
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "792dcc76d4076a49646e99fcf6e1c928de24844b",
+            "fingerprint": "8efb8dcef486184bf2dbda4bbf050fba8d06ddf845f4728b045294a8c9c10393",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/paired_evaluation_analysis.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M11"
     }
   ],
   "pending_operation": {
@@ -4649,7 +5047,32 @@
             "path": "robot_learning/lab/paired_evaluation_analysis.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "792dcc76d4076a49646e99fcf6e1c928de24844b",
+          "fingerprint": "8efb8dcef486184bf2dbda4bbf050fba8d06ddf845f4728b045294a8c9c10393",
+          "manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ]
+        },
         "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
         "effective_parameters": {
           "algorithm": {
@@ -4690,15 +5113,663 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--check",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+          ],
+          "instrument": "python_module",
+          "label": "paired_evaluation_analysis_check",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M12-1-paired_evaluation_analysis_check.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/check",
+                  "type": "string"
+                },
+                {
+                  "entries": 5,
+                  "path": "/checked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/expected",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/observed",
+                  "type": "object"
+                },
+                {
+                  "path": "/status",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/branch_successes",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/candidate_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/expected/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected/full_failure_mode_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/negative_cases",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/expected/outer_failure_mode_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/paired_discordance_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/radius_bin_full_successes",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/expected/radius_bin_outer_successes",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/branch_successes",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/candidate_summaries",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/failure_mode_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/negative_cases",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/observed/paired_discordance_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "full_radius",
+                    "label",
+                    "outer_only"
+                  ],
+                  "path": "/observed/radius_bin_successes",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/branch_successes/both",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/branch_successes/folded_only",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/branch_successes/none",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/expected/branch_successes/open_only",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/expected/candidate_summaries/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/expected/candidate_summaries/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/expected/full_failure_mode_counts/interrupted_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/full_failure_mode_counts/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/full_failure_mode_counts/reached_but_never_completed",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/negative_cases/invalid_branch_rejected",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/negative_cases/mismatched_join_seed_rejected",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/expected/outer_failure_mode_counts/interrupted_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/outer_failure_mode_counts/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/outer_failure_mode_counts/reached_but_never_completed",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/paired_discordance_counts/both_failure",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/paired_discordance_counts/both_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/paired_discordance_counts/full_radius_only_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/expected/paired_discordance_counts/outer_only_success",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/branch_successes/both",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/branch_successes/folded_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/branch_successes/none",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/observed/branch_successes/open_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/candidate_summaries/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/observed/candidate_summaries/outer_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/failure_mode_counts/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/observed/failure_mode_counts/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/observed/negative_cases/invalid_branch_rejected",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/negative_cases/mismatched_join_seed_rejected",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/observed/paired_discordance_counts/both_failure",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/paired_discordance_counts/both_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/paired_discordance_counts/full_radius_only_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/observed/paired_discordance_counts/outer_only_success",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "5bd1e9a3fcb864decfcf17239093d019d20b830ca432608c794458b33f8bc935"
+          },
+          "module": "robot_learning.lab.paired_evaluation_analysis"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--check",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_check.json"
+            ],
+            "instrument": "python_module",
+            "label": "paired_evaluation_analysis_check",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M12-1-paired_evaluation_analysis_check.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/check",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/checked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/expected",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/observed",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/status",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/branch_successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/candidate_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/full_failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/negative_cases",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/expected/outer_failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/radius_bin_full_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/expected/radius_bin_outer_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/branch_successes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/candidate_summaries",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/failure_mode_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/negative_cases",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/observed/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "outer_only"
+                    ],
+                    "path": "/observed/radius_bin_successes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/both",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/folded_only",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/none",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/expected/branch_successes/open_only",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected/candidate_summaries/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/expected/candidate_summaries/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/full_failure_mode_counts/reached_but_never_completed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/negative_cases/invalid_branch_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/negative_cases/mismatched_join_seed_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/outer_failure_mode_counts/reached_but_never_completed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/expected/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/observed/branch_successes/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/candidate_summaries/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/observed/candidate_summaries/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/failure_mode_counts/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/observed/failure_mode_counts/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/observed/negative_cases/invalid_branch_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/negative_cases/mismatched_join_seed_rejected",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/observed/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "5bd1e9a3fcb864decfcf17239093d019d20b830ca432608c794458b33f8bc935"
+            },
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "792dcc76d4076a49646e99fcf6e1c928de24844b",
+            "fingerprint": "8efb8dcef486184bf2dbda4bbf050fba8d06ddf845f4728b045294a8c9c10393",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b649e60b61a1303612cb7af3266c014d09e17245ca1f511d643bd30459cf9fad",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/paired_evaluation_analysis.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M12",
     "inquiry_id": "I1",
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Run the controlled verification for the paired evaluation analysis before applying it to M8 and M10.",
@@ -4767,7 +5838,8 @@
       "M8",
       "M9",
       "T2",
-      "M10"
+      "M10",
+      "M12"
     ],
     "scientific_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d"
   },
