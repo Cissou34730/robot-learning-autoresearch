@@ -2478,13 +2478,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal reached; success 98.0%; 200 episodes",
   "model_roles": {
     "best_known": "T3:checkpoint-90112",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t3-cfad5f12a-e7043a7ed87b4e4bb05a92c3df900652be315585b462751585dd2740ee15d8c1",
+    "completed_at": "2026-10-13T21:04:43Z",
+    "fingerprint": "e7043a7ed87b4e4bb05a92c3df900652be315585b462751585dd2740ee15d8c1",
+    "model": "T3:checkpoint-90112",
+    "status": "passed",
+    "summary": "goal reached; success 98.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-13T16:11:24Z",
@@ -7577,7 +7584,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-13T21:03:34Z",
+      "completed_at": "2026-10-13T21:04:43Z",
       "error": null,
       "id": "E13",
       "inquiry_id": null,
@@ -7588,7 +7595,7 @@
       },
       "result": {
         "model": "T3:checkpoint-90112",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_passed"
       },
       "session_id": "S6",
       "status": "completed",
@@ -7642,6 +7649,6 @@
   "terminal_state": {
     "model": "T3:checkpoint-90112",
     "reason": "Request the protected 200-episode official assessment for the explicitly assigned best-known artifact T3:checkpoint-90112. On the fresh non-overlapping M10 panel it achieved 158/160 = 98.75%, above the 98% development threshold; M11 showed exact preservation of T2's [6,10) 52/53 and [10,14) 34/34 strata, recovery of [14,17) to 41/41 and [17,20] to 31/32, and only one no-entry plus one post-entry failure, with hold interruptions reduced from nine to one. The transfer used a complete artifact with no exact saved-component matches to T2, while T3:checkpoint-120832 tied the measured result; E10 correctly selected the proxy-nominated 90112 checkpoint without granting terminal-checkpoint privilege. We do not claim the reward terms, PPO, full-radius exposure, or transfer recipe caused the improvement: the evidence supports only the complete-artifact result. Residual branch/limit uncertainty, persistent hold-window action saturation, one transfer seed, and the two development failures remain explicit limitations, but they do not identify a tested variant or mechanism whose expected contribution justifies delaying the irreversible goal test. Further inquiry would add characterization rather than direct certification and could not remove the protected-panel generalization uncertainty. The official assessment now directly determines whether the human criterion of at least 196/200 uninterrupted 100-step holds is met; its distinct fixed panel preserves the required assessment boundary.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_passed"
   }
 }
