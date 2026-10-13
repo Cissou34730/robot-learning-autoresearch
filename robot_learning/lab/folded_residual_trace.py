@@ -262,6 +262,7 @@ def collect_panel(
     episodes: int = 160,
     seed: int = 4200,
     controls: int | None = None,
+    algorithm: str | None = None,
 ) -> dict:
     """Collect the full outcome panel, retaining detailed frames after selection."""
     if episodes < 1:
@@ -269,7 +270,7 @@ def collect_panel(
     if controls is not None and controls < 0:
         raise ValueError("controls must be non-negative")
 
-    runtime = load_runtime(Path(model_path))
+    runtime = load_runtime(Path(model_path), algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
     production_timing = {
         "frame_skip": int(env.frame_skip),
@@ -376,9 +377,14 @@ def write_panel(
     seed: int,
     output: Path,
     controls: int | None = None,
+    algorithm: str | None = None,
 ) -> None:
     panel = collect_panel(
-        model_path, episodes=episodes, seed=seed, controls=controls
+        model_path,
+        episodes=episodes,
+        seed=seed,
+        controls=controls,
+        algorithm=algorithm,
     )
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -393,6 +399,7 @@ def main() -> None:
     parser.add_argument("--episodes", type=int, default=160)
     parser.add_argument("--seed", type=int, default=4200)
     parser.add_argument("--controls", type=int, default=None)
+    parser.add_argument("--algorithm", default=None)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     write_panel(
@@ -400,6 +407,7 @@ def main() -> None:
         episodes=args.episodes,
         seed=args.seed,
         controls=args.controls,
+        algorithm=args.algorithm,
         output=args.output,
     )
 
