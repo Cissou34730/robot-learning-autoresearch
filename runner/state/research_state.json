@@ -145,7 +145,7 @@
       "training_steps": 110592
     },
     "T1:checkpoint-115712": {
-      "artifact": "campaigns/checkpoints/candidates/dc48cc2f-7672-4843-9be3-94851fc35aed/t1/checkpoint-115712",
+      "artifact": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t1-cfbc9e22f-43272f9c5c1562faee61199f18ad26cc4877628fd58643340d818968395cc844",
       "evaluation_artifacts": [
         "campaigns/evaluations/dc48cc2f-7672-4843-9be3-94851fc35aed/evaluation-dc48cc2f-7672-4843-9be3-94851fc35aed-m1-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json"
       ],
@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -837,9 +837,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-115712",
     "retained": {},
     "working": null
   },
@@ -1190,9 +1190,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T16:13:48Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the only candidate with completed development evidence and is therefore the strongest evidence-backed baseline, although its 65.625% held-out success is far below the 98% goal. Its diagnostic artifact shows the current gap is concentrated in the official inner-radius regime rather than being established as a general hold-controller failure."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the only candidate with completed development evidence and is therefore the strongest evidence-backed baseline, although its 65.625% held-out success is far below the 98% goal. Its diagnostic artifact shows the current gap is concentrated in the official inner-radius regime rather than being established as a general hold-controller failure."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/dc48cc2f-7672-4843-9be3-94851fc35aed/t1-cfbc9e22f-43272f9c5c1562faee61199f18ad26cc4877628fd58643340d818968395cc844",
+        "fingerprint": "43272f9c5c1562faee61199f18ad26cc4877628fd58643340d818968395cc844",
+        "source": "campaigns/checkpoints/candidates/dc48cc2f-7672-4843-9be3-94851fc35aed/t1/checkpoint-115712"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the only candidate with completed development evidence and is therefore the strongest evidence-backed baseline, although its 65.625% held-out success is far below the 98% goal. Its diagnostic artifact shows the current gap is concentrated in the official inner-radius regime rather than being established as a general hold-controller failure."
+      }
+    },
+    "request_fingerprint": "90637512f9ee996248a6e564433da308314988b59c84623a91314a400962045e",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1213,7 +1287,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E1"
     ],
     "scientific_parent_commit": "2445e31277491bdefad9e1638a0a5d370f96d92e"
   },
