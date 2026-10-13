@@ -93,8 +93,12 @@ def _controlled_pair() -> tuple[dict[str, Any], dict[str, Any]]:
         _diagnostic(
             episode,
             radius,
-            first_reach_step=None if episode in (0, 2) else 4,
-            branch=None if episode in (0, 2) else ("open" if episode == 1 else "folded"),
+            first_reach_step=None if episode in (0, 2, 4) else 4,
+            branch=(
+                None
+                if episode in (0, 2, 4)
+                else ("open" if episode == 1 else "folded")
+            ),
             hold_interruptions=1 if episode == 3 else 0,
             above_count=episode,
         )
@@ -163,22 +167,22 @@ def run_checks() -> dict[str, Any]:
         "[17,20]",
     ]:
         raise AssertionError("radius strata are not ordered as specified")
-    if strata[0]["candidate"]["episodes"] != 2 or strata[0]["candidate"]["successes"] != 1:
+    if strata[0]["candidate"]["episodes"] != 1 or strata[0]["candidate"]["successes"] != 0:
         raise AssertionError("stratum [6,10) arithmetic is incorrect")
     if comparison["candidate"]["failures"] != {
-        "no_entry_failures": 2,
-        "post_entry_unsuccessful": 1,
+        "no_entry_failures": 3,
+        "post_entry_unsuccessful": 0,
         "hold_interruption_count": 1,
         "episodes_with_hold_interruptions": 1,
     }:
         raise AssertionError("null-safe failure classification is incorrect")
     if comparison["candidate"]["branch_at_first_entry"] != {
         "open": 1,
-        "folded": 2,
-        "null": 2,
+        "folded": 1,
+        "null": 3,
     }:
         raise AssertionError("null-safe branch counting is incorrect")
-    if comparison["candidate"]["first_entry"]["rate_percent"] != 60.0:
+    if comparison["candidate"]["first_entry"]["rate_percent"] != 40.0:
         raise AssertionError("first-entry rate arithmetic is incorrect")
     if (
         comparison["candidate"]["joint_limit_margin"]["target"]["open"]["mean"] != 0.3
