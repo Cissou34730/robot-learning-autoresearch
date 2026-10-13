@@ -32,6 +32,12 @@ RADIUS_BINS = (
     (0.14, 0.18, False, "[0.14,0.18)"),
     (0.18, 0.20, True, "[0.18,0.20]"),
 )
+BEARING_BINS = (
+    (-180.0, -90.0, False, "[-180,-90)"),
+    (-90.0, 0.0, False, "[-90,0)"),
+    (0.0, 90.0, False, "[0,90)"),
+    (90.0, 180.0, True, "[90,180]"),
+)
 BRANCH_STRATA = ("both", "open_only", "folded_only", "none")
 SUCCESS_HOLD_STEPS = 100
 
@@ -146,6 +152,18 @@ def _radius_bin(radius_cm: float) -> str:
     )
 
 
+def _bearing_bin(angle_degrees: float) -> str:
+    for lower, upper, upper_inclusive, label in BEARING_BINS:
+        if lower <= angle_degrees < upper or (
+            upper_inclusive and lower <= angle_degrees <= upper
+        ):
+            return label
+    raise ValueError(
+        "target_angle_degrees is outside the fixed [-180,180] degree range: "
+        f"{angle_degrees}"
+    )
+
+
 def _branch_from_flags(open_legal: bool, folded_legal: bool) -> str:
     if open_legal and folded_legal:
         return "both"
@@ -185,7 +203,10 @@ def _validate_diagnostic_row(row: Any, index: int) -> dict[str, Any]:
     radius_cm = _require_number(
         row["target_radius_cm"], f"{context}.target_radius_cm", minimum=0.0
     )
-    _require_number(row["target_angle_degrees"], f"{context}.target_angle_degrees")
+    angle_degrees = _require_number(
+        row["target_angle_degrees"], f"{context}.target_angle_degrees"
+    )
+    _bearing_bin(angle_degrees)
     if not isinstance(row["ik_open_legal"], bool) or not isinstance(
         row["ik_folded_legal"], bool
     ):
@@ -369,6 +390,17 @@ def _check_shared_panel(
             raise ValueError(
                 f"paired artifacts have mismatched target radii at episode {outer_item['episode']}"
             )
+        outer_bearing_bin = _bearing_bin(float(outer_diag["target_angle_degrees"]))
+        full_bearing_bin = _bearing_bin(float(full_diag["target_angle_degrees"]))
+        if outer_bearing_bin != full_bearing_bin or not math.isclose(
+            float(outer_diag["target_angle_degrees"]),
+            float(full_diag["target_angle_degrees"]),
+            rel_tol=0.0,
+            abs_tol=1e-9,
+        ):
+            raise ValueError(
+                f"paired artifacts have mismatched target angles at episode {outer_item['episode']}"
+            )
 
 
 def _mean(values: list[float]) -> float | None:
@@ -395,6 +427,13 @@ def _aggregate(items: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "never_reached_count": sum(
             item["diagnostic"]["first_reach_step"] is None for item in items
+        ),
+        "mean_in_tolerance_steps": _mean(
+            [float(item["diagnostic"]["in_tolerance_steps"]) for item in items]
+        ),
+        "max_in_tolerance_steps": max(
+            (int(item["diagnostic"]["in_tolerance_steps"]) for item in items),
+            default=None,
         ),
         "mean_minimum_distance_cm": _mean(
             [float(item["diagnostic"]["min_distance_cm"]) for item in items]
@@ -500,6 +539,29 @@ def analyze_documents(
             }
         )
 
+    bearing_bins: list[dict[str, Any]] = []
+    for lower, upper, upper_inclusive, label in BEARING_BINS:
+        outer_items = [
+            item
+            for item in outer
+            if _bearing_bin(float(item["diagnostic"]["target_angle_degrees"])) == label
+        ]
+        full_items = [
+            item
+            for item in full
+            if _bearing_bin(float(item["diagnostic"]["target_angle_degrees"])) == label
+        ]
+        bearing_bins.append(
+            {
+                "label": label,
+                "lower_angle_degrees": lower,
+                "upper_angle_degrees": upper,
+                "upper_inclusive": upper_inclusive,
+                "outer_only": _candidate_aggregate(outer_items, "outer_only"),
+                "full_radius": _candidate_aggregate(full_items, "full_radius"),
+            }
+        )
+
     branch_strata: dict[str, Any] = {}
     for branch in BRANCH_STRATA:
         outer_items = [
@@ -544,6 +606,7 @@ def analyze_documents(
         },
         "paired_discordance_counts": _paired_discordance(outer, full),
         "radius_bins": radius_bins,
+        "bearing_bins": bearing_bins,
         "branch_strata": branch_strata,
         "failure_modes": {
             "outer_only": outer_failure_modes,
@@ -577,9 +640,14 @@ def _fixture_artifact(
     first_reaches: list[int | None],
     held_steps: list[int],
     interruptions: list[int],
+    angles_degrees: list[float] | None = None,
 ) -> dict[str, Any]:
     results = []
     diagnostics = []
+    if angles_degrees is None:
+        angles_degrees = [float(episode * 20) for episode in range(len(successes))]
+    if len(angles_degrees) != len(successes):
+        raise ValueError("controlled fixture angles must match the episode count")
     for episode, (
         success,
         radius_cm,
@@ -620,7 +688,7 @@ def _fixture_artifact(
                 "episode": episode,
                 "episode_seed": 100 + episode,
                 "target_radius_cm": radius_cm,
-                "target_angle_degrees": float(episode * 20),
+                "target_angle_degrees": angles_degrees[episode],
                 "ik_open_legal": legal_flags[0],
                 "ik_folded_legal": legal_flags[1],
                 "ik_branch_classification": branch,
@@ -679,12 +747,33 @@ def _run_check(output_path: Path) -> None:
         [50, 100, 30, 100],
         [1, 0, 0, 0],
     )
+    bearing_outer_fixture = _fixture_artifact(
+        [True, False, False, False, True],
+        [6.0, 10.0, 14.0, 18.0, 20.0],
+        ["both", "open_only", "folded_only", "none", "both"],
+        [10, None, 20, 30, 5],
+        [100, 0, 30, 40, 100],
+        [0, 0, 0, 0, 0],
+        [-180.0, -90.0, 0.0, 90.0, 180.0],
+    )
+    bearing_full_fixture = _fixture_artifact(
+        [False, True, False, False, True],
+        [6.0, 10.0, 14.0, 18.0, 20.0],
+        ["both", "open_only", "folded_only", "none", "both"],
+        [10, 8, 20, 30, 5],
+        [50, 100, 30, 40, 100],
+        [0, 0, 0, 0, 0],
+        [-180.0, -90.0, 0.0, 90.0, 180.0],
+    )
     with tempfile.TemporaryDirectory(prefix="paired-evaluation-check-") as directory:
         outer_path = Path(directory) / "outer.json"
         full_path = Path(directory) / "full.json"
         _write_json(outer_path, outer_fixture)
         _write_json(full_path, full_fixture)
         observed = analyze_paths(outer_path, full_path)
+    bearing_observed = analyze_documents(
+        bearing_outer_fixture, bearing_full_fixture
+    )
 
     expected_discordance = {
         "outer_only_success": 1,
@@ -706,6 +795,8 @@ def _run_check(output_path: Path) -> None:
             "max_held_steps": 100,
             "interrupted_episode_count": 1,
             "never_reached_count": 1,
+            "mean_in_tolerance_steps": 57.5,
+            "max_in_tolerance_steps": 100,
         },
         "full_radius": {
             "successes": 2,
@@ -714,6 +805,8 @@ def _run_check(output_path: Path) -> None:
             "max_held_steps": 100,
             "interrupted_episode_count": 1,
             "never_reached_count": 0,
+            "mean_in_tolerance_steps": 70.0,
+            "max_in_tolerance_steps": 100,
         },
     }
     for candidate, expected in expected_candidate_summaries.items():
@@ -732,6 +825,32 @@ def _run_check(output_path: Path) -> None:
             raise AssertionError("outer-only radius-stratified success mismatch")
         if radius_bin["full_radius"]["successes"] != expected_full_counts[index]:
             raise AssertionError("full-radius radius-stratified success mismatch")
+    expected_bearing_outer_counts = [1, 0, 0, 1]
+    expected_bearing_full_counts = [0, 1, 0, 1]
+    expected_bearing_bin_counts = [1, 1, 1, 2]
+    if len(bearing_observed["bearing_bins"]) != len(BEARING_BINS):
+        raise AssertionError("the controlled bearing panel did not retain all bins")
+    for index, bearing_bin in enumerate(bearing_observed["bearing_bins"]):
+        if (
+            bearing_bin["outer_only"]["episode_count"]
+            != expected_bearing_bin_counts[index]
+        ):
+            raise AssertionError("controlled bearing-bin episode count mismatch")
+        if (
+            bearing_bin["full_radius"]["episode_count"]
+            != expected_bearing_bin_counts[index]
+        ):
+            raise AssertionError("full-radius bearing-bin episode count mismatch")
+        if (
+            bearing_bin["outer_only"]["successes"]
+            != expected_bearing_outer_counts[index]
+        ):
+            raise AssertionError("outer-only bearing-stratified success mismatch")
+        if (
+            bearing_bin["full_radius"]["successes"]
+            != expected_bearing_full_counts[index]
+        ):
+            raise AssertionError("full-radius bearing-stratified success mismatch")
     expected_branch_successes = {
         "both": (1, 0),
         "open_only": (0, 1),
@@ -781,6 +900,16 @@ def _run_check(output_path: Path) -> None:
         negative_cases["invalid_branch_rejected"] = True
     else:
         negative_cases["invalid_branch_rejected"] = False
+    mismatched_angle = copy.deepcopy(bearing_full_fixture)
+    mismatched_angle["research_evidence"]["episode_diagnostics"][0][
+        "target_angle_degrees"
+    ] = -179.0
+    try:
+        analyze_documents(bearing_outer_fixture, mismatched_angle)
+    except ValueError:
+        negative_cases["mismatched_join_angle_rejected"] = True
+    else:
+        negative_cases["mismatched_join_angle_rejected"] = False
     if not all(negative_cases.values()):
         raise AssertionError(f"validation negative cases were not rejected: {negative_cases}")
 
@@ -805,6 +934,22 @@ def _run_check(output_path: Path) -> None:
                 }
                 for item in observed["radius_bins"]
             ],
+            "bearing_bin_successes": [
+                {
+                    "label": item["label"],
+                    "outer_only": item["outer_only"]["successes"],
+                    "full_radius": item["full_radius"]["successes"],
+                }
+                for item in bearing_observed["bearing_bins"]
+            ],
+            "bearing_bin_counts": [
+                {
+                    "label": item["label"],
+                    "outer_only": item["outer_only"]["episode_count"],
+                    "full_radius": item["full_radius"]["episode_count"],
+                }
+                for item in bearing_observed["bearing_bins"]
+            ],
             "branch_successes": {
                 branch: {
                     "outer_only": item["outer_only"]["successes"],
@@ -826,18 +971,26 @@ def _run_check(output_path: Path) -> None:
             "candidate_summaries": expected_candidate_summaries,
             "radius_bin_outer_successes": expected_outer_counts,
             "radius_bin_full_successes": expected_full_counts,
+            "bearing_bin_outer_successes": expected_bearing_outer_counts,
+            "bearing_bin_full_successes": expected_bearing_full_counts,
+            "bearing_bin_outer_counts": expected_bearing_bin_counts,
+            "bearing_bin_full_counts": expected_bearing_bin_counts,
             "branch_successes": expected_branch_successes,
             "outer_failure_mode_counts": dict(zip(modes, expected_outer_failure_counts)),
             "full_failure_mode_counts": dict(zip(modes, expected_full_failure_counts)),
             "negative_cases": {
                 "mismatched_join_seed_rejected": True,
                 "invalid_branch_rejected": True,
+                "mismatched_join_angle_rejected": True,
             },
         },
         "checked_scope": [
             "JSON loading and paired episode-seed validation",
             "radius-bin boundary assignment including 0.06, 0.10, 0.14, and 0.20 m",
+            "bearing-bin boundary assignment at -180, -90, 0, 90, and 180 degrees",
+            "paired target-angle validation",
             "branch-stratum success counts",
+            "mean and maximum in-tolerance-step aggregation",
             "failure-mode predicates and paired count differences",
             "rejection of mismatched joins and invalid branch categories",
         ],
