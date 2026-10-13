@@ -1659,7 +1659,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 14,
+    "measurement": 15,
     "session": 3,
     "training": 2
   },
@@ -5864,9 +5864,1344 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T08:49:33Z",
+      "error": null,
+      "id": "M15",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Rerun the complete paired M8 outer-only and M10 full-radius development analysis with radius, bearing, branch, hold, failure-mode, action, and velocity diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--outer-only",
+              "{input:outer_evaluation}",
+              "--full-radius",
+              "{input:full_evaluation}",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json",
+            "inputs": {
+              "full_evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M10"
+              },
+              "outer_evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M8"
+              }
+            },
+            "instrument": "python_module",
+            "label": "paired_m8_m10_analysis_v2",
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "rationale": "M14 validated the extended analysis instrument. This rerun supplies the missing bearing-stratified and in-tolerance summaries required to close I1 while retaining exact artifact bindings and official-geometry pairing."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--outer-only",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+              "--full-radius",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+            ],
+            "instrument": "python_module",
+            "label": "paired_m8_m10_analysis_v2",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M15-1-paired_evaluation_analysis_m8_m10_v2.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "lower_angle_degrees",
+                      "outer_only",
+                      "upper_angle_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/bearing_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/branch_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidates",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_mode_paired_differences",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_modes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/input_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "lower_radius_m",
+                      "outer_only",
+                      "upper_inclusive",
+                      "upper_radius_m"
+                    ],
+                    "path": "/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/candidates/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/candidates/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/interrupted_hold",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/reached_but_never_completed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_modes/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_modes/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/input_artifacts/full_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifacts/outer_only",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/branch_strata/both/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/both/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/both/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/folded_only/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/folded_only/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/folded_only/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/none/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/none/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/none/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/open_only/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/open_only/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/open_only/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidates/full_radius/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/candidates/full_radius/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/interrupted_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_in_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_joint_velocity_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_in_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_joint_velocity_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_minimum_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/never_reached_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "3ae16d66486c8170a1b0812079bbdbf03b34ef0da9150e00decde20bf3092209",
+              "input_artifacts": {
+                "full_evaluation": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "095aab766a88807852a971d25b514304fd267709b4b9f64d053f0393e72eee95"
+                },
+                "outer_evaluation": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+                  "operation_id": "M8",
+                  "recorded_artifact_fingerprint": "9f06fdec56e79f2eb49bcfb3633b04008c6d91b6583fbb243069f5d440b01938"
+                }
+              }
+            },
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "a4d54f1f5417653fe8271472ec10658c1f7ef94b",
+            "fingerprint": "20a01c612151bcc0bb4a95215e0780b2dc05d78c2fe77c66ce58601c0e1b0f52",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/paired_evaluation_analysis.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--outer-only",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+            "--full-radius",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+          ],
+          "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json",
+          "input_artifacts": {
+            "full_evaluation": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+              "operation_id": "M10",
+              "recorded_artifact_fingerprint": "095aab766a88807852a971d25b514304fd267709b4b9f64d053f0393e72eee95"
+            },
+            "outer_evaluation": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+              "operation_id": "M8",
+              "recorded_artifact_fingerprint": "9f06fdec56e79f2eb49bcfb3633b04008c6d91b6583fbb243069f5d440b01938"
+            }
+          },
+          "inputs": {
+            "full_evaluation": {
+              "artifact_index": 0,
+              "operation_id": "M10"
+            },
+            "outer_evaluation": {
+              "artifact_index": 0,
+              "operation_id": "M8"
+            }
+          },
+          "instrument": "python_module",
+          "label": "paired_m8_m10_analysis_v2",
+          "module": "robot_learning.lab.paired_evaluation_analysis"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+            "path": "robot_learning/lab/compiled_dynamics.py"
+          },
+          {
+            "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+            "path": "robot_learning/lab/compiled_dynamics_check.py"
+          },
+          {
+            "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+            "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+          },
+          {
+            "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+            "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+          },
+          {
+            "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+            "path": "robot_learning/lab/paired_evaluation_analysis.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "a4d54f1f5417653fe8271472ec10658c1f7ef94b",
+          "fingerprint": "20a01c612151bcc0bb4a95215e0780b2dc05d78c2fe77c66ce58601c0e1b0f52",
+          "manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ]
+        },
+        "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+            "path": "robot_learning/lab/paired_evaluation_analysis.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/paired_evaluation_analysis.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--outer-only",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+            "--full-radius",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+            "--output",
+            "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+          ],
+          "instrument": "python_module",
+          "label": "paired_m8_m10_analysis_v2",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M15-1-paired_evaluation_analysis_m8_m10_v2.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 12,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis",
+                  "type": "string"
+                },
+                {
+                  "path": "/analysis_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "full_radius",
+                    "label",
+                    "lower_angle_degrees",
+                    "outer_only",
+                    "upper_angle_degrees",
+                    "upper_inclusive"
+                  ],
+                  "path": "/bearing_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/branch_strata",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidates",
+                  "type": "object"
+                },
+                {
+                  "path": "/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/failure_mode_paired_differences",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/failure_modes",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/input_artifacts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/paired_discordance_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "full_radius",
+                    "label",
+                    "lower_radius_m",
+                    "outer_only",
+                    "upper_inclusive",
+                    "upper_radius_m"
+                  ],
+                  "path": "/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/unchecked_scope",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_strata/both",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_strata/folded_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_strata/none",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/branch_strata/open_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/candidates/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/candidates/outer_only",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/failure_mode_paired_differences/interrupted_hold",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/failure_mode_paired_differences/never_reached",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/failure_mode_paired_differences/reached_but_never_completed",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/failure_modes/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/failure_modes/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/input_artifacts/full_radius",
+                  "type": "string"
+                },
+                {
+                  "path": "/input_artifacts/outer_only",
+                  "type": "string"
+                },
+                {
+                  "path": "/paired_discordance_counts/both_failure",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired_discordance_counts/both_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired_discordance_counts/full_radius_only_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired_discordance_counts/outer_only_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/branch_strata/both/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/both/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/both/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/branch_strata/folded_only/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/folded_only/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/folded_only/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/branch_strata/none/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/none/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/none/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/branch_strata/open_only/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/open_only/full_radius",
+                  "type": "object"
+                },
+                {
+                  "entries": 15,
+                  "path": "/branch_strata/open_only/outer_only",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidates/full_radius/candidate",
+                  "type": "string"
+                },
+                {
+                  "path": "/candidates/full_radius/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/interrupted_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/max_in_tolerance_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/max_joint_velocity_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_action_saturation_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_final_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_in_tolerance_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_joint_velocity_max",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/mean_minimum_distance_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/never_reached_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidates/full_radius/successes",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "3ae16d66486c8170a1b0812079bbdbf03b34ef0da9150e00decde20bf3092209",
+            "input_artifacts": {
+              "full_evaluation": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+                "operation_id": "M10",
+                "recorded_artifact_fingerprint": "095aab766a88807852a971d25b514304fd267709b4b9f64d053f0393e72eee95"
+              },
+              "outer_evaluation": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+                "operation_id": "M8",
+                "recorded_artifact_fingerprint": "9f06fdec56e79f2eb49bcfb3633b04008c6d91b6583fbb243069f5d440b01938"
+              }
+            }
+          },
+          "module": "robot_learning.lab.paired_evaluation_analysis"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--outer-only",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+              "--full-radius",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+            ],
+            "instrument": "python_module",
+            "label": "paired_m8_m10_analysis_v2",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/python-module-M15-1-paired_evaluation_analysis_m8_m10_v2.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "lower_angle_degrees",
+                      "outer_only",
+                      "upper_angle_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/bearing_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/branch_strata",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidates",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_mode_paired_differences",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_modes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/input_artifacts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired_discordance_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "full_radius",
+                      "label",
+                      "lower_radius_m",
+                      "outer_only",
+                      "upper_inclusive",
+                      "upper_radius_m"
+                    ],
+                    "path": "/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/unchecked_scope",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/both",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/folded_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/none",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/branch_strata/open_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/candidates/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/candidates/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/interrupted_hold",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/never_reached",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/failure_mode_paired_differences/reached_but_never_completed",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_modes/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_modes/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/input_artifacts/full_radius",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifacts/outer_only",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/both_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/both_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/full_radius_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired_discordance_counts/outer_only_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/branch_strata/both/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/both/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/both/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/folded_only/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/folded_only/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/folded_only/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/none/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/none/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/none/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/branch_strata/open_only/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/open_only/full_radius",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 15,
+                    "path": "/branch_strata/open_only/outer_only",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidates/full_radius/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/candidates/full_radius/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/interrupted_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_in_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/max_joint_velocity_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_final_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_in_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_joint_velocity_max",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/mean_minimum_distance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/never_reached_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidates/full_radius/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "3ae16d66486c8170a1b0812079bbdbf03b34ef0da9150e00decde20bf3092209",
+              "input_artifacts": {
+                "full_evaluation": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m10-T2-checkpoint-120832-160ep-seed4200-ffdcdffe5fb1.json",
+                  "operation_id": "M10",
+                  "recorded_artifact_fingerprint": "095aab766a88807852a971d25b514304fd267709b4b9f64d053f0393e72eee95"
+                },
+                "outer_evaluation": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/evaluation-5ff87d6b-5501-48f6-9b8f-bc6c1cda5323-m8-T1-checkpoint-115712-160ep-seed4200-ffdcdffe5fb1.json",
+                  "operation_id": "M8",
+                  "recorded_artifact_fingerprint": "9f06fdec56e79f2eb49bcfb3633b04008c6d91b6583fbb243069f5d440b01938"
+                }
+              }
+            },
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+              "path": "robot_learning/lab/compiled_dynamics.py"
+            },
+            {
+              "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+              "path": "robot_learning/lab/compiled_dynamics_check.py"
+            },
+            {
+              "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+              "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+            },
+            {
+              "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+              "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+            },
+            {
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "a4d54f1f5417653fe8271472ec10658c1f7ef94b",
+            "fingerprint": "20a01c612151bcc0bb4a95215e0780b2dc05d78c2fe77c66ce58601c0e1b0f52",
+            "manifest": [
+              {
+                "fingerprint": "448cc745d389c569597f50a91a3a1cf43b1d3ae68de997aca866433cd7dafc46",
+                "path": "robot_learning/lab/compiled_dynamics.py"
+              },
+              {
+                "fingerprint": "c67d3dbef7c6e088490a2b39daa971ae4afc099673d00262537c0516a956e805",
+                "path": "robot_learning/lab/compiled_dynamics_check.py"
+              },
+              {
+                "fingerprint": "fe7577e2d9824db23cdc71b487563b78324aa890fded13167b2c6fba927c310a",
+                "path": "robot_learning/lab/evaluation_diagnostics_check.py"
+              },
+              {
+                "fingerprint": "fd98b6ce7cb67a3ff0e087d97a750d1f318fab488aec02ee15f097b86244cc86",
+                "path": "robot_learning/lab/full_radius_training_exposure_check.py"
+              },
+              {
+                "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+                "path": "robot_learning/lab/paired_evaluation_analysis.py"
+              }
+            ]
+          },
+          "code_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "719bd2f5db0d95e5f33d563fc35bd338434f475ee3a521539b0a73f59f9f3711",
+              "path": "robot_learning/lab/paired_evaluation_analysis.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/paired_evaluation_analysis.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M15",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Rerun the complete paired M8 outer-only and M10 full-radius development analysis with radius, bearing, branch, hold, failure-mode, action, and velocity diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--outer-only",
+              "{input:outer_evaluation}",
+              "--full-radius",
+              "{input:full_evaluation}",
+              "--output",
+              "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json"
+            ],
+            "artifact": "campaigns/evaluations/5ff87d6b-5501-48f6-9b8f-bc6c1cda5323/paired_evaluation_analysis_m8_m10_v2.json",
+            "inputs": {
+              "full_evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M10"
+              },
+              "outer_evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M8"
+              }
+            },
+            "instrument": "python_module",
+            "label": "paired_m8_m10_analysis_v2",
+            "module": "robot_learning.lab.paired_evaluation_analysis"
+          }
+        ],
+        "rationale": "M14 validated the extended analysis instrument. This rerun supplies the missing bearing-stratified and in-tolerance summaries required to close I1 while retaining exact artifact bindings and official-geometry pairing."
+      }
+    },
+    "request_fingerprint": "5a2cc3ff09c132896de8acc4ab068aa2fb7ec55a90408611e0203d183177bc22",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working, best-known, and retained roles remain empty. M5 is a physical characterization, not a learned candidate; the inquiry must produce and measure candidate artifacts before a role can be assigned.",
     "completed_operations": [
@@ -5916,7 +7251,8 @@
       "M10",
       "M12",
       "M13",
-      "M14"
+      "M14",
+      "M15"
     ],
     "scientific_parent_commit": "2076e569af4e3fb2d04574bf0149fe394d5a3d1d"
   },
