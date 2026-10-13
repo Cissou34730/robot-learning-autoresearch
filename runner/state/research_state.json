@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a bounded route has a complete candidate artifact and an independent official-geometry development evaluation against T2 with the same episode seeds, together with hold-failure diagnostics sufficient to determine whether the route materially improves complete success and the reached/hold-interruption failure classes. A positive conclusion requires a reproducible candidate-level improvement that makes official assessment the better next choice; a negative or limited conclusion is sufficient if the candidate does not improve complete success or leaves the same consequential deficit, with remaining uncertainty recorded rather than converted into an assessment claim.",
     "goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode panel. T2 is the best-known development candidate at 150/160, so the inquiry targets the ten observed development failures rather than reopening the already resolved outer-only versus full-radius coverage choice. Any candidate must preserve the official target distribution, tolerance, sampled-hold semantics, and unchanged assessment boundary.",
-    "handoff_conclusion": "M1 compatibility verification and M4 repaired behavioral checks establish implementation validity of the candidate-free MuJoCo characterization path, not policy performance. M3 remains execution history only because its serialized trajectory rows were aliased. M5 established finite compiled dynamics, 20 ms policy intervals, approximately +/-5 saturated actuator torque, and a strong opposing-command braking response; absent actuation authority is therefore a weaker first explanation, but braking does not by itself explain learned-policy failures and endpoint samples do not establish continuous within-step stability. The repository exposure difference was initially only a hypothesis. T1 trained the established outer-only 0.14-0.20 m exposure and M8 measured 105/160 (65.625%) on official full-radius geometry. T2 changed the training exposure to 0.06-0.20 m while keeping the PPO recipe, runtime, reward, observations, normalization, and nominal seed unchanged; M10 measured 150/160 (93.75%) on the exact paired panel. M12 and M14 validated the paired-analysis implementation, including strict episode/seed/geometry joins, radius and bearing boundaries, branch strata, hold-step aggregation, failure predicates, and malformed-input rejection. M15 inspected the complete paired artifacts. There were 48 full-radius-only successes, 3 outer-only-only successes, 102 both successes, and 7 both failures. Full-radius versus outer-only success was 100.0% versus 22.5% in [0.06,0.10), 94.3% versus 62.3% in [0.10,0.14), 89.7% versus 94.9% in [0.14,0.18), and 89.3% versus 92.9% in [0.18,0.20]. Never-reached failures fell from 49 to 7; mean minimum distance fell from 2.807 cm to 0.376 cm; mean maximum held steps rose from 66.38 to 93.79; and mean total in-tolerance steps rose from 68.05 to 96.575. Full-radius improved all four bearing sectors (86.3-100.0% versus 48.4-92.2%). The both-branch stratum improved from 69.3% to 97.9%, and open-only was 100% for both; folded-only improved from 14.3% to 50.0% but remains small at 14 episodes, while no none-branch episodes occurred. These observations support full-radius exposure as the next route at artifact-comparison level, not as a causal training-method claim: exposure, saved policy, and learning trajectory changed together. Stabilization/control timing remains a secondary route for the remaining failures, and branch labels do not establish union infeasibility. I1 was closed with a positive, limited conclusion in E4.",
+    "handoff_conclusion": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
     "handoff_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
@@ -1657,7 +1657,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 15,
     "session": 4,
@@ -1666,7 +1666,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -6442,52 +6442,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-13T08:53:13Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
+        "completed_operations": [
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "Before this goal review the campaign used one completed inquiry (I1), three scientific sessions before the current goal review, two 120,000-step training runs (T1 and T2, each completing 120,832 rollout-rounded steps), thirteen completed measurements, and no official assessment. This goal review added E6 best-known assignment and E7 opening I2; the campaign now records two inquiries including I2, four sessions including the current goal review, two training runs, thirteen measurements, and no protected 200-episode assessment.",
+        "current_goal_gap": "On the exact 160-episode official-geometry development panel, T2 succeeded in 150 episodes (93.75%), leaving 10 failures: 7 never reached tolerance and 3 reached tolerance but never completed the hold, with failed interrupted holds among the residual hold failures. The protected 200-episode assessment has not been spent. Continuous within-frame-skip behavior remains unmeasured, folded-only evidence is underpowered at 7/14 successes, and the T1/T2 comparison cannot isolate exposure from the changed learned artifact and trajectory.",
+        "current_synthesis": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
+        "decision_frontier": "The consequential unresolved distinction is whether one bounded stabilization/control-timing development route built on the full-radius T2 candidate can materially improve complete uninterrupted-hold success, rather than only minimum distance or reward, while preserving the official distribution and sampled-hold semantics. Evidence that would revise the direction is an independent official-geometry development comparison against T2 on identical episode seeds, plus hold-failure diagnostics distinguishing never-reached, reached-but-incomplete, and interrupted holds; substep diagnostics would additionally determine whether endpoint success hides within-frame-skip excursions. If a candidate-level improvement is material and reproducible, assessment becomes preferable; if complete success does not improve or the same deficit persists, retain T2 and carry the unresolved mechanism limits into the assessment decision. The prior coverage-versus-stabilization choice is not being reopened: full-radius is the selected route at artifact-comparison level.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "M8",
+          "M10",
+          "M15",
+          "E4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The sole objective remains a learned policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official assessment. T2:checkpoint-120832 is now explicitly the best-known development candidate, but its 150/160 development result is below the objective and is not an official result.",
+        "next_direction_or_closure": "Goal review chose one bounded inquiry rather than the terminal official assessment. I2 is open under E7 and will continue only after this checkpoint. Its work must preserve official target geometry, tolerance, 100-step sampled hold and the protected-assessment boundary; it will close when the specified complete candidate comparison and failure diagnostics support a positive, negative, limited or inconclusive conclusion. The assessment remains available after I2 and will not be treated as a development probe.",
+        "next_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "64f868ab7ce82223832153fc6e614e8394572d80",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
+        "completed_operations": [
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "Before this goal review the campaign used one completed inquiry (I1), three scientific sessions before the current goal review, two 120,000-step training runs (T1 and T2, each completing 120,832 rollout-rounded steps), thirteen completed measurements, and no official assessment. This goal review added E6 best-known assignment and E7 opening I2; the campaign now records two inquiries including I2, four sessions including the current goal review, two training runs, thirteen measurements, and no protected 200-episode assessment.",
+        "current_goal_gap": "On the exact 160-episode official-geometry development panel, T2 succeeded in 150 episodes (93.75%), leaving 10 failures: 7 never reached tolerance and 3 reached tolerance but never completed the hold, with failed interrupted holds among the residual hold failures. The protected 200-episode assessment has not been spent. Continuous within-frame-skip behavior remains unmeasured, folded-only evidence is underpowered at 7/14 successes, and the T1/T2 comparison cannot isolate exposure from the changed learned artifact and trajectory.",
+        "current_synthesis": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
+        "decision_frontier": "The consequential unresolved distinction is whether one bounded stabilization/control-timing development route built on the full-radius T2 candidate can materially improve complete uninterrupted-hold success, rather than only minimum distance or reward, while preserving the official distribution and sampled-hold semantics. Evidence that would revise the direction is an independent official-geometry development comparison against T2 on identical episode seeds, plus hold-failure diagnostics distinguishing never-reached, reached-but-incomplete, and interrupted holds; substep diagnostics would additionally determine whether endpoint success hides within-frame-skip excursions. If a candidate-level improvement is material and reproducible, assessment becomes preferable; if complete success does not improve or the same deficit persists, retain T2 and carry the unresolved mechanism limits into the assessment decision. The prior coverage-versus-stabilization choice is not being reopened: full-radius is the selected route at artifact-comparison level.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "M8",
+          "M10",
+          "M15",
+          "E4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The sole objective remains a learned policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official assessment. T2:checkpoint-120832 is now explicitly the best-known development candidate, but its 150/160 development result is below the objective and is not an official result.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review chose one bounded inquiry rather than the terminal official assessment. I2 is open under E7 and will continue only after this checkpoint. Its work must preserve official target geometry, tolerance, 100-step sampled hold and the protected-assessment boundary; it will close when the specified complete candidate comparison and failure diagnostics support a positive, negative, limited or inconclusive conclusion. The assessment remains available after I2 and will not be treated as a development probe.",
+        "next_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "81508f4b-56d9-4bc9-911e-4de672ff61c3",
+        "campaign_id": "5ff87d6b-5501-48f6-9b8f-bc6c1cda5323",
+        "campaign_usage": "22m35s | 51.46 AIU | prompt 10.1m (93% cached) | output 120.4k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "90747c861daee018bd79debce19d9921cf3de04b",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
+        "completed_operations": [
+          "E6",
+          "E7"
+        ],
+        "cumulative_resource_use": "Before this goal review the campaign used one completed inquiry (I1), three scientific sessions before the current goal review, two 120,000-step training runs (T1 and T2, each completing 120,832 rollout-rounded steps), thirteen completed measurements, and no official assessment. This goal review added E6 best-known assignment and E7 opening I2; the campaign now records two inquiries including I2, four sessions including the current goal review, two training runs, thirteen measurements, and no protected 200-episode assessment.",
+        "current_goal_gap": "On the exact 160-episode official-geometry development panel, T2 succeeded in 150 episodes (93.75%), leaving 10 failures: 7 never reached tolerance and 3 reached tolerance but never completed the hold, with failed interrupted holds among the residual hold failures. The protected 200-episode assessment has not been spent. Continuous within-frame-skip behavior remains unmeasured, folded-only evidence is underpowered at 7/14 successes, and the T1/T2 comparison cannot isolate exposure from the changed learned artifact and trajectory.",
+        "current_synthesis": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
+        "decision_frontier": "The consequential unresolved distinction is whether one bounded stabilization/control-timing development route built on the full-radius T2 candidate can materially improve complete uninterrupted-hold success, rather than only minimum distance or reward, while preserving the official distribution and sampled-hold semantics. Evidence that would revise the direction is an independent official-geometry development comparison against T2 on identical episode seeds, plus hold-failure diagnostics distinguishing never-reached, reached-but-incomplete, and interrupted holds; substep diagnostics would additionally determine whether endpoint success hides within-frame-skip excursions. If a candidate-level improvement is material and reproducible, assessment becomes preferable; if complete success does not improve or the same deficit persists, retain T2 and carry the unresolved mechanism limits into the assessment decision. The prior coverage-versus-stabilization choice is not being reopened: full-radius is the selected route at artifact-comparison level.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "M8",
+          "M10",
+          "M15",
+          "E4",
+          "E6",
+          "E7"
+        ],
+        "human_goal_connection": "The sole objective remains a learned policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official assessment. T2:checkpoint-120832 is now explicitly the best-known development candidate, but its 150/160 development result is below the objective and is not an official result.",
+        "next_direction_or_closure": "Goal review chose one bounded inquiry rather than the terminal official assessment. I2 is open under E7 and will continue only after this checkpoint. Its work must preserve official target geometry, tolerance, 100-step sampled hold and the protected-assessment boundary; it will close when the specified complete candidate comparison and failure diagnostics support a positive, negative, limited or inconclusive conclusion. The assessment remains available after I2 and will not be treated as a development probe.",
+        "next_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?"
+      }
+    },
+    "request_fingerprint": "26944240b8200a13bd513759f6adde61235ce24af5d29d6b002d1f9ba95ea9c9",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Two learned candidates exist: T1 is the outer-only baseline trained over 0.14-0.20 m and measured by M8 at 105/160; T2 is the full-radius candidate trained over 0.06-0.20 m and measured by M10 at 150/160. No working, best-known, or retained role has been assigned. The T2 artifact is the strongest measured development candidate, but role assignment belongs to the next goal-review decision and does not itself certify the human goal.",
+    "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E6 because M10 measured 150/160 on the official full-radius geometry and M15 confirmed the paired development comparison. T1 remains an unassigned outer-only baseline measured by M8 at 105/160. No candidate is certified by this role assignment, and no working or retained role is assigned.",
     "completed_operations": [
-      "T1",
-      "M6",
-      "M7",
-      "M8",
-      "M9",
-      "T2",
-      "M10",
-      "M12",
-      "M13",
-      "M14",
-      "M15",
-      "E4"
+      "E6",
+      "E7"
     ],
-    "cumulative_resource_use": "The campaign has used one inquiry (I1), three scientific sessions, two 120,000-step training runs (T1 outer-only and T2 full-radius; actual checkpoints through 120,832 due rollout rounding), thirteen completed measurements including candidate-free characterization, evaluator checks, exposure validation, paired development evaluations, and analysis checks, plus the completed inquiry close E4. No official 200-episode assessment has been used, no model role has been assigned, and the maintainer allocation was not exceeded.",
-    "current_goal_gap": "No candidate has been assigned a best-known role and no protected 200-episode assessment has been requested. The strongest measured development artifact, T2 checkpoint-120832 evaluated in M10, achieved 150/160 (93.75%), leaving 10 development failures: 7 never reached, 3 reached but never completed, with 3 failed interrupted holds. The remaining mechanisms include stabilization/control timing and a weak folded-only stratum (7/14 successes), while continuous within-frame-skip stability remains unmeasured by endpoint diagnostics. The 160-episode development panel cannot be converted into a 196/200 official claim.",
-    "current_synthesis": "M1 compatibility verification and M4 repaired behavioral checks establish implementation validity of the candidate-free MuJoCo characterization path, not policy performance. M3 remains execution history only because its serialized trajectory rows were aliased. M5 established finite compiled dynamics, 20 ms policy intervals, approximately +/-5 saturated actuator torque, and a strong opposing-command braking response; absent actuation authority is therefore a weaker first explanation, but braking does not by itself explain learned-policy failures and endpoint samples do not establish continuous within-step stability. The repository exposure difference was initially only a hypothesis. T1 trained the established outer-only 0.14-0.20 m exposure and M8 measured 105/160 (65.625%) on official full-radius geometry. T2 changed the training exposure to 0.06-0.20 m while keeping the PPO recipe, runtime, reward, observations, normalization, and nominal seed unchanged; M10 measured 150/160 (93.75%) on the exact paired panel. M12 and M14 validated the paired-analysis implementation, including strict episode/seed/geometry joins, radius and bearing boundaries, branch strata, hold-step aggregation, failure predicates, and malformed-input rejection. M15 inspected the complete paired artifacts. There were 48 full-radius-only successes, 3 outer-only-only successes, 102 both successes, and 7 both failures. Full-radius versus outer-only success was 100.0% versus 22.5% in [0.06,0.10), 94.3% versus 62.3% in [0.10,0.14), 89.7% versus 94.9% in [0.14,0.18), and 89.3% versus 92.9% in [0.18,0.20]. Never-reached failures fell from 49 to 7; mean minimum distance fell from 2.807 cm to 0.376 cm; mean maximum held steps rose from 66.38 to 93.79; and mean total in-tolerance steps rose from 68.05 to 96.575. Full-radius improved all four bearing sectors (86.3-100.0% versus 48.4-92.2%). The both-branch stratum improved from 69.3% to 97.9%, and open-only was 100% for both; folded-only improved from 14.3% to 50.0% but remains small at 14 episodes, while no none-branch episodes occurred. These observations support full-radius exposure as the next route at artifact-comparison level, not as a causal training-method claim: exposure, saved policy, and learning trajectory changed together. Stabilization/control timing remains a secondary route for the remaining failures, and branch labels do not establish union infeasibility. I1 was closed with a positive, limited conclusion in E4.",
-    "decision_frontier": "The immediate coverage-versus-stabilization distinction is resolved for the bounded I1 decision: prioritize the full-radius exposure artifact rather than returning to outer-only coverage. The remaining goal-relevant frontier is whether the full-radius candidate can close the final deficit through ordinary development, stabilization/control timing, or branch-specific work, and whether the 93.75% development result transfers to the protected 200-episode assessment. Folded-only performance is a consequential but underpowered stratum; reached-but-incomplete and failed interrupted holds are consequential stabilization signals; endpoint diagnostics cannot resolve within-frame-skip behavior; and the paired difference cannot isolate radius exposure causally. Bearing variation is not the leading explanation because full-radius improved all inspected sectors. These limits should guide goal review without reopening I1 by drift.",
+    "cumulative_resource_use": "Before this goal review the campaign used one completed inquiry (I1), three scientific sessions before the current goal review, two 120,000-step training runs (T1 and T2, each completing 120,832 rollout-rounded steps), thirteen completed measurements, and no official assessment. This goal review added E6 best-known assignment and E7 opening I2; the campaign now records two inquiries including I2, four sessions including the current goal review, two training runs, thirteen measurements, and no protected 200-episode assessment.",
+    "current_goal_gap": "On the exact 160-episode official-geometry development panel, T2 succeeded in 150 episodes (93.75%), leaving 10 failures: 7 never reached tolerance and 3 reached tolerance but never completed the hold, with failed interrupted holds among the residual hold failures. The protected 200-episode assessment has not been spent. Continuous within-frame-skip behavior remains unmeasured, folded-only evidence is underpowered at 7/14 successes, and the T1/T2 comparison cannot isolate exposure from the changed learned artifact and trajectory.",
+    "current_synthesis": "Established evidence: M1 and M4, with the repaired M5 characterization, establish compatibility and finite compiled dynamics for the candidate-free MuJoCo path, including 20 ms policy intervals, approximately +/-5 saturated actuator torque, and strong opposing-command braking; they do not establish policy performance. M10 measured the full-radius T2 artifact at 150/160, while M8 measured the outer-only T1 artifact at 105/160; M15 verified the paired joins, boundaries, strata and failure decomposition. The full-radius artifact improved the omitted inner-radius regime, reduced never-reached failures, and improved all inspected bearing sectors, so it is the stronger complete candidate and the coverage route should not be reopened without new evidence. Correction to the inherited interpretation: this evidence supports candidate selection only. Because exposure, saved policy and learning trajectory changed together, it does not prove that exposure alone caused the gain, and the improved aggregate result does not establish that stabilization is secondary in a causal sense. The physical model predicts that official success is a sampled uninterrupted hold governed by approach, braking, residual velocity and boundary crossings; endpoint diagnostics cannot establish excursions during the ten internal MuJoCo steps. Competing residual explanations are incomplete reach/control coverage, control timing or overshoot during the sampled hold, and branch-specific folded-posture behavior. M5 makes absent actuation authority a weaker first explanation, but does not resolve these alternatives. The selected next route is therefore a bounded task-preserving development inquiry that can change the complete candidate and directly compare it with T2; it is not a claim that an intervention will succeed.",
+    "decision_frontier": "The consequential unresolved distinction is whether one bounded stabilization/control-timing development route built on the full-radius T2 candidate can materially improve complete uninterrupted-hold success, rather than only minimum distance or reward, while preserving the official distribution and sampled-hold semantics. Evidence that would revise the direction is an independent official-geometry development comparison against T2 on identical episode seeds, plus hold-failure diagnostics distinguishing never-reached, reached-but-incomplete, and interrupted holds; substep diagnostics would additionally determine whether endpoint success hides within-frame-skip excursions. If a candidate-level improvement is material and reproducible, assessment becomes preferable; if complete success does not improve or the same deficit persists, retain T2 and carry the unresolved mechanism limits into the assessment decision. The prior coverage-versus-stabilization choice is not being reopened: full-radius is the selected route at artifact-comparison level.",
     "evidence_references": [
       "M1",
       "M4",
       "M5",
-      "E2",
-      "T1",
-      "M6",
-      "M7",
       "M8",
-      "M9",
-      "T2",
       "M10",
-      "M12",
-      "M14",
       "M15",
-      "E4"
+      "E4",
+      "E6",
+      "E7"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successful episodes out of the protected 200-episode official assessment, with every success requiring a complete uninterrupted 100-step sampled hold. I1 produced the first learned-policy development evidence and resolved the immediate route question: the full-radius artifact is the stronger route toward the goal because its deficit relative to outer-only is concentrated in inner-radius reach coverage. Its 150/160 development result is not official certification and does not establish that exposure alone caused the gain.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed. The evidence-backed next route is to carry the full-radius T2 candidate into goal review and decide between explicit best-known assignment with further stabilization/branch-focused development and the terminal official assessment. Do not describe M10 or M15 as causal proof of full-radius exposure, official 98% performance, or continuous stability. If development continues, preserve the official full-radius distribution and sampled-hold semantics; treat folded-only and reached/interrupted failures as the remaining mechanisms to test rather than reverting to outer-only coverage without new evidence.",
-    "next_question": "At goal review, should the campaign assign the full-radius T2 artifact as the best-known development candidate and continue bounded development focused on stabilization/control timing and folded-only failures, or request the protected 200-episode assessment while keeping the 93.75% development result explicitly distinct from certification?",
-    "scientific_commit": "fe54e1b86520e6f16cbaf8915109318597a94ed6",
-    "session_id": "S3"
+    "human_goal_connection": "The sole objective remains a learned policy achieving at least 196 complete uninterrupted 100-step holds in the protected 200-episode official assessment. T2:checkpoint-120832 is now explicitly the best-known development candidate, but its 150/160 development result is below the objective and is not an official result.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review chose one bounded inquiry rather than the terminal official assessment. I2 is open under E7 and will continue only after this checkpoint. Its work must preserve official target geometry, tolerance, 100-step sampled hold and the protected-assessment boundary; it will close when the specified complete candidate comparison and failure diagnostics support a positive, negative, limited or inconclusive conclusion. The assessment remains available after I2 and will not be treated as a development probe.",
+    "next_question": "Can one bounded, task-preserving stabilization/control-timing development route built on the full-radius T2 candidate reduce the remaining never-reached and reached-but-incomplete failures enough to make the protected 200-episode assessment the better next decision?",
+    "scientific_commit": "90747c861daee018bd79debce19d9921cf3de04b",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -6495,22 +6624,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "81508f4b-56d9-4bc9-911e-4de672ff61c3",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E6",
-      "E7"
-    ],
-    "scientific_parent_commit": "64f868ab7ce82223832153fc6e614e8394572d80"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
