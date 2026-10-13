@@ -61,6 +61,8 @@ EXIT_INTERRUPTED = 130
 
 SHUTDOWN_TIMEOUT_SECONDS = 30.0
 FORCE_STOP_TIMEOUT_SECONDS = 10.0
+MODEL_CALL_RETRY_LIMIT = 5
+MODEL_CALL_RETRY_DELAY_SECONDS = 5.0
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
@@ -2692,6 +2694,7 @@ def session_options(
     client=None,
 ) -> dict:
     from copilot import ToolSet, define_tool
+    from copilot.session_events import AssistantMessageData
     from runner.artifact_evidence_query import (
         ArtifactEvidenceQueryParams,
         query_artifact,
@@ -2708,6 +2711,52 @@ def session_options(
             or (operations is not None and (operations.busy or operations.closed))
         ):
             raise ValueError("Only the active, unlocked main/preliminary PI may query.")
+
+    model_call_retries = 0
+
+    async def on_error_occurred(request, invocation):
+        nonlocal model_call_retries
+        if (
+            invocation.get("session_id") != args.session_id
+            or request.get("sessionId") != args.session_id
+            or request.get("errorContext") != "model_call"
+            or request.get("recoverable") is not True
+            or (operations is not None and operations.closed)
+            or (coding is not None and coding.closed)
+            or stop_requested()
+        ):
+            return None
+        error = request.get("error")
+        message = error.get("message") if isinstance(error, dict) else error
+        if not isinstance(message, str):
+            return None
+        try:
+            details = json.loads(message)
+        except json.JSONDecodeError:
+            return None
+        if not isinstance(details, dict) or (
+            details.get("code") != "invalid_request_body"
+            or details.get("type") != "websocket_error"
+            or details.get("message") != "internal server error"
+        ):
+            return None
+        if model_call_retries >= MODEL_CALL_RETRY_LIMIT:
+            console.line("  ! Copilot model request failed after five retries; stopping")
+            return {"errorHandling": "abort"}
+        model_call_retries += 1
+        console.line(
+            f"  ! Copilot model request failed; retry "
+            f"{model_call_retries}/{MODEL_CALL_RETRY_LIMIT} "
+            f"in {MODEL_CALL_RETRY_DELAY_SECONDS:g}s"
+        )
+        await asyncio.sleep(MODEL_CALL_RETRY_DELAY_SECONDS)
+        if (
+            stop_requested()
+            or (operations is not None and operations.closed)
+            or (coding is not None and coding.closed)
+        ):
+            return {"errorHandling": "abort"}
+        return {"errorHandling": "retry", "retryCount": 1}
 
     async def artifact_evidence_query(params, invocation) -> str:
         authorize_reader(invocation)
@@ -2822,9 +2871,20 @@ def session_options(
         rg_path, authorize_reader,
     )
 
-    on_event, on_permission_request = build_handlers(
+    handle_event, on_permission_request = build_handlers(
         console, finished, preliminary=args.preliminary, operations=operations, coding=coding
     )
+
+    def on_event(event) -> None:
+        nonlocal model_call_retries
+        if (
+            getattr(event, "agent_id", None) is None
+            and isinstance(event.data, AssistantMessageData)
+            and event.data.interaction_id is not None
+        ):
+            model_call_retries = 0
+        handle_event(event)
+
     tools = [*search.tools(), artifact_evidence_tool, training_log_tool, api_reference_tool]
     available = (
         ToolSet()
@@ -2873,7 +2933,8 @@ def session_options(
     options["hooks"] = {
         "on_pre_tool_use": scoped_tool_hook(
             operations=operations, coding=coding, preliminary=args.preliminary
-        )
+        ),
+        "on_error_occurred": on_error_occurred,
     }
     if not args.preliminary:
         options["include_sub_agent_streaming_events"] = True
