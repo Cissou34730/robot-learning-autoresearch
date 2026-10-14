@@ -120,6 +120,9 @@ RESEARCH_TOOLS = [
 ]
 MAIN_PI_TOOLS = ["view", "rg", "glob"]
 CODING_TOOLS = ["view", "apply_patch", "scientific_api_reference"]
+REVIEW_TOOLS = ["view", "scientific_api_reference"]
+REVIEW_MODEL = "gpt-6-luna"
+REVIEW_REASONING = "max"
 MAIN_WRITE_DENIAL = (
     "Ordinary PI sessions have no file-write tools. Use submit_operation for actions. "
     "Use scientific_coding for bounded scientific source changes."
@@ -1786,6 +1789,25 @@ class CodingReport(CodingCheck):
     compatibility_check: CodingCheck | None = None
 
 
+class ReviewFinding(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    location: str = Field(min_length=1)
+    issue: str = Field(min_length=1)
+    evidence: str = Field(min_length=1)
+    consequence: str = Field(min_length=1)
+    confidence: str = Field(min_length=1)
+    check_coverage: str = Field(min_length=1)
+
+
+class ReviewReport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    summary: str = Field(min_length=1)
+    findings: list[ReviewFinding]
+    unchecked_scope: list[str] = Field(min_length=1)
+
+
 class CodingConsole(Console):
     """Collect child accounting without printing its conversation or diffs."""
 
@@ -1923,6 +1945,34 @@ Use {artifact} for the output-path argument.
 Use different artifact filenames for the two checks.
 """
 
+REVIEW_INSTRUCTIONS = """
+You are an independent Python scientific-code reviewer supporting the PI.
+
+Review the original request, actual changes and proposed verification.
+Read relevant scoped files when needed. Treat the coder's claims and expected
+check values as claims to test, not proof of correctness.
+
+Find consequential implementation and verification errors. Use concrete
+counterexamples or independent arithmetic. Check affected boundary cases,
+representations, invariants and preservation of requested behavior.
+Distinguish confirmed defects from unresolved questions. Do not report style
+issues, speculative improvements or unrelated pre-existing defects.
+
+Use scientific_api_reference for unfamiliar installed APIs.
+Do not edit files, execute code, delegate, submit operations or choose research
+direction. Your findings are advisory. The PI decides what to correct.
+
+Return only a JSON object containing:
+- summary: string
+- findings: list of objects containing location, issue, evidence, consequence,
+  confidence and check_coverage, all strings
+- unchecked_scope: nonempty list of strings
+
+Report at most eight substantive findings. An empty findings list means no
+confirmed defect found, not approval or proof of correctness.
+State that no code was executed and no files were changed.
+"""
+
 
 class ScientificCoding:
     def __init__(self, client, args, console: Console) -> None:
@@ -1934,6 +1984,9 @@ class ScientificCoding:
         self.operations = None
         self.session = None
         self.bindings: dict[str, dict] = {}
+        self.original_requests: dict[str, dict] = {}
+        self.review_handles: set[str] = set()
+        self.active_agent = "scientific-coder"
         self.active_handle: str | None = None
         self.binding: dict | None = None
         self.child_console = None
@@ -1944,6 +1997,8 @@ class ScientificCoding:
         self.child_error = None
         self.permission_requests: dict[int, tuple[object, str | None, dict | None]] = {}
         self.native_accounting: dict = {}
+        self.child_models: set[str] = set()
+        self.child_reasoning: set[str] = set()
         self.cancellation_unconfirmed = False
         self.quiescent = False
 
@@ -1953,6 +2008,19 @@ class ScientificCoding:
             "description": "Bounded scientific source and verification author.",
             "prompt": CODING_INSTRUCTIONS,
             "tools": CODING_TOOLS,
+            "infer": False,
+            "mcp_servers": {},
+        }
+
+    def reviewer_agent(self) -> dict:
+        return {
+            "name": "scientific-reviewer",
+            "display_name": "Scientific rubber duck",
+            "description": "Read-only scientific source and verification reviewer.",
+            "prompt": REVIEW_INSTRUCTIONS,
+            "tools": REVIEW_TOOLS,
+            "model": REVIEW_MODEL,
+            "reasoning_effort": REVIEW_REASONING,
             "infer": False,
             "mcp_servers": {},
         }
@@ -1970,8 +2038,9 @@ class ScientificCoding:
                 "in read_paths, and the check module in verification_path.\n\n"
                 "Put necessary background in source_context. The child does not "
                 "receive your conversation.\n\n"
-                "Inspect the returned code and proposed check. Only Runner "
-                "executes checks.\n\n"
+                "A read-only independent reviewer examines completed deliveries. "
+                "Inspect its findings, the returned code and proposed check. "
+                "You decide corrections. Only Runner executes checks.\n\n"
                 "Continue the same change using session_handle; its file "
                 "permissions remain unchanged."
             ),
@@ -1992,6 +2061,7 @@ class ScientificCoding:
 
     def on_event(self, event) -> None:
         from copilot.session_events import (
+            AssistantTurnStartData, AssistantUsageData,
             PermissionRequestedData,
             SubagentCompletedData, SubagentFailedData, SubagentStartedData,
         )
@@ -1999,7 +2069,7 @@ class ScientificCoding:
         data = event.data
         handle = getattr(event, "agent_id", None)
         if isinstance(data, SubagentStartedData) and self.busy:
-            if data.agent_name == "scientific-coder" and self.active_handle is None:
+            if data.agent_name == self.active_agent and self.active_handle is None:
                 self.active_handle = handle or data.tool_call_id
         if isinstance(data, PermissionRequestedData) and not data.resolved_by_hook:
             # SDK dispatches this event before its callback, using the same request object.
@@ -2007,10 +2077,17 @@ class ScientificCoding:
                 data.permission_request, handle,
                 self.binding if self.busy and handle == self.active_handle else None,
             )
-        if handle != self.active_handle or not self.busy:
+        if handle is None or handle != self.active_handle or not self.busy:
             return
         if self.child_events is not None:
             self.child_events(event)
+        if isinstance(data, (AssistantTurnStartData, AssistantUsageData)):
+            model = getattr(data, "model", None)
+            if model:
+                self.child_models.add(normalize_model(model))
+            reasoning = getattr(data, "reasoning_effort", None)
+            if reasoning:
+                self.child_reasoning.add(reasoning)
         if isinstance(data, (SubagentCompletedData, SubagentFailedData)):
             self.native_accounting = {
                 "agent_id": handle,
@@ -2020,9 +2097,12 @@ class ScientificCoding:
                 "total_tokens": data.total_tokens,
                 "total_tool_calls": data.total_tool_calls,
             }
+            model = getattr(data, "model", None)
+            if model:
+                self.child_models.add(normalize_model(model))
             self.child_error = getattr(data, "error", None)
             if getattr(data, "cancelled", False):
-                self.child_error = "Native coding task was cancelled."
+                self.child_error = f"Native {self.active_agent} task was cancelled."
             self.completed.set()
 
     def pre_tool_use(self, request, invocation):
@@ -2035,6 +2115,14 @@ class ScientificCoding:
                 }
             handle = request.get("sessionId")
             if handle == self.active_handle and self.busy and self.binding is not None:
+                if (
+                    self.active_agent == "scientific-reviewer"
+                    and request.get("toolName") not in REVIEW_TOOLS
+                ):
+                    return {
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": "The scientific reviewer is read-only.",
+                    }
                 return scoped_tool_hook(
                     coding_paths=frozenset(self.binding["allowed_paths"]),
                     read_paths=frozenset(self.binding["read_paths"]),
@@ -2072,10 +2160,22 @@ class ScientificCoding:
     def start_hook(self, request, invocation):
         if (
             invocation.get("session_id") != self.args.session_id
-            or request.get("agentName") != "scientific-coder"
+            or request.get("agentName") != self.active_agent
             or not self.busy or self.binding is None
         ):
             return {"additionalContext": "Unauthorized child: all tools are denied. Stop."}
+        if self.active_agent == "scientific-reviewer":
+            return {
+                "additionalContext": (
+                    "Installed APIs: native MuJoCo 3.12.0, Gymnasium 1.3.0, "
+                    "Stable-Baselines3 2.9.0. Dependencies are fixed. "
+                    "Review only the supplied change and exact readable files. "
+                    "All writes, execution, delegation and operations are denied. "
+                    "Do not trust coder-authored expectations without checking them. "
+                    "Return advisory findings to the PI, not a scientific approval.\n"
+                    + json.dumps(self.binding, ensure_ascii=False)
+                )
+            }
         return {
             "additionalContext": (
                 "Installed scientific APIs: native MuJoCo 3.12.0, NOT mujoco-py; "
@@ -2128,7 +2228,10 @@ class ScientificCoding:
             return None
         self.stop_response = request.get("response", "")
         try:
-            self.report(self.stop_response)
+            if self.active_agent == "scientific-reviewer":
+                ReviewReport.model_validate_json(self.stop_response)
+            else:
+                self.report(self.stop_response)
         except (ValueError, OSError) as error:
             if self.stop_challenges < 2:
                 self.stop_challenges += 1
@@ -2136,9 +2239,9 @@ class ScientificCoding:
                     "decision": "block",
                     "reason": (
                         "Engineering handoff is incomplete: " + str(error)
-                        + ". Finish the scoped laboratory check and return the exact "
-                        "JSON handoff contract. Do not execute checks, broaden scope, "
-                        "make a scientific judgment, or select a research direction."
+                        + ". Return the exact JSON handoff contract. "
+                        "Do not execute checks, broaden scope, make a scientific "
+                        "judgment, or select a research direction."
                     ),
                 }
         self.completed.set()
@@ -2210,9 +2313,162 @@ class ScientificCoding:
                 )
         return binding
 
-    async def invoke(self, params: ScientificCodingParams, invocation) -> str:
+    async def run_child(
+        self, *, agent: str, prompt: str, binding: dict, result: dict,
+        handle: str | None = None,
+    ) -> CodingReport | ReviewReport | None:
         from copilot.generated.rpc import TasksSendMessageRequest, TasksStartAgentRequest
 
+        started = time.monotonic()
+        child_console = CodingConsole()
+        self.child_console = child_console
+        self.child_events, _ = build_handlers(
+            child_console, asyncio.Event(), child_accounting=True
+        )
+        self.active_agent = agent
+        self.active_handle = handle
+        self.binding = binding
+        self.permission_requests.clear()
+        self.completed.clear()
+        self.stop_response = ""
+        self.stop_challenges = 0
+        self.child_error = None
+        self.native_accounting = {}
+        self.child_models = set()
+        self.child_reasoning = set()
+        self.quiescent = False
+        report = None
+        exit_code = EXIT_RUNTIME_FAILURE
+        cancelled = False
+        try:
+            if handle:
+                sent = await self.session.rpc.tasks.send_message(
+                    TasksSendMessageRequest(id=handle, message=prompt)
+                )
+                if not sent.sent:
+                    raise ValueError(sent.error or "Native same-child correction was not delivered.")
+            else:
+                child = await self.session.rpc.tasks.start_agent(TasksStartAgentRequest(
+                    agent_type=agent, name=agent,
+                    description=(
+                        "Independent source and verification review"
+                        if agent == "scientific-reviewer"
+                        else "Scoped source and verification authoring"
+                    ),
+                    prompt=prompt,
+                ))
+                if self.active_handle not in (None, child.agent_id):
+                    raise ValueError("Native child identity changed during dispatch.")
+                self.active_handle = child.agent_id
+            if agent == "scientific-reviewer":
+                self.review_handles.add(self.active_handle)
+            else:
+                self.bindings[self.active_handle] = binding
+                if handle is None:
+                    self.original_requests[self.active_handle] = json.loads(prompt)
+            await asyncio.wait_for(self.wait_child_idle(), self.args.timeout)
+            if self.child_error or child_console.session_error:
+                raise RuntimeError(self.child_error or child_console.session_error)
+            if agent == "scientific-reviewer":
+                if (
+                    self.child_models != {REVIEW_MODEL}
+                    or self.child_reasoning != {REVIEW_REASONING}
+                ):
+                    raise ValueError(
+                        f"Requested reviewer {REVIEW_MODEL!r}/{REVIEW_REASONING!r} "
+                        f"was not verified; reported models: {sorted(self.child_models)}, "
+                        f"reasoning: {sorted(self.child_reasoning)}."
+                    )
+                report = ReviewReport.model_validate_json(self.stop_response)
+                result.update(report.model_dump())
+            else:
+                report = self.report(self.stop_response)
+            result["status"] = "completed"
+            exit_code = EXIT_OK
+        except asyncio.CancelledError:
+            cancelled = True
+            result.update(
+                status="cancelled",
+                error=f"{agent} cancelled; source and review require PI inspection.",
+            )
+            exit_code = EXIT_INTERRUPTED
+        except TimeoutError:
+            result.update(
+                status="timeout",
+                error=f"{agent} timed out; source and review require PI inspection.",
+            )
+            exit_code = EXIT_TIMEOUT
+        except Exception as error:  # noqa: BLE001 - return partial edits, not an assurance
+            result["error"] = f"{type(error).__name__}: {error}"
+            exit_code = EXIT_SESSION_ERROR
+        finally:
+            if not self.quiescent:
+                cleanup = asyncio.create_task(self.cancel_child())
+                while True:
+                    try:
+                        await asyncio.shield(cleanup)
+                        self.quiescent = True
+                        break
+                    except asyncio.CancelledError:
+                        cancelled = True
+                        result.update(
+                            status="cancelled",
+                            error=f"{agent} cancelled; source and review require PI inspection.",
+                        )
+                        exit_code = EXIT_INTERRUPTED
+                        if cleanup.cancelled():
+                            self.closed = True
+                            self.cancellation_unconfirmed = True
+                            break
+                    except Exception as error:  # noqa: BLE001 - shutdown must still follow
+                        result.update(
+                            status="error", cleanup_error=f"{type(error).__name__}: {error}"
+                        )
+                        exit_code = EXIT_RUNTIME_FAILURE
+                        break
+            elapsed = time.monotonic() - started
+            self.console.coding_duration_seconds += elapsed
+            handle = self.active_handle
+            result["session_handle"] = handle
+            self.native_accounting["agent_id"] = handle
+            result["native_accounting"] = self.native_accounting
+            result["actual_models"] = sorted(self.child_models)
+            result["actual_reasoning_efforts"] = sorted(self.child_reasoning)
+            result["usage"] = {
+                "wall_duration_seconds": round(elapsed, 3),
+                "input_tokens": child_console.prompt_tokens
+                if "input_tokens" in child_console.reported_usage else None,
+                "output_tokens": child_console.output_tokens
+                if "output_tokens" in child_console.reported_usage else None,
+                "cache_read_tokens": child_console.cache_read_tokens
+                if "cache_read_tokens" in child_console.reported_usage else None,
+                "cache_write_tokens": child_console.cache_write_tokens
+                if "cache_write_tokens" in child_console.reported_usage else None,
+                "aiu": child_console.nano_aiu / 1e9
+                if "aiu" in child_console.reported_usage else None,
+                "tool_calls": child_console.tool_calls,
+            }
+            try:
+                usage_args = self.args
+                if agent == "scientific-reviewer":
+                    usage_args = argparse.Namespace(**{
+                        **vars(self.args), "model": REVIEW_MODEL, "reasoning": REVIEW_REASONING,
+                    })
+                record_usage(
+                    usage_args, child_console, elapsed, exit_code,
+                    role=agent.replace("-", "_"), session_id=handle,
+                    parent_session_id=self.args.session_id,
+                    actual_models=sorted(self.child_models),
+                    actual_reasoning_efforts=sorted(self.child_reasoning),
+                )
+            except (OSError, ValueError) as error:
+                result["usage_error"] = str(error)
+                self.console.line(f"  ! {agent} usage could not be recorded: {error}")
+        if cancelled:
+            raise asyncio.CancelledError
+        return report if result["status"] == "completed" else None
+
+    async def invoke(self, params: ScientificCodingParams, invocation) -> str:
         if self.closed or self.busy or (
             self.operations is not None
             and (self.operations.busy or self.operations.closed)
@@ -2250,21 +2506,7 @@ class ScientificCoding:
         self.busy = True
         task = asyncio.current_task()
         self.active_tasks.add(task)
-        started = time.monotonic()
-        child_console = CodingConsole()
-        self.child_console = child_console
-        self.child_events, _ = build_handlers(
-            child_console, asyncio.Event(), child_accounting=True
-        )
-        self.active_handle = params.session_handle
-        self.binding = binding
-        self.permission_requests.clear()
-        self.completed.clear()
-        self.stop_response = ""
-        self.stop_challenges = 0
-        self.child_error = None
-        self.native_accounting = {}
-        self.quiescent = False
+        cancelled = False
         result = {
             "status": "error",
             "verification_module": verification[:-3].replace("/", "."),
@@ -2272,113 +2514,57 @@ class ScientificCoding:
             "review_required": True,
             "unchecked_scope": ["No scientific check has been executed by this tool."],
         }
-        exit_code = EXIT_RUNTIME_FAILURE
-        cancelled = False
         try:
-            prompt = json.dumps({
-                "intent": params.intent,
-                **binding,
-                "source_context": params.source_context,
-            }, ensure_ascii=False)
-            if params.session_handle:
-                sent = await self.session.rpc.tasks.send_message(
-                    TasksSendMessageRequest(id=params.session_handle, message=prompt)
+            request = {
+                "intent": params.intent, **binding, "source_context": params.source_context,
+            }
+            report = await self.run_child(
+                agent="scientific-coder", prompt=json.dumps(request, ensure_ascii=False),
+                binding=binding, result=result, handle=params.session_handle,
+            )
+            if isinstance(report, CodingReport):
+                result.update({
+                    "summary": report.summary,
+                    "proposed_check": self.check_proposal(report, result["verification_module"]),
+                    "proposed_compatibility_check": (
+                        self.check_proposal(report.compatibility_check, result["verification_module"])
+                        if report.compatibility_check is not None else None
+                    ),
+                    "check_description": report.check_description,
+                    "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
+                })
+                result["changes"], result["diff"] = coding_changes(before)
+                review = {"status": "error", "check_executed": False}
+                result["review"] = review
+                self.console.line(
+                    f"  > scientific_coding: independent review ({REVIEW_MODEL}, {REVIEW_REASONING})"
                 )
-                if not sent.sent:
-                    raise ValueError(sent.error or "Native same-child correction was not delivered.")
-            else:
-                child = await self.session.rpc.tasks.start_agent(TasksStartAgentRequest(
-                    agent_type="scientific-coder", name="scientific-coder",
-                    description="Scoped source and verification authoring", prompt=prompt,
-                ))
-                if self.active_handle not in (None, child.agent_id):
-                    raise ValueError("Native child identity changed during dispatch.")
-                self.active_handle = child.agent_id
-            self.bindings[self.active_handle] = binding
-            await asyncio.wait_for(self.wait_child_idle(), self.args.timeout)
-            if self.child_error or child_console.session_error:
-                raise RuntimeError(self.child_error or child_console.session_error)
-            report = self.report(self.stop_response)
-            result.update({
-                "status": "completed", "summary": report.summary,
-                "proposed_check": self.check_proposal(report, result["verification_module"]),
-                "proposed_compatibility_check": (
-                    self.check_proposal(report.compatibility_check, result["verification_module"])
-                    if report.compatibility_check is not None else None
-                ),
-                "check_description": report.check_description,
-                "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
-            })
-            exit_code = EXIT_OK
+                await self.run_child(
+                    agent="scientific-reviewer",
+                    prompt=json.dumps({
+                        "request": self.original_requests.get(result["session_handle"], request),
+                        "correction_intent": params.intent if params.session_handle else None,
+                        "correction_context": params.source_context if params.session_handle else None,
+                        "changes": result["changes"],
+                        "diff": result["diff"],
+                        "verification_module": result["verification_module"],
+                        "proposed_check": result["proposed_check"],
+                        "proposed_compatibility_check": result["proposed_compatibility_check"],
+                    }, ensure_ascii=False),
+                    binding={**binding, "allowed_paths": []},
+                    result=review,
+                )
+                if review["status"] != "completed":
+                    result.update(
+                        status="error",
+                        error=f"Independent review did not complete: {review.get('error', review['status'])}",
+                    )
         except asyncio.CancelledError:
             cancelled = True
-            result.update(
-                status="cancelled",
-                error="Coding cancelled; partial edits require PI review.",
-            )
-            exit_code = EXIT_INTERRUPTED
-        except TimeoutError:
-            result.update(
-                status="timeout",
-                error="Coding timed out; partial edits require PI review.",
-            )
-            exit_code = EXIT_TIMEOUT
-        except Exception as error:  # noqa: BLE001 - return partial edits, not an assurance
-            result["error"] = f"{type(error).__name__}: {error}"
-            exit_code = EXIT_SESSION_ERROR
+            result.update(status="cancelled", error="Coding/review cancelled; partial changes require PI review.")
+        except (OSError, ValueError) as error:
+            result.update(status="error", error=f"{type(error).__name__}: {error}")
         finally:
-            if not self.quiescent:
-                cleanup = asyncio.create_task(self.cancel_child())
-                while True:
-                    try:
-                        await asyncio.shield(cleanup)
-                        break
-                    except asyncio.CancelledError:
-                        cancelled = True
-                        result.update(
-                            status="cancelled",
-                            error="Coding cancelled; partial edits require PI review.",
-                        )
-                        exit_code = EXIT_INTERRUPTED
-                        if cleanup.cancelled():
-                            self.closed = True
-                            self.cancellation_unconfirmed = True
-                            break
-                    except Exception as error:  # noqa: BLE001 - shutdown must still follow
-                        result.update(
-                            status="error", cleanup_error=f"{type(error).__name__}: {error}"
-                        )
-                        exit_code = EXIT_RUNTIME_FAILURE
-                        break
-            elapsed = time.monotonic() - started
-            self.console.coding_duration_seconds += elapsed
-            handle = self.active_handle
-            result["session_handle"] = handle
-            self.native_accounting["agent_id"] = handle
-            result["native_accounting"] = self.native_accounting
-            result["usage"] = {
-                "wall_duration_seconds": round(elapsed, 3),
-                "input_tokens": child_console.prompt_tokens
-                if "input_tokens" in child_console.reported_usage else None,
-                "output_tokens": child_console.output_tokens
-                if "output_tokens" in child_console.reported_usage else None,
-                "cache_read_tokens": child_console.cache_read_tokens
-                if "cache_read_tokens" in child_console.reported_usage else None,
-                "cache_write_tokens": child_console.cache_write_tokens
-                if "cache_write_tokens" in child_console.reported_usage else None,
-                "aiu": child_console.nano_aiu / 1e9
-                if "aiu" in child_console.reported_usage else None,
-                "tool_calls": child_console.tool_calls,
-            }
-            try:
-                record_usage(
-                    self.args, child_console, elapsed, exit_code,
-                    role="scientific_coder", session_id=handle,
-                    parent_session_id=self.args.session_id,
-                )
-            except (OSError, ValueError) as error:
-                result["usage_error"] = str(error)
-                self.console.line("  ! Coding usage could not be recorded.")
             self.active_tasks.discard(task)
             self.busy = self.cancellation_unconfirmed
 
@@ -2387,6 +2573,7 @@ class ScientificCoding:
         except OSError as error:
             result.update(status="error", review_error=str(error), changes=[], diff="")
             result["unchecked_scope"].append("Actual change review could not be collected.")
+        handle = result.get("session_handle")
         encoded = json.dumps(result, ensure_ascii=False)
         if cancelled or len(encoded.encode("utf-8")) > LARGE_OUTPUT_MAX_BYTES:
             LARGE_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -2410,7 +2597,10 @@ class ScientificCoding:
             task.cancel()
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-        for handle in set(self.bindings) | ({self.active_handle} if self.active_handle else set()):
+        for handle in (
+            set(self.bindings) | self.review_handles
+            | ({self.active_handle} if self.active_handle else set())
+        ):
             await self.cancel_child(handle)
 
     async def cancel_child(self, handle: str | None = None) -> None:
@@ -2793,7 +2983,7 @@ def session_options(
             or invocation.agent_id != coding.active_handle
             or (operations is not None and (operations.busy or operations.closed))
         ):
-            raise ValueError("Only the active main PI or its authorized coding child may read APIs.")
+            raise ValueError("Only the active main PI or its authorized scientific child may read APIs.")
         return json.dumps(await asyncio.to_thread(read_reference, params), ensure_ascii=False)
 
     api_reference_tool = define_tool(
@@ -2808,7 +2998,7 @@ def session_options(
             "documentation, available Python source and native MuJoCo declaration; "
             "offset/max_bytes page UTF-8 definition bytes. Missing symbols and unavailable "
             "source/signatures are explicit, not guessed. Follow next_offset for complete "
-            "retrieval. Main PI and its exact-scope coding child can both use this reader. "
+            "retrieval. Main PI and its exact-scope coding/review children can use this reader. "
             "Reference availability is not proof that a production integration executes."
         ),
         handler=scientific_api_reference,
@@ -2881,7 +3071,7 @@ def session_options(
         "enable_config_discovery": False,
         "enable_on_demand_instruction_discovery": False,
         "mcp_servers": {},
-        "custom_agents": [coding.agent()] if coding is not None else [],
+        "custom_agents": [coding.agent(), coding.reviewer_agent()] if coding is not None else [],
         "memory": {"enabled": False},
         "large_output": {
             "enabled": True,
@@ -3173,6 +3363,8 @@ def record_usage(
     role: str = "pi",
     session_id: str | None = None,
     parent_session_id: str | None = None,
+    actual_models: list[str] | None = None,
+    actual_reasoning_efforts: list[str] | None = None,
 ) -> None:
     """Append aggregate usage, never conversation content or tool arguments."""
     if not args.campaign_id:
@@ -3217,6 +3409,10 @@ def record_usage(
         "tool_calls": console.tool_calls,
         "tools_by_name": console.tool_counts,
     }
+    if actual_models is not None:
+        row["actual_models"] = actual_models
+    if actual_reasoning_efforts is not None:
+        row["actual_reasoning_efforts"] = actual_reasoning_efforts
     with (directory / f"{campaign_id}.jsonl").open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 

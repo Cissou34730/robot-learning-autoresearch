@@ -76,7 +76,7 @@ Ordinary Copilot main PI sessions expose `scientific_coding` and
 `submit_operation` alongside source readers, `artifact_evidence_query` and
 `training_log_query`. They have no `apply_patch`, other file-write tools or
 shell tools. `scientific_api_reference` reads installed library definitions
-for both PI and authorized coding child. The preliminary scientific-model
+for PI and authorized coding/review children. The preliminary scientific-model
 session retains its existing publication interface and does not expose coding.
 
 `scientific_coding` accepts:
@@ -127,6 +127,16 @@ The stop hook applies to corrections as well as the initial invocation.
 The handler waits for the stop handoff and native task idle state before
 unlocking operation submission.
 
+After a completed coding handoff, the handler starts a fresh native
+`scientific-reviewer` using GPT-6 Luna with max reasoning. It receives the
+original request, the current correction intent when present, actual changed
+files and diff, and the proposed checks. Its exact read scope matches the
+coding binding. Its tools are `view` and `scientific_api_reference`; writes,
+execution, delegation and operation submission are denied.
+The handler keeps operation submission locked until this review settles.
+It verifies the reported reviewer model and reasoning, and reports unavailable or failed
+review explicitly rather than treating it as a completed review.
+
 The result returns the child handle, actual per-invocation changed-file manifest
 and diff, verification module, proposed `python_module` entry and unchecked
 scope. A `compatibility_check` handoff supplies its own `check_args`,
@@ -136,6 +146,12 @@ artifact basename. The result exposes this entry as
 `proposed_compatibility_check` alongside `proposed_check`. Both are unexecuted
 proposals. Large review output is offloaded with a file pointer. Errors and
 timeouts return partial changes when available; cancellation preserves review output.
+The `review` entry contains its status, reviewer handle, summary, findings,
+unchecked scope, actual reported models/reasoning and per-invocation usage. Each finding
+contains `location`, `issue`, `evidence`, `consequence`, `confidence` and
+`check_coverage` strings. No findings means no confirmed defect found, not
+approval. Findings do not trigger automatic repairs or a scientific gate.
+The PI decides whether to correct the source through the original coder handle.
 The proposed check is not executed by this tool. The main PI reviews the actual
 changed source and executable check before scientific reliance or submission.
 Runner executes the reviewed check through the existing measurement instrument.
@@ -144,6 +160,9 @@ owned by Copilot SDK 1.0.19; operation acceptance and scientific execution
 remain owned by the existing trusted controller and Runner.
 Usage and changes are reported per invocation. SDK native-task lifetime totals
 are labeled separately and must not be added again on each correction.
+Reviewer usage has the separate `scientific_reviewer` role, configured model
+and reasoning, and reported actual models. PI time excludes both delegated
+coding and review time.
 
 ## Source readers
 
@@ -200,7 +219,7 @@ complete byte count and `next_offset`. Unavailable signatures and source are
 explicit. A missing symbol returns `symbol_not_found`, not a guessed substitute.
 Definition availability does not establish execution compatibility.
 
-The active PI or its authorized native coding child can use this reader.
+The active PI or its authorized native coding/review child can use this reader.
 Coding and Runner locks still apply. It does not widen repository file scopes
 or give either actor execution permissions.
 

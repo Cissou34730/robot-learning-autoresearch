@@ -13,6 +13,8 @@ Coding delegation provides implementation assistance, not another scientific
 actor. The PI retains scientific intent, interpretation and review authority.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
+Inspect independent review findings with the changed source and proposed checks.
+The PI decides corrections. An independent review does not certify science.
 
 For changed library or runtime integration, resolve unfamiliar APIs from the
 installed definitions rather than memory. Review and run a small production-path
