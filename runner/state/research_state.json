@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close the inquiry after a fresh 120000-step PPO run using the existing policy, PPO, runtime, and environment recipe with only the target-radius exposure changed to 6-20 cm, followed by an independent task-predicate evaluation on a non-overlapping panel with the same failure decomposition. A positive conclusion requires a material reduction in inner-radius no-reach failures without an unacceptable loss of outer-radius success or complete-hold performance; a negative or limited conclusion is warranted if inner no-reach failures persist, if the candidate regresses materially on the 14-20 cm region or hold failures, or if the comparison is unavailable/inconclusive. Any persistent radius/angle or configuration-linked pattern will redirect the next decision toward branch, singularity/limit, contact, or dynamics characterization rather than establishing sampler exposure as the sole cause.",
     "goal_connection": "The current best candidate achieves 110/160 (68.75%) on an independent task-predicate panel, leaving a 29.25 percentage-point development gap. Forty-two failures never entered tolerance, 46 of 50 failures occurred below 14 cm, and the baseline was never trained on that inner range. A full-radius candidate could therefore improve the probability of reaching the official 196/200 objective, while complete uninterrupted holding remains protected by separately scoring the eight entry-but-hold failures.",
-    "handoff_conclusion": "Observed facts: T1 was a fresh PPO run using the unchanged 64-64 tanh policy, current PPO parameters, one environment, and the 14-20 cm training sampler. Its proxy success reached 0.96 at 115712 and 120832 steps, but that proxy is not development evidence for the official distribution. M1 evaluated the 120832 checkpoint with the task success predicate on 160 independent seeds and preserved per-episode diagnostics. M1 records 110 successes, 42 failures with no first tolerance entry, and 8 failures that entered but had maximum holds below 100; 46 failures were at target radii below 14 cm. Interpretation: the initial direction should prioritize inner-workspace/generalization coverage, because the dominant observed failure is no reach on targets absent from training. This does not establish that sampler exposure is the sole cause: branch selection, singularity/limit conditioning, or configuration-dependent dynamics may explain why some inner targets fail. Hold stabilization remains a real secondary capability: its 8 failures and the model's 20 ms sampled boundary semantics mean it cannot be discarded. The current evidence does not identify the official probability measure beyond the contract, does not test a changed sampler, and does not characterize Jacobian conditioning, contacts, or physical dynamics. Reward and training-proxy rank are therefore insufficient for candidate selection toward the human goal.",
+    "handoff_conclusion": "Observed facts: T1 was a fresh 120000-requested-step PPO run with the unchanged 64-64 tanh policy, current PPO parameters, one environment, and a 14-20 cm training sampler; actual completion was 120832 steps. Its late training proxy was 0.96, but M1 evaluated the task predicate independently and found 110/160 successes. The preserved diagnostics show a dominant no-entry failure class concentrated in radii below 14 cm, plus a smaller but real complete-hold failure class after entry. The baseline's outer-radius behavior is therefore useful counterevidence against a globally incapable controller, but does not establish that inner failures are caused by sampler coverage alone. Interpretation and competing explanations: expanding exposure is the most direct candidate-level test because the largest observed failure class lies outside training support. The physical model also predicts alternative causes: reset at full extension and branch-conditioned Jacobian singularity can make some angles or configurations difficult; joint limits and possible self-contact can make inner targets configuration dependent; unknown inertial and numerical properties can make braking and 20 ms sampled regulation fail. The 8 hold failures support the separate-capability interpretation and require complete-hold diagnostics, not minimum distance or reward, in the comparison. Correction to the inherited proposal: the former wording asked whether to open an inquiry, but M1 already establishes that this is a worthwhile goal-review choice; the active scientific unknown is the effect of the full-radius candidate. Limits: the existing evidence contains no changed-sampler candidate, no controlled branch/Jacobian/contact/dynamics characterization, and no protected sampler realization or official result. Thus I1 can compare the complete artifacts and redirect based on radius/angle and reach-versus-hold patterns, but cannot prove sampler exposure as the sole causal mechanism or certify the 98% goal.",
     "handoff_question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1288,31 +1288,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-14T15:10:01Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 using T1 and M1; its role is an evidence-backed comparison reference, not a goal certification. No working or retained candidate exists. I1 has no new candidate yet.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Startup session S1 completed one fresh training run T1 (requested 120000, actual 120832), one independent 160-episode measurement M1, and one best-known assignment E1, followed by checkpoint E2. Goal-review session S2 opened inquiry E3; no official assessment, protected benchmark result, new training run, new measurement, retained candidate, or working candidate has been added. Inquiry allocation remains one full 120000-step training request plus its bounded development evaluation under the campaign rules.",
+        "current_goal_gap": "The best-known candidate is 29.25 percentage points below the 98% development target on the independent panel (110/160 versus 196/200 as the official threshold, noting the panels are distinct). M1 found 42/50 failures with no tolerance entry, 8/50 that entered but did not complete the hold, and 46/50 failures at radii below 14 cm. This is a development gap, not an estimate of protected official performance.",
+        "current_synthesis": "Observed facts: T1 was a fresh 120000-requested-step PPO run with the unchanged 64-64 tanh policy, current PPO parameters, one environment, and a 14-20 cm training sampler; actual completion was 120832 steps. Its late training proxy was 0.96, but M1 evaluated the task predicate independently and found 110/160 successes. The preserved diagnostics show a dominant no-entry failure class concentrated in radii below 14 cm, plus a smaller but real complete-hold failure class after entry. The baseline's outer-radius behavior is therefore useful counterevidence against a globally incapable controller, but does not establish that inner failures are caused by sampler coverage alone. Interpretation and competing explanations: expanding exposure is the most direct candidate-level test because the largest observed failure class lies outside training support. The physical model also predicts alternative causes: reset at full extension and branch-conditioned Jacobian singularity can make some angles or configurations difficult; joint limits and possible self-contact can make inner targets configuration dependent; unknown inertial and numerical properties can make braking and 20 ms sampled regulation fail. The 8 hold failures support the separate-capability interpretation and require complete-hold diagnostics, not minimum distance or reward, in the comparison. Correction to the inherited proposal: the former wording asked whether to open an inquiry, but M1 already establishes that this is a worthwhile goal-review choice; the active scientific unknown is the effect of the full-radius candidate. Limits: the existing evidence contains no changed-sampler candidate, no controlled branch/Jacobian/contact/dynamics characterization, and no protected sampler realization or official result. Thus I1 can compare the complete artifacts and redirect based on radius/angle and reach-versus-hold patterns, but cannot prove sampler exposure as the sole causal mechanism or certify the 98% goal.",
+        "decision_frontier": "I1 must distinguish whether a full-radius candidate materially reduces inner-workspace no-reach failures while preserving 14-20 cm success and uninterrupted holding, versus whether failures persist in angle/configuration-linked patterns that make branch choice, singularity/limit conditioning, contact, or dynamics the higher-value next direction. The discriminating evidence is a fresh 120000-step run with the existing PPO policy, runtime, and recipe except target-radius exposure changed from 14-20 cm to 6-20 cm, followed by a non-overlapping independent task-predicate evaluation with radius- and angle-stratified success, first entry, maximum hold, and interruptions. A reduction in inner no-reach without hold or outer regression supports continued coverage-led development; persistence or a material hold/outer regression redirects the next investigation. An unavailable or incomplete comparison remains unresolved rather than a negative scientific result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign objective remains at least 196 successes in the fixed 200-episode official assessment, with success requiring an uninterrupted 100-control-step hold. The best-known T1:checkpoint-120832 achieved 110/160 (68.75%) on an independent development panel, so official assessment is not requested. The bounded I1 inquiry tests the most consequential current development route: whether exposing the existing PPO recipe to the official inner radii improves complete-task success without sacrificing hold behavior.",
+        "next_direction_or_closure": "Open and continue bounded inquiry I1. Its first development action should be a fresh full-allocation PPO training run using the existing implementation and runtime with only the target-radius training exposure broadened to 6-20 cm, then independent task-predicate evaluation and the same failure decomposition. The official assessment is deferred because the current candidate is far below the goal and the proposed comparison has high expected contribution at bounded cost. If the full-radius result is positive, continue coverage-led development; if negative, limited, or persistent failures are angle/configuration linked, close or reframe toward branch/singularity/limit/contact/dynamics characterization without treating one candidate result as a general disproof of learning.",
+        "next_question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "c45a81d769668dc3064f308f1782432fa50a483c",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 using T1 and M1; its role is an evidence-backed comparison reference, not a goal certification. No working or retained candidate exists. I1 has no new candidate yet.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Startup session S1 completed one fresh training run T1 (requested 120000, actual 120832), one independent 160-episode measurement M1, and one best-known assignment E1, followed by checkpoint E2. Goal-review session S2 opened inquiry E3; no official assessment, protected benchmark result, new training run, new measurement, retained candidate, or working candidate has been added. Inquiry allocation remains one full 120000-step training request plus its bounded development evaluation under the campaign rules.",
+        "current_goal_gap": "The best-known candidate is 29.25 percentage points below the 98% development target on the independent panel (110/160 versus 196/200 as the official threshold, noting the panels are distinct). M1 found 42/50 failures with no tolerance entry, 8/50 that entered but did not complete the hold, and 46/50 failures at radii below 14 cm. This is a development gap, not an estimate of protected official performance.",
+        "current_synthesis": "Observed facts: T1 was a fresh 120000-requested-step PPO run with the unchanged 64-64 tanh policy, current PPO parameters, one environment, and a 14-20 cm training sampler; actual completion was 120832 steps. Its late training proxy was 0.96, but M1 evaluated the task predicate independently and found 110/160 successes. The preserved diagnostics show a dominant no-entry failure class concentrated in radii below 14 cm, plus a smaller but real complete-hold failure class after entry. The baseline's outer-radius behavior is therefore useful counterevidence against a globally incapable controller, but does not establish that inner failures are caused by sampler coverage alone. Interpretation and competing explanations: expanding exposure is the most direct candidate-level test because the largest observed failure class lies outside training support. The physical model also predicts alternative causes: reset at full extension and branch-conditioned Jacobian singularity can make some angles or configurations difficult; joint limits and possible self-contact can make inner targets configuration dependent; unknown inertial and numerical properties can make braking and 20 ms sampled regulation fail. The 8 hold failures support the separate-capability interpretation and require complete-hold diagnostics, not minimum distance or reward, in the comparison. Correction to the inherited proposal: the former wording asked whether to open an inquiry, but M1 already establishes that this is a worthwhile goal-review choice; the active scientific unknown is the effect of the full-radius candidate. Limits: the existing evidence contains no changed-sampler candidate, no controlled branch/Jacobian/contact/dynamics characterization, and no protected sampler realization or official result. Thus I1 can compare the complete artifacts and redirect based on radius/angle and reach-versus-hold patterns, but cannot prove sampler exposure as the sole causal mechanism or certify the 98% goal.",
+        "decision_frontier": "I1 must distinguish whether a full-radius candidate materially reduces inner-workspace no-reach failures while preserving 14-20 cm success and uninterrupted holding, versus whether failures persist in angle/configuration-linked patterns that make branch choice, singularity/limit conditioning, contact, or dynamics the higher-value next direction. The discriminating evidence is a fresh 120000-step run with the existing PPO policy, runtime, and recipe except target-radius exposure changed from 14-20 cm to 6-20 cm, followed by a non-overlapping independent task-predicate evaluation with radius- and angle-stratified success, first entry, maximum hold, and interruptions. A reduction in inner no-reach without hold or outer regression supports continued coverage-led development; persistence or a material hold/outer regression redirects the next investigation. An unavailable or incomplete comparison remains unresolved rather than a negative scientific result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign objective remains at least 196 successes in the fixed 200-episode official assessment, with success requiring an uninterrupted 100-control-step hold. The best-known T1:checkpoint-120832 achieved 110/160 (68.75%) on an independent development panel, so official assessment is not requested. The bounded I1 inquiry tests the most consequential current development route: whether exposing the existing PPO recipe to the official inner radii improves complete-task success without sacrificing hold behavior.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Open and continue bounded inquiry I1. Its first development action should be a fresh full-allocation PPO training run using the existing implementation and runtime with only the target-radius training exposure broadened to 6-20 cm, then independent task-predicate evaluation and the same failure decomposition. The official assessment is deferred because the current candidate is far below the goal and the proposed comparison has high expected contribution at bounded cost. If the full-radius result is positive, continue coverage-led development; if negative, limited, or persistent failures are angle/configuration linked, close or reframe toward branch/singularity/limit/contact/dynamics characterization without treating one candidate result as a general disproof of learning.",
+        "next_question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "1c5c3e01-212d-4fad-af05-498952e06132",
+        "campaign_id": "124dad80-0d01-4503-96cf-bff4755e3278",
+        "campaign_usage": "4m45s | 9.26 AIU | prompt 1.4m (89% cached) | output 26.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "abdd8c67174752e7543f1970d152b95aed891a7c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 using T1 and M1; its role is an evidence-backed comparison reference, not a goal certification. No working or retained candidate exists. I1 has no new candidate yet.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Startup session S1 completed one fresh training run T1 (requested 120000, actual 120832), one independent 160-episode measurement M1, and one best-known assignment E1, followed by checkpoint E2. Goal-review session S2 opened inquiry E3; no official assessment, protected benchmark result, new training run, new measurement, retained candidate, or working candidate has been added. Inquiry allocation remains one full 120000-step training request plus its bounded development evaluation under the campaign rules.",
+        "current_goal_gap": "The best-known candidate is 29.25 percentage points below the 98% development target on the independent panel (110/160 versus 196/200 as the official threshold, noting the panels are distinct). M1 found 42/50 failures with no tolerance entry, 8/50 that entered but did not complete the hold, and 46/50 failures at radii below 14 cm. This is a development gap, not an estimate of protected official performance.",
+        "current_synthesis": "Observed facts: T1 was a fresh 120000-requested-step PPO run with the unchanged 64-64 tanh policy, current PPO parameters, one environment, and a 14-20 cm training sampler; actual completion was 120832 steps. Its late training proxy was 0.96, but M1 evaluated the task predicate independently and found 110/160 successes. The preserved diagnostics show a dominant no-entry failure class concentrated in radii below 14 cm, plus a smaller but real complete-hold failure class after entry. The baseline's outer-radius behavior is therefore useful counterevidence against a globally incapable controller, but does not establish that inner failures are caused by sampler coverage alone. Interpretation and competing explanations: expanding exposure is the most direct candidate-level test because the largest observed failure class lies outside training support. The physical model also predicts alternative causes: reset at full extension and branch-conditioned Jacobian singularity can make some angles or configurations difficult; joint limits and possible self-contact can make inner targets configuration dependent; unknown inertial and numerical properties can make braking and 20 ms sampled regulation fail. The 8 hold failures support the separate-capability interpretation and require complete-hold diagnostics, not minimum distance or reward, in the comparison. Correction to the inherited proposal: the former wording asked whether to open an inquiry, but M1 already establishes that this is a worthwhile goal-review choice; the active scientific unknown is the effect of the full-radius candidate. Limits: the existing evidence contains no changed-sampler candidate, no controlled branch/Jacobian/contact/dynamics characterization, and no protected sampler realization or official result. Thus I1 can compare the complete artifacts and redirect based on radius/angle and reach-versus-hold patterns, but cannot prove sampler exposure as the sole causal mechanism or certify the 98% goal.",
+        "decision_frontier": "I1 must distinguish whether a full-radius candidate materially reduces inner-workspace no-reach failures while preserving 14-20 cm success and uninterrupted holding, versus whether failures persist in angle/configuration-linked patterns that make branch choice, singularity/limit conditioning, contact, or dynamics the higher-value next direction. The discriminating evidence is a fresh 120000-step run with the existing PPO policy, runtime, and recipe except target-radius exposure changed from 14-20 cm to 6-20 cm, followed by a non-overlapping independent task-predicate evaluation with radius- and angle-stratified success, first entry, maximum hold, and interruptions. A reduction in inner no-reach without hold or outer regression supports continued coverage-led development; persistence or a material hold/outer regression redirects the next investigation. An unavailable or incomplete comparison remains unresolved rather than a negative scientific result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign objective remains at least 196 successes in the fixed 200-episode official assessment, with success requiring an uninterrupted 100-control-step hold. The best-known T1:checkpoint-120832 achieved 110/160 (68.75%) on an independent development panel, so official assessment is not requested. The bounded I1 inquiry tests the most consequential current development route: whether exposing the existing PPO recipe to the official inner radii improves complete-task success without sacrificing hold behavior.",
+        "next_direction_or_closure": "Open and continue bounded inquiry I1. Its first development action should be a fresh full-allocation PPO training run using the existing implementation and runtime with only the target-radius training exposure broadened to 6-20 cm, then independent task-predicate evaluation and the same failure decomposition. The official assessment is deferred because the current candidate is far below the goal and the proposed comparison has high expected contribution at bounded cost. If the full-radius result is positive, continue coverage-led development; if negative, limited, or persistent failures are angle/configuration linked, close or reframe toward branch/singularity/limit/contact/dynamics characterization without treating one candidate result as a general disproof of learning.",
+        "next_question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?"
+      }
+    },
+    "request_fingerprint": "4c4269bf9ddbf318dcb7464c5485b180ed8ac4e5d32d11930ca8e570d636841b",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using T1 and M1. No working or retained candidate. The best-known role is a selection reference only and does not certify adequacy or official success.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 using T1 and M1; its role is an evidence-backed comparison reference, not a goal certification. No working or retained candidate exists. I1 has no new candidate yet.",
     "completed_operations": [
-      "T1",
-      "M1",
-      "E1"
+      "E3"
     ],
-    "cumulative_resource_use": "Startup session S1 completed T1 (one fresh training run; requested 120000 steps, actual 120832 due rollout rounding), M1 (one 160-episode independent research evaluation), and E1 (best-known assignment). No official assessment, protected benchmark result, retained candidate, or active inquiry exists.",
-    "current_goal_gap": "Best-known candidate T1:checkpoint-120832 achieved 110/160 = 68.75% on the independent research panel, leaving a 29.25 percentage-point development gap to 98%. This is not an official assessment and does not estimate the protected panel result. The inspected failures are mechanistically split: 42/50 never reached tolerance and 8/50 reached but failed the uninterrupted hold; 46/50 failures occurred for targets below 14 cm, outside the baseline training range.",
-    "current_synthesis": "Observed facts: T1 was a fresh PPO run using the unchanged 64-64 tanh policy, current PPO parameters, one environment, and the 14-20 cm training sampler. Its proxy success reached 0.96 at 115712 and 120832 steps, but that proxy is not development evidence for the official distribution. M1 evaluated the 120832 checkpoint with the task success predicate on 160 independent seeds and preserved per-episode diagnostics. M1 records 110 successes, 42 failures with no first tolerance entry, and 8 failures that entered but had maximum holds below 100; 46 failures were at target radii below 14 cm. Interpretation: the initial direction should prioritize inner-workspace/generalization coverage, because the dominant observed failure is no reach on targets absent from training. This does not establish that sampler exposure is the sole cause: branch selection, singularity/limit conditioning, or configuration-dependent dynamics may explain why some inner targets fail. Hold stabilization remains a real secondary capability: its 8 failures and the model's 20 ms sampled boundary semantics mean it cannot be discarded. The current evidence does not identify the official probability measure beyond the contract, does not test a changed sampler, and does not characterize Jacobian conditioning, contacts, or physical dynamics. Reward and training-proxy rank are therefore insufficient for candidate selection toward the human goal.",
-    "decision_frontier": "The unresolved direction is whether the best next investment is (A) broadened target exposure to the official 6-20 cm range with the existing controller recipe, or (B) explicit branch/singularity/dynamics characterization and a control or observation redesign before further learning. The discriminating evidence is a matched candidate trained with full-radius exposure and evaluated with the same independent task predicate, with radius/angle-stratified success and reach-versus-hold diagnostics. A strong reduction in inner no-reach failures while preserving outer success would justify continuing exposure expansion; persistent failures concentrated by angle or configuration would redirect toward branch, limit, Jacobian, or dynamics investigation. The comparison would establish a property of the changed candidate, not prove sampler exposure as the sole causal mechanism. The 8 hold failures require continued monitoring and would become the primary direction if exposure expansion removes no-reach failures without raising hold interruptions.",
+    "cumulative_resource_use": "Startup session S1 completed one fresh training run T1 (requested 120000, actual 120832), one independent 160-episode measurement M1, and one best-known assignment E1, followed by checkpoint E2. Goal-review session S2 opened inquiry E3; no official assessment, protected benchmark result, new training run, new measurement, retained candidate, or working candidate has been added. Inquiry allocation remains one full 120000-step training request plus its bounded development evaluation under the campaign rules.",
+    "current_goal_gap": "The best-known candidate is 29.25 percentage points below the 98% development target on the independent panel (110/160 versus 196/200 as the official threshold, noting the panels are distinct). M1 found 42/50 failures with no tolerance entry, 8/50 that entered but did not complete the hold, and 46/50 failures at radii below 14 cm. This is a development gap, not an estimate of protected official performance.",
+    "current_synthesis": "Observed facts: T1 was a fresh 120000-requested-step PPO run with the unchanged 64-64 tanh policy, current PPO parameters, one environment, and a 14-20 cm training sampler; actual completion was 120832 steps. Its late training proxy was 0.96, but M1 evaluated the task predicate independently and found 110/160 successes. The preserved diagnostics show a dominant no-entry failure class concentrated in radii below 14 cm, plus a smaller but real complete-hold failure class after entry. The baseline's outer-radius behavior is therefore useful counterevidence against a globally incapable controller, but does not establish that inner failures are caused by sampler coverage alone. Interpretation and competing explanations: expanding exposure is the most direct candidate-level test because the largest observed failure class lies outside training support. The physical model also predicts alternative causes: reset at full extension and branch-conditioned Jacobian singularity can make some angles or configurations difficult; joint limits and possible self-contact can make inner targets configuration dependent; unknown inertial and numerical properties can make braking and 20 ms sampled regulation fail. The 8 hold failures support the separate-capability interpretation and require complete-hold diagnostics, not minimum distance or reward, in the comparison. Correction to the inherited proposal: the former wording asked whether to open an inquiry, but M1 already establishes that this is a worthwhile goal-review choice; the active scientific unknown is the effect of the full-radius candidate. Limits: the existing evidence contains no changed-sampler candidate, no controlled branch/Jacobian/contact/dynamics characterization, and no protected sampler realization or official result. Thus I1 can compare the complete artifacts and redirect based on radius/angle and reach-versus-hold patterns, but cannot prove sampler exposure as the sole causal mechanism or certify the 98% goal.",
+    "decision_frontier": "I1 must distinguish whether a full-radius candidate materially reduces inner-workspace no-reach failures while preserving 14-20 cm success and uninterrupted holding, versus whether failures persist in angle/configuration-linked patterns that make branch choice, singularity/limit conditioning, contact, or dynamics the higher-value next direction. The discriminating evidence is a fresh 120000-step run with the existing PPO policy, runtime, and recipe except target-radius exposure changed from 14-20 cm to 6-20 cm, followed by a non-overlapping independent task-predicate evaluation with radius- and angle-stratified success, first entry, maximum hold, and interruptions. A reduction in inner no-reach without hold or outer regression supports continued coverage-led development; persistence or a material hold/outer regression redirects the next investigation. An unavailable or incomplete comparison remains unresolved rather than a negative scientific result.",
     "evidence_references": [
       "T1",
       "M1",
-      "E1"
+      "E1",
+      "E3"
     ],
-    "human_goal_connection": "The human objective is at least 196 successes in the fixed 200-episode official assessment, where success requires an uninterrupted 100-control-step hold. The first learned baseline is far from that objective on an independent development panel, so the campaign must improve complete-task success rather than optimize reward or first reach.",
+    "human_goal_connection": "The campaign objective remains at least 196 successes in the fixed 200-episode official assessment, with success requiring an uninterrupted 100-control-step hold. The best-known T1:checkpoint-120832 achieved 110/160 (68.75%) on an independent development panel, so official assessment is not requested. The bounded I1 inquiry tests the most consequential current development route: whether exposing the existing PPO recipe to the official inner radii improves complete-task success without sacrificing hold behavior.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Do not request official assessment. At goal review, open the bounded full-radius exposure inquiry and use a fresh 120000-step training run with the existing recipe except for the target-radius exposure, followed by independent task-predicate evaluation and the same failure decomposition. If the result is not materially better in inner-radius success, redirect the inquiry toward branch/singularity and dynamics characterization rather than treating the negative candidate result as a general disproof of learning.",
-    "next_question": "At goal review, should the campaign open a bounded inquiry asking whether expanding the unchanged PPO baseline from its 14-20 cm training exposure to the official 6-20 cm radius reduces the observed inner no-reach failures enough to justify coverage-led development toward 98%, while preserving complete-hold performance?",
-    "scientific_commit": "7efe115a391b71b2956c7c8a7d432e7eef30a8df",
-    "session_id": "S1"
+    "next_direction_or_closure": "Open and continue bounded inquiry I1. Its first development action should be a fresh full-allocation PPO training run using the existing implementation and runtime with only the target-radius training exposure broadened to 6-20 cm, then independent task-predicate evaluation and the same failure decomposition. The official assessment is deferred because the current candidate is far below the goal and the proposed comparison has high expected contribution at bounded cost. If the full-radius result is positive, continue coverage-led development; if negative, limited, or persistent failures are angle/configuration linked, close or reframe toward branch/singularity/limit/contact/dynamics characterization without treating one candidate result as a general disproof of learning.",
+    "next_question": "Does expanding the unchanged PPO baseline's training target-radius exposure from 14-20 cm to the official 6-20 cm range reduce inner-workspace no-reach failures enough to justify coverage-led development toward 98% while preserving complete-hold performance?",
+    "scientific_commit": "abdd8c67174752e7543f1970d152b95aed891a7c",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1320,21 +1446,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1c5c3e01-212d-4fad-af05-498952e06132",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E3"
-    ],
-    "scientific_parent_commit": "c45a81d769668dc3064f308f1782432fa50a483c"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
