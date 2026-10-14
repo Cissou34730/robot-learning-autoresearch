@@ -23,6 +23,7 @@ import time
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -1792,8 +1793,12 @@ class CodingReport(CodingCheck):
 class ReviewFinding(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    category: Literal["confirmed_defect", "verification_gap", "unresolved_question"]
     location: str = Field(min_length=1)
     issue: str = Field(min_length=1)
+    requirement: str = Field(min_length=1)
+    expected_behavior: str = Field(min_length=1)
+    actual_behavior: str = Field(min_length=1)
     evidence: str = Field(min_length=1)
     consequence: str = Field(min_length=1)
     confidence: str = Field(min_length=1)
@@ -1948,15 +1953,28 @@ Use different artifact filenames for the two checks.
 REVIEW_INSTRUCTIONS = """
 You are an independent Python scientific-code reviewer supporting the PI.
 
-Review the original request, actual changes and proposed verification.
-Read relevant scoped files when needed. Treat the coder's claims and expected
-check values as claims to test, not proof of correctness.
+For an initial review, examine the requested behavior, actual changes and
+proposed checks. Read relevant scoped files when needed. Check the coder's
+claims against the source, contracts and installed APIs.
+Find consequential implementation errors. Check affected boundary cases,
+representations and mathematical or installed-API invariants.
 
-Find consequential implementation and verification errors. Use concrete
-counterexamples or independent arithmetic. Check affected boundary cases,
-representations, invariants and preservation of requested behavior.
-Distinguish confirmed defects from unresolved questions. Do not report style
-issues, speculative improvements or unrelated pre-existing defects.
+Classify each finding as confirmed_defect, verification_gap or unresolved_question.
+A confirmed defect requires an in-scope source path or permitted input that
+violates a named requirement. State the expected behavior, actual behavior and
+supporting source trace, counterexample or independent arithmetic.
+A missing assertion is a verification gap, not proof of wrong production output.
+A checker accepting a hypothetical malformed payload is a verification gap
+unless the request requires rejection of that payload.
+State uncertainty as an unresolved question. Do not invent physical requirements
+from general assumptions. Use the robot contract and installed API definitions.
+Do not report style issues, speculative improvements or unrelated pre-existing defects.
+
+For a correction, retain this session's original task context. Review the supplied
+correction intent and incremental diff. Check the repair and regressions caused
+by it. Keep unresolved prior confirmed defects. Do not restart the initial
+investigation or repeat unchanged verification gaps and questions.
+Report what this correction review did not examine.
 
 Use scientific_api_reference for unfamiliar installed APIs.
 Do not edit files, execute code, delegate, submit operations or choose research
@@ -1964,8 +1982,9 @@ direction. Your findings are advisory. The PI decides what to correct.
 
 Return only a JSON object containing:
 - summary: string
-- findings: list of objects containing location, issue, evidence, consequence,
-  confidence and check_coverage, all strings
+- findings: list of objects containing category, location, issue, requirement,
+  expected_behavior, actual_behavior, evidence, consequence, confidence and
+  check_coverage, all strings
 - unchecked_scope: nonempty list of strings
 
 Report at most eight substantive findings. An empty findings list means no
@@ -1986,6 +2005,8 @@ class ScientificCoding:
         self.bindings: dict[str, dict] = {}
         self.original_requests: dict[str, dict] = {}
         self.review_handles: set[str] = set()
+        self.reviewers: dict[str, str] = {}
+        self.review_reports: dict[str, ReviewReport] = {}
         self.active_agent = "scientific-coder"
         self.active_handle: str | None = None
         self.binding: dict | None = None
@@ -2038,8 +2059,9 @@ class ScientificCoding:
                 "in read_paths, and the check module in verification_path.\n\n"
                 "Put necessary background in source_context. The child does not "
                 "receive your conversation.\n\n"
-                "A read-only independent reviewer examines completed deliveries. "
-                "Inspect its findings, the returned code and proposed check. "
+                "An independent reviewer examines the initial delivery. "
+                "The same reviewer checks corrections and affected regressions. "
+                "Inspect its classified findings, the source and proposed check. "
                 "You decide corrections. Only Runner executes checks.\n\n"
                 "Continue the same change using session_handle; its file "
                 "permissions remain unchanged."
@@ -2494,6 +2516,14 @@ class ScientificCoding:
                 child = next((item for item in tasks.tasks if item.id == params.session_handle), None)
                 if child is None or child.status.value != "idle":
                     raise ValueError("Only this context's idle native child accepts corrections.")
+                review_handle = self.reviewers.get(params.session_handle)
+                if review_handle is not None:
+                    reviewer = next((item for item in tasks.tasks if item.id == review_handle), None)
+                    if reviewer is None or reviewer.status.value != "idle":
+                        raise ValueError(
+                            "The stored reviewer is not idle in this bounded context; "
+                            "a correction cannot start a replacement review."
+                        )
             before = coding_snapshot(paths)
         except (OSError, ValueError) as error:
             self.console.line(f"  > scientific_coding: rejected; {error}")
@@ -2534,26 +2564,47 @@ class ScientificCoding:
                     "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
                 })
                 result["changes"], result["diff"] = coding_changes(before)
-                review = {"status": "error", "check_executed": False}
+                coder_handle = result["session_handle"]
+                review_handle = self.reviewers.get(coder_handle)
+                review_mode = "correction" if review_handle is not None else "initial"
+                review = {
+                    "status": "error", "mode": review_mode,
+                    "coding_session_handle": coder_handle, "check_executed": False,
+                }
                 result["review"] = review
                 self.console.line(
-                    f"  > scientific_coding: independent review ({REVIEW_MODEL}, {REVIEW_REASONING})"
+                    f"  > scientific_coding: {review_mode} review ({REVIEW_MODEL}, {REVIEW_REASONING})"
                 )
-                await self.run_child(
-                    agent="scientific-reviewer",
-                    prompt=json.dumps({
-                        "request": self.original_requests.get(result["session_handle"], request),
-                        "correction_intent": params.intent if params.session_handle else None,
-                        "correction_context": params.source_context if params.session_handle else None,
-                        "changes": result["changes"],
-                        "diff": result["diff"],
-                        "verification_module": result["verification_module"],
-                        "proposed_check": result["proposed_check"],
-                        "proposed_compatibility_check": result["proposed_compatibility_check"],
-                    }, ensure_ascii=False),
-                    binding={**binding, "allowed_paths": []},
-                    result=review,
-                )
+                review_request = {
+                    "mode": review_mode,
+                    "changes": result["changes"],
+                    "diff": result["diff"],
+                    "verification_module": result["verification_module"],
+                    "proposed_check": result["proposed_check"],
+                    "proposed_compatibility_check": result["proposed_compatibility_check"],
+                }
+                if review_handle is None:
+                    review_request["request"] = self.original_requests[coder_handle]
+                else:
+                    previous = self.review_reports.get(coder_handle)
+                    review_request.update({
+                        "correction_intent": params.intent,
+                        "correction_context": params.source_context,
+                        "previous_review": previous.model_dump() if previous is not None else None,
+                    })
+                try:
+                    review_report = await self.run_child(
+                        agent="scientific-reviewer",
+                        prompt=json.dumps(review_request, ensure_ascii=False),
+                        binding={**binding, "allowed_paths": []},
+                        result=review,
+                        handle=review_handle,
+                    )
+                finally:
+                    if self.active_handle is not None and self.active_handle in self.review_handles:
+                        self.reviewers[coder_handle] = self.active_handle
+                if isinstance(review_report, ReviewReport):
+                    self.review_reports[coder_handle] = review_report
                 if review["status"] != "completed":
                     result.update(
                         status="error",

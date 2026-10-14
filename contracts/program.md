@@ -15,6 +15,12 @@ Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
 Inspect independent review findings with the changed source and proposed checks.
 The PI decides corrections. An independent review does not certify science.
+Distinguish demonstrated defects from verification gaps and unresolved questions.
+A missing assertion does not prove that the production code returns wrong data.
+Do not treat every possible checker improvement as a prerequisite for execution.
+Check proposed physical expectations against the robot contract and installed APIs.
+After addressing the relevant defects, request the small production-path check
+through Runner. Its result informs further repair or scientific work.
 
 For changed library or runtime integration, resolve unfamiliar APIs from the
 installed definitions rather than memory. Review and run a small production-path

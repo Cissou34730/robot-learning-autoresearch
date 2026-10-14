@@ -127,12 +127,18 @@ The stop hook applies to corrections as well as the initial invocation.
 The handler waits for the stop handoff and native task idle state before
 unlocking operation submission.
 
-After a completed coding handoff, the handler starts a fresh native
-`scientific-reviewer` using GPT-6 Luna with max reasoning. It receives the
-original request, the current correction intent when present, actual changed
-files and diff, and the proposed checks. Its exact read scope matches the
-coding binding. Its tools are `view` and `scientific_api_reference`; writes,
-execution, delegation and operation submission are denied.
+After the first completed handoff for an assignment, the handler starts an
+independent native `scientific-reviewer` using GPT-6 Luna with max reasoning.
+It receives the original request, actual changed files and diff, and proposed
+checks. Corrections reuse that native reviewer. They provide the correction
+intent and context, incremental changes, proposed checks and previous completed
+review, without repeating the original request. The result identifies the review
+`mode` as `initial` or `correction` and its `coding_session_handle`.
+A missing or non-idle stored reviewer rejects correction dispatch.
+The handler does not create a replacement reviewer for that assignment.
+Its exact read scope matches the coding binding.
+Its tools are `view` and `scientific_api_reference`; writes, execution,
+delegation and operation submission are denied.
 The handler keeps operation submission locked until this review settles.
 It verifies the reported reviewer model and reasoning, and reports unavailable or failed
 review explicitly rather than treating it as a completed review.
@@ -147,10 +153,13 @@ artifact basename. The result exposes this entry as
 proposals. Large review output is offloaded with a file pointer. Errors and
 timeouts return partial changes when available; cancellation preserves review output.
 The `review` entry contains its status, reviewer handle, summary, findings,
-unchecked scope, actual reported models/reasoning and per-invocation usage. Each finding
-contains `location`, `issue`, `evidence`, `consequence`, `confidence` and
-`check_coverage` strings. No findings means no confirmed defect found, not
-approval. Findings do not trigger automatic repairs or a scientific gate.
+unchecked scope, actual reported models/reasoning and per-invocation usage.
+Each finding contains a `category` string with one of these values:
+`confirmed_defect`, `verification_gap` or `unresolved_question`.
+It also contains `location`, `issue`, `requirement`, `expected_behavior`,
+`actual_behavior`, `evidence`, `consequence`, `confidence` and `check_coverage`
+strings. No findings means no confirmed defect found, not approval.
+Findings do not trigger automatic repairs or a scientific gate.
 The PI decides whether to correct the source through the original coder handle.
 The proposed check is not executed by this tool. The main PI reviews the actual
 changed source and executable check before scientific reliance or submission.
