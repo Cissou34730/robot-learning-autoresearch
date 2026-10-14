@@ -22,6 +22,14 @@ from robot_learning.training.environment import (
 
 EXPECTED_TARGET_RADIUS_RANGE = (0.06, 0.20)
 COMPATIBILITY_SEEDS = (0, 1, 2)
+CAMPAIGN_EVALUATION_ROOT = (
+    Path(__file__).resolve().parents[2]
+    / "campaigns"
+    / "evaluations"
+    / "124dad80-0d01-4503-96cf-bff4755e3278"
+)
+PRIMARY_ARTIFACT_FILENAME = "full_radius_training_sampler_check.json"
+COMPATIBILITY_ARTIFACT_FILENAME = "full_radius_training_sampler_compatibility.json"
 
 
 def _configured_range(env: Any) -> tuple[float, float]:
@@ -76,14 +84,29 @@ def run_check(*, compatibility: bool) -> dict[str, Any]:
         env.close()
 
 
+def _artifact_path(
+    artifact: Path | None, *, compatibility: bool
+) -> Path:
+    if artifact is not None:
+        return artifact
+    filename = (
+        COMPATIBILITY_ARTIFACT_FILENAME
+        if compatibility
+        else PRIMARY_ARTIFACT_FILENAME
+    )
+    return CAMPAIGN_EVALUATION_ROOT / filename
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--artifact", type=Path, required=True)
+    parser.add_argument("--artifact", type=Path)
     parser.add_argument("--compatibility", action="store_true")
     args = parser.parse_args()
 
     result = run_check(compatibility=args.compatibility)
-    args.artifact.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    artifact = _artifact_path(args.artifact, compatibility=args.compatibility)
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return 0
 
 
