@@ -8,3 +8,4 @@
 | E2 | checkpoint | - | checkpointed |
 | E3 | inquiry | I1 | completed |
 | E4 | checkpoint | - | checkpointed |
+| M2 | measurement | I1 | failed |
