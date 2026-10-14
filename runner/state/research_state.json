@@ -179,7 +179,7 @@
       "training_steps": 115712
     },
     "T1:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/124dad80-0d01-4503-96cf-bff4755e3278/t1/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/124dad80-0d01-4503-96cf-bff4755e3278/t1-c8cf701d5-d040a6eabc043ace2710191b66066d6a21a39240a53e6af1741d1b56b9dc7c8b",
       "evaluation_artifacts": [
         "campaigns/evaluations/124dad80-0d01-4503-96cf-bff4755e3278/evaluation-124dad80-0d01-4503-96cf-bff4755e3278-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
       ],
@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -837,9 +837,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -1190,9 +1190,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-14T15:07:28Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is currently the strongest evidence-backed complete candidate: it is tied for the best observed late-training proxy and is the only candidate measured on an independent task-predicate panel. Its 68.75% research-panel success is below the human goal, but it remains the reference artifact for subsequent comparisons."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is currently the strongest evidence-backed complete candidate: it is tied for the best observed late-training proxy and is the only candidate measured on an independent task-predicate panel. Its 68.75% research-panel success is below the human goal, but it remains the reference artifact for subsequent comparisons."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/124dad80-0d01-4503-96cf-bff4755e3278/t1-c8cf701d5-d040a6eabc043ace2710191b66066d6a21a39240a53e6af1741d1b56b9dc7c8b",
+        "fingerprint": "d040a6eabc043ace2710191b66066d6a21a39240a53e6af1741d1b56b9dc7c8b",
+        "source": "campaigns/checkpoints/candidates/124dad80-0d01-4503-96cf-bff4755e3278/t1/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is currently the strongest evidence-backed complete candidate: it is tied for the best observed late-training proxy and is the only candidate measured on an independent task-predicate panel. Its 68.75% research-panel success is below the human goal, but it remains the reference artifact for subsequent comparisons."
+      }
+    },
+    "request_fingerprint": "be7e3915c37381263f52b0f4faaee134c60bb74325c5a94e1d643f9c77954c3e",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1213,7 +1287,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E1"
     ],
     "scientific_parent_commit": "85c26dfb75a04a24e7c1834a41e378dfc13496c7"
   },
