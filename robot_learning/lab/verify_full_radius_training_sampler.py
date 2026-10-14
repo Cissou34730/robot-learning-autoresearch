@@ -12,6 +12,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import shlex
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +32,7 @@ CAMPAIGN_EVALUATION_ROOT = (
 )
 PRIMARY_ARTIFACT_FILENAME = "full_radius_training_sampler_check.json"
 COMPATIBILITY_ARTIFACT_FILENAME = "full_radius_training_sampler_compatibility.json"
+MODULE_NAME = "robot_learning.lab.verify_full_radius_training_sampler"
 
 
 def _configured_range(env: Any) -> tuple[float, float]:
@@ -97,14 +100,28 @@ def _artifact_path(
     return CAMPAIGN_EVALUATION_ROOT / filename
 
 
-def main() -> int:
+def _normalize_argv(argv: list[str] | None = None) -> list[str]:
+    normalized = list(sys.argv[1:] if argv is None else argv)
+    if len(normalized) == 1:
+        normalized = shlex.split(normalized[0])
+    if normalized and normalized[0] == MODULE_NAME:
+        normalized = normalized[1:]
+    return normalized
+
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact", type=Path)
     parser.add_argument("--compatibility", action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(_normalize_argv(argv))
 
     result = run_check(compatibility=args.compatibility)
-    artifact = _artifact_path(args.artifact, compatibility=args.compatibility)
+    artifact_argument = (
+        None if args.artifact == Path("{artifact}") else args.artifact
+    )
+    artifact = _artifact_path(
+        artifact_argument, compatibility=args.compatibility
+    )
     artifact.parent.mkdir(parents=True, exist_ok=True)
     artifact.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return 0
