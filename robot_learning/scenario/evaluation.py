@@ -17,262 +17,10 @@ import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
-from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-from contracts.task_spec import SUCCESS_THRESHOLD
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-
-
-def _finite_float(value: float | int | np.floating) -> float | None:
-    result = float(value)
-    return result if np.isfinite(result) else None
-
-
-def _joint_limit_margins(
-    joint_angles: np.ndarray, joint_ranges: np.ndarray
-) -> np.ndarray | None:
-    angles = np.asarray(joint_angles, dtype=np.float64)
-    ranges = np.asarray(joint_ranges, dtype=np.float64)
-    if angles.shape != (2,) or ranges.shape != (2, 2):
-        raise ValueError("two joint angles and two joint ranges are required")
-    if not np.all(np.isfinite(angles)) or not np.all(np.isfinite(ranges)):
-        return None
-    margins = np.minimum(angles - ranges[:, 0], ranges[:, 1] - angles)
-    return margins if np.all(np.isfinite(margins)) else None
-
-
-def target_ik_branch_diagnostics(
-    target_position: np.ndarray, joint_ranges: np.ndarray
-) -> dict[str, dict | None]:
-    """Return the planar target IK branches and their limit margins.
-
-    Angles and margins are radians.  A branch is ``None`` when the target is
-    not a finite, reachable planar target.
-    """
-    target = np.asarray(target_position, dtype=np.float64)
-    ranges = np.asarray(joint_ranges, dtype=np.float64)
-    if target.ndim != 1 or target.shape[0] < 2 or ranges.shape != (2, 2):
-        raise ValueError("a planar target and two joint ranges are required")
-    target_x, target_y = target[:2]
-    if not np.all(np.isfinite(target[:2])) or not np.all(np.isfinite(ranges)):
-        return {"open": None, "folded": None}
-
-    cos_elbow = (
-        target_x**2
-        + target_y**2
-        - UPPER_ARM_LENGTH**2
-        - FOREARM_LENGTH**2
-    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-    if not np.isfinite(cos_elbow) or cos_elbow < -1.0 or cos_elbow > 1.0:
-        return {"open": None, "folded": None}
-
-    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-    target_angle = float(np.arctan2(target_y, target_x))
-    branches: dict[str, dict | None] = {}
-    for name, elbow in (("open", elbow_open), ("folded", -elbow_open)):
-        shoulder = target_angle - float(
-            np.arctan2(
-                FOREARM_LENGTH * np.sin(elbow),
-                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
-            )
-        )
-        angles = np.asarray([shoulder, elbow], dtype=np.float64)
-        margins = _joint_limit_margins(angles, ranges)
-        if margins is None:
-            branches[name] = None
-            continue
-        branches[name] = {
-            "joint_angles_rad": [float(angle) for angle in angles],
-            "joint_limit_margins_rad": [float(margin) for margin in margins],
-            "minimum_joint_limit_margin_rad": float(np.min(margins)),
-        }
-    return branches
-
-
-def minimum_joint_limit_margin(
-    joint_angles: np.ndarray, joint_ranges: np.ndarray
-) -> float | None:
-    """Return the nearest joint limit in radians, or ``None`` for bad input."""
-    margins = _joint_limit_margins(joint_angles, joint_ranges)
-    if margins is None:
-        return None
-    return _finite_float(np.min(margins))
-
-
-def nearest_target_ik_branch(
-    branches: dict[str, dict | None], actual_configuration: np.ndarray
-) -> dict | None:
-    """Identify the target branch nearest an actual two-joint configuration."""
-    actual = np.asarray(actual_configuration, dtype=np.float64)
-    if actual.shape != (2,) or not np.all(np.isfinite(actual)):
-        return None
-    candidates: list[tuple[float, str]] = []
-    for name in ("open", "folded"):
-        branch = branches.get(name)
-        if branch is None:
-            continue
-        angles = np.asarray(branch["joint_angles_rad"], dtype=np.float64)
-        if angles.shape != (2,) or not np.all(np.isfinite(angles)):
-            continue
-        wrapped_delta = (angles - actual + np.pi) % (2.0 * np.pi) - np.pi
-        distance = float(np.linalg.norm(wrapped_delta))
-        if np.isfinite(distance):
-            candidates.append((distance, name))
-    if not candidates:
-        return None
-    distance, name = min(candidates)
-    return {
-        "branch": name,
-        "configuration_distance_rad": distance,
-    }
-
-
-def _empty_hold_window_diagnostics() -> dict[str, float | int | None]:
-    return {
-        "hold_window_control_steps": 0,
-        "hold_window_max_joint_speed_norm_rad_per_s": None,
-        "hold_window_max_absolute_action": None,
-        "hold_window_max_internal_substep_distance_cm": None,
-        "hold_window_max_internal_substep_distance_above_threshold_cm": None,
-        "hold_window_internal_substeps_above_threshold": 0,
-    }
-
-
-def _accumulate_hold_window_diagnostics(
-    diagnostics: dict[str, float | int | None],
-    *,
-    previous_held_steps: int,
-    held_steps: int,
-    joint_speed_norm_rad_per_s: float | None,
-    absolute_action: float | None,
-    substep_distances: np.ndarray,
-) -> None:
-    """Accumulate measurements for a hold entry, continuation, or exit step."""
-    if previous_held_steps <= 0 and held_steps <= 0:
-        return
-
-    diagnostics["hold_window_control_steps"] = (
-        int(diagnostics["hold_window_control_steps"]) + 1
-    )
-    if joint_speed_norm_rad_per_s is not None:
-        current_max_speed = diagnostics["hold_window_max_joint_speed_norm_rad_per_s"]
-        if (
-            current_max_speed is None
-            or joint_speed_norm_rad_per_s > float(current_max_speed)
-        ):
-            diagnostics["hold_window_max_joint_speed_norm_rad_per_s"] = (
-                joint_speed_norm_rad_per_s
-            )
-    if absolute_action is not None:
-        current_max_action = diagnostics["hold_window_max_absolute_action"]
-        if current_max_action is None or absolute_action > float(current_max_action):
-            diagnostics["hold_window_max_absolute_action"] = absolute_action
-
-    finite_substeps = np.asarray(substep_distances, dtype=np.float64)
-    finite_substeps = finite_substeps[np.isfinite(finite_substeps)]
-    if not finite_substeps.size:
-        return
-
-    current_max_substep_cm = float(np.max(finite_substeps) * 100.0)
-    previous_max_substep_cm = diagnostics[
-        "hold_window_max_internal_substep_distance_cm"
-    ]
-    if (
-        previous_max_substep_cm is None
-        or current_max_substep_cm > float(previous_max_substep_cm)
-    ):
-        diagnostics["hold_window_max_internal_substep_distance_cm"] = (
-            current_max_substep_cm
-        )
-
-    above_threshold = finite_substeps[finite_substeps > SUCCESS_THRESHOLD]
-    diagnostics["hold_window_internal_substeps_above_threshold"] = (
-        int(diagnostics["hold_window_internal_substeps_above_threshold"])
-        + int(above_threshold.size)
-    )
-    if above_threshold.size:
-        current_max_above_cm = float(np.max(above_threshold) * 100.0)
-        previous_max_above_cm = diagnostics[
-            "hold_window_max_internal_substep_distance_above_threshold_cm"
-        ]
-        if (
-            previous_max_above_cm is None
-            or current_max_above_cm > float(previous_max_above_cm)
-        ):
-            diagnostics[
-                "hold_window_max_internal_substep_distance_above_threshold_cm"
-            ] = current_max_above_cm
-
-
-def _build_episode_diagnostics(
-    *,
-    episode: int,
-    episode_seed: int,
-    target_position: np.ndarray,
-    target_ik_branches: dict[str, dict | None],
-    min_distance_cm: float,
-    final_distance_cm: float,
-    first_reach_step: int | None,
-    max_held_steps: int,
-    in_tolerance_steps: int,
-    hold_interruptions: int,
-    min_joint_limit_margin_rad: float | None,
-    max_joint_speed_norm_rad_per_s: float | None,
-    max_absolute_action: float | None,
-    max_internal_substep_distance_cm: float | None,
-    max_internal_substep_distance_above_threshold_cm: float | None,
-    internal_substeps_above_threshold: int,
-    hold_window_control_steps: int,
-    hold_window_max_joint_speed_norm_rad_per_s: float | None,
-    hold_window_max_absolute_action: float | None,
-    hold_window_max_internal_substep_distance_cm: float | None,
-    hold_window_max_internal_substep_distance_above_threshold_cm: float | None,
-    hold_window_internal_substeps_above_threshold: int,
-    nearest_branch_at_first_entry: dict | None,
-) -> dict:
-    """Assemble one JSON-compatible diagnostic record from measured values."""
-    return {
-        "episode": episode,
-        "episode_seed": episode_seed,
-        "target_radius_cm": float(
-            np.hypot(target_position[0], target_position[1]) * 100.0
-        ),
-        "target_angle_degrees": float(
-            np.degrees(np.arctan2(target_position[1], target_position[0]))
-        ),
-        "target_ik_branches": target_ik_branches,
-        "nearest_target_ik_branch_at_first_entry": nearest_branch_at_first_entry,
-        "min_distance_cm": _finite_float(min_distance_cm),
-        "final_distance_cm": _finite_float(final_distance_cm),
-        "first_reach_step": first_reach_step,
-        "max_held_steps": max_held_steps,
-        "in_tolerance_steps": in_tolerance_steps,
-        "hold_interruptions": hold_interruptions,
-        "min_joint_limit_margin_rad": min_joint_limit_margin_rad,
-        "max_joint_speed_norm_rad_per_s": max_joint_speed_norm_rad_per_s,
-        "max_absolute_action": max_absolute_action,
-        "max_internal_substep_distance_cm": max_internal_substep_distance_cm,
-        "max_internal_substep_distance_above_threshold_cm": (
-            max_internal_substep_distance_above_threshold_cm
-        ),
-        "internal_substeps_above_threshold": internal_substeps_above_threshold,
-        "hold_window_control_steps": hold_window_control_steps,
-        "hold_window_max_joint_speed_norm_rad_per_s": (
-            hold_window_max_joint_speed_norm_rad_per_s
-        ),
-        "hold_window_max_absolute_action": hold_window_max_absolute_action,
-        "hold_window_max_internal_substep_distance_cm": (
-            hold_window_max_internal_substep_distance_cm
-        ),
-        "hold_window_max_internal_substep_distance_above_threshold_cm": (
-            hold_window_max_internal_substep_distance_above_threshold_cm
-        ),
-        "hold_window_internal_substeps_above_threshold": (
-            hold_window_internal_substeps_above_threshold
-        ),
-    }
 
 
 def evaluate_research_model(
@@ -307,25 +55,7 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        joint_ranges = np.asarray(env.model.jnt_range[:2], dtype=np.float64)
-        target_ik_branches = target_ik_branch_diagnostics(
-            target_position, joint_ranges
-        )
-        min_joint_limit_margin_rad = minimum_joint_limit_margin(
-            np.asarray(env.data.qpos[:2], dtype=np.float64), joint_ranges
-        )
-        max_joint_speed_norm_rad_per_s = _finite_float(
-            np.linalg.norm(np.asarray(env.data.qvel[:2], dtype=np.float64))
-        )
-        max_absolute_action = 0.0
-        max_internal_substep_distance_cm: float | None = None
-        max_internal_substep_distance_above_threshold_cm: float | None = None
-        internal_substeps_above_threshold = 0
-        hold_window_diagnostics = _empty_hold_window_diagnostics()
-        previous_held_steps = 0
-        nearest_branch_at_first_entry: dict | None = None
         while not (terminated or truncated):
-            previous_held_steps_before_step = previous_held_steps
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
@@ -335,82 +65,15 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            current_joint_limit_margin = minimum_joint_limit_margin(
-                np.asarray(env.data.qpos[:2], dtype=np.float64), joint_ranges
-            )
-            if current_joint_limit_margin is not None:
-                if min_joint_limit_margin_rad is None:
-                    min_joint_limit_margin_rad = current_joint_limit_margin
-                else:
-                    min_joint_limit_margin_rad = min(
-                        min_joint_limit_margin_rad, current_joint_limit_margin
-                    )
-            current_speed_norm = _finite_float(
-                np.linalg.norm(np.asarray(env.data.qvel[:2], dtype=np.float64))
-            )
-            if current_speed_norm is not None:
-                if max_joint_speed_norm_rad_per_s is None:
-                    max_joint_speed_norm_rad_per_s = current_speed_norm
-                else:
-                    max_joint_speed_norm_rad_per_s = max(
-                        max_joint_speed_norm_rad_per_s, current_speed_norm
-                    )
-            applied_action = np.asarray(env.last_action, dtype=np.float64)
-            current_max_action = _finite_float(np.max(np.abs(applied_action)))
-            if current_max_action is not None:
-                max_absolute_action = max(max_absolute_action, current_max_action)
-            substep_distances = np.asarray(
-                env.last_substep_distances, dtype=np.float64
-            )
-            _accumulate_hold_window_diagnostics(
-                hold_window_diagnostics,
-                previous_held_steps=previous_held_steps_before_step,
-                held_steps=held_steps,
-                joint_speed_norm_rad_per_s=current_speed_norm,
-                absolute_action=current_max_action,
-                substep_distances=substep_distances,
-            )
-            if substep_distances.size:
-                finite_substeps = substep_distances[np.isfinite(substep_distances)]
-                if finite_substeps.size:
-                    current_max_substep_cm = float(np.max(finite_substeps) * 100.0)
-                    if max_internal_substep_distance_cm is None:
-                        max_internal_substep_distance_cm = current_max_substep_cm
-                    else:
-                        max_internal_substep_distance_cm = max(
-                            max_internal_substep_distance_cm, current_max_substep_cm
-                        )
-                    above_threshold = finite_substeps[
-                        finite_substeps > SUCCESS_THRESHOLD
-                    ]
-                    internal_substeps_above_threshold += int(above_threshold.size)
-                    if above_threshold.size:
-                        current_max_above_cm = float(np.max(above_threshold) * 100.0)
-                        if (
-                            max_internal_substep_distance_above_threshold_cm is None
-                        ):
-                            max_internal_substep_distance_above_threshold_cm = (
-                                current_max_above_cm
-                            )
-                        else:
-                            max_internal_substep_distance_above_threshold_cm = max(
-                                max_internal_substep_distance_above_threshold_cm,
-                                current_max_above_cm,
-                            )
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    nearest_branch_at_first_entry = nearest_target_ik_branch(
-                        target_ik_branches,
-                        np.asarray(env.data.qpos[:2], dtype=np.float64),
-                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-            previous_held_steps = held_steps
 
         episode_results.append(
             {
@@ -425,53 +88,22 @@ def evaluate_research_model(
             }
         )
         episode_diagnostics.append(
-            _build_episode_diagnostics(
-                episode=episode,
-                episode_seed=seed + episode,
-                target_position=target_position,
-                target_ik_branches=target_ik_branches,
-                min_distance_cm=min_distance_cm,
-                final_distance_cm=final_distance_cm,
-                first_reach_step=first_reach_step,
-                max_held_steps=max_held_steps,
-                in_tolerance_steps=in_tolerance_steps,
-                hold_interruptions=hold_interruptions,
-                min_joint_limit_margin_rad=min_joint_limit_margin_rad,
-                max_joint_speed_norm_rad_per_s=max_joint_speed_norm_rad_per_s,
-                max_absolute_action=max_absolute_action,
-                max_internal_substep_distance_cm=max_internal_substep_distance_cm,
-                max_internal_substep_distance_above_threshold_cm=(
-                    max_internal_substep_distance_above_threshold_cm
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "target_radius_cm": float(
+                    np.hypot(target_position[0], target_position[1]) * 100.0
                 ),
-                internal_substeps_above_threshold=internal_substeps_above_threshold,
-                hold_window_control_steps=int(
-                    hold_window_diagnostics["hold_window_control_steps"]
+                "target_angle_degrees": float(
+                    np.degrees(np.arctan2(target_position[1], target_position[0]))
                 ),
-                hold_window_max_joint_speed_norm_rad_per_s=(
-                    hold_window_diagnostics[
-                        "hold_window_max_joint_speed_norm_rad_per_s"
-                    ]
-                ),
-                hold_window_max_absolute_action=hold_window_diagnostics[
-                    "hold_window_max_absolute_action"
-                ],
-                hold_window_max_internal_substep_distance_cm=(
-                    hold_window_diagnostics[
-                        "hold_window_max_internal_substep_distance_cm"
-                    ]
-                ),
-                hold_window_max_internal_substep_distance_above_threshold_cm=(
-                    hold_window_diagnostics[
-                        "hold_window_max_internal_substep_distance_above_threshold_cm"
-                    ]
-                ),
-                hold_window_internal_substeps_above_threshold=int(
-                    hold_window_diagnostics[
-                        "hold_window_internal_substeps_above_threshold"
-                    ]
-                ),
-                nearest_branch_at_first_entry=nearest_branch_at_first_entry,
-            )
+                "min_distance_cm": min_distance_cm,
+                "final_distance_cm": final_distance_cm,
+                "first_reach_step": first_reach_step,
+                "max_held_steps": max_held_steps,
+                "in_tolerance_steps": in_tolerance_steps,
+                "hold_interruptions": hold_interruptions,
+            }
         )
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
@@ -489,15 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "time": "control_steps",
-                "joint_angle": "rad",
-                "joint_limit_margin": "rad",
-                "joint_speed": "rad/s",
-                "action": "normalized actuator command",
-                "substep_distance_threshold": "1 cm",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
