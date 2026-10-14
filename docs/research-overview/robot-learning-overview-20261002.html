@@ -263,8 +263,9 @@
           <ul>
             <li>Each coding assignment receives an independent GPT-6 Luna review with max reasoning. Corrections reuse that reviewer to check the repair and affected regressions.</li>
             <li>The reviewer can read selected files. It cannot edit code, execute checks or choose the scientific direction.</li>
-            <li>The PI receives findings and decides corrections through the original coder.</li>
+            <li>The reviewer requests a complete batch of engineering repairs from the same coder. The PI receives the final package or a blocked requirement.</li>
             <li>Findings separate demonstrated defects, verification gaps and unresolved questions. A missing assertion does not prove wrong measurement output.</li>
+            <li>Unclear requirements and scientific choices return to the PI. Runner does not coordinate repairs. The reviewer does not execute checks.</li>
             <li>The runtime checks the actual reviewer model and reasoning level. It records reviewer usage separately.</li>
             <li>Commit <code>4e2c84d</code> added the reviewer. A later correction-flow repair replaces repeated fresh reviews. Neither change resets or launches a campaign.</li>
             <li>The three historical review trials cost 56.875771 AIU in total. This is separate from campaign costs.</li>
@@ -317,7 +318,8 @@
       <div class="note" style="margin-top: 16px">
         <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
         <p>The PI requests code changes in exact selected files. A native coder receives the request and selected context, not the campaign conversation.</p>
-        <p>An independent read-only reviewer examines each assignment. The same reviewer checks corrections and affected regressions. The PI decides corrections. Neither helper executes checks or submits operations.</p>
+        <p>An independent read-only reviewer examines each assignment. It requests engineering repairs as one batch. The same coder makes the changes. The same reviewer checks them.</p>
+        <p>The PI receives the final package or a blocked requirement. Scientific decisions remain with the PI. Neither helper executes checks or submits operations.</p>
         <p>Runner executes the checks that the PI requests. Code review does not approve scientific conclusions.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
         <p>Ordinary Copilot main and coding sessions have no shell tools. The main PI calls <code>submit_operation</code> without file-write tools.</p>
@@ -590,6 +592,7 @@
           <li>Commit <code>4e2c84d</code> adds read-only GPT-6 Luna review after each completed coding delivery.</li>
           <li>Startup in <code>d205479e</code> reached the session deadline during its fifth review. No Runner check ran in that session.</li>
           <li>The approved repair retains one reviewer per assignment. Corrections check repairs and affected regressions. Findings distinguish defects, check gaps and unresolved questions.</li>
+          <li>The next approved change routes complete engineering repair batches inside the coding handoff. The PI receives the final package or a clear blocking reason.</li>
           <li>The PI keeps correction authority. Runner does not coordinate repairs or judge science.</li>
           <li>Reviewer costs have a separate record. The runtime checks the actual model and reasoning level.</li>
           <li>The maintainer started the new campaign <code>d205479e</code>. Its results are outside the completed-campaign report.</li>
@@ -712,7 +715,7 @@
             <tr><td>Candidate-free capability visibility (R5-2)</td><td>The PI can see what it can do without a candidate.</td><td>Implemented.</td></tr>
             <tr><td>PI-selected evidence scope</td><td>One JSON tool and one training-log tool support selected fields, records, summaries and complete content. Repeated subsets and continuations are explicit.</td><td>Implementation checks only. No required scientific inspection pattern.</td></tr>
             <tr class="group-row"><td colspan="3">Runner and tool repairs</td></tr>
-            <tr><td>Native coder and independent code reviewer</td><td>The coder receives selected files and runtime-version instructions. Luna/max reviews the assignment, then checks repairs in the same session. Findings have separate categories. The PI decides corrections. Runner alone executes checks.</td><td>The initial implementation is in <code>4e2c84d</code>. The correction-flow repair removes repeated fresh reviews. Separate reviewer costs. Campaign effect unmeasured.</td></tr>
+            <tr><td>Native coder and independent code reviewer</td><td>Luna/max reviews the assignment and requests a complete engineering repair batch. The same coder repairs it. The same reviewer checks it. The PI receives the final package or blocking reason. Runner alone executes checks.</td><td>The initial implementation is in <code>4e2c84d</code>. Repairs now stay inside the coding handoff. Scientific choices remain with the PI. Separate reviewer costs. Campaign effect unmeasured.</td></tr>
             <tr><td>Large Git publication and recovery</td><td>Repair publication and recovery of completed operations.</td><td>Implemented <code>b7727d1</code>.</td></tr>
             <tr><td>Runner state ignored in protected checks</td><td>Only registered Runner state is ignored. Dirty protected sources are still rejected.</td><td>Implemented <code>48bffca</code>.</td></tr>
             <tr><td>Style findings do not fail an operation</td><td>Ruff findings no longer use up a scientific operation. Syntax and behavior failures still block.</td><td>Implemented <code>f953039</code>.</td></tr>

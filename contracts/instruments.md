@@ -134,18 +134,41 @@ checks. Corrections reuse that native reviewer. They provide the correction
 intent and context, incremental changes, proposed checks and previous completed
 review, without repeating the original request. The result identifies the review
 `mode` as `initial` or `correction` and its `coding_session_handle`.
+
+The reviewer returns a `decision`: `request_changes`, `ready_for_pi` or
+`needs_pi`, with a `decision_reason` string.
+For `request_changes`, `requested_changes` contains one complete batch.
+Each entry contains `finding_id` and `instruction` strings, plus `paths` as
+a list of exact writable file strings.
+The batch must reference every confirmed defect in that report.
+Duplicate finding IDs, missing defects and requests for non-defect findings
+reject the handoff. Requested paths must remain inside the original write scope.
+
+The native coding handler sends the batch to the same coder.
+It then sends the incremental repair to the same reviewer.
+The handler does not return to the main PI between these engineering steps.
+`ready_for_pi` returns a completed package. `needs_pi` returns that status and
+the reviewer's reason, with current source changes and unexecuted check proposals.
+A repeated automatic repair ID or a repair with no source changes stops automatic
+dispatch and returns `needs_pi` with an explicit reason.
+
 A missing or non-idle stored reviewer rejects correction dispatch.
 The handler does not create a replacement reviewer for that assignment.
 Its exact read scope matches the coding binding.
 Its tools are `view` and `scientific_api_reference`; writes, execution,
 delegation and operation submission are denied.
-The handler keeps operation submission locked until this review settles.
+The handler keeps operation submission locked until the coding handoff settles.
 It verifies the reported reviewer model and reasoning, and reports unavailable or failed
 review explicitly rather than treating it as a completed review.
 
 The result returns the child handle, actual per-invocation changed-file manifest
 and diff, verification module, proposed `python_module` entry and unchecked
-scope. A `compatibility_check` handoff supplies its own `check_args`,
+scope. The manifest and diff include all repairs within that invocation.
+`repair_history` records each dispatched batch, its confirmed findings,
+decision reason, coder status and follow-up review status.
+Completed repairs also record the coder's summary and the reviewer's next decision
+and reason.
+A `compatibility_check` handoff supplies its own `check_args`,
 `artifact_filename` and `check_description`, or null for unchanged integration.
 It uses a separate mode of the same scoped verification module, with a distinct
 artifact basename. The result exposes this entry as
@@ -156,11 +179,12 @@ The `review` entry contains its status, reviewer handle, summary, findings,
 unchecked scope, actual reported models/reasoning and per-invocation usage.
 Each finding contains a `category` string with one of these values:
 `confirmed_defect`, `verification_gap` or `unresolved_question`.
-It also contains `location`, `issue`, `requirement`, `expected_behavior`,
+It also contains `finding_id`, `location`, `issue`, `requirement`, `expected_behavior`,
 `actual_behavior`, `evidence`, `consequence`, `confidence` and `check_coverage`
 strings. No findings means no confirmed defect found, not approval.
-Findings do not trigger automatic repairs or a scientific gate.
-The PI decides whether to correct the source through the original coder handle.
+Only an explicit, valid `request_changes` decision routes an engineering batch.
+Verification gaps and questions do not enter that batch.
+Scientific decisions remain with the PI. Review is not a scientific gate.
 The proposed check is not executed by this tool. The main PI reviews the actual
 changed source and executable check before scientific reliance or submission.
 Runner executes the reviewed check through the existing measurement instrument.

@@ -14,13 +14,20 @@ actor. The PI retains scientific intent, interpretation and review authority.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
 Inspect independent review findings with the changed source and proposed checks.
-The PI decides corrections. An independent review does not certify science.
+The reviewer can request engineering repairs within the original PI intent.
+The coder addresses the complete batch before the same reviewer checks it.
+
+The PI receives the final package or a clear reason for a blocked handoff.
+The PI decides unclear requirements, changes of scientific intent and unresolved repairs.
+An independent review does not certify science.
 Distinguish demonstrated defects from verification gaps and unresolved questions.
 A missing assertion does not prove that the production code returns wrong data.
 Do not treat every possible checker improvement as a prerequisite for execution.
+
 Check proposed physical expectations against the robot contract and installed APIs.
 After addressing the relevant defects, request the small production-path check
 through Runner. Its result informs further repair or scientific work.
+Engineering review does not execute checks or replace the PI's scientific judgment.
 
 For changed library or runtime integration, resolve unfamiliar APIs from the
 installed definitions rather than memory. Review and run a small production-path

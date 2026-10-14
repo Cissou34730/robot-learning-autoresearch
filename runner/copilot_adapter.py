@@ -1793,6 +1793,7 @@ class CodingReport(CodingCheck):
 class ReviewFinding(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    finding_id: str = Field(min_length=1)
     category: Literal["confirmed_defect", "verification_gap", "unresolved_question"]
     location: str = Field(min_length=1)
     issue: str = Field(min_length=1)
@@ -1805,12 +1806,47 @@ class ReviewFinding(BaseModel):
     check_coverage: str = Field(min_length=1)
 
 
+class ReviewChange(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    finding_id: str = Field(min_length=1)
+    instruction: str = Field(min_length=1)
+    paths: list[str] = Field(min_length=1)
+
+
 class ReviewReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     summary: str = Field(min_length=1)
+    decision: Literal["request_changes", "ready_for_pi", "needs_pi"]
+    decision_reason: str = Field(min_length=1)
     findings: list[ReviewFinding]
+    requested_changes: list[ReviewChange]
     unchecked_scope: list[str] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def require_complete_batch(self) -> ReviewReport:
+        identifiers = [finding.finding_id for finding in self.findings]
+        if len(identifiers) != len(set(identifiers)):
+            raise ValueError("Review finding IDs must be unique.")
+        requested = [change.finding_id for change in self.requested_changes]
+        if len(requested) != len(set(requested)):
+            raise ValueError("Repair requests must have unique finding IDs.")
+        defects = {
+            finding.finding_id for finding in self.findings
+            if finding.category == "confirmed_defect"
+        }
+        if self.decision == "request_changes":
+            if not defects or set(requested) != defects:
+                raise ValueError(
+                    "A repair batch must cover all confirmed defects, "
+                    "and must not include gaps or unresolved questions."
+                )
+        elif requested:
+            raise ValueError("Only request_changes may contain repair requests.")
+        if self.decision == "ready_for_pi" and defects:
+            raise ValueError("Confirmed defects require repairs or a needs_pi handoff.")
+        return self
 
 
 class CodingConsole(Console):
@@ -1975,20 +2011,37 @@ correction intent and incremental diff. Check the repair and regressions caused
 by it. Keep unresolved prior confirmed defects. Do not restart the initial
 investigation or repeat unchanged verification gaps and questions.
 Report what this correction review did not examine.
+Retain each finding's ID when reassessing the same issue.
+
+Report all findings from the pass together. Do not withhold known defects for
+later rounds. Request changes for every confirmed defect in one batch.
+Each request must identify its finding, the correction and exact authorized files.
+The handler sends the complete batch to the same coder. You then review its repair.
+Do not request repairs for hypothetical checker gaps or optional improvements.
+Choose needs_pi for an unclear requirement, a change of scientific intent,
+conflicting physical expectations or a repair you cannot resolve.
+Do not repeat a failed repair request under a new finding ID.
+Choose ready_for_pi when no confirmed defect remains. Report remaining gaps
+and questions without declaring scientific approval.
 
 Use scientific_api_reference for unfamiliar installed APIs.
 Do not edit files, execute code, delegate, submit operations or choose research
-direction. Your findings are advisory. The PI decides what to correct.
+direction. Request only engineering repairs within the original PI intent.
+The PI retains scientific decisions and authorizes Runner checks.
 
 Return only a JSON object containing:
 - summary: string
-- findings: list of objects containing category, location, issue, requirement,
+- decision: request_changes, ready_for_pi or needs_pi
+- decision_reason: nonempty string
+- findings: list of objects containing finding_id, category, location, issue, requirement,
   expected_behavior, actual_behavior, evidence, consequence, confidence and
   check_coverage, all strings
+- requested_changes: list of objects containing finding_id and instruction
+  strings, and paths as a list of exact authorized file strings
 - unchecked_scope: nonempty list of strings
 
-Report at most eight substantive findings. An empty findings list means no
-confirmed defect found, not approval or proof of correctness.
+An empty findings list means no confirmed defect found, not approval or proof
+of correctness.
 State that no code was executed and no files were changed.
 """
 
@@ -2060,9 +2113,11 @@ class ScientificCoding:
                 "Put necessary background in source_context. The child does not "
                 "receive your conversation.\n\n"
                 "An independent reviewer examines the initial delivery. "
-                "The same reviewer checks corrections and affected regressions. "
-                "Inspect its classified findings, the source and proposed check. "
-                "You decide corrections. Only Runner executes checks.\n\n"
+                "It requests batched engineering repairs from the same coder, "
+                "then checks the repair and affected regressions. "
+                "You receive the final source, classified findings, repair history "
+                "and proposed check, or a needs_pi reason. "
+                "Scientific choices remain yours. Only Runner executes checks.\n\n"
                 "Continue the same change using session_handle; its file "
                 "permissions remain unchanged."
             ),
@@ -2194,7 +2249,9 @@ class ScientificCoding:
                     "Review only the supplied change and exact readable files. "
                     "All writes, execution, delegation and operations are denied. "
                     "Do not trust coder-authored expectations without checking them. "
-                    "Return advisory findings to the PI, not a scientific approval.\n"
+                    "Request complete engineering repair batches through your handoff. "
+                    "Return scientific choices or blocked requirements to the PI. "
+                    "No review certifies science.\n"
                     + json.dumps(self.binding, ensure_ascii=False)
                 )
             }
@@ -2542,17 +2599,28 @@ class ScientificCoding:
             "verification_module": verification[:-3].replace("/", "."),
             "check_executed": False,
             "review_required": True,
+            "repair_history": [],
             "unchecked_scope": ["No scientific check has been executed by this tool."],
         }
+        pending_repair = None
         try:
             request = {
                 "intent": params.intent, **binding, "source_context": params.source_context,
             }
-            report = await self.run_child(
-                agent="scientific-coder", prompt=json.dumps(request, ensure_ascii=False),
-                binding=binding, result=result, handle=params.session_handle,
-            )
-            if isinstance(report, CodingReport):
+            coding_handle = params.session_handle
+            step_before = before
+            attempted_findings: set[str] = set()
+            while True:
+                report = await self.run_child(
+                    agent="scientific-coder", prompt=json.dumps(request, ensure_ascii=False),
+                    binding=binding, result=result, handle=coding_handle,
+                )
+                if pending_repair is not None:
+                    pending_repair["coder_status"] = result["status"]
+                if not isinstance(report, CodingReport):
+                    break
+                if pending_repair is not None:
+                    pending_repair["coder_summary"] = report.summary
                 result.update({
                     "summary": report.summary,
                     "proposed_check": self.check_proposal(report, result["verification_module"]),
@@ -2561,9 +2629,12 @@ class ScientificCoding:
                         if report.compatibility_check is not None else None
                     ),
                     "check_description": report.check_description,
-                    "unchecked_scope": [*result["unchecked_scope"], *report.unchecked_scope],
+                    "unchecked_scope": [
+                        "No scientific check has been executed by this tool.",
+                        *report.unchecked_scope,
+                    ],
                 })
-                result["changes"], result["diff"] = coding_changes(before)
+                result["changes"], result["diff"] = coding_changes(step_before)
                 coder_handle = result["session_handle"]
                 review_handle = self.reviewers.get(coder_handle)
                 review_mode = "correction" if review_handle is not None else "initial"
@@ -2577,6 +2648,8 @@ class ScientificCoding:
                 )
                 review_request = {
                     "mode": review_mode,
+                    "coder_summary": report.summary,
+                    "coder_unchecked_scope": report.unchecked_scope,
                     "changes": result["changes"],
                     "diff": result["diff"],
                     "verification_module": result["verification_module"],
@@ -2588,8 +2661,12 @@ class ScientificCoding:
                 else:
                     previous = self.review_reports.get(coder_handle)
                     review_request.update({
-                        "correction_intent": params.intent,
-                        "correction_context": params.source_context,
+                        "correction_intent": request["intent"],
+                        "correction_context": request["source_context"],
+                        "correction_origin": "reviewer" if pending_repair is not None else "pi",
+                        "requested_changes": (
+                            pending_repair["requested_changes"] if pending_repair is not None else []
+                        ),
                         "previous_review": previous.model_dump() if previous is not None else None,
                     })
                 try:
@@ -2603,19 +2680,87 @@ class ScientificCoding:
                 finally:
                     if self.active_handle is not None and self.active_handle in self.review_handles:
                         self.reviewers[coder_handle] = self.active_handle
+                    if pending_repair is not None:
+                        pending_repair["review_status"] = review["status"]
                 if isinstance(review_report, ReviewReport):
                     self.review_reports[coder_handle] = review_report
-                if review["status"] != "completed":
+                    if pending_repair is not None:
+                        pending_repair["review_decision"] = review_report.decision
+                        pending_repair["review_reason"] = review_report.decision_reason
+                if not isinstance(review_report, ReviewReport) or review["status"] != "completed":
                     result.update(
                         status="error",
                         error=f"Independent review did not complete: {review.get('error', review['status'])}",
                     )
+                    break
+                if review_report.decision == "ready_for_pi":
+                    break
+                if review_report.decision == "needs_pi":
+                    result.update(status="needs_pi", reason=review_report.decision_reason)
+                    break
+
+                requested_ids = {change.finding_id for change in review_report.requested_changes}
+                repeated = requested_ids & attempted_findings
+                if repeated:
+                    result.update(
+                        status="needs_pi",
+                        reason=f"Automatic repair request repeated finding IDs: {sorted(repeated)}.",
+                    )
+                    break
+                if pending_repair is not None and not result["changes"]:
+                    result.update(
+                        status="needs_pi",
+                        reason="The coder changed no source and the reviewer still requests repairs.",
+                    )
+                    break
+                for change in review_report.requested_changes:
+                    selected = coding_file_scope(change.paths, writable=True)
+                    outside = selected - paths
+                    if outside:
+                        raise ValueError(
+                            f"Reviewer repair requests files outside the coding scope: {sorted(outside)}."
+                        )
+                attempted_findings.update(requested_ids)
+                pending_repair = {
+                    "requested_changes": [
+                        change.model_dump() for change in review_report.requested_changes
+                    ],
+                    "confirmed_findings": [
+                        finding.model_dump() for finding in review_report.findings
+                        if finding.category == "confirmed_defect"
+                    ],
+                    "decision_reason": review_report.decision_reason,
+                    "coder_status": "pending",
+                    "review_status": "pending",
+                }
+                result["repair_history"].append(pending_repair)
+                request = {
+                    "intent": (
+                        "Resolve the complete engineering repair batch in source_context. "
+                        "Preserve the original PI intent and behavior outside that batch. "
+                        "Report any conflict with the contracts or installed APIs."
+                    ),
+                    **binding,
+                    "source_context": json.dumps({
+                        "requested_changes": pending_repair["requested_changes"],
+                        "confirmed_findings": pending_repair["confirmed_findings"],
+                        "decision_reason": review_report.decision_reason,
+                    }, ensure_ascii=False),
+                }
+                coding_handle = coder_handle
+                step_before = coding_snapshot(paths)
+                result["review"] = {
+                    "status": "pending", "mode": "correction",
+                    "coding_session_handle": coder_handle, "check_executed": False,
+                }
         except asyncio.CancelledError:
             cancelled = True
             result.update(status="cancelled", error="Coding/review cancelled; partial changes require PI review.")
         except (OSError, ValueError) as error:
             result.update(status="error", error=f"{type(error).__name__}: {error}")
         finally:
+            if pending_repair is not None and pending_repair["coder_status"] == "pending":
+                pending_repair["coder_status"] = result["status"]
             self.active_tasks.discard(task)
             self.busy = self.cancellation_unconfirmed
 

@@ -65,14 +65,22 @@ bound mechanically to the explicit request. Copilot main and coding agents
 have no shell tools. Native start instructions remind the coder of the locked
 scientific API versions above; it cannot install or change dependencies.
 Both roles can inspect installed APIs through `scientific_api_reference`.
+
 Each new coding assignment receives an independent native GPT-6 Luna review at
 max reasoning. The reviewer receives the original request, actual changes and
 proposed checks. Corrections reuse that reviewer to check the repair and affected
 regressions, not restart the original investigation. Its reads remain exactly
 scoped, with no write or execution authority. Findings distinguish demonstrated
-defects, verification gaps and unresolved questions. They are advisory.
-The PI decides corrections through the existing coding handle.
-Neither the reviewer nor Runner initiates repairs or approves scientific logic.
+defects, verification gaps and unresolved questions.
+
+The reviewer can request a
+complete engineering repair batch within the original PI intent and file scope.
+The native coding handoff sends that batch to the same coder and returns the
+repair to the same reviewer. The PI receives the final package or a blocked
+requirement. Scientific choices, unclear requirements and unresolved repairs
+remain with the PI. The reviewer does not approve scientific logic.
+Runner does not initiate or coordinate these repairs.
+
 Reviewer usage is recorded separately from coder and PI usage.
 For changed library/runtime integration, the child proposes a small
 artifact-independent compatibility mode in its scoped verification module.
