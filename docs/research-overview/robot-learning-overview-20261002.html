@@ -195,10 +195,10 @@
         <button id="theme-toggle" type="button">Change theme</button>
       </div>
       <h1>Robot AutoResearch</h1>
-      <p class="intro">Robot AutoResearch is a harness. It lets an independent AI agent, the Principal Investigator (PI), train a robot.</p>
-      <p class="intro">The human owns the goal. The PI owns the science and the training. The Runner is the gatekeeper. It checks and runs every operation.</p>
-      <p class="intro">The working example is a two-joint arm that must reach a target and hold still. Work is organized in campaigns. A campaign is split into inquiries. An inquiry is one scientific question.</p>
-      <p class="snapshot">Last updated <time datetime="2026-10-11">2026-10-11</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
+      <p class="intro">Robot AutoResearch lets an AI Principal Investigator (PI) develop and test methods for a robot.</p>
+      <p class="intro">The human defines the goal. The PI chooses the scientific work. Runner checks and executes accepted operations. It does not choose the science.</p>
+      <p class="intro">The example is a two-joint arm that must reach a target and hold still. Training is one tool, not the whole process.</p>
+      <p class="snapshot">Last updated <time datetime="2026-10-14">14 October 2026</time>. This page does not update itself. The <a href="../harness-experiment-log.md">harness log</a> records current issue states. Campaign records establish measured results.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status">1 Status</a>
         <a href="#roles">2 Roles</a>
@@ -217,67 +217,59 @@
       <p class="section-label">1 / STATUS DASHBOARD</p>
       <h2 id="status-heading">Where the project stands</h2>
       <div class="note" style="margin-bottom: 16px">
-        <p><strong>Latest attempt:</strong> campaign <code>5de5e4a0</code> stopped in startup after publishing its scientific model. A transport defect falsely rejected two valid training proposals. No training or measurement completed; preparation and startup used 4.893137 AIU.</p>
-        <p>The maintainer approved transport/search repairs, native coding subagents and directly callable evidence/log tools. The campaign remains stopped. Implementation checks do not authorize a restart or establish scientific effectiveness.</p>
+        <p><strong>Last completed campaign:</strong> <code>dc48cc2f</code> passed its official test at 196/200, or 98.0%.</p>
+        <p>It needed fewer source repairs, but a silent angle error survived the checks. <a href="robot-campaign-dc48cc2f-20261014.html">Read the result, code and cost report</a>.</p>
+        <p>The maintainer started a separate campaign, <code>d205479e</code>, on 14 October. This page does not assess its results.</p>
       </div>
       <div class="grid two status-grid">
         <article class="card hot">
           <span class="tag">Latest completed campaign</span>
-          <h3 style="margin-top: 12px">Campaign <code>f917968b</code></h3>
+          <h3 style="margin-top: 12px">Campaign <code>dc48cc2f</code> passed</h3>
           <ul>
-            <li>Official fail: 193/200, or 96.5%, three successes below the goal.</li>
-            <li>Assessed candidate: <code>T3:checkpoint-120832</code>, measured at 151/160 in development.</li>
-            <li>Later measured alternatives did not improve T3. T10 nomination omitted its two 100% proxies and all full-radius-stage checkpoints.</li>
-            <li>Nine completed training operations, thirteen completed measurements and nine inquiries; 156.47 AIU and 54m09s PI time.</li>
-            <li>The connected direction/commitment repair has no completed post-revision assessment. Later attempts stopped on implementation defects.</li>
+            <li>Official result: 196/200, or 98.0%. Four cases failed.</li>
+            <li>Selected model: <code>T3:checkpoint-90112</code>. Its fresh development result was 158/160.</li>
+            <li>Three training runs executed 362,496 steps. The campaign used two inquiries.</li>
+            <li>Nine measurements completed. Two attempted measurements failed.</li>
+            <li>Recorded AI usage: 45.506525 AIU, including PI work, coding and interrupted work.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">Failed variants preserved the broader direction, then justified commitment of an unchanged candidate. This is a recorded decision defect, not proof that wording caused the outcome. <a href="../harness-change-narrative.md">Read the comparison and corrective revision</a>.</p>
+          <p class="small muted" style="margin-top: 8px">The pass met the minimum exactly. It does not prove success on every future target. <a href="robot-campaign-dc48cc2f-20261014.html">Read the full report</a>.</p>
         </article>
         <article class="card">
-          <span class="tag">Previous passing result</span>
-          <h3 style="margin-top: 12px">Campaign <code>89a6354a</code> passed</h3>
+          <span class="tag">Code quality and cost</span>
+          <h3 style="margin-top: 12px">Fewer repairs, but not error-free code</h3>
           <ul>
-            <li>Official assessment: 196/200 (98.0%) with <code>T7:checkpoint-75776</code>.</li>
-            <li>Seven training operations, eight measurements and three inquiries; 77.03 AIU and 29m02s PI time.</li>
-            <li>One metadata-only checkpoint correction allowed same-campaign continuation without a second reset.</li>
-            <li>Its pass did not establish OI-005 calibration or isolate later wording effects.</li>
+            <li>Source repair calls fell from nine in <code>5ff87d6b</code> to one in <code>dc48cc2f</code>.</li>
+            <li>Recorded AI usage fell from 102.595910 to 45.506525 AIU.</li>
+            <li>The campaigns did different amounts of work. These totals do not isolate the effect of the shorter instructions.</li>
+            <li>The coder repaired a checker with wrong expected values. A different angle error remained undetected.</li>
+            <li>The angle error affected geometry diagnostics, not the official success count.</li>
           </ul>
-          <p class="small"><a href="../oi005_assessment_decision_rca_20261011.md">Read the RCA and campaign observation</a></p>
+          <p class="small"><a href="robot-campaign-dc48cc2f-20261014.html#code">Read the code findings</a></p>
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">23 issues, OI-001 to OI-023</h3>
+          <h3 style="margin-top: 12px">Current issue source: OI-001 to OI-033</h3>
           <ul>
-            <li>Active or open (5): OI-006, OI-008, OI-010, OI-019, OI-021.</li>
-            <li>Implemented, observed but not closed (1): OI-005.</li>
-            <li>Implemented or revised, awaiting campaign evidence (6): OI-009, OI-014, OI-015, OI-018, OI-022, OI-023. The latest OI-005 correction is also unmeasured.</li>
-            <li>Original bounded defects closed (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017. OI-004's narrow nomination clarification is unmeasured.</li>
-            <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
-            <li>Paused or proposal (2): OI-007, OI-012.</li>
-            <li>Highest-priority new issue: OI-021.</li>
+            <li>The harness log records current status for each issue.</li>
+            <li>A working implementation is not proof of a scientific improvement.</li>
+            <li>The latest work added independent code review and separate reviewer cost records.</li>
+            <li>The new review does not automatically close evidence, cost or scientific-method issues.</li>
           </ul>
-          <p class="small"><a href="#issues">See the full table</a></p>
+          <p class="small"><a href="../harness-experiment-log.md">Read the source register</a>. <a href="#issues">Read the current summary</a>.</p>
         </article>
         <article class="card">
           <span class="tag">Changed last</span>
-          <h3 style="margin-top: 12px">11 October 2026</h3>
+          <h3 style="margin-top: 12px">Independent code review: 14 October</h3>
           <ul>
-            <li>SDK 1.0.19 is the integrated Copilot agent runtime. Native coding subagents replace manually managed coding sessions; engineering instructions and installed scientific API versions remain inside the coding interface. Same-child corrections retain the exact scope within the current bounded context.</li>
-            <li>OI-022 corrects successful process exits contaminated by asynchronous stdin-write output. OI-023 constrains searches before forbidden descendants are read or reported.</li>
-            <li>The PI can request scoped evidence, successive subsets or complete JSON/log content. The existing JSON-query interface remains; the training-log reader is now a custom tool. The unused <code>jello</code> dependency is removed, not recreated.</li>
-            <li>OI-011 is closed implemented/effective: logical JSON Pointers display without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
-            <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed inquiry cap remains.</li>
-            <li>OI-017 is closed effective after campaign evidence showed the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
-            <li>OI-018 adds fair bounded batching with per-query traversal budgets and shared result/output limits.</li>
-            <li>OI-003 and OI-016 close on campaign <code>ec7f3d3a</code> evidence; no campaign-length replay was required.</li>
-            <li>OI-020 is withdrawn as an invalid generalization of campaign-specific evidence. OI-021 records the scenario-specific scientific-model prompt; impact analysis must precede repair.</li>
-            <li>OI-005 now compares terminal assessment with the expected contribution of further bounded work. Independent parent and Opus 5.5/high RCAs cover both early requests and persistent deferral. <a href="../oi005_assessment_decision_rca_20261011.md">Read the reconciled RCA</a>.</li>
-            <li>The authorized fresh v3 campaign <code>89a6354a</code> passed officially at 196/200 after a metadata-only checkpoint correction and same-campaign continuation. OI-005 is observed, not closed; its remaining counterevidence and trigger-wording limits are documented.</li>
-            <li>The earlier OI-009 repair exposes checkpoint session/list context and exact mismatch feedback. The latest campaign avoided the previous bookkeeping stop, but its more explicit OI-005 reasons did not resolve commitment calibration. Neither observation isolates a causal effect.</li>
-            <li>The latest OI-014/OI-005 correction requires cumulative direction review and a candidate-specific commitment case directly in ordinary prompts. Scientific possibility does not justify another variant; failed alternatives do not improve the unchanged candidate. Unresolved causes retain their decision consequences.</li>
-            <li>A narrow OI-004 clarification contextualizes training proxies by exposure and runtime. These corrective revisions remain unmeasured; no Runner, recipe or budget change was made.</li>
+            <li>Each completed coding delivery now receives a fresh GPT-6 Luna review with max reasoning.</li>
+            <li>The reviewer can read selected files. It cannot edit code, execute checks or choose the scientific direction.</li>
+            <li>The PI receives findings and decides corrections through the original coder.</li>
+            <li>The runtime checks the actual reviewer model and reasoning level. It records reviewer usage separately.</li>
+            <li>Commit <code>4e2c84d</code> contains the change. It did not reset or launch a campaign.</li>
+            <li>The three historical review trials cost 56.875771 AIU in total. This is separate from campaign costs.</li>
+            <li>Luna found the angle error but missed the wrong checker. The trials do not prove complete review coverage.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
+          <p class="small muted" style="margin-top: 8px"><a href="robot-campaign-dc48cc2f-20261014.html#review">Read the review comparison</a>. Later campaign evidence must establish the effect of the new review.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -296,7 +288,8 @@
         <article class="card role pi">
           <h3>Principal Investigator (PI)</h3>
           <p>Chooses questions, methods, and tools.</p>
-          <p>Defines bounded code changes and reviews the coding child's actual source and executable check.</p>
+          <p>Defines bounded code changes.</p>
+          <p>Reviews code, proposed checks and independent review findings.</p>
           <p>Interprets completed evidence.</p>
           <p>Decides whether to request the official assessment.</p>
         </article>
@@ -322,12 +315,15 @@
       </div>
       <div class="note" style="margin-top: 16px">
         <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
-        <p>Ordinary main PI sessions use native coding subagents for exact-file-scoped source changes. The child receives a narrow objective and source context, not the PI's campaign conversation. It cannot submit operations or execute checks. The main PI reviews the actual diff and check before asking Runner to execute it.</p>
+        <p>The PI requests code changes in exact selected files. A native coder receives the request and selected context, not the campaign conversation.</p>
+        <p>A fresh read-only reviewer examines each completed delivery. The PI decides corrections. Neither helper can execute checks or submit operations.</p>
+        <p>Runner executes the checks that the PI requests. Code review does not approve scientific conclusions.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
-        <p>Ordinary Copilot main and coding sessions have no shell tools. Main PI calls <code>submit_operation</code> without file-write tools; preliminary scientific-model publication is unchanged. All Python runs through <code>uv run</code>, with Runner executing scientific checks, training and evaluation. OpenCode retains its legacy file and command-policy interface.</p>
+        <p>Ordinary Copilot main and coding sessions have no shell tools. The main PI calls <code>submit_operation</code> without file-write tools.</p>
+        <p>The preliminary phase keeps its scientific-model publication permission. Runner executes scientific checks, training and evaluation through <code>uv run</code>. OpenCode keeps its legacy file and command-policy interface.</p>
         <p>Copilot SDK 1.0.19 supplies agent lifecycle, custom tools and native subagents. Runner and scientific functions remain separate. OpenCode is a legacy runtime option, not equivalent custom-tool integration.</p>
-        <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and <code>training_log_query</code>. Large results identify continuation; partial content is never presented as complete.</p>
-        <p class="small muted">The authorized first launch exposed OI-022 and OI-023 before any training. Real harmless SDK-native calls verified coding hooks, scoped permissions and same-child correction; fixture checks cover transport, search and evidence paging. The stopped campaign is preserved. Scientific effect remains unmeasured.</p>
+        <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and <code>training_log_query</code>. Large results identify continuation. Partial content never appears as complete evidence.</p>
+        <p class="small muted">Earlier checks covered transport, search and selected file access. The latest SDK check confirmed read-only Luna/max review. Scientific effect remains unmeasured.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>
@@ -380,7 +376,7 @@
         <div class="diagram loop" tabindex="0" aria-label="Scrollable campaign loop diagram">
           <svg viewBox="0 0 1000 680" role="img" aria-labelledby="loop-title loop-description">
             <title id="loop-title">Current lifecycle with an operational inquiry-cap pause</title>
-            <desc id="loop-description">Write the scientific model once. Startup establishes or refines an initial direction through scientific work before goal review. Goal review permits inquiry opening or official assessment. Inquiry measurements and training return to the same session. Continuing or reframing requires a session record and a fresh session. Closing and saving the record returns to goal review. The launcher pauses at the inquiry cap after active scientific work is recorded. A pause is not a campaign conclusion. Official pass or fail ends the campaign.</desc>
+            <desc id="loop-description">The fixed scientific model informs startup, which develops a direction before goal review permits an inquiry or official assessment. Inquiry measurements and training return to the same session. A saved session record permits a fresh session to continue, reframe, or return to goal review after closure. At the inquiry cap, the launcher pauses after saving active scientific work. A pause is not a conclusion. Official pass or fail ends the campaign.</desc>
             <defs>
               <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="tip"/></marker>
               <marker id="return-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="return-tip"/></marker>
@@ -460,7 +456,7 @@
           <h3>Rules for the inquiry cap</h3>
           <p>The cap is 15 inquiries. It is a temporary execution limit.</p>
           <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
-          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is closed as a withdrawn removal proposal; the cap remains an accepted operational limit.</p>
+          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is closed because the maintainer withdrew the removal proposal. The cap remains an accepted execution limit.</p>
         </div>
       </div>
       <details style="margin-top: 16px">
@@ -469,9 +465,9 @@
           <ol class="steps-list">
             <li>The Copilot PI picks an action and calls <code>submit_operation</code> with the existing instrument payload. The exchange file stays internal to the trusted controller and Runner.</li>
             <li>The Runner checks the shape, the phase, the file ownership, and the allocation.</li>
-            <li>The Runner accepts the request and gives it an id. M# is a measurement, T# is training, E# is another event.</li>
+            <li>The Runner accepts the request and gives it an id. M# identifies a measurement. T# identifies a training run. E# identifies another event.</li>
             <li>The Runner runs it and saves the result, the files, and the history.</li>
-            <li>The launcher rebuilds the brief and returns compact factual result/errors and changed state directly to the same conversation. A checkpoint ends that context; the next bounded context is fresh, on the same SDK runtime.</li>
+            <li>The launcher rebuilds the brief. It returns concise results, errors and changed state to the same conversation. A checkpoint ends that context. The next bounded context is fresh, on the same SDK runtime.</li>
           </ol>
           <p class="small muted" style="margin-top: 8px">Only completed operations count as evidence. A valid request is not a scientific endorsement.</p>
           <div class="table-wrap" style="margin-top: 12px">
@@ -480,7 +476,7 @@
               <tbody>
                 <tr><td>Invalid request</td><td>The Runner returns the exact reason directly. Checkpoint list errors identify the current session and both expected and submitted lists. One retry is allowed. Then the launcher stops.</td></tr>
                 <tr><td>Error in PI code</td><td>The error goes back to the same PI session. It is execution history, not a scientific result.</td></tr>
-                <tr><td>Publication failure after a run</td><td>The result and transaction are kept. The launcher stops for repair; it does not automatically reaccept or retrain.</td></tr>
+                <tr><td>Publication failure after a run</td><td>Runner keeps the result and transaction. The launcher stops for repair. It does not automatically reaccept or retrain.</td></tr>
                 <tr><td>Lost response</td><td>Submission stops. On resume, the controller recovers existing pending/completed Runner state instead of blindly replaying the tool call.</td></tr>
                 <tr><td>Maintainer stop</td><td>State is kept. It is not a pass, a fail, or a conclusion.</td></tr>
               </tbody>
@@ -517,35 +513,46 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Issue register OI-001 to OI-023</h2>
-      <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
+      <h2 id="issues-heading">Current issues: OI-001 to OI-033</h2>
+      <p>The <a href="../harness-experiment-log.md">harness log</a> is the source for these states. Issue IDs are never reused.</p>
+      <p>A completed code change is not proof of a campaign improvement. The table keeps those two facts separate.</p>
       <div class="card table-wrap wide">
         <table>
           <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
           <tbody>
-            <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is now traceable. In campaign <code>896c230a</code> the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control for that distinction, M1 and M2 measured before any intervention, and E1 handed off the unresolved coverage-versus-stabilization frontier. I1 then tested the named distinction. One campaign cannot say which prompt element caused this. Startup cost stays OI-006.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
-            <tr><td>OI-003</td><td>Measurement evidence. Campaign <code>79395c88</code> declared M30 nearest-branch margins missing even though the completed artifact contained them. The synthesis convention now ties a direction-changing conclusion to its supporting operation and artifact field, and states that an uninspected diagnostic is not missing evidence. Campaign <code>ec7f3d3a</code> did not repeat the false-missing interpretation.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-004</td><td>Original nonterminal-selection defect closed from earlier evidence. Latest T10 nomination omitted two 100% proxies and every full-radius-stage checkpoint; T3's terminal selection had measured support. Program and direct prompts now contextualize proxies by exposure/runtime, without requiring every checkpoint to be measured.</td><td><span class="tag">Original defect closed; clarification unmeasured</span></td></tr>
-            <tr><td>OI-005</td><td>Latest E43 committed unchanged T3 after unsuccessful alternatives. Direct goal-review guidance now distinguishes candidate prospects from best-known rank and official certification authority. Limitations affect the choice without automatically selecting assessment or more work. <a href="../harness-change-narrative.md">Comparison and corrective revision</a>.</td><td><span class="tag">Not closed; corrective revision unmeasured</span></td></tr>
-            <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
-            <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
-            <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
-            <tr><td>OI-009</td><td>Checkpoint bookkeeping and operation submission. Copilot tool results identify the still-active session and exact operation list. Rejection feedback reports expected and submitted values. Structured submission keeps the consumed request file internal; OpenCode retains its legacy interface. Strict validation and retry limits remain unchanged.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-010</td><td>Explicit protection of the old protocol log.</td><td><span class="tag">Unimplemented</span></td></tr>
-            <tr><td>OI-011</td><td>Console clarity and maintainer-file read controls. Artifact evidence calls now show operation, action, and logical JSON Pointer detail without resolving the pointer as a filesystem path. Existing phase-specific maintainer-file read controls remain implemented. The original console/read-control scope is complete; any future distinct maintainer-file control defect requires a new issue.</td><td><span class="tag">Closed, implemented/effective 2026-10-10</span></td></tr>
-            <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
-            <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. Removal is not planned soon; the checkpointed pause and resume mechanism remain accepted operational limits.</td><td><span class="tag">Closed, withdrawn</span></td></tr>
-            <tr><td>OI-014</td><td>Latest claim limits improved, but a regulation direction persisted across unsuccessful variants. Direct prompts now require accumulated results to update the case for developing, investigating or changing that direction. A negative result neither disproves the method nor justifies another variant. Unresolved causes retain consequences beyond closure. <a href="../harness-change-narrative.md">Read the RCA and repair summary</a>.</td><td><span class="tag">Corrective revision unmeasured</span></td></tr>
-            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Serialized component observability is implemented, and campaign <code>79395c88</code> treated PPO expert-action reward shaping as evidence about direct controller imitation. The wording now limits claims to what was implemented. Campaign <code>ec7f3d3a</code> did not exercise that historical mismatch, so it remains implemented but unmeasured.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-016</td><td>Inquiry and handoff semantics. The corrective revision permits method-specific bounded inquiries, treats a closed-session next question as a revisable goal-review proposal, preserves exact identity after opening, and passes the goal review's actual synthesis into the fresh inquiry. Campaign <code>ec7f3d3a</code> used bounded multi-operation inquiry work and the E19 → E20 frontier handoff without forcing a stale question; the two boundary replays support the same bounded conclusion.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-017</td><td>Nested artifact evidence access. Campaign <code>339736e0</code> used the operation-scoped, fingerprint-verified tool successfully, and the retrieved evidence changed scientific conclusions. Repetitive query mechanics are tracked separately as OI-018.</td><td><span class="tag">Closed, effective</span></td></tr>
-            <tr><td>OI-018</td><td>Artifact-query ergonomics and context amplification. Related filters, projections and aggregates share verified provenance. Scoped requests, successive pages and complete-content retrieval are explicit choices, not mandatory summaries. Training logs have a separate parser-backed custom tool.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-019</td><td>Terminal brief consistency. The generated brief can place a final official pass beside stale pre-assessment checkpoint prose.</td><td><span class="tag">Open, low priority</span></td></tr>
-            <tr><td>OI-020</td><td>Self-imposed acceptance gates and slice-label drift. This issue improperly generalized scenario-specific evidence and overlapped the assessment-readiness scope already owned by OI-005. The original observation remains in the <code>79395c88</code> RCA.</td><td><span class="tag">Withdrawn</span></td></tr>
-            <tr><td>OI-021</td><td>Scenario-specific scientific-model prompt. The preliminary objective explicitly names reaching, trajectory control, convergence, stabilization and multiple kinematic solutions. The direct wording is confined to fresh-campaign scientific-model generation, but the generated model and synthesis are handed into startup. All 57 recorded scientific-model sessions were exposed; measured policy evidence remains factual, while independent mechanism discovery and robot-generic claims are contaminated.</td><td><span class="tag">Open, high priority</span></td></tr>
-            <tr><td>OI-022</td><td>Valid operation rejected by contaminated process return. The stdin-write completion is discarded and harmless checks require exact scalar success/failure exits. No validator or retry-limit change.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-023</td><td>Readable parent directory exposed forbidden search descendants. Searches enforce the shared phase-aware read policy before reading content or reporting paths. Direct-read controls remain.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-001</td><td>The first action must connect to the scientific model.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-002</td><td>Inquiries need clear closing conditions.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-003</td><td>Conclusions must identify their supporting evidence.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-004</td><td>Select checkpoints from evidence, not their position in a run. The original defect is closed. A later instruction change remains unmeasured.</td><td><span class="tag">Original defect closed</span></td></tr>
+            <tr><td>OI-005</td><td>Compare the value of another inquiry with the value of the official test.</td><td><span class="tag">Change implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-006</td><td>Check whether the full startup budget is necessary.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-007</td><td>Review the order of the role and goal in prompts.</td><td><span class="tag">Paused</span></td></tr>
+            <tr><td>OI-008</td><td>Reduce repeated context without hiding useful evidence.</td><td><span class="tag">Further change implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-009</td><td>Expose exact session and operation identities in submissions.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-010</td><td>Check protection of the old protocol log. The original concern is likely obsolete.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-011</td><td>Keep console paths clear and protect maintainer files.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-012</td><td>Permit separate publication of a frozen policy.</td><td><span class="tag">Proposal only</span></td></tr>
+            <tr><td>OI-013</td><td>Remove the inquiry cap. The maintainer withdrew this proposal.</td><td><span class="tag">Withdrawn</span></td></tr>
+            <tr><td>OI-014</td><td>Separate measured model gains from claims about their cause.</td><td><span class="tag">Further change implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-015</td><td>Check the actual implementation of a method. Restore only exact selected source files.</td><td><span class="tag">Restore repair implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-016</td><td>Keep inquiry boundaries clear. Treat the next proposed question as revisable.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-017</td><td>Permit access to nested values in saved evidence.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-018</td><td>Make evidence and log queries clear, bounded and complete when requested.</td><td><span class="tag">Change implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-019</td><td>Prevent final results from appearing beside stale decision text.</td><td><span class="tag">Open, low priority</span></td></tr>
+            <tr><td>OI-020</td><td>A proposed general issue was not valid beyond its specific campaign.</td><td><span class="tag">Withdrawn</span></td></tr>
+            <tr><td>OI-021</td><td>Remove task-specific assumptions from the initial scientific-model prompt after an impact review.</td><td><span class="tag">Open, high priority</span></td></tr>
+            <tr><td>OI-022</td><td>Return exact process exit codes without extra output values.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-023</td><td>Apply read restrictions before searches inspect files or return paths.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-024</td><td>Reduce fragmented diagnostics and repeated measurements.</td><td><span class="tag">Open, repair not approved</span></td></tr>
+            <tr><td>OI-025</td><td>Keep scientific summaries faithful to the recorded data.</td><td><span class="tag">Open, cause review deferred</span></td></tr>
+            <tr><td>OI-026</td><td>Compare the cost of coding context, review and checks.</td><td><span class="tag">Open, comparison required</span></td></tr>
+            <tr><td>OI-027</td><td>Report session errors and final status accurately.</td><td><span class="tag">Repair implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-028</td><td>Report publication failures after operation acceptance.</td><td><span class="tag">Repair implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-029</td><td>Use one typed operation envelope. Return clear structure errors.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-030</td><td>Keep the exact stored file scope for same-child corrections.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-031</td><td>Use exact saved artifact identities and compact record lookups.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-032</td><td>Permit selected reads from large JSON files without loading every value.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-033</td><td>Retry the specified recoverable parent model error within the approved limit.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -577,27 +584,46 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
+        <h3 style="margin-top: 0">14 October</h3>
+        <ul>
+          <li>Commit <code>4e2c84d</code> adds read-only GPT-6 Luna review after each completed coding delivery.</li>
+          <li>The PI keeps correction authority. Runner does not coordinate repairs or judge science.</li>
+          <li>Reviewer costs have a separate record. The runtime checks the actual model and reasoning level.</li>
+          <li>The maintainer started the new campaign <code>d205479e</code>. Its results are outside the completed-campaign report.</li>
+        </ul>
+        <h3>13 October</h3>
+        <ul>
+          <li>Campaign <code>dc48cc2f</code> passed the official test with 196/200 successes and recorded 45.506525 AIU.</li>
+          <li>Its coder needed one source repair. A silent target-angle error remained in the diagnostic code.</li>
+          <li>Three later blind reviews compared Sonnet, Haiku and Luna. Their results support independent review, not a guarantee of correctness.</li>
+        </ul>
+        <h3>12 October</h3>
+        <ul>
+          <li>Evidence queries gained smaller default pages, clearer errors and exact artifact selection.</li>
+          <li>Native coder permissions now use the permission event's identity. Unknown or stale identities receive no file access.</li>
+          <li>Recipe restore requests now name exact files. Unselected files and laboratory tools stay unchanged.</li>
+        </ul>
         <h3 style="margin-top: 0">11 October</h3>
         <ul>
           <li>The authorized campaign <code>5de5e4a0</code> stopped at startup after two false training rejections. It produced no completed scientific operation. The model publication and stopped state remain intact.</li>
-          <li>The approved integrated revision repairs process return handling and descendant search access, replaces manual coding sessions with native subagents, and exposes complete/scoped evidence and training-log retrieval.</li>
+          <li>The approved revision repairs process return handling and descendant search access. It replaces manual coding sessions with native subagents. Evidence and training-log tools support complete or selected content.</li>
           <li>Copilot SDK 1.0.19 is the agent runtime. The unused <code>jello</code> dependency is removed. No campaign is launched, resumed or reset as part of this revision.</li>
         </ul>
         <h3>10 October</h3>
         <ul>
-          <li>OI-011 is closed implemented/effective. Artifact evidence calls display concise logical JSON Pointers without filesystem resolution, the original console/read-control scope is complete, and any future distinct maintainer-file control defect requires a new issue.</li>
-          <li>OI-013 is closed as a withdrawn removal proposal; the checkpointed fifteen-inquiry pause remains an accepted operational limit.</li>
+          <li>OI-011 is closed as effective. Artifact evidence calls display short JSON Pointers, not filesystem paths. The original console and read controls are complete. A separate future defect in maintainer-file controls needs a new issue.</li>
+          <li>OI-013 is closed because the maintainer withdrew the removal proposal. The fifteen-inquiry pause remains an accepted execution limit after a saved checkpoint.</li>
           <li>OI-017 is closed effective after campaign <code>339736e0</code> showed that the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
-          <li>OI-018 adds bounded batching for related evidence queries. Each specification has its own traversal budget, while result and output-byte budgets remain shared; fair result allocation and explicit truncation or budget-exhaustion states prevent ambiguous starvation.</li>
+          <li>OI-018 groups related evidence queries into one bounded request. Each query has its own traversal budget. Queries share result and output-byte budgets. Fair result allocation prevents one query from consuming the whole result budget. The reply identifies incomplete content and exhausted budgets.</li>
         </ul>
         <h3>9 October</h3>
         <ul>
           <li>Batch 3 implements OI-017 as a deferred, operation-scoped SDK query tool. The PI supplies a completed measurement operation ID, while Runner state supplies the artifact path and mandatory fingerprint. M30 fixed-evidence validation recovered the nested 15 positive and eight nonpositive margins among 23 pre-reach failures.</li>
           <li>OI-016 corrective revision is implemented after campaign <code>79395c88</code> showed the first repair ineffective. Proposed next questions are revisable in goal review, active inquiry identity remains exact, and the fresh inquiry receives the goal review's actual synthesis. Bounded closure and peer instruments are preserved. Two independent fixed-evidence replays at the pre-I13 boundary, run on the historical model specification, both avoided the redundant inquiry.</li>
-          <li>The evidence-handoff fidelity revision addresses OI-003, OI-015 and OI-014 in one change. A direction-changing conclusion must identify its supporting operation and artifact field, state what an intended method actually implemented, and preserve causal limits when other factors changed. The duplicated interpretation reminders in the inquiry section and the launcher are removed, leaving one owner in the program contract.</li>
-          <li>The comprehensive campaign <code>79395c88</code> RCA reopened OI-003 for the false M30 missing-evidence claim, added the T10 imitation mismatch to OI-015, and recorded new comparison-confounding evidence under OI-014.</li>
-          <li>OI-015 is implemented. Candidate archival now records separate learned-component and runtime fingerprints, completed training reports exact checkpoint matches, and both feedback paths state that serialized equality does not determine intervention realization. No campaign has measured the behavior change yet.</li>
-          <li>OI-001 is closed as effective. Campaign <code>896c230a</code> shows the full chain: the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control, M1 and M2 measured first, and E1 handed off an unresolved frontier. The startup cost question stays in OI-006.</li>
+          <li>The evidence-handoff revision addresses OI-003, OI-015 and OI-014. A conclusion that changes direction must name its supporting operation and artifact field. It must state what the method actually implemented. It must preserve causal limits when other factors changed. The program contract now owns these rules. The inquiry section and launcher no longer repeat them.</li>
+          <li>The root-cause review of campaign <code>79395c88</code> reopened OI-003 for the false claim that M30 evidence was missing. It added T10's imitation mismatch to OI-015. It recorded other factors that affected comparisons under OI-014.</li>
+          <li>OI-015 is implemented. Candidate archives now record separate fingerprints for learned components and runtime code. Completed training reports exact checkpoint matches. Both feedback paths explain that equal saved values do not prove that an intended change took effect. No campaign measured this behavior change at that date.</li>
+          <li>OI-001 is closed as effective. In campaign <code>896c230a</code>, the model named the omitted 6 to 14 cm region. Startup ran T1 as a declared control. M1 and M2 measured first. E1 passed the unresolved question to the next session. The startup cost question stays in OI-006.</li>
           <li>Campaign <code>896c230a</code> finished at 193/200. It failed the goal but confirmed the OI-003 interpretation repair in use.</li>
           <li>Campaign <code>58dcd817</code> completed at 195/200. It missed the scientific goal by one episode, while providing the live-campaign evidence needed to close OI-004 as effective.</li>
           <li>OI-004 is closed. The campaign nominated non-terminal checkpoints from training trajectories, repaired missing evidence before conclusion, and followed the failure diagnosis into one bounded capture-focused intervention.</li>
@@ -673,7 +699,7 @@
             <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
             <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
             <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
-            <tr><td>Checkpoint boundary and structured submission</td><td>Copilot receives the active session's exact list directly at mandatory checkpoint transitions. Main PI submits structured payloads, not file patches. Ordinary results continue in one context; checkpoints start fresh contexts on the same runtime.</td><td>Startup transport failure repaired under OI-022. No automatic scientific-content correction or retry-limit increase; campaign effect unmeasured.</td></tr>
+            <tr><td>Checkpoint boundary and structured submission</td><td>Copilot receives the active session's exact list at required checkpoints. The main PI submits structured payloads, not file patches. Ordinary results continue in one context. Checkpoints start fresh contexts on the same runtime.</td><td>OI-022 repaired the startup transport failure. No automatic scientific-content correction or retry-limit increase. Campaign effect unmeasured.</td></tr>
             <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
             <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
             <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. OI-013 is closed as a withdrawn removal proposal.</td></tr>
@@ -681,15 +707,15 @@
             <tr><td>Artifact inventories and references</td><td>They help the PI find the detailed evidence.</td><td>Implemented <code>f986a2c</code>, <code>97a12ba</code>. Partial reading is still possible (OI-003).</td></tr>
             <tr><td>Compact research brief</td><td>Less repeated text. A replay went from 109,508 to 46,656 bytes (57.39% smaller).</td><td>Implemented <code>3825d2e</code>. Better decisions are not shown.</td></tr>
             <tr><td>Candidate-free capability visibility (R5-2)</td><td>The PI can see what it can do without a candidate.</td><td>Implemented.</td></tr>
-            <tr><td>PI-selected evidence scope</td><td>One JSON tool and one training-log tool support selected fields, records, summaries and complete content. Repeated subsets and continuations are explicit.</td><td>Implementation checks only; no forced scientific inspection pattern.</td></tr>
+            <tr><td>PI-selected evidence scope</td><td>One JSON tool and one training-log tool support selected fields, records, summaries and complete content. Repeated subsets and continuations are explicit.</td><td>Implementation checks only. No required scientific inspection pattern.</td></tr>
             <tr class="group-row"><td colspan="3">Runner and tool repairs</td></tr>
-            <tr><td>Native coding author and main PI reviewer</td><td>SDK-native coding subagents receive scoped sources, runtime-version instructions and a defect-sensitive check requirement. Main PI reviews actual edits; Runner alone executes checks.</td><td>Manual coding-session plumbing superseded. No new scientific actor or validity certificate.</td></tr>
+            <tr><td>Native coder and independent code reviewer</td><td>The coder receives selected files and runtime-version instructions. Each delivery receives a fresh read-only Luna/max review. The PI decides corrections. Runner alone executes checks.</td><td>Implemented in <code>4e2c84d</code>. Separate reviewer costs. Campaign effect unmeasured. Review does not approve science.</td></tr>
             <tr><td>Large Git publication and recovery</td><td>Repair publication and recovery of completed operations.</td><td>Implemented <code>b7727d1</code>.</td></tr>
             <tr><td>Runner state ignored in protected checks</td><td>Only registered Runner state is ignored. Dirty protected sources are still rejected.</td><td>Implemented <code>48bffca</code>.</td></tr>
             <tr><td>Style findings do not fail an operation</td><td>Ruff findings no longer use up a scientific operation. Syntax and behavior failures still block.</td><td>Implemented <code>f953039</code>.</td></tr>
             <tr><td>Bounded Copilot shutdown</td><td>Session disconnect and client shutdown cannot hang.</td><td>Implemented <code>2e897c7</code>.</td></tr>
             <tr><td>Copilot adapter without scientific text</td><td>The adapter handles runtime and permissions. Prompts and the program carry the science.</td><td>Implemented <code>7f86168</code>.</td></tr>
-            <tr><td>Phase-specific reserved reads and searches</td><td>The preliminary analyst can read scientific source and robot contracts, not protected evaluator code. Maintainer files remain reserved. Searches apply the same policy to descendants before traversal; directory enumeration uses scoped <code>glob</code>, not <code>view</code>.</td><td>OI-023 repairs parent-directory leakage. Tool-level controls, not an operating-system sandbox.</td></tr>
+            <tr><td>Phase-specific reserved reads and searches</td><td>The preliminary analyst can read scientific source and robot contracts, not protected evaluator code. Maintainer files remain reserved. Searches apply the same policy to descendants before traversal. Directory lists use scoped <code>glob</code>, not <code>view</code>.</td><td>OI-023 repairs parent-directory leakage. Tool-level controls, not an operating-system sandbox.</td></tr>
           </tbody>
         </table>
       </div>
@@ -737,7 +763,7 @@
           <dt>Candidate and recipe</dt><dd>A candidate is a registered learned policy. The recipe is the code and settings that produced it.</dd>
           <dt>Best-known policy</dt><dd>See model roles. It is not automatically ready for assessment.</dd>
           <dt>Harness</dt><dd>The launcher, the Runner, the contracts, and the context that support the process.</dd>
-          <dt>Status words</dt><dd>Implemented: in the code. Observation: a result in a named campaign. Open: not solved. Proposal: not approved. Deferred: set aside. Withdrawn: removed. Historical: old, not current.</dd>
+          <dt>Status words</dt><dd><p>Implemented means the code contains the change. Observation means a named campaign showed a result. Open means the problem remains. Proposal means the change needs approval.</p><p>Deferred means work waits. Withdrawn means the change was removed. Historical means the entry describes an old state.</p></dd>
         </dl>
       </div>
     </section>
@@ -750,8 +776,12 @@
         <table>
           <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
           <tbody>
-            <tr><td><code>f917968b</code></td><td>11 Oct, 08:48 CEST</td><td>Official fail: 193/200 (96.5%) with T3. Nine inquiries and 156.47 AIU. Connected direction/commitment defect and incomplete T10 nomination led to the approved corrective wording; its effect remains unmeasured.</td><td><a href="../harness-change-narrative.md">Comparative RCA and correction</a></td></tr>
-            <tr><td><code>89a6354a</code></td><td>11 Oct, 01:02 CEST</td><td>Official pass: 196/200 (98.0%) with T7. Fresh v3 campaign; one metadata-only checkpoint correction, no second reset. OI-005 comparison observed with residual limitations; not closed.</td><td><a href="../oi005_assessment_decision_rca_20261011.md">OI-005 RCA and campaign observation</a></td></tr>
+            <tr><td><code>d205479e</code></td><td>14 Oct, 08:12 CEST</td><td>The maintainer started a new campaign. This report does not assess its results.</td><td>Separate campaign. No final report here.</td></tr>
+            <tr><td><code>dc48cc2f</code></td><td>13 Oct, 18:01 CEST</td><td>Official pass: 196/200 (98.0%). Three training runs, two inquiries and 45.506525 AIU. One silent diagnostic error remained.</td><td><a href="robot-campaign-dc48cc2f-20261014.html">Result, code and cost</a></td></tr>
+            <tr><td><code>5ff87d6b</code></td><td>Before dc48cc2f</td><td>Official fail: 195/200 (97.5%). Four training runs and 102.595910 AIU. The later campaign needed fewer source repairs.</td><td><a href="robot-campaign-dc48cc2f-20261014.html#cost">Recorded cost comparison</a></td></tr>
+            <tr><td><code>0d39d52c</code></td><td>11 Oct</td><td>The maintainer stopped this campaign. The report separates tool errors, costs and proposed repairs.</td><td><a href="robot-campaign-0d39d52c-20261011-tooling-review.html">Tooling review</a></td></tr>
+            <tr><td><code>f917968b</code></td><td>11 Oct, 08:48 CEST</td><td>Official fail: 193/200 (96.5%) with T3. Nine inquiries and 156.47 AIU. Problems with direction, commitment and T10 nomination led to approved wording changes. Their effect remains unmeasured.</td><td><a href="../harness-change-narrative.md">Root-cause comparison and correction</a></td></tr>
+            <tr><td><code>89a6354a</code></td><td>11 Oct, 01:02 CEST</td><td>Official pass: 196/200 (98.0%) with T7. Fresh v3 campaign. One metadata-only checkpoint correction, no second reset. The OI-005 comparison occurred, but limits remained. The issue stays open.</td><td><a href="../oi005_assessment_decision_rca_20261011.md">OI-005 root cause and campaign result</a></td></tr>
             <tr><td><code>58dcd817</code></td><td>9 Oct</td><td>Official fail: 195/200 (97.5%). OI-004 closed as effective after non-terminal checkpoint nomination, explicit missing-evidence repair, and frontier-led progression produced T2 at 153/160 versus T1 at 150/160.</td><td><a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">OI-004 outcome</a></td></tr>
             <tr><td><code>896c230a</code></td><td>9 Oct</td><td>Official fail: 193/200 (96.5%). OI-003 and OI-004 both closed as effective: the campaign preserved reach-versus-hold diagnostics and selected the transfer-learning route using matched mechanism evidence rather than aggregate-only conclusions.</td><td><a href="robot-campaign-896c230a-oi003-oi004-closure-20261009.html">OI-003/OI-004 closure</a></td></tr>
             <tr><td><code>1ae27a27</code></td><td>8 Oct</td><td>Paused at 15 inquiries. T3 reached 153/160. OI-002 produced bounded closure. Inquiry granularity, scientific progression, and the cap interaction remain distinct findings.</td><td><a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Campaign review</a></td></tr>
@@ -791,7 +821,7 @@
           <ul>
             <li>The old runtime blocked goal-review measurements and forced a terminal choice at the cap.</li>
             <li>E19 happened at 4 of 15 inquiries. The cap did not cause it.</li>
-            <li>Now the cap only pauses the launcher. OI-013 is closed as a withdrawn removal proposal; the pause remains an accepted operational limit.</li>
+            <li>Now the cap only pauses the launcher. OI-013 is closed because the maintainer withdrew the removal proposal. The pause remains an accepted execution limit.</li>
           </ul>
         </div>
       </details>
@@ -803,7 +833,7 @@
             <thead><tr><th scope="col">Revision</th><th scope="col">Note</th></tr></thead>
             <tbody>
               <tr><td>Startup clarification <code>c2ec8f7</code></td><td>Withdrawn. <code>eb1118e</code> restored older wording. The 4 October startup batch later replaced that.</td></tr>
-              <tr><td>Readiness guidance <code>e4736da</code></td><td>Added 3 October. Removed by the maintainer. The rollback is in <code>b275861</code>. Shutdown repair <code>2e897c7</code> stays. On 11 October OI-005 adopted a different, two-sided goal-review comparison; the old block was not reinstated.</td></tr>
+              <tr><td>Readiness guidance <code>e4736da</code></td><td>Added 3 October. The maintainer removed it in <code>b275861</code>. Shutdown repair <code>2e897c7</code> stays. On 11 October OI-005 adopted a different, two-sided goal-review comparison. It did not restore the old block.</td></tr>
               <tr><td>Closure and handoff prompts <code>b4f1cdf</code>, <code>c0cfcb6</code></td><td>Reverted.</td></tr>
               <tr><td>Startup cue removal <code>371bae1</code></td><td>No improvement seen. Withdrawn in <code>efc3be7</code>.</td></tr>
               <tr><td>R3 inquiry semantics <code>9c5ef61</code></td><td>Discarded. It made the inquiry question too important.</td></tr>
@@ -846,7 +876,7 @@
         <div class="details-body">
           <ul>
             <li><strong>Trial <code>2573991c</code>:</strong> <code>eb1118e</code> restored the reference startup wording. The PI still trained first. The successful reference measured first.</li>
-            <li><strong>Reviews:</strong> the same wording gave different openings. Two passages had been removed in <code>6d6d41e</code>. Both were already missing at the successful base <code>e26fbc4</code>. Their absence alone does not explain the drift.</li>
+            <li><strong>Reviews:</strong> the same wording gave different openings. Commit <code>6d6d41e</code> removed two passages. Both were already missing at the successful base <code>e26fbc4</code>. Their absence alone does not explain the drift.</li>
             <li><strong>4 October restoration:</strong> only two paragraphs from <code>6d6d41e^</code> were put back, under Inquiry work. This added no startup rule.</li>
             <li><strong>Trial <code>c7040992</code>:</strong> startup only planned and saved a record. Goal review then opened a baseline inquiry.</li>
             <li><strong>Persona trial (5 October):</strong> three fresh campaigns with the previous persona. Startup trained first twice and characterized the physics first once. This shows variance. It is not a causal estimate. See <a href="../persona-stochasticity-report-20261005.md">the report</a>.</li>
@@ -866,7 +896,7 @@
             <li>The first start after it failed on heading levels. <code>b3f4307</code> fixed it.</li>
             <li>A read-only review of campaign <code>bd32cc79</code> found the model rigorous. It listed about 20 items of equal weight, including the training-range mismatch (14&ndash;20 cm training, 6&ndash;20 cm official). The PI tested the mismatch after five operations and an inquiry reframe.</li>
             <li><code>5437ff2</code> restored the closing section in controlled English. Language and persona were kept.</li>
-            <li>The effects of language, persona, and the other model in that campaign cannot be separated. Reverting any of them would be a separate test.</li>
+            <li>These results cannot separate the effects of language, persona and the other model in that campaign. A test of any reversal needs a separate comparison.</li>
           </ul>
         </div>
       </details>
@@ -958,7 +988,7 @@
     </section>
 
     <footer>
-      <p>Snapshot of 2026-10-10, not live status. Implementation status and scientific effect are kept apart.</p>
+      <p>Snapshot of 14 October 2026, not live status. Implementation status and scientific effect stay separate.</p>
       <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>
