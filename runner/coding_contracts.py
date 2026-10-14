@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
-from pydantic import Field
 from typing import Literal
-from pydantic import field_validator
-from pydantic import model_validator
-from runner import protocol
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from runner import protocol
 
 # The preliminary analyst retains its existing publication/tool contract.
 RESEARCH_TOOLS = [
@@ -67,16 +64,20 @@ class ScientificCodingParams(BaseModel):
 
     intent: str = Field(min_length=1, max_length=16_000)
     allowed_paths: list[str] | None = Field(
-        default=None, min_length=1, max_length=64,
+        default=None,
+        min_length=1,
+        max_length=64,
         description="Exact writable files for a new child; omit for a correction.",
     )
     read_paths: list[str] | None = Field(
-        default=None, max_length=64,
+        default=None,
+        max_length=64,
         description="Additional readable files; omit to reuse correction scope.",
     )
     source_context: str = Field(default="", max_length=32_000)
     verification_path: str | None = Field(
-        default=None, min_length=1,
+        default=None,
+        min_length=1,
         description="Scoped lab verification module; omit for a correction.",
     )
     session_handle: str | None = Field(default=None, min_length=1)
@@ -150,7 +151,8 @@ class ReviewReport(BaseModel):
         if len(requested) != len(set(requested)):
             raise ValueError("Repair requests must have unique finding IDs.")
         defects = {
-            finding.finding_id for finding in self.findings
+            finding.finding_id
+            for finding in self.findings
             if finding.category == "confirmed_defect"
         }
         if self.decision == "request_changes":
@@ -275,7 +277,9 @@ class OperationSubmissionParams(BaseModel):
 
     @field_validator("request")
     @classmethod
-    def validate_envelope(cls, request: dict[str, object] | None) -> dict[str, object] | None:
+    def validate_envelope(
+        cls, request: dict[str, object] | None
+    ) -> dict[str, object] | None:
         if request is not None:
             try:
                 protocol.validate_operation_envelope(request)

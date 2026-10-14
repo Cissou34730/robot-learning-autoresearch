@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from pathlib import PureWindowsPath
 import fnmatch
-
+from pathlib import Path, PureWindowsPath
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -131,7 +129,7 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
     path = Path(target)
     if not path.is_absolute():
         path = ROOT / path
-    if linked_path(ROOT, path) or ":" in str(path)[len(path.anchor):]:
+    if linked_path(ROOT, path) or ":" in str(path)[len(path.anchor) :]:
         return FILE_EDIT_DENIAL
     if is_pi_writable_path(target, preliminary=preliminary):
         return None
@@ -162,11 +160,15 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
     if not path.is_absolute():
         path = ROOT / path
     if (
-        relative is None or linked_path(ROOT, path)
-        or ":" in str(path)[len(path.anchor):]
+        relative is None
+        or linked_path(ROOT, path)
+        or ":" in str(path)[len(path.anchor) :]
         or relative.split("/", 1)[0] in {".git", ".venv", ".github"}
         or relative == ".copilot"
-        or (relative.startswith(".copilot/") and not relative.startswith(".copilot/large-output/"))
+        or (
+            relative.startswith(".copilot/")
+            and not relative.startswith(".copilot/large-output/")
+        )
     ):
         return FILE_READ_DENIAL
     if preliminary:
@@ -198,7 +200,9 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
     result = set()
     for target in paths:
         path = PureWindowsPath(target)
-        rejection = f"Coding {'write' if writable else 'read'} scope rejected {target!r}: "
+        rejection = (
+            f"Coding {'write' if writable else 'read'} scope rejected {target!r}: "
+        )
         if (
             not target.strip()
             or path.drive
@@ -220,7 +224,10 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
             )
         if writable:
             if relative == "pi_workspace/operation_request.json":
-                raise ValueError(rejection + "operation requests are Runner exchange, not coding output.")
+                raise ValueError(
+                    rejection
+                    + "operation requests are Runner exchange, not coding output."
+                )
             reason = file_edit_denial(target)
             if reason:
                 raise ValueError(rejection + reason)

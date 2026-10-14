@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import shlex
+from pathlib import Path
+
 from runner.path_policy import (
     FILE_READ_DENIAL,
+    ROOT,
     file_read_denial,
     is_reserved_execution,
-    ROOT,
 )
-
 
 READ_ONLY_GIT = frozenset(
     {

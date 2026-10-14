@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from pathlib import PureWindowsPath
-from datetime import UTC
-from datetime import datetime
 import json
 import ntpath
 import re
@@ -13,13 +9,15 @@ import shutil
 import sys
 import time
 import uuid
+from datetime import UTC, datetime
+from pathlib import Path, PureWindowsPath
+
 from runner.coding_contracts import (
     normalize_model,
 )
 from runner.path_policy import (
     ROOT,
 )
-
 
 UUID_PATTERN = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
@@ -418,7 +416,8 @@ class Console:
                         operation_id,
                         (
                             f"artifact {arguments.get('artifact_index', 0)}"
-                            if action not in {"operations", "metadata"} else None
+                            if action not in {"operations", "metadata"}
+                            else None
                         ),
                         action,
                     )
@@ -448,10 +447,16 @@ class Console:
             elif name == "scientific_coding":
                 detail = "bounded coding / PI source review required"
             elif name == "scientific_api_reference":
-                detail = " | ".join(str(value) for value in (
-                    arguments.get("library", "-"), arguments.get("symbol") or "library root",
-                    arguments.get("action", "definition"), arguments.get("contains"),
-                ) if value)
+                detail = " | ".join(
+                    str(value)
+                    for value in (
+                        arguments.get("library", "-"),
+                        arguments.get("symbol") or "library root",
+                        arguments.get("action", "definition"),
+                        arguments.get("contains"),
+                    )
+                    if value
+                )
             elif name == "powershell":
                 description = arguments.get("description")
                 command = arguments.get("command")
@@ -668,7 +673,8 @@ def record_usage(
             max(
                 0.0,
                 elapsed - console.coding_duration_seconds - console.runner_wait_seconds,
-            ), 3
+            ),
+            3,
         ),
         "wall_duration_seconds": round(elapsed, 3),
         "runner_wait_seconds": round(console.runner_wait_seconds, 3),
