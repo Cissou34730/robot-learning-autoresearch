@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when completed trajectory evidence for the best-known policy, stratified by target radius and angle and separating no-reach from reached-but-not-held episodes, shows either branch/path divergence during reach, or post-reach action/velocity/substep excursions and hold exits, with the alternative evidence insufficient to explain the dominant residual; close as inconclusive only if the traces do not partition these mechanisms, while carrying that limitation into goal review.",
     "goal_connection": "The best-known policy is only 105/160 (65.625%) on the official-like distribution, leaving a 34.375 percentage-point gap to 98%. Resolving whether the dominant failure is reach/path selection or post-reach sampled-data stabilization determines whether the next intervention should redesign trajectory/branch handling or the feedback/braking behavior.",
-    "handoff_conclusion": "Established observations: T1 used the baseline 0.14-0.20 m training exposure and M1 recorded 105/160 successes, with 49 no-reach failures and six reached-but-not-held failures. T2 changed only the PI-owned training radius exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, shared task mechanics, evaluation semantics, and runtime; its step-matched M2 comparison on the same 160 seeds recorded 73/160 versus T1's 105/160, -20.0 percentage points, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 established the structured pattern: T2 improved the [6,10) cm bin to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees, while T1 scored 48.4% and 92.1% in those sectors. T2 had 80 reached episodes and 80 no-reach failures, with seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer total hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although post-reach hold loss remains consequential. Interpretation and limits: broader exposure did not improve this tested candidate and leaves a strong angle/radius-structured residual consistent with branch/path selection or conditioning problems; it does not establish that exposure universally harms performance because T1 and T2 are different fresh training artifacts and the comparison has no joint, action, or substep traces. The exact branch and sampled-data dynamics mechanisms remain unresolved. The physical model's reachability claim remains plausible but is not a substitute for trajectory evidence.",
+    "handoff_conclusion": "Established observations: T1 used 0.14-0.20 m training exposure and achieved 105/160, with 49 no-reach and six reached-but-not-held failures. T2 changed the PI-owned training exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, task mechanics, evaluation semantics, and runtime; it achieved 73/160 versus T1's 105/160 on the same 160 seeds, with a -20.0 percentage-point paired delta, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 found a structured residual: T2 improved [6,10) cm to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) and 0% in [90,180], while T1 scored 48.4% and 92.1%. T2 had 80 reaches and 80 no-reach failures plus seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although hold loss remains consequential to the objective. Correction to the inherited interpretation: these data establish a difference between two fresh, recipe-specific artifacts, not a universal causal harm from broader radius exposure; the intervention changed the training environment and seed, and no joint/action/substep traces identify the mechanism. The physical model still makes nominal reachability plausible and identifies branch/path selection from a common straight reset, Jacobian/transient conditioning, and sampled-data braking as competing explanations. The exact causal partition remains unresolved. The current inquiry E8 therefore targets trajectory-level evidence rather than another uninstrumented exposure comparison.",
     "handoff_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
@@ -1658,7 +1658,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 4,
@@ -1667,7 +1667,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -3268,35 +3268,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T20:48:45Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and the matched baseline arm of M2. T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. These roles are development roles only and do not certify the official goal.",
+        "completed_operations": [
+          "E8"
+        ],
+        "cumulative_resource_use": "Before E8: one fresh baseline PPO training run T1 requested 120000 steps and completed 120832; one 160-episode M1 development evaluation; one best-known role assignment; inquiry I1; one fresh full-radius PPO run T2 requested 120000 steps and completed 120832; M2 evaluated T1 and T2 on matched 160-episode panels (320 research-evaluation episodes); M3 ran one diagnostic analysis; I1 closed as E6. E8 opened the second bounded inquiry and consumed no training or evaluation episodes. No protected official assessment or benchmark evidence was consumed.",
+        "current_goal_gap": "Best-known development evidence is T1:checkpoint-115712 at 105/160 = 65.625%, versus the 98% objective, a 34.375 percentage-point gap. T2:checkpoint-115712 is 73/160 = 45.625% on the matched panel and is not best-known. No protected official assessment has been requested.",
+        "current_synthesis": "Established observations: T1 used 0.14-0.20 m training exposure and achieved 105/160, with 49 no-reach and six reached-but-not-held failures. T2 changed the PI-owned training exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, task mechanics, evaluation semantics, and runtime; it achieved 73/160 versus T1's 105/160 on the same 160 seeds, with a -20.0 percentage-point paired delta, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 found a structured residual: T2 improved [6,10) cm to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) and 0% in [90,180], while T1 scored 48.4% and 92.1%. T2 had 80 reaches and 80 no-reach failures plus seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although hold loss remains consequential to the objective. Correction to the inherited interpretation: these data establish a difference between two fresh, recipe-specific artifacts, not a universal causal harm from broader radius exposure; the intervention changed the training environment and seed, and no joint/action/substep traces identify the mechanism. The physical model still makes nominal reachability plausible and identifies branch/path selection from a common straight reset, Jacobian/transient conditioning, and sampled-data braking as competing explanations. The exact causal partition remains unresolved. The current inquiry E8 therefore targets trajectory-level evidence rather than another uninstrumented exposure comparison.",
+        "decision_frontier": "The consequential unresolved distinction is whether failures arise primarily during the straight-start reach because the policy selects an inconsistent or unfavorable IK branch/path, or after tolerance entry because 50 Hz action updates and 500 Hz substeps permit insufficient braking, endpoint excursions, or hold interruption. M2/M3 cannot distinguish these causes because their artifacts contain no joint trajectories, branch identity, actions, or substep distances. The inquiry will be redirected toward branch-aware trajectory redesign if angle/radius-stratified traces show branch/path divergence or reach failure without corresponding post-reach instability; it will favor stabilization-control redesign if reached episodes show action sign/saturation, residual velocity, substep excursions, or repeated boundary exits. If traces do not partition the mechanisms, the result will remain inconclusive and that limitation will govern the next goal review.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "M3",
+          "E6",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 98% success on the protected official distribution, requiring 196 of 200 episodes to complete the uninterrupted 100-step hold. T1:checkpoint-115712 is the strongest evidence-backed development candidate at 105/160 = 65.625%, leaving a 34.375 percentage-point gap; T2 is worse at 73/160 = 45.625%. The campaign therefore needs mechanism-directed development before official assessment.",
+        "next_direction_or_closure": "Continue the bounded E8 inquiry in a fresh session. First obtain trajectory evidence for the best-known T1 with target geometry, joint positions/velocities, analytical branch proximity, actions, control-boundary distances, and 500 Hz substep extrema, separating no-reach from reached-but-not-held episodes. Use the completed discriminator to choose a branch/path intervention or a sampled-data stabilization intervention; do not request official assessment at the current 65.625% best-known performance.",
+        "next_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2d98392e5c465ff2c5a4b84cefa47000ac1235df",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and the matched baseline arm of M2. T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. These roles are development roles only and do not certify the official goal.",
+        "completed_operations": [
+          "E8"
+        ],
+        "cumulative_resource_use": "Before E8: one fresh baseline PPO training run T1 requested 120000 steps and completed 120832; one 160-episode M1 development evaluation; one best-known role assignment; inquiry I1; one fresh full-radius PPO run T2 requested 120000 steps and completed 120832; M2 evaluated T1 and T2 on matched 160-episode panels (320 research-evaluation episodes); M3 ran one diagnostic analysis; I1 closed as E6. E8 opened the second bounded inquiry and consumed no training or evaluation episodes. No protected official assessment or benchmark evidence was consumed.",
+        "current_goal_gap": "Best-known development evidence is T1:checkpoint-115712 at 105/160 = 65.625%, versus the 98% objective, a 34.375 percentage-point gap. T2:checkpoint-115712 is 73/160 = 45.625% on the matched panel and is not best-known. No protected official assessment has been requested.",
+        "current_synthesis": "Established observations: T1 used 0.14-0.20 m training exposure and achieved 105/160, with 49 no-reach and six reached-but-not-held failures. T2 changed the PI-owned training exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, task mechanics, evaluation semantics, and runtime; it achieved 73/160 versus T1's 105/160 on the same 160 seeds, with a -20.0 percentage-point paired delta, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 found a structured residual: T2 improved [6,10) cm to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) and 0% in [90,180], while T1 scored 48.4% and 92.1%. T2 had 80 reaches and 80 no-reach failures plus seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although hold loss remains consequential to the objective. Correction to the inherited interpretation: these data establish a difference between two fresh, recipe-specific artifacts, not a universal causal harm from broader radius exposure; the intervention changed the training environment and seed, and no joint/action/substep traces identify the mechanism. The physical model still makes nominal reachability plausible and identifies branch/path selection from a common straight reset, Jacobian/transient conditioning, and sampled-data braking as competing explanations. The exact causal partition remains unresolved. The current inquiry E8 therefore targets trajectory-level evidence rather than another uninstrumented exposure comparison.",
+        "decision_frontier": "The consequential unresolved distinction is whether failures arise primarily during the straight-start reach because the policy selects an inconsistent or unfavorable IK branch/path, or after tolerance entry because 50 Hz action updates and 500 Hz substeps permit insufficient braking, endpoint excursions, or hold interruption. M2/M3 cannot distinguish these causes because their artifacts contain no joint trajectories, branch identity, actions, or substep distances. The inquiry will be redirected toward branch-aware trajectory redesign if angle/radius-stratified traces show branch/path divergence or reach failure without corresponding post-reach instability; it will favor stabilization-control redesign if reached episodes show action sign/saturation, residual velocity, substep excursions, or repeated boundary exits. If traces do not partition the mechanisms, the result will remain inconclusive and that limitation will govern the next goal review.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "M3",
+          "E6",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 98% success on the protected official distribution, requiring 196 of 200 episodes to complete the uninterrupted 100-step hold. T1:checkpoint-115712 is the strongest evidence-backed development candidate at 105/160 = 65.625%, leaving a 34.375 percentage-point gap; T2 is worse at 73/160 = 45.625%. The campaign therefore needs mechanism-directed development before official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Continue the bounded E8 inquiry in a fresh session. First obtain trajectory evidence for the best-known T1 with target geometry, joint positions/velocities, analytical branch proximity, actions, control-boundary distances, and 500 Hz substep extrema, separating no-reach from reached-but-not-held episodes. Use the completed discriminator to choose a branch/path intervention or a sampled-data stabilization intervention; do not request official assessment at the current 65.625% best-known performance.",
+        "next_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "2a65fdd3-2b9c-4327-b149-e49e18b81ed3",
+        "campaign_id": "d6c57175-6804-4898-8c11-e012dda4930a",
+        "campaign_usage": "13m28s | 23.17 AIU | prompt 3.3m (87% cached) | output 78.8k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "fffcaa4e593b57958ada80d96ef165f8e7a23431",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and the matched baseline arm of M2. T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. These roles are development roles only and do not certify the official goal.",
+        "completed_operations": [
+          "E8"
+        ],
+        "cumulative_resource_use": "Before E8: one fresh baseline PPO training run T1 requested 120000 steps and completed 120832; one 160-episode M1 development evaluation; one best-known role assignment; inquiry I1; one fresh full-radius PPO run T2 requested 120000 steps and completed 120832; M2 evaluated T1 and T2 on matched 160-episode panels (320 research-evaluation episodes); M3 ran one diagnostic analysis; I1 closed as E6. E8 opened the second bounded inquiry and consumed no training or evaluation episodes. No protected official assessment or benchmark evidence was consumed.",
+        "current_goal_gap": "Best-known development evidence is T1:checkpoint-115712 at 105/160 = 65.625%, versus the 98% objective, a 34.375 percentage-point gap. T2:checkpoint-115712 is 73/160 = 45.625% on the matched panel and is not best-known. No protected official assessment has been requested.",
+        "current_synthesis": "Established observations: T1 used 0.14-0.20 m training exposure and achieved 105/160, with 49 no-reach and six reached-but-not-held failures. T2 changed the PI-owned training exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, task mechanics, evaluation semantics, and runtime; it achieved 73/160 versus T1's 105/160 on the same 160 seeds, with a -20.0 percentage-point paired delta, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 found a structured residual: T2 improved [6,10) cm to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) and 0% in [90,180], while T1 scored 48.4% and 92.1%. T2 had 80 reaches and 80 no-reach failures plus seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although hold loss remains consequential to the objective. Correction to the inherited interpretation: these data establish a difference between two fresh, recipe-specific artifacts, not a universal causal harm from broader radius exposure; the intervention changed the training environment and seed, and no joint/action/substep traces identify the mechanism. The physical model still makes nominal reachability plausible and identifies branch/path selection from a common straight reset, Jacobian/transient conditioning, and sampled-data braking as competing explanations. The exact causal partition remains unresolved. The current inquiry E8 therefore targets trajectory-level evidence rather than another uninstrumented exposure comparison.",
+        "decision_frontier": "The consequential unresolved distinction is whether failures arise primarily during the straight-start reach because the policy selects an inconsistent or unfavorable IK branch/path, or after tolerance entry because 50 Hz action updates and 500 Hz substeps permit insufficient braking, endpoint excursions, or hold interruption. M2/M3 cannot distinguish these causes because their artifacts contain no joint trajectories, branch identity, actions, or substep distances. The inquiry will be redirected toward branch-aware trajectory redesign if angle/radius-stratified traces show branch/path divergence or reach failure without corresponding post-reach instability; it will favor stabilization-control redesign if reached episodes show action sign/saturation, residual velocity, substep excursions, or repeated boundary exits. If traces do not partition the mechanisms, the result will remain inconclusive and that limitation will govern the next goal review.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "M3",
+          "E6",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 98% success on the protected official distribution, requiring 196 of 200 episodes to complete the uninterrupted 100-step hold. T1:checkpoint-115712 is the strongest evidence-backed development candidate at 105/160 = 65.625%, leaving a 34.375 percentage-point gap; T2 is worse at 73/160 = 45.625%. The campaign therefore needs mechanism-directed development before official assessment.",
+        "next_direction_or_closure": "Continue the bounded E8 inquiry in a fresh session. First obtain trajectory evidence for the best-known T1 with target geometry, joint positions/velocities, analytical branch proximity, actions, control-boundary distances, and 500 Hz substep extrema, separating no-reach from reached-but-not-held episodes. Use the completed discriminator to choose a branch/path intervention or a sampled-data stabilization intervention; do not request official assessment at the current 65.625% best-known performance.",
+        "next_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?"
+      }
+    },
+    "request_fingerprint": "d1e02d4490858fb497b8ae0763d103ee81edb5df2140117d142a69004944bff0",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and re-confirmed in the matched baseline arm of M2; T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. T2 remains an important negative comparison artifact, not a goal-certified model.",
+    "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and the matched baseline arm of M2. T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. These roles are development roles only and do not certify the official goal.",
     "completed_operations": [
-      "T2",
-      "M2",
-      "M3",
-      "E6"
+      "E8"
     ],
-    "cumulative_resource_use": "Before I1: one fresh baseline PPO training run T1 requested 120000 steps and completed 120832, one 160-episode M1 development evaluation, one best-known role assignment, and inquiry I1 opening. During I1: one fresh full-radius PPO run T2 requested 120000 steps and completed through the 120832-step checkpoint set; M2 evaluated T1 and T2 on two matched 160-episode panels (320 research-evaluation episodes total); M3 executed one PI-owned diagnostic analysis over those artifacts; I1 was closed as E6. No official assessment or protected benchmark evidence was consumed.",
-    "current_goal_gap": "Best-known development performance is 105/160 = 65.625% for T1:checkpoint-115712, versus the 98% objective; the remaining gap is 34.375 percentage points. T2:checkpoint-115712 achieved 73/160 = 45.625% on the same matched panel and is not best-known. No protected official assessment has been requested.",
-    "current_synthesis": "Established observations: T1 used the baseline 0.14-0.20 m training exposure and M1 recorded 105/160 successes, with 49 no-reach failures and six reached-but-not-held failures. T2 changed only the PI-owned training radius exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, shared task mechanics, evaluation semantics, and runtime; its step-matched M2 comparison on the same 160 seeds recorded 73/160 versus T1's 105/160, -20.0 percentage points, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 established the structured pattern: T2 improved the [6,10) cm bin to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees, while T1 scored 48.4% and 92.1% in those sectors. T2 had 80 reached episodes and 80 no-reach failures, with seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer total hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although post-reach hold loss remains consequential. Interpretation and limits: broader exposure did not improve this tested candidate and leaves a strong angle/radius-structured residual consistent with branch/path selection or conditioning problems; it does not establish that exposure universally harms performance because T1 and T2 are different fresh training artifacts and the comparison has no joint, action, or substep traces. The exact branch and sampled-data dynamics mechanisms remain unresolved. The physical model's reachability claim remains plausible but is not a substitute for trajectory evidence.",
-    "decision_frontier": "The exposure-vs-redesign distinction is resolved for the tested implementation: simply broadening exposure is not the next supported direction, because the full-radius candidate was substantially worse and retained structured no-reach failures. The next consequential distinction is whether T2's angle-specific failures arise primarily from inconsistent IK branch/path selection and fixed-start transient conditioning, or from sampled-data action/braking and post-reach stabilization. M2 and M3 cannot distinguish these causes because evaluation artifacts contain no joint trajectories, branch identity, actions, or MuJoCo substep distances. Evidence that would revise the direction is a matched candidate or diagnostic trace showing branch-consistent joint paths and action/substep behavior by angle/radius; persistent no-reach failures with branch/path divergence would favor branch-aware path redesign, while successful reach followed by boundary excursions or action sign/saturation patterns would favor stabilization-control redesign.",
+    "cumulative_resource_use": "Before E8: one fresh baseline PPO training run T1 requested 120000 steps and completed 120832; one 160-episode M1 development evaluation; one best-known role assignment; inquiry I1; one fresh full-radius PPO run T2 requested 120000 steps and completed 120832; M2 evaluated T1 and T2 on matched 160-episode panels (320 research-evaluation episodes); M3 ran one diagnostic analysis; I1 closed as E6. E8 opened the second bounded inquiry and consumed no training or evaluation episodes. No protected official assessment or benchmark evidence was consumed.",
+    "current_goal_gap": "Best-known development evidence is T1:checkpoint-115712 at 105/160 = 65.625%, versus the 98% objective, a 34.375 percentage-point gap. T2:checkpoint-115712 is 73/160 = 45.625% on the matched panel and is not best-known. No protected official assessment has been requested.",
+    "current_synthesis": "Established observations: T1 used 0.14-0.20 m training exposure and achieved 105/160, with 49 no-reach and six reached-but-not-held failures. T2 changed the PI-owned training exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, task mechanics, evaluation semantics, and runtime; it achieved 73/160 versus T1's 105/160 on the same 160 seeds, with a -20.0 percentage-point paired delta, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 found a structured residual: T2 improved [6,10) cm to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) and 0% in [90,180], while T1 scored 48.4% and 92.1%. T2 had 80 reaches and 80 no-reach failures plus seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although hold loss remains consequential to the objective. Correction to the inherited interpretation: these data establish a difference between two fresh, recipe-specific artifacts, not a universal causal harm from broader radius exposure; the intervention changed the training environment and seed, and no joint/action/substep traces identify the mechanism. The physical model still makes nominal reachability plausible and identifies branch/path selection from a common straight reset, Jacobian/transient conditioning, and sampled-data braking as competing explanations. The exact causal partition remains unresolved. The current inquiry E8 therefore targets trajectory-level evidence rather than another uninstrumented exposure comparison.",
+    "decision_frontier": "The consequential unresolved distinction is whether failures arise primarily during the straight-start reach because the policy selects an inconsistent or unfavorable IK branch/path, or after tolerance entry because 50 Hz action updates and 500 Hz substeps permit insufficient braking, endpoint excursions, or hold interruption. M2/M3 cannot distinguish these causes because their artifacts contain no joint trajectories, branch identity, actions, or substep distances. The inquiry will be redirected toward branch-aware trajectory redesign if angle/radius-stratified traces show branch/path divergence or reach failure without corresponding post-reach instability; it will favor stabilization-control redesign if reached episodes show action sign/saturation, residual velocity, substep excursions, or repeated boundary exits. If traces do not partition the mechanisms, the result will remain inconclusive and that limitation will govern the next goal review.",
     "evidence_references": [
       "T1",
       "M1",
       "T2",
       "M2",
       "M3",
-      "E6"
+      "E6",
+      "E8"
     ],
-    "human_goal_connection": "The human goal remains at least 98% success on the official 0.06-0.20 m radius and full-angle distribution with an uninterrupted 100-step hold. The best evidence-backed candidate remains T1:checkpoint-115712 at 105/160 (65.625%) on the official-like development panel, 32.375 percentage points below the goal; the new full-radius candidate is worse at 73/160 (45.625%), so the campaign is not ready for official assessment.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed with a negative exposure result. Return to goal review with the next proposed question focused on discriminating branch/path selection from sampled-data stabilization. The campaign should not request the terminal official assessment: the best-known policy is 65.625%, and the new candidate is worse. The next bounded work should first obtain joint/IK-branch, action, and substep trajectory evidence or an embodied dynamics diagnostic, then choose a branch-aware or stabilization-control intervention based on that evidence.",
-    "next_question": "Which branch/path and sampled-data stabilization mechanism should drive the next intervention toward 98% official success: angle-conditioned branch/path selection errors from the common straight reset, or post-reach braking and hold instability at the 50 Hz policy update rate?",
-    "scientific_commit": "33c8a2d531b1e9c997d17d3612194f37d21858c3",
-    "session_id": "S3"
+    "human_goal_connection": "The human goal is at least 98% success on the protected official distribution, requiring 196 of 200 episodes to complete the uninterrupted 100-step hold. T1:checkpoint-115712 is the strongest evidence-backed development candidate at 105/160 = 65.625%, leaving a 34.375 percentage-point gap; T2 is worse at 73/160 = 45.625%. The campaign therefore needs mechanism-directed development before official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Continue the bounded E8 inquiry in a fresh session. First obtain trajectory evidence for the best-known T1 with target geometry, joint positions/velocities, analytical branch proximity, actions, control-boundary distances, and 500 Hz substep extrema, separating no-reach from reached-but-not-held episodes. Use the completed discriminator to choose a branch/path intervention or a sampled-data stabilization intervention; do not request official assessment at the current 65.625% best-known performance.",
+    "next_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
+    "scientific_commit": "fffcaa4e593b57958ada80d96ef165f8e7a23431",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3304,21 +3438,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "2a65fdd3-2b9c-4327-b149-e49e18b81ed3",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E8"
-    ],
-    "scientific_parent_commit": "2d98392e5c465ff2c5a4b84cefa47000ac1235df"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
