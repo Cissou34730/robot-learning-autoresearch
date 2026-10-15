@@ -5,7 +5,7 @@ from __future__ import annotations
 import fnmatch
 from pathlib import Path, PureWindowsPath
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 
 MAIN_WRITE_DENIAL = (
@@ -122,7 +122,7 @@ def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
 
 
 def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
-    from runner.copilot_scoped_search import linked_path
+    from runner.copilot.copilot_scoped_search import linked_path
 
     if not isinstance(target, str):
         return FILE_EDIT_DENIAL
@@ -153,7 +153,7 @@ def scoped_edit_denial(
 
 
 def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
-    from runner.copilot_scoped_search import linked_path
+    from runner.copilot.copilot_scoped_search import linked_path
 
     relative = _repository_relative_target(target)
     path = Path(target) if isinstance(target, str) else ROOT.parent

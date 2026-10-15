@@ -1230,7 +1230,7 @@ superseded. It does not instruct the Researcher and does not replace
 
 - **Decision:** OpenCode is replaced by the official GitHub Copilot SDK
   (`github-copilot-sdk`, declared in the `researcher` dependency group) behind a
-  single repository-owned adapter, `runner/copilot_adapter.py`. `run_research.ps1`
+  single repository-owned adapter, `runner/copilot/copilot_adapter.py`. `run_research.ps1`
   changes only inside `Invoke-ResearcherSession`; `researcher_session.ps1` is
   untouched and still observes a session as process, deliverable presence and
   deliverable validity.

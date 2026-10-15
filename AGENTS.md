@@ -148,7 +148,7 @@ The PI must not modify these paths during a scientific session:
   `contracts/instruments.md`, `pi_workspace/scientific_model.md` (after its
   campaign-start PI session);
 - `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
-  `runner/copilot_adapter.py`;
+  `runner/copilot/copilot_adapter.py`;
 - `tools/campaign_report.py`;
 - `runner/run_experiment.py`, `runner/reset_campaign.py`, `runner/*.py`,
   `runner/build_brief.py`, `runner/query_training_log.py`;

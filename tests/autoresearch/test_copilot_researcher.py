@@ -14,10 +14,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import runner.copilot_adapter as adapter
+import runner.copilot.copilot_adapter as adapter
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = (ROOT / "runner/copilot_adapter.py").read_text(encoding="utf-8")
+SOURCE = (ROOT / "runner/copilot/copilot_adapter.py").read_text(encoding="utf-8")
 
 
 # --- model identity ---------------------------------------------------------
@@ -428,7 +428,7 @@ def test_preliminary_write_permission_only_allows_the_scientific_model():
     [
         ("runner/run_experiment.py", False),
         ("runner/protocol.py", False),
-        ("runner/copilot_adapter.py", False),
+        ("runner/copilot/copilot_adapter.py", False),
         ("benchmark/adapters/final_benchmark.py", False),
         (str(ROOT / "benchmark" / "final_benchmark.py"), False),
         ("docs/harness-experiment-log.md", False),

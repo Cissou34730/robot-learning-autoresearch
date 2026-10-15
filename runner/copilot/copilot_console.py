@@ -12,10 +12,10 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
-from runner.coding_contracts import (
+from runner.copilot.coding_contracts import (
     normalize_model,
 )
-from runner.path_policy import (
+from runner.copilot.path_policy import (
     ROOT,
 )
 

@@ -483,7 +483,7 @@ function Assert-ResearchRuntime {
 
 Assert-ResearchRuntime
 . "$PSScriptRoot\researcher_session.ps1"
-. "$PSScriptRoot\runner\copilot_controller.ps1"
+. "$PSScriptRoot\runner\copilot\copilot_controller.ps1"
 
 function Invoke-PISession {
     param(

@@ -83,7 +83,7 @@ child also polls the external request:
   Existing runner handling stops training or evaluation cooperatively, persists
   partial state, writes `RECOVERY_PENDING` or `RESTART_PENDING` when applicable,
   and returns 130.
-- `runner/copilot_adapter.py` calls `session.abort()`, then always disconnects.
+- `runner/copilot/copilot_adapter.py` calls `session.abort()`, then always disconnects.
 - `researcher_opencode/src/adapter.ts` resolves its existing interrupt outcome,
   calls `session.abort()`, and drains its runtime handles.
 

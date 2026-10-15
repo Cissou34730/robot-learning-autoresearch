@@ -5,7 +5,7 @@ from __future__ import annotations
 import shlex
 from pathlib import Path
 
-from runner.path_policy import (
+from runner.copilot.path_policy import (
     FILE_READ_DENIAL,
     ROOT,
     file_read_denial,

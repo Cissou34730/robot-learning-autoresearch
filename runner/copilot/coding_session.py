@@ -10,7 +10,7 @@ import re
 import time
 import uuid
 
-from runner.coding_contracts import (
+from runner.copilot.coding_contracts import (
     CODING_INSTRUCTIONS,
     CODING_TOOLS,
     MAIN_PI_TOOLS,
@@ -25,16 +25,16 @@ from runner.coding_contracts import (
     ScientificCodingParams,
     normalize_model,
 )
-from runner.command_policy import (
+from runner.copilot.command_policy import (
     command_denial,
     shell_command_text,
 )
-from runner.copilot_console import (
+from runner.copilot.copilot_console import (
     CodingConsole,
     Console,
     record_usage,
 )
-from runner.path_policy import (
+from runner.copilot.path_policy import (
     CODING_PERMISSION_DENIAL,
     CODING_SCOPE_DENIAL,
     FILE_READ_DENIAL,

@@ -24,7 +24,7 @@ PROTECTED_RUNNER_PATHS = {
     "run_research.ps1",
     "researcher_mutex.ps1",
 }
-PROTECTED_RUNTIME_PATHS = {"runner/copilot_adapter.py"}
+PROTECTED_RUNTIME_PATHS = {"runner/copilot/copilot_adapter.py"}
 PROTECTED_RUNTIME_PREFIXES = ("runner/", "tools/", "researcher_opencode/")
 PROTECTED_MEASUREMENT_PATHS = {"benchmark/paired_evidence.py"}
 PROTECTED_CONTEXT_PATHS = {

@@ -17,12 +17,12 @@ import sys
 import time
 from pathlib import Path
 
-from runner.coding_contracts import (
+from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
     normalize_model,
 )
-from runner.coding_session import (
+from runner.copilot.coding_session import (
     EXIT_INTERRUPTED,
     EXIT_OK,
     EXIT_RUNTIME_FAILURE,
@@ -35,7 +35,7 @@ from runner.coding_session import (
     build_handlers,
     scoped_tool_hook,
 )
-from runner.command_policy import (  # noqa: F401 - preserve existing policy imports
+from runner.copilot.command_policy import (  # noqa: F401 - preserve existing policy imports
     DEPENDENCY_DENIAL,
     EXECUTION_DENIAL,
     GIT_DENIAL,
@@ -44,15 +44,15 @@ from runner.command_policy import (  # noqa: F401 - preserve existing policy imp
     execution_target,
     shell_command_text,
 )
-from runner.copilot_console import (
+from runner.copilot.copilot_console import (
     Console,
     record_usage,
 )
-from runner.operation_submission import (
+from runner.copilot.operation_submission import (
     ControllerChannel,
     OperationSubmission,
 )
-from runner.path_policy import (  # noqa: F401 - preserve existing policy imports
+from runner.copilot.path_policy import (  # noqa: F401 - preserve existing policy imports
     FILE_EDIT_DENIAL,
     FILE_READ_DENIAL,
     file_edit_denial,
@@ -60,7 +60,7 @@ from runner.path_policy import (  # noqa: F401 - preserve existing policy import
 )
 from runner.stop_control import stop_requested, wait_for_stop_request
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 
 EXIT_NOT_AUTHENTICATED = 3
@@ -146,7 +146,7 @@ def session_options(
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
-    from runner.copilot_scoped_search import ScopedSearch
+    from runner.copilot.copilot_scoped_search import ScopedSearch
     from runner.query_training_log import TrainingLogQueryParams, query_training_log
     from runner.scientific_api_reference import (
         ScientificAPIReferenceParams,

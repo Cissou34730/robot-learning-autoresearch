@@ -6,10 +6,10 @@ import asyncio
 import json
 import time
 
-from runner.coding_contracts import (
+from runner.copilot.coding_contracts import (
     OperationSubmissionParams,
 )
-from runner.copilot_console import (
+from runner.copilot.copilot_console import (
     Console,
 )
 from runner.stop_control import stop_request_path
