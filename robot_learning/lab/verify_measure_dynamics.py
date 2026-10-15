@@ -92,6 +92,21 @@ def _check_artifact(measurement: dict[str, Any]) -> dict[str, Any]:
 
     actuators = measurement["actuators"]
     _assert(len(actuators) == 2, "both official actuators must be described")
+    for actuator_id, actuator in enumerate(actuators):
+        _assert(
+            actuator["id"] == actuator_id
+            and actuator["identifier"] == f"actuator_{actuator_id}",
+            f"actuator {actuator_id} lost its stable index-derived identifier",
+        )
+        _assert(
+            actuator["identifier_metadata"]
+            == {
+                "source": "index-derived",
+                "compiled_name": None,
+                "reason": "compiled actuator name is absent",
+            },
+            f"actuator {actuator_id} is missing absent-name metadata",
+        )
     for actuator_id in range(2):
         for direction, sign in (
             ("small_positive", 1),

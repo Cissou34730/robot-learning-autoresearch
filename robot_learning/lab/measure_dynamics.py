@@ -194,12 +194,17 @@ def _model_metadata(
             raise DynamicsMeasurementError(
                 f"actuator {actuator_id} does not support both command directions"
             )
+        identifier = f"actuator_{actuator_id}"
         actuator_names.append(
             {
                 "id": actuator_id,
-                "name": _object_name(
-                    model, mujoco.mjtObj.mjOBJ_ACTUATOR, actuator_id
-                ),
+                "name": identifier,
+                "identifier": identifier,
+                "identifier_metadata": {
+                    "source": "index-derived",
+                    "compiled_name": None,
+                    "reason": "compiled actuator name is absent",
+                },
                 "ctrl_range": [float(low), float(high)],
                 "gear": actuator_gears[actuator_id].tolist(),
                 "transmission_target_id": int(actuator_trn_ids[actuator_id, 0]),
