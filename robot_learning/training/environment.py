@@ -7,27 +7,11 @@ policy learns but never how an already-saved policy is measured, so it is
 excluded from the research-evaluation semantics fingerprint.
 """
 
-import math
-
 import gymnasium as gym
 
-from contracts.task_spec import TARGET_RADIUS_RANGE
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = TARGET_RADIUS_RANGE
-
-
-def training_exposure_metadata() -> dict[str, object]:
-    """Return the concrete target exposure used by the training environment."""
-    return {
-        "radius_range_m": [
-            float(TRAINING_TARGET_RADIUS_RANGE[0]),
-            float(TRAINING_TARGET_RADIUS_RANGE[1]),
-        ],
-        "radius_law": "uniform",
-        "angle_range_radians": [-math.pi, math.pi],
-        "angle_law": "uniform_full_circle",
-    }
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 def make_training_env() -> gym.Env:

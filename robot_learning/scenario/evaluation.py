@@ -23,31 +23,6 @@ from robot_learning.scenario.environment import make_evaluation_env
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
-def ik_branch_proximities(observation: np.ndarray) -> tuple[float, float]:
-    """Return open and folded IK-feature distances from an observation."""
-    values = np.asarray(observation, dtype=np.float64)
-    if values.shape != (11,):
-        raise ValueError(f"expected an 11-value observation, got {values.shape}")
-    return (
-        float(np.linalg.norm(values[7:9])),
-        float(np.linalg.norm(values[9:11])),
-    )
-
-
-def selected_ik_branch(open_proximity: float, folded_proximity: float) -> str:
-    """Select the closer IK branch, resolving a tie in favor of open."""
-    return "open" if open_proximity <= folded_proximity else "folded"
-
-
-def failure_attribution(success: bool, first_reach_step: int | None) -> str:
-    """Classify an episode by first entry and uninterrupted task completion."""
-    if success:
-        return "success"
-    if first_reach_step is None:
-        return "approach_failure"
-    return "hold_failure"
-
-
 def evaluate_research_model(
     model_path: Path,
     *,
@@ -80,47 +55,11 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        min_open_branch_proximity = float("inf")
-        min_folded_branch_proximity = float("inf")
-        action_magnitude_total = 0.0
-        action_magnitude_max = 0.0
-        final_action_magnitude = 0.0
-        saturated_steps = 0
-        saturated_components = 0
-        action_components = int(np.asarray(env.action_space.low).size)
-
-        open_proximity, folded_proximity = ik_branch_proximities(obs)
-        min_open_branch_proximity = min(min_open_branch_proximity, open_proximity)
-        min_folded_branch_proximity = min(
-            min_folded_branch_proximity, folded_proximity
-        )
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            actual_action = np.asarray(env.data.ctrl, dtype=np.float64).copy()
-            action_magnitude = float(np.linalg.norm(actual_action))
-            action_magnitude_total += action_magnitude
-            action_magnitude_max = max(action_magnitude_max, action_magnitude)
-            final_action_magnitude = action_magnitude
-            at_action_limit = np.logical_or(
-                actual_action
-                <= np.asarray(env.action_space.low, dtype=np.float64),
-                actual_action
-                >= np.asarray(env.action_space.high, dtype=np.float64),
-            )
-            saturated_components += int(np.count_nonzero(at_action_limit))
-            if np.any(at_action_limit):
-                saturated_steps += 1
-
-            open_proximity, folded_proximity = ik_branch_proximities(obs)
-            min_open_branch_proximity = min(
-                min_open_branch_proximity, open_proximity
-            )
-            min_folded_branch_proximity = min(
-                min_folded_branch_proximity, folded_proximity
-            )
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
@@ -148,10 +87,6 @@ def evaluate_research_model(
                 "truncated": bool(truncated),
             }
         )
-        selected_branch = selected_ik_branch(
-            min_open_branch_proximity, min_folded_branch_proximity
-        )
-        attribution = failure_attribution(success, first_reach_step)
         episode_diagnostics.append(
             {
                 "episode": episode,
@@ -168,24 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "failure_attribution": attribution,
-                "min_open_branch_proximity": min_open_branch_proximity,
-                "min_folded_branch_proximity": min_folded_branch_proximity,
-                "selected_branch": selected_branch,
-                "selected_branch_proximity": min(
-                    min_open_branch_proximity, min_folded_branch_proximity
-                ),
-                "actual_action_magnitude_mean": (
-                    action_magnitude_total / steps
-                ),
-                "actual_action_magnitude_max": action_magnitude_max,
-                "actual_action_magnitude_final": final_action_magnitude,
-                "action_saturation_steps": saturated_steps,
-                "action_saturation_fraction": saturated_steps / steps,
-                "action_saturated_components": saturated_components,
-                "action_saturation_component_fraction": (
-                    saturated_components / (steps * action_components)
-                ),
             }
         )
         if progress_callback is not None:
@@ -204,12 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "time": "control_steps",
-                "branch_proximity": "joint_error_norm_radians",
-                "action_magnitude": "control_l2_norm",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 

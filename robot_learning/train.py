@@ -16,10 +16,7 @@ from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
 from robot_learning.training.checkpoint import export_runtime
-from robot_learning.training.environment import (
-    make_training_env,
-    training_exposure_metadata,
-)
+from robot_learning.training.environment import make_training_env
 from robot_learning.training.research_config import load_experiment_config
 
 # The current learning method. Replacing it is a normal research change.
@@ -80,7 +77,6 @@ def effective_training_config(config: dict) -> dict:
         "n_envs": n_envs,
         "model_parameters": parallel_ppo_params(config["ppo"], n_envs),
         "policy": copy.deepcopy(config["policy"]),
-        "training_exposure": training_exposure_metadata(),
     }
 
 
@@ -172,7 +168,6 @@ def main() -> None:
             "completed": not interrupted,
             "resumed_from": str(args.resume) if args.resume else None,
             "effective_config": effective_config,
-            "training_exposure": training_exposure_metadata(),
         }
         (args.output_dir / "artifact.json").write_text(
             json.dumps(artifact, indent=2, default=str) + "\n",
