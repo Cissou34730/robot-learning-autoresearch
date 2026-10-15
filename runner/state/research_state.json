@@ -3471,38 +3471,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
-        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
-        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
-        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward."
-      }
-    },
-    "request_fingerprint": "07a3a04092cca84691c9e7609bde50017fb681a2946e97447e4dd211e18ea394",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly assigned by E11 on the basis of M3 and E9. Working: none. Retained: none. T2 is strongest by completed development evidence but remains below the human goal and is not assessment-certified.",
     "completed_operations": [
