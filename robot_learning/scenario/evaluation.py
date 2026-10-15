@@ -48,27 +48,13 @@ def evaluate_research_model(
         success = False
         terminated = False
         truncated = False
-        min_distance_cm: float | None = None
-        final_distance_cm: float | None = None
+        min_distance_cm = float("inf")
+        final_distance_cm = float("nan")
         first_reach_step: int | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        actual_action_trace: list[list[float]] = []
-        action_saturated_per_joint_trace: list[list[bool]] = []
-        action_saturated_trace: list[bool] = []
-        action_clipped_per_joint_trace: list[list[bool]] = []
-        action_clipped_trace: list[bool] = []
-        joint_velocity_trace: list[list[float]] = []
-        endpoint_position_trace: list[list[float]] = []
-        endpoint_linear_velocity_trace: list[list[float]] = []
-        ik_branch_residuals_trace: list[dict[str, list[float]]] = []
-        ik_branch_residual_norms_trace: list[dict[str, float]] = []
-        selected_ik_branch_trace: list[str] = []
-        joint_limit_margin_trace: list[float] = []
-        substep_envelope_trace: list[dict[str, float]] = []
-        substep_distance_exceedance_with_boundary_in_tolerance_count = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -76,35 +62,7 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            substep_distances_m = [
-                float(value) for value in info["substep_distance_m"]
-            ]
-            substep_endpoint_linear_speeds_m_per_s = [
-                float(value)
-                for value in info["substep_endpoint_linear_speed_m_per_s"]
-            ]
-            substep_envelope_trace.append(
-                {
-                    "max_substep_distance_cm": 100.0 * max(substep_distances_m),
-                    "min_substep_distance_cm": 100.0 * min(substep_distances_m),
-                    "max_substep_endpoint_linear_speed_m_per_s": max(
-                        substep_endpoint_linear_speeds_m_per_s
-                    ),
-                }
-            )
-            boundary_in_tolerance = (
-                float(info["distance"]) <= env.success_threshold
-            )
-            if (
-                boundary_in_tolerance
-                and max(substep_distances_m) > env.success_threshold
-            ):
-                substep_distance_exceedance_with_boundary_in_tolerance_count += 1
-            min_distance_cm = (
-                distance_cm
-                if min_distance_cm is None
-                else min(min_distance_cm, distance_cm)
-            )
+            min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
@@ -116,36 +74,6 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-            actual_action_trace.append(list(info["actual_action"]))
-            action_saturated_per_joint_trace.append(
-                list(info["action_saturated_per_joint"])
-            )
-            action_saturated_trace.append(bool(info["action_saturated"]))
-            action_clipped_per_joint_trace.append(
-                list(info["action_clipped_per_joint"])
-            )
-            action_clipped_trace.append(bool(info["action_clipped"]))
-            joint_velocity_trace.append(list(info["joint_velocity_rad_per_s"]))
-            endpoint_position_trace.append(list(info["end_effector_position_m"]))
-            endpoint_linear_velocity_trace.append(
-                list(info["end_effector_linear_velocity_m_per_s"])
-            )
-            ik_branch_residuals_trace.append(
-                {
-                    branch: list(residuals)
-                    for branch, residuals in info["ik_branch_residuals_rad"].items()
-                }
-            )
-            ik_branch_residual_norms_trace.append(
-                {
-                    branch: float(norm)
-                    for branch, norm in info["ik_branch_residual_norms_rad"].items()
-                }
-            )
-            selected_ik_branch_trace.append(str(info["selected_ik_branch"]))
-            joint_limit_margin_trace.append(float(info["joint_limit_margin_rad"]))
-
-        terminal_reason = "success" if success else "horizon_truncation"
 
         episode_results.append(
             {
@@ -157,7 +85,6 @@ def evaluate_research_model(
                 "steps": steps,
                 "terminated": bool(terminated),
                 "truncated": bool(truncated),
-                "terminal_reason": terminal_reason,
             }
         )
         episode_diagnostics.append(
@@ -176,30 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                # Per-control-step envelopes of the internal physics samples;
-                # these are measurement diagnostics, not inferred failure causes.
-                "substep_envelope_trace": substep_envelope_trace,
-                "substep_distance_exceedance_with_boundary_in_tolerance_count": (
-                    substep_distance_exceedance_with_boundary_in_tolerance_count
-                ),
-                "terminal_reason": terminal_reason,
-                "minimum_joint_limit_margin_rad": min(joint_limit_margin_trace),
-                "actual_action_trace": actual_action_trace,
-                "action_saturated_per_joint_trace": action_saturated_per_joint_trace,
-                "action_saturated_trace": action_saturated_trace,
-                "action_clipped_per_joint_trace": action_clipped_per_joint_trace,
-                "action_clipped_trace": action_clipped_trace,
-                "joint_velocity_trace_rad_per_s": joint_velocity_trace,
-                "endpoint_position_trace_m": endpoint_position_trace,
-                "endpoint_linear_velocity_trace_m_per_s": (
-                    endpoint_linear_velocity_trace
-                ),
-                "ik_branch_residuals_rad_trace": ik_branch_residuals_trace,
-                "ik_branch_residual_norms_rad_trace": (
-                    ik_branch_residual_norms_trace
-                ),
-                "selected_ik_branch_trace": selected_ik_branch_trace,
-                "joint_limit_margin_trace_rad": joint_limit_margin_trace,
             }
         )
         if progress_callback is not None:
@@ -207,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 7,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -218,18 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "target_radius": "cm",
-                "target_angle": "degrees",
-                "time": "control_steps",
-                "action": "dimensionless",
-                "joint_velocity": "rad/s",
-                "endpoint_position": "m",
-                "endpoint_linear_velocity": "m/s",
-                "ik_branch_residual": "rad",
-                "joint_limit_margin": "rad",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
