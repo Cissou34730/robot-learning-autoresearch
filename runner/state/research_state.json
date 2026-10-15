@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed evidence distinguishes the dominant residual failure mechanism well enough to select the next campaign direction: acquisition/branch/limit-conditioned if the residual no-entry failures concentrate in outer or constrained geometry and a candidate or diagnostic reduces those failures, or transient stabilization if entry-then-interruption persists with low acquisition error and visible velocity/oscillation evidence. A limited or inconclusive result is sufficient if the evidence cannot discriminate these routes, provided the unresolved consequence for assessment versus further work is recorded.",
-    "goal_connection": "The best-known T2 candidate is 6 successes short of the 196/200 official threshold when scaled from the 160-episode development panel. Resolving whether the remaining failures are chiefly acquisition/geometry failures or post-entry stabilization failures determines whether the next bounded work should improve target-conditioned reaching or velocity-aware hold control, directly targeting complete uninterrupted holds.",
-    "handoff_conclusion": "Established observations: T1 with 14\u201320 cm training exposure scored 105/160 (65.625%) in M2, including 49 no-entry failures. T2 changed the training radius to the full 6\u201320 cm band while retaining the fresh seed, PPO tanh 64x64 recipe, reward, 11-value runtime, robot, timing and success semantics; it completed 120,832 steps and scored 150/160 (93.75%) in M3. E9 therefore supports a large artifact-level improvement and supports full-band exposure as a material contributor for this tested implementation, especially because the inward-band no-entry failures fell from 51/55 in T1 to 3/10 in T2. It does not establish full-band exposure as the sole cause or as a general method guarantee. M3\u2019s complete failure diagnostics revise the emphasis but not the central question: residual failures are mostly outer-radius, yet healthy-margin failures coexist with negative-margin failures, so outer-target acquisition, branch/limit conditioning and control remain competing explanations. The three entry cases show repeated hold interruptions, making post-entry transient stabilization consequential; their late or early first reach and high interruption counts do not by themselves identify velocity control as the cause. The artifact contains control-boundary traces including action saturation and joint/endpoint velocity, but no per-physics-substep hold trace, so hidden excursions between 20 ms checks remain an unresolved measurement limit. The initial model\u2019s consequences remain decision-relevant: configuration-dependent inertia and bounded authority can shape transient behavior; branch and limit margin can shape acquisition; zero gravity makes static holding physically easier than arrival braking; and the discrete boundary check can alias fast oscillations. None of these establishes an actuator ceiling or a dominant residual mechanism. The inherited proposed question is not settled by M3: the exact failure split and mixed margins preserve a consequential distinction, so I3 is warranted rather than assessment now. The correction is that T2, not T1, is the strongest measured candidate; E11 records that role explicitly.",
-    "handoff_question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-    "rationale": "Request another bounded inquiry rather than the official assessment because M3 is materially improved but remains 93.75%, below the 98% objective, and its 10 failures contain consequential alternatives: 7 never entered tolerance, while 3 entered and then repeatedly interrupted the hold. The failures are mostly at outer radii, but three healthy positive joint-limit margins coexist with negative-margin cases, so neither branch/limit acquisition nor transient stabilization is established as the dominant cause. M3 also exposes only control-boundary hold evidence; the inter-substep trajectory remains unmeasured. One focused inquiry has credible decision value because its outcome can select a targeted intervention or justify assessment, whereas assessment now would irreversibly end the campaign without resolving a failure class that may be tractable.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7ba3ec35c8ded41eb317d93922ce6c82ebcad545",
     "id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 4,
     "session": 7,
@@ -3457,9 +3446,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T14:01:02Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
+        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
+        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
+        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
+        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited positive conclusion: acquisition is the next priority, while transient stabilization is a confirmed secondary mechanism. M3/M4 reproduced T2 at 150/160 and identify 7/10 failures with no first reach; four of those are outer-radius targets (16.54\u201318.35 cm) and six of seven no-entry cases have negative minimum observed joint-limit margin, although one healthy-margin no-entry case prevents a pure limit-only claim. The three entry-then-interruption failures are all outer-radius and M4's substep envelopes show boundary-aliasing intervals in each (1, 193 and 242 intervals), alongside the previously observed high interruptions and alternating velocities. Thus the evidence supports addressing outer-target/branch/limit-conditioned acquisition first because it is the larger failure class and determines the minimum six improvements needed for the scaled 98% objective; transient braking/hold stabilization remains a consequential follow-on direction. The result is limited to the tested T2 artifact, frozen runtime and 160-episode development panel, not an official assessment or a general method guarantee.",
+        "reason": "M4 supplies the previously missing within-frame evidence and preserves the same aggregate result as M3, separating hidden substep excursions from boundary-sampled failure accounting. It does not show that stabilization explains the seven no-entry cases, nor that limit margin alone explains them. This closes I3 because the completed evidence selects the next campaign direction by failure-class prevalence and geometry/constraint concentration while explicitly carrying the unresolved healthy-margin acquisition and stabilization consequences forward."
+      }
+    },
+    "request_fingerprint": "07a3a04092cca84691c9e7609bde50017fb681a2946e97447e4dd211e18ea394",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly assigned by E11 on the basis of M3 and E9. Working: none. Retained: none. T2 is strongest by completed development evidence but remains below the human goal and is not assessment-certified.",
     "completed_operations": [
@@ -3502,7 +3545,8 @@
     "kind": "inquiry",
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M4"
+      "M4",
+      "E14"
     ],
     "scientific_parent_commit": "9d1a6a59f8a9686aedfcdc80427d1c2d05120d16"
   },
