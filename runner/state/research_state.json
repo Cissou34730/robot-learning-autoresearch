@@ -3206,52 +3206,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-120832",
-        "evidence": [
-          "M3",
-          "E9"
-        ],
-        "reason": "M3 is the strongest completed development measurement: T2:checkpoint-120832 achieved 150/160 = 93.75% on the same non-protected official-distribution panel where T1 achieved 105/160 = 65.625%. The artifact comparison and E9 establish a substantial improvement, especially in the previously untrained inward band, while preserving 10 residual failures and the complete-hold criterion. This assigns the evidence-backed strongest candidate; it does not certify the 98% goal or commit to official assessment."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/d67ac904-3a02-40a4-b93c-041ec31f1b9b/t2-c8cf701d5-eb5c6164b6993a0cec84689b2add000d7bc3698ae5f553bffb17b506c72cd7ed",
-        "fingerprint": "eb5c6164b6993a0cec84689b2add000d7bc3698ae5f553bffb17b506c72cd7ed",
-        "source": "campaigns/checkpoints/candidates/d67ac904-3a02-40a4-b93c-041ec31f1b9b/t2/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "M3",
-          "E9"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "M3",
-          "E9"
-        ],
-        "reason": "M3 is the strongest completed development measurement: T2:checkpoint-120832 achieved 150/160 = 93.75% on the same non-protected official-distribution panel where T1 achieved 105/160 = 65.625%. The artifact comparison and E9 establish a substantial improvement, especially in the previously untrained inward band, while preserving 10 residual failures and the complete-hold criterion. This assigns the evidence-backed strongest candidate; it does not certify the 98% goal or commit to official assessment."
-      }
-    },
-    "request_fingerprint": "97512b487407ec5cef32869f4e14e6f7abc062f5f358658898828f7ea2183c7b",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Recorded best-known role remains T1:checkpoint-115712 because the attempted role update after inquiry closure was not permitted before checkpoint. However, M3 establishes T2:checkpoint-120832 as the strongest measured artifact at 93.75% versus T1\u2019s 65.625%; the next goal review should explicitly assign T2 as best-known before deciding between official assessment and a new bounded inquiry. No candidate meets the human goal; no working or retained role is assigned.",
     "completed_operations": [
