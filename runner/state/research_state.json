@@ -1660,7 +1660,7 @@
   "counters": {
     "event": 5,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 2
   },
@@ -2851,9 +2851,1005 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T20:44:49Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Compute deterministic radius- and angle-stratified reach/hold summaries and paired success transitions for the matched M2 baseline and full-radius evaluation artifacts.",
+        "measurements": [
+          {
+            "args": [
+              "--reference",
+              "{input:reference}",
+              "--candidate",
+              "{input:candidate}",
+              "--output",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+            ],
+            "artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M2"
+              },
+              "reference": {
+                "artifact_index": 0,
+                "operation_id": "M2"
+              }
+            },
+            "instrument": "python_module",
+            "label": "matched_radius_angle_diagnostics",
+            "module": "robot_learning.lab.analyze_matched_evaluations"
+          }
+        ],
+        "rationale": "M2 establishes that the tested full-radius exposure candidate is substantially worse overall, but the inquiry closure requires structured diagnostics to distinguish a broad reach/control degradation from a narrow inner-radius effect and to quantify residual hold failures. This PI-owned analysis consumes only the completed M2 artifacts, verifies matched episode geometry and panel identity, and reports the required reach, no-reach, hold, interruption, and paired transition metrics by fixed radius and angle strata. It does not alter the evaluation artifacts or claim causal proof; the result will determine whether I1 closes with a redirect toward branch/path and stabilization-control work."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--reference",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "--candidate",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+            ],
+            "instrument": "python_module",
+            "label": "matched_radius_angle_diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/python-module-M3-1-m3-matched-evaluation-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "lower",
+                      "paired_transitions",
+                      "reference",
+                      "sector",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/diagnostic_notice",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/inputs",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate",
+                      "lower",
+                      "paired_transitions",
+                      "reference",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/inputs/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/inputs/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_transitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/inputs/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/candidate/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/inputs/candidate/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/reference/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/inputs/reference/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/reached_but_not_success_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/reached_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_failure_to_candidate_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_failure_to_candidate_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_success_to_candidate_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_success_to_candidate_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/reached_but_not_success_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/reached_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "139f479efac614bc85758c05b5b7dee47615b97e4b2d61e547a65b6b9c59f56f",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "6d7124a41b7019eac3e09ed49d97fbf87d83d11d4c5d43e3b0b795ad55dc3278"
+                },
+                "reference": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "52a53847242882e23ab93e67906c1d0c5ba6a5ff23cbcffb6ea27efb0ad8a0e1"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_matched_evaluations"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+              "path": "robot_learning/lab/analyze_matched_evaluations.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6f74342a6bd9567f99aa090cfce775e6eb3056a0",
+            "fingerprint": "7b31bb5a7933fa0ea6b3c46c2fa797df8e9cd3e1924d82d88ce2be2f2c9c8293",
+            "manifest": [
+              {
+                "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+                "path": "robot_learning/lab/analyze_matched_evaluations.py"
+              }
+            ]
+          },
+          "code_parent_commit": "9e380227b41d7bdfb6070fa71a366f46aa789ca9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+              "path": "robot_learning/lab/analyze_matched_evaluations.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_matched_evaluations.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--reference",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+            "--candidate",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+            "--output",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+          ],
+          "artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "operation_id": "M2",
+              "recorded_artifact_fingerprint": "6d7124a41b7019eac3e09ed49d97fbf87d83d11d4c5d43e3b0b795ad55dc3278"
+            },
+            "reference": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "operation_id": "M2",
+              "recorded_artifact_fingerprint": "52a53847242882e23ab93e67906c1d0c5ba6a5ff23cbcffb6ea27efb0ad8a0e1"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 1,
+              "operation_id": "M2"
+            },
+            "reference": {
+              "artifact_index": 0,
+              "operation_id": "M2"
+            }
+          },
+          "instrument": "python_module",
+          "label": "matched_radius_angle_diagnostics",
+          "module": "robot_learning.lab.analyze_matched_evaluations"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+            "path": "robot_learning/lab/analyze_matched_evaluations.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "6f74342a6bd9567f99aa090cfce775e6eb3056a0",
+          "fingerprint": "7b31bb5a7933fa0ea6b3c46c2fa797df8e9cd3e1924d82d88ce2be2f2c9c8293",
+          "manifest": [
+            {
+              "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+              "path": "robot_learning/lab/analyze_matched_evaluations.py"
+            }
+          ]
+        },
+        "code_parent_commit": "9e380227b41d7bdfb6070fa71a366f46aa789ca9",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+            "path": "robot_learning/lab/analyze_matched_evaluations.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_matched_evaluations.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--reference",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+            "--candidate",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+            "--output",
+            "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+          ],
+          "instrument": "python_module",
+          "label": "matched_radius_angle_diagnostics",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/python-module-M3-1-m3-matched-evaluation-diagnostics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_type",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "candidate",
+                    "lower",
+                    "paired_transitions",
+                    "reference",
+                    "sector",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/angle_sectors",
+                  "type": "array"
+                },
+                {
+                  "path": "/diagnostic_notice",
+                  "type": "string"
+                },
+                {
+                  "entries": 2,
+                  "path": "/inputs",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "candidate",
+                    "lower",
+                    "paired_transitions",
+                    "reference",
+                    "upper",
+                    "upper_inclusive"
+                  ],
+                  "path": "/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/inputs/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/inputs/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/overall/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/overall/paired_transitions",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/overall/reference",
+                  "type": "object"
+                },
+                {
+                  "path": "/inputs/candidate/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/inputs/candidate/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/inputs/candidate/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/inputs/reference/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/inputs/reference/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/inputs/reference/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/reached_but_not_success_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/reached_episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/candidate/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_transitions/reference_failure_to_candidate_failure",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_transitions/reference_failure_to_candidate_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_transitions/reference_success_to_candidate_failure",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/paired_transitions/reference_success_to_candidate_success",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/hold_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/reached_but_not_success_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/reached_episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/reference/successes",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "139f479efac614bc85758c05b5b7dee47615b97e4b2d61e547a65b6b9c59f56f",
+            "input_artifacts": {
+              "candidate": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                "operation_id": "M2",
+                "recorded_artifact_fingerprint": "6d7124a41b7019eac3e09ed49d97fbf87d83d11d4c5d43e3b0b795ad55dc3278"
+              },
+              "reference": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                "operation_id": "M2",
+                "recorded_artifact_fingerprint": "52a53847242882e23ab93e67906c1d0c5ba6a5ff23cbcffb6ea27efb0ad8a0e1"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_matched_evaluations"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--reference",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "--candidate",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+            ],
+            "instrument": "python_module",
+            "label": "matched_radius_angle_diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/python-module-M3-1-m3-matched-evaluation-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_type",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "candidate",
+                      "lower",
+                      "paired_transitions",
+                      "reference",
+                      "sector",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_sectors",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/diagnostic_notice",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/inputs",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate",
+                      "lower",
+                      "paired_transitions",
+                      "reference",
+                      "upper",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/inputs/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/inputs/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/overall/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/overall/paired_transitions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/overall/reference",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/inputs/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/candidate/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/inputs/candidate/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inputs/reference/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/inputs/reference/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/reached_but_not_success_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/reached_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/candidate/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_failure_to_candidate_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_failure_to_candidate_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_success_to_candidate_failure",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/paired_transitions/reference_success_to_candidate_success",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/hold_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/reached_but_not_success_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/reached_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/reference/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "139f479efac614bc85758c05b5b7dee47615b97e4b2d61e547a65b6b9c59f56f",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T2-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "6d7124a41b7019eac3e09ed49d97fbf87d83d11d4c5d43e3b0b795ad55dc3278"
+                },
+                "reference": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m2-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "52a53847242882e23ab93e67906c1d0c5ba6a5ff23cbcffb6ea27efb0ad8a0e1"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_matched_evaluations"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+              "path": "robot_learning/lab/analyze_matched_evaluations.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6f74342a6bd9567f99aa090cfce775e6eb3056a0",
+            "fingerprint": "7b31bb5a7933fa0ea6b3c46c2fa797df8e9cd3e1924d82d88ce2be2f2c9c8293",
+            "manifest": [
+              {
+                "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+                "path": "robot_learning/lab/analyze_matched_evaluations.py"
+              }
+            ]
+          },
+          "code_parent_commit": "9e380227b41d7bdfb6070fa71a366f46aa789ca9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "414880e9287e44a449f61c8aa869b239860726f4c245b3b4843cd0b576238fbc",
+              "path": "robot_learning/lab/analyze_matched_evaluations.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_matched_evaluations.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Compute deterministic radius- and angle-stratified reach/hold summaries and paired success transitions for the matched M2 baseline and full-radius evaluation artifacts.",
+        "measurements": [
+          {
+            "args": [
+              "--reference",
+              "{input:reference}",
+              "--candidate",
+              "{input:candidate}",
+              "--output",
+              "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json"
+            ],
+            "artifact": "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/m3-matched-evaluation-diagnostics.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M2"
+              },
+              "reference": {
+                "artifact_index": 0,
+                "operation_id": "M2"
+              }
+            },
+            "instrument": "python_module",
+            "label": "matched_radius_angle_diagnostics",
+            "module": "robot_learning.lab.analyze_matched_evaluations"
+          }
+        ],
+        "rationale": "M2 establishes that the tested full-radius exposure candidate is substantially worse overall, but the inquiry closure requires structured diagnostics to distinguish a broad reach/control degradation from a narrow inner-radius effect and to quantify residual hold failures. This PI-owned analysis consumes only the completed M2 artifacts, verifies matched episode geometry and panel identity, and reports the required reach, no-reach, hold, interruption, and paired transition metrics by fixed radius and angle strata. It does not alter the evaluation artifacts or claim causal proof; the result will determine whether I1 closes with a redirect toward branch/path and stabilization-control work."
+      }
+    },
+    "request_fingerprint": "76b636d467f253afbcb32e31d6a5dec56cd5a66fef8773d26d12e0028849252a",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, explicitly assigned in E3 because it is the only complete candidate with an official-like development measurement; this role does not imply proximity to 98%. Retained: none.",
     "completed_operations": [
@@ -2896,7 +3892,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M2"
+      "M2",
+      "M3"
     ],
     "scientific_parent_commit": "9e380227b41d7bdfb6070fa71a366f46aa789ca9"
   },
