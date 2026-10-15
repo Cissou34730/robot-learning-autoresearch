@@ -3270,47 +3270,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed trajectory evidence for the best-known policy, stratified by target radius and angle and separating no-reach from reached-but-not-held episodes, shows either branch/path divergence during reach, or post-reach action/velocity/substep excursions and hold exits, with the alternative evidence insufficient to explain the dominant residual; close as inconclusive only if the traces do not partition these mechanisms, while carrying that limitation into goal review.",
-          "goal_connection": "The best-known policy is only 105/160 (65.625%) on the official-like distribution, leaving a 34.375 percentage-point gap to 98%. Resolving whether the dominant failure is reach/path selection or post-reach sampled-data stabilization determines whether the next intervention should redesign trajectory/branch handling or the feedback/braking behavior.",
-          "handoff_conclusion": "Established observations: T1 used the baseline 0.14-0.20 m training exposure and M1 recorded 105/160 successes, with 49 no-reach failures and six reached-but-not-held failures. T2 changed only the PI-owned training radius exposure to 0.06-0.20 m while retaining the PPO 64-64 tanh recipe, shared task mechanics, evaluation semantics, and runtime; its step-matched M2 comparison on the same 160 seeds recorded 73/160 versus T1's 105/160, -20.0 percentage points, 59 reference-success-to-candidate-failure transitions, and 86 discordant episodes. M3 established the structured pattern: T2 improved the [6,10) cm bin to 40.0% versus T1's 22.5%, but fell to 43.4%, 53.8%, and 46.4% in [10,14), [14,18), and [18,20] cm versus T1's 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees, while T1 scored 48.4% and 92.1% in those sectors. T2 had 80 reached episodes and 80 no-reach failures, with seven reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and six reached-but-not-success failures. T2 had fewer total hold interruptions (104 versus 272), so the dominant observed difference is reach/path behavior, although post-reach hold loss remains consequential. Interpretation and limits: broader exposure did not improve this tested candidate and leaves a strong angle/radius-structured residual consistent with branch/path selection or conditioning problems; it does not establish that exposure universally harms performance because T1 and T2 are different fresh training artifacts and the comparison has no joint, action, or substep traces. The exact branch and sampled-data dynamics mechanisms remain unresolved. The physical model's reachability claim remains plausible but is not a substitute for trajectory evidence.",
-          "handoff_question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
-          "rationale": "M2 and M3 establish a large, angle- and radius-structured artifact difference but contain no joint trajectories, branch identity, actions, or substep distances. The observed 80 no-reach failures versus 7 reached-but-not-success failures for T2 and 49 versus 6 for T1 favor prioritizing reach/path evidence first, while the hold failures remain consequential for the 98% objective. A bounded trace measurement is therefore more decision-relevant than another uninstrumented candidate comparison or an immediate official assessment. The prior exposure conclusion is limited to the tested fresh T2 implementation and is not treated as a universal exposure effect.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed trajectory evidence for the best-known policy, stratified by target radius and angle and separating no-reach from reached-but-not-held episodes, shows either branch/path divergence during reach, or post-reach action/velocity/substep excursions and hold exits, with the alternative evidence insufficient to explain the dominant residual; close as inconclusive only if the traces do not partition these mechanisms, while carrying that limitation into goal review.",
-        "goal_connection": "The best-known policy is only 105/160 (65.625%) on the official-like distribution, leaving a 34.375 percentage-point gap to 98%. Resolving whether the dominant failure is reach/path selection or post-reach sampled-data stabilization determines whether the next intervention should redesign trajectory/branch handling or the feedback/braking behavior.",
-        "question": "Do trajectory-level failures of the best-known T1 arise primarily from branch/path selection during the common straight-start reach, or from sampled-data braking and hold instability after entering tolerance, as determined by matched angle/radius joint-branch, action, and 500-Hz substep traces?",
-        "rationale": "M2 and M3 establish a large, angle- and radius-structured artifact difference but contain no joint trajectories, branch identity, actions, or substep distances. The observed 80 no-reach failures versus 7 reached-but-not-success failures for T2 and 49 versus 6 for T1 favor prioritizing reach/path evidence first, while the hold failures remain consequential for the 98% objective. A bounded trace measurement is therefore more decision-relevant than another uninstrumented candidate comparison or an immediate official assessment. The prior exposure conclusion is limited to the tested fresh T2 implementation and is not treated as a universal exposure effect."
-      }
-    },
-    "request_fingerprint": "65749eb25e4289a09189c2fd925536df3f85c4ca62211c1b6ba0b933c3fd4579",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, supported by M1 and re-confirmed in the matched baseline arm of M2; T2:checkpoint-115712 is not promoted because M2 measured 45.625% and M3 showed severe angle-structured failures. Retained: none. T2 remains an important negative comparison artifact, not a goal-certified model.",
     "completed_operations": [
