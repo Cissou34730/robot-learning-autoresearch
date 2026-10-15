@@ -2,15 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| T1 | training | - | completed |
-| M1 | measurement | - | completed |
-| E1 | model_role | - | assigned |
-| E2 | checkpoint | - | checkpointed |
-| E3 | inquiry | I1 | completed |
-| E4 | checkpoint | - | checkpointed |
-| M2 | measurement | I1 | failed |
-| M3 | measurement | I1 | failed |
-| M4 | measurement | I1 | completed |
-| T2 | training | I1 | completed |
-| M5 | measurement | I1 | completed |
-| M6 | measurement | I1 | completed |
