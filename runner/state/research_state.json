@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 4,
     "session": 7,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -3469,32 +3469,183 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T14:01:41Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly retained as strongest evidence-backed candidate by E11 on the basis of M3 and E9; it remains below goal and is not assessment-certified. Working: none. Retained: none. M4 is a remeasurement of the same frozen T2 artifact, not a new candidate.",
+        "completed_operations": [
+          "M4",
+          "E14"
+        ],
+        "cumulative_resource_use": "Four completed development measurements (M1 candidate-independent physics probe; M2 T1 panel; M3 T2 panel; M4 T2 same-panel substep-envelope panel), two fresh PPO training runs at the 120,000-step maintainer allocation (T1 and T2, each completing 120,832 steps), three prior inquiries plus the closed I3 inquiry E14, and explicit best-known assignment E11. No protected benchmark episodes or official assessment used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains below the human goal at 150/160 on the non-protected development panel; ten failures leave a scaled gap of at least six successes to 196/200, and no protected assessment has been run. M4 reproduced the same 150/160 result with substep diagnostics, so the gap is not an instrumentation artifact.",
+        "current_synthesis": "Established: full-band T2 materially improved over T1 on the tested PPO implementation, especially inward-band no-entry failures (E9); T2 is still the best-known artifact (E11). M3/M4 identify seven no-entry and three entry-then-interruption failures. The no-entry class is the larger residual class: four failures are at outer radii 16.54\u201318.35 cm and six of seven have negative observed minimum joint-limit margin, but one healthy-margin no-entry case prevents a limit-only explanation. M4 adds evidence that all three entry failures include control-boundary intervals whose internal substep distance exceeded tolerance (counts 1, 193 and 242), confirming transient stabilization and boundary aliasing as real secondary mechanisms; the repeated high interruptions and visible alternating velocities remain relevant. M1 establishes compiled configuration-dependent inertia/authority and a finite-grid constrained-geometry risk, but neither an actuator ceiling nor a sole causal explanation. The measured conclusions are limited to the frozen T2 runtime, this implementation, and the 160-episode development panel; 150/160 is not an official result.",
+        "decision_frontier": "The next campaign direction should first test outer-target/branch/limit-conditioned acquisition, because it accounts for seven failures and is the only route that can address the minimum six-success gap without assuming post-entry stabilization explains no-entry episodes. The acquisition mechanism is not fully resolved: one healthy-margin no-entry case and oscillatory visible control traces leave branch-conditioned trajectory/control as alternatives to static limit feasibility. Transient stabilization must remain a competing follow-on direction because all three entry failures show substep excursions and substantial interruptions. The next discriminating evidence should compare a complete acquisition-focused candidate or diagnostic against T2 on the same official-distribution development panel, stratifying no-entry success by outer radius, angle/branch and limit margin while retaining entry interruption, velocity and substep-envelope fields. A reduction in outer/constrained no-entry failures would support acquisition as the actionable bottleneck; persistent entry failures after acquisition improvement would redirect work to velocity-aware braking/hold control. Neither result certifies the protected assessment.",
+        "evidence_references": [
+          "M1",
+          "M3",
+          "M4",
+          "E9",
+          "E11",
+          "E14"
+        ],
+        "human_goal_connection": "Advance the best-known T2 policy from 150/160 = 93.75% development success toward at least 196/200 = 98% official success on complete uninterrupted 100-control-step holds over the fixed 0.06\u20130.20 m full-angle task distribution. I3 selected the next development direction rather than authorizing official assessment.",
+        "next_direction_or_closure": "I3 closed with a limited positive conclusion in E14. The next goal review should compare the acquisition-first direction against assessment readiness, then if further work is chosen, use a complete acquisition-focused candidate or diagnostic rather than an untargeted training repeat. Carry the confirmed transient substep-excursion mechanism forward as a secondary branch of the decision.",
+        "next_question": "Can an acquisition-focused intervention or diagnostic reduce T2\u2019s outer-radius and constrained-margin no-entry failures on the official-distribution development panel enough to establish a credible route toward the 98% complete-hold goal, while preserving the substep evidence needed to decide when transient stabilization must become the next priority?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "9d1a6a59f8a9686aedfcdc80427d1c2d05120d16",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly retained as strongest evidence-backed candidate by E11 on the basis of M3 and E9; it remains below goal and is not assessment-certified. Working: none. Retained: none. M4 is a remeasurement of the same frozen T2 artifact, not a new candidate.",
+        "completed_operations": [
+          "M4",
+          "E14"
+        ],
+        "cumulative_resource_use": "Four completed development measurements (M1 candidate-independent physics probe; M2 T1 panel; M3 T2 panel; M4 T2 same-panel substep-envelope panel), two fresh PPO training runs at the 120,000-step maintainer allocation (T1 and T2, each completing 120,832 steps), three prior inquiries plus the closed I3 inquiry E14, and explicit best-known assignment E11. No protected benchmark episodes or official assessment used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains below the human goal at 150/160 on the non-protected development panel; ten failures leave a scaled gap of at least six successes to 196/200, and no protected assessment has been run. M4 reproduced the same 150/160 result with substep diagnostics, so the gap is not an instrumentation artifact.",
+        "current_synthesis": "Established: full-band T2 materially improved over T1 on the tested PPO implementation, especially inward-band no-entry failures (E9); T2 is still the best-known artifact (E11). M3/M4 identify seven no-entry and three entry-then-interruption failures. The no-entry class is the larger residual class: four failures are at outer radii 16.54\u201318.35 cm and six of seven have negative observed minimum joint-limit margin, but one healthy-margin no-entry case prevents a limit-only explanation. M4 adds evidence that all three entry failures include control-boundary intervals whose internal substep distance exceeded tolerance (counts 1, 193 and 242), confirming transient stabilization and boundary aliasing as real secondary mechanisms; the repeated high interruptions and visible alternating velocities remain relevant. M1 establishes compiled configuration-dependent inertia/authority and a finite-grid constrained-geometry risk, but neither an actuator ceiling nor a sole causal explanation. The measured conclusions are limited to the frozen T2 runtime, this implementation, and the 160-episode development panel; 150/160 is not an official result.",
+        "decision_frontier": "The next campaign direction should first test outer-target/branch/limit-conditioned acquisition, because it accounts for seven failures and is the only route that can address the minimum six-success gap without assuming post-entry stabilization explains no-entry episodes. The acquisition mechanism is not fully resolved: one healthy-margin no-entry case and oscillatory visible control traces leave branch-conditioned trajectory/control as alternatives to static limit feasibility. Transient stabilization must remain a competing follow-on direction because all three entry failures show substep excursions and substantial interruptions. The next discriminating evidence should compare a complete acquisition-focused candidate or diagnostic against T2 on the same official-distribution development panel, stratifying no-entry success by outer radius, angle/branch and limit margin while retaining entry interruption, velocity and substep-envelope fields. A reduction in outer/constrained no-entry failures would support acquisition as the actionable bottleneck; persistent entry failures after acquisition improvement would redirect work to velocity-aware braking/hold control. Neither result certifies the protected assessment.",
+        "evidence_references": [
+          "M1",
+          "M3",
+          "M4",
+          "E9",
+          "E11",
+          "E14"
+        ],
+        "human_goal_connection": "Advance the best-known T2 policy from 150/160 = 93.75% development success toward at least 196/200 = 98% official success on complete uninterrupted 100-control-step holds over the fixed 0.06\u20130.20 m full-angle task distribution. I3 selected the next development direction rather than authorizing official assessment.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 closed with a limited positive conclusion in E14. The next goal review should compare the acquisition-first direction against assessment readiness, then if further work is chosen, use a complete acquisition-focused candidate or diagnostic rather than an untargeted training repeat. Carry the confirmed transient substep-excursion mechanism forward as a secondary branch of the decision.",
+        "next_question": "Can an acquisition-focused intervention or diagnostic reduce T2\u2019s outer-radius and constrained-margin no-entry failures on the official-distribution development panel enough to establish a credible route toward the 98% complete-hold goal, while preserving the substep evidence needed to decide when transient stabilization must become the next priority?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "4f542b44-eb0d-488c-8ec3-a9be748890af",
+        "campaign_id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
+        "campaign_usage": "35m49s | 49.02 AIU | prompt 7.6m (88% cached) | output 169.1k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "4m23s | 3.63 AIU | prompt 439.3k (83% cached) | output 21.7k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "493ef277f3f6b22af3eca27fedf6352018acf7fb",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "fc32c5d7d98aaa29f3ec12d31da03d363fdc85373e8a6c5882f4820a32fcd77a",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "01d22e9dcf92391f51bdd07f70951e59c652c47a674705a958412181f38d3ad7",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly retained as strongest evidence-backed candidate by E11 on the basis of M3 and E9; it remains below goal and is not assessment-certified. Working: none. Retained: none. M4 is a remeasurement of the same frozen T2 artifact, not a new candidate.",
+        "completed_operations": [
+          "M4",
+          "E14"
+        ],
+        "cumulative_resource_use": "Four completed development measurements (M1 candidate-independent physics probe; M2 T1 panel; M3 T2 panel; M4 T2 same-panel substep-envelope panel), two fresh PPO training runs at the 120,000-step maintainer allocation (T1 and T2, each completing 120,832 steps), three prior inquiries plus the closed I3 inquiry E14, and explicit best-known assignment E11. No protected benchmark episodes or official assessment used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains below the human goal at 150/160 on the non-protected development panel; ten failures leave a scaled gap of at least six successes to 196/200, and no protected assessment has been run. M4 reproduced the same 150/160 result with substep diagnostics, so the gap is not an instrumentation artifact.",
+        "current_synthesis": "Established: full-band T2 materially improved over T1 on the tested PPO implementation, especially inward-band no-entry failures (E9); T2 is still the best-known artifact (E11). M3/M4 identify seven no-entry and three entry-then-interruption failures. The no-entry class is the larger residual class: four failures are at outer radii 16.54\u201318.35 cm and six of seven have negative observed minimum joint-limit margin, but one healthy-margin no-entry case prevents a limit-only explanation. M4 adds evidence that all three entry failures include control-boundary intervals whose internal substep distance exceeded tolerance (counts 1, 193 and 242), confirming transient stabilization and boundary aliasing as real secondary mechanisms; the repeated high interruptions and visible alternating velocities remain relevant. M1 establishes compiled configuration-dependent inertia/authority and a finite-grid constrained-geometry risk, but neither an actuator ceiling nor a sole causal explanation. The measured conclusions are limited to the frozen T2 runtime, this implementation, and the 160-episode development panel; 150/160 is not an official result.",
+        "decision_frontier": "The next campaign direction should first test outer-target/branch/limit-conditioned acquisition, because it accounts for seven failures and is the only route that can address the minimum six-success gap without assuming post-entry stabilization explains no-entry episodes. The acquisition mechanism is not fully resolved: one healthy-margin no-entry case and oscillatory visible control traces leave branch-conditioned trajectory/control as alternatives to static limit feasibility. Transient stabilization must remain a competing follow-on direction because all three entry failures show substep excursions and substantial interruptions. The next discriminating evidence should compare a complete acquisition-focused candidate or diagnostic against T2 on the same official-distribution development panel, stratifying no-entry success by outer radius, angle/branch and limit margin while retaining entry interruption, velocity and substep-envelope fields. A reduction in outer/constrained no-entry failures would support acquisition as the actionable bottleneck; persistent entry failures after acquisition improvement would redirect work to velocity-aware braking/hold control. Neither result certifies the protected assessment.",
+        "evidence_references": [
+          "M1",
+          "M3",
+          "M4",
+          "E9",
+          "E11",
+          "E14"
+        ],
+        "human_goal_connection": "Advance the best-known T2 policy from 150/160 = 93.75% development success toward at least 196/200 = 98% official success on complete uninterrupted 100-control-step holds over the fixed 0.06\u20130.20 m full-angle task distribution. I3 selected the next development direction rather than authorizing official assessment.",
+        "next_direction_or_closure": "I3 closed with a limited positive conclusion in E14. The next goal review should compare the acquisition-first direction against assessment readiness, then if further work is chosen, use a complete acquisition-focused candidate or diagnostic rather than an untargeted training repeat. Carry the confirmed transient substep-excursion mechanism forward as a secondary branch of the decision.",
+        "next_question": "Can an acquisition-focused intervention or diagnostic reduce T2\u2019s outer-radius and constrained-margin no-entry failures on the official-distribution development panel enough to establish a credible route toward the 98% complete-hold goal, while preserving the substep evidence needed to decide when transient stabilization must become the next priority?"
+      }
+    },
+    "request_fingerprint": "67a658a29b5bd1c4b76fc45b466ce0c4649f6c8cc6c81e796200f4ae93b22731",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly assigned by E11 on the basis of M3 and E9. Working: none. Retained: none. T2 is strongest by completed development evidence but remains below the human goal and is not assessment-certified.",
+    "candidates_and_roles": "Best-known: T2:checkpoint-120832, explicitly retained as strongest evidence-backed candidate by E11 on the basis of M3 and E9; it remains below goal and is not assessment-certified. Working: none. Retained: none. M4 is a remeasurement of the same frozen T2 artifact, not a new candidate.",
     "completed_operations": [
-      "E11",
-      "E12"
+      "M4",
+      "E14"
     ],
-    "cumulative_resource_use": "Two fresh PPO training runs at the maintainer allocation (T1 and T2; each requested 120,000 and completed 120,832 steps), three 160-episode non-protected official-distribution development measurements (M2, M3 and the earlier inventory), two prior inquiries including I2, one closed I2 decision (E9), one explicit best-known assignment for T2 (E11), and one newly opened bounded inquiry I3 (E12). No protected benchmark episodes or official assessment used.",
-    "current_goal_gap": "T2:checkpoint-120832 achieved 150/160 = 93.75% on the non-protected official-distribution development panel, leaving 10 failures; the 196/200 official threshold is not established and no protected assessment has been run. The detailed M3 diagnostic confirms 7 failures with no first reach and 3 entry-then-interruption failures. The no-entry cases include seven outer-radius targets (16.54\u201318.83 cm) and three inner-band cases (10.66\u201310.85 cm); the entry cases reached at steps 10, 19 and 116 but held for at most 3, 3 and 1 steps, with 1, 242 and 192 interruptions. Three failures had healthy positive minimum joint-limit margins (1.659\u20131.795 rad), while the other seven had negative margins. This is a development gap, not an official result.",
-    "current_synthesis": "Established observations: T1 with 14\u201320 cm training exposure scored 105/160 (65.625%) in M2, including 49 no-entry failures. T2 changed the training radius to the full 6\u201320 cm band while retaining the fresh seed, PPO tanh 64x64 recipe, reward, 11-value runtime, robot, timing and success semantics; it completed 120,832 steps and scored 150/160 (93.75%) in M3. E9 therefore supports a large artifact-level improvement and supports full-band exposure as a material contributor for this tested implementation, especially because the inward-band no-entry failures fell from 51/55 in T1 to 3/10 in T2. It does not establish full-band exposure as the sole cause or as a general method guarantee. M3\u2019s complete failure diagnostics revise the emphasis but not the central question: residual failures are mostly outer-radius, yet healthy-margin failures coexist with negative-margin failures, so outer-target acquisition, branch/limit conditioning and control remain competing explanations. The three entry cases show repeated hold interruptions, making post-entry transient stabilization consequential; their late or early first reach and high interruption counts do not by themselves identify velocity control as the cause. The artifact contains control-boundary traces including action saturation and joint/endpoint velocity, but no per-physics-substep hold trace, so hidden excursions between 20 ms checks remain an unresolved measurement limit. The initial model\u2019s consequences remain decision-relevant: configuration-dependent inertia and bounded authority can shape transient behavior; branch and limit margin can shape acquisition; zero gravity makes static holding physically easier than arrival braking; and the discrete boundary check can alias fast oscillations. None of these establishes an actuator ceiling or a dominant residual mechanism. The inherited proposed question is not settled by M3: the exact failure split and mixed margins preserve a consequential distinction, so I3 is warranted rather than assessment now. The correction is that T2, not T1, is the strongest measured candidate; E11 records that role explicitly.",
-    "decision_frontier": "I3 must discriminate whether the next goal-directed direction is (A) outer-target/branch/limit-conditioned acquisition or (B) post-entry transient stabilization. Evidence favoring A would be residual no-entry failures concentrated by target radius/angle/branch or constrained margin, especially if healthy-margin acquisition failures are reduced by a geometry-conditioned candidate or control change. Evidence favoring B would be repeated entry-then-interruption at low acquisition error with high visible endpoint/joint velocity, alternating actions or boundary crossings, and preferably substep distance evidence; successful boundary holds with substep exits would also expose an evaluation-aliasing limit. Mixed or unavailable diagnostics should remain inconclusive rather than being converted into a causal claim. This distinction changes whether further work should target acquisition geometry or velocity-aware hold control, and whether the best-known candidate has a credible route to the 98% threshold.",
+    "cumulative_resource_use": "Four completed development measurements (M1 candidate-independent physics probe; M2 T1 panel; M3 T2 panel; M4 T2 same-panel substep-envelope panel), two fresh PPO training runs at the 120,000-step maintainer allocation (T1 and T2, each completing 120,832 steps), three prior inquiries plus the closed I3 inquiry E14, and explicit best-known assignment E11. No protected benchmark episodes or official assessment used.",
+    "current_goal_gap": "T2:checkpoint-120832 remains below the human goal at 150/160 on the non-protected development panel; ten failures leave a scaled gap of at least six successes to 196/200, and no protected assessment has been run. M4 reproduced the same 150/160 result with substep diagnostics, so the gap is not an instrumentation artifact.",
+    "current_synthesis": "Established: full-band T2 materially improved over T1 on the tested PPO implementation, especially inward-band no-entry failures (E9); T2 is still the best-known artifact (E11). M3/M4 identify seven no-entry and three entry-then-interruption failures. The no-entry class is the larger residual class: four failures are at outer radii 16.54\u201318.35 cm and six of seven have negative observed minimum joint-limit margin, but one healthy-margin no-entry case prevents a limit-only explanation. M4 adds evidence that all three entry failures include control-boundary intervals whose internal substep distance exceeded tolerance (counts 1, 193 and 242), confirming transient stabilization and boundary aliasing as real secondary mechanisms; the repeated high interruptions and visible alternating velocities remain relevant. M1 establishes compiled configuration-dependent inertia/authority and a finite-grid constrained-geometry risk, but neither an actuator ceiling nor a sole causal explanation. The measured conclusions are limited to the frozen T2 runtime, this implementation, and the 160-episode development panel; 150/160 is not an official result.",
+    "decision_frontier": "The next campaign direction should first test outer-target/branch/limit-conditioned acquisition, because it accounts for seven failures and is the only route that can address the minimum six-success gap without assuming post-entry stabilization explains no-entry episodes. The acquisition mechanism is not fully resolved: one healthy-margin no-entry case and oscillatory visible control traces leave branch-conditioned trajectory/control as alternatives to static limit feasibility. Transient stabilization must remain a competing follow-on direction because all three entry failures show substep excursions and substantial interruptions. The next discriminating evidence should compare a complete acquisition-focused candidate or diagnostic against T2 on the same official-distribution development panel, stratifying no-entry success by outer radius, angle/branch and limit margin while retaining entry interruption, velocity and substep-envelope fields. A reduction in outer/constrained no-entry failures would support acquisition as the actionable bottleneck; persistent entry failures after acquisition improvement would redirect work to velocity-aware braking/hold control. Neither result certifies the protected assessment.",
     "evidence_references": [
-      "T2",
-      "M2",
+      "M1",
       "M3",
+      "M4",
       "E9",
-      "E11"
+      "E11",
+      "E14"
     ],
-    "human_goal_connection": "Advance from the best-known T2 development candidate toward at least 98% success on complete uninterrupted 100-control-step holds over the official 0.06\u20130.20 m full-angle distribution. The goal review assigned T2:checkpoint-120832 as best-known and opened I3 to identify which residual failure mechanism should govern the next bounded work.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Continue with the newly opened bounded inquiry I3 after this checkpoint. Choose the next operation for its information value: resolve the acquisition-versus-stabilization distinction using the existing diagnostics and, where needed, a focused candidate comparison or PI-owned measurement that preserves the official task and frozen runtime semantics. Do not request official assessment until the inquiry result is weighed against the same 93.75% evidence and remaining uncertainty.",
-    "next_question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-    "scientific_commit": "a9bcc8103253c86f606f8f38b1060bad7fbaa6e2",
-    "session_id": "S6"
+    "human_goal_connection": "Advance the best-known T2 policy from 150/160 = 93.75% development success toward at least 196/200 = 98% official success on complete uninterrupted 100-control-step holds over the fixed 0.06\u20130.20 m full-angle task distribution. I3 selected the next development direction rather than authorizing official assessment.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 closed with a limited positive conclusion in E14. The next goal review should compare the acquisition-first direction against assessment readiness, then if further work is chosen, use a complete acquisition-focused candidate or diagnostic rather than an untargeted training repeat. Carry the confirmed transient substep-excursion mechanism forward as a secondary branch of the decision.",
+    "next_question": "Can an acquisition-focused intervention or diagnostic reduce T2\u2019s outer-radius and constrained-margin no-entry failures on the official-distribution development panel enough to establish a credible route toward the 98% complete-hold goal, while preserving the substep evidence needed to decide when transient stabilization must become the next priority?",
+    "scientific_commit": "493ef277f3f6b22af3eca27fedf6352018acf7fb",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3502,22 +3653,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4f542b44-eb0d-488c-8ec3-a9be748890af",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M4",
-      "E14"
-    ],
-    "scientific_parent_commit": "9d1a6a59f8a9686aedfcdc80427d1c2d05120d16"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
