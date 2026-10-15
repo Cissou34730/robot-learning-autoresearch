@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry after a fresh full-band training run under the stated fixed recipe has produced a complete frozen candidate and that candidate has been evaluated on an official-distribution development panel with the existing mechanism diagnostics. A positive conclusion requires higher complete episode success with improvement concentrated in the previously unrepresented inward band and fewer no-entry failures; a negative conclusion requires no material improvement or persistent failures across healthy-margin targets; mixed or unavailable diagnostics support only an inconclusive conclusion. In every case, preserve the comparison at artifact level and carry unresolved branch/limit-conditioned acquisition and minority post-entry instability into the next decision.",
+    "goal_connection": "Advance toward a learned policy achieving at least 98% complete uninterrupted holds over the official 6\u201320 cm full-angle distribution by testing the most direct coverage gap implicated by the current candidate's 49 of 55 no-entry failures.",
+    "handoff_conclusion": "M1 established candidate-independent physical priors: the loaded arm has configuration-dependent compiled inertia and transient authority, one-interval momentum can be substantial, and finite-grid IK feasibility and joint-limit margins vary by branch; it did not establish policy failure or an actuator ceiling. T1 then trained the unchanged recorded PPO baseline (tanh 64x64, current reward and 11-value runtime, 14\u201320 cm training radius) for 120,000 requested steps, with proxy success rising to roughly 0.95\u20130.97 late in the run. Because training proxies reflect the restricted exposure, they only nominated a plateau checkpoint; the pre-terminal 115,712-step artifact was selected rather than treating the terminal checkpoint as privileged. The PI-owned diagnostic plumbing added post-control-boundary actual mapped/clipped actions, saturation, joint velocity, MuJoCo endpoint linear velocity, IK branch residuals/selected branch, joint-limit margin, terminal reason and traces without changing task mechanics. M2 evaluated the frozen T1:checkpoint-115712 on 160 official-distribution development episodes and recorded 65.625% success (105/160). All 55 failures ended at the horizon; 49 had max held steps 0 and never entered tolerance, while 6 entered at steps 14\u201325 and later interrupted, with measured nonzero joint and endpoint velocities. The no-entry failures skewed inward (mean radius 9.75 cm versus 13.17 cm overall), consistent with the known 14\u201320 cm exposure gap, while failures also occurred at some larger radii and minimum joint-limit margins ranged from negative to healthy values. Thus the tested baseline's dominant practical failure is pre-entry acquisition/exposure/geometry, with post-entry transient instability a real but minority class. The evidence does not separate missing inward exposure from branch/limit-conditioned control within the pre-entry failures, does not prove a broader PPO or reward claim, and does not establish official success.",
+    "handoff_question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+    "rationale": "The best-known frozen baseline T1:checkpoint-115712 scored 105/160 (65.625%) on M2, far below the 196/200 goal equivalent, so requesting terminal official assessment now would likely spend the campaign on a candidate with weak measured prospects and end it without testing the most consequential identified gap. M2 recorded 49 of 55 failures with zero held steps and no tolerance entry, and those failures skewed inward, while only 6 failures entered and later interrupted; this makes broader target exposure a high-value, goal-linked candidate comparison. However, the evidence does not establish exposure as the cause: failures also occurred at larger radii and across varying joint-limit margins, and the diagnostic panel did not isolate branch-conditioned acquisition from missing exposure. The inquiry therefore tests the complete full-band artifact while keeping the protected robot, timing, reward, observation/runtime, and success semantics fixed, and requires radial/angle and branch/limit diagnostics to prevent an aggregate improvement from being misreported as a causal exposure result. The expected cost is one bounded training allocation and one development evaluation; its result can either justify retaining the full-band direction or redirect effort toward branch-aware acquisition or post-entry stabilization before any official assessment.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7ba3ec35c8ded41eb317d93922ce6c82ebcad545",
     "id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 6,
-    "inquiry": 1,
+    "event": 7,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1805,9 +1816,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T13:38:14Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after a fresh full-band training run under the stated fixed recipe has produced a complete frozen candidate and that candidate has been evaluated on an official-distribution development panel with the existing mechanism diagnostics. A positive conclusion requires higher complete episode success with improvement concentrated in the previously unrepresented inward band and fewer no-entry failures; a negative conclusion requires no material improvement or persistent failures across healthy-margin targets; mixed or unavailable diagnostics support only an inconclusive conclusion. In every case, preserve the comparison at artifact level and carry unresolved branch/limit-conditioned acquisition and minority post-entry instability into the next decision.",
+        "goal_connection": "Advance toward a learned policy achieving at least 98% complete uninterrupted holds over the official 6\u201320 cm full-angle distribution by testing the most direct coverage gap implicated by the current candidate's 49 of 55 no-entry failures.",
+        "question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+        "rationale": "The best-known frozen baseline T1:checkpoint-115712 scored 105/160 (65.625%) on M2, far below the 196/200 goal equivalent, so requesting terminal official assessment now would likely spend the campaign on a candidate with weak measured prospects and end it without testing the most consequential identified gap. M2 recorded 49 of 55 failures with zero held steps and no tolerance entry, and those failures skewed inward, while only 6 failures entered and later interrupted; this makes broader target exposure a high-value, goal-linked candidate comparison. However, the evidence does not establish exposure as the cause: failures also occurred at larger radii and across varying joint-limit margins, and the diagnostic panel did not isolate branch-conditioned acquisition from missing exposure. The inquiry therefore tests the complete full-band artifact while keeping the protected robot, timing, reward, observation/runtime, and success semantics fixed, and requires radial/angle and branch/limit diagnostics to prevent an aggregate improvement from being misreported as a causal exposure result. The expected cost is one bounded training allocation and one development evaluation; its result can either justify retaining the full-band direction or redirect effort toward branch-aware acquisition or post-entry stabilization before any official assessment."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry after a fresh full-band training run under the stated fixed recipe has produced a complete frozen candidate and that candidate has been evaluated on an official-distribution development panel with the existing mechanism diagnostics. A positive conclusion requires higher complete episode success with improvement concentrated in the previously unrepresented inward band and fewer no-entry failures; a negative conclusion requires no material improvement or persistent failures across healthy-margin targets; mixed or unavailable diagnostics support only an inconclusive conclusion. In every case, preserve the comparison at artifact level and carry unresolved branch/limit-conditioned acquisition and minority post-entry instability into the next decision.",
+          "goal_connection": "Advance toward a learned policy achieving at least 98% complete uninterrupted holds over the official 6\u201320 cm full-angle distribution by testing the most direct coverage gap implicated by the current candidate's 49 of 55 no-entry failures.",
+          "handoff_conclusion": "M1 established candidate-independent physical priors: the loaded arm has configuration-dependent compiled inertia and transient authority, one-interval momentum can be substantial, and finite-grid IK feasibility and joint-limit margins vary by branch; it did not establish policy failure or an actuator ceiling. T1 then trained the unchanged recorded PPO baseline (tanh 64x64, current reward and 11-value runtime, 14\u201320 cm training radius) for 120,000 requested steps, with proxy success rising to roughly 0.95\u20130.97 late in the run. Because training proxies reflect the restricted exposure, they only nominated a plateau checkpoint; the pre-terminal 115,712-step artifact was selected rather than treating the terminal checkpoint as privileged. The PI-owned diagnostic plumbing added post-control-boundary actual mapped/clipped actions, saturation, joint velocity, MuJoCo endpoint linear velocity, IK branch residuals/selected branch, joint-limit margin, terminal reason and traces without changing task mechanics. M2 evaluated the frozen T1:checkpoint-115712 on 160 official-distribution development episodes and recorded 65.625% success (105/160). All 55 failures ended at the horizon; 49 had max held steps 0 and never entered tolerance, while 6 entered at steps 14\u201325 and later interrupted, with measured nonzero joint and endpoint velocities. The no-entry failures skewed inward (mean radius 9.75 cm versus 13.17 cm overall), consistent with the known 14\u201320 cm exposure gap, while failures also occurred at some larger radii and minimum joint-limit margins ranged from negative to healthy values. Thus the tested baseline's dominant practical failure is pre-entry acquisition/exposure/geometry, with post-entry transient instability a real but minority class. The evidence does not separate missing inward exposure from branch/limit-conditioned control within the pre-entry failures, does not prove a broader PPO or reward claim, and does not establish official success.",
+          "handoff_question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+          "rationale": "The best-known frozen baseline T1:checkpoint-115712 scored 105/160 (65.625%) on M2, far below the 196/200 goal equivalent, so requesting terminal official assessment now would likely spend the campaign on a candidate with weak measured prospects and end it without testing the most consequential identified gap. M2 recorded 49 of 55 failures with zero held steps and no tolerance entry, and those failures skewed inward, while only 6 failures entered and later interrupted; this makes broader target exposure a high-value, goal-linked candidate comparison. However, the evidence does not establish exposure as the cause: failures also occurred at larger radii and across varying joint-limit margins, and the diagnostic panel did not isolate branch-conditioned acquisition from missing exposure. The inquiry therefore tests the complete full-band artifact while keeping the protected robot, timing, reward, observation/runtime, and success semantics fixed, and requires radial/angle and branch/limit diagnostics to prevent an aggregate improvement from being misreported as a causal exposure result. The expected cost is one bounded training allocation and one development evaluation; its result can either justify retaining the full-band direction or redirect effort toward branch-aware acquisition or post-entry stabilization before any official assessment.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after a fresh full-band training run under the stated fixed recipe has produced a complete frozen candidate and that candidate has been evaluated on an official-distribution development panel with the existing mechanism diagnostics. A positive conclusion requires higher complete episode success with improvement concentrated in the previously unrepresented inward band and fewer no-entry failures; a negative conclusion requires no material improvement or persistent failures across healthy-margin targets; mixed or unavailable diagnostics support only an inconclusive conclusion. In every case, preserve the comparison at artifact level and carry unresolved branch/limit-conditioned acquisition and minority post-entry instability into the next decision.",
+        "goal_connection": "Advance toward a learned policy achieving at least 98% complete uninterrupted holds over the official 6\u201320 cm full-angle distribution by testing the most direct coverage gap implicated by the current candidate's 49 of 55 no-entry failures.",
+        "question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
+        "rationale": "The best-known frozen baseline T1:checkpoint-115712 scored 105/160 (65.625%) on M2, far below the 196/200 goal equivalent, so requesting terminal official assessment now would likely spend the campaign on a candidate with weak measured prospects and end it without testing the most consequential identified gap. M2 recorded 49 of 55 failures with zero held steps and no tolerance entry, and those failures skewed inward, while only 6 failures entered and later interrupted; this makes broader target exposure a high-value, goal-linked candidate comparison. However, the evidence does not establish exposure as the cause: failures also occurred at larger radii and across varying joint-limit margins, and the diagnostic panel did not isolate branch-conditioned acquisition from missing exposure. The inquiry therefore tests the complete full-band artifact while keeping the protected robot, timing, reward, observation/runtime, and success semantics fixed, and requires radial/angle and branch/limit diagnostics to prevent an aggregate improvement from being misreported as a causal exposure result. The expected cost is one bounded training allocation and one development evaluation; its result can either justify retaining the full-band direction or redirect effort toward branch-aware acquisition or post-entry stabilization before any official assessment."
+      }
+    },
+    "request_fingerprint": "8273bbb24c77b43ae0a8d1d4c4c07e574abd3e9f0b648783e79ce0e067118abf",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, explicitly assigned after M2 as the strongest evidence-backed complete artifact, with 65.625% success on the official-distribution development panel. No working candidate is assigned. No candidate meets the human goal and no official assessment is justified. T1's training-proxy ranking does not certify performance, and the diagnostic code change is instrumentation rather than a tested learning intervention.",
     "completed_operations": [
@@ -1838,6 +1912,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "9ec6c36e-c222-475e-b6b5-ebaddfe70643",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "dbc75679d791cca1bf6efe4be7b5027811c36b66"
+  },
   "terminal_state": null
 }
