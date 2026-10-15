@@ -9,3 +9,4 @@
 | E3 | model_role | - | assigned |
 | E4 | inquiry | I1 | completed |
 | E5 | checkpoint | - | checkpointed |
+| T2 | training | I1 | completed |
