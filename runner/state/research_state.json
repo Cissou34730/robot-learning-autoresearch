@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
     "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
-    "handoff_conclusion": "Observed in completed operation M1: the Runner executed the candidate-independent loaded-physics probe and produced a verified artifact. The loaded model has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Compiled body masses and inertia are generated rather than specified in the XML; representative mass matrices vary with configuration, including shoulder diagonal values 0.01210, 0.01147 and 0.01093 kg*m^2 and shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep constant saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds from 0.61 to 1.64 m/s across the three configurations, whereas zero commands remained stationary. These observations establish that the loaded plant has meaningful, configuration-dependent transient authority and that momentum can be large over one official 20 ms interval; they do not establish policy failure, hold instability under feedback, or an unavoidable actuator limit because no policy episode was measured. The finite 15-by-25 radius-angle grid over both IK branches contained 708 feasible and 42 infeasible branch configurations. The infeasible records are branch-specific and symmetric across angle/branch; inspected examples show the alternate branch can be feasible for the same target (at r=0.06 m, angle -120 degrees, elbow-up is outside the shoulder range while elbow-down is feasible). The grid's worst feasible branch has only 0.751 degrees minimum joint-limit margin at r=0.12 m, angle -120 degrees, elbow-up. Thus the measurement supports branch-aware geometry as a consequential risk, but does not prove any official target is unreachable and explicitly is not a continuous reachability proof. Interpretation remains provisional: the physical model's competing explanations\u2014branch/limit-conditioned acquisition versus transient overshoot/hold instability\u2014both remain live, with dynamics authority now measured rather than assumed.",
+    "handoff_conclusion": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
     "handoff_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -474,27 +474,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T13:18:59Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidate exists. Working and best-known roles remain empty; official assessment is not justified because no frozen candidate has development evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed candidate-independent measurement (M1), one opened inquiry (E2), zero training steps, zero candidate evaluations, and zero model-role assignments.",
+        "current_goal_gap": "No learned candidate exists, so the campaign has no development success rate and no candidate-level failure mechanism. The gap to the 98% objective remains unquantified; M1 cannot substitute for policy evaluation.",
+        "current_synthesis": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
+        "decision_frontier": "The active distinction is whether the first learned candidate fails mainly before or during acquisition in geometry/branch and low-limit-margin regions, or after entering tolerance through late arrival, high velocity, repeated boundary crossings, or interrupted hold. A development aggregate alone cannot distinguish these. The decisive evidence is a frozen candidate evaluated on the official target distribution with per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces; substep traces become necessary if control-boundary diagnostics do not explain hold exits. Concentration in low-margin or inward/angle bins would support branch-aware exposure/control; broad entry followed by exits or high arrival velocity would support stabilization; mixed or uninformative diagnostics would preserve the distinction as unresolved rather than justify a causal claim.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% complete uninterrupted hold success on the official 6\u201320 cm, full-angle target distribution. The inquiry will first obtain candidate-level evidence without changing the protected robot, timing, target distribution, or success semantics, then use mechanism diagnostics to select the intervention most likely to improve whole-episode success.",
+        "next_direction_or_closure": "Checkpoint the goal review and continue inquiry I1 in a fresh session. First produce a learned candidate under a bounded, recorded recipe, then evaluate the candidate on a non-protected development panel drawn from the official target distribution with the mechanism diagnostics named in the decision frontier. Compare the resulting evidence to M1 without treating training proxies or the terminal checkpoint as performance evidence; select the first intervention only after the candidate-level failure mode is classified or explicitly found inconclusive.",
+        "next_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b5dab9852814335075299978cb0e50f37b1ce46c",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidate exists. Working and best-known roles remain empty; official assessment is not justified because no frozen candidate has development evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed candidate-independent measurement (M1), one opened inquiry (E2), zero training steps, zero candidate evaluations, and zero model-role assignments.",
+        "current_goal_gap": "No learned candidate exists, so the campaign has no development success rate and no candidate-level failure mechanism. The gap to the 98% objective remains unquantified; M1 cannot substitute for policy evaluation.",
+        "current_synthesis": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
+        "decision_frontier": "The active distinction is whether the first learned candidate fails mainly before or during acquisition in geometry/branch and low-limit-margin regions, or after entering tolerance through late arrival, high velocity, repeated boundary crossings, or interrupted hold. A development aggregate alone cannot distinguish these. The decisive evidence is a frozen candidate evaluated on the official target distribution with per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces; substep traces become necessary if control-boundary diagnostics do not explain hold exits. Concentration in low-margin or inward/angle bins would support branch-aware exposure/control; broad entry followed by exits or high arrival velocity would support stabilization; mixed or uninformative diagnostics would preserve the distinction as unresolved rather than justify a causal claim.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% complete uninterrupted hold success on the official 6\u201320 cm, full-angle target distribution. The inquiry will first obtain candidate-level evidence without changing the protected robot, timing, target distribution, or success semantics, then use mechanism diagnostics to select the intervention most likely to improve whole-episode success.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint the goal review and continue inquiry I1 in a fresh session. First produce a learned candidate under a bounded, recorded recipe, then evaluate the candidate on a non-protected development panel drawn from the official target distribution with the mechanism diagnostics named in the decision frontier. Compare the resulting evidence to M1 without treating training proxies or the terminal checkpoint as performance evidence; select the first intervention only after the candidate-level failure mode is classified or explicitly found inconclusive.",
+        "next_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "ac509d83-9751-40b2-9695-09d9ad086ebd",
+        "campaign_id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
+        "campaign_usage": "13m09s | 15.67 AIU | prompt 2m (87% cached) | output 74.4k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "dfbd28043317fe51a8f66669b4a4c744e03d23fb",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidate exists. Working and best-known roles remain empty; official assessment is not justified because no frozen candidate has development evidence.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed candidate-independent measurement (M1), one opened inquiry (E2), zero training steps, zero candidate evaluations, and zero model-role assignments.",
+        "current_goal_gap": "No learned candidate exists, so the campaign has no development success rate and no candidate-level failure mechanism. The gap to the 98% objective remains unquantified; M1 cannot substitute for policy evaluation.",
+        "current_synthesis": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
+        "decision_frontier": "The active distinction is whether the first learned candidate fails mainly before or during acquisition in geometry/branch and low-limit-margin regions, or after entering tolerance through late arrival, high velocity, repeated boundary crossings, or interrupted hold. A development aggregate alone cannot distinguish these. The decisive evidence is a frozen candidate evaluated on the official target distribution with per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces; substep traces become necessary if control-boundary diagnostics do not explain hold exits. Concentration in low-margin or inward/angle bins would support branch-aware exposure/control; broad entry followed by exits or high arrival velocity would support stabilization; mixed or uninformative diagnostics would preserve the distinction as unresolved rather than justify a causal claim.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% complete uninterrupted hold success on the official 6\u201320 cm, full-angle target distribution. The inquiry will first obtain candidate-level evidence without changing the protected robot, timing, target distribution, or success semantics, then use mechanism diagnostics to select the intervention most likely to improve whole-episode success.",
+        "next_direction_or_closure": "Checkpoint the goal review and continue inquiry I1 in a fresh session. First produce a learned candidate under a bounded, recorded recipe, then evaluate the candidate on a non-protected development panel drawn from the official target distribution with the mechanism diagnostics named in the decision frontier. Compare the resulting evidence to M1 without treating training proxies or the terminal checkpoint as performance evidence; select the first intervention only after the candidate-level failure mode is classified or explicitly found inconclusive.",
+        "next_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?"
+      }
+    },
+    "request_fingerprint": "5bbada493397411878c5ebda0221a41e9e8591137b8281815f0b5fca8473a066",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidates exist. Working and best-known roles remain empty; no candidate comparison or official assessment is justified.",
+    "candidates_and_roles": "No learned candidate exists. Working and best-known roles remain empty; official assessment is not justified because no frozen candidate has development evidence.",
     "completed_operations": [
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One completed candidate-independent measurement (M1); zero training steps, zero inquiries, zero candidate evaluations, and no model-role assignments.",
-    "current_goal_gap": "There is no learned candidate or development success evidence yet, so the gap to 98% episode success is unquantified. We do not yet know whether the dominant practical failure mode is target-geometry/branch selection, late arrival, or post-entry hold interruption.",
-    "current_synthesis": "Observed in completed operation M1: the Runner executed the candidate-independent loaded-physics probe and produced a verified artifact. The loaded model has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Compiled body masses and inertia are generated rather than specified in the XML; representative mass matrices vary with configuration, including shoulder diagonal values 0.01210, 0.01147 and 0.01093 kg*m^2 and shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep constant saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds from 0.61 to 1.64 m/s across the three configurations, whereas zero commands remained stationary. These observations establish that the loaded plant has meaningful, configuration-dependent transient authority and that momentum can be large over one official 20 ms interval; they do not establish policy failure, hold instability under feedback, or an unavoidable actuator limit because no policy episode was measured. The finite 15-by-25 radius-angle grid over both IK branches contained 708 feasible and 42 infeasible branch configurations. The infeasible records are branch-specific and symmetric across angle/branch; inspected examples show the alternate branch can be feasible for the same target (at r=0.06 m, angle -120 degrees, elbow-up is outside the shoulder range while elbow-down is feasible). The grid's worst feasible branch has only 0.751 degrees minimum joint-limit margin at r=0.12 m, angle -120 degrees, elbow-up. Thus the measurement supports branch-aware geometry as a consequential risk, but does not prove any official target is unreachable and explicitly is not a continuous reachability proof. Interpretation remains provisional: the physical model's competing explanations\u2014branch/limit-conditioned acquisition versus transient overshoot/hold instability\u2014both remain live, with dynamics authority now measured rather than assumed.",
-    "decision_frontier": "The unresolved decision is which mechanism should determine the first learning direction: (A) branch/limit-conditioned target coverage and configuration acquisition, or (B) visible-state velocity-aware braking and stabilization for the 100-sample uninterrupted hold. M1 shows both can matter but is candidate-independent and short-horizon. Discriminating evidence is a complete candidate evaluation on the official target distribution with per-episode first-entry time, minimum/final distance, maximum held steps, hold interruptions, terminal reason, target radius/angle, inferred branch residuals and joint-limit margin, plus control saturation and velocity traces; substep traces should be added if boundary-level success/failure is not explained. A concentration of failures in low-margin angles/radii would redirect toward branch-aware exposure/control; broad failures with entry followed by exits or high arrival velocity would redirect toward stabilization. The finite grid's 42 branch violations must not be promoted to task infeasibility without target-level aggregation or observed episode failures.",
+    "cumulative_resource_use": "One completed candidate-independent measurement (M1), one opened inquiry (E2), zero training steps, zero candidate evaluations, and zero model-role assignments.",
+    "current_goal_gap": "No learned candidate exists, so the campaign has no development success rate and no candidate-level failure mechanism. The gap to the 98% objective remains unquantified; M1 cannot substitute for policy evaluation.",
+    "current_synthesis": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
+    "decision_frontier": "The active distinction is whether the first learned candidate fails mainly before or during acquisition in geometry/branch and low-limit-margin regions, or after entering tolerance through late arrival, high velocity, repeated boundary crossings, or interrupted hold. A development aggregate alone cannot distinguish these. The decisive evidence is a frozen candidate evaluated on the official target distribution with per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces; substep traces become necessary if control-boundary diagnostics do not explain hold exits. Concentration in low-margin or inward/angle bins would support branch-aware exposure/control; broad entry followed by exits or high arrival velocity would support stabilization; mixed or uninformative diagnostics would preserve the distinction as unresolved rather than justify a causal claim.",
     "evidence_references": [
       "M1"
     ],
-    "human_goal_connection": "Advance toward a learned policy with at least 98% complete uninterrupted hold success on the official 6\u201320 cm, full-angle distribution. The startup measurement establishes physical and geometric facts needed to choose the first policy investigation without altering the protected robot, timing, target distribution, or success semantics.",
+    "human_goal_connection": "Advance toward a learned policy with at least 98% complete uninterrupted hold success on the official 6\u201320 cm, full-angle target distribution. The inquiry will first obtain candidate-level evidence without changing the protected robot, timing, target distribution, or success semantics, then use mechanism diagnostics to select the intervention most likely to improve whole-episode success.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Enter goal review with M1 as the physical prior. The next scientific action should obtain a complete candidate artifact and measure it on the official development distribution with geometry- and hold-specific diagnostics, rather than infer a learning direction from compiled dynamics or aggregate reward. Treat M1's strong but configuration-dependent saturated response as evidence against assuming a simple authority ceiling, while preserving branch margin and transient momentum as competing explanations.",
-    "next_question": "Which mechanism dominates the first learned candidate's official-task failures\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and what intervention should be tested first to move toward 98% complete uninterrupted holds?",
-    "scientific_commit": "cf9edc794a8e5dbf8388b075a29c8d0f7f014d8d",
-    "session_id": "S1"
+    "next_direction_or_closure": "Checkpoint the goal review and continue inquiry I1 in a fresh session. First produce a learned candidate under a bounded, recorded recipe, then evaluate the candidate on a non-protected development panel drawn from the official target distribution with the mechanism diagnostics named in the decision frontier. Compare the resulting evidence to M1 without treating training proxies or the terminal checkpoint as performance evidence; select the first intervention only after the candidate-level failure mode is classified or explicitly found inconclusive.",
+    "next_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+    "scientific_commit": "dfbd28043317fe51a8f66669b4a4c744e03d23fb",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -502,21 +620,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ac509d83-9751-40b2-9695-09d9ad086ebd",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "b5dab9852814335075299978cb0e50f37b1ce46c"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
