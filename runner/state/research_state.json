@@ -145,7 +145,7 @@
       "training_steps": 110592
     },
     "T1:checkpoint-115712": {
-      "artifact": "campaigns/checkpoints/candidates/d6c57175-6804-4898-8c11-e012dda4930a/t1/checkpoint-115712",
+      "artifact": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
       "evaluation_artifacts": [
         "campaigns/evaluations/d6c57175-6804-4898-8c11-e012dda4930a/evaluation-d6c57175-6804-4898-8c11-e012dda4930a-m1-T1-checkpoint-115712-160ep-seed4200-604d52985c97.json"
       ],
@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -837,11 +837,11 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
     "best_known": null,
     "retained": {},
-    "working": null
+    "working": "T1:checkpoint-115712"
   },
   "official_assessment": null,
   "operation_events": [
@@ -1190,9 +1190,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T20:26:53Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_working",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the first complete learned artifact measured under the official-like distribution. It is the current working reference for diagnosing the 34.375 percentage-point gap; its diagnostics show 49/160 never reached tolerance and only 6/160 reached without completing the hold."
+      },
+      "result": {
+        "action": "set_working",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_working",
+        "candidate_id": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the first complete learned artifact measured under the official-like distribution. It is the current working reference for diagnosing the 34.375 percentage-point gap; its diagnostics show 49/160 never reached tolerance and only 6/160 reached without completing the hold."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
+        "fingerprint": "6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
+        "source": "campaigns/checkpoints/candidates/d6c57175-6804-4898-8c11-e012dda4930a/t1/checkpoint-115712"
+      },
+      "result": {
+        "action": "set_working",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_working",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "This is the first complete learned artifact measured under the official-like distribution. It is the current working reference for diagnosing the 34.375 percentage-point gap; its diagnostics show 49/160 never reached tolerance and only 6/160 reached without completing the hold."
+      }
+    },
+    "request_fingerprint": "13a5887d9e8b48bca397d5e67e3079055bb647be67c09255d7ed08b32fa24765",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1213,7 +1287,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E1"
     ],
     "scientific_parent_commit": "be48b47dbd3a3a013dd60a24a5baf0bd0fa38585"
   },
