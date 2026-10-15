@@ -3197,38 +3197,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a negative exposure result and a structured redirect. The step-matched full-radius candidate T2:checkpoint-115712 did not materially improve the dominant failure problem: on the matched 160-seed panel it achieved 73/160 (45.625%) versus T1:checkpoint-115712 at 105/160 (65.625%), a paired delta of -20.0 percentage points with 59 reference-success-to-candidate-failure transitions and 86 discordant episodes. M3 shows the residual is consequentially structured rather than a uniform inner-radius deficit: T2 improved [6,10) cm to 40.0% versus T1 22.5%, but scored 43.4% in [10,14), 53.8% in [14,18), and 46.4% in [18,20] versus T1 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees. T2 had 80 reaches and 80 no-reach failures, with 7 reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and 6 reached-but-not-success failures. The candidate also had 104 hold interruptions versus T1's 272, so the principal observed degradation is reach/path selection, with a consequential but smaller hold residual. The result establishes only the tested fresh PPO seed, checkpoint, runtime, and exposure implementation; it does not prove a universal causal effect of radius exposure or identify the exact branch/dynamics mechanism.",
-        "reason": "The closure condition is met: a same-runtime full-official-radius candidate was compared with T1 on matched seeds with radius- and angle-stratified reach and hold diagnostics. Broader exposure did not improve overall success or remove the dominant no-reach failures, and M3 identifies strong angle- and radius-structured residuals requiring the next investigation to focus on branch/path selection and stabilization-control behavior. The exact mechanism remains unresolved because M2/M3 contain no joint-branch, action, or substep trajectories; those unknowns are carried into the next goal review rather than treated as settled."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a negative exposure result and a structured redirect. The step-matched full-radius candidate T2:checkpoint-115712 did not materially improve the dominant failure problem: on the matched 160-seed panel it achieved 73/160 (45.625%) versus T1:checkpoint-115712 at 105/160 (65.625%), a paired delta of -20.0 percentage points with 59 reference-success-to-candidate-failure transitions and 86 discordant episodes. M3 shows the residual is consequentially structured rather than a uniform inner-radius deficit: T2 improved [6,10) cm to 40.0% versus T1 22.5%, but scored 43.4% in [10,14), 53.8% in [14,18), and 46.4% in [18,20] versus T1 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees. T2 had 80 reaches and 80 no-reach failures, with 7 reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and 6 reached-but-not-success failures. The candidate also had 104 hold interruptions versus T1's 272, so the principal observed degradation is reach/path selection, with a consequential but smaller hold residual. The result establishes only the tested fresh PPO seed, checkpoint, runtime, and exposure implementation; it does not prove a universal causal effect of radius exposure or identify the exact branch/dynamics mechanism.",
-        "reason": "The closure condition is met: a same-runtime full-official-radius candidate was compared with T1 on matched seeds with radius- and angle-stratified reach and hold diagnostics. Broader exposure did not improve overall success or remove the dominant no-reach failures, and M3 identifies strong angle- and radius-structured residuals requiring the next investigation to focus on branch/path selection and stabilization-control behavior. The exact mechanism remains unresolved because M2/M3 contain no joint-branch, action, or substep trajectories; those unknowns are carried into the next goal review rather than treated as settled.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved with a negative exposure result and a structured redirect. The step-matched full-radius candidate T2:checkpoint-115712 did not materially improve the dominant failure problem: on the matched 160-seed panel it achieved 73/160 (45.625%) versus T1:checkpoint-115712 at 105/160 (65.625%), a paired delta of -20.0 percentage points with 59 reference-success-to-candidate-failure transitions and 86 discordant episodes. M3 shows the residual is consequentially structured rather than a uniform inner-radius deficit: T2 improved [6,10) cm to 40.0% versus T1 22.5%, but scored 43.4% in [10,14), 53.8% in [14,18), and 46.4% in [18,20] versus T1 62.3%, 94.9%, and 92.9%; by angle T2 scored 100% in [-90,0) degrees and 0% in [90,180] degrees. T2 had 80 reaches and 80 no-reach failures, with 7 reached-but-not-success failures; T1 had 111 reaches, 49 no-reach failures, and 6 reached-but-not-success failures. The candidate also had 104 hold interruptions versus T1's 272, so the principal observed degradation is reach/path selection, with a consequential but smaller hold residual. The result establishes only the tested fresh PPO seed, checkpoint, runtime, and exposure implementation; it does not prove a universal causal effect of radius exposure or identify the exact branch/dynamics mechanism.",
-        "reason": "The closure condition is met: a same-runtime full-official-radius candidate was compared with T1 on matched seeds with radius- and angle-stratified reach and hold diagnostics. Broader exposure did not improve overall success or remove the dominant no-reach failures, and M3 identifies strong angle- and radius-structured residuals requiring the next investigation to focus on branch/path selection and stabilization-control behavior. The exact mechanism remains unresolved because M2/M3 contain no joint-branch, action, or substep trajectories; those unknowns are carried into the next goal review rather than treated as settled."
-      }
-    },
-    "request_fingerprint": "0d2ab1eb3881a7c4e61eff83b66cbdd86c591e1e7514545f144b2cc124de5610",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712. Best-known: T1:checkpoint-115712, explicitly assigned in E3 because it is the only complete candidate with an official-like development measurement; this role does not imply proximity to 98%. Retained: none.",
     "completed_operations": [
