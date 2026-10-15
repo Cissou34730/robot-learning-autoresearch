@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -110,63 +109,20 @@ class CodingReport(BaseModel):
     unchecked_scope: list[str] = Field(min_length=1)
 
 
-class ReviewFinding(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    finding_id: str = Field(min_length=1)
-    category: Literal["confirmed_defect", "verification_gap", "unresolved_question"]
-    location: str = Field(min_length=1)
-    issue: str = Field(min_length=1)
-    requirement: str = Field(min_length=1)
-    expected_behavior: str = Field(min_length=1)
-    actual_behavior: str = Field(min_length=1)
-    evidence: str = Field(min_length=1)
-    consequence: str = Field(min_length=1)
-    confidence: str = Field(min_length=1)
-    check_coverage: str = Field(min_length=1)
-
-
-class ReviewChange(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    finding_id: str = Field(min_length=1)
-    instruction: str = Field(min_length=1)
-    paths: list[str] = Field(min_length=1)
-
-
 class ReviewReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    summary: str = Field(min_length=1)
-    decision: Literal["request_changes", "ready_for_pi", "needs_pi"]
-    decision_reason: str = Field(min_length=1)
-    findings: list[ReviewFinding]
-    requested_changes: list[ReviewChange]
-    unchecked_scope: list[str] = Field(min_length=1)
+    validation: bool = Field(strict=True)
+    what_is_wrong: str
+    why: str
+    where: str
 
     @model_validator(mode="after")
-    def require_complete_batch(self) -> ReviewReport:
-        identifiers = [finding.finding_id for finding in self.findings]
-        if len(identifiers) != len(set(identifiers)):
-            raise ValueError("Review finding IDs must be unique.")
-        requested = [change.finding_id for change in self.requested_changes]
-        if len(requested) != len(set(requested)):
-            raise ValueError("Repair requests must have unique finding IDs.")
-        defects = {
-            finding.finding_id
-            for finding in self.findings
-            if finding.category == "confirmed_defect"
-        }
-        if self.decision == "request_changes":
-            if not defects or set(requested) != defects:
-                raise ValueError(
-                    "A repair batch must cover all confirmed defects, "
-                    "and must not include gaps or unresolved questions."
-                )
-        elif requested:
-            raise ValueError("Only request_changes may contain repair requests.")
-        if self.decision == "ready_for_pi" and defects:
-            raise ValueError("Confirmed defects require repairs or a needs_pi handoff.")
+    def require_failed_review_details(self) -> ReviewReport:
+        if not self.validation and not all(
+            value.strip() for value in (self.what_is_wrong, self.why, self.where)
+        ):
+            raise ValueError("A failed review must state what is wrong, why and where.")
         return self
 
 

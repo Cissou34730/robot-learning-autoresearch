@@ -465,9 +465,9 @@ class ScientificCoding:
                 "scenario, authority and operation-contract text to both authors "
                 "and reviewers, without expanding their file permissions.\n\n"
                 "An independent reviewer examines the initial delivery. "
-                "It requests batched engineering repairs from the same coder, "
-                "then checks the repair and affected regressions. "
-                "You receive the final source, classified findings, repair history "
+                "A failed review goes unchanged to the same coder. "
+                "The same reviewer checks the correction. "
+                "You receive the final source, review, repair history "
                 "or a needs_pi reason. No verification module or executable check "
                 "proposal is required. Scientific choices and operation requests "
                 "remain yours. Only Runner executes scientific operations.\n\n"
@@ -1036,7 +1036,6 @@ class ScientificCoding:
             }
             coding_handle = params.session_handle
             step_before = before
-            attempted_findings: set[str] = set()
             while True:
                 report = await self.run_child(
                     agent="scientific-coder",
@@ -1086,22 +1085,14 @@ class ScientificCoding:
                     previous = self.review_reports.get(coder_handle)
                     review_request.update(
                         {
-                            "correction_intent": request["intent"],
-                            "correction_context": request["source_context"],
-                            "correction_origin": "reviewer"
-                            if pending_repair is not None
-                            else "pi",
-                            "requested_changes": (
-                                pending_repair["requested_changes"]
-                                if pending_repair is not None
-                                else []
-                            ),
                             "previous_review": previous.model_dump()
                             if previous is not None
                             else None,
-                            "task_context": context,
                         }
                     )
+                    if pending_repair is None:
+                        review_request["correction_intent"] = request["intent"]
+                        review_request["correction_context"] = request["source_context"]
                 try:
                     review_report = await self.run_child(
                         agent="scientific-reviewer",
@@ -1121,8 +1112,7 @@ class ScientificCoding:
                 if isinstance(review_report, ReviewReport):
                     self.review_reports[coder_handle] = review_report
                     if pending_repair is not None:
-                        pending_repair["review_decision"] = review_report.decision
-                        pending_repair["review_reason"] = review_report.decision_reason
+                        pending_repair["follow_up_review"] = review_report.model_dump()
                 if (
                     not isinstance(review_report, ReviewReport)
                     or review["status"] != "completed"
@@ -1132,68 +1122,29 @@ class ScientificCoding:
                         error=f"Independent review did not complete: {review.get('error', review['status'])}",
                     )
                     break
-                if review_report.decision == "ready_for_pi":
-                    break
-                if review_report.decision == "needs_pi":
-                    result.update(
-                        status="needs_pi", reason=review_report.decision_reason
-                    )
+                if review_report.validation:
                     break
 
-                requested_ids = {
-                    change.finding_id for change in review_report.requested_changes
-                }
-                repeated = requested_ids & attempted_findings
-                if repeated:
-                    result.update(
-                        status="needs_pi",
-                        reason=f"Automatic repair request repeated finding IDs: {sorted(repeated)}.",
-                    )
-                    break
                 if pending_repair is not None and not result["changes"]:
                     result.update(
                         status="needs_pi",
-                        reason="The coder changed no source and the reviewer still requests repairs.",
+                        reason="The coder changed no source and review validation still failed.",
                     )
                     break
-                for change in review_report.requested_changes:
-                    selected = coding_file_scope(change.paths, writable=True)
-                    outside = selected - paths
-                    if outside:
-                        raise ValueError(
-                            f"Reviewer repair requests files outside the coding scope: {sorted(outside)}."
-                        )
-                attempted_findings.update(requested_ids)
                 pending_repair = {
-                    "requested_changes": [
-                        change.model_dump()
-                        for change in review_report.requested_changes
-                    ],
-                    "confirmed_findings": [
-                        finding.model_dump()
-                        for finding in review_report.findings
-                        if finding.category == "confirmed_defect"
-                    ],
-                    "decision_reason": review_report.decision_reason,
+                    "review": review_report.model_dump(),
                     "coder_status": "pending",
                     "review_status": "pending",
                 }
                 result["repair_history"].append(pending_repair)
                 request = {
                     "intent": (
-                        "Resolve the complete engineering repair batch in source_context. "
-                        "Preserve the original PI intent and behavior outside that batch. "
-                        "Report any conflict with the contracts or installed APIs."
+                        "Correct the problems described by the reviewer in source_context. "
+                        "Preserve the PI's requested output and authorized file scope. "
+                        "Report unclear requirements instead of guessing."
                     ),
-                    **binding,
-                    "task_context": context,
                     "source_context": json.dumps(
-                        {
-                            "requested_changes": pending_repair["requested_changes"],
-                            "confirmed_findings": pending_repair["confirmed_findings"],
-                            "decision_reason": review_report.decision_reason,
-                        },
-                        ensure_ascii=False,
+                        review_report.model_dump(), ensure_ascii=False
                     ),
                 }
                 coding_handle = coder_handle

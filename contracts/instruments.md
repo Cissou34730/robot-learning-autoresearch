@@ -148,22 +148,27 @@ intent and context, incremental changes and previous completed
 review, without repeating the original request. The result identifies the review
 `mode` as `initial` or `correction` and its `coding_session_handle`.
 
-The reviewer returns a `decision`: `request_changes`, `ready_for_pi` or
-`needs_pi`, with a `decision_reason` string.
-For `request_changes`, `requested_changes` contains one complete batch.
-Each entry contains `finding_id` and `instruction` strings, plus `paths` as
-a list of exact writable file strings.
-The batch must reference every confirmed defect in that report.
-Duplicate finding IDs, missing defects and requests for non-defect findings
-reject the handoff. Requested paths must remain inside the original write scope.
+The reviewer returns exactly four fields:
 
-The native coding handler sends the batch to the same coder.
-It then sends the incremental repair to the same reviewer.
+```json
+{
+  "validation": {"type": "boolean"},
+  "what_is_wrong": {"type": "string"},
+  "why": {"type": "string"},
+  "where": {"type": "string"}
+}
+```
+
+The three explanation fields contain plain text, not nested finding records.
+When `validation` is false, all three must explain the failed review.
+The native coding handler sends that four-field report unchanged to the same coder.
+It then sends the incremental repair and one previous review to the same reviewer.
+Unchanged contracts and duplicate repair instructions are not resent for automatic corrections.
 The handler does not return to the main PI between these engineering steps.
-`ready_for_pi` returns a completed package. `needs_pi` returns that status and
-the reviewer's reason and current source changes.
-A repeated automatic repair ID or a repair with no source changes stops automatic
-dispatch and returns `needs_pi` with an explicit reason.
+When `validation` is true, the handler returns the completed package.
+A repair with no source changes and another failed review returns `needs_pi`.
+The result includes an explicit reason and current source changes.
+The whole PI session deadline still includes all coding and review.
 
 A missing or non-idle stored reviewer rejects correction dispatch.
 The handler does not create a replacement reviewer for that assignment.
@@ -177,24 +182,16 @@ review explicitly rather than treating it as a completed review.
 The result returns the child handle, actual per-invocation changed-file manifest
 and diff, coder summary and unchecked scope.
 The manifest and diff include all repairs within that invocation.
-`repair_history` records each dispatched batch, its confirmed findings,
-decision reason, coder status and follow-up review status.
-Completed repairs also record the coder's summary and the reviewer's next decision
-and reason.
+`repair_history` records each forwarded review, coder status and follow-up review status.
+Completed repairs also record the coder's summary and the next four-field review.
 The handoff requires no verification module, argument template or execution proposal.
 It performs no argument substitution and executes no code.
 Measurement or analysis code is authored only when the PI explicitly requests it.
 Large review output is offloaded with a file pointer. Errors and
 timeouts return partial changes when available; cancellation preserves review output.
-The `review` entry contains its status, reviewer handle, summary, findings,
-unchecked scope, actual reported models/reasoning and per-invocation usage.
-Each finding contains a `category` string with one of these values:
-`confirmed_defect`, `verification_gap` or `unresolved_question`.
-It also contains `finding_id`, `location`, `issue`, `requirement`, `expected_behavior`,
-`actual_behavior`, `evidence`, `consequence`, `confidence` and `check_coverage`
-strings. No findings means no confirmed defect found, not approval.
-Only an explicit, valid `request_changes` decision routes an engineering batch.
-Verification gaps and questions do not enter that batch.
+The `review` entry contains the four-field report and harness metadata:
+status, reviewer handle, actual models/reasoning and per-invocation usage.
+File permissions remain enforced by the existing binding, not by parsing `where`.
 Scientific decisions remain with the PI. Review is not a scientific gate.
 The main PI reviews actual changed source and reported limitations before scientific reliance.
 Scientific measurements remain separate PI-authorized operations executed by Runner.

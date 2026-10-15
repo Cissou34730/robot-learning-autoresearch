@@ -15,14 +15,14 @@ State the expected output precisely in the coding request. The coder chooses
 how to implement it. Missing output requirements return to the PI, not to guesswork.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
-Inspect independent review findings with the changed source and reported limitations.
+Inspect the independent review with the changed source and reported limitations.
 The reviewer can request engineering repairs within the original PI intent.
-The coder addresses the complete batch before the same reviewer checks it.
+The coder corrects the reported problems before the same reviewer checks the repair.
 
 The PI receives the final package or a clear reason for a blocked handoff.
 The PI decides unclear requirements, changes of scientific intent and unresolved repairs.
 An independent review does not certify science.
-Distinguish demonstrated defects from verification gaps and unresolved questions.
+Distinguish concrete code errors from untested behavior and unclear requirements.
 A missing assertion does not prove that the production code returns wrong data.
 Do not treat every possible checker improvement as a prerequisite for execution.
 

@@ -76,13 +76,12 @@ Each new coding assignment receives an independent native GPT-6 Luna review at
 high reasoning. The reviewer receives the original request, supplied contract
 context and actual changes. Corrections reuse that reviewer to check the repair and affected
 regressions, not restart the original investigation. Its reads remain exactly
-scoped, with no write or execution authority. Findings distinguish demonstrated
-defects, verification gaps and unresolved questions.
+scoped, with no write or execution authority. The reviewer returns four fields:
+`validation`, `what_is_wrong`, `why` and `where`.
 The review checks concrete implementation errors, not formal correctness or optional hardening.
 
-The reviewer can request a
-complete engineering repair batch within the original PI intent and file scope.
-The native coding handoff sends that batch to the same coder and returns the
+When validation fails, the native coding handoff sends the review unchanged
+to the same coder within the original PI intent and file scope. It returns the
 repair to the same reviewer. The PI receives the final package or a blocked
 requirement. Scientific choices, unclear requirements and unresolved repairs
 remain with the PI. The reviewer does not approve scientific logic.
