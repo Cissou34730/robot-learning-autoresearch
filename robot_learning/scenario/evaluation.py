@@ -67,6 +67,8 @@ def evaluate_research_model(
         ik_branch_residual_norms_trace: list[dict[str, float]] = []
         selected_ik_branch_trace: list[str] = []
         joint_limit_margin_trace: list[float] = []
+        substep_envelope_trace: list[dict[str, float]] = []
+        substep_distance_exceedance_with_boundary_in_tolerance_count = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -74,6 +76,30 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            substep_distances_m = [
+                float(value) for value in info["substep_distance_m"]
+            ]
+            substep_endpoint_linear_speeds_m_per_s = [
+                float(value)
+                for value in info["substep_endpoint_linear_speed_m_per_s"]
+            ]
+            substep_envelope_trace.append(
+                {
+                    "max_substep_distance_cm": 100.0 * max(substep_distances_m),
+                    "min_substep_distance_cm": 100.0 * min(substep_distances_m),
+                    "max_substep_endpoint_linear_speed_m_per_s": max(
+                        substep_endpoint_linear_speeds_m_per_s
+                    ),
+                }
+            )
+            boundary_in_tolerance = (
+                float(info["distance"]) <= env.success_threshold
+            )
+            if (
+                boundary_in_tolerance
+                and max(substep_distances_m) > env.success_threshold
+            ):
+                substep_distance_exceedance_with_boundary_in_tolerance_count += 1
             min_distance_cm = (
                 distance_cm
                 if min_distance_cm is None
@@ -150,6 +176,12 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                # Per-control-step envelopes of the internal physics samples;
+                # these are measurement diagnostics, not inferred failure causes.
+                "substep_envelope_trace": substep_envelope_trace,
+                "substep_distance_exceedance_with_boundary_in_tolerance_count": (
+                    substep_distance_exceedance_with_boundary_in_tolerance_count
+                ),
                 "terminal_reason": terminal_reason,
                 "minimum_joint_limit_margin_rad": min(joint_limit_margin_trace),
                 "actual_action_trace": actual_action_trace,
@@ -175,7 +207,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 7,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,

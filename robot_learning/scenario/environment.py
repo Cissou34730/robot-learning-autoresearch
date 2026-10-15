@@ -234,8 +234,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        substep_distance_m: list[float] = []
+        substep_endpoint_linear_speed_m_per_s: list[float] = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            substep_distance_m.append(self._distance_to_target())
+            substep_endpoint_linear_speed_m_per_s.append(
+                float(np.linalg.norm(self._end_effector_linear_velocity()))
+            )
 
         distance = self._distance_to_target()
 
@@ -268,6 +274,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            # Measurement-only diagnostics sampled after each physics substep;
+            # these do not participate in policy observations or task semantics.
+            "substep_distance_m": substep_distance_m,
+            "substep_endpoint_linear_speed_m_per_s": (
+                substep_endpoint_linear_speed_m_per_s
+            ),
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,
