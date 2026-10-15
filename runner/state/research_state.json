@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a fresh full-band training run under the stated fixed recipe has produced a complete frozen candidate and that candidate has been evaluated on an official-distribution development panel with the existing mechanism diagnostics. A positive conclusion requires higher complete episode success with improvement concentrated in the previously unrepresented inward band and fewer no-entry failures; a negative conclusion requires no material improvement or persistent failures across healthy-margin targets; mixed or unavailable diagnostics support only an inconclusive conclusion. In every case, preserve the comparison at artifact level and carry unresolved branch/limit-conditioned acquisition and minority post-entry instability into the next decision.",
-    "goal_connection": "Advance toward a learned policy achieving at least 98% complete uninterrupted holds over the official 6\u201320 cm full-angle distribution by testing the most direct coverage gap implicated by the current candidate's 49 of 55 no-entry failures.",
-    "handoff_conclusion": "M1 established candidate-independent physical priors: the loaded arm has configuration-dependent compiled inertia and transient authority, one 20 ms interval can carry substantial momentum, and finite-grid IK feasibility and joint-limit margins vary by branch; it did not establish an actuator ceiling or policy failure. T1 trained the unchanged PPO recipe (tanh 64x64, current reward, 11-value runtime, 14\u201320 cm exposure) for 120,000 requested steps and completed 120,832; its late proxy success near 0.96 only nominates a checkpoint within that restricted exposure and is not development performance. M2 evaluated the frozen pre-terminal plateau checkpoint T1:checkpoint-115712 on 160 official-distribution development episodes and measured 105 successes (65.625%). All 55 failures truncated at the horizon; 49 had maximum held steps zero and never entered tolerance, while 6 entered at steps 14\u201325 and later interrupted with nonzero measured velocities. The no-entry failures skewed inward, supporting missing inward exposure as a credible hypothesis, but M2 also found failures at larger radii and varied joint-limit margins, so it does not establish exposure as the cause or separate exposure from branch/limit-conditioned acquisition. The inherited statement that exposure/branch-conditioned acquisition dominates should therefore be narrowed: M2 establishes a recipe-specific no-entry failure predominance, not a causal exposure conclusion. The minority post-entry interruptions keep transient stabilization consequential, but they are not the first bottleneck for this tested artifact. E7 opens I2 to test the complete full-band candidate with fixed reward, observation/runtime, robot, timing, and success semantics; any causal claim will remain limited to the compared artifacts and recorded implementation.",
-    "handoff_question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal?",
-    "rationale": "The best-known frozen baseline T1:checkpoint-115712 scored 105/160 (65.625%) on M2, far below the 196/200 goal equivalent, so requesting terminal official assessment now would likely spend the campaign on a candidate with weak measured prospects and end it without testing the most consequential identified gap. M2 recorded 49 of 55 failures with zero held steps and no tolerance entry, and those failures skewed inward, while only 6 failures entered and later interrupted; this makes broader target exposure a high-value, goal-linked candidate comparison. However, the evidence does not establish exposure as the cause: failures also occurred at larger radii and across varying joint-limit margins, and the diagnostic panel did not isolate branch-conditioned acquisition from missing exposure. The inquiry therefore tests the complete full-band artifact while keeping the protected robot, timing, reward, observation/runtime, and success semantics fixed, and requires radial/angle and branch/limit diagnostics to prevent an aggregate improvement from being misreported as a causal exposure result. The expected cost is one bounded training allocation and one development evaluation; its result can either justify retaining the full-band direction or redirect effort toward branch-aware acquisition or post-entry stabilization before any official assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7ba3ec35c8ded41eb317d93922ce6c82ebcad545",
     "id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
@@ -1657,7 +1646,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -3128,9 +3117,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T13:49:02Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Positive limited conclusion for I2: the fresh full-band candidate T2:checkpoint-120832 materially outperformed the baseline artifact T1:checkpoint-115712 on the same 160-episode official-distribution development panel, 150/160 (93.75%) versus 105/160 (65.625%). No-entry failures fell from 49 to 7. The reduction was concentrated in the previously unrepresented inward band: T1 had 51 of 55 failures below 14 cm, whereas T2 had only 3 of 10 failures below 14 cm; T2 residual failures were predominantly at outer radii. This supports retaining full-band exposure as a material contributor for this tested PPO implementation, but it does not establish exposure as the sole cause or meet the 98% human goal.",
+        "reason": "The closure condition is met: T2 is a fresh full-band training run under the fixed tested PPO reward, observation/runtime, robot, timing, and success semantics, and its highest late-proxy complete checkpoint was evaluated with the existing mechanism diagnostics. The source change was limited to the training target-radius range from (0.14, 0.20) to (0.06, 0.20), while evaluation semantics remained unchanged. M3 leaves a consequential residual distinction for the next direction: 7 failures never entered tolerance, 3 entered and later interrupted, and 3 of the 10 failures had healthy positive minimum joint-limit margins while the others included negative margins. Thus branch/limit-conditioned acquisition and outer-target behavior remain unresolved, and the minority post-entry cases preserve velocity-aware stabilization as a possible next mechanism. Development evidence does not authorize official assessment yet because 93.75% remains below the 98% requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Positive limited conclusion for I2: the fresh full-band candidate T2:checkpoint-120832 materially outperformed the baseline artifact T1:checkpoint-115712 on the same 160-episode official-distribution development panel, 150/160 (93.75%) versus 105/160 (65.625%). No-entry failures fell from 49 to 7. The reduction was concentrated in the previously unrepresented inward band: T1 had 51 of 55 failures below 14 cm, whereas T2 had only 3 of 10 failures below 14 cm; T2 residual failures were predominantly at outer radii. This supports retaining full-band exposure as a material contributor for this tested PPO implementation, but it does not establish exposure as the sole cause or meet the 98% human goal.",
+        "reason": "The closure condition is met: T2 is a fresh full-band training run under the fixed tested PPO reward, observation/runtime, robot, timing, and success semantics, and its highest late-proxy complete checkpoint was evaluated with the existing mechanism diagnostics. The source change was limited to the training target-radius range from (0.14, 0.20) to (0.06, 0.20), while evaluation semantics remained unchanged. M3 leaves a consequential residual distinction for the next direction: 7 failures never entered tolerance, 3 entered and later interrupted, and 3 of the 10 failures had healthy positive minimum joint-limit margins while the others included negative margins. Thus branch/limit-conditioned acquisition and outer-target behavior remain unresolved, and the minority post-entry cases preserve velocity-aware stabilization as a possible next mechanism. Development evidence does not authorize official assessment yet because 93.75% remains below the 98% requirement.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Positive limited conclusion for I2: the fresh full-band candidate T2:checkpoint-120832 materially outperformed the baseline artifact T1:checkpoint-115712 on the same 160-episode official-distribution development panel, 150/160 (93.75%) versus 105/160 (65.625%). No-entry failures fell from 49 to 7. The reduction was concentrated in the previously unrepresented inward band: T1 had 51 of 55 failures below 14 cm, whereas T2 had only 3 of 10 failures below 14 cm; T2 residual failures were predominantly at outer radii. This supports retaining full-band exposure as a material contributor for this tested PPO implementation, but it does not establish exposure as the sole cause or meet the 98% human goal.",
+        "reason": "The closure condition is met: T2 is a fresh full-band training run under the fixed tested PPO reward, observation/runtime, robot, timing, and success semantics, and its highest late-proxy complete checkpoint was evaluated with the existing mechanism diagnostics. The source change was limited to the training target-radius range from (0.14, 0.20) to (0.06, 0.20), while evaluation semantics remained unchanged. M3 leaves a consequential residual distinction for the next direction: 7 failures never entered tolerance, 3 entered and later interrupted, and 3 of the 10 failures had healthy positive minimum joint-limit margins while the others included negative margins. Thus branch/limit-conditioned acquisition and outer-target behavior remain unresolved, and the minority post-entry cases preserve velocity-aware stabilization as a possible next mechanism. Development evidence does not authorize official assessment yet because 93.75% remains below the 98% requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "Positive limited conclusion for I2: the fresh full-band candidate T2:checkpoint-120832 materially outperformed the baseline artifact T1:checkpoint-115712 on the same 160-episode official-distribution development panel, 150/160 (93.75%) versus 105/160 (65.625%). No-entry failures fell from 49 to 7. The reduction was concentrated in the previously unrepresented inward band: T1 had 51 of 55 failures below 14 cm, whereas T2 had only 3 of 10 failures below 14 cm; T2 residual failures were predominantly at outer radii. This supports retaining full-band exposure as a material contributor for this tested PPO implementation, but it does not establish exposure as the sole cause or meet the 98% human goal.",
+        "reason": "The closure condition is met: T2 is a fresh full-band training run under the fixed tested PPO reward, observation/runtime, robot, timing, and success semantics, and its highest late-proxy complete checkpoint was evaluated with the existing mechanism diagnostics. The source change was limited to the training target-radius range from (0.14, 0.20) to (0.06, 0.20), while evaluation semantics remained unchanged. M3 leaves a consequential residual distinction for the next direction: 7 failures never entered tolerance, 3 entered and later interrupted, and 3 of the 10 failures had healthy positive minimum joint-limit margins while the others included negative margins. Thus branch/limit-conditioned acquisition and outer-target behavior remain unresolved, and the minority post-entry cases preserve velocity-aware stabilization as a possible next mechanism. Development evidence does not authorize official assessment yet because 93.75% remains below the 98% requirement.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Positive limited conclusion for I2: the fresh full-band candidate T2:checkpoint-120832 materially outperformed the baseline artifact T1:checkpoint-115712 on the same 160-episode official-distribution development panel, 150/160 (93.75%) versus 105/160 (65.625%). No-entry failures fell from 49 to 7. The reduction was concentrated in the previously unrepresented inward band: T1 had 51 of 55 failures below 14 cm, whereas T2 had only 3 of 10 failures below 14 cm; T2 residual failures were predominantly at outer radii. This supports retaining full-band exposure as a material contributor for this tested PPO implementation, but it does not establish exposure as the sole cause or meet the 98% human goal.",
+        "reason": "The closure condition is met: T2 is a fresh full-band training run under the fixed tested PPO reward, observation/runtime, robot, timing, and success semantics, and its highest late-proxy complete checkpoint was evaluated with the existing mechanism diagnostics. The source change was limited to the training target-radius range from (0.14, 0.20) to (0.06, 0.20), while evaluation semantics remained unchanged. M3 leaves a consequential residual distinction for the next direction: 7 failures never entered tolerance, 3 entered and later interrupted, and 3 of the 10 failures had healthy positive minimum joint-limit margins while the others included negative margins. Thus branch/limit-conditioned acquisition and outer-target behavior remain unresolved, and the minority post-entry cases preserve velocity-aware stabilization as a possible next mechanism. Development evidence does not authorize official assessment yet because 93.75% remains below the 98% requirement."
+      }
+    },
+    "request_fingerprint": "84ee3dc6c0076056b3e8fe8f94cffe214405efcdc788ed15d2be8c0b3bd4434f",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned after M2 by E4 as the strongest evidence-backed complete artifact, with 65.625% development success. No working candidate is assigned. No candidate meets the human goal, and no official assessment is requested at this boundary. T1's training-proxy rank does not certify performance; its diagnostic changes are instrumentation rather than a tested learning intervention.",
     "completed_operations": [
@@ -3174,7 +3217,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does replacing the baseline 14\u201320 cm training exposure with the full official 6\u201320 cm target-radius distribution, while holding the tested PPO reward, observation/runtime, robot, timing, and success semantics fixed, materially improve complete episode success and reduce no-entry failures toward the 98% goal? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E9"
     ],
     "scientific_parent_commit": "5261a0907cc18bac37012aaa1a97a0c2aab27803"
   },
