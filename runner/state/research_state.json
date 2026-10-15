@@ -3240,47 +3240,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence distinguishes the dominant residual failure mechanism well enough to select the next campaign direction: acquisition/branch/limit-conditioned if the residual no-entry failures concentrate in outer or constrained geometry and a candidate or diagnostic reduces those failures, or transient stabilization if entry-then-interruption persists with low acquisition error and visible velocity/oscillation evidence. A limited or inconclusive result is sufficient if the evidence cannot discriminate these routes, provided the unresolved consequence for assessment versus further work is recorded.",
-          "goal_connection": "The best-known T2 candidate is 6 successes short of the 196/200 official threshold when scaled from the 160-episode development panel. Resolving whether the remaining failures are chiefly acquisition/geometry failures or post-entry stabilization failures determines whether the next bounded work should improve target-conditioned reaching or velocity-aware hold control, directly targeting complete uninterrupted holds.",
-          "handoff_conclusion": "M1 established candidate-independent physical priors: compiled inertia and transient authority vary with configuration, one 20 ms interval can carry momentum, and constrained IK margins vary by branch; it did not establish an actuator ceiling. T1 used the fixed PPO tanh 64x64 recipe, current reward and 11-value runtime with 14\u201320 cm exposure, and M2 measured 105/160 = 65.625%, with 49 of 55 failures never entering tolerance. T2 changed only the training target-radius range to the full 6\u201320 cm band, using the same fresh seed and bounded allocation; it completed 120,832 steps and M3 measured 150/160 = 93.75% with the same evaluation semantics. The artifact comparison establishes a large performance improvement and a reduction from 49 to 7 no-entry failures. The reduction was concentrated in the inward band: T1 had 51 of 55 failures below 14 cm, while T2 had 3 of 10 failures below 14 cm; T2 residual failures were predominantly outer targets. This supports full-band exposure as a material contributor for this tested implementation, but not as the sole cause or a general method guarantee. The remaining 3 entry-then-interruption failures preserve transient stabilization as consequential, and 3 residual failures had healthy positive minimum joint-limit margins while the remainder included negative margins, so branch/limit-conditioned acquisition and outer-target behavior remain unresolved. The artifact diagnostic traces did not include inter-substep hold evidence, so hidden excursions remain an untested measurement limit rather than an inferred cause.",
-          "handoff_question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-          "rationale": "Request another bounded inquiry rather than the official assessment because M3 is materially improved but remains 93.75%, below the 98% objective, and its 10 failures contain consequential alternatives: 7 never entered tolerance, while 3 entered and then repeatedly interrupted the hold. The failures are mostly at outer radii, but three healthy positive joint-limit margins coexist with negative-margin cases, so neither branch/limit acquisition nor transient stabilization is established as the dominant cause. M3 also exposes only control-boundary hold evidence; the inter-substep trajectory remains unmeasured. One focused inquiry has credible decision value because its outcome can select a targeted intervention or justify assessment, whereas assessment now would irreversibly end the campaign without resolving a failure class that may be tractable.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence distinguishes the dominant residual failure mechanism well enough to select the next campaign direction: acquisition/branch/limit-conditioned if the residual no-entry failures concentrate in outer or constrained geometry and a candidate or diagnostic reduces those failures, or transient stabilization if entry-then-interruption persists with low acquisition error and visible velocity/oscillation evidence. A limited or inconclusive result is sufficient if the evidence cannot discriminate these routes, provided the unresolved consequence for assessment versus further work is recorded.",
-        "goal_connection": "The best-known T2 candidate is 6 successes short of the 196/200 official threshold when scaled from the 160-episode development panel. Resolving whether the remaining failures are chiefly acquisition/geometry failures or post-entry stabilization failures determines whether the next bounded work should improve target-conditioned reaching or velocity-aware hold control, directly targeting complete uninterrupted holds.",
-        "question": "Which residual mechanism\u2014outer-target/branch/limit-conditioned acquisition or post-entry transient stabilization\u2014must be addressed next to move the best-known candidate from 93.75% development success toward the 98% complete-hold goal?",
-        "rationale": "Request another bounded inquiry rather than the official assessment because M3 is materially improved but remains 93.75%, below the 98% objective, and its 10 failures contain consequential alternatives: 7 never entered tolerance, while 3 entered and then repeatedly interrupted the hold. The failures are mostly at outer radii, but three healthy positive joint-limit margins coexist with negative-margin cases, so neither branch/limit acquisition nor transient stabilization is established as the dominant cause. M3 also exposes only control-boundary hold evidence; the inter-substep trajectory remains unmeasured. One focused inquiry has credible decision value because its outcome can select a targeted intervention or justify assessment, whereas assessment now would irreversibly end the campaign without resolving a failure class that may be tractable."
-      }
-    },
-    "request_fingerprint": "9de46b996467e8379bf4979e3d939e6769812d35c59d430b68a2ef90ad032cdd",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Recorded best-known role remains T1:checkpoint-115712 because the attempted role update after inquiry closure was not permitted before checkpoint. However, M3 establishes T2:checkpoint-120832 as the strongest measured artifact at 93.75% versus T1\u2019s 65.625%; the next goal review should explicitly assign T2 as best-known before deciding between official assessment and a new bounded inquiry. No candidate meets the human goal; no working or retained role is assigned.",
     "completed_operations": [
