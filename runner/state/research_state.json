@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a fresh candidate trained with the existing deterministic observation and explicitly recorded official-radius exposure has been measured on a non-overlapping research panel with episode success and the planned approach, geometry/branch, hold-regulation, action, and interruption diagnostics, and the evidence is sufficient to conclude whether this recipe is a credible development direction or to redirect the next method. Preserve any unresolved causal distinction rather than treating aggregate performance as mechanism evidence.",
+    "goal_connection": "The campaign has no measured learned candidate and therefore no quantified gap to the required 98% official episode success. A fresh candidate evaluated on a distinct research panel can establish whether the demonstrated compiled dynamics are exploitable by the existing observation and can identify the failure class that most directly determines the next route toward 196 of 200 uninterrupted holds.",
+    "handoff_conclusion": "Evidence: M3 measured the compiled official MuJoCo model at 0.002 s physics timestep, 10 physics substeps per 0.020 s control interval, zero gravity, compiled arm-body masses of about 0.099 kg and 0.052 kg, 0.5 N*m*s/rad damping, 0.01 kg*m^2 armature, and two bounded motors with gear 5. A 0.25 command produced 1.25 N*m joint-space actuator torque and roughly 105--255 rad/s^2 peak acceleration across the three official-radius configurations; a saturated command produced 5 N*m and roughly 935--1042 rad/s^2 peak acceleration. Held constant for 0.5 s, even the 0.25 command reached about 2.5 rad/s and moved the endpoint by up to about 0.22 m, while saturated commands drove large joint excursions. With zero command, an initial joint-speed norm of about 0.72 rad/s decayed to effectively zero by 1 s, with 1.2--2.1 mm endpoint displacement. Interpretation: dynamic authority is not the immediate physical bottleneck; the compiled arm can dissipate motion, but stable holding requires low-amplitude, velocity-aware, rapidly tapered feedback rather than persistent commands. This supports first developing a state-feedback policy using the existing q, qdot, Cartesian error, and IK features. Competing explanation A is that a memoryless policy can regulate the deterministic physical state if training exposure and action shaping teach this tapering. Competing explanation B is that branch/radius conditioning, the outer-band training exposure, or absent hold-phase memory makes the policy fail despite adequate authority and requires a different exposure or temporal policy design. M3 cannot distinguish those learned-policy explanations: it is open-loop, uses three fixed configurations, and does not measure target trajectories, branch occupancy, policy actions, or episode outcomes. M2 confirms the measurement path and its unit/timing/substep checks, but is engineering validation rather than goal evidence. Neither operation establishes development or official performance, transfer robustness, or recurrence benefit.",
+    "handoff_question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+    "rationale": "Requesting the protected assessment is not justified because no candidate has been trained, assigned a best-known role, or measured. The open-loop M3 result establishes available dynamic authority and damping but cannot distinguish whether learned failures would arise from approach, geometry/branch conditioning, exposure, or hold regulation; M2 is engineering validation only. This bounded inquiry is the lowest-cost goal-linked way to create the missing candidate evidence while retaining the residual uncertainty needed for the next scientific choice.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "97af64df16a48f85b14abc81e388a60d79c6141e",
     "id": "6758dad3-5ea1-46f1-839a-f0af594a4529",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 3,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -727,9 +738,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T05:47:27Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a fresh candidate trained with the existing deterministic observation and explicitly recorded official-radius exposure has been measured on a non-overlapping research panel with episode success and the planned approach, geometry/branch, hold-regulation, action, and interruption diagnostics, and the evidence is sufficient to conclude whether this recipe is a credible development direction or to redirect the next method. Preserve any unresolved causal distinction rather than treating aggregate performance as mechanism evidence.",
+        "goal_connection": "The campaign has no measured learned candidate and therefore no quantified gap to the required 98% official episode success. A fresh candidate evaluated on a distinct research panel can establish whether the demonstrated compiled dynamics are exploitable by the existing observation and can identify the failure class that most directly determines the next route toward 196 of 200 uninterrupted holds.",
+        "question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+        "rationale": "Requesting the protected assessment is not justified because no candidate has been trained, assigned a best-known role, or measured. The open-loop M3 result establishes available dynamic authority and damping but cannot distinguish whether learned failures would arise from approach, geometry/branch conditioning, exposure, or hold regulation; M2 is engineering validation only. This bounded inquiry is the lowest-cost goal-linked way to create the missing candidate evidence while retaining the residual uncertainty needed for the next scientific choice."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a fresh candidate trained with the existing deterministic observation and explicitly recorded official-radius exposure has been measured on a non-overlapping research panel with episode success and the planned approach, geometry/branch, hold-regulation, action, and interruption diagnostics, and the evidence is sufficient to conclude whether this recipe is a credible development direction or to redirect the next method. Preserve any unresolved causal distinction rather than treating aggregate performance as mechanism evidence.",
+          "goal_connection": "The campaign has no measured learned candidate and therefore no quantified gap to the required 98% official episode success. A fresh candidate evaluated on a distinct research panel can establish whether the demonstrated compiled dynamics are exploitable by the existing observation and can identify the failure class that most directly determines the next route toward 196 of 200 uninterrupted holds.",
+          "handoff_conclusion": "Evidence: M3 measured the compiled official MuJoCo model at 0.002 s physics timestep, 10 physics substeps per 0.020 s control interval, zero gravity, compiled arm-body masses of about 0.099 kg and 0.052 kg, 0.5 N*m*s/rad damping, 0.01 kg*m^2 armature, and two bounded motors with gear 5. A 0.25 command produced 1.25 N*m joint-space actuator torque and roughly 105--255 rad/s^2 peak acceleration across the three official-radius configurations; a saturated command produced 5 N*m and roughly 935--1042 rad/s^2 peak acceleration. Held constant for 0.5 s, even the 0.25 command reached about 2.5 rad/s and moved the endpoint by up to about 0.22 m, while saturated commands drove large joint excursions. With zero command, an initial joint-speed norm of about 0.72 rad/s decayed to effectively zero by 1 s, with 1.2--2.1 mm endpoint displacement. Interpretation: dynamic authority is not the immediate physical bottleneck; the compiled arm can dissipate motion, but stable holding requires low-amplitude, velocity-aware, rapidly tapered feedback rather than persistent commands. This supports first developing a state-feedback policy using the existing q, qdot, Cartesian error, and IK features. Competing explanation A is that a memoryless policy can regulate the deterministic physical state if training exposure and action shaping teach this tapering. Competing explanation B is that branch/radius conditioning, the outer-band training exposure, or absent hold-phase memory makes the policy fail despite adequate authority and requires a different exposure or temporal policy design. M3 cannot distinguish those learned-policy explanations: it is open-loop, uses three fixed configurations, and does not measure target trajectories, branch occupancy, policy actions, or episode outcomes. M2 confirms the measurement path and its unit/timing/substep checks, but is engineering validation rather than goal evidence. Neither operation establishes development or official performance, transfer robustness, or recurrence benefit.",
+          "handoff_question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+          "rationale": "Requesting the protected assessment is not justified because no candidate has been trained, assigned a best-known role, or measured. The open-loop M3 result establishes available dynamic authority and damping but cannot distinguish whether learned failures would arise from approach, geometry/branch conditioning, exposure, or hold regulation; M2 is engineering validation only. This bounded inquiry is the lowest-cost goal-linked way to create the missing candidate evidence while retaining the residual uncertainty needed for the next scientific choice.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a fresh candidate trained with the existing deterministic observation and explicitly recorded official-radius exposure has been measured on a non-overlapping research panel with episode success and the planned approach, geometry/branch, hold-regulation, action, and interruption diagnostics, and the evidence is sufficient to conclude whether this recipe is a credible development direction or to redirect the next method. Preserve any unresolved causal distinction rather than treating aggregate performance as mechanism evidence.",
+        "goal_connection": "The campaign has no measured learned candidate and therefore no quantified gap to the required 98% official episode success. A fresh candidate evaluated on a distinct research panel can establish whether the demonstrated compiled dynamics are exploitable by the existing observation and can identify the failure class that most directly determines the next route toward 196 of 200 uninterrupted holds.",
+        "question": "Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice?",
+        "rationale": "Requesting the protected assessment is not justified because no candidate has been trained, assigned a best-known role, or measured. The open-loop M3 result establishes available dynamic authority and damping but cannot distinguish whether learned failures would arise from approach, geometry/branch conditioning, exposure, or hold regulation; M2 is engineering validation only. This bounded inquiry is the lowest-cost goal-linked way to create the missing candidate evidence while retaining the residual uncertainty needed for the next scientific choice."
+      }
+    },
+    "request_fingerprint": "e60416acbd183c233c449cea2cb84bc40a689377563a01c38f168ce2b328649c",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate artifacts exist. Working, best-known, and retained roles are all empty; no model-role assignment is justified.",
     "completed_operations": [
@@ -757,6 +831,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "9a8a5637-cc97-4ca6-b8c3-857d8d9757ad",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "229650dbf6b90a417c59c5e1f56846b81429eebc"
+  },
   "terminal_state": null
 }
