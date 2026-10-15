@@ -3,3 +3,4 @@
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
 | T1 | training | - | completed |
+| M1 | measurement | - | completed |
