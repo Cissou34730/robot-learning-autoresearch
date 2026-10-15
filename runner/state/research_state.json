@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
+    "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
+    "handoff_conclusion": "Observed in completed operation M1: the Runner executed the candidate-independent loaded-physics probe and produced a verified artifact. The loaded model has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Compiled body masses and inertia are generated rather than specified in the XML; representative mass matrices vary with configuration, including shoulder diagonal values 0.01210, 0.01147 and 0.01093 kg*m^2 and shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep constant saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds from 0.61 to 1.64 m/s across the three configurations, whereas zero commands remained stationary. These observations establish that the loaded plant has meaningful, configuration-dependent transient authority and that momentum can be large over one official 20 ms interval; they do not establish policy failure, hold instability under feedback, or an unavoidable actuator limit because no policy episode was measured. The finite 15-by-25 radius-angle grid over both IK branches contained 708 feasible and 42 infeasible branch configurations. The infeasible records are branch-specific and symmetric across angle/branch; inspected examples show the alternate branch can be feasible for the same target (at r=0.06 m, angle -120 degrees, elbow-up is outside the shoulder range while elbow-down is feasible). The grid's worst feasible branch has only 0.751 degrees minimum joint-limit margin at r=0.12 m, angle -120 degrees, elbow-up. Thus the measurement supports branch-aware geometry as a consequential risk, but does not prove any official target is unreachable and explicitly is not a continuous reachability proof. Interpretation remains provisional: the physical model's competing explanations\u2014branch/limit-conditioned acquisition versus transient overshoot/hold instability\u2014both remain live, with dynamics authority now measured rather than assumed.",
+    "handoff_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+    "rationale": "The strongest available evidence is M1, which establishes configuration-dependent transient authority and branch/limit variation but contains no policy episodes, so neither competing explanation has candidate-level support. No best-known candidate exists and official assessment would be unjustified. A bounded candidate-development and diagnostic inquiry has high expected contribution because its result directly chooses between exposure/branch-aware learning and velocity-aware stabilization, while preserving the protected robot, timing, target distribution, and success semantics.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "7ba3ec35c8ded41eb317d93922ce6c82ebcad545",
     "id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -440,9 +451,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T13:18:28Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
+        "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
+        "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+        "rationale": "The strongest available evidence is M1, which establishes configuration-dependent transient authority and branch/limit variation but contains no policy episodes, so neither competing explanation has candidate-level support. No best-known candidate exists and official assessment would be unjustified. A bounded candidate-development and diagnostic inquiry has high expected contribution because its result directly chooses between exposure/branch-aware learning and velocity-aware stabilization, while preserving the protected robot, timing, target distribution, and success semantics."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
+          "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
+          "handoff_conclusion": "Observed in completed operation M1: the Runner executed the candidate-independent loaded-physics probe and produced a verified artifact. The loaded model has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Compiled body masses and inertia are generated rather than specified in the XML; representative mass matrices vary with configuration, including shoulder diagonal values 0.01210, 0.01147 and 0.01093 kg*m^2 and shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep constant saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds from 0.61 to 1.64 m/s across the three configurations, whereas zero commands remained stationary. These observations establish that the loaded plant has meaningful, configuration-dependent transient authority and that momentum can be large over one official 20 ms interval; they do not establish policy failure, hold instability under feedback, or an unavoidable actuator limit because no policy episode was measured. The finite 15-by-25 radius-angle grid over both IK branches contained 708 feasible and 42 infeasible branch configurations. The infeasible records are branch-specific and symmetric across angle/branch; inspected examples show the alternate branch can be feasible for the same target (at r=0.06 m, angle -120 degrees, elbow-up is outside the shoulder range while elbow-down is feasible). The grid's worst feasible branch has only 0.751 degrees minimum joint-limit margin at r=0.12 m, angle -120 degrees, elbow-up. Thus the measurement supports branch-aware geometry as a consequential risk, but does not prove any official target is unreachable and explicitly is not a continuous reachability proof. Interpretation remains provisional: the physical model's competing explanations\u2014branch/limit-conditioned acquisition versus transient overshoot/hold instability\u2014both remain live, with dynamics authority now measured rather than assumed.",
+          "handoff_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+          "rationale": "The strongest available evidence is M1, which establishes configuration-dependent transient authority and branch/limit variation but contains no policy episodes, so neither competing explanation has candidate-level support. No best-known candidate exists and official assessment would be unjustified. A bounded candidate-development and diagnostic inquiry has high expected contribution because its result directly chooses between exposure/branch-aware learning and velocity-aware stabilization, while preserving the protected robot, timing, target distribution, and success semantics.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
+        "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
+        "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
+        "rationale": "The strongest available evidence is M1, which establishes configuration-dependent transient authority and branch/limit variation but contains no policy episodes, so neither competing explanation has candidate-level support. No best-known candidate exists and official assessment would be unjustified. A bounded candidate-development and diagnostic inquiry has high expected contribution because its result directly chooses between exposure/branch-aware learning and velocity-aware stabilization, while preserving the protected robot, timing, target distribution, and success semantics."
+      }
+    },
+    "request_fingerprint": "dbf7cbd2c504b46c53ec2e55e98d8832be1e8bb9c465a57a24c7d5b8889502cd",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working and best-known roles remain empty; no candidate comparison or official assessment is justified.",
     "completed_operations": [
@@ -468,6 +542,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "ac509d83-9751-40b2-9695-09d9ad086ebd",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "b5dab9852814335075299978cb0e50f37b1ce46c"
+  },
   "terminal_state": null
 }
