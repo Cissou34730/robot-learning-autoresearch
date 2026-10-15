@@ -1283,49 +1283,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-115712",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "T1:checkpoint-115712 is the only complete candidate measured on the official-like development panel. M1 records 105/160 successes (65.625%), with all successes completing the 100-step hold and 49/55 failures never reaching tolerance. This makes it the strongest evidence-backed candidate currently available, but far below the 98% goal and not a basis for claiming goal attainment."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
-        "fingerprint": "6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
-        "source": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-115712",
-        "evidence": [
-          "M1"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E3",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-115712",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "T1:checkpoint-115712 is the only complete candidate measured on the official-like development panel. M1 records 105/160 successes (65.625%), with all successes completing the 100-step hold and 49/55 failures never reaching tolerance. This makes it the strongest evidence-backed candidate currently available, but far below the 98% goal and not a basis for claiming goal attainment."
-      }
-    },
-    "request_fingerprint": "a7728d82ad0d20b0adcceba99b33872805f4ccf6953580971954ce50c6210d44",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712, selected as the first complete artifact measured on the official-like panel (M1, 65.625%). Best-known: none; official assessment not justified. No retained candidates.",
     "completed_operations": [
