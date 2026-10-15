@@ -19,7 +19,13 @@ MAX_FILES = 50_000
 class GlobParams(BaseModel):
     model_config = ConfigDict(extra="forbid")
     pattern: str = Field(min_length=1, max_length=4096)
-    paths: str | list[str] | None = None
+    paths: str | list[str] | None = Field(
+        default=None,
+        description=(
+            "Readable search roots. Use paths, not path. "
+            "Omit for the repository root."
+        ),
+    )
 
 
 class RgParams(GlobParams):
@@ -309,7 +315,9 @@ class ScopedSearch:
             define_tool(
                 "glob", description=(
                     "Find readable repository files by glob, including ** and brace "
-                    "alternatives. Reserved descendants and linked paths are pruned "
+                    "alternatives. Parameters are pattern and paths, not path. "
+                    "Directory discovery uses this tool, not view. "
+                    "Reserved descendants and linked paths are pruned "
                     "BEFORE filenames enter the result. paths accepts root/default, "
                     "subdirectory or several directories. Explicit truncation is not "
                     "a claim of complete retrieval. Coding children cannot use search."

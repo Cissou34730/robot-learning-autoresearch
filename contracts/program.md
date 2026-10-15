@@ -11,6 +11,8 @@ assessment belong to that one role.
 
 Coding delegation provides implementation assistance, not another scientific
 actor. The PI retains scientific intent, interpretation and review authority.
+State the expected output precisely in the coding request. The coder chooses
+how to implement it. Missing output requirements return to the PI, not to guesswork.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
 Inspect independent review findings with the changed source and reported limitations.

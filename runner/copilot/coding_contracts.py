@@ -62,7 +62,14 @@ class ScientificCodingParams(BaseModel):
         },
     )
 
-    intent: str = Field(min_length=1, max_length=16_000)
+    intent: str = Field(
+        min_length=1,
+        max_length=16_000,
+        description=(
+            "State the expected output precisely. "
+            "The coder chooses how to implement it."
+        ),
+    )
     allowed_paths: list[str] | None = Field(
         default=None,
         min_length=1,
@@ -78,8 +85,8 @@ class ScientificCodingParams(BaseModel):
         default="",
         max_length=32_000,
         description=(
-            "Task-specific facts, concrete input/output requirements, caller context "
-            "and observed errors. The child does not receive the PI conversation. "
+            "Supporting facts, caller context and observed errors. "
+            "The child does not receive the PI conversation. "
             "Current scenario, authority and operation-contract excerpts are supplied "
             "by the harness; select additional source files in read_paths."
         ),

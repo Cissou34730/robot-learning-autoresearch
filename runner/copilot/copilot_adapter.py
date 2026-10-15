@@ -17,6 +17,8 @@ import sys
 import time
 from pathlib import Path
 
+from copilot import ToolResult
+
 from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
@@ -221,7 +223,9 @@ def session_options(
     artifact_evidence_tool = define_tool(
         "artifact_evidence_query",
         description=(
-            "Read-only campaign-bound JSON evidence. Provide operation identity, "
+            "Read-only campaign-bound JSON evidence, including large measurement artifacts. "
+            "Selected queries and complete byte-paged reads use this reader, not view. "
+            "Provide operation identity, "
             "not a filesystem path. operations pages the operation index; metadata "
             "selects an operation's record, artifact references or checkpoint metadata "
             "without loading artifact contents. Metadata paths are /operation, /record, "
@@ -281,7 +285,7 @@ def session_options(
         skip_permission=True,
     )
 
-    async def scientific_api_reference(params, invocation) -> str:
+    async def scientific_api_reference(params, invocation) -> str | ToolResult:
         if getattr(invocation, "agent_id", None) is None:
             authorize_reader(invocation)
         elif (
@@ -296,9 +300,25 @@ def session_options(
             raise ValueError(
                 "Only the active main PI or its authorized scientific child may read APIs."
             )
-        return json.dumps(
-            await asyncio.to_thread(read_reference, params), ensure_ascii=False
-        )
+        try:
+            reference = await asyncio.to_thread(read_reference, params)
+        except ValueError as error:
+            message = str(error)
+            return ToolResult(
+                text_result_for_llm=json.dumps(
+                    {
+                        "status": "lookup_failed",
+                        "library": params.library,
+                        "symbol": params.symbol,
+                        "error": message,
+                    },
+                    ensure_ascii=False,
+                ),
+                result_type="failure",
+                error=message,
+                tool_telemetry={},
+            )
+        return json.dumps(reference, ensure_ascii=False)
 
     api_reference_tool = define_tool(
         "scientific_api_reference",

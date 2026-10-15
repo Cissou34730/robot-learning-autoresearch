@@ -90,7 +90,7 @@ session retains its existing publication interface and does not expose coding.
 
 `scientific_coding` accepts:
 
-- `intent`: the bounded scientific change;
+- `intent`: the precise expected output of the bounded change;
 - `allowed_paths`: exact repository-relative writable scientific files;
 - `read_paths`: optional additional relevant scientific sources, contracts,
   `AGENTS.md` or the frozen `pi_workspace/scientific_model.md`;
@@ -257,6 +257,7 @@ Python source and native MuJoCo declaration. `offset` and `max_bytes` select
 UTF-8 definition bytes. The result reports version, content fingerprint,
 complete byte count and `next_offset`. Unavailable signatures and source are
 explicit. A missing symbol returns `symbol_not_found`, not a guessed substitute.
+Rejected lookups return a failed tool result with the library, symbol and reason.
 Definition availability does not establish execution compatibility.
 
 The active PI or its authorized native coding/review child can use this reader.

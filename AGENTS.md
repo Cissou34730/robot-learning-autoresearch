@@ -32,6 +32,12 @@ and complete retrieval. The PI chooses the requested content and may inspect
 successive subsets. Large results report their continuation explicitly rather
 than silently truncating. No general Python-query execution tool is exposed.
 
+`view` reads exact readable files, not directory listings. Directory discovery
+uses `glob` with `pattern` and `paths`, not `path`. Measurement JSON, including
+large artifacts, uses `artifact_evidence_query`, not `view`. Its complete
+byte-paged reads remain available. Training trajectories use `training_log_query`.
+Tool schemas define the accepted fields and limits.
+
 Training-log discovery returns metadata, not the full trajectory. Records
 require selected metric names or an explicit all-metrics request. JSON and log
 pages are small by default; complete retrieval remains available through

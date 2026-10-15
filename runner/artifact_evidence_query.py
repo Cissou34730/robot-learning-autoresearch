@@ -163,7 +163,8 @@ class ArtifactEvidenceQueryParams(BaseModel):
         min_length=1,
         max_length=MAX_BATCH_QUERIES,
         description=(
-            "For batch, related query specifications executed against one "
+            f"For batch, at most {MAX_BATCH_QUERIES} related query specifications "
+            "executed against one "
             "resolved and fingerprint-verified artifact. Prefer one batch over "
             "separate calls for related fields; provenance is returned once. "
             "Each specification can select subsets or complete objects. "

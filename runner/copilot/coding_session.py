@@ -455,12 +455,12 @@ class ScientificCoding:
             "scientific_coding",
             description=(
                 "Use scientific_coding for scientific source changes.\n\n"
-                "In intent, state what to build, its actual inputs and expected "
-                "outputs, and what must stay unchanged.\n\n"
+                "In intent, state the expected output precisely. "
+                "The coder chooses how to implement it, not what the output means.\n\n"
                 "Select exact writable files in allowed_paths and additional "
                 "readable source and caller files in read_paths.\n\n"
-                "Put concrete input/output requirements, scientific constraints, "
-                "caller context and observed errors in source_context. The child "
+                "Put supporting facts, caller context and observed errors "
+                "in source_context. The child "
                 "does not receive your conversation. The harness supplies current "
                 "scenario, authority and operation-contract text to both authors "
                 "and reviewers, without expanding their file permissions.\n\n"

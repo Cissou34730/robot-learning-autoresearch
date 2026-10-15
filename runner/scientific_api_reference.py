@@ -27,14 +27,14 @@ class ScientificAPIReferenceParams(BaseModel):
 
 
 def _owned_definition(value: object, library: str) -> bool:
+    if isinstance(value, (property, classmethod, staticmethod)):
+        return True
     if inspect.ismodule(value):
         owner = value.__name__
     elif inspect.isclass(value) or inspect.isroutine(value):
         owner = getattr(value, "__module__", "") or ""
     else:
-        return isinstance(
-            value, (property, classmethod, staticmethod)
-        ) or inspect.isdatadescriptor(value)
+        return inspect.isdatadescriptor(value)
     return owner == library or owner.startswith(library + ".")
 
 
