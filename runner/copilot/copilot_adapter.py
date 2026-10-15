@@ -700,7 +700,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     continuation = parser.add_mutually_exclusive_group()
     continuation.add_argument("--resume", action="store_true")
     continuation.add_argument("--resume-or-create", action="store_true")
-    parser.add_argument("--timeout", type=float, default=1800.0)
+    parser.add_argument("--timeout", type=float, default=900.0)
     # Accounting metadata only; these values never enter the model prompt.
     parser.add_argument("--campaign-id")
     parser.add_argument("--phase")

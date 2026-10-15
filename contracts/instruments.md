@@ -88,6 +88,9 @@ shell tools. `scientific_api_reference` reads installed library definitions
 for PI and authorized coding/review children. The preliminary scientific-model
 session retains its existing publication interface and does not expose coding.
 
+The default Copilot PI deadline is 15 minutes of active session time.
+Coding and review consume that same budget. Runner execution waits are excluded.
+
 `scientific_coding` accepts:
 
 - `intent`: the precise expected output of the bounded change;
@@ -138,7 +141,7 @@ The handler waits for the stop handoff and native task idle state before
 unlocking operation submission.
 
 After the first completed handoff for an assignment, the handler starts an
-independent native `scientific-reviewer` using GPT-6 Luna with max reasoning.
+independent native `scientific-reviewer` using GPT-6 Luna with high reasoning.
 It receives the original request, supplied task context, actual changed files and diff.
 Corrections reuse that native reviewer. They provide the correction
 intent and context, incremental changes and previous completed
