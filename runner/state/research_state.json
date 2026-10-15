@@ -828,18 +828,18 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 0,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-115712",
     "retained": {},
     "working": "T1:checkpoint-115712"
   },
@@ -1254,9 +1254,78 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T20:28:43Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "T1:checkpoint-115712 is the only complete candidate measured on the official-like development panel. M1 records 105/160 successes (65.625%), with all successes completing the 100-step hold and 49/55 failures never reaching tolerance. This makes it the strongest evidence-backed candidate currently available, but far below the 98% goal and not a basis for claiming goal attainment."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-115712",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "T1:checkpoint-115712 is the only complete candidate measured on the official-like development panel. M1 records 105/160 successes (65.625%), with all successes completing the 100-step hold and 49/55 failures never reaching tolerance. This makes it the strongest evidence-backed candidate currently available, but far below the 98% goal and not a basis for claiming goal attainment."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
+        "fingerprint": "6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6",
+        "source": "campaigns/checkpoints/retained/d6c57175-6804-4898-8c11-e012dda4930a/t1-cfbc9e22f-6f5c660f77bb531e1791f585f29ebc2d07fa795eb60e094683a4e1f02b6b99a6"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-115712",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "T1:checkpoint-115712 is the only complete candidate measured on the official-like development panel. M1 records 105/160 successes (65.625%), with all successes completing the 100-step hold and 49/55 failures never reaching tolerance. This makes it the strongest evidence-backed candidate currently available, but far below the 98% goal and not a basis for claiming goal attainment."
+      }
+    },
+    "request_fingerprint": "a7728d82ad0d20b0adcceba99b33872805f4ccf6953580971954ce50c6210d44",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712, selected as the first complete artifact measured on the official-like panel (M1, 65.625%). Best-known: none; official assessment not justified. No retained candidates.",
     "completed_operations": [
@@ -1286,6 +1355,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "ae6ff638-eae0-4afe-a87d-bfd022d07cf0",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E3"
+    ],
+    "scientific_parent_commit": "3864e79a3fed0e62a5855e94532da2b5ef747bd1"
+  },
   "terminal_state": null
 }
