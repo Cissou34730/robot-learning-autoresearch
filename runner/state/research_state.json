@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Obtain and interpret a same-runtime full-official-radius candidate versus T1:checkpoint-115712 on matched official-like episode seeds, with radius- and angle-stratified first reach, minimum/final distance, maximum hold, interruptions, and success diagnostics. Close when these results establish that broader exposure materially changes the dominant no-reach failures, establish that it does not and leave a consequential structured residual requiring branch/path or stabilization work, or remain inconclusive with the unresolved distinction explicitly carried into the next goal review.",
+    "goal_connection": "The current best-known candidate reaches only 105 of 160 official-like episodes (65.625%), leaving a 34.375 percentage-point gap to the 98% episode-success objective. Resolving whether missing inner-radius capability or residual branch/path and stabilization control is the dominant actionable limitation determines whether the next learned policy should first broaden exposure or redesign the closed-loop controller.",
+    "handoff_conclusion": "Observed: T1 trained the unchanged PPO 64-64 tanh recipe on the narrower 0.14-0.20 m training exposure; its training proxy rose to about 0.96 by 115712 steps. M1 measured the nonterminal checkpoint T1:checkpoint-115712 on 160 official-like episodes and recorded 105 successes. The 105 successes exactly match episodes with max_held_steps=100. Of the 55 failures, 49 had max_held_steps=0, so the dominant observed failure mode is failure to reach; six reached tolerance but did not sustain the required hold, showing a secondary stabilization problem. Interpretation: this supports the model's prediction that the exposure mismatch is consequential and makes broader target coverage the leading intervention hypothesis. Competing explanations remain branch/path selection, angle-conditioned transients, and sampled-data braking/conditioning; the visible catastrophic misses at inner radii and some angles are consistent with these alternatives but do not distinguish them. The baseline result is recipe- and runtime-specific: training proxies came from the narrow training distribution, and M1 contains no joint branch, action, or substep trajectory traces and no precomputed radius bins.",
+    "handoff_question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+    "rationale": "The baseline result is decisively below the goal, so requesting the terminal official assessment has poor expected value relative to one bounded causal intervention. The inherited coverage interpretation is supported but not established: M1 contains per-episode radius and angle fields, yet no matched full-radius candidate, branch/action traces, or substep dynamics. A full-radius comparison is the lowest-cost experiment that can test whether the 49 no-reach failures respond to exposure while preserving the current runtime and task semantics; structured residual reach or hold failures would redirect the campaign rather than justify attributing them to coverage.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "1134528c1eb2558c253c325d406019747a0eb18c",
     "id": "d6c57175-6804-4898-8c11-e012dda4930a",
@@ -828,8 +839,8 @@
     }
   },
   "counters": {
-    "event": 3,
-    "inquiry": 0,
+    "event": 4,
+    "inquiry": 1,
     "measurement": 1,
     "session": 2,
     "training": 1
@@ -837,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1281,9 +1292,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T20:29:11Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Obtain and interpret a same-runtime full-official-radius candidate versus T1:checkpoint-115712 on matched official-like episode seeds, with radius- and angle-stratified first reach, minimum/final distance, maximum hold, interruptions, and success diagnostics. Close when these results establish that broader exposure materially changes the dominant no-reach failures, establish that it does not and leave a consequential structured residual requiring branch/path or stabilization work, or remain inconclusive with the unresolved distinction explicitly carried into the next goal review.",
+        "goal_connection": "The current best-known candidate reaches only 105 of 160 official-like episodes (65.625%), leaving a 34.375 percentage-point gap to the 98% episode-success objective. Resolving whether missing inner-radius capability or residual branch/path and stabilization control is the dominant actionable limitation determines whether the next learned policy should first broaden exposure or redesign the closed-loop controller.",
+        "question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+        "rationale": "The baseline result is decisively below the goal, so requesting the terminal official assessment has poor expected value relative to one bounded causal intervention. The inherited coverage interpretation is supported but not established: M1 contains per-episode radius and angle fields, yet no matched full-radius candidate, branch/action traces, or substep dynamics. A full-radius comparison is the lowest-cost experiment that can test whether the 49 no-reach failures respond to exposure while preserving the current runtime and task semantics; structured residual reach or hold failures would redirect the campaign rather than justify attributing them to coverage."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Obtain and interpret a same-runtime full-official-radius candidate versus T1:checkpoint-115712 on matched official-like episode seeds, with radius- and angle-stratified first reach, minimum/final distance, maximum hold, interruptions, and success diagnostics. Close when these results establish that broader exposure materially changes the dominant no-reach failures, establish that it does not and leave a consequential structured residual requiring branch/path or stabilization work, or remain inconclusive with the unresolved distinction explicitly carried into the next goal review.",
+          "goal_connection": "The current best-known candidate reaches only 105 of 160 official-like episodes (65.625%), leaving a 34.375 percentage-point gap to the 98% episode-success objective. Resolving whether missing inner-radius capability or residual branch/path and stabilization control is the dominant actionable limitation determines whether the next learned policy should first broaden exposure or redesign the closed-loop controller.",
+          "handoff_conclusion": "Observed: T1 trained the unchanged PPO 64-64 tanh recipe on the narrower 0.14-0.20 m training exposure; its training proxy rose to about 0.96 by 115712 steps. M1 measured the nonterminal checkpoint T1:checkpoint-115712 on 160 official-like episodes and recorded 105 successes. The 105 successes exactly match episodes with max_held_steps=100. Of the 55 failures, 49 had max_held_steps=0, so the dominant observed failure mode is failure to reach; six reached tolerance but did not sustain the required hold, showing a secondary stabilization problem. Interpretation: this supports the model's prediction that the exposure mismatch is consequential and makes broader target coverage the leading intervention hypothesis. Competing explanations remain branch/path selection, angle-conditioned transients, and sampled-data braking/conditioning; the visible catastrophic misses at inner radii and some angles are consistent with these alternatives but do not distinguish them. The baseline result is recipe- and runtime-specific: training proxies came from the narrow training distribution, and M1 contains no joint branch, action, or substep trajectory traces and no precomputed radius bins.",
+          "handoff_question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+          "rationale": "The baseline result is decisively below the goal, so requesting the terminal official assessment has poor expected value relative to one bounded causal intervention. The inherited coverage interpretation is supported but not established: M1 contains per-episode radius and angle fields, yet no matched full-radius candidate, branch/action traces, or substep dynamics. A full-radius comparison is the lowest-cost experiment that can test whether the 49 no-reach failures respond to exposure while preserving the current runtime and task semantics; structured residual reach or hold failures would redirect the campaign rather than justify attributing them to coverage.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Obtain and interpret a same-runtime full-official-radius candidate versus T1:checkpoint-115712 on matched official-like episode seeds, with radius- and angle-stratified first reach, minimum/final distance, maximum hold, interruptions, and success diagnostics. Close when these results establish that broader exposure materially changes the dominant no-reach failures, establish that it does not and leave a consequential structured residual requiring branch/path or stabilization work, or remain inconclusive with the unresolved distinction explicitly carried into the next goal review.",
+        "goal_connection": "The current best-known candidate reaches only 105 of 160 official-like episodes (65.625%), leaving a 34.375 percentage-point gap to the 98% episode-success objective. Resolving whether missing inner-radius capability or residual branch/path and stabilization control is the dominant actionable limitation determines whether the next learned policy should first broaden exposure or redesign the closed-loop controller.",
+        "question": "Which causal capability should drive the next intervention toward 98% official success: extending learning exposure to the full official radius range, or redesigning branch/path and stabilization control because the baseline's reach misses persist after exposure is corrected?",
+        "rationale": "The baseline result is decisively below the goal, so requesting the terminal official assessment has poor expected value relative to one bounded causal intervention. The inherited coverage interpretation is supported but not established: M1 contains per-episode radius and angle fields, yet no matched full-radius candidate, branch/action traces, or substep dynamics. A full-radius comparison is the lowest-cost experiment that can test whether the 49 no-reach failures respond to exposure while preserving the current runtime and task semantics; structured residual reach or hold failures would redirect the campaign rather than justify attributing them to coverage."
+      }
+    },
+    "request_fingerprint": "21e5d15625f958dd100f93ed367ad836042303f39433a7ae445f76749b544691",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Working: T1:checkpoint-115712, selected as the first complete artifact measured on the official-like panel (M1, 65.625%). Best-known: none; official assessment not justified. No retained candidates.",
     "completed_operations": [
@@ -1325,7 +1399,8 @@
     "kind": "goal_review",
     "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
     "operation_ids": [
-      "E3"
+      "E3",
+      "E4"
     ],
     "scientific_parent_commit": "3864e79a3fed0e62a5855e94532da2b5ef747bd1"
   },
