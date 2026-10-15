@@ -22,8 +22,8 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 3,
-    "session": 2,
+    "measurement": 5,
+    "session": 3,
     "training": 0
   },
   "human_goal": {
@@ -793,9 +793,191 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T05:57:28Z",
+      "error": "robot_learning.lab.verify_research_policy failed:\n\nusage: verify_research_policy.py [-h] --artifact ARTIFACT [--compatibility]\nverify_research_policy.py: error: the following arguments are required: --artifact\n",
+      "id": "M4",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Execute the reviewed production-path checks for the I1 training exposure, artifact metadata, deterministic observation interface, action clipping, and branch/failure diagnostic helpers before fresh candidate development.",
+        "measurements": [
+          {
+            "args": [
+              "robot_learning.lab.verify_research_policy --artifact {artifact}"
+            ],
+            "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_contract_check.json",
+            "instrument": "python_module",
+            "label": "I1 contract and diagnostic invariants",
+            "module": "robot_learning.lab.verify_research_policy"
+          },
+          {
+            "args": [
+              "robot_learning.lab.verify_research_policy --compatibility --artifact {artifact}"
+            ],
+            "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_compatibility_check.json",
+            "instrument": "python_module",
+            "label": "I1 production training environment compatibility",
+            "module": "robot_learning.lab.verify_research_policy"
+          }
+        ],
+        "rationale": "The first candidate is only decision-relevant if the intended official-radius exposure is actually active and the evaluation instrument can preserve the planned discriminators. These bounded checks do not establish policy performance; they prevent an implementation mismatch from being mistaken for a scientific result."
+      },
+      "result": {
+        "error": "robot_learning.lab.verify_research_policy failed:\n\nusage: verify_research_policy.py [-h] --artifact ARTIFACT [--compatibility]\nverify_research_policy.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M5",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "{artifact}"
+          ],
+          "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_contract_check.json",
+          "instrument": "python_module",
+          "label": "I1 contract and diagnostic invariants",
+          "module": "robot_learning.lab.verify_research_policy"
+        },
+        {
+          "args": [
+            "--compatibility",
+            "--artifact",
+            "{artifact}"
+          ],
+          "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_compatibility_check.json",
+          "instrument": "python_module",
+          "label": "I1 production training environment compatibility",
+          "module": "robot_learning.lab.verify_research_policy"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "8eabacd5a94e758cce36ab96b1530d1c9838422834170a51fe871a7e21cb10ba",
+            "path": "robot_learning/lab/measure_dynamics.py"
+          },
+          {
+            "fingerprint": "8f13fcb7a86de313b8c31c15da9db206689d2fe7e11f6d04e1c117871106e945",
+            "path": "robot_learning/lab/verify_measure_dynamics.py"
+          },
+          {
+            "fingerprint": "92e375ef6125d52e6aea11b1fdea510b3173344e221ce0d399fa269efa5c1845",
+            "path": "robot_learning/lab/verify_research_policy.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "04424bee4ce3d2bcdf23e4fe8d12716a6eb18835",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "92e375ef6125d52e6aea11b1fdea510b3173344e221ce0d399fa269efa5c1845",
+            "path": "robot_learning/lab/verify_research_policy.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/verify_research_policy.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "864bfda28df12e95121674962b1d757290057541f571e899401e3cfd526db02d",
+            "path": "robot_learning/scenario/evaluation.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "08a81b244f1aeedfd522da01e049ce288908371d7cdd47c1be8ef742748413ee",
+            "path": "robot_learning/train.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "8d38965158ea977222ebdc15e32e02d3c15ffada95474c6d48792d5bc5d224e2",
+            "path": "robot_learning/training/environment.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/train.py",
+          "robot_learning/training/environment.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Re-execute the reviewed production-path checks for the I1 training exposure, artifact metadata, deterministic observation interface, action clipping, and branch/failure diagnostic helpers with the corrected module argument vector.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "{artifact}"
+            ],
+            "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_contract_check.json",
+            "instrument": "python_module",
+            "label": "I1 contract and diagnostic invariants",
+            "module": "robot_learning.lab.verify_research_policy"
+          },
+          {
+            "args": [
+              "--compatibility",
+              "--artifact",
+              "{artifact}"
+            ],
+            "artifact": "campaigns/evaluations/6758dad3-5ea1-46f1-839a-f0af594a4529/research_policy_compatibility_check.json",
+            "instrument": "python_module",
+            "label": "I1 production training environment compatibility",
+            "module": "robot_learning.lab.verify_research_policy"
+          }
+        ],
+        "rationale": "The prior attempt did not run the checks because the module name was incorrectly included in its argument list. This replacement uses the same bounded checks and scientific purpose; it is required to establish implementation compatibility before fresh candidate development."
+      }
+    },
+    "request_fingerprint": "87a7d3f8e318f5f3acd25689dbfb93dc513a00bcb254a597c1e305951f39e779",
+    "session_id": "S3",
+    "supersedes": "M4"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate artifacts exist. Working, best-known, and retained roles remain empty; no role assignment is justified before training and development measurement.",
     "completed_operations": [
@@ -822,6 +1004,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f754db3c-13bd-462b-b933-a0b51207e529",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a fresh learned policy, trained with the existing deterministic state observation and a training exposure aligned to the official 0.06--0.20 m radius law, achieve reliable uninterrupted holds on a distinct research panel, and which of approach, geometry/branch, or hold-regulation diagnostics determines the next method choice? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "04424bee4ce3d2bcdf23e4fe8d12716a6eb18835"
+  },
   "terminal_state": null
 }
