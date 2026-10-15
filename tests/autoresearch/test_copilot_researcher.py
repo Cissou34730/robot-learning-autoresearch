@@ -917,3 +917,246 @@ def test_the_copilot_runtime_loads_only_where_it_is_used():
     assert "from copilot" not in header
     # Every other module keeps importing the adapter's policy without the SDK.
     assert "from copilot" in SOURCE
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        {
+            "training": {
+                "initialization": "fresh",
+                "seed": True,
+                "steps": 1,
+                "description": "Train",
+                "rationale": "Measure learning",
+            }
+        },
+        {"measurement": {"description": "Measure"}},
+        {
+            "measurement": {
+                "description": "Measure",
+                "rationale": "Inspect a quantity",
+                "measurements": [
+                    {
+                        "instrument": "python_module",
+                        "module": "robot_learning.lab.measure",
+                        "args": ["--output", "{artifact}"],
+                        "artifact": "output.json",
+                    }
+                ],
+            }
+        },
+    ],
+)
+def test_sdk_operation_handler_rejects_invalid_bodies_before_controller(operation):
+    from runner.copilot.copilot_console import Console
+    from runner.copilot.operation_submission import OperationSubmission
+
+    channel = SimpleNamespace(send=AsyncMock(), receive=AsyncMock())
+    binding = {
+        "session_id": "inert",
+        "campaign_id": "campaign",
+        "invocation_id": "invocation",
+        "state": {"operation_event_count": 0},
+    }
+    tool = OperationSubmission(channel, binding, Console(), None).tool()
+    invocation = SimpleNamespace(
+        arguments={"request": operation},
+        session_id="inert",
+        agent_id=None,
+        tool_call_id="call-1",
+    )
+    result = asyncio.run(tool.handler(invocation))
+
+    assert result.result_type == "failure"
+    channel.send.assert_not_awaited()
+    channel.receive.assert_not_awaited()
+
+
+def test_sdk_operation_handler_preserves_literal_arguments_and_failed_operation_metadata():
+    from runner.copilot.copilot_console import Console
+    from runner.copilot.operation_submission import OperationSubmission
+
+    entry = {
+        "instrument": "python_module",
+        "module": "robot_learning.lab.measure",
+        "args": [
+            "--output",
+            "campaigns/evaluations/campaign/output.json",
+            "--label",
+            "literal value with spaces",
+        ],
+        "artifact": "campaigns/evaluations/campaign/output.json",
+    }
+    operation = {
+        "measurement": {
+            "description": "Inspect a quantity",
+            "rationale": "Inform a decision",
+            "measurements": [entry],
+        }
+    }
+    binding = {
+        "session_id": "inert",
+        "campaign_id": "campaign",
+        "invocation_id": "invocation",
+        "state": {"operation_event_count": 0},
+    }
+    channel = SimpleNamespace(
+        send=AsyncMock(),
+        receive=AsyncMock(
+            return_value={
+                "type": "operation_result",
+                "invocation_id": "invocation",
+                "call_id": "call-1",
+                "status": "implementation_error",
+                "error": "Execution failed",
+                "accepted_measurement": entry,
+                "state": binding["state"],
+            }
+        ),
+    )
+    operations = OperationSubmission(channel, binding, Console(), None)
+    invocation = SimpleNamespace(
+        arguments={"request": operation},
+        session_id="inert",
+        agent_id=None,
+        tool_call_id="call-1",
+    )
+    tool = operations.tool()
+    result = asyncio.run(tool.handler(invocation))
+    assert result.result_type == "success"
+    response = json.loads(result.text_result_for_llm)
+    assert response["accepted_measurement"] == entry
+    assert response["error"] == "Execution failed"
+    assert operations.closed is False
+    assert channel.send.call_args.args[0]["request"] == operation
+    asyncio.run(tool.handler(invocation))
+    assert channel.send.await_count == 1
+
+
+def test_coding_context_and_source_only_handoff_survive_same_child_correction(
+    monkeypatch,
+):
+    from runner.copilot import coding_session
+    from runner.copilot.coding_contracts import (
+        CodingReport,
+        ReviewReport,
+        ScientificCodingParams,
+    )
+    from runner.copilot.copilot_console import Console
+
+    args = adapter.parse_args(
+        [
+            "p",
+            "--session-id",
+            "inert",
+            "--campaign-id",
+            "11111111-1111-1111-1111-111111111111",
+        ]
+    )
+    coding = coding_session.ScientificCoding(None, args, Console())
+    coding.session = SimpleNamespace(
+        rpc=SimpleNamespace(
+            tools=SimpleNamespace(initialize_and_validate=AsyncMock()),
+            tasks=SimpleNamespace(
+                list=AsyncMock(
+                    return_value=SimpleNamespace(
+                        tasks=[
+                            SimpleNamespace(
+                                id="coder", status=SimpleNamespace(value="idle")
+                            ),
+                            SimpleNamespace(
+                                id="reviewer", status=SimpleNamespace(value="idle")
+                            ),
+                        ]
+                    )
+                )
+            ),
+        )
+    )
+    monkeypatch.setattr(coding_session, "coding_snapshot", lambda _paths: {})
+    monkeypatch.setattr(coding_session, "coding_changes", lambda _before: ([], ""))
+    captured = []
+
+    async def child(*, agent, prompt, binding, result, handle):
+        payload = json.loads(prompt)
+        captured.append((agent, payload, binding, handle))
+        if agent == "scientific-coder":
+            coding.active_handle = "coder"
+            coding.bindings["coder"] = binding
+            if handle is None:
+                coding.original_requests["coder"] = payload
+            report = CodingReport(
+                summary="Requested change authored", unchecked_scope=["Not executed"]
+            )
+        else:
+            coding.active_handle = "reviewer"
+            coding.review_handles.add("reviewer")
+            report = ReviewReport(
+                summary="Implementation reviewed",
+                decision="ready_for_pi",
+                decision_reason="No confirmed defects",
+                findings=[],
+                requested_changes=[],
+                unchecked_scope=["Not executed"],
+            )
+            result.update(report.model_dump())
+        result.update(status="completed", session_handle=coding.active_handle)
+        return report
+
+    monkeypatch.setattr(coding, "run_child", child)
+    invocation = SimpleNamespace(
+        session_id="inert", agent_id=None, tool_call_id="call-1"
+    )
+    initial = json.loads(
+        asyncio.run(
+            coding.invoke(
+                ScientificCodingParams(
+                    intent="Author the requested behavior",
+                    allowed_paths=["robot_learning/training/environment.py"],
+                    source_context="Preserve the caller interface.",
+                ),
+                invocation,
+            )
+        )
+    )
+    assert initial["status"] == "completed"
+    context = captured[0][1]["task_context"]
+    assert context["scenario"] == (ROOT / "contracts" / "scenario.md").read_text(
+        encoding="utf-8"
+    )
+    assert captured[1][1]["request"]["task_context"] == context
+    assert captured[0][1]["source_context"] == "Preserve the caller interface."
+    assert captured[0][2]["read_paths"] == ["robot_learning/training/environment.py"]
+    assert captured[1][2]["allowed_paths"] == []
+    assert captured[1][2]["read_paths"] == captured[0][2]["read_paths"]
+    assert {
+        "proposed_check",
+        "proposed_compatibility_check",
+        "verification_module",
+    }.isdisjoint(initial)
+
+    monkeypatch.setattr(
+        coding,
+        "task_context",
+        lambda: pytest.fail("Correction lost its stored context"),
+    )
+    correction = json.loads(
+        asyncio.run(
+            coding.invoke(
+                ScientificCodingParams(
+                    intent="Correct the same change",
+                    session_handle="coder",
+                ),
+                invocation,
+            )
+        )
+    )
+    assert correction["status"] == "completed"
+    assert captured[2][3] == "coder"
+    assert captured[3][3] == "reviewer"
+    assert captured[2][1]["task_context"] == context
+    assert captured[3][1]["task_context"] == context
+    assert captured[3][1]["mode"] == "correction"
+    assert "request" not in captured[3][1]
+    assert captured[2][2] == captured[0][2]

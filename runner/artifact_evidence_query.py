@@ -119,25 +119,28 @@ class ArtifactEvidenceQuerySpec(BaseModel):
 class ArtifactEvidenceQueryParams(BaseModel):
     model_config = {"extra": "forbid"}
 
-    action: Literal["discover", "query", "batch", "read", "operations", "metadata"] = Field(
-        description=(
-            "discover lists paths; query or batch selects, filters, projects or "
-            "aggregates values. read retrieves the entire original artifact in "
-            "byte pages. operations queries the operation index; metadata queries "
-            "one operation's record, artifacts or checkpoints without opening data. "
-            "Original reads return "
-            "readable UTF-8 byte pages (or base64 for other encodings), including "
-            "oversized objects/artifacts. Repeat "
-            "read with next_offset and the verified fingerprint; concatenate "
-            "page content in offset order for exact reconstruction. UTF-8 "
-            "pages never split a character; offsets still count original bytes. "
-            "Selection occurs before query output limits. No implicit summarization."
-        ),
+    action: Literal["discover", "query", "batch", "read", "operations", "metadata"] = (
+        Field(
+            description=(
+                "discover lists paths; query or batch selects, filters, projects or "
+                "aggregates values. read retrieves the entire original artifact in "
+                "byte pages. operations queries the operation index; metadata queries "
+                "one operation's record, artifacts, checkpoints or accepted pending "
+                "request and resolved measurements without opening artifact data. "
+                "Original reads return "
+                "readable UTF-8 byte pages (or base64 for other encodings), including "
+                "oversized objects/artifacts. Repeat "
+                "read with next_offset and the verified fingerprint; concatenate "
+                "page content in offset order for exact reconstruction. UTF-8 "
+                "pages never split a character; offsets still count original bytes. "
+                "Selection occurs before query output limits. No implicit summarization."
+            ),
+        )
     )
     operation_id: str | None = Field(
         default=None,
         description=(
-            "Required except for operations. For metadata, any recorded operation; "
+            "Required except for operations. For metadata, any recorded or pending operation; "
             "otherwise the completed measurement that recorded the JSON artifact."
         ),
     )
@@ -468,29 +471,74 @@ def _operation_summary(event: dict) -> dict:
     }
 
 
+def _pending_summary(pending: dict) -> dict:
+    return {
+        **{key: pending.get(key) for key in ("id", "kind", "session_id", "inquiry_id")},
+        "status": "failed_pending" if pending.get("failure") else "pending",
+        "progress": pending["progress"],
+        "description": pending["request"][pending["kind"]].get("description"),
+        "artifact_count": 0,
+        "checkpoint_count": 0,
+    }
+
+
 def _query_metadata(state: dict, args: dict, campaign_id: str) -> str:
     if repository.current_campaign_id(state) != campaign_id:
         raise ValueError("tool campaign does not match the active Runner state")
     events = state.get("operation_events", [])
+    pending = state.get("pending_operation")
     if args["action"] == "operations":
         source = [_operation_summary(event) for event in events]
+        if isinstance(pending, dict) and not any(
+            event["id"] == pending["id"] for event in events
+        ):
+            source.append(_pending_summary(pending))
         default_path = "/*"
     else:
         identifier = args["operation_id"].strip()
         event = next((item for item in events if item["id"] == identifier), None)
-        if event is None:
+        selected_pending = (
+            pending
+            if isinstance(pending, dict) and pending["id"] == identifier
+            else None
+        )
+        if event is None and selected_pending is None:
             raise ArtifactUnavailableError("operation_not_found", {"operation_id": identifier})
         source = {
-            "operation": _operation_summary(event),
+            "operation": _operation_summary(event)
+            if event
+            else _pending_summary(selected_pending),
             "record": event,
             "artifacts": [
                 {"operation_id": identifier, "artifact_index": index, **artifact}
                 for index, artifact in enumerate(_artifact_catalog(event))
-            ],
+            ]
+            if event
+            else [],
             "checkpoints": [
-                candidate for candidate in state.get("candidates", {}).values()
+                candidate
+                for candidate in state.get("candidates", {}).values()
                 if candidate["origin_operation"] == identifier
             ],
+            "pending": {
+                **{
+                    key: selected_pending.get(key)
+                    for key in (
+                        "id",
+                        "kind",
+                        "progress",
+                        "failure",
+                        "request",
+                        "request_fingerprint",
+                    )
+                },
+                "measurements": selected_pending["data"].get("measurements", []),
+                "completed_measurement_count": len(
+                    selected_pending["data"].get("partial_results", [])
+                ),
+            }
+            if selected_pending
+            else None,
         }
         source["operation"]["checkpoint_count"] = len(source["checkpoints"])
         default_path = "/operation"

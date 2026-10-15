@@ -16,6 +16,96 @@ from runner import protocol, repository
 from runner.execution import requested_paired_comparisons
 
 
+def test_pending_request_metadata_preserves_the_request_without_exposing_artifacts(
+    monkeypatch,
+):
+    from runner.artifact_evidence_query import query_artifact
+
+    request = {
+        "measurement": {
+            "description": "Run a diagnostic",
+            "rationale": "Inspect a quantity",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "robot_learning.lab.measure",
+                    "args": ["--output", "{artifact}"],
+                    "artifact": "campaigns/evaluations/campaign/result.json",
+                }
+            ],
+        }
+    }
+    protocol.validate_operation_shape("measurement", request["measurement"])
+    pending = {
+        "id": "M1",
+        "kind": "measurement",
+        "session_id": "S1",
+        "inquiry_id": None,
+        "progress": "accepted",
+        "failure": "No declared output",
+        "request": request,
+        "request_fingerprint": "frozen-request",
+        "data": {
+            "measurements": request["measurement"]["measurements"],
+            "partial_results": [],
+        },
+    }
+    state = {
+        "campaign": {"id": "campaign"},
+        "candidates": {},
+        "pending_operation": pending,
+        "operation_events": [
+            {
+                "id": "M0",
+                "kind": "measurement",
+                "status": "completed",
+                "request": {},
+                "result": {"measurements": []},
+            }
+        ],
+    }
+    monkeypatch.setattr(repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(
+        repository,
+        "resolve_repo_path",
+        lambda _path: pytest.fail("Opened an incomplete artifact"),
+    )
+    response = json.loads(
+        query_artifact(
+            {"action": "metadata", "operation_id": "M1", "path": "/pending"},
+            "campaign",
+        )
+    )
+    value = response["result"]["matches"][0]["value"]
+    assert value["request"] == request
+    assert value["measurements"] == pending["data"]["measurements"]
+    assert value["failure"] == pending["failure"]
+    assert value["completed_measurement_count"] == 0
+    assert response["artifact_contents_inspected"] is False
+
+    first = json.loads(query_artifact({"action": "operations", "limit": 1}, "campaign"))
+    assert first["result"]["next_offset"] == 1
+    second = json.loads(
+        query_artifact(
+            {
+                "action": "operations",
+                "limit": 1,
+                "offset": first["result"]["next_offset"],
+            },
+            "campaign",
+        )
+    )
+    assert second["result"]["matches"][0]["value"]["status"] == "failed_pending"
+    assert second["result"]["matches"][0]["value"]["id"] == "M1"
+    unavailable = json.loads(
+        query_artifact(
+            {"action": "read", "operation_id": "M1"},
+            "campaign",
+        )
+    )
+    assert unavailable["status"] == "artifact_unavailable"
+
+
 def _evaluation(seed: int, outcomes: list[bool]) -> dict:
     return {
         "episodes": len(outcomes),

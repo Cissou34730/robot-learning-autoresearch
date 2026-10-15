@@ -6,7 +6,7 @@ function Get-CopilotOperationState {
     param([Parameter(Mandatory)]$State)
 
     $session = $State.scientific_session
-    $transition = Get-RequiredSessionSummaryTransition -State $State
+    $availability = Get-RunnerOperationAvailability -State $State
     return @{
         campaign_id = [string]$State.campaign.id
         session_id = if ($session) { [string]$session.id } else { $null }
@@ -14,17 +14,18 @@ function Get-CopilotOperationState {
         session_kind = if ($session) { [string]$session.kind } else { $null }
         operation_event_count = @($State.operation_events).Count
         completed_operations = @(if ($session) { $session.operation_ids })
-        checkpoint_required = [bool]$transition
-        transition = if ($transition) { $transition.Inquiry } else { $null }
-        next_question = if ($transition -and $State.active_inquiry) {
-            [string]$State.active_inquiry.question
-        } else { $null }
+        allowed_operations = @($availability.allowed_operations)
+        checkpoint_required = [bool]$availability.checkpoint_required
+        transition = $availability.checkpoint_reason
+        next_question = $availability.next_question
         model_roles = $State.model_roles
         pending = if ($State.pending_operation) {
             @{
                 id = $State.pending_operation.id
                 progress = $State.pending_operation.progress
                 failure = $State.pending_operation.failure
+                request_fingerprint = $State.pending_operation.request_fingerprint
+                metadata_path = "/pending"
             }
         } else { $null }
         terminal = $State.terminal_state
@@ -246,6 +247,12 @@ function Invoke-CopilotOperationSubmission {
             [string]$current.pending_operation.failure
         } else { $errorDetail }
         if ($response.status -eq "implementation_error") {
+            $measurements = @($current.pending_operation.data.measurements)
+            $completedCount = @($current.pending_operation.data.partial_results).Count
+            if ($current.pending_operation.kind -eq "measurement" -and
+                $completedCount -lt $measurements.Count) {
+                $response.accepted_measurement = $measurements[$completedCount]
+            }
             Update-ResearchBrief
         }
     }

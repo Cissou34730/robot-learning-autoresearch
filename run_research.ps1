@@ -732,64 +732,36 @@ function Get-CampaignResourceSummary {
     )
 }
 
-function Get-RequiredSessionSummaryTransition {
+function Get-RunnerOperationAvailability {
     param([Parameter(Mandatory)]$State)
 
-    $session = $State.scientific_session
-    if (-not $session) {
+    $exitCode = Invoke-Runner -Arguments @("--operation-state-input") `
+        -InputText (ConvertTo-Json -InputObject $State -Depth 100 -Compress) `
+        -CaptureOutput
+    if ($exitCode -ne 0) {
+        throw "Runner operation-state lookup failed: $($script:ProcessOutput)"
+    }
+    $availability = ConvertFrom-Json -InputObject $script:ProcessStdout -ErrorAction Stop
+    if ($null -eq $availability -or
+        $availability.PSObject.Properties.Name -notcontains "allowed_operations") {
+        throw "Runner operation-state response is missing allowed_operations."
+    }
+    return $availability
+}
+
+function Get-RequiredSessionSummaryTransition {
+    param([Parameter(Mandatory)]$State, $Availability)
+
+    if (-not $Availability) {
+        $Availability = Get-RunnerOperationAvailability -State $State
+    }
+    if (-not $Availability.checkpoint_required) {
         return $null
     }
-    if (
-        $session.kind -eq "goal_review" -and
-        $State.active_inquiry -and
-        $State.active_inquiry.opened_in_session -eq $session.id
-    ) {
-        return [pscustomobject]@{
-            Objective = (
-                "Save the goal-review session summary after opening " +
-                "$($State.active_inquiry.id)."
-            )
-            Inquiry = (
-                "$($State.active_inquiry.id) has been opened, but it is not " +
-                "actionable until this goal-review session ends and its fresh " +
-                "inquiry session starts."
-            )
-        }
+    return [pscustomobject]@{
+        Objective = "Save the scientific session record. $($Availability.checkpoint_reason)"
+        Inquiry = [string]$Availability.checkpoint_reason
     }
-    if (
-        $session.kind -eq "inquiry" -and
-        $session.operation_ids -and
-        $session.operation_ids.Count -gt 0
-    ) {
-        $latestId = [string]$session.operation_ids[-1]
-        $latest = $State.operation_events |
-            Where-Object {
-                $_.id -eq $latestId -and
-                $_.status -eq "completed" -and
-                $_.kind -eq "inquiry"
-            } |
-            Select-Object -First 1
-        if ($latest -and $latest.result.action -in @("reframe", "close")) {
-            $action = [string]$latest.result.action
-            $inquiryId = if ($latest.inquiry_id) {
-                [string]$latest.inquiry_id
-            }
-            else {
-                "the inquiry"
-            }
-            return [pscustomobject]@{
-                Objective = (
-                    "Save the inquiry-session summary after the $action of " +
-                    "$inquiryId."
-                )
-                Inquiry = (
-                    "The $action decision is complete. Further scientific work " +
-                    "belongs to the fresh session created after this summary."
-                )
-            }
-        }
-    }
-    return $null
 }
 
 function Test-InquiryCapPause {
@@ -848,7 +820,8 @@ function New-ScientificSessionPrompt {
     else {
         "No scientific decision frontier has been recorded yet."
     }
-    $transition = Get-RequiredSessionSummaryTransition -State $State
+    $availability = Get-RunnerOperationAvailability -State $State
+    $transition = Get-RequiredSessionSummaryTransition -State $State -Availability $availability
     $inquiry = if ($transition) {
         [string]$transition.Inquiry
     }
@@ -957,7 +930,9 @@ function New-ScientificSessionPrompt {
         )
     }
     else {
-        @("Use only the operation kinds listed as available in campaigns/brief.md.")
+        @(
+            "Currently permitted operation kinds: $($availability.allowed_operations -join ', '). Request, evidence and resource checks still apply."
+        )
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
         $modelHandoff = "The decision-relevant synthesis is in campaigns/brief.md under 'Initial scientific model'."

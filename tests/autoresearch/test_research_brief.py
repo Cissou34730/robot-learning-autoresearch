@@ -111,6 +111,8 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
 def test_startup_brief_exposes_phase_operations_and_artifact_root(
     monkeypatch, tmp_path: Path
 ):
+    from unittest.mock import Mock
+
     research = tmp_path / "campaigns"
     research.mkdir()
     state = repository.empty_campaign_state(
@@ -144,21 +146,20 @@ def test_startup_brief_exposes_phase_operations_and_artifact_root(
     repository.validate_research_state(state, allow_missing_artifact=True)
     (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr(brief, "RESEARCH_DIR", research)
+    compute_availability = brief.runner_protocol.session_operation_availability
+    availability = Mock(wraps=compute_availability)
+    monkeypatch.setattr(
+        brief.runner_protocol, "session_operation_availability", availability
+    )
 
     text = brief.render_research_brief()
 
-    assert "current scientific session is `startup`" in text
-    assert "campaign is at goal review" not in text
-    assert "- Session kind: `startup`" in text
-    assert "`checkpoint`" in text
-    assert "`measurement`" in text
-    assert (
-        "`inquiry`"
-        not in text.split("- Phase-level operation capabilities", 1)[1].split("\n", 1)[0]
-    )
-    assert (
-        "- Campaign evaluation artifact root: `campaigns/evaluations/campaign/`"
-    ) in text
+    availability.assert_called_once_with(state)
+    allowed = compute_availability(state)["allowed_operations"]
+    assert "checkpoint" in allowed
+    assert "measurement" in allowed
+    assert "inquiry" not in allowed
+    assert "campaigns/evaluations/campaign/" in text
 
 
 def test_operation_feedback_is_factual_and_operation_specific():

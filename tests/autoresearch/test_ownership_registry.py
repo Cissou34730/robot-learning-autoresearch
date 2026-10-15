@@ -38,6 +38,34 @@ def test_campaign_lab_is_owned_but_not_part_of_recipe_identity():
     assert repository.researcher_change_paths([path]) == [path]
 
 
+@pytest.mark.parametrize(
+    ("path", "owned"),
+    [
+        ("robot_learning/scenario/new.py", True),
+        ("robot_learning/training/new.py", True),
+        ("robot_learning/lab/new.py", True),
+        ("robot_learning/train.py", True),
+        ("robot_learning/scenario/__init__.py", False),
+        ("robot_learning/__init__.py", False),
+        ("robot_learning/extra.py", False),
+    ],
+)
+def test_runner_and_copilot_agree_on_scientific_file_ownership(path, owned):
+    from runner.copilot.path_policy import is_pi_writable_path
+
+    assert protocol.is_researcher_owned(path) is owned
+    assert is_pi_writable_path(path) is owned
+
+
+def test_internal_operation_exchange_is_not_a_coding_child_write():
+    from runner.copilot.path_policy import coding_file_scope
+
+    path = "pi_workspace/operation_request.json"
+    assert protocol.is_researcher_owned(path)
+    with pytest.raises(ValueError):
+        coding_file_scope([path], writable=True)
+
+
 def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path):
     from runner import repository
 

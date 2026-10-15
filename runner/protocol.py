@@ -52,7 +52,11 @@ AUTORESEARCH_BOUNDARY_TEST_PATHS = (
     "tests/autoresearch/test_policy_runtime.py",
 )
 RESEARCHER_VALIDATED_TEST_PATHS = (*AUTORESEARCH_BOUNDARY_TEST_PATHS,)
-RESEARCHER_OWNED_PREFIXES = ("robot_learning/",)
+RESEARCHER_OWNED_PREFIXES = (
+    "robot_learning/scenario/",
+    "robot_learning/training/",
+    "robot_learning/lab/",
+)
 CAMPAIGN_LAB_PREFIXES = ("robot_learning/lab/",)
 RESEARCHER_OWNED_PATHS = {
     "robot_learning/evaluate.py",
@@ -952,6 +956,53 @@ def _latest_session_event(state: dict, session: dict) -> dict | None:
     )
 
 
+def session_operation_availability(state: dict) -> dict:
+    session = state.get("scientific_session")
+    result = {
+        "allowed_operations": [],
+        "checkpoint_required": False,
+        "checkpoint_reason": None,
+        "next_question": None,
+    }
+    if not isinstance(session, dict) or state.get("terminal_state"):
+        return result
+    pending = state.get("pending_operation")
+    if isinstance(pending, dict) and (
+        not pending.get("failure")
+        or pending["progress"] in {"result_ready", "completed"}
+    ):
+        return result
+    active = state.get("active_inquiry")
+    allowed = set(SESSION_OPERATION_MATRIX[session["kind"]])
+    latest = _latest_session_event(state, session)
+    reason = None
+    if session["kind"] == "goal_review":
+        if isinstance(active, dict) and active["opened_in_session"] == session["id"]:
+            reason = f"Inquiry {active['id']} was opened; checkpoint this goal-review session."
+        else:
+            allowed.discard("checkpoint")
+    elif session["kind"] == "inquiry":
+        if active is None:
+            reason = "The inquiry is closed; checkpoint this inquiry session."
+        elif (
+            isinstance(latest, dict)
+            and latest["kind"] == "inquiry"
+            and latest["result"].get("action") == "reframe"
+        ):
+            reason = (
+                f"Inquiry {active['id']} was reframed; checkpoint this inquiry session."
+            )
+    if reason:
+        allowed = {"checkpoint"}
+        result.update(
+            checkpoint_required=True,
+            checkpoint_reason=reason,
+            next_question=active["question"] if isinstance(active, dict) else None,
+        )
+    result["allowed_operations"] = sorted(allowed)
+    return result
+
+
 def _validate_session_operation(
     kind: str,
     request: dict,
@@ -959,10 +1010,20 @@ def _validate_session_operation(
     session: dict,
 ) -> None:
     session_kind = session["kind"]
-    allowed = SESSION_OPERATION_MATRIX[session_kind]
+    availability = session_operation_availability(state)
+    allowed = availability["allowed_operations"]
     if kind not in allowed:
+        if availability["checkpoint_required"]:
+            raise ValueError(
+                "the current session requires a checkpoint before further operation. "
+                + availability["checkpoint_reason"]
+            )
+        if kind == "checkpoint" and session_kind == "goal_review" and allowed:
+            raise ValueError(
+                "goal-review checkpoint requires an inquiry opened in this session"
+            )
         raise ValueError(
-            f"{kind} is not available in a {session_kind} scientific session"
+            f"{kind} is not available in the current {session_kind} scientific session"
         )
     if (
         session_kind == "goal_review"
@@ -976,16 +1037,6 @@ def _validate_session_operation(
         and request.get("action") not in {"reframe", "close"}
     ):
         raise ValueError("inquiry sessions may only reframe or close their inquiry")
-    latest = _latest_session_event(state, session)
-    if (
-        isinstance(latest, dict)
-        and latest["kind"] == "inquiry"
-        and latest["result"].get("action") == "reframe"
-        and kind != "checkpoint"
-    ):
-        raise ValueError(
-            "a reframed inquiry requires a checkpoint before further operation"
-        )
 
 
 def operation_envelope_schema() -> dict:
@@ -993,13 +1044,277 @@ def operation_envelope_schema() -> dict:
         "oneOf": [
             {
                 "type": "object",
-                "properties": {kind: {"type": "object"}},
+                "properties": {kind: operation_body_schema(kind)},
                 "required": [kind],
                 "additionalProperties": False,
             }
             for kind in sorted(OPERATION_KEYS)
         ]
     }
+
+
+def operation_body_schema(kind: str) -> dict:
+    text = {"type": "string", "minLength": 1}
+    strings = {"type": "array", "items": text}
+
+    def body(properties: dict, optional: tuple[str, ...] = ()) -> dict:
+        return {
+            "type": "object",
+            "properties": properties,
+            "required": sorted(set(properties) - set(optional)),
+            "additionalProperties": False,
+        }
+
+    if kind == "training":
+        common = {
+            "seed": {"type": "integer", "minimum": 0},
+            "steps": {"type": "integer", "minimum": 1},
+            "description": text,
+            "rationale": text,
+        }
+        return {
+            "oneOf": [
+                body(
+                    {**common, "initialization": {"const": "fresh", "type": "string"}}
+                ),
+                body(
+                    {
+                        **common,
+                        "initialization": {"const": "transfer", "type": "string"},
+                        "parent": text,
+                    }
+                ),
+            ]
+        }
+    if kind == "measurement":
+        entries = [
+            body(
+                {
+                    "instrument": {"const": "research_evaluation", "type": "string"},
+                    "candidate": text,
+                    "episodes": {"type": "integer", "minimum": 1},
+                    "seed": {"type": "integer", "minimum": 0},
+                    "label": {"type": "string"},
+                },
+                ("label",),
+            ),
+            body(
+                {
+                    "instrument": {"const": "task_reference", "type": "string"},
+                    "candidate": text,
+                    "label": {"type": "string"},
+                },
+                ("label",),
+            ),
+            body(
+                {
+                    "instrument": {"const": "python_module", "type": "string"},
+                    "module": text,
+                    "args": {
+                        "type": "array",
+                        "description": (
+                            "One string per literal module argument. Do not include "
+                            "the module name or a launcher command. Use concrete output paths."
+                        ),
+                        "items": {"type": "string"},
+                    },
+                    "artifact": text,
+                    "label": {"type": "string"},
+                    "inputs": {
+                        "type": "object",
+                        "additionalProperties": body(
+                            {
+                                "operation_id": text,
+                                "artifact_index": {"type": "integer", "minimum": 0},
+                            }
+                        ),
+                    },
+                },
+                ("label", "inputs"),
+            ),
+        ]
+        return body(
+            {
+                "description": text,
+                "rationale": text,
+                "measurements": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {"oneOf": entries},
+                },
+                "paired_comparisons": {
+                    "type": "array",
+                    "items": body({"candidate": text, "reference": text}),
+                },
+            },
+            ("paired_comparisons",),
+        )
+    if kind == "inquiry":
+        common = {
+            "question": text,
+            "goal_connection": text,
+            "closure_condition": text,
+            "rationale": text,
+        }
+        return {
+            "oneOf": [
+                body({**common, "action": {"const": action, "type": "string"}})
+                for action in ("open", "reframe")
+            ]
+            + [
+                body(
+                    {
+                        "action": {"const": "close", "type": "string"},
+                        "outcome": text,
+                        "reason": text,
+                    }
+                )
+            ]
+        }
+    if kind == "checkpoint":
+        fields = repository.CHECKPOINT_FIELDS - {
+            "session_id",
+            "inquiry_id",
+            "scientific_commit",
+        }
+        return body(
+            {
+                field: strings
+                if field in {"evidence_references", "completed_operations"}
+                else text
+                for field in sorted(fields)
+            }
+        )
+    if kind == "model_role":
+        common = {
+            "candidate": text,
+            "reason": text,
+            "evidence": {**strings, "minItems": 1},
+        }
+        return {
+            "oneOf": [
+                body({**common, "action": {"const": action, "type": "string"}})
+                for action in ("set_working", "set_best_known")
+            ]
+            + [
+                body(
+                    {
+                        **common,
+                        "action": {"const": "retain", "type": "string"},
+                        "label": text,
+                    }
+                )
+            ]
+        }
+    if kind == "restore_recipe":
+        return body(
+            {
+                "candidate": text,
+                "reason": text,
+                "paths": {**strings, "minItems": 1},
+            }
+        )
+    if kind == "campaign_conclusion":
+        return body(
+            {
+                "action": {"const": "request_official_assessment", "type": "string"},
+                "reason": text,
+            }
+        )
+    raise ValueError(f"unknown operation kind {kind!r}")
+
+
+def validate_operation_shape(kind: str, request: object) -> None:
+    """Check request structure without resolving state or executing a planner."""
+    schema = operation_body_schema(kind)
+
+    def variant(spec: dict, record: dict, selector: str) -> dict:
+        if "oneOf" not in spec:
+            return spec
+        selected = next(
+            (
+                item
+                for item in spec["oneOf"]
+                if item["properties"][selector]["const"] == record.get(selector)
+            ),
+            None,
+        )
+        if selected is None:
+            raise ValueError(f"{kind} {selector} is invalid: {record.get(selector)!r}")
+        return selected
+
+    def fields(record: object, spec: dict, description: str) -> None:
+        if not isinstance(record, dict):
+            raise TypeError(f"{description} must be an object")
+        missing = set(spec["required"]) - set(record)
+        extra = set(record) - set(spec["properties"])
+        if missing or extra:
+            raise ValueError(
+                f"{description} fields are invalid: "
+                f"missing={sorted(missing)}, extra={sorted(extra)}"
+            )
+        for name, value in record.items():
+            field = spec["properties"][name]
+            expected = field["type"]
+            if expected == "string":
+                if "minLength" in field:
+                    _nonempty(record, name, f"{description} {name}")
+                elif not isinstance(value, str):
+                    raise TypeError(f"{description} {name} must be a string")
+                if "const" in field and value != field["const"]:
+                    raise ValueError(f"{description} {name} must be {field['const']!r}")
+            elif expected == "integer":
+                _integer(
+                    record, name, f"{description} {name}", minimum=field["minimum"]
+                )
+            elif expected == "object" and not isinstance(value, dict):
+                raise TypeError(f"{description} {name} must be an object")
+            elif expected == "array":
+                if not isinstance(value, list):
+                    raise TypeError(f"{description} {name} must be a list")
+                if len(value) < field.get("minItems", 0):
+                    raise ValueError(f"{description} {name} must not be empty")
+                if field["items"].get("type") == "string" and any(
+                    not isinstance(item, str)
+                    or ("minLength" in field["items"] and not item.strip())
+                    for item in value
+                ):
+                    raise TypeError(f"{description} {name} must be a list of strings")
+
+    if not isinstance(request, dict):
+        raise TypeError(f"{kind} request must be an object")
+    selector = "initialization" if kind == "training" else "action"
+    schema = variant(schema, request, selector)
+    fields(request, schema, f"{kind} request")
+    if kind != "measurement":
+        return
+    entry_schema = schema["properties"]["measurements"]["items"]
+    for index, entry in enumerate(request["measurements"]):
+        if not isinstance(entry, dict):
+            raise TypeError(f"measurement {index} must be an object")
+        fields(
+            entry, variant(entry_schema, entry, "instrument"), f"measurement {index}"
+        )
+        if entry["instrument"] == "python_module":
+            validate_measurement_inputs(entry)
+    comparison_schema = schema["properties"]["paired_comparisons"]["items"]
+    for index, comparison in enumerate(request.get("paired_comparisons", [])):
+        fields(comparison, comparison_schema, f"paired comparison {index}")
+
+
+def validate_operation_submission(operation: dict) -> str:
+    kind = validate_operation_envelope(operation)
+    validate_operation_shape(kind, operation[kind])
+    if kind == "measurement":
+        for index, entry in enumerate(operation[kind]["measurements"]):
+            if entry["instrument"] == "python_module" and any(
+                "{artifact}" in argument for argument in entry["args"]
+            ):
+                raise ValueError(
+                    f"measurement {index} args contains unresolved '{{artifact}}'; "
+                    "supply the concrete output path in the module arguments"
+                )
+    return kind
 
 
 def validate_operation_envelope(operation: dict) -> str:
@@ -1040,12 +1355,12 @@ def validate_operation_request(operation: dict, state: dict) -> str:
         raise TypeError("operation request must be an object")
     if state["terminal_state"] is not None:
         raise ValueError("the campaign is terminal")
+    kind = validate_operation_submission(operation)
     pending = state["pending_operation"]
     if isinstance(pending, dict):
         if operation != pending["request"]:
             raise ValueError("a different Runner operation is already pending")
         return str(pending["kind"])
-    kind = validate_operation_envelope(operation)
     request = operation[kind]
     session = require_active_session(state)
     _validate_session_operation(kind, request, state, session)

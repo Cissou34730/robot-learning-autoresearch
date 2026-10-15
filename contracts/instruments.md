@@ -19,8 +19,9 @@ inquiry | measurement | training | checkpoint | model_role |
 restore_recipe | campaign_conclusion
 ```
 
-The SDK schema exposes these exclusive wrappers and validates their structure
-before dispatch. Runner uses the same wrapper validation, then validates
+The SDK schema exposes the exclusive wrappers and their complete body structures.
+Shared structural validation checks the request before dispatch.
+Runner uses the same structural validation, then validates
 the operation body against the active state. A flat operation record with
 `kind` and body fields is not a submission envelope. Errors identify
 missing wrappers, extra top-level fields, or a non-object body.
@@ -32,7 +33,9 @@ Evidence references must identify completed operations.
 `submit_operation` returns a compact factual result or the exact rejection/error,
 operation identity when completed, and changed state: session identity and kind,
 actual completed-operation list, roles, resource counts, pending/terminal status,
-and required checkpoint transition. Full artifact inventories and logs are not
+currently permitted operation kinds, and required checkpoint transition.
+Request, evidence and resource checks still apply to these kinds.
+Full artifact inventories and logs are not
 attached to each completion. Detailed artifacts stay available through
 `artifact_evidence_query`; preserved training logs through `training_log_query`.
 Ordinary results continue in this same conversation,
@@ -42,10 +45,16 @@ ends this context; the launcher creates the next bounded context when permitted.
 The SDK process/client remains alive across those contexts.
 
 Correct a rejected request in this conversation. Two rejected submissions stop
-the bounded session, preserving the existing one-retry limit. Implementation
-errors retain the PI's repair authority: diagnose, use `scientific_coding` for
-source repair, review actual changes, and submit a replacement envelope or
-`{"request": null}` to reaccept the failed pending operation after repair.
+the bounded session, preserving the existing one-retry limit.
+`implementation_error` means an accepted operation failed. It does not diagnose
+a source defect. Inspect the actual error and accepted invocation before
+deciding whether to correct the request or repair source.
+Use `artifact_evidence_query` with `action=metadata`, the pending `operation_id`,
+and `path=/pending` to retrieve its exact request and resolved measurements.
+Changed arguments require a replacement envelope.
+Use `scientific_coding` only when source repair is needed.
+`{"request": null}` reaccepts the same request after source repair.
+It cannot correct request arguments.
 An execution failure is history, not scientific evidence. `validation_fatal`,
 `controller_fatal`, publication failures, interruption, terminality and
 recovery-required results prohibit further submission and evidence queries
@@ -85,13 +94,11 @@ session retains its existing publication interface and does not expose coding.
 - `allowed_paths`: exact repository-relative writable scientific files;
 - `read_paths`: optional additional relevant scientific sources, contracts,
   `AGENTS.md` or the frozen `pi_workspace/scientific_model.md`;
-- `source_context`: optional source context selected by the main PI;
-- `verification_path`: a Python module file under `robot_learning/lab/`,
-  included in `allowed_paths`;
+- `source_context`: optional PI-selected requirements, caller context and errors;
 - `session_handle`: optional returned native child identity for same-change
   corrections within this bounded context.
 
-New calls require `intent`, `allowed_paths` and `verification_path`.
+New calls require `intent` and `allowed_paths`.
 Corrections may supply only `intent` and `session_handle`, with optional
 `source_context`. Omit scope fields to reuse the stored binding. Explicitly
 resubmitted fields must resolve to the same binding; changed fields reject
@@ -100,10 +107,13 @@ with their names. A new scope requires a new PI-directed call without a handle.
 Protected writes, directories, wildcard scopes, operation requests and arbitrary
 filesystem paths are refused. New writable files are permitted even when their
 parent directory does not exist. The frozen scientific model remains read-only,
-and only explicitly selected files enter the coding read binding. Rejections
+and only explicitly selected files enter the coding read binding.
+Coder and reviewer also receive fixed environment, scenario and operation-contract
+text. This text does not expand file permissions or include the campaign conversation.
+Rejections
 identify the offending path and reason; a rejected read binding does not imply
 new-file creation is unavailable. A continued child must keep the same writable,
-readable and verification scope. The SDK dispatches the registered native
+readable scope. The SDK dispatches the registered native
 coding subagent with the supplied objective and source context, rather than
 creating a separate SDK session or passing the PI's campaign conversation.
 Corrections are sent to that same native child.
@@ -129,9 +139,9 @@ unlocking operation submission.
 
 After the first completed handoff for an assignment, the handler starts an
 independent native `scientific-reviewer` using GPT-6 Luna with max reasoning.
-It receives the original request, actual changed files and diff, and proposed
-checks. Corrections reuse that native reviewer. They provide the correction
-intent and context, incremental changes, proposed checks and previous completed
+It receives the original request, supplied task context, actual changed files and diff.
+Corrections reuse that native reviewer. They provide the correction
+intent and context, incremental changes and previous completed
 review, without repeating the original request. The result identifies the review
 `mode` as `initial` or `correction` and its `coding_session_handle`.
 
@@ -148,7 +158,7 @@ The native coding handler sends the batch to the same coder.
 It then sends the incremental repair to the same reviewer.
 The handler does not return to the main PI between these engineering steps.
 `ready_for_pi` returns a completed package. `needs_pi` returns that status and
-the reviewer's reason, with current source changes and unexecuted check proposals.
+the reviewer's reason and current source changes.
 A repeated automatic repair ID or a repair with no source changes stops automatic
 dispatch and returns `needs_pi` with an explicit reason.
 
@@ -162,18 +172,16 @@ It verifies the reported reviewer model and reasoning, and reports unavailable o
 review explicitly rather than treating it as a completed review.
 
 The result returns the child handle, actual per-invocation changed-file manifest
-and diff, verification module, proposed `python_module` entry and unchecked
-scope. The manifest and diff include all repairs within that invocation.
+and diff, coder summary and unchecked scope.
+The manifest and diff include all repairs within that invocation.
 `repair_history` records each dispatched batch, its confirmed findings,
 decision reason, coder status and follow-up review status.
 Completed repairs also record the coder's summary and the reviewer's next decision
 and reason.
-A `compatibility_check` handoff supplies its own `check_args`,
-`artifact_filename` and `check_description`, or null for unchanged integration.
-It uses a separate mode of the same scoped verification module, with a distinct
-artifact basename. The result exposes this entry as
-`proposed_compatibility_check` alongside `proposed_check`. Both are unexecuted
-proposals. Large review output is offloaded with a file pointer. Errors and
+The handoff requires no verification module, argument template or execution proposal.
+It performs no argument substitution and executes no code.
+Measurement or analysis code is authored only when the PI explicitly requests it.
+Large review output is offloaded with a file pointer. Errors and
 timeouts return partial changes when available; cancellation preserves review output.
 The `review` entry contains its status, reviewer handle, summary, findings,
 unchecked scope, actual reported models/reasoning and per-invocation usage.
@@ -185,9 +193,8 @@ strings. No findings means no confirmed defect found, not approval.
 Only an explicit, valid `request_changes` decision routes an engineering batch.
 Verification gaps and questions do not enter that batch.
 Scientific decisions remain with the PI. Review is not a scientific gate.
-The proposed check is not executed by this tool. The main PI reviews the actual
-changed source and executable check before scientific reliance or submission.
-Runner executes the reviewed check through the existing measurement instrument.
+The main PI reviews actual changed source and reported limitations before scientific reliance.
+Scientific measurements remain separate PI-authorized operations executed by Runner.
 No coding result certifies scientific validity. Native task lifecycle is
 owned by Copilot SDK 1.0.19; operation acceptance and scientific execution
 remain owned by the existing trusted controller and Runner.
@@ -270,11 +277,19 @@ The interface supports:
 - `batch`: apply related query specifications to the same verified artifact;
 - `read`: retrieve the artifact's complete content through successive pages.
 - `operations`: query compact operation metadata without opening artifacts;
-- `metadata`: query one operation's record, artifact references, or checkpoints.
+- `metadata`: query one operation's record, artifact references, checkpoints,
+  or accepted pending request.
 
 `operations` does not take `operation_id`. Its default path selects operation
 rows. `metadata` requires `operation_id`. Its paths are `/operation`, `/record`,
-`/artifacts`, and `/checkpoints`. Its default path selects the operation summary.
+`/artifacts`, `/checkpoints`, and `/pending`. Its default path selects the operation summary.
+The operation index includes an accepted pending operation.
+Its status is `pending` or `failed_pending`, not completed evidence.
+For that operation, `/pending/request` returns the exact wrapped accepted request.
+`/pending/measurements` returns resolved invocations and declared outputs.
+`/pending` also includes progress, failure, request fingerprint and completed-measurement count.
+These fields remain available after an execution failure or context replacement.
+They do not authorize artifact-content access to incomplete measurements.
 Both actions support the existing query filters, selection, aggregates, and pages.
 They report `artifact_contents_inspected` as false. Recorded metadata is not
 an inspection of measurement contents.
@@ -513,6 +528,11 @@ Use this interface:
 Set `instrument` to `python_module`.
 The `module`, `args`, and `artifact` fields are required.
 The `label` and `inputs` fields are optional.
+Each `args` element is one literal module argument, not a full launch command.
+Do not include the module name or launcher in `args`.
+Pass a concrete output path in the arguments when the module requires it.
+`artifact` declares the expected output. It does not substitute an argument.
+Unresolved `{artifact}` tokens are rejected before acceptance.
 The module must be under `robot_learning.lab`, `robot_learning.scenario`, or
 `robot_learning.training`.
 The artifact must be a campaign JSON path under
@@ -531,6 +551,9 @@ the module runs. Results retain the input identities in their compact metadata.
 Missing, changed, or unavailable inputs are errors. The Runner never chooses
 another artifact, changes the module, or decides how the PI repairs the request.
 Arguments without input placeholders remain unchanged.
+Execution errors identify the accepted module arguments and declared output.
+A successful module exit without that output is an operation failure.
+Runner reports these facts without diagnosing the source or selecting a repair.
 
 A paired-comparison entry uses this interface:
 

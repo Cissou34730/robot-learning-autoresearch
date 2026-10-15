@@ -1075,10 +1075,20 @@ def execute_measurement(state: dict, pending: dict) -> int:
                     output_path = repository.resolve_repo_path(spec["artifact"])
                     output_path.parent.mkdir(parents=True, exist_ok=True)
                     output_path.unlink(missing_ok=True)
-                    execution.run_module(spec["module"], *spec["args"])
+                    invocation = (
+                        f"module={spec['module']}, args={json.dumps(spec['args'])}, "
+                        f"declared_artifact={spec['artifact']}"
+                    )
+                    try:
+                        execution.run_module(spec["module"], *spec["args"])
+                    except RuntimeError as error:
+                        raise RuntimeError(
+                            f"{error}\nAccepted invocation: {invocation}"
+                        ) from error
                     if not output_path.is_file():
                         raise RuntimeError(
-                            "python_module measurement produced no declared artifact"
+                            "python_module returned without its declared artifact. "
+                            f"Accepted invocation: {invocation}"
                         )
                     _json_object_artifact(
                         output_path,
@@ -2111,6 +2121,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     parser.add_argument("--check-operation", action="store_true")
     parser.add_argument("--check-operation-input", action="store_true")
+    parser.add_argument("--operation-state-input", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
     parser.add_argument(
         "--start-session", choices=("startup", "goal_review", "inquiry"), default=None
@@ -2137,6 +2148,10 @@ def main() -> int:
     global TIMESTEPS
     args = parse_args()
     TIMESTEPS = args.timesteps
+    if args.operation_state_input:
+        state = json.loads(sys.stdin.read())
+        print(json.dumps(protocol.session_operation_availability(state)))
+        return 0
     if args.validate_session_backend:
         if not all(
             (

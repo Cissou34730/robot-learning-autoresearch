@@ -48,10 +48,9 @@ class ScientificCodingParams(BaseModel):
         json_schema_extra={
             "anyOf": [
                 {
-                    "required": ["allowed_paths", "verification_path"],
+                    "required": ["allowed_paths"],
                     "properties": {
                         "allowed_paths": {"type": "array"},
-                        "verification_path": {"type": "string"},
                         "session_handle": {"type": "null"},
                     },
                 },
@@ -75,38 +74,33 @@ class ScientificCodingParams(BaseModel):
         max_length=64,
         description="Additional readable files; omit to reuse correction scope.",
     )
-    source_context: str = Field(default="", max_length=32_000)
-    verification_path: str | None = Field(
-        default=None,
-        min_length=1,
-        description="Scoped lab verification module; omit for a correction.",
+    source_context: str = Field(
+        default="",
+        max_length=32_000,
+        description=(
+            "Task-specific facts, concrete input/output requirements, caller context "
+            "and observed errors. The child does not receive the PI conversation. "
+            "Current scenario, authority and operation-contract excerpts are supplied "
+            "by the harness; select additional source files in read_paths."
+        ),
     )
     session_handle: str | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
     def require_initial_scope(self) -> ScientificCodingParams:
-        if not self.session_handle and (
-            self.allowed_paths is None or self.verification_path is None
-        ):
+        if not self.session_handle and self.allowed_paths is None:
             raise ValueError(
-                "A new coding call requires allowed_paths and verification_path. "
+                "A new coding call requires allowed_paths. "
                 "A correction requires the returned session_handle and intent."
             )
         return self
 
 
-class CodingCheck(BaseModel):
+class CodingReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    check_args: list[str]
-    artifact_filename: str
-    check_description: str = Field(min_length=1)
-
-
-class CodingReport(CodingCheck):
-    summary: str
+    summary: str = Field(min_length=1)
     unchecked_scope: list[str] = Field(min_length=1)
-    compatibility_check: CodingCheck | None = None
 
 
 class ReviewFinding(BaseModel):
@@ -198,7 +192,7 @@ class OperationSubmissionParams(BaseModel):
     ) -> dict[str, object] | None:
         if request is not None:
             try:
-                protocol.validate_operation_envelope(request)
+                protocol.validate_operation_submission(request)
             except TypeError as error:
                 raise ValueError(str(error)) from error
         return request

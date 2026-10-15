@@ -848,80 +848,9 @@ def _require_exact_fields(value: object, fields: set[str], description: str) -> 
 
 
 def _validate_operation_request_shape(kind: str, request: object) -> None:
-    if not isinstance(request, dict):
-        raise TypeError(f"{kind} request must be an object")
-    if kind == "training":
-        required = {"initialization", "seed", "steps", "description", "rationale"}
-        allowed = required | {"parent"}
-        if frozenset(request) not in {frozenset(required), frozenset(allowed)}:
-            raise ValueError("training request fields are invalid")
-        return
-    if kind == "measurement":
-        required = {"description", "rationale", "measurements"}
-        allowed = required | {"paired_comparisons"}
-        if frozenset(request) not in {frozenset(required), frozenset(allowed)}:
-            raise ValueError("measurement request fields are invalid")
-        measurements = request["measurements"]
-        if not isinstance(measurements, list):
-            raise TypeError("measurement request measurements must be a list")
-        entry_fields = {
-            "research_evaluation": {
-                "instrument",
-                "candidate",
-                "episodes",
-                "seed",
-                "label",
-            },
-            "task_reference": {"instrument", "candidate", "label"},
-            "python_module": {"instrument", "module", "args", "artifact", "label"},
-        }
-        for entry in measurements:
-            if (
-                not isinstance(entry, dict)
-                or entry.get("instrument") not in entry_fields
-            ):
-                raise ValueError("measurement request has an invalid instrument")
-            fields = entry_fields[entry["instrument"]]
-            allowed = fields | (
-                {"inputs"} if entry["instrument"] == "python_module" else set()
-            )
-            if not fields - {"label"} <= set(entry) <= allowed:
-                raise ValueError("measurement request entry fields are invalid")
-            if entry["instrument"] == "python_module":
-                from runner.protocol import validate_measurement_inputs
+    from runner.protocol import validate_operation_shape
 
-                validate_measurement_inputs(entry)
-        comparisons = request.get("paired_comparisons", [])
-        if not isinstance(comparisons, list) or any(
-            not isinstance(item, dict) or set(item) != {"candidate", "reference"}
-            for item in comparisons
-        ):
-            raise ValueError("paired comparison fields are invalid")
-        return
-    if kind == "inquiry":
-        action = request.get("action")
-        fields = (
-            {"action", "outcome", "reason"}
-            if action == "close"
-            else {
-                "action",
-                "question",
-                "goal_connection",
-                "closure_condition",
-                "rationale",
-            }
-        )
-    elif kind == "checkpoint":
-        fields = CHECKPOINT_FIELDS - {"session_id", "inquiry_id", "scientific_commit"}
-    elif kind == "model_role":
-        fields = {"action", "candidate", "reason", "evidence"}
-        if request.get("action") == "retain":
-            fields.add("label")
-    elif kind == "restore_recipe":
-        fields = {"candidate", "reason", "paths"}
-    else:
-        fields = {"action", "reason"}
-    _require_exact_fields(request, fields, f"{kind} request")
+    validate_operation_shape(kind, request)
 
 
 def _validate_manifest(value: object, description: str) -> None:

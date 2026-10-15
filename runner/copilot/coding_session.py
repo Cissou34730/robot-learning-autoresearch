@@ -6,7 +6,6 @@ import argparse
 import asyncio
 import difflib
 import json
-import re
 import time
 import uuid
 
@@ -19,7 +18,6 @@ from runner.copilot.coding_contracts import (
     REVIEW_MODEL,
     REVIEW_REASONING,
     REVIEW_TOOLS,
-    CodingCheck,
     CodingReport,
     ReviewReport,
     ScientificCodingParams,
@@ -430,7 +428,7 @@ class ScientificCoding:
     def agent(self) -> dict:
         return {
             "name": "scientific-coder",
-            "description": "Bounded scientific source and verification author.",
+            "description": "Bounded scientific source author.",
             "prompt": CODING_INSTRUCTIONS,
             "tools": CODING_TOOLS,
             "infer": False,
@@ -441,7 +439,7 @@ class ScientificCoding:
         return {
             "name": "scientific-reviewer",
             "display_name": "Scientific rubber duck",
-            "description": "Read-only scientific source and verification reviewer.",
+            "description": "Read-only implementation and logic reviewer.",
             "prompt": REVIEW_INSTRUCTIONS,
             "tools": REVIEW_TOOLS,
             "model": REVIEW_MODEL,
@@ -459,16 +457,20 @@ class ScientificCoding:
                 "Use scientific_coding for scientific source changes.\n\n"
                 "In intent, state what to build, its actual inputs and expected "
                 "outputs, and what must stay unchanged.\n\n"
-                "Select writable files in allowed_paths, additional readable files "
-                "in read_paths, and the check module in verification_path.\n\n"
-                "Put necessary background in source_context. The child does not "
-                "receive your conversation.\n\n"
+                "Select exact writable files in allowed_paths and additional "
+                "readable source and caller files in read_paths.\n\n"
+                "Put concrete input/output requirements, scientific constraints, "
+                "caller context and observed errors in source_context. The child "
+                "does not receive your conversation. The harness supplies current "
+                "scenario, authority and operation-contract text to both authors "
+                "and reviewers, without expanding their file permissions.\n\n"
                 "An independent reviewer examines the initial delivery. "
                 "It requests batched engineering repairs from the same coder, "
                 "then checks the repair and affected regressions. "
                 "You receive the final source, classified findings, repair history "
-                "and proposed check, or a needs_pi reason. "
-                "Scientific choices remain yours. Only Runner executes checks.\n\n"
+                "or a needs_pi reason. No verification module or executable check "
+                "proposal is required. Scientific choices and operation requests "
+                "remain yours. Only Runner executes scientific operations.\n\n"
                 "Continue the same change using session_handle; its file "
                 "permissions remain unchanged."
             ),
@@ -631,52 +633,49 @@ class ScientificCoding:
                 "Installed scientific APIs: native MuJoCo 3.12.0, NOT mujoco-py; "
                 "Gymnasium 1.3.0; Stable-Baselines3 2.9.0. Dependencies and manifests "
                 "are fixed and human-owned. SDK 1.0.19 is a harness runtime detail, "
-                "not permission to edit the harness. Author scoped source and a "
-                "defect-sensitive laboratory verification proposal only; execute nothing. "
+                "not permission to edit the harness. Author only the requested "
+                "scoped source; execute nothing. Read the supplied task_context "
+                "and relevant authorized source and callers before editing. "
                 "Use scientific_api_reference for unfamiliar installed APIs. "
-                "Changed integration needs a small artifact-independent production-path "
-                "compatibility proposal, not just an import or saved-JSON check. "
-                "The parent PI must review actual diffs and executable checks. "
+                "Do not add mandatory check modules or execution proposals. "
+                "The reviewer checks implementation errors and logic. "
+                "The parent PI must review actual diffs. "
                 "No engineering handoff certifies science or Runner acceptance.\n"
                 + json.dumps(self.binding, ensure_ascii=False)
             )
         }
 
     def report(self, response: str) -> CodingReport:
-        report = CodingReport.model_validate_json(response)
-        if (
-            self.binding is None
-            or not (ROOT / self.binding["verification_path"]).is_file()
-        ):
-            raise ValueError("Missing scoped verification module.")
-        checks: list[CodingCheck] = [report]
-        if report.compatibility_check is not None:
-            checks.append(report.compatibility_check)
-        for check in checks:
-            if not re.fullmatch(
-                r"[A-Za-z0-9_-]+\.json", check.artifact_filename
-            ) or not any("{artifact}" in argument for argument in check.check_args):
-                raise ValueError(
-                    "Invalid executable check proposal or artifact basename."
-                )
-        if len({check.artifact_filename for check in checks}) != len(checks):
-            raise ValueError(
-                "Compatibility and behavioral checks need distinct artifact basenames."
-            )
-        return report
+        return CodingReport.model_validate_json(response)
 
-    def check_proposal(self, check: CodingCheck, module: str) -> dict:
-        artifact = (
-            f"campaigns/evaluations/{self.args.campaign_id}/{check.artifact_filename}"
+    def task_context(self) -> dict[str, str]:
+        authority = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        instruments = (ROOT / "contracts" / "instruments.md").read_text(
+            encoding="utf-8"
         )
+
+        def excerpt(text: str, start: str, end: str) -> str:
+            _, found, tail = text.partition(start)
+            if not found:
+                raise ValueError(f"Required coding-context section is missing: {start}")
+            selected, found, _ = tail.partition(end)
+            if not found:
+                raise ValueError(f"Required coding-context boundary is missing: {end}")
+            return start + selected
+
         return {
-            "instrument": "python_module",
-            "module": module,
-            "args": [
-                argument.replace("{artifact}", artifact)
-                for argument in check.check_args
-            ],
-            "artifact": artifact,
+            "authority": excerpt(authority, "## Environment", "## Layout"),
+            "scenario": (ROOT / "contracts" / "scenario.md").read_text(
+                encoding="utf-8"
+            ),
+            "operation_envelope": excerpt(
+                instruments,
+                "## Operation request envelope",
+                "## Scientific coding interface",
+            ),
+            "python_module": excerpt(
+                instruments, "A `python_module` entry", "A paired-comparison entry"
+            ),
         }
 
     def stop_hook(self, request, invocation):
@@ -744,32 +743,17 @@ class ScientificCoding:
                     "a handle from another context cannot authorize a correction."
                 )
         supplied = params.model_dump(
-            include={"allowed_paths", "read_paths", "verification_path"},
+            include={"allowed_paths", "read_paths"},
             exclude_none=True,
         )
         scope = {**(previous or {}), **supplied}
-        if "allowed_paths" not in scope or "verification_path" not in scope:
-            raise ValueError(
-                "A new coding call requires allowed_paths and verification_path."
-            )
+        if "allowed_paths" not in scope:
+            raise ValueError("A new coding call requires allowed_paths.")
         paths = coding_file_scope(scope["allowed_paths"], writable=True)
         reads = paths | coding_file_scope(scope.get("read_paths", []), writable=False)
-        verification = next(
-            iter(coding_file_scope([scope["verification_path"]], writable=True))
-        )
-        if (
-            verification not in paths
-            or not verification.startswith("robot_learning/lab/")
-            or not verification.endswith(".py")
-            or any(not part.isidentifier() for part in verification[:-3].split("/"))
-        ):
-            raise ValueError(
-                "verification_path must be a scoped robot_learning/lab Python module."
-            )
         binding = {
             "allowed_paths": sorted(paths),
             "read_paths": sorted(reads),
-            "verification_path": verification,
         }
         if previous is not None:
             changed = [field for field in binding if binding[field] != previous[field]]
@@ -831,9 +815,9 @@ class ScientificCoding:
                         agent_type=agent,
                         name=agent,
                         description=(
-                            "Independent source and verification review"
+                            "Independent implementation and logic review"
                             if agent == "scientific-reviewer"
-                            else "Scoped source and verification authoring"
+                            else "Scoped source authoring"
                         ),
                         prompt=prompt,
                     )
@@ -988,7 +972,11 @@ class ScientificCoding:
             uuid.UUID(self.args.campaign_id)
             binding = self.resolve_binding(params)
             paths = frozenset(binding["allowed_paths"])
-            verification = binding["verification_path"]
+            context = (
+                self.original_requests[params.session_handle]["task_context"]
+                if params.session_handle
+                else self.task_context()
+            )
             if params.session_handle:
                 tasks = await self.session.rpc.tasks.list()
                 child = next(
@@ -1034,8 +1022,6 @@ class ScientificCoding:
         cancelled = False
         result = {
             "status": "error",
-            "verification_module": verification[:-3].replace("/", "."),
-            "check_executed": False,
             "review_required": True,
             "repair_history": [],
             "unchecked_scope": ["No scientific check has been executed by this tool."],
@@ -1046,6 +1032,7 @@ class ScientificCoding:
                 "intent": params.intent,
                 **binding,
                 "source_context": params.source_context,
+                "task_context": context,
             }
             coding_handle = params.session_handle
             step_before = before
@@ -1067,18 +1054,6 @@ class ScientificCoding:
                 result.update(
                     {
                         "summary": report.summary,
-                        "proposed_check": self.check_proposal(
-                            report, result["verification_module"]
-                        ),
-                        "proposed_compatibility_check": (
-                            self.check_proposal(
-                                report.compatibility_check,
-                                result["verification_module"],
-                            )
-                            if report.compatibility_check is not None
-                            else None
-                        ),
-                        "check_description": report.check_description,
                         "unchecked_scope": [
                             "No scientific check has been executed by this tool.",
                             *report.unchecked_scope,
@@ -1093,7 +1068,6 @@ class ScientificCoding:
                     "status": "error",
                     "mode": review_mode,
                     "coding_session_handle": coder_handle,
-                    "check_executed": False,
                 }
                 result["review"] = review
                 self.console.line(
@@ -1105,11 +1079,6 @@ class ScientificCoding:
                     "coder_unchecked_scope": report.unchecked_scope,
                     "changes": result["changes"],
                     "diff": result["diff"],
-                    "verification_module": result["verification_module"],
-                    "proposed_check": result["proposed_check"],
-                    "proposed_compatibility_check": result[
-                        "proposed_compatibility_check"
-                    ],
                 }
                 if review_handle is None:
                     review_request["request"] = self.original_requests[coder_handle]
@@ -1130,6 +1099,7 @@ class ScientificCoding:
                             "previous_review": previous.model_dump()
                             if previous is not None
                             else None,
+                            "task_context": context,
                         }
                     )
                 try:
@@ -1216,6 +1186,7 @@ class ScientificCoding:
                         "Report any conflict with the contracts or installed APIs."
                     ),
                     **binding,
+                    "task_context": context,
                     "source_context": json.dumps(
                         {
                             "requested_changes": pending_repair["requested_changes"],
@@ -1231,7 +1202,6 @@ class ScientificCoding:
                     "status": "pending",
                     "mode": "correction",
                     "coding_session_handle": coder_handle,
-                    "check_executed": False,
                 }
         except asyncio.CancelledError:
             cancelled = True
@@ -1267,7 +1237,7 @@ class ScientificCoding:
             result["review_output_path"] = str(output)
             encoded = json.dumps(result, ensure_ascii=False)
         self.console.line(
-            f"  > scientific_coding: {result['status']}; source/check review required"
+            f"  > scientific_coding: {result['status']}; source review required"
         )
         if cancelled:
             self.console.line(

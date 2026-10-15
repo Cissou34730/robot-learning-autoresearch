@@ -67,8 +67,8 @@ scientific API versions above; it cannot install or change dependencies.
 Both roles can inspect installed APIs through `scientific_api_reference`.
 
 Each new coding assignment receives an independent native GPT-6 Luna review at
-max reasoning. The reviewer receives the original request, actual changes and
-proposed checks. Corrections reuse that reviewer to check the repair and affected
+max reasoning. The reviewer receives the original request, supplied contract
+context and actual changes. Corrections reuse that reviewer to check the repair and affected
 regressions, not restart the original investigation. Its reads remain exactly
 scoped, with no write or execution authority. Findings distinguish demonstrated
 defects, verification gaps and unresolved questions.
@@ -82,10 +82,12 @@ remain with the PI. The reviewer does not approve scientific logic.
 Runner does not initiate or coordinate these repairs.
 
 Reviewer usage is recorded separately from coder and PI usage.
-For changed library/runtime integration, the child proposes a small
-artifact-independent compatibility mode in its scoped verification module.
-The PI reviews actual production-path coverage. Runner executes the reviewed
-proposal through the existing `python_module` instrument before larger work.
+Coder and reviewer receive fixed environment, scenario and operation-contract
+text with the PI's selected requirements, source context and exact file binding.
+The coding handoff does not require a verification module or executable proposal.
+It does not execute code or convert argument templates.
+The PI reviews the source and reported limitations.
+Ordinary scientific measurements remain separate PI-authorized operations.
 Analysis code is authored in the PI laboratory and executed by Runner.
 The preliminary analyst retains its existing tools and scientific-model
 publication permission; coding delegation is not exposed in that phase.

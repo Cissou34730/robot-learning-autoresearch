@@ -340,15 +340,17 @@ def _session_lines(state: dict) -> list[str]:
     session = state["scientific_session"]
     if not isinstance(session, dict):
         return ["- None; the next scientific work begins from durable state."]
-    allowed = sorted(runner_protocol.SESSION_OPERATION_MATRIX[session["kind"]])
+    availability = runner_protocol.session_operation_availability(state)
+    allowed = availability["allowed_operations"]
     evaluation_root = (
         f"campaigns/evaluations/{runner_repository.current_campaign_id(state)}/"
     )
     return [
         f"- Session kind: `{session['kind']}`",
-        "- Phase-level operation capabilities (current transition rules may "
-        "further restrict them): "
-        + ", ".join(f"`{operation}`" for operation in allowed),
+        "- Currently permitted operation kinds (request, evidence and resource "
+        "checks still apply): "
+        + (", ".join(f"`{operation}`" for operation in allowed) or "none"),
+        "- Required transition: " + (availability["checkpoint_reason"] or "none"),
         f"- Campaign evaluation artifact root: `{evaluation_root}`",
         f"- Objective: {session['objective']}",
         f"- Inquiry: `{session['inquiry_id'] or '-'}`",

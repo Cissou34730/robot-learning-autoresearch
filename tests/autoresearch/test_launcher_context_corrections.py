@@ -118,6 +118,91 @@ def test_inquiry_reframe_forces_checkpoint_before_more_work(monkeypatch):
     protocol._validate_session_operation("checkpoint", {}, state, session)
 
 
+@pytest.mark.parametrize("transition", ["open", "reframe", "close"])
+def test_reported_operation_availability_matches_checkpoint_enforcement(
+    monkeypatch, transition
+):
+    state = _ready_state(
+        monkeypatch,
+        session_kind="goal_review" if transition == "open" else "inquiry",
+    )
+    session = state["scientific_session"]
+    if transition == "open":
+        state["active_inquiry"] = {
+            "id": "I1",
+            "opened_in_session": session["id"],
+            "question": "Current question",
+        }
+    elif transition == "close":
+        state["active_inquiry"] = None
+    session["operation_ids"] = ["E1"]
+    state["operation_events"] = [
+        {
+            "id": "E1",
+            "kind": "inquiry",
+            "status": "completed",
+            "result": {"action": transition},
+        }
+    ]
+    availability = protocol.session_operation_availability(state)
+    assert availability["allowed_operations"] == ["checkpoint"]
+    assert availability["checkpoint_required"] is True
+    assert availability["next_question"] == (
+        state["active_inquiry"]["question"] if state["active_inquiry"] else None
+    )
+    protocol._validate_session_operation("checkpoint", {}, state, session)
+    with pytest.raises(ValueError, match="requires a checkpoint"):
+        protocol._validate_session_operation("measurement", {}, state, session)
+
+
+def test_operation_availability_stops_at_pending_and_terminal_boundaries(monkeypatch):
+    state = _ready_state(monkeypatch, session_kind="goal_review")
+    with pytest.raises(ValueError, match="requires an inquiry opened in this session"):
+        protocol._validate_session_operation(
+            "checkpoint",
+            {},
+            state,
+            state["scientific_session"],
+        )
+    assert (
+        "checkpoint"
+        not in protocol.session_operation_availability(state)["allowed_operations"]
+    )
+    state["pending_operation"] = {"progress": "accepted", "failure": None}
+    assert protocol.session_operation_availability(state)["allowed_operations"] == []
+    state["pending_operation"]["failure"] = "Execution failed"
+    assert (
+        "measurement"
+        in protocol.session_operation_availability(state)["allowed_operations"]
+    )
+    state["pending_operation"]["progress"] = "result_ready"
+    assert protocol.session_operation_availability(state)["allowed_operations"] == []
+    state["pending_operation"] = None
+    state["terminal_state"] = {"status": "official_assessment_requested"}
+    assert protocol.session_operation_availability(state)["allowed_operations"] == []
+
+
+def test_launcher_operation_state_mode_reports_facts_without_loading_or_writing_state(
+    monkeypatch, capsys
+):
+    import io
+    import json
+
+    state = _ready_state(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--operation-state-input"])
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(state)))
+    monkeypatch.setattr(
+        repository, "load_state", lambda **_kwargs: pytest.fail("Unexpected state load")
+    )
+    monkeypatch.setattr(
+        repository, "write_state", lambda _state: pytest.fail("Unexpected state write")
+    )
+    assert run_experiment.main() == 0
+    assert json.loads(
+        capsys.readouterr().out
+    ) == protocol.session_operation_availability(state)
+
+
 @pytest.mark.parametrize("kind", sorted(repository.OPERATION_KINDS))
 def test_every_new_operation_rejects_a_human_owned_scientific_delta(monkeypatch, kind):
     state = _ready_state(monkeypatch)
@@ -443,3 +528,117 @@ def test_relaunch_without_max_inquiries_uses_persisted_value(monkeypatch, capsys
     assert run_experiment.main() == 0
     assert state["campaign"]["max_inquiries"] == 7
     assert capsys.readouterr().out == ""
+
+
+@pytest.mark.parametrize("response", ["valid", "invalid", "null", "missing", "nonzero"])
+def test_launcher_availability_uses_real_process_capture_and_rejects_bad_responses(
+    tmp_path, response
+):
+    import json
+    import shutil
+
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to run launcher helper")
+    uv = shutil.which("uv")
+    if uv is None:
+        pytest.skip("no uv executable to run the installed project stack")
+    code = {
+        "valid": (
+            f"import sys; sys.path.insert(0,{str(ROOT)!r}); "
+            "print('inert transport warning',file=sys.stderr); "
+            "from runner.run_experiment import main; "
+            "sys.argv=['runner','--operation-state-input']; raise SystemExit(main())"
+        ),
+        "invalid": "print('not JSON')",
+        "null": "print('null')",
+        "missing": "print('{}')",
+        "nonzero": "import sys; print('native stderr diagnostic',file=sys.stderr); raise SystemExit(7)",
+    }[response]
+    encoded = json.dumps(
+        {
+            "launcher": str(ROOT / "run_research.ps1"),
+            "controller": str(ROOT / "runner" / "copilot" / "copilot_controller.ps1"),
+            "root": str(ROOT),
+            "uv": uv,
+            "code": code,
+            "response": response,
+        }
+    ).replace("'", "''")
+    exercise = tmp_path / "exercise-availability.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+$values = ConvertFrom-Json -InputObject '{encoded}'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    $values.launcher, [ref]$null, [ref]$null)
+$names = @('Invoke-CooperativeProcess', 'Get-RunnerOperationAvailability',
+           'Get-RequiredSessionSummaryTransition')
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in $names
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+function Test-CampaignStopRequested {{ return $false }}
+function Get-CampaignResourceSummary {{ param($State); return 'inert resources' }}
+function Invoke-Runner {{
+    param($Arguments, $InputText, [switch]$CaptureOutput)
+    return Invoke-CooperativeProcess -FilePath $values.uv -ArgumentList @(
+        'run', '--no-sync', '--project', $values.root, 'python', '-c', $values.code
+    ) -Operation 'read-only transport check' -InputText $InputText -CaptureOutput
+}}
+$state = [pscustomobject]@{{
+    campaign = [pscustomobject]@{{id='campaign'}}
+    scientific_session = [pscustomobject]@{{
+        id='S1'; kind='goal_review'; operation_ids=@(); backend_session_id='inert'
+    }}
+    active_inquiry = [pscustomobject]@{{
+        id='I1'; opened_in_session='S1'; question='Current question'
+    }}
+    pending_operation=$null; terminal_state=$null; operation_events=@(); model_roles=@{{}}
+}}
+if ($values.response -ne 'valid') {{
+    $rejected = $false
+    try {{ Get-RunnerOperationAvailability -State $state | Out-Null }}
+    catch {{
+        $rejected = $true
+        if ($values.response -eq 'nonzero' -and
+            $_.Exception.Message -notlike '*native stderr diagnostic*') {{
+            throw 'Native error detail was lost.'
+        }}
+    }}
+    if (-not $rejected) {{ throw 'Malformed transport response was accepted.' }}
+    exit 0
+}}
+$availability = Get-RunnerOperationAvailability -State $state
+if (-not $availability.checkpoint_required -or
+    $availability.allowed_operations[0] -ne 'checkpoint') {{
+    throw 'Launcher lost the required checkpoint.'
+}}
+if ($script:ProcessStderr -notlike '*inert transport warning*') {{
+    throw 'The real process helper did not capture stderr.'
+}}
+$transition = Get-RequiredSessionSummaryTransition -State $state -Availability $availability
+if (-not $transition) {{ throw 'Required transition disappeared.' }}
+. $values.controller
+$result = Get-CopilotOperationState -State $state
+if (-not $result.checkpoint_required -or
+    $result.allowed_operations[0] -ne 'checkpoint' -or
+    $result.next_question -ne 'Current question') {{
+    throw 'Controller operation state disagrees with Runner.'
+}}
+""",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=45,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

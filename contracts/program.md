@@ -13,7 +13,7 @@ Coding delegation provides implementation assistance, not another scientific
 actor. The PI retains scientific intent, interpretation and review authority.
 Delegation and evidence-reader mechanics are defined in
 `contracts/instruments.md`, not additional scientific lifecycle phases.
-Inspect independent review findings with the changed source and proposed checks.
+Inspect independent review findings with the changed source and reported limitations.
 The reviewer can request engineering repairs within the original PI intent.
 The coder addresses the complete batch before the same reviewer checks it.
 
@@ -25,17 +25,14 @@ A missing assertion does not prove that the production code returns wrong data.
 Do not treat every possible checker improvement as a prerequisite for execution.
 
 Check proposed physical expectations against the robot contract and installed APIs.
-After addressing the relevant defects, request the small production-path check
-through Runner. Its result informs further repair or scientific work.
 Engineering review does not execute checks or replace the PI's scientific judgment.
 
 For changed library or runtime integration, resolve unfamiliar APIs from the
-installed definitions rather than memory. Review and run a small production-path
-compatibility check through Runner before larger or artifact-dependent work.
-The check uses controlled inputs and exercises the changed calls, not only
-module imports or existing JSON. Keep its scope proportional to the integration.
-Successful execution establishes compatibility within that scope, not scientific
-validity or goal progress.
+installed definitions rather than memory.
+The coding handoff requires no verification module or executable proposal.
+The PI selects and authorizes any runtime measurement separately from that handoff.
+Successful execution establishes compatibility only for the calls it exercises.
+It does not establish scientific validity or goal progress.
 
 The Runner is not a scientific actor. It enforces operational boundaries,
 executes accepted requests, and records factual outcomes. It does not choose

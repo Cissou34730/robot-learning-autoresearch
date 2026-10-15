@@ -661,6 +661,64 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     assert persisted["scientific_session"]["id"] == session["id"]
 
 
+@pytest.mark.parametrize("module_failure", [False, True])
+def test_python_module_failure_preserves_invocation_facts(
+    monkeypatch, tmp_path, module_failure
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Run a diagnostic.")
+    module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    args = ["--output", str(artifact), "--label", "literal value with spaces"]
+    request = {
+        "measurement": {
+            "description": "Run the diagnostic",
+            "rationale": "Inspect a quantity",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "robot_learning.lab.diagnostic",
+                    "args": args,
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+
+    def run_module(name, *received):
+        assert name == "robot_learning.lab.diagnostic"
+        assert list(received) == args
+        if module_failure:
+            raise RuntimeError("preserved process error")
+        return "successful exit without output"
+
+    monkeypatch.setattr(execution, "run_module", run_module)
+    monkeypatch.setattr(
+        repository,
+        "publish_campaign_laboratory",
+        lambda _id: {
+            "commit": "c" * 40,
+            "manifest": [],
+            "fingerprint": "f",
+        },
+    )
+    with pytest.raises(RuntimeError) as caught:
+        run_experiment.execute_pending_operation()
+    error = str(caught.value)
+    assert "robot_learning.lab.diagnostic" in error
+    assert json.dumps(args) in error
+    assert request["measurement"]["measurements"][0]["artifact"] in error
+    if module_failure:
+        assert "preserved process error" in error
+    persisted = repository.read_state()
+    assert persisted["pending_operation"]["failure"] == error
+    assert persisted["pending_operation"]["request"] == request
+    assert persisted["operation_events"] == []
+
+
 def test_identical_raw_measurement_after_completion_allocates_next_operation(
     monkeypatch, tmp_path
 ):
