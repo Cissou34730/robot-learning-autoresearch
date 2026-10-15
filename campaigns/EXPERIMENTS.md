@@ -19,3 +19,4 @@
 | E10 | checkpoint | I2 | checkpointed |
 | E11 | model_role | - | assigned |
 | E12 | inquiry | I3 | completed |
+| E13 | checkpoint | - | checkpointed |
