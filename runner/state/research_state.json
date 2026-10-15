@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train and evaluate at least one frozen learned candidate on a development panel drawn from the official target distribution, preserving the official task semantics, and obtain per-episode first-entry time, maximum held steps, interruptions, terminal reason, target radius and angle, inferred branch residuals and joint-limit margin, action saturation, and joint/endpoint velocity traces. Close with a positive, negative, limited, or inconclusive mechanism conclusion when these diagnostics either distinguish the two explanations enough to select the first intervention, or show that they do not and identify the remaining discriminator; aggregate success alone is insufficient.",
-    "goal_connection": "A learned policy can reach the 98% campaign objective only if it succeeds across the full 6\u201320 cm, full-angle distribution and completes the uninterrupted 100-sample hold. Identifying whether failures are concentrated in geometry/branch acquisition or in arrival and hold dynamics determines the first intervention and prevents optimizing a reward or proxy that does not advance complete episode success.",
-    "handoff_conclusion": "M1 completed a candidate-independent loaded-physics probe. The loaded plant has the expected two joints, 0.002 s physics timestep, zero gravity, 0.02 s official control interval, +/-1 controls, and gear 5. Generated compiled inertias vary with configuration: representative shoulder mass-matrix diagonals were 0.01210, 0.01147, and 0.01093 kg*m^2, with shoulder-elbow coupling from 0.000507 to -0.000080 kg*m^2. Ten-substep saturated commands produced approximately 200\u2013212 rad/s^2 joint accelerations and endpoint speeds of 0.61\u20131.64 m/s across representative configurations, while zero commands remained stationary. These facts establish configuration-dependent transient authority and possible one-interval momentum; they do not establish policy failure, feedback-hold instability, or an unavoidable actuator ceiling. M1 also sampled a finite 15-by-25 radius-angle grid over both IK branches: 708 points were feasible and 42 were infeasible, with branch-specific violations and an inspected case where the alternate branch was feasible. The worst feasible sampled branch had 0.751 degrees of minimum joint-limit margin. This supports branch/limit-conditioned behavior as a live risk but is not a continuous reachability proof and does not show any official target is unreachable. I therefore correct E1\u2019s wording that referred to the first candidate\u2019s 'official-task failures': no such failures had yet been observed. The active inquiry instead asks the first-candidate experiment to distinguish the competing explanations\u2014geometry/branch-conditioned acquisition and exposure versus late-arrival or post-entry transient hold instability\u2014before selecting an intervention.",
-    "handoff_question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For the first learned candidate on the official target distribution, which mechanism dominates episode failure\u2014branch/limit-conditioned acquisition and exposure, or late-arrival/post-entry transient hold instability\u2014and which intervention should be tested first to move toward 98% complete uninterrupted holds?",
-    "rationale": "The strongest available evidence is M1, which establishes configuration-dependent transient authority and branch/limit variation but contains no policy episodes, so neither competing explanation has candidate-level support. No best-known candidate exists and official assessment would be unjustified. A bounded candidate-development and diagnostic inquiry has high expected contribution because its result directly chooses between exposure/branch-aware learning and velocity-aware stabilization, while preserving the protected robot, timing, target distribution, and success semantics.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "7ba3ec35c8ded41eb317d93922ce6c82ebcad545",
     "id": "d67ac904-3a02-40a4-b93c-041ec31f1b9b",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -848,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1757,9 +1746,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-15T13:36:15Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited positive mechanism conclusion: for the first candidate under the tested baseline PPO recipe, branch/limit-conditioned acquisition and especially the unrepresented inward target exposure dominate observed failure over late-arrival/post-entry hold instability. In M2, 49 of 55 failures never entered tolerance; 6 entered and later interrupted, with nonzero entry velocities. The first intervention should expand training exposure to the official 6\u201320 cm distribution while preserving official evaluation semantics. The evidence does not isolate exposure from branch/limit control within the pre-entry class, does not explain every no-entry failure, and does not establish the 98% objective.",
+        "reason": "M1 supplied only candidate-independent physics and finite IK facts. T1 supplied the first frozen baseline candidate, and M2 supplied the required official-distribution diagnostics: 65.625% success (105/160), failure terminal reason horizon truncation for all 55 failures, max held steps zero for 49 failures and positive for 6, first-entry steps 14\u201325 for those 6, hold interruptions concentrated in the post-entry cases, target-radius skew toward inward failures, joint-limit margins and control-boundary joint/endpoint velocity traces. This meets I1's closure condition because the failure timing separates the dominant acquisition class from the minority post-entry class sufficiently to choose the first intervention. The remaining branch-versus-exposure attribution and residual hold instability are consequential for subsequent work and will be carried into goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Limited positive mechanism conclusion: for the first candidate under the tested baseline PPO recipe, branch/limit-conditioned acquisition and especially the unrepresented inward target exposure dominate observed failure over late-arrival/post-entry hold instability. In M2, 49 of 55 failures never entered tolerance; 6 entered and later interrupted, with nonzero entry velocities. The first intervention should expand training exposure to the official 6\u201320 cm distribution while preserving official evaluation semantics. The evidence does not isolate exposure from branch/limit control within the pre-entry class, does not explain every no-entry failure, and does not establish the 98% objective.",
+        "reason": "M1 supplied only candidate-independent physics and finite IK facts. T1 supplied the first frozen baseline candidate, and M2 supplied the required official-distribution diagnostics: 65.625% success (105/160), failure terminal reason horizon truncation for all 55 failures, max held steps zero for 49 failures and positive for 6, first-entry steps 14\u201325 for those 6, hold interruptions concentrated in the post-entry cases, target-radius skew toward inward failures, joint-limit margins and control-boundary joint/endpoint velocity traces. This meets I1's closure condition because the failure timing separates the dominant acquisition class from the minority post-entry class sufficiently to choose the first intervention. The remaining branch-versus-exposure attribution and residual hold instability are consequential for subsequent work and will be carried into goal review.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Limited positive mechanism conclusion: for the first candidate under the tested baseline PPO recipe, branch/limit-conditioned acquisition and especially the unrepresented inward target exposure dominate observed failure over late-arrival/post-entry hold instability. In M2, 49 of 55 failures never entered tolerance; 6 entered and later interrupted, with nonzero entry velocities. The first intervention should expand training exposure to the official 6\u201320 cm distribution while preserving official evaluation semantics. The evidence does not isolate exposure from branch/limit control within the pre-entry class, does not explain every no-entry failure, and does not establish the 98% objective.",
+        "reason": "M1 supplied only candidate-independent physics and finite IK facts. T1 supplied the first frozen baseline candidate, and M2 supplied the required official-distribution diagnostics: 65.625% success (105/160), failure terminal reason horizon truncation for all 55 failures, max held steps zero for 49 failures and positive for 6, first-entry steps 14\u201325 for those 6, hold interruptions concentrated in the post-entry cases, target-radius skew toward inward failures, joint-limit margins and control-boundary joint/endpoint velocity traces. This meets I1's closure condition because the failure timing separates the dominant acquisition class from the minority post-entry class sufficiently to choose the first intervention. The remaining branch-versus-exposure attribution and residual hold instability are consequential for subsequent work and will be carried into goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Limited positive mechanism conclusion: for the first candidate under the tested baseline PPO recipe, branch/limit-conditioned acquisition and especially the unrepresented inward target exposure dominate observed failure over late-arrival/post-entry hold instability. In M2, 49 of 55 failures never entered tolerance; 6 entered and later interrupted, with nonzero entry velocities. The first intervention should expand training exposure to the official 6\u201320 cm distribution while preserving official evaluation semantics. The evidence does not isolate exposure from branch/limit control within the pre-entry class, does not explain every no-entry failure, and does not establish the 98% objective.",
+        "reason": "M1 supplied only candidate-independent physics and finite IK facts. T1 supplied the first frozen baseline candidate, and M2 supplied the required official-distribution diagnostics: 65.625% success (105/160), failure terminal reason horizon truncation for all 55 failures, max held steps zero for 49 failures and positive for 6, first-entry steps 14\u201325 for those 6, hold interruptions concentrated in the post-entry cases, target-radius skew toward inward failures, joint-limit margins and control-boundary joint/endpoint velocity traces. This meets I1's closure condition because the failure timing separates the dominant acquisition class from the minority post-entry class sufficiently to choose the first intervention. The remaining branch-versus-exposure attribution and residual hold instability are consequential for subsequent work and will be carried into goal review.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited positive mechanism conclusion: for the first candidate under the tested baseline PPO recipe, branch/limit-conditioned acquisition and especially the unrepresented inward target exposure dominate observed failure over late-arrival/post-entry hold instability. In M2, 49 of 55 failures never entered tolerance; 6 entered and later interrupted, with nonzero entry velocities. The first intervention should expand training exposure to the official 6\u201320 cm distribution while preserving official evaluation semantics. The evidence does not isolate exposure from branch/limit control within the pre-entry class, does not explain every no-entry failure, and does not establish the 98% objective.",
+        "reason": "M1 supplied only candidate-independent physics and finite IK facts. T1 supplied the first frozen baseline candidate, and M2 supplied the required official-distribution diagnostics: 65.625% success (105/160), failure terminal reason horizon truncation for all 55 failures, max held steps zero for 49 failures and positive for 6, first-entry steps 14\u201325 for those 6, hold interruptions concentrated in the post-entry cases, target-radius skew toward inward failures, joint-limit margins and control-boundary joint/endpoint velocity traces. This meets I1's closure condition because the failure timing separates the dominant acquisition class from the minority post-entry class sufficiently to choose the first intervention. The remaining branch-versus-exposure attribution and residual hold instability are consequential for subsequent work and will be carried into goal review."
+      }
+    },
+    "request_fingerprint": "dc9001901885ccf264a253fe1838c3d19805a6b1ed8189291e79da5fa1deb28f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate exists. Working and best-known roles remain empty; official assessment is not justified because no frozen candidate has development evidence.",
     "completed_operations": [
@@ -1799,7 +1842,8 @@
     "operation_ids": [
       "T1",
       "M2",
-      "E4"
+      "E4",
+      "E5"
     ],
     "scientific_parent_commit": "d87d87ae2109de5fda734812eef8af4cd550de15"
   },
