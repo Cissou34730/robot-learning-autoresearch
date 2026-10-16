@@ -2469,7 +2469,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 5,
     "session": 9,
@@ -2478,7 +2478,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -5299,34 +5299,197 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T20:27:29Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, and M5, but it is not officially certified and is far below the 98% requirement. T3:checkpoint-105472 is an adverse branch-aware artifact measured by M5 and is not assigned a role. T2:checkpoint-120832 remains an adverse exposure-only artifact without a role. No working candidate supports official assessment and no candidate is retained under a new label.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "E17"
+        ],
+        "cumulative_resource_use": "Campaign total: four inquiries opened and now closed, ten bounded scientific sessions including this checkpoint, five completed measurements (M1-M5), three completed fresh training operations (T1-T3), 72 archived checkpoints, no official assessment, and no terminal campaign conclusion. I4 consumed one 120000-step training allocation and one 200-episode protected task-reference comparison. M5 completed as a candidate comparison but had a diagnostic-content limitation that prevents mechanism attribution.",
+        "current_goal_gap": "T1:checkpoint-120832 remains the best-known candidate. It previously achieved 110/160 = 68.75% on the full-range development panel, with 42 non-entries and 8 hold failures. On the protected task-reference-v1 panel, M5 measured T1 at 147/200 = 73.5%, still 49 episodes short of the 196-success objective. T3:checkpoint-105472 achieved only 33/200 = 16.5% on that same panel. The official assessment remains unrequested.",
+        "current_synthesis": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+        "decision_frontier": "The branch-aware implementation tested in I4 did not advance the human goal and should not be repeated unchanged. The remaining consequential distinction is whether its adverse result came from the specific guidance/blending dynamics or learned optimization around that structure, versus a broader limitation of explicit branch selection; this cannot be resolved from M5 because the protected task-reference artifact lacks synchronized control and hold diagnostics. A future decision should use an artifact and measurement protocol that records first entry, uninterrupted hold, interruptions, applied versus policy action, selected branch, joint state/velocity, limits, and contacts. Evidence of persistent far-from-target failures with active guidance would redirect toward approach/representation or a less forceful controller; entry with hold interruptions would redirect toward stabilization; a corrected branch-aware artifact that materially improves success would reopen that method family. T1 remains the appropriate reference, and no evidence supports the official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E9",
+          "T2",
+          "M4",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official panel, with every success requiring a complete uninterrupted 100-control-step hold inside the 1 cm target ball. I4 tested a complete branch-aware artifact against the strongest direct-torque reference before any official commitment; the result did not close the large gap toward 98%.",
+        "next_direction_or_closure": "I4 is closed with a limited negative artifact-level conclusion. Return to goal review to choose between a synchronized mechanism measurement that fills M5's missing branch/entry/hold diagnostics and a redesigned control intervention. Do not repeat the tested branch-aware guidance blend unchanged, do not infer a hold tradeoff from M5, and do not request official assessment on T1.",
+        "next_question": "Which next bounded intervention can improve T1's full-distribution success toward 98% after the adverse branch-aware result: resolve the missing branch/approach/hold mechanism with synchronized diagnostics, or redesign the control structure rather than repeating the tested guidance blend?"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "22ac5c0ff727dbc4c2b7116b5b0b15811a44ff2b",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, and M5, but it is not officially certified and is far below the 98% requirement. T3:checkpoint-105472 is an adverse branch-aware artifact measured by M5 and is not assigned a role. T2:checkpoint-120832 remains an adverse exposure-only artifact without a role. No working candidate supports official assessment and no candidate is retained under a new label.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "E17"
+        ],
+        "cumulative_resource_use": "Campaign total: four inquiries opened and now closed, ten bounded scientific sessions including this checkpoint, five completed measurements (M1-M5), three completed fresh training operations (T1-T3), 72 archived checkpoints, no official assessment, and no terminal campaign conclusion. I4 consumed one 120000-step training allocation and one 200-episode protected task-reference comparison. M5 completed as a candidate comparison but had a diagnostic-content limitation that prevents mechanism attribution.",
+        "current_goal_gap": "T1:checkpoint-120832 remains the best-known candidate. It previously achieved 110/160 = 68.75% on the full-range development panel, with 42 non-entries and 8 hold failures. On the protected task-reference-v1 panel, M5 measured T1 at 147/200 = 73.5%, still 49 episodes short of the 196-success objective. T3:checkpoint-105472 achieved only 33/200 = 16.5% on that same panel. The official assessment remains unrequested.",
+        "current_synthesis": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+        "decision_frontier": "The branch-aware implementation tested in I4 did not advance the human goal and should not be repeated unchanged. The remaining consequential distinction is whether its adverse result came from the specific guidance/blending dynamics or learned optimization around that structure, versus a broader limitation of explicit branch selection; this cannot be resolved from M5 because the protected task-reference artifact lacks synchronized control and hold diagnostics. A future decision should use an artifact and measurement protocol that records first entry, uninterrupted hold, interruptions, applied versus policy action, selected branch, joint state/velocity, limits, and contacts. Evidence of persistent far-from-target failures with active guidance would redirect toward approach/representation or a less forceful controller; entry with hold interruptions would redirect toward stabilization; a corrected branch-aware artifact that materially improves success would reopen that method family. T1 remains the appropriate reference, and no evidence supports the official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E9",
+          "T2",
+          "M4",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official panel, with every success requiring a complete uninterrupted 100-control-step hold inside the 1 cm target ball. I4 tested a complete branch-aware artifact against the strongest direct-torque reference before any official commitment; the result did not close the large gap toward 98%.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "I4 is closed with a limited negative artifact-level conclusion. Return to goal review to choose between a synchronized mechanism measurement that fills M5's missing branch/entry/hold diagnostics and a redesigned control intervention. Do not repeat the tested branch-aware guidance blend unchanged, do not infer a hold tradeoff from M5, and do not request official assessment on T1.",
+        "next_question": "Which next bounded intervention can improve T1's full-distribution success toward 98% after the adverse branch-aware result: resolve the missing branch/approach/hold mechanism with synchronized diagnostics, or redesign the control structure rather than repeating the tested guidance blend?",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "d89708da-8024-435d-9cd8-13349c6d5582",
+        "campaign_id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
+        "campaign_usage": "29m42s | 62.71 AIU | prompt 9m (87% cached) | output 172.9k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "5m46s | 10.89 AIU | prompt 1.5m (87% cached) | output 36.7k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "b1b01de6d371a6add9a6b6537634bb52fb7c358b",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, and M5, but it is not officially certified and is far below the 98% requirement. T3:checkpoint-105472 is an adverse branch-aware artifact measured by M5 and is not assigned a role. T2:checkpoint-120832 remains an adverse exposure-only artifact without a role. No working candidate supports official assessment and no candidate is retained under a new label.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "E17"
+        ],
+        "cumulative_resource_use": "Campaign total: four inquiries opened and now closed, ten bounded scientific sessions including this checkpoint, five completed measurements (M1-M5), three completed fresh training operations (T1-T3), 72 archived checkpoints, no official assessment, and no terminal campaign conclusion. I4 consumed one 120000-step training allocation and one 200-episode protected task-reference comparison. M5 completed as a candidate comparison but had a diagnostic-content limitation that prevents mechanism attribution.",
+        "current_goal_gap": "T1:checkpoint-120832 remains the best-known candidate. It previously achieved 110/160 = 68.75% on the full-range development panel, with 42 non-entries and 8 hold failures. On the protected task-reference-v1 panel, M5 measured T1 at 147/200 = 73.5%, still 49 episodes short of the 196-success objective. T3:checkpoint-105472 achieved only 33/200 = 16.5% on that same panel. The official assessment remains unrequested.",
+        "current_synthesis": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+        "decision_frontier": "The branch-aware implementation tested in I4 did not advance the human goal and should not be repeated unchanged. The remaining consequential distinction is whether its adverse result came from the specific guidance/blending dynamics or learned optimization around that structure, versus a broader limitation of explicit branch selection; this cannot be resolved from M5 because the protected task-reference artifact lacks synchronized control and hold diagnostics. A future decision should use an artifact and measurement protocol that records first entry, uninterrupted hold, interruptions, applied versus policy action, selected branch, joint state/velocity, limits, and contacts. Evidence of persistent far-from-target failures with active guidance would redirect toward approach/representation or a less forceful controller; entry with hold interruptions would redirect toward stabilization; a corrected branch-aware artifact that materially improves success would reopen that method family. T1 remains the appropriate reference, and no evidence supports the official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E9",
+          "T2",
+          "M4",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official panel, with every success requiring a complete uninterrupted 100-control-step hold inside the 1 cm target ball. I4 tested a complete branch-aware artifact against the strongest direct-torque reference before any official commitment; the result did not close the large gap toward 98%.",
+        "next_direction_or_closure": "I4 is closed with a limited negative artifact-level conclusion. Return to goal review to choose between a synchronized mechanism measurement that fills M5's missing branch/entry/hold diagnostics and a redesigned control intervention. Do not repeat the tested branch-aware guidance blend unchanged, do not infer a hold tradeoff from M5, and do not request official assessment on T1.",
+        "next_question": "Which next bounded intervention can improve T1's full-distribution success toward 98% after the adverse branch-aware result: resolve the missing branch/approach/hold mechanism with synchronized diagnostics, or redesign the control structure rather than repeating the tested guidance blend?"
+      }
+    },
+    "request_fingerprint": "be1f22c15ae71a4e7777e53651a74e984219bc974074dfcadf394ffd6035c530",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2 and M3, but is not officially certified. T2:checkpoint-120832 is an adverse full-distribution exposure candidate measured by M4 and is not assigned a role. No working candidate supports official assessment. The active inquiry will compare any new complete branch-aware artifact against T1 rather than treating a training proxy or a new description as evidence of capability.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, and M5, but it is not officially certified and is far below the 98% requirement. T3:checkpoint-105472 is an adverse branch-aware artifact measured by M5 and is not assigned a role. T2:checkpoint-120832 remains an adverse exposure-only artifact without a role. No working candidate supports official assessment and no candidate is retained under a new label.",
     "completed_operations": [
-      "E15"
+      "T3",
+      "M5",
+      "E17"
     ],
-    "cumulative_resource_use": "Campaign total: four inquiries opened including active I4, three inquiries closed, eight bounded scientific sessions, four completed measurements (M1\u2013M4), two completed fresh training operations (T1 and T2) producing 48 archived checkpoints, no official assessment and no terminal campaign conclusion. The current goal-review action E15 consumed no training or measurement allocation; I4 now permits bounded inquiry work under the existing allocation.",
-    "current_goal_gap": "T1 has 50 failures on the 160-episode full-range development panel: 42 non-entries and 8 hold failures, leaving a 29.25 percentage-point gap to the 98% objective. T2 has 101 failures: 98 non-entries, 3 entered-but-failed-hold episodes, and 59/160 successes. The official 200-episode assessment remains unrequested because no candidate is close enough on development evidence to make that terminal commitment preferable.",
-    "current_synthesis": "Established observations: M2 measured T1:checkpoint-120832 at 110/160, and M3 traces showed catastrophic T1 non-entries settling far from the target with safe joint-limit margins and zero contacts, while matched successes and near-threshold failures implicated policy branch selection/approach and a smaller stabilization class. E9 supports branch/coverage selection as a leading explanation for the dominant non-entry tail and distinguishes hold interruption as a secondary task-critical failure. T2 was a fresh 120000-step direct-torque PPO run whose intended source change was training target-radius exposure from 14\u201320 cm to 6\u201320 cm; its training proxy had zero success at checkpoints, and M4 measured 59/160 versus 124/160 for T1 on the same seed-5200 panel, with T2 showing 98 non-entries, 3 entered-but-failed-hold episodes and 5 interruptions versus T1's 32, 4 and 4. Interpretation and correction: this is an adverse complete-artifact comparison of the tested full-range exposure recipe, not causal proof that radius exposure alone is harmful, because seed, normalization, learned weights and runtime artifact differ and no exact saved components matched. Likewise, the traces do not establish that T1 failures are literally a chosen wrong sector; safe-margin non-entry is consistent with branch/coverage selection, failure to leave the reset singularity, or optimization failure. The zero T2 training-success proxy leaves wider-distribution optimization as a consequential alternative. Existing evidence nevertheless makes entry/branch structure the leading next direction because both T1 and especially T2 are non-entry dominated, while hold diagnostics must remain a co-primary criterion. No evidence establishes a primary reachability, joint-limit or contact impossibility under the fixed task boundary.",
-    "decision_frontier": "I4 will distinguish whether an explicitly branch-aware policy or control structure can convert the dominant safe-margin non-entry tail into reliable entry across the full 6\u201320 cm distribution, versus whether the observed tail persists because the underlying optimization/approach dynamics remain limiting. It must also distinguish genuine progress from an entry-for-hold tradeoff by retaining complete-hold, longest-run and interruption diagnostics. Results that show persistent non-entry despite branch-aware structure would redirect attention to approach dynamics, representation/optimization or compiled-control effects; results that convert entry but leave interruptions dominant would redirect to stabilization. The claim must remain at the tested implementation and complete-artifact level.",
+    "cumulative_resource_use": "Campaign total: four inquiries opened and now closed, ten bounded scientific sessions including this checkpoint, five completed measurements (M1-M5), three completed fresh training operations (T1-T3), 72 archived checkpoints, no official assessment, and no terminal campaign conclusion. I4 consumed one 120000-step training allocation and one 200-episode protected task-reference comparison. M5 completed as a candidate comparison but had a diagnostic-content limitation that prevents mechanism attribution.",
+    "current_goal_gap": "T1:checkpoint-120832 remains the best-known candidate. It previously achieved 110/160 = 68.75% on the full-range development panel, with 42 non-entries and 8 hold failures. On the protected task-reference-v1 panel, M5 measured T1 at 147/200 = 73.5%, still 49 episodes short of the 196-success objective. T3:checkpoint-105472 achieved only 33/200 = 16.5% on that same panel. The official assessment remains unrequested.",
+    "current_synthesis": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+    "decision_frontier": "The branch-aware implementation tested in I4 did not advance the human goal and should not be repeated unchanged. The remaining consequential distinction is whether its adverse result came from the specific guidance/blending dynamics or learned optimization around that structure, versus a broader limitation of explicit branch selection; this cannot be resolved from M5 because the protected task-reference artifact lacks synchronized control and hold diagnostics. A future decision should use an artifact and measurement protocol that records first entry, uninterrupted hold, interruptions, applied versus policy action, selected branch, joint state/velocity, limits, and contacts. Evidence of persistent far-from-target failures with active guidance would redirect toward approach/representation or a less forceful controller; entry with hold interruptions would redirect toward stabilization; a corrected branch-aware artifact that materially improves success would reopen that method family. T1 remains the appropriate reference, and no evidence supports the official assessment.",
     "evidence_references": [
       "M1",
+      "T1",
       "M2",
       "M3",
       "E9",
       "T2",
       "M4",
       "E13",
-      "E15"
+      "E15",
+      "E17",
+      "T3",
+      "M5"
     ],
-    "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official panel, with every success requiring a complete uninterrupted 100-control-step hold. T1:checkpoint-120832 is the best-known artifact at 110/160 = 68.75% on a full-range development panel, so the immediate goal gap is dominated by reducing full-distribution entry failures without sacrificing hold continuity.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open I4 and develop or measure the most credible explicit branch-aware policy/control structure under the fixed robot, physics, task distribution, action semantics and complete-hold success definition. Compare its complete artifact with T1 using full-range episode outcomes and geometry/entry/hold/interruption diagnostics. Do not repeat unchanged exposure-only PPO or request official assessment on the current evidence.",
-    "next_question": "Can an explicitly branch-aware policy or control structure reduce T1's safe-margin non-entry tail across the full 6\u201320 cm distribution without exchanging it for uninterrupted-hold failures, and what failure mechanism limits it?",
-    "scientific_commit": "74387a52d063c7c477222a780ea192ec72add956",
-    "session_id": "S8"
+    "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official panel, with every success requiring a complete uninterrupted 100-control-step hold inside the 1 cm target ball. I4 tested a complete branch-aware artifact against the strongest direct-torque reference before any official commitment; the result did not close the large gap toward 98%.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "I4 is closed with a limited negative artifact-level conclusion. Return to goal review to choose between a synchronized mechanism measurement that fills M5's missing branch/entry/hold diagnostics and a redesigned control intervention. Do not repeat the tested branch-aware guidance blend unchanged, do not infer a hold tradeoff from M5, and do not request official assessment on T1.",
+    "next_question": "Which next bounded intervention can improve T1's full-distribution success toward 98% after the adverse branch-aware result: resolve the missing branch/approach/hold mechanism with synchronized diagnostics, or redesign the control structure rather than repeating the tested guidance blend?",
+    "scientific_commit": "b1b01de6d371a6add9a6b6537634bb52fb7c358b",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5334,23 +5497,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d89708da-8024-435d-9cd8-13349c6d5582",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can an explicitly branch-aware policy or control structure reduce T1's safe-margin non-entry tail across the full 6\u201320 cm distribution without exchanging it for uninterrupted-hold failures, and what failure mechanism limits it? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T3",
-      "M5",
-      "E17"
-    ],
-    "scientific_parent_commit": "22ac5c0ff727dbc4c2b7116b5b0b15811a44ff2b"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
