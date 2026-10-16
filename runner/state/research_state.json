@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry when a completed implementation and candidate comparison against T1:checkpoint-120832 on a matched, non-overlapping official-distribution panel provides complete-hold success, radius/angle strata, never-reach versus reached-but-failed-hold classes, reset-to-reach branch errors and trajectory/control traces. A positive bounded conclusion requires a material reduction in inner-radius never-reach failures, no material loss of outer-radius or hold performance, and an overall result that moves credibly toward 196/200; a negative or limited conclusion is warranted if those gains do not occur or the candidate trades away existing performance. Attribute conclusions to the implemented artifact comparison only: training seed, source provenance and any remaining method components must stay explicit, and substep excursions must remain reported without changing official success semantics.",
-    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 on M3/M5, leaving a 49-episode gap, while the fresh 6-20 cm exposure artifact T2 achieved 70/200 and degraded every measured radius stratum. A branch-aware reset/trajectory-learning intervention directly targets the observed learned transient and branch-coverage signature while preserving the official complete-hold endpoint and the already strong outer-radius behavior as explicit constraints.",
-    "handoff_conclusion": "Established observations: T1 used the current PPO implementation and measured 147/200 (73.5%) on M3/M5; T2 changed the training radius exposure to 6-20 cm, used a fresh seed and source provenance, and measured 70/200 (35.0%) on the same panel. T2 was worse in every radius stratum and had 120 never-reached episodes versus T1's 42. M5 showed identical compiled MuJoCo dimensions, timestep, control interval, gravity, body masses/inertias, damping, armature, actuator gear and limits for the two artifacts, zero contacts in all 400 evaluated episodes, and different reset-to-reach/branch trajectories and control usage. Representative traces support an artifact-level learned transient/branch signature; a reverse discordant episode shows geometry is not a universal impossibility. T1 successful endpoint holds can exceed 1 cm at internal substeps, so the coded endpoint evaluator does not certify continuous-time containment. The physical model's nominal reachability and singular-reset consequences remain useful: official targets are nominally branch-reachable under point kinematics, but the reset is singular and close targets require large folds. Compiled-authority mismatch, self-contact and plant retuning are not supported as dominant explanations for this complete comparison, though they remain conditional outside the measured artifacts. Correction to the inherited direction: M5 supports learned reset/branch-transient behavior as the dominant actionable signature for the T1-versus-T2 artifact comparison, not as proof that a branch-aware intervention is causal or sufficient. Source inspection confirms that the current implementation has no branch-aware reset curriculum, trajectory target, or branch-conditioned controller; branch errors are only part of the observation, and the failed T2 change was exposure-only. Thus I3 will test a genuinely different implementation, while all causal claims remain limited to its complete artifact comparison and coded semantics.",
-    "handoff_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
-    "rationale": "M5 completed the prior mechanism inquiry: T1 and T2 had identical compiled MuJoCo fields and zero contacts, while their paired traces differed in reset escape, branch convergence and control usage; this makes learned transient/branch behavior the most actionable route for the compared artifacts, but does not prove branch-aware learning is causal or sufficient. The current implementation has no branch-aware reset or trajectory intervention: T2 only replaced the training radius range, and its fresh artifact fell to 35.0% versus T1's 73.5%. A new branch-aware intervention is therefore not a relabeling of the failed exposure comparison. It has higher expected contribution than official assessment of a candidate 49 episodes below the comparable objective, while costing one bounded development allocation and using the retained M5 trace evaluator. The inquiry will compare the complete resulting artifact with T1, distinguish candidate selection from mechanism attribution, and preserve unresolved seed/source confounding and endpoint-versus-substep limits.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -2484,7 +2473,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 7,
     "session": 7,
@@ -7522,9 +7511,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T22:49:54Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
+        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
+        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
+        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
+        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
+        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient."
+      }
+    },
+    "request_fingerprint": "7f1d99c1eef47b409a4dec76260d4a9274d9a229f751f8ada74aa7a32b6b4f56",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. T2:checkpoint-120832 remains a measured comparison artifact only. No working or retained candidate is assigned. I3 will develop a new artifact from T1 rather than change the best-known role implicitly.",
     "completed_operations": [
@@ -7570,7 +7613,8 @@
     "operation_ids": [
       "T3",
       "M6",
-      "M7"
+      "M7",
+      "E13"
     ],
     "scientific_parent_commit": "7232013295588a47b1fc423a52e5c5590e93d544"
   },
