@@ -5192,38 +5192,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "M5 provides a bounded positive mechanism result for the compared artifacts. On the same 200-episode panel, T1 remains 147/200 and T2 70/200 with the prior paired 38.5-point gap. The compiled MuJoCo model is identical across artifacts: 2 joints, 2 ms integration, 20 ms control, identical compiled masses/inertias, damping, armature, actuator gear and limits; all 200 episodes for both candidates have zero contacts. T2's 120 never-reached episodes have mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm, and mean peak generalized actuator force 6.72, versus T1's 42 never-reached episodes at 6.20 cm, 19.79 cm, and 7.07 respectively. Representative paired traces at the same targets show T1 escaping reset and converging to a near-zero open-branch error while T2 settles into a distant folded posture with nonzero errors to both branches; a reverse discordant pair shows T2 can succeed where T1 fails, so this is not a universal geometry impossibility. T1's successful hold can contain internal substep excursions above 1 cm despite endpoint success, establishing a secondary endpoint-versus-substep limitation of the coded semantics rather than the dominant cause of T2's never-reach deficit.",
-        "reason": "The closure condition is met with a specific bounded route, while causal limits remain explicit. M5 distinguishes the consequential alternatives for this artifact comparison: compiled authority, numerical model mismatch and self-contact are not supported as dominant explanations; the broad T2 deficit is consistent with learned reset/branch-transient and control-usage behavior, with training-artifact variability still inseparable from the changed exposure, seed and source provenance. The next credible route toward 196/200 is therefore to retain T1 as the development baseline and test a branch-aware reset/trajectory-learning intervention, using gradual or stratified inner-radius coverage rather than repeating the unproductive wholesale 6-20 cm fresh replacement. Plant retuning is not justified by this evidence. Hold timing/substep traces should remain a constraint in the next comparison, because endpoint success does not certify continuous-time containment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "M5 provides a bounded positive mechanism result for the compared artifacts. On the same 200-episode panel, T1 remains 147/200 and T2 70/200 with the prior paired 38.5-point gap. The compiled MuJoCo model is identical across artifacts: 2 joints, 2 ms integration, 20 ms control, identical compiled masses/inertias, damping, armature, actuator gear and limits; all 200 episodes for both candidates have zero contacts. T2's 120 never-reached episodes have mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm, and mean peak generalized actuator force 6.72, versus T1's 42 never-reached episodes at 6.20 cm, 19.79 cm, and 7.07 respectively. Representative paired traces at the same targets show T1 escaping reset and converging to a near-zero open-branch error while T2 settles into a distant folded posture with nonzero errors to both branches; a reverse discordant pair shows T2 can succeed where T1 fails, so this is not a universal geometry impossibility. T1's successful hold can contain internal substep excursions above 1 cm despite endpoint success, establishing a secondary endpoint-versus-substep limitation of the coded semantics rather than the dominant cause of T2's never-reach deficit.",
-        "reason": "The closure condition is met with a specific bounded route, while causal limits remain explicit. M5 distinguishes the consequential alternatives for this artifact comparison: compiled authority, numerical model mismatch and self-contact are not supported as dominant explanations; the broad T2 deficit is consistent with learned reset/branch-transient and control-usage behavior, with training-artifact variability still inseparable from the changed exposure, seed and source provenance. The next credible route toward 196/200 is therefore to retain T1 as the development baseline and test a branch-aware reset/trajectory-learning intervention, using gradual or stratified inner-radius coverage rather than repeating the unproductive wholesale 6-20 cm fresh replacement. Plant retuning is not justified by this evidence. Hold timing/substep traces should remain a constraint in the next comparison, because endpoint success does not certify continuous-time containment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M5 provides a bounded positive mechanism result for the compared artifacts. On the same 200-episode panel, T1 remains 147/200 and T2 70/200 with the prior paired 38.5-point gap. The compiled MuJoCo model is identical across artifacts: 2 joints, 2 ms integration, 20 ms control, identical compiled masses/inertias, damping, armature, actuator gear and limits; all 200 episodes for both candidates have zero contacts. T2's 120 never-reached episodes have mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm, and mean peak generalized actuator force 6.72, versus T1's 42 never-reached episodes at 6.20 cm, 19.79 cm, and 7.07 respectively. Representative paired traces at the same targets show T1 escaping reset and converging to a near-zero open-branch error while T2 settles into a distant folded posture with nonzero errors to both branches; a reverse discordant pair shows T2 can succeed where T1 fails, so this is not a universal geometry impossibility. T1's successful hold can contain internal substep excursions above 1 cm despite endpoint success, establishing a secondary endpoint-versus-substep limitation of the coded semantics rather than the dominant cause of T2's never-reach deficit.",
-        "reason": "The closure condition is met with a specific bounded route, while causal limits remain explicit. M5 distinguishes the consequential alternatives for this artifact comparison: compiled authority, numerical model mismatch and self-contact are not supported as dominant explanations; the broad T2 deficit is consistent with learned reset/branch-transient and control-usage behavior, with training-artifact variability still inseparable from the changed exposure, seed and source provenance. The next credible route toward 196/200 is therefore to retain T1 as the development baseline and test a branch-aware reset/trajectory-learning intervention, using gradual or stratified inner-radius coverage rather than repeating the unproductive wholesale 6-20 cm fresh replacement. Plant retuning is not justified by this evidence. Hold timing/substep traces should remain a constraint in the next comparison, because endpoint success does not certify continuous-time containment."
-      }
-    },
-    "request_fingerprint": "561baaab36b3af7aac68fd32c88b21bf56f5ada2b3623f712f26978a50af6969",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from E1 and supported by M1 and M3; it is not goal-certified. T1:checkpoint-115712 is a measured comparison artifact. T2:checkpoint-115712 and T2:checkpoint-120832 are fresh official-exposure artifacts measured by M3 and both underperform matched T1 artifacts; neither is assigned working or retained status. No working candidate is assigned.",
     "completed_operations": [
