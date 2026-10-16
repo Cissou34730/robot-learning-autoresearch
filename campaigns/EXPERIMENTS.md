@@ -17,3 +17,4 @@
 | M3 | measurement | I2 | completed |
 | M4 | measurement | I2 | completed |
 | E9 | model_role | I2 | assigned |
+| E10 | inquiry | I2 | completed |
