@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a complete saved-runtime controller or policy-state artifact has been produced and compared on a fresh shared 200-episode research panel under the fixed official semantics against the relevant learned baseline(s), with radius/angle strata and never-reached versus reached-but-failed-hold diagnostics. A positive conclusion requires at least 196/200 while preserving both the T3-level inner outcomes and the T1/T3-level outer complete-hold outcomes; otherwise close with the measured negative, limited, or inconclusive result and carry forward the residual failure class. No result changes official success semantics or substitutes for the protected assessment.",
-    "goal_connection": "The human objective is at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. Current research artifacts are 145/200 for T1, 168/200 for T3, and 163/200 for T4, so the remaining gap is specifically the unresolved combination of inner-radius acquisition and outer-radius maintenance.",
-    "handoff_conclusion": "Observed: the physical model predicts nominal reachability across 6-20 cm but a rank-one fully extended reset singularity, large elbow folds for inner targets, and a stabilization objective whose hold counter is not observable in the policy observation. M5 found identical compiled plant semantics and zero contacts in the T1/T2 comparison, so the current evidence does not support retuning the plant or attributing the T2 loss to contacts or compiled-dynamics differences. M6/M7 showed T3's branch-aware transfer artifact improved pooled success and inner outcomes but lost five outer complete holds relative to T1, with unchanged reset branch-error evidence. T4 then implemented one complete phase-separated reward recipe: transfer from T1, full 6-20 cm exposure, acquisition-only branch/escape shaping, and forfeiture after maintenance exits. On M8/M9 it reduced T1's never-reached failures and improved [6,10) and [10,14) outcomes, but lost outer successes and added reached-but-failed-hold cases; it also remained below T3 overall. Correction to the inherited interpretation: this is a property of the coupled T4 artifact, not a causal test that reward-only phase separation is insufficient, because transfer lineage, seed, exposure, reward, and checkpoint selection changed together; it also does not establish that the residual tradeoff is controller-state causality rather than learned-artifact variability. Training logs nominate no unmeasured checkpoint as development evidence: T3's 0.99-1.00 proxy was concentrated around 66.6-71k steps, while its measured 70,656-step artifact was 168/200 on M8; T4's proxy peak near 105,472 was 163/200. The runtime inspection establishes a consequential unexercised surface: saved evaluation executes the serialized PolicyIO, whose current action path is identity and whose runtime exposes only generic model recurrence, with no explicit acquisition/maintenance state machine. This makes I5 a method test rather than another reward-only description. Competing explanations remain: an explicit stateful controller may prevent maintenance oscillation and preserve outer holds; alternatively the tradeoff may arise from policy optimization variability or unmodeled transient/endpoint effects, in which case a controller will not combine the strata. The model's self-contact and substep-hold uncertainties remain relevant to claims about continuous embodied robustness, but cannot change the present official decision unless they alter protected semantics; all official decisions here remain under coded endpoint semantics. Evidence that would revise the direction is a fresh matched complete-artifact panel with controller activation verified in the saved runtime, stratified inner/outer success, never-reached and reached-but-failed-hold classes, and paired outcomes against the learned baselines.",
-    "handoff_question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
-    "handoff_source_session_id": "S10",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
-    "rationale": "Open this bounded route because the current best evidence is materially below the goal and the expected contribution of one explicit controller/state-separation allocation is credible: the physical model identifies hidden hold progress and a reset singularity, while T4 showed only that one coupled reward/exposure/transfer/checkpoint recipe shifts failures toward improved inner reach but loses outer holds. Correcting the inherited interpretation, T4 does not establish reward-only phase separation as the cause or rule out artifact variability; the logs also show training proxies are not development performance, with T3's high proxy concentrated near 68-71k steps and T4's proxy peak not translating to the combined panel result. The current saved runtime has no explicit acquisition/maintenance state machine, so this inquiry tests a genuinely unexercised method surface rather than repeating reward-only shaping. Official assessment of T1 would be terminal at 145/200 on the latest matched panel, whereas this bounded implementation-and-panel route can directly test whether the unresolved tradeoff is controller/state structure and is worth one training/measurement allocation.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -4125,7 +4114,7 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 5,
     "measurement": 11,
     "session": 11,
@@ -14484,9 +14473,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T23:39:33Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited negative result for the tested implementation: the controller-enabled saved-runtime artifact T5:checkpoint-10240 was verified active (controller_activation_id=i5_acquisition_maintenance_v1 and controller_callable_path=true) and achieved 156/200 (78.0%) on the fresh shared M10 panel, tied with T3 but below the 196/200 requirement. It improved T4's reached-but-failed-hold class from 25 to 7 and improved inner [6,10) success to 32/57 versus T1 20/57 and T3 21/57, but retained 37 never-reached failures and underperformed T3 in [10,14), [14,18), and [18,20); outer success was 73/83 versus T3 79/83. The implemented phase separation therefore supplies evidence that explicit saved-runtime maintenance can reduce hold failures after acquisition, but it did not combine T3-level inner outcomes with T1/T3-level outer performance or move the frozen artifact toward 196.",
+        "reason": "The I5 closure condition is satisfied in its permissive form because a complete controller-enabled artifact was produced, activation was verified in the saved runtime, and it was compared on a fresh shared 200-episode panel with radius/angle and failure-class diagnostics. The positive condition was not met: T5 reached 156/200, with an acquisition-heavy residual (37 never reached) and lower outer strata than T3/T1. This is a result about the coupled T4-lineage training plus the specific v1 bounded IK/PD maintenance controller, not a disproof of policy-state separation generally; the controller method was genuinely exercised, while learned-artifact variability and controller gain/phase design remain unresolved. Carry the residual decision consequence to goal review: further work should only be selected if it directly addresses never-reached acquisition and can be justified against the now-measured partial maintenance benefit, rather than repeating this exact runtime recipe."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited negative result for the tested implementation: the controller-enabled saved-runtime artifact T5:checkpoint-10240 was verified active (controller_activation_id=i5_acquisition_maintenance_v1 and controller_callable_path=true) and achieved 156/200 (78.0%) on the fresh shared M10 panel, tied with T3 but below the 196/200 requirement. It improved T4's reached-but-failed-hold class from 25 to 7 and improved inner [6,10) success to 32/57 versus T1 20/57 and T3 21/57, but retained 37 never-reached failures and underperformed T3 in [10,14), [14,18), and [18,20); outer success was 73/83 versus T3 79/83. The implemented phase separation therefore supplies evidence that explicit saved-runtime maintenance can reduce hold failures after acquisition, but it did not combine T3-level inner outcomes with T1/T3-level outer performance or move the frozen artifact toward 196.",
+        "reason": "The I5 closure condition is satisfied in its permissive form because a complete controller-enabled artifact was produced, activation was verified in the saved runtime, and it was compared on a fresh shared 200-episode panel with radius/angle and failure-class diagnostics. The positive condition was not met: T5 reached 156/200, with an acquisition-heavy residual (37 never reached) and lower outer strata than T3/T1. This is a result about the coupled T4-lineage training plus the specific v1 bounded IK/PD maintenance controller, not a disproof of policy-state separation generally; the controller method was genuinely exercised, while learned-artifact variability and controller gain/phase design remain unresolved. Carry the residual decision consequence to goal review: further work should only be selected if it directly addresses never-reached acquisition and can be justified against the now-measured partial maintenance benefit, rather than repeating this exact runtime recipe.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited negative result for the tested implementation: the controller-enabled saved-runtime artifact T5:checkpoint-10240 was verified active (controller_activation_id=i5_acquisition_maintenance_v1 and controller_callable_path=true) and achieved 156/200 (78.0%) on the fresh shared M10 panel, tied with T3 but below the 196/200 requirement. It improved T4's reached-but-failed-hold class from 25 to 7 and improved inner [6,10) success to 32/57 versus T1 20/57 and T3 21/57, but retained 37 never-reached failures and underperformed T3 in [10,14), [14,18), and [18,20); outer success was 73/83 versus T3 79/83. The implemented phase separation therefore supplies evidence that explicit saved-runtime maintenance can reduce hold failures after acquisition, but it did not combine T3-level inner outcomes with T1/T3-level outer performance or move the frozen artifact toward 196.",
+        "reason": "The I5 closure condition is satisfied in its permissive form because a complete controller-enabled artifact was produced, activation was verified in the saved runtime, and it was compared on a fresh shared 200-episode panel with radius/angle and failure-class diagnostics. The positive condition was not met: T5 reached 156/200, with an acquisition-heavy residual (37 never reached) and lower outer strata than T3/T1. This is a result about the coupled T4-lineage training plus the specific v1 bounded IK/PD maintenance controller, not a disproof of policy-state separation generally; the controller method was genuinely exercised, while learned-artifact variability and controller gain/phase design remain unresolved. Carry the residual decision consequence to goal review: further work should only be selected if it directly addresses never-reached acquisition and can be justified against the now-measured partial maintenance benefit, rather than repeating this exact runtime recipe."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited negative result for the tested implementation: the controller-enabled saved-runtime artifact T5:checkpoint-10240 was verified active (controller_activation_id=i5_acquisition_maintenance_v1 and controller_callable_path=true) and achieved 156/200 (78.0%) on the fresh shared M10 panel, tied with T3 but below the 196/200 requirement. It improved T4's reached-but-failed-hold class from 25 to 7 and improved inner [6,10) success to 32/57 versus T1 20/57 and T3 21/57, but retained 37 never-reached failures and underperformed T3 in [10,14), [14,18), and [18,20); outer success was 73/83 versus T3 79/83. The implemented phase separation therefore supplies evidence that explicit saved-runtime maintenance can reduce hold failures after acquisition, but it did not combine T3-level inner outcomes with T1/T3-level outer performance or move the frozen artifact toward 196.",
+        "reason": "The I5 closure condition is satisfied in its permissive form because a complete controller-enabled artifact was produced, activation was verified in the saved runtime, and it was compared on a fresh shared 200-episode panel with radius/angle and failure-class diagnostics. The positive condition was not met: T5 reached 156/200, with an acquisition-heavy residual (37 never reached) and lower outer strata than T3/T1. This is a result about the coupled T4-lineage training plus the specific v1 bounded IK/PD maintenance controller, not a disproof of policy-state separation generally; the controller method was genuinely exercised, while learned-artifact variability and controller gain/phase design remain unresolved. Carry the residual decision consequence to goal review: further work should only be selected if it directly addresses never-reached acquisition and can be justified against the now-measured partial maintenance benefit, rather than repeating this exact runtime recipe.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited negative result for the tested implementation: the controller-enabled saved-runtime artifact T5:checkpoint-10240 was verified active (controller_activation_id=i5_acquisition_maintenance_v1 and controller_callable_path=true) and achieved 156/200 (78.0%) on the fresh shared M10 panel, tied with T3 but below the 196/200 requirement. It improved T4's reached-but-failed-hold class from 25 to 7 and improved inner [6,10) success to 32/57 versus T1 20/57 and T3 21/57, but retained 37 never-reached failures and underperformed T3 in [10,14), [14,18), and [18,20); outer success was 73/83 versus T3 79/83. The implemented phase separation therefore supplies evidence that explicit saved-runtime maintenance can reduce hold failures after acquisition, but it did not combine T3-level inner outcomes with T1/T3-level outer performance or move the frozen artifact toward 196.",
+        "reason": "The I5 closure condition is satisfied in its permissive form because a complete controller-enabled artifact was produced, activation was verified in the saved runtime, and it was compared on a fresh shared 200-episode panel with radius/angle and failure-class diagnostics. The positive condition was not met: T5 reached 156/200, with an acquisition-heavy residual (37 never reached) and lower outer strata than T3/T1. This is a result about the coupled T4-lineage training plus the specific v1 bounded IK/PD maintenance controller, not a disproof of policy-state separation generally; the controller method was genuinely exercised, while learned-artifact variability and controller gain/phase design remain unresolved. Carry the residual decision consequence to goal review: further work should only be selected if it directly addresses never-reached acquisition and can be justified against the now-measured partial maintenance benefit, rather than repeating this exact runtime recipe."
+      }
+    },
+    "request_fingerprint": "7bbb24a2367bf1ae81104c52edb3077d76c6a509de148fc7739c53b7c3fc41ce",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because T1/T3/T4 evidence shows it preserves the strongest observed outer-radius complete-hold behavior, despite 145/200 on M8 and 142/200 on M6. T3:checkpoint-70656 is the strongest pooled measured artifact at 168/200 on M8 but loses outer holds. T4:checkpoint-105472 is a limited phase-separated artifact at 163/200: it improves T1's inner reach and never-reach count but does not preserve outer maintenance. T2 remains non-viable. No working candidate is assigned; I5 will create a new controller-enabled candidate only if its complete artifact is produced and measured.",
     "completed_operations": [
@@ -14535,7 +14578,8 @@
     "operation_ids": [
       "T5",
       "M10",
-      "M11"
+      "M11",
+      "E21"
     ],
     "scientific_parent_commit": "73ebecb2edc5af9967ae0d115741dda0c1d757e5"
   },
