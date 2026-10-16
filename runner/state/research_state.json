@@ -2468,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 6,
     "session": 7,
@@ -2477,7 +2477,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -5308,32 +5308,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:32:34Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
+        "completed_operations": [
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Completed campaign use now includes M1 compiled-dynamics measurement with 16 deterministic torque-pulse experiments; T1, T2, and T3 each used one fresh or transfer 120,000-step training allocation and completed 120,832 rollout steps; M2 used 200 task-reference episodes; M3 and M4 used 160 research-evaluation episodes each; M5 used two paired 160-episode research evaluations (320 episodes); M6 used two paired 160-episode research evaluations (320 episodes); E4 assigned the prior best-known role, E5 closed I1, E7 opened I2, E9 assigned T2 best-known, E10 closed I2, E12 opened I3, and E14 closed I3. No official assessment episodes have been used. Inquiry count remains 3/15.",
+        "current_goal_gap": "T3:checkpoint-105472 achieved 158/160 (98.75%) on the fresh M6 development panel, two failures short of a perfect panel and above the 98% development target. It had 2 no-reach failures, 0 hold interruptions, inner-band success 92/93, and outer-band success 66/67. T2 on the same panel achieved 155/160 (96.875%), with 4 no-reach failures, 1 hold interruption, inner success 92/93, and outer success 63/67. The official requirement of at least 196/200 remains unmeasured.",
+        "current_synthesis": "Observed facts: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training and M4 panel produced 118/160 (73.75%), dominated by inner no-reach failures. T2 changed training target-radius exposure to the full official 0.06-0.20 m range and, on matched M5, improved to 150/160 (93.75%) versus T1's 111/160, with inner success rising 39/85 to 80/85 and outer success remaining strong at 70/75 versus 72/75. T2's M5 residual was 7 no-reach and 3 hold-interrupted, making no-reach the dominant observed class. Mechanistic interpretation from the physical model: all official targets are analytically feasible, direct bounded torque requires the learned policy to generate and brake motion, and near-folded configurations can be dynamically difficult; unchanged observations/history remain a competing explanation. T3 was a fresh 120,000-step transfer run from T2 with a training-only opt-in reward that added a narrow near-tolerance precision potential and a modest endpoint-speed penalty within 3 cm, while preserving the target distribution, observations, action mapping, hold semantics, horizon, and evaluation defaults. On the matched disjoint M6 panel, T3 improved complete success to 158/160 and reduced no-reach and interruption failures without sacrificing either radius band. This supports the complete T3 artifact and the execution-focused route for this PPO transfer implementation. It does not isolate either reward term as causal: T3's mean first-reach step was lower (11.68 versus 12.61) but mean entry speed was higher (0.598 versus 0.384 m/s), and only one candidate/panel was tested. The intervention therefore provides bounded candidate-selection evidence, not a general proof of execution-reward causality. The intra-interval continuity question and observation/history sufficiency remain untested, but neither is needed to close I3 because its explicit matched-comparison condition is met.",
+        "decision_frontier": "At goal review, decide whether the positive but single-panel M6 development evidence makes T3 the strongest candidate and justifies requesting the protected official assessment, or whether another bounded inquiry has higher expected contribution before consuming the terminal panel. The official assessment is the only evidence that can certify the human goal. If further work is chosen, it must be justified against the now-positive T3 result and should target a consequential unresolved distinction such as robustness across a new disjoint panel, intra-interval continuity, or observation/history limits; M6 alone does not establish that those mechanisms are limiting. Preserve the implementation limit that the tested route is a T2-derived PPO transfer with reward shaping, not a claim about all execution-focused methods.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "E9",
+          "E10",
+          "E12",
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful complete, uninterrupted two-second holds in the fixed 200-episode official assessment. I3 produced a development candidate that exceeds the 98% development-panel threshold, but the protected official distribution remains entirely unmeasured; no scientific result in this checkpoint certifies the human goal.",
+        "next_direction_or_closure": "I3 is closed with a limited-positive conclusion under E14. The next bounded decision is goal review: use M6 to compare T3 against T2, explicitly update the best-known role if justified, and decide between the protected official assessment and a newly justified robustness/mechanism inquiry. Do not treat the development result as certification or assume that the reward terms alone caused the improvement.",
+        "next_question": "Does the positive M6 development evidence justify assigning T3:checkpoint-105472 as best-known and requesting the protected official assessment, or is one further bounded robustness/mechanism inquiry more valuable toward the 98% human goal?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "891a88ce913e962f52f18b279e0ae1b5ce74f808",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
+        "completed_operations": [
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Completed campaign use now includes M1 compiled-dynamics measurement with 16 deterministic torque-pulse experiments; T1, T2, and T3 each used one fresh or transfer 120,000-step training allocation and completed 120,832 rollout steps; M2 used 200 task-reference episodes; M3 and M4 used 160 research-evaluation episodes each; M5 used two paired 160-episode research evaluations (320 episodes); M6 used two paired 160-episode research evaluations (320 episodes); E4 assigned the prior best-known role, E5 closed I1, E7 opened I2, E9 assigned T2 best-known, E10 closed I2, E12 opened I3, and E14 closed I3. No official assessment episodes have been used. Inquiry count remains 3/15.",
+        "current_goal_gap": "T3:checkpoint-105472 achieved 158/160 (98.75%) on the fresh M6 development panel, two failures short of a perfect panel and above the 98% development target. It had 2 no-reach failures, 0 hold interruptions, inner-band success 92/93, and outer-band success 66/67. T2 on the same panel achieved 155/160 (96.875%), with 4 no-reach failures, 1 hold interruption, inner success 92/93, and outer success 63/67. The official requirement of at least 196/200 remains unmeasured.",
+        "current_synthesis": "Observed facts: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training and M4 panel produced 118/160 (73.75%), dominated by inner no-reach failures. T2 changed training target-radius exposure to the full official 0.06-0.20 m range and, on matched M5, improved to 150/160 (93.75%) versus T1's 111/160, with inner success rising 39/85 to 80/85 and outer success remaining strong at 70/75 versus 72/75. T2's M5 residual was 7 no-reach and 3 hold-interrupted, making no-reach the dominant observed class. Mechanistic interpretation from the physical model: all official targets are analytically feasible, direct bounded torque requires the learned policy to generate and brake motion, and near-folded configurations can be dynamically difficult; unchanged observations/history remain a competing explanation. T3 was a fresh 120,000-step transfer run from T2 with a training-only opt-in reward that added a narrow near-tolerance precision potential and a modest endpoint-speed penalty within 3 cm, while preserving the target distribution, observations, action mapping, hold semantics, horizon, and evaluation defaults. On the matched disjoint M6 panel, T3 improved complete success to 158/160 and reduced no-reach and interruption failures without sacrificing either radius band. This supports the complete T3 artifact and the execution-focused route for this PPO transfer implementation. It does not isolate either reward term as causal: T3's mean first-reach step was lower (11.68 versus 12.61) but mean entry speed was higher (0.598 versus 0.384 m/s), and only one candidate/panel was tested. The intervention therefore provides bounded candidate-selection evidence, not a general proof of execution-reward causality. The intra-interval continuity question and observation/history sufficiency remain untested, but neither is needed to close I3 because its explicit matched-comparison condition is met.",
+        "decision_frontier": "At goal review, decide whether the positive but single-panel M6 development evidence makes T3 the strongest candidate and justifies requesting the protected official assessment, or whether another bounded inquiry has higher expected contribution before consuming the terminal panel. The official assessment is the only evidence that can certify the human goal. If further work is chosen, it must be justified against the now-positive T3 result and should target a consequential unresolved distinction such as robustness across a new disjoint panel, intra-interval continuity, or observation/history limits; M6 alone does not establish that those mechanisms are limiting. Preserve the implementation limit that the tested route is a T2-derived PPO transfer with reward shaping, not a claim about all execution-focused methods.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "E9",
+          "E10",
+          "E12",
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful complete, uninterrupted two-second holds in the fixed 200-episode official assessment. I3 produced a development candidate that exceeds the 98% development-panel threshold, but the protected official distribution remains entirely unmeasured; no scientific result in this checkpoint certifies the human goal.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed with a limited-positive conclusion under E14. The next bounded decision is goal review: use M6 to compare T3 against T2, explicitly update the best-known role if justified, and decide between the protected official assessment and a newly justified robustness/mechanism inquiry. Do not treat the development result as certification or assume that the reward terms alone caused the improvement.",
+        "next_question": "Does the positive M6 development evidence justify assigning T3:checkpoint-105472 as best-known and requesting the protected official assessment, or is one further bounded robustness/mechanism inquiry more valuable toward the 98% human goal?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "d3a0b4c1-f725-457d-ac0d-6633e5d2e8af",
+        "campaign_id": "5c83824d-8c09-447e-b338-e3e036a23cbf",
+        "campaign_usage": "14m58s | 35.53 AIU | prompt 4.7m (85% cached) | output 95.6k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "1m12s | 2.19 AIU | prompt 137.5k (55% cached) | output 8.5k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0f48e5b446521d82ca903beef39b0d144467d8bb",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
+        "completed_operations": [
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Completed campaign use now includes M1 compiled-dynamics measurement with 16 deterministic torque-pulse experiments; T1, T2, and T3 each used one fresh or transfer 120,000-step training allocation and completed 120,832 rollout steps; M2 used 200 task-reference episodes; M3 and M4 used 160 research-evaluation episodes each; M5 used two paired 160-episode research evaluations (320 episodes); M6 used two paired 160-episode research evaluations (320 episodes); E4 assigned the prior best-known role, E5 closed I1, E7 opened I2, E9 assigned T2 best-known, E10 closed I2, E12 opened I3, and E14 closed I3. No official assessment episodes have been used. Inquiry count remains 3/15.",
+        "current_goal_gap": "T3:checkpoint-105472 achieved 158/160 (98.75%) on the fresh M6 development panel, two failures short of a perfect panel and above the 98% development target. It had 2 no-reach failures, 0 hold interruptions, inner-band success 92/93, and outer-band success 66/67. T2 on the same panel achieved 155/160 (96.875%), with 4 no-reach failures, 1 hold interruption, inner success 92/93, and outer success 63/67. The official requirement of at least 196/200 remains unmeasured.",
+        "current_synthesis": "Observed facts: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training and M4 panel produced 118/160 (73.75%), dominated by inner no-reach failures. T2 changed training target-radius exposure to the full official 0.06-0.20 m range and, on matched M5, improved to 150/160 (93.75%) versus T1's 111/160, with inner success rising 39/85 to 80/85 and outer success remaining strong at 70/75 versus 72/75. T2's M5 residual was 7 no-reach and 3 hold-interrupted, making no-reach the dominant observed class. Mechanistic interpretation from the physical model: all official targets are analytically feasible, direct bounded torque requires the learned policy to generate and brake motion, and near-folded configurations can be dynamically difficult; unchanged observations/history remain a competing explanation. T3 was a fresh 120,000-step transfer run from T2 with a training-only opt-in reward that added a narrow near-tolerance precision potential and a modest endpoint-speed penalty within 3 cm, while preserving the target distribution, observations, action mapping, hold semantics, horizon, and evaluation defaults. On the matched disjoint M6 panel, T3 improved complete success to 158/160 and reduced no-reach and interruption failures without sacrificing either radius band. This supports the complete T3 artifact and the execution-focused route for this PPO transfer implementation. It does not isolate either reward term as causal: T3's mean first-reach step was lower (11.68 versus 12.61) but mean entry speed was higher (0.598 versus 0.384 m/s), and only one candidate/panel was tested. The intervention therefore provides bounded candidate-selection evidence, not a general proof of execution-reward causality. The intra-interval continuity question and observation/history sufficiency remain untested, but neither is needed to close I3 because its explicit matched-comparison condition is met.",
+        "decision_frontier": "At goal review, decide whether the positive but single-panel M6 development evidence makes T3 the strongest candidate and justifies requesting the protected official assessment, or whether another bounded inquiry has higher expected contribution before consuming the terminal panel. The official assessment is the only evidence that can certify the human goal. If further work is chosen, it must be justified against the now-positive T3 result and should target a consequential unresolved distinction such as robustness across a new disjoint panel, intra-interval continuity, or observation/history limits; M6 alone does not establish that those mechanisms are limiting. Preserve the implementation limit that the tested route is a T2-derived PPO transfer with reward shaping, not a claim about all execution-focused methods.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M5",
+          "E9",
+          "E10",
+          "E12",
+          "T3",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful complete, uninterrupted two-second holds in the fixed 200-episode official assessment. I3 produced a development candidate that exceeds the 98% development-panel threshold, but the protected official distribution remains entirely unmeasured; no scientific result in this checkpoint certifies the human goal.",
+        "next_direction_or_closure": "I3 is closed with a limited-positive conclusion under E14. The next bounded decision is goal review: use M6 to compare T3 against T2, explicitly update the best-known role if justified, and decide between the protected official assessment and a newly justified robustness/mechanism inquiry. Do not treat the development result as certification or assume that the reward terms alone caused the improvement.",
+        "next_question": "Does the positive M6 development evidence justify assigning T3:checkpoint-105472 as best-known and requesting the protected official assessment, or is one further bounded robustness/mechanism inquiry more valuable toward the 98% human goal?"
+      }
+    },
+    "request_fingerprint": "b1d85026ca96a578787003426049b6a87710ef55e705d1f2b1699891a09b777f",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T2:checkpoint-120832, based on E9 and M5; 150/160 (93.75%) on the matched development panel, with full 0.06-0.20 m training-radius exposure. T1:checkpoint-120832 remains the matched reference at 111/160 (69.375%). No working candidate is assigned. Neither candidate is official-goal certified. I3 will produce and compare any new candidate against T2 before changing roles.",
+    "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
     "completed_operations": [
-      "E12"
+      "T3",
+      "M6",
+      "E14"
     ],
-    "cumulative_resource_use": "Campaign totals remain: M1 compiled-dynamics measurement with 16 deterministic torque-pulse experiments; T1 and T2 each used one fresh 120,000-step training allocation and completed 120,832 rollout steps; M2 used 200 task-reference episodes; M3 and M4 used 160 research-evaluation episodes each; M5 used two paired 160-episode research evaluations (320 episodes total); E4 assigned the prior best-known role, E5 closed I1, E7 opened I2, E9 assigned T2 best-known, E10 closed I2, and E12 opened I3. No official assessment episodes have been used. Inquiry count is now 3/15; no new training or measurement resources were consumed by E12.",
-    "current_goal_gap": "T2:checkpoint-120832 is 4.25 percentage points below the 98% development target on M5, with 10 failures: 7 no-reach and 3 hold-interrupted. Inner-band success is 80/85 with 5 no-reach failures; outer-band success is 70/75 with 2 no-reach and 3 hold-interrupted failures. The protected official-distribution result remains unmeasured.",
-    "current_synthesis": "Observed: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training proxy did not predict its 73.75% M4 result, where inner no-reach failures dominated. T2 changed only training target-radius exposure to the full 0.06-0.20 m range and, on matched disjoint M5, improved success from T1's 111/160 (69.375%) to 150/160 (93.75%); inner success rose 39/85 to 80/85 and inner no-reach fell 34 to 5, while outer success remained strong at 70/75 versus 72/75. The artifact comparison supports T2 as the strongest tested candidate and supports full-range exposure for this PPO implementation, but does not establish coverage as the sole cause or establish official success. T2's residual pattern corrects the prior emphasis on possible hold-memory limitation: no-reach, not hold interruption, is the dominant residual class, so hidden hold state is not currently the limiting observed mechanism. Interpretation: bounded direct torque, braking requirements, and near-folded conditioning make execution a credible mechanism for the no-reach gap; unchanged observation/history representation remains a competing explanation, especially if an execution-focused change fails or causes more interruptions. The exact causal contribution of either mechanism is unresolved because no execution-focused candidate has yet been measured. The protected assessment is the only evidence that can certify the human goal.",
-    "decision_frontier": "I3 must distinguish whether a targeted execution-focused intervention can reduce T2's residual no-reach failures without sacrificing the full-radius inner gains, outer performance, or complete-hold reliability, versus whether persistent failures implicate the unchanged observation/history representation or another untested mechanism. The required discriminator is a matched disjoint evaluation of a T2-derived execution-focused candidate against T2 retaining radius-band, first-reach, realized branch, entry-speed, maximum held streak, interruptions, minimum/final distance, and failure-class diagnostics. A positive result supports developing that route; persistence of no-reach or increased interruptions redirects attention toward representation/history or leaves T2 as the assessment candidate. The official assessment remains the sole certification and is intentionally deferred until this bounded question is resolved.",
+    "cumulative_resource_use": "Completed campaign use now includes M1 compiled-dynamics measurement with 16 deterministic torque-pulse experiments; T1, T2, and T3 each used one fresh or transfer 120,000-step training allocation and completed 120,832 rollout steps; M2 used 200 task-reference episodes; M3 and M4 used 160 research-evaluation episodes each; M5 used two paired 160-episode research evaluations (320 episodes); M6 used two paired 160-episode research evaluations (320 episodes); E4 assigned the prior best-known role, E5 closed I1, E7 opened I2, E9 assigned T2 best-known, E10 closed I2, E12 opened I3, and E14 closed I3. No official assessment episodes have been used. Inquiry count remains 3/15.",
+    "current_goal_gap": "T3:checkpoint-105472 achieved 158/160 (98.75%) on the fresh M6 development panel, two failures short of a perfect panel and above the 98% development target. It had 2 no-reach failures, 0 hold interruptions, inner-band success 92/93, and outer-band success 66/67. T2 on the same panel achieved 155/160 (96.875%), with 4 no-reach failures, 1 hold interruption, inner success 92/93, and outer success 63/67. The official requirement of at least 196/200 remains unmeasured.",
+    "current_synthesis": "Observed facts: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training and M4 panel produced 118/160 (73.75%), dominated by inner no-reach failures. T2 changed training target-radius exposure to the full official 0.06-0.20 m range and, on matched M5, improved to 150/160 (93.75%) versus T1's 111/160, with inner success rising 39/85 to 80/85 and outer success remaining strong at 70/75 versus 72/75. T2's M5 residual was 7 no-reach and 3 hold-interrupted, making no-reach the dominant observed class. Mechanistic interpretation from the physical model: all official targets are analytically feasible, direct bounded torque requires the learned policy to generate and brake motion, and near-folded configurations can be dynamically difficult; unchanged observations/history remain a competing explanation. T3 was a fresh 120,000-step transfer run from T2 with a training-only opt-in reward that added a narrow near-tolerance precision potential and a modest endpoint-speed penalty within 3 cm, while preserving the target distribution, observations, action mapping, hold semantics, horizon, and evaluation defaults. On the matched disjoint M6 panel, T3 improved complete success to 158/160 and reduced no-reach and interruption failures without sacrificing either radius band. This supports the complete T3 artifact and the execution-focused route for this PPO transfer implementation. It does not isolate either reward term as causal: T3's mean first-reach step was lower (11.68 versus 12.61) but mean entry speed was higher (0.598 versus 0.384 m/s), and only one candidate/panel was tested. The intervention therefore provides bounded candidate-selection evidence, not a general proof of execution-reward causality. The intra-interval continuity question and observation/history sufficiency remain untested, but neither is needed to close I3 because its explicit matched-comparison condition is met.",
+    "decision_frontier": "At goal review, decide whether the positive but single-panel M6 development evidence makes T3 the strongest candidate and justifies requesting the protected official assessment, or whether another bounded inquiry has higher expected contribution before consuming the terminal panel. The official assessment is the only evidence that can certify the human goal. If further work is chosen, it must be justified against the now-positive T3 result and should target a consequential unresolved distinction such as robustness across a new disjoint panel, intra-interval continuity, or observation/history limits; M6 alone does not establish that those mechanisms are limiting. Preserve the implementation limit that the tested route is a T2-derived PPO transfer with reward shaping, not a claim about all execution-focused methods.",
     "evidence_references": [
       "M1",
       "M4",
       "M5",
       "E9",
       "E10",
-      "E12"
+      "E12",
+      "T3",
+      "M6",
+      "E14"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successful complete, uninterrupted two-second holds in the fixed 200-episode official assessment. T2 is not certified: its best completed development evidence is 150/160 (93.75%) on M5. I3 was opened because a bounded execution-focused comparison can address the largest observed residual class before consuming the terminal assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is open with a bounded execution-versus-representation question. The next inquiry session should select the least confounded execution-focused implementation or measurement, train or characterize it within the existing allocation, and compare the resulting complete artifact with T2 using the preserved stratified diagnostics. Closure can be positive, negative, limited, or redirected under the stated condition; no official assessment is requested in this goal-review session.",
-    "next_question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-    "scientific_commit": "8bb7bd40019cb9158514645a88b458d5e0a53034",
-    "session_id": "S6"
+    "human_goal_connection": "The human goal remains at least 196 successful complete, uninterrupted two-second holds in the fixed 200-episode official assessment. I3 produced a development candidate that exceeds the 98% development-panel threshold, but the protected official distribution remains entirely unmeasured; no scientific result in this checkpoint certifies the human goal.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed with a limited-positive conclusion under E14. The next bounded decision is goal review: use M6 to compare T3 against T2, explicitly update the best-known role if justified, and decide between the protected official assessment and a newly justified robustness/mechanism inquiry. Do not treat the development result as certification or assume that the reward terms alone caused the improvement.",
+    "next_question": "Does the positive M6 development evidence justify assigning T3:checkpoint-105472 as best-known and requesting the protected official assessment, or is one further bounded robustness/mechanism inquiry more valuable toward the 98% human goal?",
+    "scientific_commit": "0f48e5b446521d82ca903beef39b0d144467d8bb",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5341,23 +5494,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d3a0b4c1-f725-457d-ac0d-6633e5d2e8af",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T3",
-      "M6",
-      "E14"
-    ],
-    "scientific_parent_commit": "891a88ce913e962f52f18b279e0ae1b5ce74f808"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
