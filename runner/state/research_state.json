@@ -2486,7 +2486,7 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 6,
+    "measurement": 7,
     "session": 7,
     "training": 3
   },
@@ -7218,9 +7218,921 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T22:48:37Z",
+      "error": null,
+      "id": "M7",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Deterministically analyze the completed M6 paired artifacts by official target-radius and angle bins, separating never-reached from reached-but-failed-hold outcomes and preserving paired wins by radius.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "{input:T3}",
+              "--candidate-b",
+              "{input:T1}",
+              "--output",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+            ],
+            "artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json",
+            "inputs": {
+              "T1": {
+                "artifact_index": 1,
+                "operation_id": "M6"
+              },
+              "T3": {
+                "artifact_index": 0,
+                "operation_id": "M6"
+              }
+            },
+            "instrument": "python_module",
+            "label": "m6-branch-aware-strata",
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "rationale": "The M6 aggregate gain is decision-relevant only if it reduces the inner-radius never-reach deficit without trading away outer-radius or hold performance. This analysis uses the same completed artifacts and the existing validated laboratory diagnostic, so it adds the required stratified comparison without rerunning or changing either policy. Its output will determine whether the positive overall delta satisfies the bounded I3 closure condition or whether another development direction is warranted."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+              "--candidate-b",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+              "--output",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+            ],
+            "instrument": "python_module",
+            "label": "m6-branch-aware-strata",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-python-module-M7-1-m6-branch-aware-strata.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_a",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_b",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate_a_wins",
+                      "candidate_b_wins",
+                      "discordant_episodes",
+                      "episodes",
+                      "ties"
+                    ],
+                    "path": "/paired_by_radius_bin",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_a/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_a/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_a/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_a/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_b/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_b/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_b/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_b/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7d677cd0883be99d3dca328af684a28dfcbc22d3c563c4cb4d19c23d472872d8",
+              "input_artifacts": {
+                "T1": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+                  "operation_id": "M6",
+                  "recorded_artifact_fingerprint": "7e4b34d7bb7c829a53f1471391dc87b94fe8a7766f0b12fd08ef5dbcb000fb03"
+                },
+                "T3": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+                  "operation_id": "M6",
+                  "recorded_artifact_fingerprint": "b6550b6a489e4b040aba7a5bc6930bfc6e3a2fd106187637717b89538340c18e"
+                }
+              }
+            },
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+            "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+            "manifest": [
+              {
+                "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+                "path": "robot_learning/lab/official_panel_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7232013295588a47b1fc423a52e5c5590e93d544",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/official_panel_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate-a",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+            "--candidate-b",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+            "--output",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+          ],
+          "artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json",
+          "input_artifacts": {
+            "T1": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+              "operation_id": "M6",
+              "recorded_artifact_fingerprint": "7e4b34d7bb7c829a53f1471391dc87b94fe8a7766f0b12fd08ef5dbcb000fb03"
+            },
+            "T3": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+              "operation_id": "M6",
+              "recorded_artifact_fingerprint": "b6550b6a489e4b040aba7a5bc6930bfc6e3a2fd106187637717b89538340c18e"
+            }
+          },
+          "inputs": {
+            "T1": {
+              "artifact_index": 1,
+              "operation_id": "M6"
+            },
+            "T3": {
+              "artifact_index": 0,
+              "operation_id": "M6"
+            }
+          },
+          "instrument": "python_module",
+          "label": "m6-branch-aware-strata",
+          "module": "robot_learning.lab.official_panel_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+            "path": "robot_learning/lab/official_panel_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+          "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+          "manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "7232013295588a47b1fc423a52e5c5590e93d544",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+            "path": "robot_learning/lab/official_panel_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/official_panel_diagnostics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--candidate-a",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+            "--candidate-b",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+            "--output",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+          ],
+          "instrument": "python_module",
+          "label": "m6-branch-aware-strata",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-python-module-M7-1-m6-branch-aware-strata.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 4,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate_a",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate_b",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "candidate_a_wins",
+                    "candidate_b_wins",
+                    "discordant_episodes",
+                    "episodes",
+                    "ties"
+                  ],
+                  "path": "/paired_by_radius_bin",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_a/angle_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate_a/failure_classes",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate_a/model",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate_a/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_a/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/candidate_a/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_b/angle_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate_b/failure_classes",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate_b/model",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate_b/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_b/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/candidate_b/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/failure_classes/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/failure_classes/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/successes",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "7d677cd0883be99d3dca328af684a28dfcbc22d3c563c4cb4d19c23d472872d8",
+            "input_artifacts": {
+              "T1": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+                "operation_id": "M6",
+                "recorded_artifact_fingerprint": "7e4b34d7bb7c829a53f1471391dc87b94fe8a7766f0b12fd08ef5dbcb000fb03"
+              },
+              "T3": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+                "operation_id": "M6",
+                "recorded_artifact_fingerprint": "b6550b6a489e4b040aba7a5bc6930bfc6e3a2fd106187637717b89538340c18e"
+              }
+            }
+          },
+          "module": "robot_learning.lab.official_panel_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+              "--candidate-b",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+              "--output",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+            ],
+            "instrument": "python_module",
+            "label": "m6-branch-aware-strata",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-python-module-M7-1-m6-branch-aware-strata.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_a",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_b",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate_a_wins",
+                      "candidate_b_wins",
+                      "discordant_episodes",
+                      "episodes",
+                      "ties"
+                    ],
+                    "path": "/paired_by_radius_bin",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_a/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_a/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_a/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_a/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_b/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_b/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_b/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_b/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7d677cd0883be99d3dca328af684a28dfcbc22d3c563c4cb4d19c23d472872d8",
+              "input_artifacts": {
+                "T1": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T1-checkpoint-120832-200ep-seed300000-985d1fc4b3f4.json",
+                  "operation_id": "M6",
+                  "recorded_artifact_fingerprint": "7e4b34d7bb7c829a53f1471391dc87b94fe8a7766f0b12fd08ef5dbcb000fb03"
+                },
+                "T3": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m6-T3-checkpoint-70656-200ep-seed300000-985d1fc4b3f4.json",
+                  "operation_id": "M6",
+                  "recorded_artifact_fingerprint": "b6550b6a489e4b040aba7a5bc6930bfc6e3a2fd106187637717b89538340c18e"
+                }
+              }
+            },
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+            "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+            "manifest": [
+              {
+                "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+                "path": "robot_learning/lab/official_panel_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7232013295588a47b1fc423a52e5c5590e93d544",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/official_panel_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Deterministically analyze the completed M6 paired artifacts by official target-radius and angle bins, separating never-reached from reached-but-failed-hold outcomes and preserving paired wins by radius.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "{input:T3}",
+              "--candidate-b",
+              "{input:T1}",
+              "--output",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json"
+            ],
+            "artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M7-1-m6-branch-aware-strata.json",
+            "inputs": {
+              "T1": {
+                "artifact_index": 1,
+                "operation_id": "M6"
+              },
+              "T3": {
+                "artifact_index": 0,
+                "operation_id": "M6"
+              }
+            },
+            "instrument": "python_module",
+            "label": "m6-branch-aware-strata",
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "rationale": "The M6 aggregate gain is decision-relevant only if it reduces the inner-radius never-reach deficit without trading away outer-radius or hold performance. This analysis uses the same completed artifacts and the existing validated laboratory diagnostic, so it adds the required stratified comparison without rerunning or changing either policy. Its output will determine whether the positive overall delta satisfies the bounded I3 closure condition or whether another development direction is warranted."
+      }
+    },
+    "request_fingerprint": "903fb8603c9d73cd867b0a9d8e034bc654bd08af4657ebfb585ff32ce997f0e2",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. T2:checkpoint-120832 remains a measured comparison artifact only. No working or retained candidate is assigned. I3 will develop a new artifact from T1 rather than change the best-known role implicitly.",
     "completed_operations": [
@@ -7265,7 +8177,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T3",
-      "M6"
+      "M6",
+      "M7"
     ],
     "scientific_parent_commit": "7232013295588a47b1fc423a52e5c5590e93d544"
   },
