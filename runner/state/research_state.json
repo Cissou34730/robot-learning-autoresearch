@@ -2216,38 +2216,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 yields a limited but decision-relevant mechanistic conclusion. Across the complete 160-episode synchronized trace panel for T1:checkpoint-120832, the dominant non-entry failures are consistent with policy branch/coverage selection failure rather than a primary finite-time, joint-limit, or contact constraint: catastrophic failures at low radii and negative angles accelerate with saturated actions, then settle far from the target with large joint-limit margins and zero contacts, while matched low-radius negative-angle successes reach the target sector under comparable high transient velocities and saturated braking. The smaller hold-failure class is a genuine stabilization failure: near-threshold episodes repeatedly cross the 1 cm boundary with alternating saturated actions despite safe joint margins and no contacts, whereas nearby successful episodes complete the uninterrupted hold. The trace does not isolate training-radius exposure as the sole cause, because no matched full-distribution-trained policy was tested; it does support prioritizing unchanged direct-torque PPO trained over the full 6-20 cm distribution, while retaining hold-interruption diagnostics as a secondary task-critical criterion.",
-        "reason": "The closure condition is met: M3 inspected synchronized full-panel traces for failed and successful episodes, including qpos/qvel, actions, post-block distance and hold progression, joint-limit margins, and contact outcomes. The evidence discriminates the next direction: do not redirect first to physical-model or joint-limit redesign; develop the matched full-distribution learning method, with stabilization/hold robustness monitored rather than ignored."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 yields a limited but decision-relevant mechanistic conclusion. Across the complete 160-episode synchronized trace panel for T1:checkpoint-120832, the dominant non-entry failures are consistent with policy branch/coverage selection failure rather than a primary finite-time, joint-limit, or contact constraint: catastrophic failures at low radii and negative angles accelerate with saturated actions, then settle far from the target with large joint-limit margins and zero contacts, while matched low-radius negative-angle successes reach the target sector under comparable high transient velocities and saturated braking. The smaller hold-failure class is a genuine stabilization failure: near-threshold episodes repeatedly cross the 1 cm boundary with alternating saturated actions despite safe joint margins and no contacts, whereas nearby successful episodes complete the uninterrupted hold. The trace does not isolate training-radius exposure as the sole cause, because no matched full-distribution-trained policy was tested; it does support prioritizing unchanged direct-torque PPO trained over the full 6-20 cm distribution, while retaining hold-interruption diagnostics as a secondary task-critical criterion.",
-        "reason": "The closure condition is met: M3 inspected synchronized full-panel traces for failed and successful episodes, including qpos/qvel, actions, post-block distance and hold progression, joint-limit margins, and contact outcomes. The evidence discriminates the next direction: do not redirect first to physical-model or joint-limit redesign; develop the matched full-distribution learning method, with stabilization/hold robustness monitored rather than ignored.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 yields a limited but decision-relevant mechanistic conclusion. Across the complete 160-episode synchronized trace panel for T1:checkpoint-120832, the dominant non-entry failures are consistent with policy branch/coverage selection failure rather than a primary finite-time, joint-limit, or contact constraint: catastrophic failures at low radii and negative angles accelerate with saturated actions, then settle far from the target with large joint-limit margins and zero contacts, while matched low-radius negative-angle successes reach the target sector under comparable high transient velocities and saturated braking. The smaller hold-failure class is a genuine stabilization failure: near-threshold episodes repeatedly cross the 1 cm boundary with alternating saturated actions despite safe joint margins and no contacts, whereas nearby successful episodes complete the uninterrupted hold. The trace does not isolate training-radius exposure as the sole cause, because no matched full-distribution-trained policy was tested; it does support prioritizing unchanged direct-torque PPO trained over the full 6-20 cm distribution, while retaining hold-interruption diagnostics as a secondary task-critical criterion.",
-        "reason": "The closure condition is met: M3 inspected synchronized full-panel traces for failed and successful episodes, including qpos/qvel, actions, post-block distance and hold progression, joint-limit margins, and contact outcomes. The evidence discriminates the next direction: do not redirect first to physical-model or joint-limit redesign; develop the matched full-distribution learning method, with stabilization/hold robustness monitored rather than ignored."
-      }
-    },
-    "request_fingerprint": "ceb17f30a65576ca7cd7266c4a2939146e768c6926c71da640641ba217c8dcce",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from the paired M2 measurement by E4. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. The best-known role is an evidence-backed selection, not a claim of official eligibility.",
     "completed_operations": [
