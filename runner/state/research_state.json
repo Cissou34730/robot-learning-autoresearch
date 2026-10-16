@@ -192,7 +192,8 @@
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json"
+        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json",
+        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
       ],
       "fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
       "id": "T1:checkpoint-120832",
@@ -841,7 +842,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 1
   },
@@ -1585,9 +1586,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:11:02Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the baseline PPO candidate with the research-evaluation diagnostics needed to discriminate stabilization failure from inner-radius generalization failure on a non-overlapping development panel.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline PPO mechanism-diagnostic development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M2 established a 73.5% task-reference success rate but its artifact omitted the decisive hold diagnostics, so the active distinction remains unresolved: responsive-dynamics stabilization failure versus inner-radius generalization failure versus both. The configured research-evaluation panel (160 episodes starting at seed 4200) is separate from the protected official assessment and records target-stratified trajectory evidence including first reach, maximum held streak, interruptions, minimum/final distance, and failure-relevant outcomes. High first reach with short streaks or interruptions would support stabilization; stable outer-radius performance with concentrated inner-radius failures would support coverage; both signatures would support a coupled gap. The operation measures the same unchanged candidate and adds the missing mechanism evidence rather than changing the recipe."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline PPO mechanism-diagnostic development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "793d54f1384f9b1cdc3a7f49e16ecbdde1aed438baa65e95ec105f105e349f7b",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "baseline PPO mechanism-diagnostic development panel",
+          "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "baseline PPO mechanism-diagnostic development panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "793d54f1384f9b1cdc3a7f49e16ecbdde1aed438baa65e95ec105f105e349f7b",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 68.75,
+            "successes": 110
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline PPO mechanism-diagnostic development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "793d54f1384f9b1cdc3a7f49e16ecbdde1aed438baa65e95ec105f105e349f7b",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the baseline PPO candidate with the research-evaluation diagnostics needed to discriminate stabilization failure from inner-radius generalization failure on a non-overlapping development panel.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline PPO mechanism-diagnostic development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M2 established a 73.5% task-reference success rate but its artifact omitted the decisive hold diagnostics, so the active distinction remains unresolved: responsive-dynamics stabilization failure versus inner-radius generalization failure versus both. The configured research-evaluation panel (160 episodes starting at seed 4200) is separate from the protected official assessment and records target-stratified trajectory evidence including first reach, maximum held streak, interruptions, minimum/final distance, and failure-relevant outcomes. High first reach with short streaks or interruptions would support stabilization; stable outer-radius performance with concentrated inner-radius failures would support coverage; both signatures would support a coupled gap. The operation measures the same unchanged candidate and adds the missing mechanism evidence rather than changing the recipe."
+      }
+    },
+    "request_fingerprint": "d602f2579e27e5a0f3a9a09621067f0b33efcc64a48d35662aa2f64f91f6c79e",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working and best-known roles remain empty; M1 is a plant measurement and E2 records the bounded inquiry, neither is a policy artifact.",
     "completed_operations": [
@@ -1627,7 +2016,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the current baseline PPO implementation produce a policy whose official-distribution gap is primarily responsive-dynamics stabilization failure, inner-radius generalization failure, or both, when measured with target-stratified hold diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "M3"
     ],
     "scientific_parent_commit": "aa9d490b893d89b004268c29cce8908d8c556f0b"
   },
