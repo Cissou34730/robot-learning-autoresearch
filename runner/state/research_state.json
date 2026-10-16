@@ -180,7 +180,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+      ],
       "fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -828,7 +830,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 2,
+    "measurement": 3,
     "session": 1,
     "training": 1
   },
@@ -1493,9 +1495,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T12:31:22Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T1:checkpoint-120832 on the held-out 160-episode research panel with per-episode geometry and reach/hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "full-radius PPO terminal development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "Training proxies nominate T1:checkpoint-120832 as the current candidate, but only research evaluation establishes development behavior. The artifact's target-radius, first-reach, minimum/final distance, maximum held steps, in-tolerance steps, and hold-interruption fields will test whether full-radius exposure closes the inner-band gap and whether failures are primarily trajectory/convergence or post-entry stabilization. This is a development measurement distinct from the protected 200-episode official assessment."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "full-radius PPO terminal development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "05ae92bc4fd58c18d139a79ce004bae959a64090445a7640a726d942a2e05d08",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "full-radius PPO terminal development panel",
+          "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "full-radius PPO terminal development panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "05ae92bc4fd58c18d139a79ce004bae959a64090445a7640a726d942a2e05d08",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "full-radius PPO terminal development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "05ae92bc4fd58c18d139a79ce004bae959a64090445a7640a726d942a2e05d08",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T1:checkpoint-120832 on the held-out 160-episode research panel with per-episode geometry and reach/hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "full-radius PPO terminal development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "Training proxies nominate T1:checkpoint-120832 as the current candidate, but only research evaluation establishes development behavior. The artifact's target-radius, first-reach, minimum/final distance, maximum held steps, in-tolerance steps, and hold-interruption fields will test whether full-radius exposure closes the inner-band gap and whether failures are primarily trajectory/convergence or post-entry stabilization. This is a development measurement distinct from the protected 200-episode official assessment."
+      }
+    },
+    "request_fingerprint": "2f27ff1f1b294886a107b633668657be2945d841167b390caaf4505cff4a7796",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1516,7 +1906,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "M2",
-      "T1"
+      "T1",
+      "M3"
     ],
     "scientific_parent_commit": "83d81e402d5df7df94363cce100f4e515d56c258"
   },
