@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "algorithm": "ppo",
+  "seed": 3,
+  "timesteps": 55296,
+  "requested_timesteps": 120000,
+  "completed": true,
+  "resumed_from": "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\retained\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\t1-c8cf701d5-d29483901ff30c97fcc81dbe47d57e5696ee14ebb5ecc536973ab78fb97f11d1\\model.zip",
+  "effective_config": {
+    "runtime_config": {
+      "algorithm": {
+        "name": "ppo"
+      },
+      "policy": {
+        "activation": "tanh",
+        "net_arch": [
+          64,
+          64
+        ]
+      },
+      "ppo": {
+        "batch_size": 64,
+        "ent_coef": 0.01,
+        "gae_lambda": 0.95,
+        "gamma": 0.99,
+        "learning_rate": 0.0003,
+        "n_steps": 1024
+      },
+      "training": {
+        "checkpoint_every_steps": 5000,
+        "n_envs": 1
+      }
+    },
+    "n_envs": 1,
+    "model_parameters": {
+      "batch_size": 64,
+      "ent_coef": 0.01,
+      "gae_lambda": 0.95,
+      "gamma": 0.99,
+      "learning_rate": 0.0003,
+      "n_steps": 1024
+    },
+    "policy": {
+      "activation": "tanh",
+      "net_arch": [
+        64,
+        64
+      ]
+    }
+  },
+  "training_success": 0.86,
+  "ep_rew_mean": 89.92250428999999
+}
