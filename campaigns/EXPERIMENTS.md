@@ -10,3 +10,4 @@
 | M2 | measurement | I1 | completed |
 | M3 | measurement | I1 | completed |
 | M4 | measurement | I1 | completed |
+| E4 | model_role | I1 | assigned |
