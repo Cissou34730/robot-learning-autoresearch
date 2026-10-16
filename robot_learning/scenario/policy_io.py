@@ -14,11 +14,21 @@ from robot_learning.scenario.observations import (
 )
 
 
-CONTROLLER_ACTIVATION_ID = "i5_acquisition_maintenance_v1"
+CONTROLLER_ACTIVATION_ID = "i6_acquisition_maintenance_v2"
 ACQUISITION_TOLERANCE_METERS = 0.01
 MAINTENANCE_POSITION_GAIN_ACTIONS_PER_RADIAN = 2.0
 MAINTENANCE_VELOCITY_GAIN_SECONDS = 0.25
 MAINTENANCE_ACTION_LIMIT = 1.0
+RESET_ESCAPE_PHASE = "reset_escape"
+ACQUISITION_PHASE = "acquisition"
+MAINTENANCE_PHASE = "maintenance"
+RESET_ESCAPE_MAX_STEPS = 12
+RESET_ESCAPE_ELBOW_RADIANS = 0.45
+RESET_ESCAPE_POSITION_GAIN_ACTIONS_PER_RADIAN = 2.5
+RESET_ESCAPE_VELOCITY_GAIN_SECONDS = 0.35
+RESET_ESCAPE_MIN_Q2_RADIANS = 0.18
+ACQUISITION_POSITION_GAIN_ACTIONS_PER_RADIAN = 1.75
+ACQUISITION_VELOCITY_GAIN_SECONDS = 0.30
 
 
 def physical_action(action):
@@ -31,7 +41,7 @@ def _bounded_action(action) -> np.ndarray:
         candidate = np.asarray(action, dtype=np.float64)
     except (TypeError, ValueError):
         return np.zeros(2, dtype=np.float64)
-    if candidate.size != 2:
+    if candidate.shape not in ((2,), (1, 2)):
         return np.zeros(2, dtype=np.float64)
     candidate = candidate.reshape(2)
     if not np.isfinite(candidate).all():
@@ -39,15 +49,79 @@ def _bounded_action(action) -> np.ndarray:
     return np.clip(candidate, -MAINTENANCE_ACTION_LIMIT, MAINTENANCE_ACTION_LIMIT)
 
 
-def make_controller_policy_io() -> PolicyIO:
-    """Build the stateful acquisition-to-maintenance runtime used by I5.
+def _validated_controller_observation(observation) -> np.ndarray | None:
+    """Return the ordinary observation only when it has the required shape."""
+    try:
+        candidate = np.asarray(observation, dtype=np.float64)
+    except (TypeError, ValueError):
+        return None
+    if candidate.shape != (OBSERVATION_SIZE,) or not np.isfinite(candidate).all():
+        return None
+    return candidate
 
-    The controller only sees the ordinary eleven-entry observation.  It takes
-    over after an observed endpoint enters the official tolerance band and
-    gives control back to the learned policy when a later observation leaves
-    that band.
+
+def _branch_targets_and_validity(
+    observation: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Reconstruct the two observed IK targets and apply joint limits."""
+    qpos = observation[0:2]
+    branch_errors = observation[7:11].reshape(2, 2)
+    branch_targets = (qpos[None, :] + branch_errors + np.pi) % (
+        2.0 * np.pi
+    ) - np.pi
+    valid = np.isfinite(branch_targets).all(axis=1) & np.all(
+        np.abs(branch_targets) <= JOINT_LIMIT_RADIANS, axis=1
+    )
+    return branch_targets, valid
+
+
+def _nearest_valid_branch(
+    observation: np.ndarray,
+    *,
+    preferred: int | None = None,
+) -> int | None:
+    """Choose one limit-compatible branch, retaining a valid latch if given."""
+    branch_targets, valid = _branch_targets_and_validity(observation)
+    if preferred is not None and 0 <= preferred < 2 and valid[preferred]:
+        return preferred
+    if not np.any(valid):
+        return None
+
+    branch_errors = observation[7:11].reshape(2, 2)
+    distances = np.linalg.norm(branch_errors, axis=1)
+    distances = np.where(valid, distances, np.inf)
+    return int(np.argmin(distances))
+
+
+def _branch_error(
+    observation: np.ndarray,
+    branch_index: int,
+) -> np.ndarray | None:
+    """Return the selected branch error after checking its finite shape."""
+    if branch_index not in (0, 1):
+        return None
+    errors = observation[7:11].reshape(2, 2)
+    error = errors[branch_index]
+    if not np.isfinite(error).all():
+        return None
+    return error
+
+
+def make_controller_policy_io() -> PolicyIO:
+    """Build the stateful reset-escape, acquisition, and maintenance runtime.
+
+    The controller only sees the ordinary eleven-entry observation.  It first
+    bends the elbow away from the reset singularity, then drives a latched,
+    joint-limit-compatible IK branch.  Once an observed endpoint enters the
+    official tolerance band, it uses the established position/velocity
+    maintenance law and returns to acquisition after an exit.
     """
-    state = {"observation": None, "in_maintenance": False}
+    state = {
+        "observation": None,
+        "phase": RESET_ESCAPE_PHASE,
+        "escape_steps": 0,
+        "branch_index": None,
+    }
 
     def observe(data):
         observation = np.asarray(reach_observation(data), dtype=np.float32)
@@ -56,60 +130,125 @@ def make_controller_policy_io() -> PolicyIO:
 
     def reset():
         state["observation"] = None
-        state["in_maintenance"] = False
+        state["phase"] = RESET_ESCAPE_PHASE
+        state["escape_steps"] = 0
+        state["branch_index"] = None
 
     def action(learned_action):
         learned = _bounded_action(learned_action)
-        observation = state["observation"]
+        observation = _validated_controller_observation(state["observation"])
         if observation is None:
-            return learned
-        try:
-            observation = np.asarray(observation, dtype=np.float64)
-        except (TypeError, ValueError):
-            state["in_maintenance"] = False
-            return learned
-        if observation.shape != (OBSERVATION_SIZE,) or not np.isfinite(
-            observation
-        ).all():
-            state["in_maintenance"] = False
+            # A malformed observation cannot safely drive a feedback law.  Do
+            # not retain a partially advanced phase across that fault.
+            state["phase"] = RESET_ESCAPE_PHASE
+            state["escape_steps"] = 0
+            state["branch_index"] = None
             return learned
 
         endpoint_to_target = observation[4:7]
         endpoint_distance = float(np.linalg.norm(endpoint_to_target))
         if not np.isfinite(endpoint_distance):
-            state["in_maintenance"] = False
+            state["phase"] = RESET_ESCAPE_PHASE
+            state["escape_steps"] = 0
+            state["branch_index"] = None
             return learned
-        if endpoint_distance > ACQUISITION_TOLERANCE_METERS:
-            state["in_maintenance"] = False
-            return learned
-        state["in_maintenance"] = True
 
         qpos = observation[0:2]
         qvel = observation[2:4]
-        branch_errors = observation[7:11].reshape(2, 2)
-        # The existing branch errors encode q_target - q.  Reconstruct each
-        # candidate target, wrap it to the joint-angle convention, and reject
-        # branches outside the robot's joint limits before choosing the nearest
-        # feasible one.
-        branch_targets = (qpos[None, :] + branch_errors + np.pi) % (
-            2.0 * np.pi
-        ) - np.pi
-        valid = np.all(
-            np.abs(branch_targets) <= JOINT_LIMIT_RADIANS, axis=1
-        )
-        if not np.any(valid):
-            state["in_maintenance"] = False
+        phase = state["phase"]
+
+        if phase == RESET_ESCAPE_PHASE:
+            branch_index = _nearest_valid_branch(
+                observation, preferred=state["branch_index"]
+            )
+            if branch_index is None:
+                return learned
+            state["branch_index"] = branch_index
+            branch_targets, _ = _branch_targets_and_validity(observation)
+            target = branch_targets[branch_index]
+
+            # Use a bounded intermediate target rather than asking the policy
+            # to act from q2=0.  The selected branch supplies the bend sign;
+            # the shoulder error also starts moving toward that same branch.
+            elbow_sign = float(np.sign(target[1]))
+            if elbow_sign == 0.0:
+                elbow_sign = float(np.sign(observation[7 + 2 * branch_index + 1]))
+            if elbow_sign == 0.0:
+                elbow_sign = 1.0
+            escape_elbow_magnitude = min(
+                max(abs(float(target[1])), RESET_ESCAPE_MIN_Q2_RADIANS),
+                RESET_ESCAPE_ELBOW_RADIANS,
+            )
+            escape_target = np.asarray(
+                [
+                    qpos[0] + 0.35 * (target[0] - qpos[0]),
+                    elbow_sign * escape_elbow_magnitude,
+                ],
+                dtype=np.float64,
+            )
+            escape_error = escape_target - qpos
+            escape_action = (
+                RESET_ESCAPE_POSITION_GAIN_ACTIONS_PER_RADIAN * escape_error
+                - RESET_ESCAPE_VELOCITY_GAIN_SECONDS * qvel
+            )
+            state["escape_steps"] += 1
+            if (
+                state["escape_steps"] >= RESET_ESCAPE_MAX_STEPS
+                or abs(float(qpos[1])) >= RESET_ESCAPE_MIN_Q2_RADIANS
+            ):
+                state["phase"] = ACQUISITION_PHASE
+            return np.clip(
+                escape_action,
+                -MAINTENANCE_ACTION_LIMIT,
+                MAINTENANCE_ACTION_LIMIT,
+            ).astype(np.float64, copy=False)
+
+        if phase not in (ACQUISITION_PHASE, MAINTENANCE_PHASE):
+            state["phase"] = RESET_ESCAPE_PHASE
+            state["escape_steps"] = 0
+            state["branch_index"] = None
             return learned
-        branch_distances = np.linalg.norm(branch_errors, axis=1)
-        branch_distances = np.where(valid, branch_distances, np.inf)
-        branch_index = int(np.argmin(branch_distances))
-        position_error = branch_errors[branch_index]
-        maintenance_action = (
-            MAINTENANCE_POSITION_GAIN_ACTIONS_PER_RADIAN * position_error
-            - MAINTENANCE_VELOCITY_GAIN_SECONDS * qvel
-        )
+
+        if endpoint_distance <= ACQUISITION_TOLERANCE_METERS:
+            state["phase"] = MAINTENANCE_PHASE
+        elif phase == MAINTENANCE_PHASE:
+            # Preserve the v1 handoff: an exit immediately returns to the
+            # branch-directed acquisition controller.
+            state["phase"] = ACQUISITION_PHASE
+
+        if state["phase"] == ACQUISITION_PHASE:
+            branch_index = _nearest_valid_branch(
+                observation, preferred=state["branch_index"]
+            )
+            if branch_index is None:
+                return learned
+            state["branch_index"] = branch_index
+        else:
+            # Maintenance retains v1's nearest-valid-IK selection rather than
+            # allowing an invalid or stale latched branch to command the arm.
+            branch_index = _nearest_valid_branch(observation)
+            if branch_index is None:
+                state["phase"] = ACQUISITION_PHASE
+                state["branch_index"] = None
+                return learned
+
+        position_error = _branch_error(observation, branch_index)
+        if position_error is None:
+            state["phase"] = ACQUISITION_PHASE
+            state["branch_index"] = None
+            return learned
+        if state["phase"] == ACQUISITION_PHASE:
+            feedback_action = (
+                ACQUISITION_POSITION_GAIN_ACTIONS_PER_RADIAN * position_error
+                - ACQUISITION_VELOCITY_GAIN_SECONDS * qvel
+            )
+        else:
+            feedback_action = (
+                MAINTENANCE_POSITION_GAIN_ACTIONS_PER_RADIAN * position_error
+                - MAINTENANCE_VELOCITY_GAIN_SECONDS * qvel
+            )
         return np.clip(
-            maintenance_action,
+            feedback_action,
             -MAINTENANCE_ACTION_LIMIT,
             MAINTENANCE_ACTION_LIMIT,
         ).astype(np.float64, copy=False)
@@ -130,7 +269,7 @@ def make_controller_policy_io() -> PolicyIO:
 
 
 def make_policy_io(*, controller_enabled: bool = False) -> PolicyIO:
-    """Return identity I/O by default, or the explicitly enabled I5 runtime."""
+    """Return identity I/O by default, or the explicitly enabled I6 runtime."""
     if controller_enabled:
         return make_controller_policy_io()
     return PolicyIO(observe=reach_observation, action=physical_action)
