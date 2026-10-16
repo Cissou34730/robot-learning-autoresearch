@@ -1957,38 +1957,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative conclusion for the tested fresh PPO direct-torque recipe: the best complete artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% development success on the full 6-20 cm radius and full-angle panel, far below the 98% campaign objective. The inquiry\u2019s causal evidence indicates approach/non-entry is dominant (42 failures had no first in-tolerance step), with a smaller but real hold-stability class (8 failures entered tolerance but never completed the uninterrupted 100-step hold).",
-        "reason": "I1 closure condition is satisfied by T1 and M2: a fresh candidate was trained, and M2 provides episode success, first-entry timing, minimum and final distance, maximum uninterrupted hold, interruption count, and per-episode target radius/angle for two paired complete artifacts. The terminal checkpoint is the stronger candidate, but the paired result is only a candidate-selection result, not a causal claim. Failures are concentrated toward the lower-radius tail and include an angle sector around -130 to -150 degrees, while the 8 hold failures show residual/unstable in-tolerance behavior. No synchronized state/action/contact/joint-limit trace was recorded, so branch, limit, and self-contact remain unresolved alternatives rather than established causes. I1 therefore closes with this recipe below goal and carries the next direction to goal review: decide between broader-distribution/control development and a targeted branch/contact/limit mechanism measurement before committing further training."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited negative conclusion for the tested fresh PPO direct-torque recipe: the best complete artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% development success on the full 6-20 cm radius and full-angle panel, far below the 98% campaign objective. The inquiry\u2019s causal evidence indicates approach/non-entry is dominant (42 failures had no first in-tolerance step), with a smaller but real hold-stability class (8 failures entered tolerance but never completed the uninterrupted 100-step hold).",
-        "reason": "I1 closure condition is satisfied by T1 and M2: a fresh candidate was trained, and M2 provides episode success, first-entry timing, minimum and final distance, maximum uninterrupted hold, interruption count, and per-episode target radius/angle for two paired complete artifacts. The terminal checkpoint is the stronger candidate, but the paired result is only a candidate-selection result, not a causal claim. Failures are concentrated toward the lower-radius tail and include an angle sector around -130 to -150 degrees, while the 8 hold failures show residual/unstable in-tolerance behavior. No synchronized state/action/contact/joint-limit trace was recorded, so branch, limit, and self-contact remain unresolved alternatives rather than established causes. I1 therefore closes with this recipe below goal and carries the next direction to goal review: decide between broader-distribution/control development and a targeted branch/contact/limit mechanism measurement before committing further training.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative conclusion for the tested fresh PPO direct-torque recipe: the best complete artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% development success on the full 6-20 cm radius and full-angle panel, far below the 98% campaign objective. The inquiry\u2019s causal evidence indicates approach/non-entry is dominant (42 failures had no first in-tolerance step), with a smaller but real hold-stability class (8 failures entered tolerance but never completed the uninterrupted 100-step hold).",
-        "reason": "I1 closure condition is satisfied by T1 and M2: a fresh candidate was trained, and M2 provides episode success, first-entry timing, minimum and final distance, maximum uninterrupted hold, interruption count, and per-episode target radius/angle for two paired complete artifacts. The terminal checkpoint is the stronger candidate, but the paired result is only a candidate-selection result, not a causal claim. Failures are concentrated toward the lower-radius tail and include an angle sector around -130 to -150 degrees, while the 8 hold failures show residual/unstable in-tolerance behavior. No synchronized state/action/contact/joint-limit trace was recorded, so branch, limit, and self-contact remain unresolved alternatives rather than established causes. I1 therefore closes with this recipe below goal and carries the next direction to goal review: decide between broader-distribution/control development and a targeted branch/contact/limit mechanism measurement before committing further training."
-      }
-    },
-    "request_fingerprint": "6f30d9e0d56f44e4834f3473b1852f8714858be74b86cfd5a209cf8ef22a6249",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working and best-known roles are empty; M1 is a physical measurement artifact and not a policy candidate.",
     "completed_operations": [
