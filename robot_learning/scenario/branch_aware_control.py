@@ -4,6 +4,10 @@ The controller is deliberately episode-scoped: :meth:`select_branch` is
 called once after a target is sampled, and the selected inverse-kinematics
 configuration is then latched until reset.  The learned action remains a
 bounded residual rather than being replaced by this guidance.
+
+After branch selection, control moves through an approach, braking, and hold
+schedule.  The schedule is state-driven and one-way; it does not use the
+environment's hold counter or episode step count.
 """
 
 from dataclasses import dataclass
@@ -11,14 +15,6 @@ from dataclasses import dataclass
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-
-# These are the only control gains and blend weights used by this method.
-# Guidance is a bounded joint-space command; the policy residual is intentionally
-# smaller so it can refine, but not immediately erase, the selected branch.
-GUIDANCE_PROPORTIONAL_GAIN = 1.0
-GUIDANCE_VELOCITY_DAMPING = 0.10
-GUIDANCE_BLEND_WEIGHT = 1.0
-POLICY_RESIDUAL_WEIGHT = 0.35
 
 # Branch ranking is deterministic: proximity is minimized first in score form,
 # with a smaller preference for configurations farther from their limits.
@@ -28,6 +24,45 @@ BRANCH_LIMIT_MARGIN_WEIGHT = 0.10
 ACTION_LOW = -1.0
 ACTION_HIGH = 1.0
 IK_REACHABILITY_EPSILON = 1e-10
+
+APPROACH_PHASE = "approach"
+BRAKING_PHASE = "braking"
+HOLD_PHASE = "hold"
+
+# The phase boundaries use both Cartesian target geometry and the latched
+# joint-space target.  They are deliberately margins around the 1 cm task
+# boundary rather than the task success counter.
+CLOSE_APPROACH_DISTANCE_M = 0.025
+CLOSE_APPROACH_ERROR_RAD = 0.35
+BRAKING_INWARD_SPEED_RAD_S = 1.5
+HOLD_ENTRY_DISTANCE_FRACTION = 0.80
+HOLD_ENTRY_ERROR_RAD = 0.12
+HOLD_ENTRY_SPEED_RAD_S = 0.35
+
+# Each phase has its own finite-time control schedule.  The hold schedule
+# retains enough proportional guidance to recover from a small interruption,
+# while its stronger velocity damping and small residual weight prevent a
+# learned command from undoing the branch target.
+PHASE_PARAMETERS = {
+    APPROACH_PHASE: {
+        "proportional_gain": 1.0,
+        "velocity_damping": 0.10,
+        "guidance_weight": 1.0,
+        "residual_weight": 0.35,
+    },
+    BRAKING_PHASE: {
+        "proportional_gain": 0.80,
+        "velocity_damping": 0.45,
+        "guidance_weight": 1.0,
+        "residual_weight": 0.12,
+    },
+    HOLD_PHASE: {
+        "proportional_gain": 0.45,
+        "velocity_damping": 0.90,
+        "guidance_weight": 0.85,
+        "residual_weight": 0.05,
+    },
+}
 
 
 def _wrap_to_pi(angle):
@@ -47,9 +82,9 @@ class FeasibleBranch:
 
 
 class BranchAwareController:
-    """Latch a feasible planar IK branch and provide bounded guidance."""
+    """Latch a feasible planar IK branch and provide scheduled guidance."""
 
-    def __init__(self, model) -> None:
+    def __init__(self, model, *, success_threshold: float = 0.01) -> None:
         if int(model.njnt) < 2:
             raise ValueError("branch-aware control requires two arm joints")
         self.model = model
@@ -62,11 +97,66 @@ class BranchAwareController:
         )
         self.selected_branch: str | None = None
         self.selected_target: np.ndarray | None = None
+        self._phase = APPROACH_PHASE
+        try:
+            threshold = float(success_threshold)
+        except (TypeError, ValueError):
+            threshold = 0.01
+        self._success_threshold = (
+            threshold if np.isfinite(threshold) and threshold > 0.0 else 0.01
+        )
 
     def _joint_state(self, data) -> tuple[np.ndarray, np.ndarray]:
-        qpos = np.asarray(data.qpos[list(self._qpos_indices)], dtype=np.float64)
-        qvel = np.asarray(data.qvel[list(self._qvel_indices)], dtype=np.float64)
+        try:
+            qpos = np.asarray(
+                data.qpos[list(self._qpos_indices)], dtype=np.float64
+            )
+            qvel = np.asarray(
+                data.qvel[list(self._qvel_indices)], dtype=np.float64
+            )
+        except (AttributeError, IndexError, TypeError, ValueError):
+            return np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)
+        if qpos.shape != (2,) or qvel.shape != (2,):
+            return np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)
+        qpos = np.nan_to_num(qpos, nan=0.0, posinf=0.0, neginf=0.0)
+        qvel = np.nan_to_num(qvel, nan=0.0, posinf=0.0, neginf=0.0)
         return qpos, qvel
+
+    @staticmethod
+    def _policy_vector(policy_action) -> np.ndarray:
+        try:
+            policy = np.asarray(policy_action, dtype=np.float64)
+        except (TypeError, ValueError):
+            return np.zeros(2, dtype=np.float64)
+        if policy.size != 2:
+            return np.zeros(2, dtype=np.float64)
+        policy = policy.reshape(2)
+        return np.nan_to_num(
+            policy, nan=0.0, posinf=ACTION_HIGH, neginf=ACTION_LOW
+        )
+
+    def _target_distance(self, data) -> float:
+        try:
+            target = np.asarray(data.mocap_pos[0][:2], dtype=np.float64)
+            qpos = np.asarray(
+                data.qpos[list(self._qpos_indices)], dtype=np.float64
+            )
+        except (AttributeError, IndexError, TypeError, ValueError):
+            return float("inf")
+        if target.shape != (2,) or qpos.shape != (2,):
+            return float("inf")
+        if not (np.all(np.isfinite(target)) and np.all(np.isfinite(qpos))):
+            return float("inf")
+        site = np.asarray(
+            [
+                UPPER_ARM_LENGTH * np.cos(qpos[0])
+                + FOREARM_LENGTH * np.cos(qpos[0] + qpos[1]),
+                UPPER_ARM_LENGTH * np.sin(qpos[0])
+                + FOREARM_LENGTH * np.sin(qpos[0] + qpos[1]),
+            ],
+            dtype=np.float64,
+        )
+        return float(np.linalg.norm(site - target))
 
     @staticmethod
     def _shoulder_for_elbow(target_x: float, target_y: float, elbow: float) -> float:
@@ -79,6 +169,8 @@ class BranchAwareController:
         )
 
     def _ik_solutions(self, target: np.ndarray) -> tuple[tuple[str, np.ndarray], ...]:
+        if target.shape != (2,) or not np.all(np.isfinite(target)):
+            return ()
         target_x, target_y = (float(value) for value in target)
         cosine = (
             target_x**2
@@ -173,6 +265,7 @@ class BranchAwareController:
         if not feasible:
             self.selected_branch = None
             self.selected_target = None
+            self._phase = APPROACH_PHASE
             raise ValueError(
                 "no feasible planar IK branch satisfies the declared joint limits"
             )
@@ -183,28 +276,94 @@ class BranchAwareController:
         )
         self.selected_branch = chosen.name
         self.selected_target = chosen.target.copy()
+        self._phase = APPROACH_PHASE
 
     def guidance_action(self, data) -> np.ndarray:
-        """Compute bounded PD guidance toward the latched joint-space target."""
+        """Compute scheduled, bounded guidance toward the latched target."""
         if self.selected_target is None:
             raise RuntimeError("branch-aware guidance requested before branch selection")
         qpos, qvel = self._joint_state(data)
         angle_error = _wrap_to_pi(self.selected_target - qpos)
+        error_norm = float(np.linalg.norm(angle_error))
+        speed_norm = float(np.linalg.norm(qvel))
+        inward_speed = (
+            float(np.dot(qvel, angle_error) / error_norm)
+            if error_norm > np.finfo(np.float64).eps
+            else 0.0
+        )
+        target_distance = self._target_distance(data)
+
+        if self._phase == APPROACH_PHASE:
+            close_approach = (
+                target_distance <= CLOSE_APPROACH_DISTANCE_M
+                and error_norm <= CLOSE_APPROACH_ERROR_RAD
+            )
+            excessive_inward_speed = (
+                inward_speed >= BRAKING_INWARD_SPEED_RAD_S
+            )
+            if close_approach or excessive_inward_speed:
+                self._phase = BRAKING_PHASE
+        if self._phase == BRAKING_PHASE:
+            hold_distance = (
+                HOLD_ENTRY_DISTANCE_FRACTION * self._success_threshold
+            )
+            if (
+                target_distance <= hold_distance
+                and error_norm <= HOLD_ENTRY_ERROR_RAD
+                and speed_norm <= HOLD_ENTRY_SPEED_RAD_S
+            ):
+                self._phase = HOLD_PHASE
+
+        parameters = PHASE_PARAMETERS[self._phase]
         guidance = (
-            GUIDANCE_PROPORTIONAL_GAIN * angle_error
-            - GUIDANCE_VELOCITY_DAMPING * qvel
+            parameters["proportional_gain"] * angle_error
+            - parameters["velocity_damping"] * qvel
+        )
+        guidance = np.nan_to_num(
+            guidance, nan=0.0, posinf=ACTION_HIGH, neginf=ACTION_LOW
         )
         return np.clip(guidance, ACTION_LOW, ACTION_HIGH).astype(np.float64)
 
+    def diagnostics(self, data) -> dict[str, float | str | bool]:
+        """Return state-driven phase diagnostics for the current control state."""
+        qpos, qvel = self._joint_state(data)
+        if self.selected_target is None:
+            angle_error = np.zeros(2, dtype=np.float64)
+        else:
+            angle_error = _wrap_to_pi(self.selected_target - qpos)
+        error_norm = float(np.linalg.norm(angle_error))
+        speed_norm = float(np.linalg.norm(qvel))
+        inward_speed = (
+            float(np.dot(qvel, angle_error) / error_norm)
+            if error_norm > np.finfo(np.float64).eps
+            else 0.0
+        )
+        parameters = PHASE_PARAMETERS[self._phase]
+        return {
+            "control_phase": self._phase,
+            # Braking remains active in hold because hold is the conservative
+            # post-braking schedule, while `braking_phase` identifies the
+            # transitional phase itself.
+            "braking_active": self._phase in (BRAKING_PHASE, HOLD_PHASE),
+            "braking_phase": self._phase == BRAKING_PHASE,
+            "guidance_weight": float(parameters["guidance_weight"]),
+            "residual_weight": float(parameters["residual_weight"]),
+            "joint_error_norm_rad": error_norm,
+            "joint_speed_norm_rad_s": speed_norm,
+            "inward_joint_speed_rad_s": inward_speed,
+            "target_distance_m": self._target_distance(data),
+        }
+
     def apply(self, policy_action, data) -> tuple[np.ndarray, np.ndarray]:
-        """Blend a bounded policy residual with guidance and clip the command."""
+        """Blend the scheduled guidance with a bounded policy residual."""
         policy = np.clip(
-            np.asarray(policy_action, dtype=np.float64), ACTION_LOW, ACTION_HIGH
+            self._policy_vector(policy_action), ACTION_LOW, ACTION_HIGH
         )
         guidance = self.guidance_action(data)
+        parameters = PHASE_PARAMETERS[self._phase]
         applied = np.clip(
-            GUIDANCE_BLEND_WEIGHT * guidance
-            + POLICY_RESIDUAL_WEIGHT * policy,
+            parameters["guidance_weight"] * guidance
+            + parameters["residual_weight"] * policy,
             ACTION_LOW,
             ACTION_HIGH,
         )

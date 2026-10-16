@@ -56,8 +56,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        self.success_threshold = success_threshold
         self._branch_controller = (
-            BranchAwareController(self.model)
+            BranchAwareController(
+                self.model, success_threshold=self.success_threshold
+            )
             if self.branch_aware_active
             else None
         )
@@ -67,7 +70,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         # post-block qpos without changing the established task state path.
         self._diagnostic_data = mujoco.MjData(self.model)
 
-        self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
         self.hold_steps_required = round(hold_seconds / control_dt)
 
@@ -196,6 +198,19 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         if self._branch_controller is None:
             guidance_action = np.zeros_like(policy_action)
             applied_action = policy_action
+            controller_diagnostics = {
+                "control_phase": None,
+                "braking_active": False,
+                "braking_phase": False,
+                "guidance_weight": 0.0,
+                "residual_weight": 1.0,
+                # These quantities are defined relative to the latched
+                # branch controller and are unavailable for direct policies.
+                "joint_error_norm_rad": None,
+                "joint_speed_norm_rad_s": None,
+                "inward_joint_speed_rad_s": None,
+                "target_distance_m": None,
+            }
         else:
             guidance_action, applied_action = self._branch_controller.apply(
                 policy_action, self.data
@@ -215,6 +230,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self._diagnostic_held_steps = 0
 
         distance = self._distance_to_target()
+        if self._branch_controller is not None:
+            controller_diagnostics = self._branch_controller.diagnostics(self.data)
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -252,6 +269,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "guidance_action": [float(value) for value in guidance_action],
             "applied_action": [float(value) for value in applied_action],
             "branch_aware_activation": bool(self.branch_aware_active),
+            **controller_diagnostics,
             "selected_branch": (
                 None
                 if self._branch_controller is None

@@ -19,9 +19,14 @@ from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
-# Bumped when the meaning of a scenario evaluation summary changes.
+# Bumped when the meaning of a scenario evaluation summary or trace changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-RESEARCH_EVALUATION_ARTIFACT_VERSION = 6
+RESEARCH_EVALUATION_ARTIFACT_VERSION = 7
+
+
+def _optional_float(value) -> float | None:
+    """Preserve unavailable controller-specific diagnostics as null."""
+    return None if value is None else float(value)
 
 
 def evaluate_research_model(
@@ -91,6 +96,23 @@ def evaluate_research_model(
                     ),
                     "branch_aware_activation": bool(
                         info["branch_aware_activation"]
+                    ),
+                    "control_phase": info.get("control_phase"),
+                    "braking_active": bool(info.get("braking_active", False)),
+                    "braking_phase": bool(info.get("braking_phase", False)),
+                    "guidance_weight": float(info.get("guidance_weight", 0.0)),
+                    "residual_weight": float(info.get("residual_weight", 1.0)),
+                    "joint_error_norm_rad": _optional_float(
+                        info.get("joint_error_norm_rad")
+                    ),
+                    "joint_speed_norm_rad_s": _optional_float(
+                        info.get("joint_speed_norm_rad_s")
+                    ),
+                    "inward_joint_speed_rad_s": _optional_float(
+                        info.get("inward_joint_speed_rad_s")
+                    ),
+                    "target_distance_m": _optional_float(
+                        info.get("target_distance_m")
                     ),
                     "distance_cm": 100.0 * float(info["diagnostic_distance"]),
                     "held_steps": int(info["diagnostic_held_steps"]),
