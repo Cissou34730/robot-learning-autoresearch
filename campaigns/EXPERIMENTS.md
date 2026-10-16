@@ -35,3 +35,4 @@
 | E22 | checkpoint | I5 | checkpointed |
 | E23 | inquiry | I6 | completed |
 | E24 | checkpoint | - | checkpointed |
+| T4 | training | I6 | completed |
