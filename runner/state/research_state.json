@@ -3681,47 +3681,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "End the inquiry after a completed, matched evaluation of an execution-focused T2-derived candidate against T2 on a disjoint research panel with radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. A positive bounded conclusion requires fewer no-reach failures with preserved or improved inner-band success, no material outer-band degradation, and no increase in hold interruptions; a negative or limited conclusion is sufficient if the intervention fails to improve no-reach, trades away the coverage gains or hold reliability, or the completed evidence redirects the next decision to observation/history limits. The protected official assessment remains the only certification of the human goal.",
-          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T2 is the best-known candidate at 150/160 (93.75%) on the matched M5 development panel, with residual failures dominated by 7 no-reach cases versus 3 hold interruptions. An execution-focused intervention could therefore address the largest observed gap without spending the protected assessment, while preserving the full-radius coverage that produced the inner-band gains.",
-          "handoff_conclusion": "Across prior evidence, M1 established that the exact compiled plant responds to bounded direct torque but did not establish policy causality; T1's late 0.93-0.97 training proxy on the restricted 0.14-0.20 m domain did not predict its 73.75% M4 development result, where inner no-reach failures dominated. T2 changed only the training target-radius distribution to 0.06-0.20 m, while retaining the same task mechanics, observations, PPO recipe, reward, action semantics, and evaluation runtime. On the matched disjoint M5 panel, T2 improved from the T1 reference's 111/160 (69.375%) to 150/160 (93.75%), with 42 candidate wins and 3 reference wins. The inner improvement was concentrated exactly in the prior failure class: success rose 39/85 to 80/85 and no-reach fell 34 to 5. Outer performance remained strong, 72/75 to 70/75, a 2.7-point decline that is a small artifact-level tradeoff rather than a material collapse. T2 had 7 no-reach and 3 hold-interrupted failures overall, so hold interruption did not become the limiting residual class. All reached T2 episodes still used the open branch (153 open, 7 unreached), leaving branch selection and dynamics-aware execution as unresolved alternatives for the remaining failures. The result supports full-range exposure for this tested PPO implementation and compared artifacts, but does not prove coverage alone is causal, does not establish history/observation sufficiency, and does not establish the official 98% claim. The physical model's consequences remain decision-relevant: bounded direct torque requires learned execution and braking; near-folded inner geometry changes conditioning; and the hidden hold counter could matter if future failures become interruption-dominated. Evidence that would revise these interpretations is a residual failure pattern dominated by hold interruptions/high entry-speed regulation errors, a branch-conditioned failure concentration, or persistent no-reach after matched execution-focused intervention.",
-          "handoff_question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-          "rationale": "The prior coverage expansion produced a large artifact-level improvement from 69.375% to 93.75%, especially in the inner band, but it left a consequential gap to 98%. The residual pattern makes execution versus representation a decision-relevant mechanism test: bounded direct torque and near-folded conditioning predict that a reach/braking-focused change could reduce no-reach, while unchanged observations leave history/representation as an alternative if no-reach persists or interruptions rise. T2's matched evidence supports further work, but does not prove execution causality or official success; one bounded inquiry has higher expected contribution than immediate assessment because it can either improve the candidate or rule out the largest residual mechanism before consuming the terminal test.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "End the inquiry after a completed, matched evaluation of an execution-focused T2-derived candidate against T2 on a disjoint research panel with radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. A positive bounded conclusion requires fewer no-reach failures with preserved or improved inner-band success, no material outer-band degradation, and no increase in hold interruptions; a negative or limited conclusion is sufficient if the intervention fails to improve no-reach, trades away the coverage gains or hold reliability, or the completed evidence redirects the next decision to observation/history limits. The protected official assessment remains the only certification of the human goal.",
-        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T2 is the best-known candidate at 150/160 (93.75%) on the matched M5 development panel, with residual failures dominated by 7 no-reach cases versus 3 hold interruptions. An execution-focused intervention could therefore address the largest observed gap without spending the protected assessment, while preserving the full-radius coverage that produced the inner-band gains.",
-        "question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-        "rationale": "The prior coverage expansion produced a large artifact-level improvement from 69.375% to 93.75%, especially in the inner band, but it left a consequential gap to 98%. The residual pattern makes execution versus representation a decision-relevant mechanism test: bounded direct torque and near-folded conditioning predict that a reach/braking-focused change could reduce no-reach, while unchanged observations leave history/representation as an alternative if no-reach persists or interruptions rise. T2's matched evidence supports further work, but does not prove execution causality or official success; one bounded inquiry has higher expected contribution than immediate assessment because it can either improve the candidate or rule out the largest residual mechanism before consuming the terminal test."
-      }
-    },
-    "request_fingerprint": "4d52396260cf630298c88495d12963c3e3c660e373eacc836aa7210afee0a65e",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E9 using T2 and M5. T2 is a fresh 120,000-step PPO artifact with 120,832 completed rollout steps and the full 0.06-0.20 m training-radius range; M5 is its matched 93.75% development evidence. T1:checkpoint-120832 remains the baseline reference at 69.375% on M5 and 73.75% on M4. No working or retained role is assigned. Neither candidate is official-goal certified.",
     "completed_operations": [
