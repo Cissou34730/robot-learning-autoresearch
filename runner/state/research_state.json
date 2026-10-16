@@ -1917,38 +1917,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolves the tested baseline as inner-radius-dominant, not stabilization-dominant. T1's unchanged PPO candidate reached 73.75% on the disjoint instrumented development panel M4: inner 6-14 cm had 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm had 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. Only five episodes interrupted after entry, with mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successes, so the predicted high-entry-speed/short-streak stabilization signature is not dominant. M2 and M3 independently confirm a large baseline gap but lack some of M4's mechanism fields. The result is limited to this PPO recipe, candidate, and panels; it does not establish that expanded coverage alone reaches 98%, nor test history-aware observations or a stabilization intervention.",
-        "reason": "The inquiry closure condition is met: the unchanged baseline was trained at the full 120,000-step allocation (T1) and measured on non-overlapping development panels, including M4 with radius bands, branch, first reach, entry speed, maximum held streak, interruptions, minimum/final distance, and failure classes. The decisive contrast is the stable outer-radius result versus concentrated inner-radius no-reach failures, while branch and high-speed stabilization alternatives are not supported as the primary explanation. Close I1 and carry forward inner-radius coverage as the next intervention direction; retain stabilization and observation sufficiency as unresolved secondary alternatives requiring matched evidence after coverage is changed."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolves the tested baseline as inner-radius-dominant, not stabilization-dominant. T1's unchanged PPO candidate reached 73.75% on the disjoint instrumented development panel M4: inner 6-14 cm had 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm had 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. Only five episodes interrupted after entry, with mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successes, so the predicted high-entry-speed/short-streak stabilization signature is not dominant. M2 and M3 independently confirm a large baseline gap but lack some of M4's mechanism fields. The result is limited to this PPO recipe, candidate, and panels; it does not establish that expanded coverage alone reaches 98%, nor test history-aware observations or a stabilization intervention.",
-        "reason": "The inquiry closure condition is met: the unchanged baseline was trained at the full 120,000-step allocation (T1) and measured on non-overlapping development panels, including M4 with radius bands, branch, first reach, entry speed, maximum held streak, interruptions, minimum/final distance, and failure classes. The decisive contrast is the stable outer-radius result versus concentrated inner-radius no-reach failures, while branch and high-speed stabilization alternatives are not supported as the primary explanation. Close I1 and carry forward inner-radius coverage as the next intervention direction; retain stabilization and observation sufficiency as unresolved secondary alternatives requiring matched evidence after coverage is changed.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 resolves the tested baseline as inner-radius-dominant, not stabilization-dominant. T1's unchanged PPO candidate reached 73.75% on the disjoint instrumented development panel M4: inner 6-14 cm had 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm had 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. Only five episodes interrupted after entry, with mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successes, so the predicted high-entry-speed/short-streak stabilization signature is not dominant. M2 and M3 independently confirm a large baseline gap but lack some of M4's mechanism fields. The result is limited to this PPO recipe, candidate, and panels; it does not establish that expanded coverage alone reaches 98%, nor test history-aware observations or a stabilization intervention.",
-        "reason": "The inquiry closure condition is met: the unchanged baseline was trained at the full 120,000-step allocation (T1) and measured on non-overlapping development panels, including M4 with radius bands, branch, first reach, entry speed, maximum held streak, interruptions, minimum/final distance, and failure classes. The decisive contrast is the stable outer-radius result versus concentrated inner-radius no-reach failures, while branch and high-speed stabilization alternatives are not supported as the primary explanation. Close I1 and carry forward inner-radius coverage as the next intervention direction; retain stabilization and observation sufficiency as unresolved secondary alternatives requiring matched evidence after coverage is changed."
-      }
-    },
-    "request_fingerprint": "87fbb24caac4beb2fc361611035f625a3fa1151e0ce2faf3bfecb33dad9558f2",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working and best-known roles remain empty; M1 is a plant measurement and E2 records the bounded inquiry, neither is a policy artifact.",
     "completed_operations": [
