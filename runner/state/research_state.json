@@ -7536,38 +7536,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
-        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
-        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 is resolved as a limited artifact-level positive, not a goal-level success. On the matched M6 panel, T3:checkpoint-70656 achieved 159/200 (79.5%) versus T1:checkpoint-120832 at 142/200 (71.0%), with 26 T3 wins versus 9 T1 wins. The gain was concentrated in the inner bins: [6,10) never-reached fell from 32 to 24 and [10,14) from 12 to 3, while paired wins were 12 versus 4 and 14 versus 0. However, T3 lost success in [14,18) (57/59 to 54/59) and [18,20) (29/29 to 27/29), and still had 41 never-reached plus 12 reached-but-failed-hold episodes overall. It therefore does not preserve outer-radius performance, does not approach 196/200, and cannot support official assessment. Complete traces show changed learned branch/control transients with identical reset branch errors, compiled plant fields, and zero contacts; substep diagnostics retain the endpoint-versus-continuous-hold limitation. The comparison does not isolate branch shaping from transfer, seed, source lineage, or checkpoint selection, so the improvement remains an artifact-level finding rather than a causal claim.",
-        "reason": "The inquiry closure condition is met in the bounded negative/limited sense: complete matched evaluation evidence includes radius and angle strata, failure classes, paired outcomes, reset-to-reach branch errors, control traces, effort diagnostics, contacts, and internal-substep hold diagnostics. The intervention materially reduced inner-radius never-reach failures, but it traded away outer-radius success and remained 37 episodes below the 196/200 objective. Continuing I3 would require a new inquiry and should not silently treat this coupled artifact comparison as proof that branch-aware shaping is sufficient."
-      }
-    },
-    "request_fingerprint": "7f1d99c1eef47b409a4dec76260d4a9274d9a229f751f8ada74aa7a32b6b4f56",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. T2:checkpoint-120832 remains a measured comparison artifact only. No working or retained candidate is assigned. I3 will develop a new artifact from T1 rather than change the best-known role implicitly.",
     "completed_operations": [
