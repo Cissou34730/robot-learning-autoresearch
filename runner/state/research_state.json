@@ -5301,38 +5301,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
-        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
-        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
-        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign."
-      }
-    },
-    "request_fingerprint": "f87d131da0b67387aae2dd99b1b95f7b22bf66e0595d300f3ba375923399e69a",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2 and M3, but is not officially certified. T2:checkpoint-120832 is an adverse full-distribution exposure candidate measured by M4 and is not assigned a role. No working candidate supports official assessment. The active inquiry will compare any new complete branch-aware artifact against T1 rather than treating a training proxy or a new description as evidence of capability.",
     "completed_operations": [
