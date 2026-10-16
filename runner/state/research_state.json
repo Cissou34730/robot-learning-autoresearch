@@ -511,47 +511,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close this inquiry when a completed training artifact and at least one completed development evaluation provide a bounded answer about first-policy capability under official-range exposure and classify the dominant observed failure pattern as reach/branch selection, sampled-data stabilization, or unresolved/limited by evaluator semantics; a positive, negative, or inconclusive result is sufficient, provided the limits of the tested implementation and diagnostics are preserved for goal review.",
-          "goal_connection": "The human goal requires a learned policy to achieve at least 196 successes in the protected 200-episode panel, with every success being a complete uninterrupted 2-second hold. This inquiry is the least speculative next step because no learned candidate exists and M1 cannot establish episode capability or protected-evaluator performance. A policy trained across the official radius range and evaluated with complete reach, entry-velocity, hold-run, interruption, branch, and saturation diagnostics can establish whether development should continue toward control stabilization or shift toward branch-conditioned representation and reach behavior.",
-          "handoff_conclusion": "Observed in completed operation M1: the compiled official model has nq=nv=nu=2, timestep 0.002 s and 0.02 s per ten-substep control interval; the recorded mass matrix at q=0 is [[0.01210,0.000507],[0.000507,0.01019]], with explicit damping 0.5 and armature 0.01. The compiled options record zero gravity, Euler/integrator value 0, solver value 2, tolerance 1e-8, and 100 iterations. All 40 sampled radius/bearing/branch IK cases were joint-limit-valid, had FK residuals between 6.1e-18 and 1.4e-16 m, minimum joint-limit margin 0.215 rad across the cases, and Jacobian condition numbers from 1.33 to 5.29. No contacts were observed at those postures or in any of the 205 matched response cases, despite the link geoms being collision-enabled. In matched ten-substep saturated pulses from q=0 and valid IK branches, peak joint speeds reached 6.08 rad/s and peak recorded acceleration reached 791.9 rad/s^2; the full pulse-plus-opposite-action traces showed speed reductions up to 2.47 rad/s but not complete stopping within the following 20 ms. The q=0 zero-action case remained at its initial 0.08 m target distance over the measured phase. Interpretation: nominal point geometry, branch feasibility, and contact are not the leading explanations for the first campaign gap in the tested states. The measured dynamics instead make sampled-data braking, entry velocity, and feedback stabilization consequential for the hold criterion, so a policy/control capability investigation is the most credible next direction. These interpretations are limited to the deterministic cases and action protocol in M1: they do not establish learned performance, long-horizon passive behavior, hidden evaluator semantics, noise/delay, or the absence of contact outside the tested trajectories. Competing explanations that remain live are target/branch selection and policy instability during reach, insufficient braking at the 20 ms interface, and a protected continuous-hold implementation differing from the visible post-action check.",
-          "handoff_question": "Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization?",
-          "rationale": "Goal review cannot justify official assessment because no best-known learned candidate exists, while another mechanics-only measurement would not close the immediate candidate-capability gap. M1 supports nominal feasibility and contact-free behavior only for its sampled deterministic cases, not all official trajectories or the protected evaluator. It also measured peak speeds up to 6.08 rad/s and only partial speed reductions under an opposite action over the following 20 ms, so the inherited claim that the dynamics provide adequate braking is unsupported and is corrected here: sampled-data braking and entry velocity remain consequential alternatives to reach/branch failure. A first policy exposed to 0.06\u20130.20 m, followed by trajectory-level development evaluation, has high expected information toward the 98% objective at bounded cost because it both creates the first candidate and distinguishes whether failures occur before entry or during the uninterrupted hold. The method claim will remain limited to the implemented exposure, training recipe, runtime, and visible development evaluator; it will not be treated as official success.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close this inquiry when a completed training artifact and at least one completed development evaluation provide a bounded answer about first-policy capability under official-range exposure and classify the dominant observed failure pattern as reach/branch selection, sampled-data stabilization, or unresolved/limited by evaluator semantics; a positive, negative, or inconclusive result is sufficient, provided the limits of the tested implementation and diagnostics are preserved for goal review.",
-        "goal_connection": "The human goal requires a learned policy to achieve at least 196 successes in the protected 200-episode panel, with every success being a complete uninterrupted 2-second hold. This inquiry is the least speculative next step because no learned candidate exists and M1 cannot establish episode capability or protected-evaluator performance. A policy trained across the official radius range and evaluated with complete reach, entry-velocity, hold-run, interruption, branch, and saturation diagnostics can establish whether development should continue toward control stabilization or shift toward branch-conditioned representation and reach behavior.",
-        "question": "Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization?",
-        "rationale": "Goal review cannot justify official assessment because no best-known learned candidate exists, while another mechanics-only measurement would not close the immediate candidate-capability gap. M1 supports nominal feasibility and contact-free behavior only for its sampled deterministic cases, not all official trajectories or the protected evaluator. It also measured peak speeds up to 6.08 rad/s and only partial speed reductions under an opposite action over the following 20 ms, so the inherited claim that the dynamics provide adequate braking is unsupported and is corrected here: sampled-data braking and entry velocity remain consequential alternatives to reach/branch failure. A first policy exposed to 0.06\u20130.20 m, followed by trajectory-level development evaluation, has high expected information toward the 98% objective at bounded cost because it both creates the first candidate and distinguishes whether failures occur before entry or during the uninterrupted hold. The method claim will remain limited to the implemented exposure, training recipe, runtime, and visible development evaluator; it will not be treated as official success."
-      }
-    },
-    "request_fingerprint": "7478d511036f6babf25735599bf1e3bc3e06a62a03a1bd6a7f7d6eb798ffc076",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles remain empty; M1 is a mechanics artifact, not a policy candidate.",
     "completed_operations": [
