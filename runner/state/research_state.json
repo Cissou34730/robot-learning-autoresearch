@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a completed non-overlapping trace-enabled research evaluation of the relevant complete artifacts supplies synchronized first-entry, phase or branch, joint speed/state, distance, hold-interruption and outcome data across geometry strata sufficient to support a bounded positive, negative, or inconclusive distinction. Persistent geometry-stratified non-entry with low hold exposure would redirect toward branch/approach coverage; meaningful entry followed by high-speed boundary crossings or interruptions would redirect toward braking/hold stabilization; uniformly poor approach with absent entries across the revised artifact would make controller-trainability or representation the leading route. If the traces do not contain these fields or remain non-discriminating, close with that limitation and retain T1 as best-known; no result below 196/200 certifies the human goal.",
-    "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment, with every success completing the uninterrupted 100-control-step hold. T1:checkpoint-120832 is only 147/200 on the protected task-reference panel, while the materially revised T4 artifact is 0/200. Choosing another controller or training route without distinguishing persistent non-entry from post-entry instability or untrainability risks spending the next bounded allocation on the wrong mechanism; synchronized traces can select the next route toward removing the 49-success gap.",
-    "handoff_conclusion": "Established observations: M3 found T1-specific persistent non-entry failures with large joint-limit margin and no contact, plus a smaller high-velocity boundary-crossing hold class. Paired fresh M6 measured T1 at 144/200 and the exact tested T3 branch-aware artifact at 195/200; T3 had one non-entry and four post-entry interruptions on that panel. Protected M5 reversed the selection, measuring T1 at 147/200 and T3 at 33/200 with a different geometry mix. This is an artifact/distribution-tail discrepancy, not evidence that branch-aware control is generally solved or invalid. T4 materially changed the complete T3 artifact to a one-way approach/braking/hold schedule with velocity-aware braking, stronger hold damping, phase-dependent guidance/residual weights and trace instrumentation. Its training proxies were zero throughout and its selected checkpoint achieved 0/200 protected successes; this rejects that complete controller/training artifact as a route toward the goal, but not branch-aware control or explicit braking in general. Correction to the inherited interpretation: M7 did not provide the planned mechanism test. Its protected task-reference artifact contains no synchronized phase, velocity, branch or hold-interruption traces, and therefore cannot support a geometry-versus-stabilization attribution. The physical model still makes ideal reachability distinct from finite-time torque reachability; target geometry and branch choice can affect approach, while zero-order-held saturated commands and residual velocity can destroy the complete hold. The consequential competing explanations remain geometry/branch non-entry, braking/hold instability, and controller-trainability or representation failure. E27 opens a bounded mechanism inquiry rather than presuming another variant is justified.",
-    "handoff_question": "Can protected-panel-relevant synchronized traces distinguish geometry/branch non-entry from braking/hold instability or controller-trainability failure well enough to choose the next credible route toward at least 196/200?",
-    "handoff_source_session_id": "S14",
-    "id": "I7",
-    "opened_in_session": "S14",
-    "question": "Can protected-panel-relevant synchronized traces distinguish geometry/branch non-entry from braking/hold instability or controller-trainability failure well enough to choose the next credible route toward at least 196/200?",
-    "rationale": "The strongest candidate is far below the objective, so assessment is not the highest-value next commitment. The latest complete artifact's 0/200 protected result is decisive evidence against that tested controller/training artifact but not a method-level disproof: all episodes truncated and the task-reference artifact omitted synchronized phase, velocity, branch and hold-interruption traces. Earlier M3/M6 evidence shows T1 has both persistent safe-margin non-entry and a smaller high-velocity hold class, while T3's fresh-panel result demonstrates that branch-aware approach can help on one panel but is not protected-robust. A bounded trace-enabled comparison therefore has direct goal value and can redirect development; it does not presume that another branch-aware variant, explicit braking, or further training is warranted.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "2b6f9afdce853d1c7fa12e88b47adddf98fbe0ff",
     "id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
@@ -3302,7 +3291,7 @@
     }
   },
   "counters": {
-    "event": 28,
+    "event": 29,
     "inquiry": 7,
     "measurement": 8,
     "session": 15,
@@ -7876,9 +7865,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T21:00:05Z",
+      "error": null,
+      "id": "E29",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
+        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
+        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization.",
+        "status": "completed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
+        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
+        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E29",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
+        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization."
+      }
+    },
+    "request_fingerprint": "e32c43d46a1ba32c5a6e6b61a733edaedc7e7728c6c8713486ea2cc67e76bafd",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known because M5 measured 147/200 on the protected task-reference-v1 panel, supported by M3 and M6; this is evidence-backed selection, not goal certification. T3:checkpoint-105472 has no role because its 195/200 fresh-panel result is contradicted by 33/200 on protected M5. T4:checkpoint-75776 has no role because M7 measured 0/200 protected successes. No candidate is working or retained, and no candidate supports official assessment.",
     "completed_operations": [
@@ -7922,7 +7965,8 @@
     "kind": "inquiry",
     "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can protected-panel-relevant synchronized traces distinguish geometry/branch non-entry from braking/hold instability or controller-trainability failure well enough to choose the next credible route toward at least 196/200? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M8"
+      "M8",
+      "E29"
     ],
     "scientific_parent_commit": "09c7f960cd3298d97012b79c5ee8e5f48252c203"
   },
