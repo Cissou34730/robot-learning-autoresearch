@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a complete candidate artifact has been produced and measured on a fresh matched 200-episode official-distribution research panel with the fixed evaluation semantics, and its radius-stratified complete-hold, never-reached, reached-but-failed-hold, first-reach, and paired outcomes have been compared with T1:checkpoint-120832 and T3:checkpoint-70656. A positive result requires inner-radius improvement over T1 together with no material loss from T1 in [14,18) and [18,20) complete-hold strata; a negative or limited result is sufficient to close if those conditions are not met or if the artifact remains materially short of the goal. The result will be interpreted as a property of the tested complete artifact, not as causal proof for any single shaping term.",
     "goal_connection": "The official objective is 196/200 complete uninterrupted holds. T1 is 142/200 on the matched M6 panel, while T3 is 159/200: T3 recovers 17 net episodes, primarily by reducing inner-radius never-reached failures, but loses five outer-radius successes and remains 37 episodes short. A method that separately protects terminal hold stabilization while addressing the inner transient deficit could improve both failure classes without changing the protected task boundary.",
-    "handoff_conclusion": "I3 tested a genuinely different implementation: transfer from T1 with training-only potential shaping toward valid IK branches and escape from the singular reset, while evaluation semantics and compiled plant fields remained unchanged. On the matched 200-episode M6 panel, T3 improved pooled success from 142/200 to 159/200 and reduced inner-radius never-reach counts from 32 to 24 in [6,10) and 12 to 3 in [10,14). The improvement was not sufficient or constraint-preserving: T3 fell from 57/59 to 54/59 in [14,18) and from 29/29 to 27/29 in [18,20), and retained substantial reach and hold failures. M6 traces show changed learned branch and control transients, identical reset branch errors, identical inspected compiled model semantics, zero contacts, and the known endpoint-versus-internal-substep hold discrepancy. The result supports continuing to treat reset/branch transients as actionable at artifact-comparison level, but it neither proves branch shaping causality nor establishes sufficiency; transfer, seed, source lineage, and checkpoint selection remain coupled.",
+    "handoff_conclusion": "Observed: M7 shows T3 improved T1's inner-radius complete-hold outcomes from 16/54 to 24/54 in [6,10) and from 40/58 to 54/58 in [10,14), with paired wins 12-4 and 14-0; it lost three successes in [14,18) and two in [18,20). T3's failure partition is 29 never-reached and 12 reached-but-failed-hold versus T1's 46 and 12. Observed: M6 traces changed the learned branch/control transients but had identical inspected reset branch errors, unchanged compiled plant semantics, and zero contacts. Observed: T3 training proxies began high under transfer, reached a local peak around 68,608-71,680 steps, then regressed toward a 0.96 success-rate proxy by 120,832; T1's proxy rose late under its 14-20 cm exposure, so neither proxy establishes official performance. Observed: T2's official-exposure-only artifact reached 147/200 in M4's matched comparison and therefore did not resolve the official-distribution gap. Interpretation revised: the evidence supports an artifact-level claim that the tested T3 recipe changes behavior and improves inner coverage, but does not establish reset escape or branch shaping as the cause because transfer, seed, source lineage, checkpoint selection, and shaping terms changed together and reset branch errors did not. The inherited proposal to isolate that causal mechanism is therefore narrowed: the consequential next test is complete-artifact method development with explicit outer-hold protection. Competing explanations remain that inner failures arise from reset/transient coverage, target-distribution generalization, or a policy tradeoff that degrades late stabilization; the existing aggregate evidence cannot distinguish these sufficiently for causal attribution, but a phase-separated objective and full stratified evaluation can decide whether the combined capability is worth pursuing.",
     "handoff_question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?",
-    "handoff_source_session_id": "S7",
+    "handoff_source_session_id": "S8",
     "id": "I4",
     "opened_in_session": "S8",
     "question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?",
@@ -2484,7 +2484,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 7,
     "session": 8,
@@ -2493,7 +2493,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -7605,33 +7605,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T22:52:50Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and preserves the best observed outer-radius complete-hold performance, although it is only 142/200 on M6. T3:checkpoint-70656 is a measured I3 artifact with a positive but limited 159/200 comparison and is not best-known because of its outer-radius losses. T2 remains non-viable as a route based on its 147/200 matched comparison. No working or retained role is assigned.",
+        "completed_operations": [
+          "E15"
+        ],
+        "cumulative_resource_use": "Before I4: 4 inquiries opened/closed through I3, 7 development measurements, 3 training runs, 8 bounded sessions including this goal review, and 1 best-known role assignment; T3 used one full transfer run and M6/M7 supplied its paired evaluation and strata analysis. I4 itself used no training or measurement allocation and records one inquiry opening plus this checkpoint.",
+        "current_goal_gap": "On matched M6, T1 achieved 142/200 and T3 achieved 159/200, leaving T3 37 episodes short of 196/200. T3 had 29 never-reached and 12 reached-but-failed-hold episodes; its inner-radius gains were offset by losses from T1 in [14,18) and [18,20). No candidate has official-assessment evidence.",
+        "current_synthesis": "Observed: M7 shows T3 improved T1's inner-radius complete-hold outcomes from 16/54 to 24/54 in [6,10) and from 40/58 to 54/58 in [10,14), with paired wins 12-4 and 14-0; it lost three successes in [14,18) and two in [18,20). T3's failure partition is 29 never-reached and 12 reached-but-failed-hold versus T1's 46 and 12. Observed: M6 traces changed the learned branch/control transients but had identical inspected reset branch errors, unchanged compiled plant semantics, and zero contacts. Observed: T3 training proxies began high under transfer, reached a local peak around 68,608-71,680 steps, then regressed toward a 0.96 success-rate proxy by 120,832; T1's proxy rose late under its 14-20 cm exposure, so neither proxy establishes official performance. Observed: T2's official-exposure-only artifact reached 147/200 in M4's matched comparison and therefore did not resolve the official-distribution gap. Interpretation revised: the evidence supports an artifact-level claim that the tested T3 recipe changes behavior and improves inner coverage, but does not establish reset escape or branch shaping as the cause because transfer, seed, source lineage, checkpoint selection, and shaping terms changed together and reset branch errors did not. The inherited proposal to isolate that causal mechanism is therefore narrowed: the consequential next test is complete-artifact method development with explicit outer-hold protection. Competing explanations remain that inner failures arise from reset/transient coverage, target-distribution generalization, or a policy tradeoff that degrades late stabilization; the existing aggregate evidence cannot distinguish these sufficiently for causal attribution, but a phase-separated objective and full stratified evaluation can decide whether the combined capability is worth pursuing.",
+        "decision_frontier": "I4 must determine whether a phase-separated policy objective over the official 6-20 cm exposure can combine T3's inner-radius reach improvement with T1's outer-radius complete-hold performance. The key discriminator is a complete candidate artifact measured on the same fixed evaluation semantics, with radius-stratified success, never-reached and reached-but-failed-hold counts, first-reach behavior, and paired episode outcomes against T1 and T3. If inner success improves over T1 while [14,18) and [18,20) do not materially decline, the route remains credible toward 196/200; otherwise the intervention is limited or redirected. Reset/branch causality remains unresolved and will not be claimed unless a future comparison actually isolates it.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M4",
+          "M6",
+          "M7",
+          "E13",
+          "E14",
+          "E15"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 official episodes with a complete uninterrupted 2-second hold. I4 targets the 37-episode gap between T3's 159/200 matched-panel result and that threshold by addressing inner-radius never-reach failures without sacrificing the outer-radius hold behavior that T1 demonstrated.",
+        "next_direction_or_closure": "I4 is opened and this goal-review session is checkpointed. The next bounded session should implement or select a phase-separated learning intervention, train within the existing allocation, and measure a development artifact against T1 and T3 using the fixed official semantics and explicit no-outer-tradeoff acceptance criterion. Do not request official assessment from the current T1 artifact.",
+        "next_question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "6158efdb225c7ac8f260242fe55fced82ab44f46",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and preserves the best observed outer-radius complete-hold performance, although it is only 142/200 on M6. T3:checkpoint-70656 is a measured I3 artifact with a positive but limited 159/200 comparison and is not best-known because of its outer-radius losses. T2 remains non-viable as a route based on its 147/200 matched comparison. No working or retained role is assigned.",
+        "completed_operations": [
+          "E15"
+        ],
+        "cumulative_resource_use": "Before I4: 4 inquiries opened/closed through I3, 7 development measurements, 3 training runs, 8 bounded sessions including this goal review, and 1 best-known role assignment; T3 used one full transfer run and M6/M7 supplied its paired evaluation and strata analysis. I4 itself used no training or measurement allocation and records one inquiry opening plus this checkpoint.",
+        "current_goal_gap": "On matched M6, T1 achieved 142/200 and T3 achieved 159/200, leaving T3 37 episodes short of 196/200. T3 had 29 never-reached and 12 reached-but-failed-hold episodes; its inner-radius gains were offset by losses from T1 in [14,18) and [18,20). No candidate has official-assessment evidence.",
+        "current_synthesis": "Observed: M7 shows T3 improved T1's inner-radius complete-hold outcomes from 16/54 to 24/54 in [6,10) and from 40/58 to 54/58 in [10,14), with paired wins 12-4 and 14-0; it lost three successes in [14,18) and two in [18,20). T3's failure partition is 29 never-reached and 12 reached-but-failed-hold versus T1's 46 and 12. Observed: M6 traces changed the learned branch/control transients but had identical inspected reset branch errors, unchanged compiled plant semantics, and zero contacts. Observed: T3 training proxies began high under transfer, reached a local peak around 68,608-71,680 steps, then regressed toward a 0.96 success-rate proxy by 120,832; T1's proxy rose late under its 14-20 cm exposure, so neither proxy establishes official performance. Observed: T2's official-exposure-only artifact reached 147/200 in M4's matched comparison and therefore did not resolve the official-distribution gap. Interpretation revised: the evidence supports an artifact-level claim that the tested T3 recipe changes behavior and improves inner coverage, but does not establish reset escape or branch shaping as the cause because transfer, seed, source lineage, checkpoint selection, and shaping terms changed together and reset branch errors did not. The inherited proposal to isolate that causal mechanism is therefore narrowed: the consequential next test is complete-artifact method development with explicit outer-hold protection. Competing explanations remain that inner failures arise from reset/transient coverage, target-distribution generalization, or a policy tradeoff that degrades late stabilization; the existing aggregate evidence cannot distinguish these sufficiently for causal attribution, but a phase-separated objective and full stratified evaluation can decide whether the combined capability is worth pursuing.",
+        "decision_frontier": "I4 must determine whether a phase-separated policy objective over the official 6-20 cm exposure can combine T3's inner-radius reach improvement with T1's outer-radius complete-hold performance. The key discriminator is a complete candidate artifact measured on the same fixed evaluation semantics, with radius-stratified success, never-reached and reached-but-failed-hold counts, first-reach behavior, and paired episode outcomes against T1 and T3. If inner success improves over T1 while [14,18) and [18,20) do not materially decline, the route remains credible toward 196/200; otherwise the intervention is limited or redirected. Reset/branch causality remains unresolved and will not be claimed unless a future comparison actually isolates it.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M4",
+          "M6",
+          "M7",
+          "E13",
+          "E14",
+          "E15"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 official episodes with a complete uninterrupted 2-second hold. I4 targets the 37-episode gap between T3's 159/200 matched-panel result and that threshold by addressing inner-radius never-reach failures without sacrificing the outer-radius hold behavior that T1 demonstrated.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I4 is opened and this goal-review session is checkpointed. The next bounded session should implement or select a phase-separated learning intervention, train within the existing allocation, and measure a development artifact against T1 and T3 using the fixed official semantics and explicit no-outer-tradeoff acceptance criterion. Do not request official assessment from the current T1 artifact.",
+        "next_question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?",
+        "session_id": "S8"
+      },
+      "presentation": {
+        "backend_session_id": "5bda1056-016d-4a16-944c-b6f7928113c3",
+        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
+        "campaign_usage": "34m35s | 54.91 AIU | prompt 7.6m (86% cached) | output 155.3k",
+        "session_id": "S8",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "8ed8f6db27655c8b09f33d118a754604c6243993",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and preserves the best observed outer-radius complete-hold performance, although it is only 142/200 on M6. T3:checkpoint-70656 is a measured I3 artifact with a positive but limited 159/200 comparison and is not best-known because of its outer-radius losses. T2 remains non-viable as a route based on its 147/200 matched comparison. No working or retained role is assigned.",
+        "completed_operations": [
+          "E15"
+        ],
+        "cumulative_resource_use": "Before I4: 4 inquiries opened/closed through I3, 7 development measurements, 3 training runs, 8 bounded sessions including this goal review, and 1 best-known role assignment; T3 used one full transfer run and M6/M7 supplied its paired evaluation and strata analysis. I4 itself used no training or measurement allocation and records one inquiry opening plus this checkpoint.",
+        "current_goal_gap": "On matched M6, T1 achieved 142/200 and T3 achieved 159/200, leaving T3 37 episodes short of 196/200. T3 had 29 never-reached and 12 reached-but-failed-hold episodes; its inner-radius gains were offset by losses from T1 in [14,18) and [18,20). No candidate has official-assessment evidence.",
+        "current_synthesis": "Observed: M7 shows T3 improved T1's inner-radius complete-hold outcomes from 16/54 to 24/54 in [6,10) and from 40/58 to 54/58 in [10,14), with paired wins 12-4 and 14-0; it lost three successes in [14,18) and two in [18,20). T3's failure partition is 29 never-reached and 12 reached-but-failed-hold versus T1's 46 and 12. Observed: M6 traces changed the learned branch/control transients but had identical inspected reset branch errors, unchanged compiled plant semantics, and zero contacts. Observed: T3 training proxies began high under transfer, reached a local peak around 68,608-71,680 steps, then regressed toward a 0.96 success-rate proxy by 120,832; T1's proxy rose late under its 14-20 cm exposure, so neither proxy establishes official performance. Observed: T2's official-exposure-only artifact reached 147/200 in M4's matched comparison and therefore did not resolve the official-distribution gap. Interpretation revised: the evidence supports an artifact-level claim that the tested T3 recipe changes behavior and improves inner coverage, but does not establish reset escape or branch shaping as the cause because transfer, seed, source lineage, checkpoint selection, and shaping terms changed together and reset branch errors did not. The inherited proposal to isolate that causal mechanism is therefore narrowed: the consequential next test is complete-artifact method development with explicit outer-hold protection. Competing explanations remain that inner failures arise from reset/transient coverage, target-distribution generalization, or a policy tradeoff that degrades late stabilization; the existing aggregate evidence cannot distinguish these sufficiently for causal attribution, but a phase-separated objective and full stratified evaluation can decide whether the combined capability is worth pursuing.",
+        "decision_frontier": "I4 must determine whether a phase-separated policy objective over the official 6-20 cm exposure can combine T3's inner-radius reach improvement with T1's outer-radius complete-hold performance. The key discriminator is a complete candidate artifact measured on the same fixed evaluation semantics, with radius-stratified success, never-reached and reached-but-failed-hold counts, first-reach behavior, and paired episode outcomes against T1 and T3. If inner success improves over T1 while [14,18) and [18,20) do not materially decline, the route remains credible toward 196/200; otherwise the intervention is limited or redirected. Reset/branch causality remains unresolved and will not be claimed unless a future comparison actually isolates it.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "T3",
+          "M4",
+          "M6",
+          "M7",
+          "E13",
+          "E14",
+          "E15"
+        ],
+        "human_goal_connection": "The human goal remains at least 196/200 official episodes with a complete uninterrupted 2-second hold. I4 targets the 37-episode gap between T3's 159/200 matched-panel result and that threshold by addressing inner-radius never-reach failures without sacrificing the outer-radius hold behavior that T1 demonstrated.",
+        "next_direction_or_closure": "I4 is opened and this goal-review session is checkpointed. The next bounded session should implement or select a phase-separated learning intervention, train within the existing allocation, and measure a development artifact against T1 and T3 using the fixed official semantics and explicit no-outer-tradeoff acceptance criterion. Do not request official assessment from the current T1 artifact.",
+        "next_question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?"
+      }
+    },
+    "request_fingerprint": "352d4667f670010a8c79344485670e1d613eba500d812f572f07368bde180caf",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and T3 did not preserve outer-radius performance. T3:checkpoint-70656 is retained as a measured I3 development artifact with a positive but limited comparison, not as best-known or official-assessment candidate. T2 remains non-viable evidence from the earlier comparison.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and preserves the best observed outer-radius complete-hold performance, although it is only 142/200 on M6. T3:checkpoint-70656 is a measured I3 artifact with a positive but limited 159/200 comparison and is not best-known because of its outer-radius losses. T2 remains non-viable as a route based on its 147/200 matched comparison. No working or retained role is assigned.",
     "completed_operations": [
-      "T3",
-      "M6",
-      "M7",
-      "E13"
+      "E15"
     ],
-    "cumulative_resource_use": "Session S7 used 1 transfer training run (T3, 120,832 completed steps), 2 paired research evaluations (M6 artifact outputs), 1 deterministic stratified analysis (M7), and 1 inquiry closure (E13); campaign state reports inquiries 3/15, measurements 7, and training runs 3.",
-    "current_goal_gap": "The human threshold is 196/200 complete uninterrupted official holds. T3 reached 159/200 on M6 and remains 37 episodes short, with 41 never-reached and 12 reached-but-failed-hold episodes. T1 remains 142/200 on the matched M6 panel and 147/200 on the earlier M3/M5 comparison. No candidate is eligible for official assessment.",
-    "current_synthesis": "I3 tested a genuinely different implementation: transfer from T1 with training-only potential shaping toward valid IK branches and escape from the singular reset, while evaluation semantics and compiled plant fields remained unchanged. On the matched 200-episode M6 panel, T3 improved pooled success from 142/200 to 159/200 and reduced inner-radius never-reach counts from 32 to 24 in [6,10) and 12 to 3 in [10,14). The improvement was not sufficient or constraint-preserving: T3 fell from 57/59 to 54/59 in [14,18) and from 29/29 to 27/29 in [18,20), and retained substantial reach and hold failures. M6 traces show changed learned branch and control transients, identical reset branch errors, identical inspected compiled model semantics, zero contacts, and the known endpoint-versus-internal-substep hold discrepancy. The result supports continuing to treat reset/branch transients as actionable at artifact-comparison level, but it neither proves branch shaping causality nor establishes sufficiency; transfer, seed, source lineage, and checkpoint selection remain coupled.",
-    "decision_frontier": "The I3 frontier is closed: the tested branch-aware route produced a real inner-radius gain but violated the no-material-outer-loss condition and did not move credibly close enough to 196/200. The next research decision should compare a redesigned learning or controller/artifact route against T1 while explicitly protecting outer-radius complete-hold performance, or run a mechanism-isolating comparison if branch shaping remains the leading hypothesis. The unresolved causal attribution is consequential for method choice but does not block closure of this bounded inquiry. Do not request official assessment.",
+    "cumulative_resource_use": "Before I4: 4 inquiries opened/closed through I3, 7 development measurements, 3 training runs, 8 bounded sessions including this goal review, and 1 best-known role assignment; T3 used one full transfer run and M6/M7 supplied its paired evaluation and strata analysis. I4 itself used no training or measurement allocation and records one inquiry opening plus this checkpoint.",
+    "current_goal_gap": "On matched M6, T1 achieved 142/200 and T3 achieved 159/200, leaving T3 37 episodes short of 196/200. T3 had 29 never-reached and 12 reached-but-failed-hold episodes; its inner-radius gains were offset by losses from T1 in [14,18) and [18,20). No candidate has official-assessment evidence.",
+    "current_synthesis": "Observed: M7 shows T3 improved T1's inner-radius complete-hold outcomes from 16/54 to 24/54 in [6,10) and from 40/58 to 54/58 in [10,14), with paired wins 12-4 and 14-0; it lost three successes in [14,18) and two in [18,20). T3's failure partition is 29 never-reached and 12 reached-but-failed-hold versus T1's 46 and 12. Observed: M6 traces changed the learned branch/control transients but had identical inspected reset branch errors, unchanged compiled plant semantics, and zero contacts. Observed: T3 training proxies began high under transfer, reached a local peak around 68,608-71,680 steps, then regressed toward a 0.96 success-rate proxy by 120,832; T1's proxy rose late under its 14-20 cm exposure, so neither proxy establishes official performance. Observed: T2's official-exposure-only artifact reached 147/200 in M4's matched comparison and therefore did not resolve the official-distribution gap. Interpretation revised: the evidence supports an artifact-level claim that the tested T3 recipe changes behavior and improves inner coverage, but does not establish reset escape or branch shaping as the cause because transfer, seed, source lineage, checkpoint selection, and shaping terms changed together and reset branch errors did not. The inherited proposal to isolate that causal mechanism is therefore narrowed: the consequential next test is complete-artifact method development with explicit outer-hold protection. Competing explanations remain that inner failures arise from reset/transient coverage, target-distribution generalization, or a policy tradeoff that degrades late stabilization; the existing aggregate evidence cannot distinguish these sufficiently for causal attribution, but a phase-separated objective and full stratified evaluation can decide whether the combined capability is worth pursuing.",
+    "decision_frontier": "I4 must determine whether a phase-separated policy objective over the official 6-20 cm exposure can combine T3's inner-radius reach improvement with T1's outer-radius complete-hold performance. The key discriminator is a complete candidate artifact measured on the same fixed evaluation semantics, with radius-stratified success, never-reached and reached-but-failed-hold counts, first-reach behavior, and paired episode outcomes against T1 and T3. If inner success improves over T1 while [14,18) and [18,20) do not materially decline, the route remains credible toward 196/200; otherwise the intervention is limited or redirected. Reset/branch causality remains unresolved and will not be claimed unless a future comparison actually isolates it.",
     "evidence_references": [
+      "T1",
+      "T2",
       "T3",
+      "M4",
       "M6",
       "M7",
-      "E13"
+      "E13",
+      "E14",
+      "E15"
     ],
-    "human_goal_connection": "The result advances the goal by identifying a measurable partial route to the dominant inner-radius never-reach deficit, while preventing a misleading promotion: 159/200 is still below the required 196/200 and the outer-radius tradeoff would violate the requirement for complete uninterrupted holds across the official distribution. The protected official success semantics remain unchanged, and substep excursions remain diagnostics rather than a relaxed criterion.",
-    "inquiry_id": "I3",
-    "next_direction_or_closure": "I3 is closed with a limited/negative bounded conclusion. Preserve T1 as best-known, retain T3 and M6/M7 as evidence that branch-aware training can alter inner transients but can trade away outer success, and begin any follow-on route as a new inquiry with an explicit no-tradeoff acceptance test and source/seed/provenance controls.",
-    "next_question": "For a new inquiry, can a redesigned intervention isolate and improve the reset/branch transient mechanism while retaining T1's outer-radius complete-hold performance and closing the remaining gap toward 196/200 on the official distribution?",
-    "scientific_commit": "084f2494959a88845b6c6dfc06bfa14ada2a6c47",
-    "session_id": "S7"
+    "human_goal_connection": "The human goal remains at least 196/200 official episodes with a complete uninterrupted 2-second hold. I4 targets the 37-episode gap between T3's 159/200 matched-panel result and that threshold by addressing inner-radius never-reach failures without sacrificing the outer-radius hold behavior that T1 demonstrated.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I4 is opened and this goal-review session is checkpointed. The next bounded session should implement or select a phase-separated learning intervention, train within the existing allocation, and measure a development artifact against T1 and T3 using the fixed official semantics and explicit no-outer-tradeoff acceptance criterion. Do not request official assessment from the current T1 artifact.",
+    "next_question": "Can a phase-separated policy objective over the full official 6\u201320 cm distribution recover the inner-radius reach gains seen in T3 while preserving T1-level outer-radius complete-hold performance, and thereby close most of the remaining gap toward 196/200 under the fixed evaluation semantics?",
+    "scientific_commit": "8ed8f6db27655c8b09f33d118a754604c6243993",
+    "session_id": "S8"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7639,21 +7783,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5bda1056-016d-4a16-944c-b6f7928113c3",
-    "id": "S8",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E15"
-    ],
-    "scientific_parent_commit": "6158efdb225c7ac8f260242fe55fced82ab44f46"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
