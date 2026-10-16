@@ -2466,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 6,
     "session": 7,
@@ -2475,7 +2475,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -5827,18 +5827,199 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T10:35:44Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, supported by T2, M3 and M4 at 150/160; it remains below the human objective and is not officially assessed. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator from M3/M4. T3:checkpoint-120832 is the tested reward-aligned artifact from T3/M5/M6 and is not assigned a role because it scored 52/160 and broadly degraded reach. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Prior campaign use: M1 dynamics measurement with 16 deterministic target seeds, four saturated probes per seed, 21 control frames per probe and 13,440 MuJoCo integration steps; T1 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M2 one 160-episode held-out evaluation; E4/E5 closure of I1; T2 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M3 paired 160-episode held-out evaluations of T2 and T1; M4 deterministic radius/angle stratified analysis; E9/E10 closure of I2; E12 opening I3; E13 prior checkpoint. I3 added T3 one fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints after one reward-source change; M5 two paired 160-episode research evaluations on shared seeds 4200-4359; M6 one deterministic stratified analysis of M5; E14 closure of I3. No protected assessment episodes have been used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains the best-known complete artifact at 150/160 = 93.75% on the held-out research panel, below the 98% development target and not an official assessment. Its inner result is 90/93 = 96.77%, while outer result is 60/67 = 89.55% with 3 outer post-entry failures and 438 outer hold interruptions. T3 is not a goal-qualified alternative: it scored 52/160 = 32.5%, with broad reach and truncation degradation.",
+        "current_synthesis": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+        "decision_frontier": "T2 is substantially closer to the human goal than T1 and remains the strongest evidence-backed candidate, but it is 46 successes short of the 196/200 official threshold if its development rate transferred directly. The tested reward intervention did not preserve reach or restore outer stability, so the consequential distinction is no longer whether this simple forfeiture should be adopted; it is whether the remaining T2 outer-band failures are caused by learned launch/stabilization, branch or angular-edge dynamics, runtime/observation-memory use, or a different reward/control formulation, and whether resolving that distinction is worth its cost relative to requesting the protected assessment. M1 weakens insufficient actuator authority, but no completed evidence records T2/T3 actions, qdot, reward components, internal 2 ms distance minima, branch choice, or hold-age-conditioned behavior. Any mechanism claim and any official-goal interpretation remain limited by those omissions.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "T2",
+          "M3",
+          "M4",
+          "E9",
+          "E10",
+          "E12",
+          "E13",
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "Advance toward a frozen policy achieving at least 196/200 successes under the protected complete uninterrupted 100-control-step hold. I3 tested whether reward alignment could close T2's 4.25-point development gap by preserving inner reach and repairing outer stability; the evidence did not support adopting the tested reward recipe, so the campaign must now weigh further discriminating work against official assessment of the best-known T2 artifact.",
+        "next_direction_or_closure": "Close I3 and return to goal review. Do not adopt the tested full hold-progress forfeiture. Goal review must compare the expected contribution and cost of a discriminating control/branch/runtime diagnostic against the option of requesting official assessment for T2; it must not infer that another reward variant is warranted from this negative result. Preserve the sampled-evaluator limitation and the absence of physical-continuity evidence in the next decision.",
+        "next_question": "At goal review, should the campaign request the protected assessment for T2:checkpoint-120832, or open one bounded diagnostic inquiry to distinguish T2's consequential outer-band hold failures among learned stabilization, branch/angular-edge behavior, runtime/observation-memory use, and the sampled-continuity limitation before committing to assessment?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "44b1fbe5b8fb2447b034d4e21e24fddd64b5c879",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, supported by T2, M3 and M4 at 150/160; it remains below the human objective and is not officially assessed. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator from M3/M4. T3:checkpoint-120832 is the tested reward-aligned artifact from T3/M5/M6 and is not assigned a role because it scored 52/160 and broadly degraded reach. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Prior campaign use: M1 dynamics measurement with 16 deterministic target seeds, four saturated probes per seed, 21 control frames per probe and 13,440 MuJoCo integration steps; T1 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M2 one 160-episode held-out evaluation; E4/E5 closure of I1; T2 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M3 paired 160-episode held-out evaluations of T2 and T1; M4 deterministic radius/angle stratified analysis; E9/E10 closure of I2; E12 opening I3; E13 prior checkpoint. I3 added T3 one fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints after one reward-source change; M5 two paired 160-episode research evaluations on shared seeds 4200-4359; M6 one deterministic stratified analysis of M5; E14 closure of I3. No protected assessment episodes have been used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains the best-known complete artifact at 150/160 = 93.75% on the held-out research panel, below the 98% development target and not an official assessment. Its inner result is 90/93 = 96.77%, while outer result is 60/67 = 89.55% with 3 outer post-entry failures and 438 outer hold interruptions. T3 is not a goal-qualified alternative: it scored 52/160 = 32.5%, with broad reach and truncation degradation.",
+        "current_synthesis": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+        "decision_frontier": "T2 is substantially closer to the human goal than T1 and remains the strongest evidence-backed candidate, but it is 46 successes short of the 196/200 official threshold if its development rate transferred directly. The tested reward intervention did not preserve reach or restore outer stability, so the consequential distinction is no longer whether this simple forfeiture should be adopted; it is whether the remaining T2 outer-band failures are caused by learned launch/stabilization, branch or angular-edge dynamics, runtime/observation-memory use, or a different reward/control formulation, and whether resolving that distinction is worth its cost relative to requesting the protected assessment. M1 weakens insufficient actuator authority, but no completed evidence records T2/T3 actions, qdot, reward components, internal 2 ms distance minima, branch choice, or hold-age-conditioned behavior. Any mechanism claim and any official-goal interpretation remain limited by those omissions.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "T2",
+          "M3",
+          "M4",
+          "E9",
+          "E10",
+          "E12",
+          "E13",
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "Advance toward a frozen policy achieving at least 196/200 successes under the protected complete uninterrupted 100-control-step hold. I3 tested whether reward alignment could close T2's 4.25-point development gap by preserving inner reach and repairing outer stability; the evidence did not support adopting the tested reward recipe, so the campaign must now weigh further discriminating work against official assessment of the best-known T2 artifact.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "Close I3 and return to goal review. Do not adopt the tested full hold-progress forfeiture. Goal review must compare the expected contribution and cost of a discriminating control/branch/runtime diagnostic against the option of requesting official assessment for T2; it must not infer that another reward variant is warranted from this negative result. Preserve the sampled-evaluator limitation and the absence of physical-continuity evidence in the next decision.",
+        "next_question": "At goal review, should the campaign request the protected assessment for T2:checkpoint-120832, or open one bounded diagnostic inquiry to distinguish T2's consequential outer-band hold failures among learned stabilization, branch/angular-edge behavior, runtime/observation-memory use, and the sampled-continuity limitation before committing to assessment?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "d6b4ab2f-558a-48fd-befa-54b3ded40faf",
+        "campaign_id": "e0acf639-be47-4a77-bbc5-fa33eb706033",
+        "campaign_usage": "20m39s | 41.63 AIU | prompt 6m (87% cached) | output 114.4k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "23s | 1.09 AIU | prompt 86.6k (45% cached) | output 1.8k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f984836a0670291ff30cfbe91314c325f7884897",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T2:checkpoint-120832, supported by T2, M3 and M4 at 150/160; it remains below the human objective and is not officially assessed. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator from M3/M4. T3:checkpoint-120832 is the tested reward-aligned artifact from T3/M5/M6 and is not assigned a role because it scored 52/160 and broadly degraded reach. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "cumulative_resource_use": "Prior campaign use: M1 dynamics measurement with 16 deterministic target seeds, four saturated probes per seed, 21 control frames per probe and 13,440 MuJoCo integration steps; T1 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M2 one 160-episode held-out evaluation; E4/E5 closure of I1; T2 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M3 paired 160-episode held-out evaluations of T2 and T1; M4 deterministic radius/angle stratified analysis; E9/E10 closure of I2; E12 opening I3; E13 prior checkpoint. I3 added T3 one fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints after one reward-source change; M5 two paired 160-episode research evaluations on shared seeds 4200-4359; M6 one deterministic stratified analysis of M5; E14 closure of I3. No protected assessment episodes have been used.",
+        "current_goal_gap": "T2:checkpoint-120832 remains the best-known complete artifact at 150/160 = 93.75% on the held-out research panel, below the 98% development target and not an official assessment. Its inner result is 90/93 = 96.77%, while outer result is 60/67 = 89.55% with 3 outer post-entry failures and 438 outer hold interruptions. T3 is not a goal-qualified alternative: it scored 52/160 = 32.5%, with broad reach and truncation degradation.",
+        "current_synthesis": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+        "decision_frontier": "T2 is substantially closer to the human goal than T1 and remains the strongest evidence-backed candidate, but it is 46 successes short of the 196/200 official threshold if its development rate transferred directly. The tested reward intervention did not preserve reach or restore outer stability, so the consequential distinction is no longer whether this simple forfeiture should be adopted; it is whether the remaining T2 outer-band failures are caused by learned launch/stabilization, branch or angular-edge dynamics, runtime/observation-memory use, or a different reward/control formulation, and whether resolving that distinction is worth its cost relative to requesting the protected assessment. M1 weakens insufficient actuator authority, but no completed evidence records T2/T3 actions, qdot, reward components, internal 2 ms distance minima, branch choice, or hold-age-conditioned behavior. Any mechanism claim and any official-goal interpretation remain limited by those omissions.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "T2",
+          "M3",
+          "M4",
+          "E9",
+          "E10",
+          "E12",
+          "E13",
+          "T3",
+          "M5",
+          "M6",
+          "E14"
+        ],
+        "human_goal_connection": "Advance toward a frozen policy achieving at least 196/200 successes under the protected complete uninterrupted 100-control-step hold. I3 tested whether reward alignment could close T2's 4.25-point development gap by preserving inner reach and repairing outer stability; the evidence did not support adopting the tested reward recipe, so the campaign must now weigh further discriminating work against official assessment of the best-known T2 artifact.",
+        "next_direction_or_closure": "Close I3 and return to goal review. Do not adopt the tested full hold-progress forfeiture. Goal review must compare the expected contribution and cost of a discriminating control/branch/runtime diagnostic against the option of requesting official assessment for T2; it must not infer that another reward variant is warranted from this negative result. Preserve the sampled-evaluator limitation and the absence of physical-continuity evidence in the next decision.",
+        "next_question": "At goal review, should the campaign request the protected assessment for T2:checkpoint-120832, or open one bounded diagnostic inquiry to distinguish T2's consequential outer-band hold failures among learned stabilization, branch/angular-edge behavior, runtime/observation-memory use, and the sampled-continuity limitation before committing to assessment?"
+      }
+    },
+    "request_fingerprint": "8cb31c0d7faee6352ce481dbecf8549ea02d22a9e6b79cd6448cbaba2e932a2a",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned from T2, M3 and M4 as the strongest completed held-out artifact at 150/160; it is not goal-qualified. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator at 105/160 on the paired panel. No working candidate is assigned and no candidate is retained. T2 intermediate checkpoints remain unmeasured; training proxies alone do not establish development performance.",
+    "candidates_and_roles": "Best-known: T2:checkpoint-120832, supported by T2, M3 and M4 at 150/160; it remains below the human objective and is not officially assessed. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator from M3/M4. T3:checkpoint-120832 is the tested reward-aligned artifact from T3/M5/M6 and is not assigned a role because it scored 52/160 and broadly degraded reach. No working or retained candidate is assigned.",
     "completed_operations": [
-      "E12"
+      "T3",
+      "M5",
+      "M6",
+      "E14"
     ],
-    "cumulative_resource_use": "M1: one candidate-independent dynamics measurement with 16 deterministic target seeds, four saturated probes per seed, 21 control frames per probe and 13,440 MuJoCo integration steps plus compiled-model inspection. T1: one fresh PPO run requested for 120,000 and completed at 120,832 steps with 24 archived checkpoints. M2: one 160-episode held-out research evaluation. E4/E5: role assignment and closure of I1. E7/E8: opening I2 and its checkpoint. T2: one fresh PPO run with full-range exposure, requested for 120,000 and completed at 120,832 steps with 24 archived checkpoints. M3: paired 160-episode held-out research evaluations of T2 and T1 on shared seeds 4200-4359. M4: one deterministic stratified analysis of M3. E9/E10: role assignment and closure of I2. E12: opening I3. No protected assessment episodes have been used.",
-    "current_goal_gap": "The best-known T2:checkpoint-120832 achieved 150/160 = 93.75% on the held-out official-radius research panel, 4.25 percentage points below the 98% development target. It achieved 90/93 inner successes (96.77%) but only 60/67 outer successes (89.55%), with 3 outer post-entry failures and 438 outer hold interruptions. This is not a protected assessment and does not establish official performance.",
-    "current_synthesis": "Observed facts: M1 measured substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 was trained on outer-only radii and scored 105/160; its dominant deficit was inner no-entry failure (45/93), while outer performance was 63/67 with zero outer post-entry failures and two interruptions. T2 changed only the training radius exposure to the full official range [0.06, 0.20] m while retaining the baseline reward, observation/runtime, control semantics, PPO settings and seed. On the paired held-out panel, T2 scored 150/160, with inner success rising to 90/93 and inner no-entry falling to 3, but outer success falling to 60/67; all 438 recorded interruptions were in the outer band, alongside three outer post-entry failures. The result is a complete-artifact improvement associated with the tested T2 recipe, not proof that exposure alone caused the gain. Review of the T2 learning log shows a terminal training proxy success rate of 0.58 and no development evidence for the unmeasured intermediate checkpoints; proxy rank therefore does not nominate an alternative artifact. Interpretation: T2's inner reach deficit was substantially addressed, but its outer hold behavior is the consequential remaining failure. The configured zero hold-exit forfeiture makes reward-to-outcome misalignment a plausible explanation for repeated partial entries/re-entries, but the available artifacts do not record reward components, actions, qdot, or internal 2 ms continuity, so this remains a hypothesis. The inherited broad proposed question is corrected here: rather than conflating coverage, reward, hold control and other mechanisms, the next bounded test holds T2's full-range exposure fixed and tests reward alignment. A positive result would support developing this recipe; a negative result would redirect attention to control/branch/runtime or another mechanism. Neither result alone establishes physical continuity between sampled 20 ms checks.",
-    "decision_frontier": "The consequential distinction is whether T2's outer-band uninterrupted-hold regression is partly caused by a reward that pays for proximity/hold progress without sufficiently penalizing exits, versus a stability or policy-control mechanism that reward alignment will not repair. The discriminating test is a fresh complete PPO artifact with T2's full official-radius exposure and fixed runtime/control/PPO conditions, changing only the reward treatment of interrupted hold completion, evaluated against T2 on the identical 160-seed panel. Inner success/no-entry, outer success/post-entry failures, maximum held steps, interruptions, truncation and angle-stratified outcomes determine whether the inner reach gain is retained and the outer regression is repaired. The official sampled evaluator remains the operational semantics; inter-sample physical continuity and hidden hold-state effects remain unresolved and would limit mechanism claims.",
+    "cumulative_resource_use": "Prior campaign use: M1 dynamics measurement with 16 deterministic target seeds, four saturated probes per seed, 21 control frames per probe and 13,440 MuJoCo integration steps; T1 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M2 one 160-episode held-out evaluation; E4/E5 closure of I1; T2 fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints; M3 paired 160-episode held-out evaluations of T2 and T1; M4 deterministic radius/angle stratified analysis; E9/E10 closure of I2; E12 opening I3; E13 prior checkpoint. I3 added T3 one fresh PPO run requested 120,000 and completed 120,832 steps with 24 checkpoints after one reward-source change; M5 two paired 160-episode research evaluations on shared seeds 4200-4359; M6 one deterministic stratified analysis of M5; E14 closure of I3. No protected assessment episodes have been used.",
+    "current_goal_gap": "T2:checkpoint-120832 remains the best-known complete artifact at 150/160 = 93.75% on the held-out research panel, below the 98% development target and not an official assessment. Its inner result is 90/93 = 96.77%, while outer result is 60/67 = 89.55% with 3 outer post-entry failures and 438 outer hold interruptions. T3 is not a goal-qualified alternative: it scored 52/160 = 32.5%, with broad reach and truncation degradation.",
+    "current_synthesis": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+    "decision_frontier": "T2 is substantially closer to the human goal than T1 and remains the strongest evidence-backed candidate, but it is 46 successes short of the 196/200 official threshold if its development rate transferred directly. The tested reward intervention did not preserve reach or restore outer stability, so the consequential distinction is no longer whether this simple forfeiture should be adopted; it is whether the remaining T2 outer-band failures are caused by learned launch/stabilization, branch or angular-edge dynamics, runtime/observation-memory use, or a different reward/control formulation, and whether resolving that distinction is worth its cost relative to requesting the protected assessment. M1 weakens insufficient actuator authority, but no completed evidence records T2/T3 actions, qdot, reward components, internal 2 ms distance minima, branch choice, or hold-age-conditioned behavior. Any mechanism claim and any official-goal interpretation remain limited by those omissions.",
     "evidence_references": [
       "M1",
       "T1",
@@ -5852,14 +6033,19 @@
       "M4",
       "E9",
       "E10",
-      "E12"
+      "E12",
+      "E13",
+      "T3",
+      "M5",
+      "M6",
+      "E14"
     ],
-    "human_goal_connection": "Advance toward a frozen learned policy achieving at least 196 successes in the protected 200-episode assessment, where every success requires the complete uninterrupted 100-control-step hold. The next inquiry tests whether reward alignment can convert T2's strong full-range reach into stable complete holds without losing inner-radius capability.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open inquiry I3 after this checkpoint. The inquiry will implement and train one reward-aligned fresh PPO recipe while preserving T2's full official-radius exposure and fixed protected task/runtime boundary, then perform the specified same-panel complete-artifact comparison. Its result will determine whether to develop the reward-aligned direction or redirect to control, branch, runtime, or another unresolved mechanism before any official assessment.",
-    "next_question": "Does aligning PPO's reward with complete uninterrupted hold completion, while retaining T2's full official-radius exposure, preserve T2's inner-band reach and restore outer-band stability?",
-    "scientific_commit": "43529cc4ecccaca469de9f3296077757f7dd6e10",
-    "session_id": "S6"
+    "human_goal_connection": "Advance toward a frozen policy achieving at least 196/200 successes under the protected complete uninterrupted 100-control-step hold. I3 tested whether reward alignment could close T2's 4.25-point development gap by preserving inner reach and repairing outer stability; the evidence did not support adopting the tested reward recipe, so the campaign must now weigh further discriminating work against official assessment of the best-known T2 artifact.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "Close I3 and return to goal review. Do not adopt the tested full hold-progress forfeiture. Goal review must compare the expected contribution and cost of a discriminating control/branch/runtime diagnostic against the option of requesting official assessment for T2; it must not infer that another reward variant is warranted from this negative result. Preserve the sampled-evaluator limitation and the absence of physical-continuity evidence in the next decision.",
+    "next_question": "At goal review, should the campaign request the protected assessment for T2:checkpoint-120832, or open one bounded diagnostic inquiry to distinguish T2's consequential outer-band hold failures among learned stabilization, branch/angular-edge behavior, runtime/observation-memory use, and the sampled-continuity limitation before committing to assessment?",
+    "scientific_commit": "f984836a0670291ff30cfbe91314c325f7884897",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5867,24 +6053,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d6b4ab2f-558a-48fd-befa-54b3ded40faf",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Does aligning PPO's reward with complete uninterrupted hold completion, while retaining T2's full official-radius exposure, preserve T2's inner-band reach and restore outer-band stability? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T3",
-      "M5",
-      "M6",
-      "E14"
-    ],
-    "scientific_parent_commit": "44b1fbe5b8fb2447b034d4e21e24fddd64b5c879"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
