@@ -8,8 +8,7 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 15
-JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -25,9 +24,6 @@ def reach_observation(data) -> np.ndarray:
             )
         )
 
-    def signed_joint_limit_margin(angle: float) -> float:
-        return float(JOINT_LIMIT_RADIANS - abs(angle))
-
     target_x = float(data.mocap_pos[0][0])
     target_y = float(data.mocap_pos[0][1])
     cos_elbow = (
@@ -37,10 +33,8 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    shoulder_open_canonical = wrap_to_pi(shoulder_open)
-    shoulder_folded_canonical = wrap_to_pi(shoulder_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    observation = np.concatenate(
+    return np.concatenate(
         [
             data.qpos,
             data.qvel,
@@ -51,19 +45,5 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-            [
-                signed_joint_limit_margin(shoulder_open_canonical),
-                signed_joint_limit_margin(elbow_open),
-                signed_joint_limit_margin(shoulder_folded_canonical),
-                signed_joint_limit_margin(elbow_folded),
-            ],
         ]
     ).astype(np.float32)
-    if observation.shape != (OBSERVATION_SIZE,):
-        raise ValueError(
-            f"Expected observation shape {(OBSERVATION_SIZE,)}, "
-            f"got {observation.shape}"
-        )
-    if not np.all(np.isfinite(observation)):
-        raise ValueError("Observation contains non-finite values")
-    return observation
