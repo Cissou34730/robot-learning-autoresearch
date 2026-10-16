@@ -5976,47 +5976,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a materially revised branch-aware artifact has been trained or otherwise produced under the fixed task semantics and a completed protected task-reference measurement supplies episode success plus synchronized failure diagnostics sufficient to determine whether it preserves approach coverage, reduces post-entry interruptions through explicit braking/hold stabilization, and avoids the T3 protected geometry-tail collapse. A positive conclusion requires at least 196/200 protected successes; a negative or limited conclusion is sufficient if protected performance remains far below the objective or the diagnostics do not support the intended distinction, with residual failures and unresolved causes carried into goal review.",
-          "goal_connection": "The human objective is at least 196 successes in the fixed 200-episode official assessment, with every success requiring the complete uninterrupted 100-control-step hold. T1:checkpoint-120832 is the current protected-panel best at 147/200, while the exact tested T3 branch-aware artifact reached 195/200 on fresh M6 but only 33/200 on protected M5. A materially revised branch-aware controller is therefore worth bounded development only if it targets both the observed post-entry interruptions and the protected geometry tails; protected task-reference performance, not fresh-panel performance, determines whether it can advance the campaign toward 98%.",
-          "handoff_conclusion": "Established observations: M3 shows that T1 has many zero-contact, large-joint-margin non-entries and a smaller class of boundary-crossing hold failures; its traces are T1-specific. M6 is a paired fresh 200-episode research evaluation with synchronized control traces. T1 achieved 144/200 and its failures are predominantly persistent non-entries: representative traces show saturated or stalled commands, no contacts, substantial joint-limit margin, and no first entry; its hold-failure traces enter with multi-radian-per-second joint velocities and repeatedly cross the 1 cm boundary under alternating saturated torque. The exact tested T3 artifact achieved 195/200 on the identical M6 seeds; its five failures comprise one non-entry and four post-entry interruptions, including high-velocity boundary crossings, so its fresh-panel improvement is consistent with better approach/branch coverage while stabilization remains its limiting class. M5 remains decisive as a protected-panel artifact comparison: T3 achieved 33/200 versus T1's 147/200, and its failures have a different geometry mix (higher mean failure radius and angle distribution) than T1's failures. The tested T3 implementation is specifically latched feasible-IK-branch PD guidance plus a 1.0 guidance and 0.35 residual blend; M6 does not prove the broader branch-aware method, and M5 does not identify the causal reason for the panel reversal. The bounded conclusion is therefore limited: T1's dominant measured limitation is approach/coverage, with secondary braking and uninterrupted-hold instability; branch-aware approach guidance can be effective on one fresh panel but the tested artifact lacks protected distributional robustness.",
-          "handoff_question": "Can a revised branch-aware controller that preserves feasible-IK approach coverage but uses explicit finite-time braking/hold stabilization and protected-panel geometry-tail coverage reach at least 196/200 without repeating I4's fixed guidance blend?",
-          "handoff_source_session_id": "S11",
-          "id": "I6",
-          "opened_in_session": "S12",
-          "question": "Can a revised branch-aware controller that preserves feasible-IK approach coverage but uses explicit finite-time braking/hold stabilization and protected-panel geometry-tail coverage reach at least 196/200 without repeating I4's fixed guidance blend?",
-          "rationale": "Official assessment is not justified: the best protected result is T1 at 147/200, and T3's 195/200 is contradicted by 33/200 on the protected panel. The available evidence supports two consequential facts: T1 has persistent non-entry failures and secondary high-velocity hold interruptions, while the tested T3 artifact improves one fresh panel but collapses on a different geometry mix. Source inspection shows I4 is specifically a fixed latched feasible-IK PD/residual blend, so a revision with explicit finite-time braking and hold stabilization would test a materially different complete artifact rather than repeat I4. Further bounded work has credible goal value because it can directly compare protected success against the four-failure allowance and diagnose whether stabilization and geometry-tail coverage can be improved together; it will not establish that branch-aware control in general is solved if the revised artifact fails.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I6",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E23",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a materially revised branch-aware artifact has been trained or otherwise produced under the fixed task semantics and a completed protected task-reference measurement supplies episode success plus synchronized failure diagnostics sufficient to determine whether it preserves approach coverage, reduces post-entry interruptions through explicit braking/hold stabilization, and avoids the T3 protected geometry-tail collapse. A positive conclusion requires at least 196/200 protected successes; a negative or limited conclusion is sufficient if protected performance remains far below the objective or the diagnostics do not support the intended distinction, with residual failures and unresolved causes carried into goal review.",
-        "goal_connection": "The human objective is at least 196 successes in the fixed 200-episode official assessment, with every success requiring the complete uninterrupted 100-control-step hold. T1:checkpoint-120832 is the current protected-panel best at 147/200, while the exact tested T3 branch-aware artifact reached 195/200 on fresh M6 but only 33/200 on protected M5. A materially revised branch-aware controller is therefore worth bounded development only if it targets both the observed post-entry interruptions and the protected geometry tails; protected task-reference performance, not fresh-panel performance, determines whether it can advance the campaign toward 98%.",
-        "question": "Can a revised branch-aware controller that preserves feasible-IK approach coverage but uses explicit finite-time braking/hold stabilization and protected-panel geometry-tail coverage reach at least 196/200 without repeating I4's fixed guidance blend?",
-        "rationale": "Official assessment is not justified: the best protected result is T1 at 147/200, and T3's 195/200 is contradicted by 33/200 on the protected panel. The available evidence supports two consequential facts: T1 has persistent non-entry failures and secondary high-velocity hold interruptions, while the tested T3 artifact improves one fresh panel but collapses on a different geometry mix. Source inspection shows I4 is specifically a fixed latched feasible-IK PD/residual blend, so a revision with explicit finite-time braking and hold stabilization would test a materially different complete artifact rather than repeat I4. Further bounded work has credible goal value because it can directly compare protected success against the four-failure allowance and diagnose whether stabilization and geometry-tail coverage can be improved together; it will not establish that branch-aware control in general is solved if the revised artifact fails."
-      }
-    },
-    "request_fingerprint": "1981dcc66de90851fe910978268064a0e6596d7e8bb1c44744d6385fe3b5ce8f",
-    "session_id": "S12",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest protected-panel artifact at 147/200 and is supported by M2, M3, M4, and M5; best-known denotes evidence strength, not goal certification. T3:checkpoint-105472 remains an adverse tested branch-aware artifact with 33/200 on protected M5 despite 195/200 on fresh M6, so it has no role. T2:checkpoint-120832 remains without a role. No working or retained candidate supports official assessment.",
     "completed_operations": [
