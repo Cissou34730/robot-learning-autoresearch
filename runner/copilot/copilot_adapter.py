@@ -521,6 +521,9 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
 async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
+    if args.preliminary:
+        args.reasoning = "max"
+
     console = getattr(args, "usage_console", None) or Console()
     finished = asyncio.Event()
     model = normalize_model(args.model)

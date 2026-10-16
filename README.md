@@ -7,6 +7,10 @@ scientific stack and agent runtime with `uv sync --locked --group researcher`.
 Native coding subagents and custom evidence tools are Copilot-specific;
 OpenCode retains its legacy interface.
 
+Copilot scientific-model preparation uses the selected PI model with `max`
+reasoning, including continuations. Ordinary PI sessions use the launcher's
+`-Reasoning` setting. The coding reviewer remains at `high`.
+
 See [AGENTS.md](AGENTS.md) for ownership and execution boundaries,
 [scientific instruments](contracts/instruments.md) for tool contracts, and
 the [harness tracker](docs/harness-experiment-log.md) for implementation status.
