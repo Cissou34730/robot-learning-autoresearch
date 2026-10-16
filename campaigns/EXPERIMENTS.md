@@ -31,3 +31,4 @@
 | T4 | training | I4 | completed |
 | M8 | measurement | I4 | completed |
 | M9 | measurement | I4 | completed |
+| E17 | inquiry | I4 | completed |
