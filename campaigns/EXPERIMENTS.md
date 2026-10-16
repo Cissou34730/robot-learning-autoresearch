@@ -24,3 +24,4 @@
 | T3 | training | I3 | completed |
 | M5 | measurement | I3 | completed |
 | M6 | measurement | I3 | completed |
+| E14 | inquiry | I3 | completed |
