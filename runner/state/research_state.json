@@ -7957,47 +7957,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a materially redesigned candidate has been trained and measured as a complete artifact on a fresh, non-overlapping full-distribution panel with synchronized entry, action/velocity, phase or branch, interruption, and hold diagnostics. A positive conclusion requires performance approaching the goal, specifically at least 196/200 complete holds with no material hold-stability regression against T1; a negative or limited conclusion is warranted if the candidate remains far below that threshold, if approach improves but hold remains the limiting failure, or if the tested implementation cannot establish a causal advantage over T1. Preserve any unresolved physics or runtime causes as limits rather than treating them as disproven.",
-          "goal_connection": "The current best-known T1 achieves only 154/200 on the latest fresh 200-episode panel, leaving 42 successes short of the 196/200 requirement. The inquiry targets the dominant observed gap\u2014non-entry and approach/branch trainability\u2014while preserving uninterrupted hold as the episode-level objective rather than optimizing a proxy.",
-          "handoff_conclusion": "M8 is the first complete trace-enabled mechanism test in this line. It found 167/200 T4 episodes with no first entry and 33/200 entries; of those entrants, 32 failed to complete the uninterrupted hold and one succeeded. T1 had 37/200 non-entries and 154/200 complete holds on identical seeds. T4 non-entry failures span the sampled radius and angular range, and representative traces show branch-aware phase transitions, saturated high-speed motion, no contact, and substantial joint-limit margin. The evidence distinguishes primary approach/branch-coverage or controller-trainability limitation in this tested T4 artifact from a secondary braking/hold instability among its entrants. It does not generalize that negative result to all branch-aware control, explicit braking, or representations. Earlier M5/M6 distribution reversals still limit claims based on any single panel.",
-          "handoff_question": "Can a redesigned learned controller representation that provides branch-conditioned, task-space approach and explicitly bounded braking/hold behavior improve fresh full-distribution complete-hold success toward at least 196/200, without repeating the saturated latched-guidance failure of T4?",
-          "handoff_source_session_id": "S15",
-          "id": "I8",
-          "opened_in_session": "S16",
-          "question": "Can a redesigned learned controller representation that provides branch-conditioned, task-space approach and explicitly bounded braking/hold behavior improve fresh full-distribution complete-hold success toward at least 196/200, without repeating the saturated latched-guidance failure of T4?",
-          "rationale": "M8 establishes a bounded recipe-level distinction, not a general rejection of branch-aware methods: T4 had 167/200 non-entries and only 1/200 successes, with representative saturated high-speed, no-contact, non-limit traces; its 32/33 entrant failures show a secondary braking/hold problem. The inspected implementation latches one IK branch and blends a high-gain joint-space schedule with a learned residual, so the evidence supports redesigning that representation rather than tuning another uninstrumented T4 schedule. T1\u2019s direct-torque artifact remains the reference at 154/200, while training logs show T1\u2019s terminal proxy success at 0.96 and T3\u2019s at 0.98 yet M8/M6 development evidence does not certify either the goal or a general method; proxy rank and terminal checkpoint are therefore insufficient. Further bounded work is preferable to official assessment because the explicit best-known artifact is 42 successes below the threshold and the redesigned representation could directly address the observed approach/branch coverage gap while retaining the required hold diagnostics.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I8",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E31",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a materially redesigned candidate has been trained and measured as a complete artifact on a fresh, non-overlapping full-distribution panel with synchronized entry, action/velocity, phase or branch, interruption, and hold diagnostics. A positive conclusion requires performance approaching the goal, specifically at least 196/200 complete holds with no material hold-stability regression against T1; a negative or limited conclusion is warranted if the candidate remains far below that threshold, if approach improves but hold remains the limiting failure, or if the tested implementation cannot establish a causal advantage over T1. Preserve any unresolved physics or runtime causes as limits rather than treating them as disproven.",
-        "goal_connection": "The current best-known T1 achieves only 154/200 on the latest fresh 200-episode panel, leaving 42 successes short of the 196/200 requirement. The inquiry targets the dominant observed gap\u2014non-entry and approach/branch trainability\u2014while preserving uninterrupted hold as the episode-level objective rather than optimizing a proxy.",
-        "question": "Can a redesigned learned controller representation that provides branch-conditioned, task-space approach and explicitly bounded braking/hold behavior improve fresh full-distribution complete-hold success toward at least 196/200, without repeating the saturated latched-guidance failure of T4?",
-        "rationale": "M8 establishes a bounded recipe-level distinction, not a general rejection of branch-aware methods: T4 had 167/200 non-entries and only 1/200 successes, with representative saturated high-speed, no-contact, non-limit traces; its 32/33 entrant failures show a secondary braking/hold problem. The inspected implementation latches one IK branch and blends a high-gain joint-space schedule with a learned residual, so the evidence supports redesigning that representation rather than tuning another uninstrumented T4 schedule. T1\u2019s direct-torque artifact remains the reference at 154/200, while training logs show T1\u2019s terminal proxy success at 0.96 and T3\u2019s at 0.98 yet M8/M6 development evidence does not certify either the goal or a general method; proxy rank and terminal checkpoint are therefore insufficient. Further bounded work is preferable to official assessment because the explicit best-known artifact is 42 successes below the threshold and the redesigned representation could directly address the observed approach/branch coverage gap while retaining the required hold diagnostics."
-      }
-    },
-    "request_fingerprint": "788e10b841a0c88ec8517491fea34661b9bd0b47a63f0217ba99d3a5da332b9c",
-    "session_id": "S16",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known; M8 measured it at 154/200 on the fresh trace panel, below the 196/200 human-goal threshold. T4:checkpoint-75776 is rejected as a complete route toward the goal after 1/200 on M8 and 0/200 on M7; it is not retained as best-known or working.",
     "completed_operations": [
