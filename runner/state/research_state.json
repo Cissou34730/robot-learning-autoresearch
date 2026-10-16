@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when matched full-radius evidence has classified the residual failures using target geometry, both analytic IK candidates and their joint-limit margins, q/qdot/action/Jacobian and first-reach traces, and hold interruptions, and either (a) a mechanism-targeted candidate comparison shows a complete-artifact improvement in uninterrupted-hold success and the corresponding failure class, (b) the evidence redirects the campaign to the competing mechanism, or (c) the test is inconclusive and preserves the unresolved distinction for goal review. Aggregate reward or a new method description alone is insufficient.",
     "goal_connection": "The best-known policy reaches only 150/160 successes (93.75%) on the development panel, below the 98% campaign objective. Removing the remaining failures requires distinguishing the observed no-entry/limit excursions from residual-velocity and interrupted-hold failures before spending another bounded training allocation, while preserving the official 0.06-0.20 m radial distribution, full angular range, 1 cm tolerance, 100 consecutive post-block checks, and 200-episode assessment boundary.",
-    "handoff_conclusion": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator system with 2 ms physics, 10-step held controls, zero gravity, 0.5 joint damping, 0.01 armature, gear 5, and configuration-dependent mass matrices near 0.01 kg*m^2. In the fixed bounded diagnostic, reset begins with a near-zero planar Jacobian determinant (about 1e-5), while a held [0.5,-0.5] command rapidly creates joint speed and kinetic energy; after sign reversal the arm still has substantial residual speed at the end of the 0.4 s phase. This supports a singular-departure and braking/settling concern, but the diagnostic is not a learned-policy evaluation and does not establish a torque unit beyond the compiled control interface. T1 changed only training radius exposure to the complete official 0.06-0.20 m interval; its learning proxies rose to 0.58 at the terminal saved checkpoint but do not establish performance. M3 measured that checkpoint at 93.75% (150/160); M4 repeated the same panel and outcome while adding failure traces. In M3/M4, eight of ten failures never entered the tolerance disk, two entered but had maximum held runs of only 1 and 3 with many interruptions. Failures were not confined to the newly exposed inner radii and included a negative-angle cluster. M4 traces show zero contacts in inspected failed episodes and several trajectories ending with shoulder qpos near +/-2.975 rad, adjacent to the +/-170 degree joint limit, while other failures retain large residual joint speed. Interpretation: unreachable-target and contact explanations are weakened; the evidence instead supports competing angular branch/joint-limit trajectory failure and high-energy braking/convergence failure. Full-radius exposure is a promising candidate property but not a causal conclusion because no matched outer-band candidate was evaluated. The current evidence does not yet establish whether explicit branch feasibility/limit awareness, action saturation/braking, or another policy difference removes the failures.",
+    "handoff_conclusion": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator arm with 2 ms physics, ten-substep held actions, zero gravity, 0.5 joint damping, 0.01 armature and gear 5; its bounded diagnostic showed near-singular reset geometry, rapid kinetic-energy growth under held action, and residual speed after reversal. M2 is candidate-independent but does not establish a learned-policy failure or a torque unit beyond the compiled interface. T1 changed training radius exposure to the complete official 0.06-0.20 m interval; its learning proxy rose to 0.58 at 120832 steps, but training proxies and checkpoint position do not establish performance. M3 and M4 measured the same T1 terminal artifact at 150/160 = 93.75%. M4 found eight failures with no tolerance-disk entry and two that entered but achieved only 1 and 3 maximum held steps with repeated interruptions; inspected failed traces had zero contacts, while some approached shoulder limits near +/-2.975 rad and others retained large residual joint speed. These observations weaken unreachable-target and contact explanations and support two consequential alternatives: an angular IK-branch/joint-limit trajectory failure versus a high-velocity braking/convergence/stabilization failure. They do not yet discriminate them because M4 lacks analytic candidate feasibility and joint-limit-margin fields. Correction to the inherited direction: the prior proposed intervention bundled branch/limit awareness with stabilization and therefore could not identify which mechanism changed; E3 opens a mechanism-first inquiry followed by a matched candidate comparison. The official sampled hold semantics remain authoritative, while substep robustness is diagnostic only.",
     "handoff_question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?",
@@ -840,7 +840,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 4,
     "session": 2,
@@ -849,7 +849,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1912,35 +1912,165 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T12:39:50Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence; it is below the development reference and has not been officially assessed. No working candidate and no retained candidates. The terminal checkpoint is not privileged by training position, and no other T1 checkpoint has development evidence that would justify replacing it.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Completed one candidate-independent dynamics measurement (M2, superseding failed M1), one fresh 120000-step training allocation (T1; 120832 actual steps after rollout rounding), two 160-episode development measurements on the same candidate and panel (M3 and M4), one best-known role assignment (E1), one goal-review checkpoint (E2), and one bounded inquiry opening (E3). One of fifteen inquiry allocations is now used; no protected official assessment has been requested or consumed.",
+        "current_goal_gap": "The strongest evidence-backed candidate, T1:checkpoint-120832, achieved 150/160 = 93.75% on the held-out development panel, leaving 10 failures and a 4.25 percentage-point shortfall to the 98% reference. This is development evidence; the protected 200-episode official result remains unmeasured and would end the campaign.",
+        "current_synthesis": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator arm with 2 ms physics, ten-substep held actions, zero gravity, 0.5 joint damping, 0.01 armature and gear 5; its bounded diagnostic showed near-singular reset geometry, rapid kinetic-energy growth under held action, and residual speed after reversal. M2 is candidate-independent but does not establish a learned-policy failure or a torque unit beyond the compiled interface. T1 changed training radius exposure to the complete official 0.06-0.20 m interval; its learning proxy rose to 0.58 at 120832 steps, but training proxies and checkpoint position do not establish performance. M3 and M4 measured the same T1 terminal artifact at 150/160 = 93.75%. M4 found eight failures with no tolerance-disk entry and two that entered but achieved only 1 and 3 maximum held steps with repeated interruptions; inspected failed traces had zero contacts, while some approached shoulder limits near +/-2.975 rad and others retained large residual joint speed. These observations weaken unreachable-target and contact explanations and support two consequential alternatives: an angular IK-branch/joint-limit trajectory failure versus a high-velocity braking/convergence/stabilization failure. They do not yet discriminate them because M4 lacks analytic candidate feasibility and joint-limit-margin fields. Correction to the inherited direction: the prior proposed intervention bundled branch/limit awareness with stabilization and therefore could not identify which mechanism changed; E3 opens a mechanism-first inquiry followed by a matched candidate comparison. The official sampled hold semantics remain authoritative, while substep robustness is diagnostic only.",
+        "decision_frontier": "Determine whether the remaining failures are concentrated on targets for which the approached IK branch is infeasible or low-margin and the trajectory approaches joint limits, or instead occur with feasible high-margin branches but excessive qdot/action energy, repeated disk exits, and poor hold stabilization. The discriminating record must preserve target radius/angle, both analytic IK candidates and their joint-limit margins, q/qdot/action/Jacobian, first reach, held-step maximum and interruptions. If the mechanism remains unresolved, candidate claims stay at artifact-comparison level and the uncertainty is carried into goal review.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% success on the protected official 200-episode distribution by resolving the mechanism behind the remaining development failures and testing only a goal-linked, task-preserving response.",
+        "next_direction_or_closure": "E3 opened bounded inquiry I1. In the fresh inquiry session, first obtain the required branch-feasibility/limit-margin and trajectory evidence on the matched full-radius panel, then choose or implement a targeted policy variant only if that evidence changes the mechanism decision. Compare any complete artifact against T1 under unchanged official task and sampled-hold semantics; close with positive, negative, redirected, or inconclusive evidence as specified by the active question rather than treating a method description or reward proxy as proof.",
+        "next_question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "7e83a261fdb01e77c8eabd0d60dd401d4d5a76dc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence; it is below the development reference and has not been officially assessed. No working candidate and no retained candidates. The terminal checkpoint is not privileged by training position, and no other T1 checkpoint has development evidence that would justify replacing it.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Completed one candidate-independent dynamics measurement (M2, superseding failed M1), one fresh 120000-step training allocation (T1; 120832 actual steps after rollout rounding), two 160-episode development measurements on the same candidate and panel (M3 and M4), one best-known role assignment (E1), one goal-review checkpoint (E2), and one bounded inquiry opening (E3). One of fifteen inquiry allocations is now used; no protected official assessment has been requested or consumed.",
+        "current_goal_gap": "The strongest evidence-backed candidate, T1:checkpoint-120832, achieved 150/160 = 93.75% on the held-out development panel, leaving 10 failures and a 4.25 percentage-point shortfall to the 98% reference. This is development evidence; the protected 200-episode official result remains unmeasured and would end the campaign.",
+        "current_synthesis": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator arm with 2 ms physics, ten-substep held actions, zero gravity, 0.5 joint damping, 0.01 armature and gear 5; its bounded diagnostic showed near-singular reset geometry, rapid kinetic-energy growth under held action, and residual speed after reversal. M2 is candidate-independent but does not establish a learned-policy failure or a torque unit beyond the compiled interface. T1 changed training radius exposure to the complete official 0.06-0.20 m interval; its learning proxy rose to 0.58 at 120832 steps, but training proxies and checkpoint position do not establish performance. M3 and M4 measured the same T1 terminal artifact at 150/160 = 93.75%. M4 found eight failures with no tolerance-disk entry and two that entered but achieved only 1 and 3 maximum held steps with repeated interruptions; inspected failed traces had zero contacts, while some approached shoulder limits near +/-2.975 rad and others retained large residual joint speed. These observations weaken unreachable-target and contact explanations and support two consequential alternatives: an angular IK-branch/joint-limit trajectory failure versus a high-velocity braking/convergence/stabilization failure. They do not yet discriminate them because M4 lacks analytic candidate feasibility and joint-limit-margin fields. Correction to the inherited direction: the prior proposed intervention bundled branch/limit awareness with stabilization and therefore could not identify which mechanism changed; E3 opens a mechanism-first inquiry followed by a matched candidate comparison. The official sampled hold semantics remain authoritative, while substep robustness is diagnostic only.",
+        "decision_frontier": "Determine whether the remaining failures are concentrated on targets for which the approached IK branch is infeasible or low-margin and the trajectory approaches joint limits, or instead occur with feasible high-margin branches but excessive qdot/action energy, repeated disk exits, and poor hold stabilization. The discriminating record must preserve target radius/angle, both analytic IK candidates and their joint-limit margins, q/qdot/action/Jacobian, first reach, held-step maximum and interruptions. If the mechanism remains unresolved, candidate claims stay at artifact-comparison level and the uncertainty is carried into goal review.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% success on the protected official 200-episode distribution by resolving the mechanism behind the remaining development failures and testing only a goal-linked, task-preserving response.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "E3 opened bounded inquiry I1. In the fresh inquiry session, first obtain the required branch-feasibility/limit-margin and trajectory evidence on the matched full-radius panel, then choose or implement a targeted policy variant only if that evidence changes the mechanism decision. Compare any complete artifact against T1 under unchanged official task and sampled-hold semantics; close with positive, negative, redirected, or inconclusive evidence as specified by the active question rather than treating a method description or reward proxy as proof.",
+        "next_question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "ca1d4b03-7e76-4222-baa9-771670423efa",
+        "campaign_id": "4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264",
+        "campaign_usage": "17m51s | 29.08 AIU | prompt 4.7m (90% cached) | output 107.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "23f2486b2cb882d23467d0159b1d3084b45e2024",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence; it is below the development reference and has not been officially assessed. No working candidate and no retained candidates. The terminal checkpoint is not privileged by training position, and no other T1 checkpoint has development evidence that would justify replacing it.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Completed one candidate-independent dynamics measurement (M2, superseding failed M1), one fresh 120000-step training allocation (T1; 120832 actual steps after rollout rounding), two 160-episode development measurements on the same candidate and panel (M3 and M4), one best-known role assignment (E1), one goal-review checkpoint (E2), and one bounded inquiry opening (E3). One of fifteen inquiry allocations is now used; no protected official assessment has been requested or consumed.",
+        "current_goal_gap": "The strongest evidence-backed candidate, T1:checkpoint-120832, achieved 150/160 = 93.75% on the held-out development panel, leaving 10 failures and a 4.25 percentage-point shortfall to the 98% reference. This is development evidence; the protected 200-episode official result remains unmeasured and would end the campaign.",
+        "current_synthesis": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator arm with 2 ms physics, ten-substep held actions, zero gravity, 0.5 joint damping, 0.01 armature and gear 5; its bounded diagnostic showed near-singular reset geometry, rapid kinetic-energy growth under held action, and residual speed after reversal. M2 is candidate-independent but does not establish a learned-policy failure or a torque unit beyond the compiled interface. T1 changed training radius exposure to the complete official 0.06-0.20 m interval; its learning proxy rose to 0.58 at 120832 steps, but training proxies and checkpoint position do not establish performance. M3 and M4 measured the same T1 terminal artifact at 150/160 = 93.75%. M4 found eight failures with no tolerance-disk entry and two that entered but achieved only 1 and 3 maximum held steps with repeated interruptions; inspected failed traces had zero contacts, while some approached shoulder limits near +/-2.975 rad and others retained large residual joint speed. These observations weaken unreachable-target and contact explanations and support two consequential alternatives: an angular IK-branch/joint-limit trajectory failure versus a high-velocity braking/convergence/stabilization failure. They do not yet discriminate them because M4 lacks analytic candidate feasibility and joint-limit-margin fields. Correction to the inherited direction: the prior proposed intervention bundled branch/limit awareness with stabilization and therefore could not identify which mechanism changed; E3 opens a mechanism-first inquiry followed by a matched candidate comparison. The official sampled hold semantics remain authoritative, while substep robustness is diagnostic only.",
+        "decision_frontier": "Determine whether the remaining failures are concentrated on targets for which the approached IK branch is infeasible or low-margin and the trajectory approaches joint limits, or instead occur with feasible high-margin branches but excessive qdot/action energy, repeated disk exits, and poor hold stabilization. The discriminating record must preserve target radius/angle, both analytic IK candidates and their joint-limit margins, q/qdot/action/Jacobian, first reach, held-step maximum and interruptions. If the mechanism remains unresolved, candidate claims stay at artifact-comparison level and the uncertainty is carried into goal review.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "Advance toward a learned policy with at least 98% success on the protected official 200-episode distribution by resolving the mechanism behind the remaining development failures and testing only a goal-linked, task-preserving response.",
+        "next_direction_or_closure": "E3 opened bounded inquiry I1. In the fresh inquiry session, first obtain the required branch-feasibility/limit-margin and trajectory evidence on the matched full-radius panel, then choose or implement a targeted policy variant only if that evidence changes the mechanism decision. Compare any complete artifact against T1 under unchanged official task and sampled-hold semantics; close with positive, negative, redirected, or inconclusive evidence as specified by the active question rather than treating a method description or reward proxy as proof.",
+        "next_question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?"
+      }
+    },
+    "request_fingerprint": "1b8f70fec82e7f2bb3d2ae135d1b7a635a9bfaf740236eb492233b02fc6bc0ca",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E1 on the basis of M3/M4. No working candidate is assigned. No retained candidates. The candidate is below the human goal and has not been officially assessed.",
+    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence; it is below the development reference and has not been officially assessed. No working candidate and no retained candidates. The terminal checkpoint is not privileged by training position, and no other T1 checkpoint has development evidence that would justify replacing it.",
     "completed_operations": [
-      "M2",
-      "T1",
-      "M3",
-      "M4",
-      "E1"
+      "E3"
     ],
-    "cumulative_resource_use": "Completed one candidate-independent dynamics measurement (M2), one fresh 120000-step training allocation (T1; actual terminal checkpoint 120832 due rollout rounding), two 160-episode development measurements on the same candidate and panel (M3 and M4), and one best-known role assignment (E1). No protected official assessment has been requested or consumed.",
-    "current_goal_gap": "The best-known candidate T1:checkpoint-120832 achieved 150/160 = 93.75% on the held-out development panel, leaving 10 development failures and a 4.25 percentage-point shortfall to 98% on that panel. This is development evidence, not an official assessment; the protected 200-episode result remains unmeasured.",
-    "current_synthesis": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator system with 2 ms physics, 10-step held controls, zero gravity, 0.5 joint damping, 0.01 armature, gear 5, and configuration-dependent mass matrices near 0.01 kg*m^2. In the fixed bounded diagnostic, reset begins with a near-zero planar Jacobian determinant (about 1e-5), while a held [0.5,-0.5] command rapidly creates joint speed and kinetic energy; after sign reversal the arm still has substantial residual speed at the end of the 0.4 s phase. This supports a singular-departure and braking/settling concern, but the diagnostic is not a learned-policy evaluation and does not establish a torque unit beyond the compiled control interface. T1 changed only training radius exposure to the complete official 0.06-0.20 m interval; its learning proxies rose to 0.58 at the terminal saved checkpoint but do not establish performance. M3 measured that checkpoint at 93.75% (150/160); M4 repeated the same panel and outcome while adding failure traces. In M3/M4, eight of ten failures never entered the tolerance disk, two entered but had maximum held runs of only 1 and 3 with many interruptions. Failures were not confined to the newly exposed inner radii and included a negative-angle cluster. M4 traces show zero contacts in inspected failed episodes and several trajectories ending with shoulder qpos near +/-2.975 rad, adjacent to the +/-170 degree joint limit, while other failures retain large residual joint speed. Interpretation: unreachable-target and contact explanations are weakened; the evidence instead supports competing angular branch/joint-limit trajectory failure and high-energy braking/convergence failure. Full-radius exposure is a promising candidate property but not a causal conclusion because no matched outer-band candidate was evaluated. The current evidence does not yet establish whether explicit branch feasibility/limit awareness, action saturation/braking, or another policy difference removes the failures.",
-    "decision_frontier": "The unresolved decision is whether the remaining gap is best attacked as an angular IK-branch/joint-limit trajectory problem or as a general high-velocity braking and stabilization problem. Discriminating evidence should preserve target radius/angle, both analytic IK candidates and their joint-limit margins, policy q/qdot/action traces, Jacobian determinant, first reach, and hold interruptions for failed and matched successful targets. A failure field concentrated at infeasible or low-margin branches and shoulder-limit excursions would justify branch/limit-aware trajectory design; failures with feasible high-margin branches but large qdot and repeated disk exits would justify braking/action-smoothing or stabilization work. Current M4 has q/qdot/J/action/contact traces but not analytic candidate margins, so it narrows rather than closes this distinction.",
+    "cumulative_resource_use": "Completed one candidate-independent dynamics measurement (M2, superseding failed M1), one fresh 120000-step training allocation (T1; 120832 actual steps after rollout rounding), two 160-episode development measurements on the same candidate and panel (M3 and M4), one best-known role assignment (E1), one goal-review checkpoint (E2), and one bounded inquiry opening (E3). One of fifteen inquiry allocations is now used; no protected official assessment has been requested or consumed.",
+    "current_goal_gap": "The strongest evidence-backed candidate, T1:checkpoint-120832, achieved 150/160 = 93.75% on the held-out development panel, leaving 10 failures and a 4.25 percentage-point shortfall to the 98% reference. This is development evidence; the protected 200-episode official result remains unmeasured and would end the campaign.",
+    "current_synthesis": "Observed facts: M2 compiled the human-authored model as a two-DOF, two-actuator arm with 2 ms physics, ten-substep held actions, zero gravity, 0.5 joint damping, 0.01 armature and gear 5; its bounded diagnostic showed near-singular reset geometry, rapid kinetic-energy growth under held action, and residual speed after reversal. M2 is candidate-independent but does not establish a learned-policy failure or a torque unit beyond the compiled interface. T1 changed training radius exposure to the complete official 0.06-0.20 m interval; its learning proxy rose to 0.58 at 120832 steps, but training proxies and checkpoint position do not establish performance. M3 and M4 measured the same T1 terminal artifact at 150/160 = 93.75%. M4 found eight failures with no tolerance-disk entry and two that entered but achieved only 1 and 3 maximum held steps with repeated interruptions; inspected failed traces had zero contacts, while some approached shoulder limits near +/-2.975 rad and others retained large residual joint speed. These observations weaken unreachable-target and contact explanations and support two consequential alternatives: an angular IK-branch/joint-limit trajectory failure versus a high-velocity braking/convergence/stabilization failure. They do not yet discriminate them because M4 lacks analytic candidate feasibility and joint-limit-margin fields. Correction to the inherited direction: the prior proposed intervention bundled branch/limit awareness with stabilization and therefore could not identify which mechanism changed; E3 opens a mechanism-first inquiry followed by a matched candidate comparison. The official sampled hold semantics remain authoritative, while substep robustness is diagnostic only.",
+    "decision_frontier": "Determine whether the remaining failures are concentrated on targets for which the approached IK branch is infeasible or low-margin and the trajectory approaches joint limits, or instead occur with feasible high-margin branches but excessive qdot/action energy, repeated disk exits, and poor hold stabilization. The discriminating record must preserve target radius/angle, both analytic IK candidates and their joint-limit margins, q/qdot/action/Jacobian, first reach, held-step maximum and interruptions. If the mechanism remains unresolved, candidate claims stay at artifact-comparison level and the uncertainty is carried into goal review.",
     "evidence_references": [
       "M2",
       "T1",
       "M3",
       "M4",
-      "E1"
+      "E1",
+      "E3"
     ],
-    "human_goal_connection": "Advance toward a learned policy with at least 98% success on the protected official 200-episode task by first separating physical feasibility, transient control, and learning-exposure effects, then targeting the failure mechanism that can remove the remaining development failures without changing the task boundary.",
+    "human_goal_connection": "Advance toward a learned policy with at least 98% success on the protected official 200-episode distribution by resolving the mechanism behind the remaining development failures and testing only a goal-linked, task-preserving response.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Prefer opening the proposed bounded inquiry because the best-known candidate is materially below the goal, its failures are mechanism-structured rather than purely inner-radius, and M4 supplies enough evidence to design a discriminating branch/limit-versus-braking test. Do not request official assessment yet.",
-    "next_question": "In a bounded inquiry, can a branch- and joint-limit-aware trajectory/stabilization method remove the observed angular no-entry and high-interruption failures while preserving the complete official radial distribution and sampled uninterrupted-hold semantics?",
-    "scientific_commit": "5fbc4d2604954f754dd3dd5ab3e396c74f31b9e5",
-    "session_id": "S1"
+    "next_direction_or_closure": "E3 opened bounded inquiry I1. In the fresh inquiry session, first obtain the required branch-feasibility/limit-margin and trajectory evidence on the matched full-radius panel, then choose or implement a targeted policy variant only if that evidence changes the mechanism decision. Compare any complete artifact against T1 under unchanged official task and sampled-hold semantics; close with positive, negative, redirected, or inconclusive evidence as specified by the active question rather than treating a method description or reward proxy as proof.",
+    "next_question": "Can a matched, full-radius mechanism test determine whether the remaining failures are primarily joint-limit/IK-branch trajectory failures or high-velocity braking/hold-stabilization failures, and can a policy variant targeted to the supported mechanism improve complete uninterrupted-hold success without changing the official task or sampled hold semantics?",
+    "scientific_commit": "23f2486b2cb882d23467d0159b1d3084b45e2024",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1948,21 +2078,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ca1d4b03-7e76-4222-baa9-771670423efa",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E3"
-    ],
-    "scientific_parent_commit": "7e83a261fdb01e77c8eabd0d60dd401d4d5a76dc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
