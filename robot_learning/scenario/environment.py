@@ -71,6 +71,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self.last_step_target_distances: list[float] = []
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -117,6 +118,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self.last_step_target_distances = []
         return self._observation(), {}
 
     def step(
@@ -128,8 +130,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        substep_target_distances: list[float] = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            substep_target_distances.append(self._distance_to_target())
+        self.last_step_target_distances = substep_target_distances
 
         distance = self._distance_to_target()
 
