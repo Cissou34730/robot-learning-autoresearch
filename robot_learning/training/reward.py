@@ -23,10 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-EXECUTION_FOCUSED_PRECISION_COEFFICIENT = 2.0
-EXECUTION_FOCUSED_PRECISION_LENGTH_SCALE = 0.005
-EXECUTION_FOCUSED_SPEED_DISTANCE = 0.03
-EXECUTION_FOCUSED_SPEED_PENALTY_COEFFICIENT = 0.1
 
 
 @dataclass(frozen=True)
@@ -48,18 +44,6 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
-def _execution_focused_precision_potential(
-    distance: float, success_threshold: float
-) -> float:
-    """Return a narrow potential whose midpoint is the tolerance boundary."""
-    scaled_distance = (
-        float(distance) - float(success_threshold)
-    ) / EXECUTION_FOCUSED_PRECISION_LENGTH_SCALE
-    return EXECUTION_FOCUSED_PRECISION_COEFFICIENT * float(
-        1.0 / (1.0 + np.exp(scaled_distance))
-    )
-
-
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -69,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    execution_focused: bool = False,
-    endpoint_speed_m_s: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -108,47 +90,19 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    near_target_precision = 0.0
-    endpoint_speed_penalty = 0.0
-    if execution_focused:
-        if endpoint_speed_m_s is None:
-            raise ValueError(
-                "endpoint_speed_m_s is required for execution-focused reward"
-            )
-        near_target_precision = (
-            _execution_focused_precision_potential(
-                current_distance, success_threshold
-            )
-            - _execution_focused_precision_potential(
-                previous_distance, success_threshold
-            )
-        )
-        if current_distance <= EXECUTION_FOCUSED_SPEED_DISTANCE:
-            endpoint_speed_penalty = -(
-                EXECUTION_FOCUSED_SPEED_PENALTY_COEFFICIENT
-                * float(endpoint_speed_m_s)
-            )
-        reward += near_target_precision + endpoint_speed_penalty
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    components = {
-        "progress": float(progress),
-        "closeness": float(closeness),
-        "hold_progress": float(hold_progress),
-        "outside_band": float(outside_band),
-        "hold_complete": float(hold_complete),
-        "action_cost": float(action_cost),
-    }
-    if execution_focused:
-        components.update(
-            {
-                "near_target_precision": float(near_target_precision),
-                "endpoint_speed_penalty": float(endpoint_speed_penalty),
-            }
-        )
-
-    return RewardResult(total=float(reward), components=components)
+    return RewardResult(
+        total=float(reward),
+        components={
+            "progress": float(progress),
+            "closeness": float(closeness),
+            "hold_progress": float(hold_progress),
+            "outside_band": float(outside_band),
+            "hold_complete": float(hold_complete),
+            "action_cost": float(action_cost),
+        },
+    )

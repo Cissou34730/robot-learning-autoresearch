@@ -41,26 +41,20 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
-        execution_focused_reward: bool = False,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        self.execution_focused_reward = execution_focused_reward
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
 
         self.success_threshold = success_threshold
-        self.control_interval_seconds = float(
-            self.model.opt.timestep * self.frame_skip
-        )
-        self.hold_steps_required = round(
-            hold_seconds / self.control_interval_seconds
-        )
+        control_dt = self.model.opt.timestep * self.frame_skip
+        self.hold_steps_required = round(hold_seconds / control_dt)
 
         n_joints = 2
         self.observation_space = gym.spaces.Box(
@@ -133,16 +127,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
-        endpoint_position_before = self._end_effector_position()
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
 
-        endpoint_position_after = self._end_effector_position()
-        endpoint_speed_m_s = float(
-            np.linalg.norm(endpoint_position_after - endpoint_position_before)
-            / self.control_interval_seconds
-        )
         distance = self._distance_to_target()
 
         previous_held_steps = self._held_steps
@@ -163,8 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            execution_focused=self.execution_focused_reward,
-            endpoint_speed_m_s=endpoint_speed_m_s,
         )
         self._previous_distance = distance
 
