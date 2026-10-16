@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry when a completed training artifact and at least one completed development evaluation provide a bounded answer about first-policy capability under official-range exposure and classify the dominant observed failure pattern as reach/branch selection, sampled-data stabilization, or unresolved/limited by evaluator semantics; a positive, negative, or inconclusive result is sufficient, provided the limits of the tested implementation and diagnostics are preserved for goal review.",
-    "goal_connection": "The human goal requires a learned policy to achieve at least 196 successes in the protected 200-episode panel, with every success being a complete uninterrupted 2-second hold. This inquiry is the least speculative next step because no learned candidate exists and M1 cannot establish episode capability or protected-evaluator performance. A policy trained across the official radius range and evaluated with complete reach, entry-velocity, hold-run, interruption, branch, and saturation diagnostics can establish whether development should continue toward control stabilization or shift toward branch-conditioned representation and reach behavior.",
-    "handoff_conclusion": "M1 observed a compiled two-joint MuJoCo model with nq=nv=nu=2, 0.002 s physics timestep, 0.02 s ten-substep control interval, zero gravity, explicit damping 0.5 and armature 0.01, and mass matrix [[0.01210,0.000507],[0.000507,0.01019]] at q=0. Across 40 sampled radius/bearing/branch IK cases, FK residuals were 6.1e-18\u20131.4e-16 m, all sampled solutions were joint-limit-valid with minimum margin 0.215 rad, and sampled Jacobian condition numbers were 1.33\u20135.29. No contacts were observed in those postures or in 205 matched response cases. These observations make nominal point-geometry failure and contact less consequential as first explanations in the tested states, but they do not establish feasibility at every official trajectory, absence of contact outside the sampled cases, or protected semantics. Saturated ten-substep pulses reached up to 6.08 rad/s and up to 791.9 rad/s^2; opposite actions reduced speed by up to 2.47 rad/s but did not fully stop it within the following 20 ms. The q=0 zero-action case retained its initial 0.08 m target distance over the measured phase. Therefore the inherited suggestion of adequate bidirectional braking is corrected as unsupported: M1 instead leaves sampled-data braking, entry velocity, and feedback stabilization consequential. The remaining competing explanations are policy reach/branch selection, high-velocity entry or insufficient braking at the 20 ms interface, hold instability, and a possible difference between visible endpoint checks and protected continuous-hold semantics. The measurements also do not test learning, long-horizon passive behavior, noise/delay, recurrent runtime behavior, or the official panel.",
-    "handoff_question": "Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization?",
-    "rationale": "Goal review cannot justify official assessment because no best-known learned candidate exists, while another mechanics-only measurement would not close the immediate candidate-capability gap. M1 supports nominal feasibility and contact-free behavior only for its sampled deterministic cases, not all official trajectories or the protected evaluator. It also measured peak speeds up to 6.08 rad/s and only partial speed reductions under an opposite action over the following 20 ms, so the inherited claim that the dynamics provide adequate braking is unsupported and is corrected here: sampled-data braking and entry velocity remain consequential alternatives to reach/branch failure. A first policy exposed to 0.06\u20130.20 m, followed by trajectory-level development evaluation, has high expected information toward the 98% objective at bounded cost because it both creates the first candidate and distinguishes whether failures occur before entry or during the uninterrupted hold. The method claim will remain limited to the implemented exposure, training recipe, runtime, and visible development evaluator; it will not be treated as official success.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "aff8eab5e56f95991565166a38b84dae4c591872",
     "id": "b9d3f752-0619-4863-81cc-96c7df3918d4",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -848,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1758,9 +1747,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T15:12:00Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 is answered for the tested first-policy recipe and visible development evaluator: a fresh PPO policy trained with full 0.06\u20130.20 m target-radius exposure reached 150/160 complete uninterrupted holds (93.75%), below the 98% campaign objective. Failures were predominantly reach/convergence failures (7/10 never entered tolerance), with a secondary sampled-data stabilization pattern (3/10 entered but had high first-entry joint speed and repeated interruptions). All 153 entering episodes and all final states were classified on the open analytic branch, so branch coverage is limited and branch causality is unresolved. Substep excursions were recorded but cannot establish protected continuous semantics.",
+        "reason": "The closure condition is met by completed training T1 and completed development evaluation M2 with radius/bearing, branch, first-entry step and velocity, hold-run, interruptions, final distance, speed, saturation, and substep diagnostics. The result redirects the next development decision toward reach/convergence and branch coverage first, while retaining sampled-data stabilization as a secondary mechanism. It is limited to T1's PPO recipe, seed, runtime, full-range training exposure, and visible 160-episode panel; it does not establish official 200-panel performance or protected evaluator semantics."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is answered for the tested first-policy recipe and visible development evaluator: a fresh PPO policy trained with full 0.06\u20130.20 m target-radius exposure reached 150/160 complete uninterrupted holds (93.75%), below the 98% campaign objective. Failures were predominantly reach/convergence failures (7/10 never entered tolerance), with a secondary sampled-data stabilization pattern (3/10 entered but had high first-entry joint speed and repeated interruptions). All 153 entering episodes and all final states were classified on the open analytic branch, so branch coverage is limited and branch causality is unresolved. Substep excursions were recorded but cannot establish protected continuous semantics.",
+        "reason": "The closure condition is met by completed training T1 and completed development evaluation M2 with radius/bearing, branch, first-entry step and velocity, hold-run, interruptions, final distance, speed, saturation, and substep diagnostics. The result redirects the next development decision toward reach/convergence and branch coverage first, while retaining sampled-data stabilization as a secondary mechanism. It is limited to T1's PPO recipe, seed, runtime, full-range training exposure, and visible 160-episode panel; it does not establish official 200-panel performance or protected evaluator semantics.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is answered for the tested first-policy recipe and visible development evaluator: a fresh PPO policy trained with full 0.06\u20130.20 m target-radius exposure reached 150/160 complete uninterrupted holds (93.75%), below the 98% campaign objective. Failures were predominantly reach/convergence failures (7/10 never entered tolerance), with a secondary sampled-data stabilization pattern (3/10 entered but had high first-entry joint speed and repeated interruptions). All 153 entering episodes and all final states were classified on the open analytic branch, so branch coverage is limited and branch causality is unresolved. Substep excursions were recorded but cannot establish protected continuous semantics.",
+        "reason": "The closure condition is met by completed training T1 and completed development evaluation M2 with radius/bearing, branch, first-entry step and velocity, hold-run, interruptions, final distance, speed, saturation, and substep diagnostics. The result redirects the next development decision toward reach/convergence and branch coverage first, while retaining sampled-data stabilization as a secondary mechanism. It is limited to T1's PPO recipe, seed, runtime, full-range training exposure, and visible 160-episode panel; it does not establish official 200-panel performance or protected evaluator semantics."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is answered for the tested first-policy recipe and visible development evaluator: a fresh PPO policy trained with full 0.06\u20130.20 m target-radius exposure reached 150/160 complete uninterrupted holds (93.75%), below the 98% campaign objective. Failures were predominantly reach/convergence failures (7/10 never entered tolerance), with a secondary sampled-data stabilization pattern (3/10 entered but had high first-entry joint speed and repeated interruptions). All 153 entering episodes and all final states were classified on the open analytic branch, so branch coverage is limited and branch causality is unresolved. Substep excursions were recorded but cannot establish protected continuous semantics.",
+        "reason": "The closure condition is met by completed training T1 and completed development evaluation M2 with radius/bearing, branch, first-entry step and velocity, hold-run, interruptions, final distance, speed, saturation, and substep diagnostics. The result redirects the next development decision toward reach/convergence and branch coverage first, while retaining sampled-data stabilization as a secondary mechanism. It is limited to T1's PPO recipe, seed, runtime, full-range training exposure, and visible 160-episode panel; it does not establish official 200-panel performance or protected evaluator semantics.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 is answered for the tested first-policy recipe and visible development evaluator: a fresh PPO policy trained with full 0.06\u20130.20 m target-radius exposure reached 150/160 complete uninterrupted holds (93.75%), below the 98% campaign objective. Failures were predominantly reach/convergence failures (7/10 never entered tolerance), with a secondary sampled-data stabilization pattern (3/10 entered but had high first-entry joint speed and repeated interruptions). All 153 entering episodes and all final states were classified on the open analytic branch, so branch coverage is limited and branch causality is unresolved. Substep excursions were recorded but cannot establish protected continuous semantics.",
+        "reason": "The closure condition is met by completed training T1 and completed development evaluation M2 with radius/bearing, branch, first-entry step and velocity, hold-run, interruptions, final distance, speed, saturation, and substep diagnostics. The result redirects the next development decision toward reach/convergence and branch coverage first, while retaining sampled-data stabilization as a secondary mechanism. It is limited to T1's PPO recipe, seed, runtime, full-range training exposure, and visible 160-episode panel; it does not establish official 200-panel performance or protected evaluator semantics."
+      }
+    },
+    "request_fingerprint": "511c319e7ac94bd0819fd89916cc427a0fba38e791280bfc2eb69be58ae2e012",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty; M1 is a mechanics artifact and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
@@ -1800,7 +1843,8 @@
     "operation_ids": [
       "T1",
       "M2",
-      "E4"
+      "E4",
+      "E5"
     ],
     "scientific_parent_commit": "044ae9fe473a6dd907e5737d6ed3b518ae9498dd"
   },
