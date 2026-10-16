@@ -29,6 +29,10 @@ RESET_ESCAPE_VELOCITY_GAIN_SECONDS = 0.35
 RESET_ESCAPE_MIN_Q2_RADIANS = 0.18
 ACQUISITION_POSITION_GAIN_ACTIONS_PER_RADIAN = 1.75
 ACQUISITION_VELOCITY_GAIN_SECONDS = 0.30
+ACQUISITION_FEEDBACK_WEIGHT_MIN = 0.35
+ACQUISITION_FEEDBACK_WEIGHT_MAX = 0.80
+ACQUISITION_ELBOW_WEIGHT_START_RADIANS = 0.75
+ACQUISITION_ELBOW_WEIGHT_FULL_RADIANS = 2.60
 
 
 def physical_action(action):
@@ -105,6 +109,36 @@ def _branch_error(
     if not np.isfinite(error).all():
         return None
     return error
+
+
+def _acquisition_feedback_weight(
+    observation: np.ndarray,
+    branch_index: int,
+) -> float:
+    """Increase bounded assistance for targets requiring a larger elbow fold."""
+    branch_targets, valid = _branch_targets_and_validity(observation)
+    if branch_index not in (0, 1) or not valid[branch_index]:
+        return ACQUISITION_FEEDBACK_WEIGHT_MIN
+    elbow_magnitude = abs(float(branch_targets[branch_index, 1]))
+    elbow_fraction = (
+        elbow_magnitude - ACQUISITION_ELBOW_WEIGHT_START_RADIANS
+    ) / (
+        ACQUISITION_ELBOW_WEIGHT_FULL_RADIANS
+        - ACQUISITION_ELBOW_WEIGHT_START_RADIANS
+    )
+    elbow_fraction = float(np.clip(elbow_fraction, 0.0, 1.0))
+    return float(
+        np.clip(
+            ACQUISITION_FEEDBACK_WEIGHT_MIN
+            + (
+                ACQUISITION_FEEDBACK_WEIGHT_MAX
+                - ACQUISITION_FEEDBACK_WEIGHT_MIN
+            )
+            * elbow_fraction,
+            ACQUISITION_FEEDBACK_WEIGHT_MIN,
+            ACQUISITION_FEEDBACK_WEIGHT_MAX,
+        )
+    )
 
 
 def make_controller_policy_io() -> PolicyIO:
@@ -242,6 +276,22 @@ def make_controller_policy_io() -> PolicyIO:
                 ACQUISITION_POSITION_GAIN_ACTIONS_PER_RADIAN * position_error
                 - ACQUISITION_VELOCITY_GAIN_SECONDS * qvel
             )
+            feedback_action = np.clip(
+                feedback_action,
+                -MAINTENANCE_ACTION_LIMIT,
+                MAINTENANCE_ACTION_LIMIT,
+            )
+            feedback_weight = _acquisition_feedback_weight(
+                observation, branch_index
+            )
+            # Keep PPO's action authority during acquisition while making the
+            # deterministic assistance stronger for large-elbow targets.
+            return np.clip(
+                (1.0 - feedback_weight) * learned
+                + feedback_weight * feedback_action,
+                -MAINTENANCE_ACTION_LIMIT,
+                MAINTENANCE_ACTION_LIMIT,
+            ).astype(np.float64, copy=False)
         else:
             feedback_action = (
                 MAINTENANCE_POSITION_GAIN_ACTIONS_PER_RADIAN * position_error
