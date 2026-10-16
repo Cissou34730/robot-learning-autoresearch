@@ -19,38 +19,8 @@ from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
-# Bumped when the meaning of a scenario evaluation summary or trace changes.
+# Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-RESEARCH_EVALUATION_ARTIFACT_VERSION = 8
-
-
-def _optional_float(value) -> float | None:
-    """Preserve unavailable controller-specific diagnostics as null."""
-    if value is None:
-        return None
-    converted = float(value)
-    return converted if np.isfinite(converted) else None
-
-
-def _optional_vector(value) -> list[float] | None:
-    """Serialize an optional controller vector without assuming its presence."""
-    return (
-        None
-        if value is None
-        else [float(component) for component in value]
-    )
-
-
-def _optional_matrix(value) -> list[list[float]] | None:
-    """Serialize an optional controller matrix without assuming its presence."""
-    return (
-        None
-        if value is None
-        else [
-            [float(component) for component in row]
-            for row in value
-        ]
-    )
 
 
 def evaluate_research_model(
@@ -69,7 +39,6 @@ def evaluate_research_model(
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
-    episode_traces: list[list[dict]] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
@@ -86,7 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        episode_trace: list[dict] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -94,94 +62,6 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            episode_trace.append(
-                {
-                    "control_step": steps,
-                    "qpos": [float(value) for value in info["qpos"]],
-                    "qvel": [float(value) for value in info["qvel"]],
-                    "action": [float(value) for value in info["action"]],
-                    "policy_action": [
-                        float(value) for value in info["policy_action"]
-                    ],
-                    "guidance_action": [
-                        float(value) for value in info["guidance_action"]
-                    ],
-                    "applied_action": [
-                        float(value) for value in info["applied_action"]
-                    ],
-                    "selected_branch": info["selected_branch"],
-                    "selected_ik_target": (
-                        None
-                        if info["selected_ik_target"] is None
-                        else [
-                            float(value)
-                            for value in info["selected_ik_target"]
-                        ]
-                    ),
-                    "branch_aware_activation": bool(
-                        info["branch_aware_activation"]
-                    ),
-                    "control_phase": info.get("control_phase"),
-                    "braking_active": bool(info.get("braking_active", False)),
-                    "braking_phase": bool(info.get("braking_phase", False)),
-                    "guidance_weight": float(info.get("guidance_weight", 0.0)),
-                    "residual_weight": float(info.get("residual_weight", 1.0)),
-                    "joint_error_norm_rad": _optional_float(
-                        info.get("joint_error_norm_rad")
-                    ),
-                    "joint_speed_norm_rad_s": _optional_float(
-                        info.get("joint_speed_norm_rad_s")
-                    ),
-                    "inward_joint_speed_rad_s": _optional_float(
-                        info.get("inward_joint_speed_rad_s")
-                    ),
-                    "target_distance_m": _optional_float(
-                        info.get("target_distance_m")
-                    ),
-                    "cartesian_error_m": _optional_vector(
-                        info.get("cartesian_error_m")
-                    ),
-                    "cartesian_error_norm_m": _optional_float(
-                        info.get("cartesian_error_norm_m")
-                    ),
-                    "cartesian_speed_m_s": _optional_vector(
-                        info.get("cartesian_speed_m_s")
-                    ),
-                    "cartesian_speed_norm_m_s": _optional_float(
-                        info.get("cartesian_speed_norm_m_s")
-                    ),
-                    "inward_cartesian_speed_m_s": _optional_float(
-                        info.get("inward_cartesian_speed_m_s")
-                    ),
-                    "planar_jacobian": _optional_matrix(
-                        info.get("planar_jacobian")
-                    ),
-                    "jacobian_condition": _optional_float(
-                        info.get("jacobian_condition")
-                    ),
-                    "controller_state_valid": (
-                        None
-                        if info.get("controller_state_valid") is None
-                        else bool(info["controller_state_valid"])
-                    ),
-                    "residual_action": _optional_vector(
-                        info.get("residual_action")
-                    ),
-                    "distance_cm": 100.0 * float(info["diagnostic_distance"]),
-                    "held_steps": int(info["diagnostic_held_steps"]),
-                    "joint_limit_distance_rad": {
-                        str(name): float(distance)
-                        for name, distance in info[
-                            "joint_limit_distance_rad"
-                        ].items()
-                    },
-                    "max_contact_count": int(info["max_contact_count"]),
-                    "contact_geom_pairs": [
-                        [str(name) for name in pair]
-                        for pair in info["contact_geom_pairs"]
-                    ],
-                }
-            )
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -225,13 +105,12 @@ def evaluate_research_model(
                 "hold_interruptions": hold_interruptions,
             }
         )
-        episode_traces.append(episode_trace)
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": RESEARCH_EVALUATION_ARTIFACT_VERSION,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -242,7 +121,6 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "episode_traces": episode_traces,
             "units": {"distance": "cm", "time": "control_steps"},
         },
     }
