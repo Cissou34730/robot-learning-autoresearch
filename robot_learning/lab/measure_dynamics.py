@@ -104,15 +104,18 @@ def _model_facts(model: mujoco.MjModel) -> dict[str, Any]:
         _object_name(model, mujoco.mjtObj.mjOBJ_JOINT, joint_id, f"joint {joint_id}")
         for joint_id in range(int(model.njnt))
     ]
-    actuator_names = [
-        _object_name(
-            model,
-            mujoco.mjtObj.mjOBJ_ACTUATOR,
-            actuator_id,
-            f"actuator {actuator_id}",
+    actuator_names: list[str] = []
+    actuator_compiled_names: list[str | None] = []
+    for actuator_id in range(int(model.nu)):
+        compiled_name = mujoco.mj_id2name(
+            model, mujoco.mjtObj.mjOBJ_ACTUATOR, actuator_id
         )
-        for actuator_id in range(int(model.nu))
-    ]
+        if compiled_name is None or not str(compiled_name):
+            actuator_names.append(f"actuator_{actuator_id}")
+            actuator_compiled_names.append(None)
+        else:
+            actuator_names.append(str(compiled_name))
+            actuator_compiled_names.append(str(compiled_name))
 
     joints: list[dict[str, Any]] = []
     dofs: list[dict[str, Any]] = []
@@ -167,6 +170,7 @@ def _model_facts(model: mujoco.MjModel) -> dict[str, Any]:
         actuators.append(
             {
                 "name": actuator_name,
+                "compiled_name": actuator_compiled_names[actuator_id],
                 "gear": _json_array(
                     model.actuator_gear[actuator_id],
                     f"gear for actuator {actuator_name}",
