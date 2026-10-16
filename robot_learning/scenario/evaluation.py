@@ -222,6 +222,32 @@ def _trace_schema(env) -> dict:
     }
 
 
+def _controller_runtime_metadata(runtime) -> tuple[str | None, bool]:
+    """Read explicit controller markers from the saved executable runtime."""
+    policy_io = runtime.io
+    activation_id = getattr(policy_io, "controller_activation_id", None)
+    callable_path = getattr(policy_io, "controller_callable_path", None)
+    # Runtime restore reconstructs PolicyIO from its callables.  The factory
+    # puts the same explicit markers on those callables so they remain
+    # inspectable without changing the human-owned PolicyIO dataclass.
+    if activation_id is None:
+        activation_id = getattr(
+            policy_io.action, "controller_activation_id", None
+        )
+    if callable_path is None:
+        callable_path = getattr(
+            policy_io.action, "controller_callable_path", None
+        )
+    if not isinstance(activation_id, str) or not activation_id:
+        activation_id = None
+    callable_path = callable_path is True
+    # Make the recovered facts directly available on the restored PolicyIO as
+    # well as on the callable that carried them through runtime restoration.
+    policy_io.controller_activation_id = activation_id
+    policy_io.controller_callable_path = callable_path
+    return activation_id, callable_path
+
+
 def evaluate_research_model(
     model_path: Path,
     *,
@@ -235,6 +261,9 @@ def evaluate_research_model(
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
+    controller_activation_id, controller_callable_path = (
+        _controller_runtime_metadata(runtime)
+    )
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
@@ -503,6 +532,8 @@ def evaluate_research_model(
         # Researcher-owned evidence for distinguishing reach failures from hold
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
+            "controller_activation_id": controller_activation_id,
+            "controller_callable_path": controller_callable_path,
             "episode_diagnostics": episode_diagnostics,
             "model_summary": model_summary,
             "trace_schema": _trace_schema(env),
