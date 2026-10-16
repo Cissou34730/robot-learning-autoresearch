@@ -3853,38 +3853,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is resolved with a limited adverse result for the tested implementation. The fresh T2 full-distribution PPO artifact, produced by changing only the training target-radius range from 14\u201320 cm to 6\u201320 cm while retaining the direct-torque PPO recipe, achieved 59/160 = 36.875% on the new full-range panel, versus 124/160 = 77.5% for T1:checkpoint-120832 on the same seeds; the paired comparison was -65 net wins and -40.625 percentage points. Diagnostics show T2 had 98 non-entry episodes, 59 complete holds, and 3 entered-but-failed-hold episodes, while T1 had 32 non-entries, 124 complete holds, and 4 entered-but-failed-hold episodes. Thus the changed artifact did not materially improve geometry-conditioned entry or uninterrupted completion; it substantially worsened entry, with a smaller hold-interruption signal. T1 remains best-known and neither candidate supports the 98% official assessment.",
-        "reason": "The bounded closure condition is met: T2 was trained over the full 6\u201320 cm distribution for the full allocation and was measured, with T1 as a paired reference, on a non-overlapping full-range panel containing episode outcomes, target geometry, first-entry, longest-hold, interruption, and distance diagnostics. The result is an adverse artifact-level comparison and a recipe-specific negative answer to I3, not proof that radius exposure alone is causal: T2 and T1 are distinct fresh learned artifacts with different seeds and saved components, although the recorded source delta confirms the intended training-range change and preserves the rest of the recipe. T2\u2019s all-zero training success and 500-step training episodes explain why proxies could not nominate it, but development measurement was required to establish the result. The next goal review should retain T1 as best-known, reject full-range exposure-only continuation, and decide whether branch-aware policy/control structure or stabilization-focused work is the more credible route toward 98%; official assessment is premature."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is resolved with a limited adverse result for the tested implementation. The fresh T2 full-distribution PPO artifact, produced by changing only the training target-radius range from 14\u201320 cm to 6\u201320 cm while retaining the direct-torque PPO recipe, achieved 59/160 = 36.875% on the new full-range panel, versus 124/160 = 77.5% for T1:checkpoint-120832 on the same seeds; the paired comparison was -65 net wins and -40.625 percentage points. Diagnostics show T2 had 98 non-entry episodes, 59 complete holds, and 3 entered-but-failed-hold episodes, while T1 had 32 non-entries, 124 complete holds, and 4 entered-but-failed-hold episodes. Thus the changed artifact did not materially improve geometry-conditioned entry or uninterrupted completion; it substantially worsened entry, with a smaller hold-interruption signal. T1 remains best-known and neither candidate supports the 98% official assessment.",
-        "reason": "The bounded closure condition is met: T2 was trained over the full 6\u201320 cm distribution for the full allocation and was measured, with T1 as a paired reference, on a non-overlapping full-range panel containing episode outcomes, target geometry, first-entry, longest-hold, interruption, and distance diagnostics. The result is an adverse artifact-level comparison and a recipe-specific negative answer to I3, not proof that radius exposure alone is causal: T2 and T1 are distinct fresh learned artifacts with different seeds and saved components, although the recorded source delta confirms the intended training-range change and preserves the rest of the recipe. T2\u2019s all-zero training success and 500-step training episodes explain why proxies could not nominate it, but development measurement was required to establish the result. The next goal review should retain T1 as best-known, reject full-range exposure-only continuation, and decide whether branch-aware policy/control structure or stabilization-focused work is the more credible route toward 98%; official assessment is premature.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 is resolved with a limited adverse result for the tested implementation. The fresh T2 full-distribution PPO artifact, produced by changing only the training target-radius range from 14\u201320 cm to 6\u201320 cm while retaining the direct-torque PPO recipe, achieved 59/160 = 36.875% on the new full-range panel, versus 124/160 = 77.5% for T1:checkpoint-120832 on the same seeds; the paired comparison was -65 net wins and -40.625 percentage points. Diagnostics show T2 had 98 non-entry episodes, 59 complete holds, and 3 entered-but-failed-hold episodes, while T1 had 32 non-entries, 124 complete holds, and 4 entered-but-failed-hold episodes. Thus the changed artifact did not materially improve geometry-conditioned entry or uninterrupted completion; it substantially worsened entry, with a smaller hold-interruption signal. T1 remains best-known and neither candidate supports the 98% official assessment.",
-        "reason": "The bounded closure condition is met: T2 was trained over the full 6\u201320 cm distribution for the full allocation and was measured, with T1 as a paired reference, on a non-overlapping full-range panel containing episode outcomes, target geometry, first-entry, longest-hold, interruption, and distance diagnostics. The result is an adverse artifact-level comparison and a recipe-specific negative answer to I3, not proof that radius exposure alone is causal: T2 and T1 are distinct fresh learned artifacts with different seeds and saved components, although the recorded source delta confirms the intended training-range change and preserves the rest of the recipe. T2\u2019s all-zero training success and 500-step training episodes explain why proxies could not nominate it, but development measurement was required to establish the result. The next goal review should retain T1 as best-known, reject full-range exposure-only continuation, and decide whether branch-aware policy/control structure or stabilization-focused work is the more credible route toward 98%; official assessment is premature."
-      }
-    },
-    "request_fingerprint": "7248e5c7b2dc02627bfb00382b76317f51fc50f9529c11edfeaa0bb8b4e9d81b",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M2 paired development evidence and M3 synchronized traces; it is not officially certified. T1:checkpoint-115712 is a measured alternative without a role. No working candidate is assigned. The 22 other T1 checkpoints are unmeasured on the full development panel and share the same 14-20 cm training exposure and direct-torque recipe, so none currently answers I3 better than the measured terminal artifact.",
     "completed_operations": [
