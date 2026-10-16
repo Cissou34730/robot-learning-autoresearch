@@ -143,10 +143,14 @@ unlocking operation submission.
 After the first completed handoff for an assignment, the handler starts an
 independent native `scientific-reviewer` using GPT-6 Luna with high reasoning.
 It receives the original request, supplied task context, actual changed files and diff.
+The review prioritizes coding defects and checks equations, units, physical
+assumptions, timing and measurement meaning in changed code.
+An untested scientific hypothesis is not itself a defect.
 Corrections reuse that native reviewer. They provide the correction
 intent and context, incremental changes and previous completed
 review, without repeating the original request. The result identifies the review
 `mode` as `initial` or `correction` and its `coding_session_handle`.
+Correction reviews cover only the reported problems and errors introduced by the repair.
 
 The reviewer returns exactly four fields:
 
@@ -192,7 +196,8 @@ timeouts return partial changes when available; cancellation preserves review ou
 The `review` entry contains the four-field report and harness metadata:
 status, reviewer handle, actual models/reasoning and per-invocation usage.
 File permissions remain enforced by the existing binding, not by parsing `where`.
-Scientific decisions remain with the PI. Review is not a scientific gate.
+Scientific decisions remain with the PI. Review does not choose scientific
+strategy or approve campaign conclusions.
 The main PI reviews actual changed source and reported limitations before scientific reliance.
 Scientific measurements remain separate PI-authorized operations executed by Runner.
 No coding result certifies scientific validity. Native task lifecycle is
