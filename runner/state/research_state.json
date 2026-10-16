@@ -3429,38 +3429,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited and inconclusive intervention result. M5 resolved the dominant T1 failure pattern on the matched full-radius panel: 7/10 failures were no-entry or interrupted approaches to the open IK branch despite an infeasible or negative-margin shoulder configuration, while 2/10 entered feasible high-margin configurations with large residual velocity and repeated interruptions; one no-entry case had both branches high-margin. The branch-feasibility observation variant T2 did not improve the complete artifact: its selected checkpoint achieved 25/160 = 15.625% versus T1/M5 at 150/160 = 93.75%, with zero training success across T2 checkpoints and 113/160 no-entry episodes. This negative result is a property of the tested fresh PPO implementation, not evidence that branch-aware control is intrinsically ineffective. The branch-versus-stabilization distinction is therefore classified for T1 but the effective remedy remains unresolved; T1 remains best-known and the protected 200-episode objective is unmet.",
-        "reason": "The inquiry closure condition is met by matched mechanism evidence plus a complete-artifact comparison that is negative but scientifically non-diagnostic about the intended branch feature because T2 training collapsed. The result redirects the next decision away from another unvalidated observation-only run: goal review should decide whether to develop an explicitly branch-selecting/trajectory-aware controller while separately controlling residual velocity, or request assessment of T1. Preserve the competing high-margin stabilization failure and the limitation that no braking intervention was tested."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Limited and inconclusive intervention result. M5 resolved the dominant T1 failure pattern on the matched full-radius panel: 7/10 failures were no-entry or interrupted approaches to the open IK branch despite an infeasible or negative-margin shoulder configuration, while 2/10 entered feasible high-margin configurations with large residual velocity and repeated interruptions; one no-entry case had both branches high-margin. The branch-feasibility observation variant T2 did not improve the complete artifact: its selected checkpoint achieved 25/160 = 15.625% versus T1/M5 at 150/160 = 93.75%, with zero training success across T2 checkpoints and 113/160 no-entry episodes. This negative result is a property of the tested fresh PPO implementation, not evidence that branch-aware control is intrinsically ineffective. The branch-versus-stabilization distinction is therefore classified for T1 but the effective remedy remains unresolved; T1 remains best-known and the protected 200-episode objective is unmet.",
-        "reason": "The inquiry closure condition is met by matched mechanism evidence plus a complete-artifact comparison that is negative but scientifically non-diagnostic about the intended branch feature because T2 training collapsed. The result redirects the next decision away from another unvalidated observation-only run: goal review should decide whether to develop an explicitly branch-selecting/trajectory-aware controller while separately controlling residual velocity, or request assessment of T1. Preserve the competing high-margin stabilization failure and the limitation that no braking intervention was tested.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited and inconclusive intervention result. M5 resolved the dominant T1 failure pattern on the matched full-radius panel: 7/10 failures were no-entry or interrupted approaches to the open IK branch despite an infeasible or negative-margin shoulder configuration, while 2/10 entered feasible high-margin configurations with large residual velocity and repeated interruptions; one no-entry case had both branches high-margin. The branch-feasibility observation variant T2 did not improve the complete artifact: its selected checkpoint achieved 25/160 = 15.625% versus T1/M5 at 150/160 = 93.75%, with zero training success across T2 checkpoints and 113/160 no-entry episodes. This negative result is a property of the tested fresh PPO implementation, not evidence that branch-aware control is intrinsically ineffective. The branch-versus-stabilization distinction is therefore classified for T1 but the effective remedy remains unresolved; T1 remains best-known and the protected 200-episode objective is unmet.",
-        "reason": "The inquiry closure condition is met by matched mechanism evidence plus a complete-artifact comparison that is negative but scientifically non-diagnostic about the intended branch feature because T2 training collapsed. The result redirects the next decision away from another unvalidated observation-only run: goal review should decide whether to develop an explicitly branch-selecting/trajectory-aware controller while separately controlling residual velocity, or request assessment of T1. Preserve the competing high-margin stabilization failure and the limitation that no braking intervention was tested."
-      }
-    },
-    "request_fingerprint": "bb89727657865d39ecb65d95dda21e566754bfd2bdf174299c38dc949193c6ab",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence; it is below the development reference and has not been officially assessed. No working candidate and no retained candidates. The terminal checkpoint is not privileged by training position, and no other T1 checkpoint has development evidence that would justify replacing it.",
     "completed_operations": [
