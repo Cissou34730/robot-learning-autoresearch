@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a fresh complete candidate is trained with the stated official-range exposure and compared on a held-out research panel using the same evaluation semantics and episode seeds as the baseline, with radius- and angle-stratified success plus first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance supports continued exposure-focused development; persistent inner no-entry redirects attention to another consequential mechanism; outer regression establishes a coverage/stability tradeoff requiring a different design. Any result remains a recipe-specific artifact comparison, not proof that exposure alone caused the outcome.",
+    "goal_connection": "The current best-known candidate achieves 105/160 = 65.625% on a held-out panel, with 45 of the 51 inner-radius failures being no-entry failures and the outer band at 94.0% success. Improving the official inner-band capability while preserving outer-band complete holds is the most direct available route toward at least 196/200 successes under the protected task distribution.",
+    "handoff_conclusion": "M1 established substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient actuator authority, passive settling, and pure kinematic unreachability as primary explanations, while remaining open-loop evidence rather than policy evidence. T1 trained the unchanged baseline PPO implementation (tanh [64,64], one environment, n_steps 1024, batch 64, gamma .99, GAE .95, learning rate 3e-4) for a requested 120,000 steps and completed 120,832 steps after rollout rounding. Its training proxy rose from zero to a maximum recorded 0.96 at 115,712 and 120,832 steps; those proxies were produced on the 0.14-0.20 m training exposure and did not establish official-distribution behavior. M2 evaluated the pre-terminal tied proxy peak T1:checkpoint-115712 on 160 held-out targets spanning 6-20 cm: 105/160 succeeded (65.625%). The preserved episode diagnostics identify 49/55 failures with max_held_steps=0, hence no tolerance entry, and only 6/55 post-entry failures with max_held_steps 1, 3, 26, 41, or 49. Stratification shows 42/93 successes (45.2%) below 14 cm versus 63/67 (94.0%) at or above 14 cm. Thus the tested outer-band-only baseline learns strong outer behavior but does not generalize reach-and-hold across the official inner band; the evidence supports inner-radius coverage as a consequential artifact difference, not as a proven causal explanation. The six post-entry failures show stabilization/reward/runtime remain real secondary mechanisms. No learned q/qdot/action trace, branch label, internal 2 ms continuity trace, or same-candidate reward-component trace was recorded, so launch, branch, reward alignment, hidden hold state, and inter-sample continuity remain unresolved where they could matter after inner-band performance is addressed. I1 therefore closes with a recipe-specific negative/limited result, not a claim against PPO generally or against any untested intervention.",
+    "handoff_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+    "rationale": "Do not request the protected assessment: the only evidence-backed candidate is 32.375 percentage points below the campaign objective. M2 directly supports inner no-entry as the dominant observed failure class, while T1's trajectory shows strong learning on the outer-only training exposure but does not establish official-distribution performance or a causal mechanism. A fresh full-allocation PPO run with only target exposure changed is therefore preferable to another unresolved diagnostic or an assessment: it tests the highest-consequence candidate-level distinction at bounded cost, retains the demonstrated outer hold behavior as a required safeguard, and leaves reward, launch, branch, stabilization, and continuity explanations unresolved if exposure does not remove the inner deficit.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "ca8153b246c4a9a04245096a0939cb5915e547fb",
     "id": "e0acf639-be47-4a77-bbc5-fa33eb706033",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 6,
-    "inquiry": 1,
+    "event": 7,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1643,9 +1654,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T10:09:46Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a fresh complete candidate is trained with the stated official-range exposure and compared on a held-out research panel using the same evaluation semantics and episode seeds as the baseline, with radius- and angle-stratified success plus first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance supports continued exposure-focused development; persistent inner no-entry redirects attention to another consequential mechanism; outer regression establishes a coverage/stability tradeoff requiring a different design. Any result remains a recipe-specific artifact comparison, not proof that exposure alone caused the outcome.",
+        "goal_connection": "The current best-known candidate achieves 105/160 = 65.625% on a held-out panel, with 45 of the 51 inner-radius failures being no-entry failures and the outer band at 94.0% success. Improving the official inner-band capability while preserving outer-band complete holds is the most direct available route toward at least 196/200 successes under the protected task distribution.",
+        "question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+        "rationale": "Do not request the protected assessment: the only evidence-backed candidate is 32.375 percentage points below the campaign objective. M2 directly supports inner no-entry as the dominant observed failure class, while T1's trajectory shows strong learning on the outer-only training exposure but does not establish official-distribution performance or a causal mechanism. A fresh full-allocation PPO run with only target exposure changed is therefore preferable to another unresolved diagnostic or an assessment: it tests the highest-consequence candidate-level distinction at bounded cost, retains the demonstrated outer hold behavior as a required safeguard, and leaves reward, launch, branch, stabilization, and continuity explanations unresolved if exposure does not remove the inner deficit."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a fresh complete candidate is trained with the stated official-range exposure and compared on a held-out research panel using the same evaluation semantics and episode seeds as the baseline, with radius- and angle-stratified success plus first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance supports continued exposure-focused development; persistent inner no-entry redirects attention to another consequential mechanism; outer regression establishes a coverage/stability tradeoff requiring a different design. Any result remains a recipe-specific artifact comparison, not proof that exposure alone caused the outcome.",
+          "goal_connection": "The current best-known candidate achieves 105/160 = 65.625% on a held-out panel, with 45 of the 51 inner-radius failures being no-entry failures and the outer band at 94.0% success. Improving the official inner-band capability while preserving outer-band complete holds is the most direct available route toward at least 196/200 successes under the protected task distribution.",
+          "handoff_conclusion": "M1 established substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient actuator authority, passive settling, and pure kinematic unreachability as primary explanations, while remaining open-loop evidence rather than policy evidence. T1 trained the unchanged baseline PPO implementation (tanh [64,64], one environment, n_steps 1024, batch 64, gamma .99, GAE .95, learning rate 3e-4) for a requested 120,000 steps and completed 120,832 steps after rollout rounding. Its training proxy rose from zero to a maximum recorded 0.96 at 115,712 and 120,832 steps; those proxies were produced on the 0.14-0.20 m training exposure and did not establish official-distribution behavior. M2 evaluated the pre-terminal tied proxy peak T1:checkpoint-115712 on 160 held-out targets spanning 6-20 cm: 105/160 succeeded (65.625%). The preserved episode diagnostics identify 49/55 failures with max_held_steps=0, hence no tolerance entry, and only 6/55 post-entry failures with max_held_steps 1, 3, 26, 41, or 49. Stratification shows 42/93 successes (45.2%) below 14 cm versus 63/67 (94.0%) at or above 14 cm. Thus the tested outer-band-only baseline learns strong outer behavior but does not generalize reach-and-hold across the official inner band; the evidence supports inner-radius coverage as a consequential artifact difference, not as a proven causal explanation. The six post-entry failures show stabilization/reward/runtime remain real secondary mechanisms. No learned q/qdot/action trace, branch label, internal 2 ms continuity trace, or same-candidate reward-component trace was recorded, so launch, branch, reward alignment, hidden hold state, and inter-sample continuity remain unresolved where they could matter after inner-band performance is addressed. I1 therefore closes with a recipe-specific negative/limited result, not a claim against PPO generally or against any untested intervention.",
+          "handoff_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+          "rationale": "Do not request the protected assessment: the only evidence-backed candidate is 32.375 percentage points below the campaign objective. M2 directly supports inner no-entry as the dominant observed failure class, while T1's trajectory shows strong learning on the outer-only training exposure but does not establish official-distribution performance or a causal mechanism. A fresh full-allocation PPO run with only target exposure changed is therefore preferable to another unresolved diagnostic or an assessment: it tests the highest-consequence candidate-level distinction at bounded cost, retains the demonstrated outer hold behavior as a required safeguard, and leaves reward, launch, branch, stabilization, and continuity explanations unresolved if exposure does not remove the inner deficit.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a fresh complete candidate is trained with the stated official-range exposure and compared on a held-out research panel using the same evaluation semantics and episode seeds as the baseline, with radius- and angle-stratified success plus first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance supports continued exposure-focused development; persistent inner no-entry redirects attention to another consequential mechanism; outer regression establishes a coverage/stability tradeoff requiring a different design. Any result remains a recipe-specific artifact comparison, not proof that exposure alone caused the outcome.",
+        "goal_connection": "The current best-known candidate achieves 105/160 = 65.625% on a held-out panel, with 45 of the 51 inner-radius failures being no-entry failures and the outer band at 94.0% success. Improving the official inner-band capability while preserving outer-band complete holds is the most direct available route toward at least 196/200 successes under the protected task distribution.",
+        "question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+        "rationale": "Do not request the protected assessment: the only evidence-backed candidate is 32.375 percentage points below the campaign objective. M2 directly supports inner no-entry as the dominant observed failure class, while T1's trajectory shows strong learning on the outer-only training exposure but does not establish official-distribution performance or a causal mechanism. A fresh full-allocation PPO run with only target exposure changed is therefore preferable to another unresolved diagnostic or an assessment: it tests the highest-consequence candidate-level distinction at bounded cost, retains the demonstrated outer hold behavior as a required safeguard, and leaves reward, launch, branch, stabilization, and continuity explanations unresolved if exposure does not remove the inner deficit."
+      }
+    },
+    "request_fingerprint": "5c9c0c73168c019ed20e0ea3071ca92f6eb8e3f5ad44ec594143a98e1b709d73",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, explicitly assigned from M2 because it is the only candidate with completed held-out official-distribution evidence. It is not goal-qualified: 65.625% development success is far below 98%. Working: none. Retained: none.",
     "completed_operations": [
@@ -1678,6 +1752,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e3d79aad-9c44-420d-8a82-fcd6d97731a0",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "237629cc03be3a8674b8095401b13b7541eaae8d"
+  },
   "terminal_state": null
 }
