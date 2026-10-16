@@ -7890,38 +7890,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
-        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
-        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E29",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M8 resolved the bounded mechanism distinction for the tested complete artifacts. On the same fresh 200-episode panel, T4 achieved 1/200 and T1 achieved 154/200. T4 had 167/200 episodes with no first entry and 33/200 with an entry; among the 33 entrants, only one completed the 100-step hold and 32 failed through interrupted or incomplete holds. T1 had 37/200 non-entries and 154/200 complete holds. T4 non-entry cases occurred across the sampled radius and angular range, including targets near the reachable boundary, while representative T4 traces show branch/phase transitions and saturated, high-speed approach behavior without contact or joint-limit proximity. The evidence therefore supports a bounded positive distinction: this tested T4 controller/training artifact is primarily approach/branch-coverage or controller-trainability limited, with a secondary braking/hold-stability failure among entrants. It does not prove branch-aware control, explicit braking, or all representations untrainable. The human goal remains unmet; T1 remains best-known at 154/200 on this panel and is 42 successes short of the 196/200 threshold.",
-        "reason": "The completed non-overlapping M8 trace evaluation supplied synchronized first-entry, phase/branch, state/speed, distance, hold-interruption, geometry, and outcome data for both complete artifacts. The resulting entry-versus-hold counts are discriminating enough to redirect the next route away from further uninstrumented T4 tuning and toward a controller/representation redesign that preserves approach coverage while separately addressing hold stabilization."
-      }
-    },
-    "request_fingerprint": "e32c43d46a1ba32c5a6e6b61a733edaedc7e7728c6c8713486ea2cc67e76bafd",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known because M5 measured 147/200 on the protected task-reference-v1 panel, supported by M3 and M6; this is evidence-backed selection, not goal certification. T3:checkpoint-105472 has no role because its 195/200 fresh-panel result is contradicted by 33/200 on protected M5. T4:checkpoint-75776 has no role because M7 measured 0/200 protected successes. No candidate is working or retained, and no candidate supports official assessment.",
     "completed_operations": [
