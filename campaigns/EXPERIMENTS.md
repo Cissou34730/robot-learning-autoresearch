@@ -21,3 +21,4 @@
 | E11 | checkpoint | I2 | checkpointed |
 | E12 | inquiry | I3 | completed |
 | E13 | checkpoint | - | checkpointed |
+| T3 | training | I3 | completed |
