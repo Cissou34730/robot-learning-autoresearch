@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry once a synchronized full-panel trace of the best-known artifact has been inspected for failed and matched successful episodes, including qpos/qvel, actions, finite-time distance/hold behavior, joint-limit margins, and contact outcomes. A concentrated diagnostic signature may support a physical redirect; ordinary reachable trajectories without limit/contact signatures may support full-distribution method development; mixed or ambiguous signatures may yield a limited conclusion while preserving the unresolved cause.",
+    "goal_connection": "The best-known policy is 68.75% on the full 6-20 cm development distribution, far below the 98% objective. Distinguishing a physical trajectory constraint from a coverage-sensitive policy failure determines whether the next bounded effort should redesign training exposure/control learning or redirect toward branch-aware and stabilization mechanisms.",
+    "handoff_conclusion": "M1 established only candidate-independent reset-origin facts: the compiled MuJoCo model has finite saturated-torque authority, well-conditioned reset inertia, and no contacts on six constant-control and four symmetric bang-bang reset trials, but one reversal did not settle the motion. T1 trained a fresh PPO direct-torque recipe with normalized 11-component state/geometry observations, tanh 64-64 policy, the current reward, 50 Hz zero-order-held actions, and a 14-20 cm training-radius range; its training proxy rose to 0.96 at both 115712 and 120832 steps, but this was not task evidence. M2 paired those complete artifacts on the same 160 full-distribution episodes: T1:checkpoint-115712 succeeded 105/160 (65.625%), while T1:checkpoint-120832 succeeded 110/160 (68.75%) and won 9 versus 4 discordant episodes. For the best-known artifact, 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold, with max-held values 1, 5, 7, 49, or 57; successful episodes generally entered and held in roughly 5-34 control steps. The non-entry failures are concentrated in many 6-13 cm cases and include a smaller approximately -130 to -150 degree sector at larger radii, while hold failures occur at several low-radius angles. These observations support a recipe/distribution mismatch and/or branch-sensitive physical edge case, but do not establish either: M2 has no state/action/contact/limit diagnostics, and candidate differences remain artifact-level comparisons. Thus the tested recipe is decisively below goal, while the broader PPO or direct-torque method is not disproved.",
+    "handoff_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+    "rationale": "The complete M2 artifact shows two distinct non-entry patterns: catastrophic off-target failures near 6-11 cm and approximately -130 to -150 degrees, and near-threshold low-radius failures, plus a smaller hold-interruption class. Existing geometry summaries cannot distinguish policy branch/coverage error from finite-time dynamics or limit interactions. The source model now establishes that self-contact cannot be a consequential alternative under the protected collision masks and parent filtering, so the diagnostic should not spend scientific scope treating it as a live cause.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "2b6f9afdce853d1c7fa12e88b47adddf98fbe0ff",
     "id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
@@ -830,16 +841,16 @@
     }
   },
   "counters": {
-    "event": 6,
-    "inquiry": 1,
+    "event": 7,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1993,9 +2004,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T19:48:51Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry once a synchronized full-panel trace of the best-known artifact has been inspected for failed and matched successful episodes, including qpos/qvel, actions, finite-time distance/hold behavior, joint-limit margins, and contact outcomes. A concentrated diagnostic signature may support a physical redirect; ordinary reachable trajectories without limit/contact signatures may support full-distribution method development; mixed or ambiguous signatures may yield a limited conclusion while preserving the unresolved cause.",
+        "goal_connection": "The best-known policy is 68.75% on the full 6-20 cm development distribution, far below the 98% objective. Distinguishing a physical trajectory constraint from a coverage-sensitive policy failure determines whether the next bounded effort should redesign training exposure/control learning or redirect toward branch-aware and stabilization mechanisms.",
+        "question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+        "rationale": "The complete M2 artifact shows two distinct non-entry patterns: catastrophic off-target failures near 6-11 cm and approximately -130 to -150 degrees, and near-threshold low-radius failures, plus a smaller hold-interruption class. Existing geometry summaries cannot distinguish policy branch/coverage error from finite-time dynamics or limit interactions. The source model now establishes that self-contact cannot be a consequential alternative under the protected collision masks and parent filtering, so the diagnostic should not spend scientific scope treating it as a live cause."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry once a synchronized full-panel trace of the best-known artifact has been inspected for failed and matched successful episodes, including qpos/qvel, actions, finite-time distance/hold behavior, joint-limit margins, and contact outcomes. A concentrated diagnostic signature may support a physical redirect; ordinary reachable trajectories without limit/contact signatures may support full-distribution method development; mixed or ambiguous signatures may yield a limited conclusion while preserving the unresolved cause.",
+          "goal_connection": "The best-known policy is 68.75% on the full 6-20 cm development distribution, far below the 98% objective. Distinguishing a physical trajectory constraint from a coverage-sensitive policy failure determines whether the next bounded effort should redesign training exposure/control learning or redirect toward branch-aware and stabilization mechanisms.",
+          "handoff_conclusion": "M1 established only candidate-independent reset-origin facts: the compiled MuJoCo model has finite saturated-torque authority, well-conditioned reset inertia, and no contacts on six constant-control and four symmetric bang-bang reset trials, but one reversal did not settle the motion. T1 trained a fresh PPO direct-torque recipe with normalized 11-component state/geometry observations, tanh 64-64 policy, the current reward, 50 Hz zero-order-held actions, and a 14-20 cm training-radius range; its training proxy rose to 0.96 at both 115712 and 120832 steps, but this was not task evidence. M2 paired those complete artifacts on the same 160 full-distribution episodes: T1:checkpoint-115712 succeeded 105/160 (65.625%), while T1:checkpoint-120832 succeeded 110/160 (68.75%) and won 9 versus 4 discordant episodes. For the best-known artifact, 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold, with max-held values 1, 5, 7, 49, or 57; successful episodes generally entered and held in roughly 5-34 control steps. The non-entry failures are concentrated in many 6-13 cm cases and include a smaller approximately -130 to -150 degree sector at larger radii, while hold failures occur at several low-radius angles. These observations support a recipe/distribution mismatch and/or branch-sensitive physical edge case, but do not establish either: M2 has no state/action/contact/limit diagnostics, and candidate differences remain artifact-level comparisons. Thus the tested recipe is decisively below goal, while the broader PPO or direct-torque method is not disproved.",
+          "handoff_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+          "rationale": "The complete M2 artifact shows two distinct non-entry patterns: catastrophic off-target failures near 6-11 cm and approximately -130 to -150 degrees, and near-threshold low-radius failures, plus a smaller hold-interruption class. Existing geometry summaries cannot distinguish policy branch/coverage error from finite-time dynamics or limit interactions. The source model now establishes that self-contact cannot be a consequential alternative under the protected collision masks and parent filtering, so the diagnostic should not spend scientific scope treating it as a live cause.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry once a synchronized full-panel trace of the best-known artifact has been inspected for failed and matched successful episodes, including qpos/qvel, actions, finite-time distance/hold behavior, joint-limit margins, and contact outcomes. A concentrated diagnostic signature may support a physical redirect; ordinary reachable trajectories without limit/contact signatures may support full-distribution method development; mixed or ambiguous signatures may yield a limited conclusion while preserving the unresolved cause.",
+        "goal_connection": "The best-known policy is 68.75% on the full 6-20 cm development distribution, far below the 98% objective. Distinguishing a physical trajectory constraint from a coverage-sensitive policy failure determines whether the next bounded effort should redesign training exposure/control learning or redirect toward branch-aware and stabilization mechanisms.",
+        "question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+        "rationale": "The complete M2 artifact shows two distinct non-entry patterns: catastrophic off-target failures near 6-11 cm and approximately -130 to -150 degrees, and near-threshold low-radius failures, plus a smaller hold-interruption class. Existing geometry summaries cannot distinguish policy branch/coverage error from finite-time dynamics or limit interactions. The source model now establishes that self-contact cannot be a consequential alternative under the protected collision masks and parent filtering, so the diagnostic should not spend scientific scope treating it as a live cause."
+      }
+    },
+    "request_fingerprint": "21bbe2d1f751ec33919b34da4c5e7417a5ed586ebae0fd6f1360a823c6f684e8",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 from the paired M2 evaluation. T1:checkpoint-115712 is a measured alternative but not assigned a role. No working candidate or retained candidate is assigned. The best-known role is not a claim of goal attainment or official eligibility.",
     "completed_operations": [
@@ -2028,6 +2102,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "65bc64b9-cfc3-4850-bd83-7e666b02aa50",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "8ae98f8690b66f2c6611abcd5b918db43d6f4497"
+  },
   "terminal_state": null
 }
