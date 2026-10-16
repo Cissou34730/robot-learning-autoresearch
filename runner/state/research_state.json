@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a completed candidate comparison or diagnostic evaluation over the full official radial interval provides episode success plus radius- and branch-stratified first reach, maximum uninterrupted in-tolerance run, interruptions, endpoint velocity, action saturation or magnitude, and joint-limit margins. High hold success with low-energy, non-limit-adjacent traces supports continuing the existing memoryless PPO/runtime route toward assessment; persistent hold interruptions, oscillation, saturation, branch-specific failures, or limit contact redirects the method toward stabilization-aware control or policy-memory changes. An inconclusive result is also sufficient to close if the completed artifact lacks the discriminating diagnostics, with that limitation carried into goal review.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s, 1 cm hold over radii 0.06-0.20 m and all angles. This inquiry directly tests whether a learned policy can meet that requirement without relying on the omitted inner-radius generalization or on limit-adjacent, saturated behavior.",
+    "handoff_conclusion": "Observed evidence from completed operation M1: the loaded authoritative model has 0.09896 kg and 0.05248 kg moving bodies, 0.01 kg m^2 armature per DOF, 0.5 N m s/rad damping, 5 N m actuator generalized-force authority at command saturation, and a 0.020 s control interval. Five deterministic zero-state protocols reached peak joint velocities of about 10.0-10.18 rad/s and peak accelerations up to 1054.7 rad/s^2. Constant saturated commands produced negative recorded joint-limit margins down to about -0.079 rad, while the 1 s pulse reached a post-command velocity threshold by sample 54 (1.08 s) but remained at the shoulder limit thereafter. These observations support the interpretation that the arm is not simply torque-starved, but that aggressive action can create overshoot and constraint/limit-adjacent behavior that is incompatible with treating first reach or instantaneous low velocity as a stable target hold. The competing explanation remains that a learned policy may avoid this regime through small corrective actions; M1 did not test target regulation, IK branch coverage, the official radius distribution, or a learned runtime, so it does not establish policy failure or official performance. The scientific direction is therefore to develop and measure a policy whose behavior is stable and low-energy across the full official radius range, while diagnosing branch and hold interruptions rather than optimizing a reach proxy.",
+    "handoff_question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+    "rationale": "The strongest candidate has not been created, so requesting the terminal official assessment would have no explicit best-known policy and no evidence of the 98% objective. M1 is useful system evidence but was an open-loop, no-target probe from reset; its saturated traces show rapid motion and limit-adjacent behavior, not a causal failure of learned regulation. The existing implementation is a memoryless PPO policy with observation normalization and a runtime over a training environment restricted to radii 0.14-0.20 m, while the official distribution is 0.06-0.20 m. A bounded full-exposure training and complete behavioral diagnostic is therefore the highest-value next decision: success with sustained low action and margin would justify continuing this route, whereas near-target interruptions or branch/limit failures would justify a stabilization-aware change. Claims will remain limited to the tested recipe and runtime, and unresolved evaluator or mechanism differences will be preserved rather than treated as settled.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "2d350536306393011cacc2499596d67d27c45f90",
     "id": "366d41cb-aeb7-4a5c-bbb0-5216fbc99e43",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -348,9 +359,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T07:44:10Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a completed candidate comparison or diagnostic evaluation over the full official radial interval provides episode success plus radius- and branch-stratified first reach, maximum uninterrupted in-tolerance run, interruptions, endpoint velocity, action saturation or magnitude, and joint-limit margins. High hold success with low-energy, non-limit-adjacent traces supports continuing the existing memoryless PPO/runtime route toward assessment; persistent hold interruptions, oscillation, saturation, branch-specific failures, or limit contact redirects the method toward stabilization-aware control or policy-memory changes. An inconclusive result is also sufficient to close if the completed artifact lacks the discriminating diagnostics, with that limitation carried into goal review.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s, 1 cm hold over radii 0.06-0.20 m and all angles. This inquiry directly tests whether a learned policy can meet that requirement without relying on the omitted inner-radius generalization or on limit-adjacent, saturated behavior.",
+        "question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+        "rationale": "The strongest candidate has not been created, so requesting the terminal official assessment would have no explicit best-known policy and no evidence of the 98% objective. M1 is useful system evidence but was an open-loop, no-target probe from reset; its saturated traces show rapid motion and limit-adjacent behavior, not a causal failure of learned regulation. The existing implementation is a memoryless PPO policy with observation normalization and a runtime over a training environment restricted to radii 0.14-0.20 m, while the official distribution is 0.06-0.20 m. A bounded full-exposure training and complete behavioral diagnostic is therefore the highest-value next decision: success with sustained low action and margin would justify continuing this route, whereas near-target interruptions or branch/limit failures would justify a stabilization-aware change. Claims will remain limited to the tested recipe and runtime, and unresolved evaluator or mechanism differences will be preserved rather than treated as settled."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a completed candidate comparison or diagnostic evaluation over the full official radial interval provides episode success plus radius- and branch-stratified first reach, maximum uninterrupted in-tolerance run, interruptions, endpoint velocity, action saturation or magnitude, and joint-limit margins. High hold success with low-energy, non-limit-adjacent traces supports continuing the existing memoryless PPO/runtime route toward assessment; persistent hold interruptions, oscillation, saturation, branch-specific failures, or limit contact redirects the method toward stabilization-aware control or policy-memory changes. An inconclusive result is also sufficient to close if the completed artifact lacks the discriminating diagnostics, with that limitation carried into goal review.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s, 1 cm hold over radii 0.06-0.20 m and all angles. This inquiry directly tests whether a learned policy can meet that requirement without relying on the omitted inner-radius generalization or on limit-adjacent, saturated behavior.",
+          "handoff_conclusion": "Observed evidence from completed operation M1: the loaded authoritative model has 0.09896 kg and 0.05248 kg moving bodies, 0.01 kg m^2 armature per DOF, 0.5 N m s/rad damping, 5 N m actuator generalized-force authority at command saturation, and a 0.020 s control interval. Five deterministic zero-state protocols reached peak joint velocities of about 10.0-10.18 rad/s and peak accelerations up to 1054.7 rad/s^2. Constant saturated commands produced negative recorded joint-limit margins down to about -0.079 rad, while the 1 s pulse reached a post-command velocity threshold by sample 54 (1.08 s) but remained at the shoulder limit thereafter. These observations support the interpretation that the arm is not simply torque-starved, but that aggressive action can create overshoot and constraint/limit-adjacent behavior that is incompatible with treating first reach or instantaneous low velocity as a stable target hold. The competing explanation remains that a learned policy may avoid this regime through small corrective actions; M1 did not test target regulation, IK branch coverage, the official radius distribution, or a learned runtime, so it does not establish policy failure or official performance. The scientific direction is therefore to develop and measure a policy whose behavior is stable and low-energy across the full official radius range, while diagnosing branch and hold interruptions rather than optimizing a reach proxy.",
+          "handoff_question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+          "rationale": "The strongest candidate has not been created, so requesting the terminal official assessment would have no explicit best-known policy and no evidence of the 98% objective. M1 is useful system evidence but was an open-loop, no-target probe from reset; its saturated traces show rapid motion and limit-adjacent behavior, not a causal failure of learned regulation. The existing implementation is a memoryless PPO policy with observation normalization and a runtime over a training environment restricted to radii 0.14-0.20 m, while the official distribution is 0.06-0.20 m. A bounded full-exposure training and complete behavioral diagnostic is therefore the highest-value next decision: success with sustained low action and margin would justify continuing this route, whereas near-target interruptions or branch/limit failures would justify a stabilization-aware change. Claims will remain limited to the tested recipe and runtime, and unresolved evaluator or mechanism differences will be preserved rather than treated as settled.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a completed candidate comparison or diagnostic evaluation over the full official radial interval provides episode success plus radius- and branch-stratified first reach, maximum uninterrupted in-tolerance run, interruptions, endpoint velocity, action saturation or magnitude, and joint-limit margins. High hold success with low-energy, non-limit-adjacent traces supports continuing the existing memoryless PPO/runtime route toward assessment; persistent hold interruptions, oscillation, saturation, branch-specific failures, or limit contact redirects the method toward stabilization-aware control or policy-memory changes. An inconclusive result is also sufficient to close if the completed artifact lacks the discriminating diagnostics, with that limitation carried into goal review.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 s, 1 cm hold over radii 0.06-0.20 m and all angles. This inquiry directly tests whether a learned policy can meet that requirement without relying on the omitted inner-radius generalization or on limit-adjacent, saturated behavior.",
+        "question": "Can a learned policy trained with full official radial exposure and the existing observation/runtime learn robust low-energy regulation and the complete uninterrupted hold across both IK branches, or does the hold failure pattern require a stabilization-aware method change?",
+        "rationale": "The strongest candidate has not been created, so requesting the terminal official assessment would have no explicit best-known policy and no evidence of the 98% objective. M1 is useful system evidence but was an open-loop, no-target probe from reset; its saturated traces show rapid motion and limit-adjacent behavior, not a causal failure of learned regulation. The existing implementation is a memoryless PPO policy with observation normalization and a runtime over a training environment restricted to radii 0.14-0.20 m, while the official distribution is 0.06-0.20 m. A bounded full-exposure training and complete behavioral diagnostic is therefore the highest-value next decision: success with sustained low action and margin would justify continuing this route, whereas near-target interruptions or branch/limit failures would justify a stabilization-aware change. Claims will remain limited to the tested recipe and runtime, and unresolved evaluator or mechanism differences will be preserved rather than treated as settled."
+      }
+    },
+    "request_fingerprint": "5853e9f161ec60bae7f96e6a714a510a2c548d1c11a199f5c6618aa05b73a5c1",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty. M1 is a system-dynamics measurement, not a candidate or performance claim.",
     "completed_operations": [
@@ -376,6 +450,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a2378b5d-42c5-4649-9923-9c84e9734d3d",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "ee383e89aa68ee36e301c3ca0feab8562423e3b9"
+  },
   "terminal_state": null
 }
