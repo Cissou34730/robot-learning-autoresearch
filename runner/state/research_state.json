@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a fresh complete candidate is trained with the stated official-range exposure and compared on a held-out research panel using the same evaluation semantics and episode seeds as the baseline, with radius- and angle-stratified success plus first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance supports continued exposure-focused development; persistent inner no-entry redirects attention to another consequential mechanism; outer regression establishes a coverage/stability tradeoff requiring a different design. Any result remains a recipe-specific artifact comparison, not proof that exposure alone caused the outcome.",
     "goal_connection": "The current best-known candidate achieves 105/160 = 65.625% on a held-out panel, with 45 of the 51 inner-radius failures being no-entry failures and the outer band at 94.0% success. Improving the official inner-band capability while preserving outer-band complete holds is the most direct available route toward at least 196/200 successes under the protected task distribution.",
-    "handoff_conclusion": "M1 established substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient actuator authority, passive settling, and pure kinematic unreachability as primary explanations, while remaining open-loop evidence rather than policy evidence. T1 trained the unchanged baseline PPO implementation (tanh [64,64], one environment, n_steps 1024, batch 64, gamma .99, GAE .95, learning rate 3e-4) for a requested 120,000 steps and completed 120,832 steps after rollout rounding. Its training proxy rose from zero to a maximum recorded 0.96 at 115,712 and 120,832 steps; those proxies were produced on the 0.14-0.20 m training exposure and did not establish official-distribution behavior. M2 evaluated the pre-terminal tied proxy peak T1:checkpoint-115712 on 160 held-out targets spanning 6-20 cm: 105/160 succeeded (65.625%). The preserved episode diagnostics identify 49/55 failures with max_held_steps=0, hence no tolerance entry, and only 6/55 post-entry failures with max_held_steps 1, 3, 26, 41, or 49. Stratification shows 42/93 successes (45.2%) below 14 cm versus 63/67 (94.0%) at or above 14 cm. Thus the tested outer-band-only baseline learns strong outer behavior but does not generalize reach-and-hold across the official inner band; the evidence supports inner-radius coverage as a consequential artifact difference, not as a proven causal explanation. The six post-entry failures show stabilization/reward/runtime remain real secondary mechanisms. No learned q/qdot/action trace, branch label, internal 2 ms continuity trace, or same-candidate reward-component trace was recorded, so launch, branch, reward alignment, hidden hold state, and inter-sample continuity remain unresolved where they could matter after inner-band performance is addressed. I1 therefore closes with a recipe-specific negative/limited result, not a claim against PPO generally or against any untested intervention.",
+    "handoff_conclusion": "M1 showed substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient authority, passive settling, and pure kinematic unreachability as primary explanations, but those measurements were open-loop rather than policy evidence. T1 trained the unchanged baseline PPO for 120,832 completed steps on the 0.14-0.20 m exposure; its training proxy rose to 0.96-0.97 near the end and then fluctuated, demonstrating learning on that exposure but not official-distribution competence. M2 evaluated the pre-terminal proxy peak T1:checkpoint-115712 on 160 held-out official-range targets: 105/160 succeeded. Of 55 failures, 49 never entered tolerance; the inner band had 51 failures, 45 of them no-entry, while only six failures entered and then lost the uninterrupted hold. I therefore revise the inherited wording from a broad claim that inner-radius coverage is causal to the narrower conclusion that inner no-entry is the dominant observed artifact difference and a high-value candidate-selection target; exposure alone remains unproven. The proposed intervention is not a claim against PPO generally and does not resolve launch, branch, reward alignment, hidden hold state, or inter-sample continuity.",
     "handoff_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 2,
     "session": 4,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1677,21 +1677,148 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T10:10:19Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "M1: one python_module dynamics measurement using 16 deterministic target seeds, four isolated saturated probes per seed, 21 control frames per probe, ten MuJoCo integration steps per frame, 13,440 integration steps plus compiled-model inspection. T1: one fresh baseline PPO run, requested 120,000 and completed 120,832 steps, with 24 archived checkpoints and a preserved learning log. M2: one 160-episode held-out research evaluation using seeds 4200-4359; no protected assessment episodes. E4: one best-known role assignment. E5: one inquiry closure. E7: opened I2. No source or dependency changes.",
+        "current_goal_gap": "T1:checkpoint-115712 achieved 105/160 = 65.625% on the held-out official-radius research panel, 32.375 percentage points below the 98% objective. It achieved 42/93 successes below 14 cm and 63/67 at or above 14 cm; no candidate is goal-qualified and no protected assessment has been requested.",
+        "current_synthesis": "M1 showed substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient authority, passive settling, and pure kinematic unreachability as primary explanations, but those measurements were open-loop rather than policy evidence. T1 trained the unchanged baseline PPO for 120,832 completed steps on the 0.14-0.20 m exposure; its training proxy rose to 0.96-0.97 near the end and then fluctuated, demonstrating learning on that exposure but not official-distribution competence. M2 evaluated the pre-terminal proxy peak T1:checkpoint-115712 on 160 held-out official-range targets: 105/160 succeeded. Of 55 failures, 49 never entered tolerance; the inner band had 51 failures, 45 of them no-entry, while only six failures entered and then lost the uninterrupted hold. I therefore revise the inherited wording from a broad claim that inner-radius coverage is causal to the narrower conclusion that inner no-entry is the dominant observed artifact difference and a high-value candidate-selection target; exposure alone remains unproven. The proposed intervention is not a claim against PPO generally and does not resolve launch, branch, reward alignment, hidden hold state, or inter-sample continuity.",
+        "decision_frontier": "The consequential distinction is whether a fresh PPO artifact trained with official inner-and-outer target exposure, while baseline reward, observation/runtime, control semantics, and PPO hyperparameters remain fixed, improves inner-band no-entry and preserves the demonstrated outer-band uninterrupted holds. A same-seed held-out comparison with radius/angle-stratified success, first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation will discriminate candidate improvement from outer-band regression. Inner improvement with preserved outer performance supports continued exposure-focused development at the artifact-comparison level; persistent inner no-entry redirects attention to launch/branch/control or reward/runtime alignment; outer regression reveals a coverage/stability tradeoff. These outcomes will not by themselves establish exposure as the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "Advance toward a learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-control-step hold. The current candidate is not close enough for assessment, so the next bounded work tests the largest observed deficit: inner-radius reach and hold.",
+        "next_direction_or_closure": "Open inquiry I2 and proceed with one bounded exposure-controlled fresh PPO candidate, followed by a same-panel held-out research evaluation using the diagnostics stated in the closure condition. Do not request official assessment now because the evidence-backed candidate is at 65.625%, far below 98%, and no untested variant or unresolved mechanism justifies assessment.",
+        "next_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "237629cc03be3a8674b8095401b13b7541eaae8d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "M1: one python_module dynamics measurement using 16 deterministic target seeds, four isolated saturated probes per seed, 21 control frames per probe, ten MuJoCo integration steps per frame, 13,440 integration steps plus compiled-model inspection. T1: one fresh baseline PPO run, requested 120,000 and completed 120,832 steps, with 24 archived checkpoints and a preserved learning log. M2: one 160-episode held-out research evaluation using seeds 4200-4359; no protected assessment episodes. E4: one best-known role assignment. E5: one inquiry closure. E7: opened I2. No source or dependency changes.",
+        "current_goal_gap": "T1:checkpoint-115712 achieved 105/160 = 65.625% on the held-out official-radius research panel, 32.375 percentage points below the 98% objective. It achieved 42/93 successes below 14 cm and 63/67 at or above 14 cm; no candidate is goal-qualified and no protected assessment has been requested.",
+        "current_synthesis": "M1 showed substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient authority, passive settling, and pure kinematic unreachability as primary explanations, but those measurements were open-loop rather than policy evidence. T1 trained the unchanged baseline PPO for 120,832 completed steps on the 0.14-0.20 m exposure; its training proxy rose to 0.96-0.97 near the end and then fluctuated, demonstrating learning on that exposure but not official-distribution competence. M2 evaluated the pre-terminal proxy peak T1:checkpoint-115712 on 160 held-out official-range targets: 105/160 succeeded. Of 55 failures, 49 never entered tolerance; the inner band had 51 failures, 45 of them no-entry, while only six failures entered and then lost the uninterrupted hold. I therefore revise the inherited wording from a broad claim that inner-radius coverage is causal to the narrower conclusion that inner no-entry is the dominant observed artifact difference and a high-value candidate-selection target; exposure alone remains unproven. The proposed intervention is not a claim against PPO generally and does not resolve launch, branch, reward alignment, hidden hold state, or inter-sample continuity.",
+        "decision_frontier": "The consequential distinction is whether a fresh PPO artifact trained with official inner-and-outer target exposure, while baseline reward, observation/runtime, control semantics, and PPO hyperparameters remain fixed, improves inner-band no-entry and preserves the demonstrated outer-band uninterrupted holds. A same-seed held-out comparison with radius/angle-stratified success, first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation will discriminate candidate improvement from outer-band regression. Inner improvement with preserved outer performance supports continued exposure-focused development at the artifact-comparison level; persistent inner no-entry redirects attention to launch/branch/control or reward/runtime alignment; outer regression reveals a coverage/stability tradeoff. These outcomes will not by themselves establish exposure as the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "Advance toward a learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-control-step hold. The current candidate is not close enough for assessment, so the next bounded work tests the largest observed deficit: inner-radius reach and hold.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Open inquiry I2 and proceed with one bounded exposure-controlled fresh PPO candidate, followed by a same-panel held-out research evaluation using the diagnostics stated in the closure condition. Do not request official assessment now because the evidence-backed candidate is at 65.625%, far below 98%, and no untested variant or unresolved mechanism justifies assessment.",
+        "next_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "e3d79aad-9c44-420d-8a82-fcd6d97731a0",
+        "campaign_id": "e0acf639-be47-4a77-bbc5-fa33eb706033",
+        "campaign_usage": "13m10s | 24.70 AIU | prompt 3.5m (88% cached) | output 77.5k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "78e9a671e90af1fa72f34592aab59b85683fe055",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "M1: one python_module dynamics measurement using 16 deterministic target seeds, four isolated saturated probes per seed, 21 control frames per probe, ten MuJoCo integration steps per frame, 13,440 integration steps plus compiled-model inspection. T1: one fresh baseline PPO run, requested 120,000 and completed 120,832 steps, with 24 archived checkpoints and a preserved learning log. M2: one 160-episode held-out research evaluation using seeds 4200-4359; no protected assessment episodes. E4: one best-known role assignment. E5: one inquiry closure. E7: opened I2. No source or dependency changes.",
+        "current_goal_gap": "T1:checkpoint-115712 achieved 105/160 = 65.625% on the held-out official-radius research panel, 32.375 percentage points below the 98% objective. It achieved 42/93 successes below 14 cm and 63/67 at or above 14 cm; no candidate is goal-qualified and no protected assessment has been requested.",
+        "current_synthesis": "M1 showed substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient authority, passive settling, and pure kinematic unreachability as primary explanations, but those measurements were open-loop rather than policy evidence. T1 trained the unchanged baseline PPO for 120,832 completed steps on the 0.14-0.20 m exposure; its training proxy rose to 0.96-0.97 near the end and then fluctuated, demonstrating learning on that exposure but not official-distribution competence. M2 evaluated the pre-terminal proxy peak T1:checkpoint-115712 on 160 held-out official-range targets: 105/160 succeeded. Of 55 failures, 49 never entered tolerance; the inner band had 51 failures, 45 of them no-entry, while only six failures entered and then lost the uninterrupted hold. I therefore revise the inherited wording from a broad claim that inner-radius coverage is causal to the narrower conclusion that inner no-entry is the dominant observed artifact difference and a high-value candidate-selection target; exposure alone remains unproven. The proposed intervention is not a claim against PPO generally and does not resolve launch, branch, reward alignment, hidden hold state, or inter-sample continuity.",
+        "decision_frontier": "The consequential distinction is whether a fresh PPO artifact trained with official inner-and-outer target exposure, while baseline reward, observation/runtime, control semantics, and PPO hyperparameters remain fixed, improves inner-band no-entry and preserves the demonstrated outer-band uninterrupted holds. A same-seed held-out comparison with radius/angle-stratified success, first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation will discriminate candidate improvement from outer-band regression. Inner improvement with preserved outer performance supports continued exposure-focused development at the artifact-comparison level; persistent inner no-entry redirects attention to launch/branch/control or reward/runtime alignment; outer regression reveals a coverage/stability tradeoff. These outcomes will not by themselves establish exposure as the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "Advance toward a learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-control-step hold. The current candidate is not close enough for assessment, so the next bounded work tests the largest observed deficit: inner-radius reach and hold.",
+        "next_direction_or_closure": "Open inquiry I2 and proceed with one bounded exposure-controlled fresh PPO candidate, followed by a same-panel held-out research evaluation using the diagnostics stated in the closure condition. Do not request official assessment now because the evidence-backed candidate is at 65.625%, far below 98%, and no untested variant or unresolved mechanism justifies assessment.",
+        "next_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?"
+      }
+    },
+    "request_fingerprint": "b4879d5e092a6de5e8edb664150fcb5cb1713652b9be55c8fcbe9abd7bbfda61",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-115712, explicitly assigned from M2 because it is the only candidate with completed held-out official-distribution evidence. It is not goal-qualified: 65.625% development success is far below 98%. Working: none. Retained: none.",
+    "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
     "completed_operations": [
-      "T1",
-      "M2",
-      "E4",
-      "E5"
+      "E7"
     ],
-    "cumulative_resource_use": "M1: one completed python_module measurement using 16 deterministic target seeds, 4 isolated saturated probes per seed, 21 control frames per probe, 10 MuJoCo integration steps per frame, 13,440 recorded integration steps plus compiled-model inspection. T1: one fresh baseline PPO training run, requested 120,000 steps and completed 120,832 after rollout-boundary rounding, with 24 archived checkpoints and preserved learning log. M2: one 160-episode held-out research evaluation using seeds 4200-4359; no protected assessment episodes. E4: one best-known role assignment. E5: one inquiry closure. No source intervention or dependency change.",
-    "current_goal_gap": "The best-known candidate T1:checkpoint-115712 achieves 105/160 = 65.625% on a held-out official-distribution research panel, leaving a 32.375 percentage-point gap to the 98% objective. It is strong on outer targets but fails substantially on inner targets, so the campaign has neither a qualifying policy nor evidence for official assessment.",
-    "current_synthesis": "M1 established substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient actuator authority, passive settling, and pure kinematic unreachability as primary explanations, while remaining open-loop evidence rather than policy evidence. T1 trained the unchanged baseline PPO implementation (tanh [64,64], one environment, n_steps 1024, batch 64, gamma .99, GAE .95, learning rate 3e-4) for a requested 120,000 steps and completed 120,832 steps after rollout rounding. Its training proxy rose from zero to a maximum recorded 0.96 at 115,712 and 120,832 steps; those proxies were produced on the 0.14-0.20 m training exposure and did not establish official-distribution behavior. M2 evaluated the pre-terminal tied proxy peak T1:checkpoint-115712 on 160 held-out targets spanning 6-20 cm: 105/160 succeeded (65.625%). The preserved episode diagnostics identify 49/55 failures with max_held_steps=0, hence no tolerance entry, and only 6/55 post-entry failures with max_held_steps 1, 3, 26, 41, or 49. Stratification shows 42/93 successes (45.2%) below 14 cm versus 63/67 (94.0%) at or above 14 cm. Thus the tested outer-band-only baseline learns strong outer behavior but does not generalize reach-and-hold across the official inner band; the evidence supports inner-radius coverage as a consequential artifact difference, not as a proven causal explanation. The six post-entry failures show stabilization/reward/runtime remain real secondary mechanisms. No learned q/qdot/action trace, branch label, internal 2 ms continuity trace, or same-candidate reward-component trace was recorded, so launch, branch, reward alignment, hidden hold state, and inter-sample continuity remain unresolved where they could matter after inner-band performance is addressed. I1 therefore closes with a recipe-specific negative/limited result, not a claim against PPO generally or against any untested intervention.",
-    "decision_frontier": "The next consequential distinction is whether adding official inner-radius targets to training, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, improves inner-band reach without sacrificing the demonstrated outer-band uninterrupted holds. The discriminating evidence is a fresh complete candidate trained with official-range exposure and a same-panel held-out research evaluation with radius/angle-stratified success, first-entry time, minimum/final distance, max held steps, interruptions, and truncation. Improvement concentrated in the inner band with preserved outer performance would justify continuing exposure-focused development at the artifact-comparison level. Persistent inner no-entry despite exposure would redirect attention to branch-aware launch/control or reward/runtime alignment; outer regression would expose a coverage/stability tradeoff requiring a different training design. The current evidence does not justify requesting official assessment, and it does not warrant treating the six post-entry failures as the first intervention target because they are fewer than the inner no-entry failures.",
+    "cumulative_resource_use": "M1: one python_module dynamics measurement using 16 deterministic target seeds, four isolated saturated probes per seed, 21 control frames per probe, ten MuJoCo integration steps per frame, 13,440 integration steps plus compiled-model inspection. T1: one fresh baseline PPO run, requested 120,000 and completed 120,832 steps, with 24 archived checkpoints and a preserved learning log. M2: one 160-episode held-out research evaluation using seeds 4200-4359; no protected assessment episodes. E4: one best-known role assignment. E5: one inquiry closure. E7: opened I2. No source or dependency changes.",
+    "current_goal_gap": "T1:checkpoint-115712 achieved 105/160 = 65.625% on the held-out official-radius research panel, 32.375 percentage points below the 98% objective. It achieved 42/93 successes below 14 cm and 63/67 at or above 14 cm; no candidate is goal-qualified and no protected assessment has been requested.",
+    "current_synthesis": "M1 showed substantial compiled actuator authority and rapid passive velocity recovery under isolated saturated pulses, weakening insufficient authority, passive settling, and pure kinematic unreachability as primary explanations, but those measurements were open-loop rather than policy evidence. T1 trained the unchanged baseline PPO for 120,832 completed steps on the 0.14-0.20 m exposure; its training proxy rose to 0.96-0.97 near the end and then fluctuated, demonstrating learning on that exposure but not official-distribution competence. M2 evaluated the pre-terminal proxy peak T1:checkpoint-115712 on 160 held-out official-range targets: 105/160 succeeded. Of 55 failures, 49 never entered tolerance; the inner band had 51 failures, 45 of them no-entry, while only six failures entered and then lost the uninterrupted hold. I therefore revise the inherited wording from a broad claim that inner-radius coverage is causal to the narrower conclusion that inner no-entry is the dominant observed artifact difference and a high-value candidate-selection target; exposure alone remains unproven. The proposed intervention is not a claim against PPO generally and does not resolve launch, branch, reward alignment, hidden hold state, or inter-sample continuity.",
+    "decision_frontier": "The consequential distinction is whether a fresh PPO artifact trained with official inner-and-outer target exposure, while baseline reward, observation/runtime, control semantics, and PPO hyperparameters remain fixed, improves inner-band no-entry and preserves the demonstrated outer-band uninterrupted holds. A same-seed held-out comparison with radius/angle-stratified success, first-entry step, minimum/final distance, maximum held steps, interruptions, and truncation will discriminate candidate improvement from outer-band regression. Inner improvement with preserved outer performance supports continued exposure-focused development at the artifact-comparison level; persistent inner no-entry redirects attention to launch/branch/control or reward/runtime alignment; outer regression reveals a coverage/stability tradeoff. These outcomes will not by themselves establish exposure as the sole cause.",
     "evidence_references": [
       "M1",
       "T1",
@@ -1699,12 +1826,12 @@
       "E4",
       "E5"
     ],
-    "human_goal_connection": "Advance toward a learned policy with at least 196 successes in the protected 200-episode assessment, where each success requires an uninterrupted 100-control-step hold. I1 supplied the first candidate-level evidence needed to choose the next development direction, but no current candidate is close enough to justify assessment.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed because its closure condition was met by T1 plus M2: the unchanged baseline candidate was trained and evaluated on the full official radius range, and preserved diagnostics identify inner-radius/no-entry as the dominant failure class. Do not request the protected assessment. Return to goal review with the proposed next question of an exposure-controlled fresh candidate; compare the complete artifact against T1 before adding reward, branch, stabilization, or continuity changes.",
+    "human_goal_connection": "Advance toward a learned policy achieving at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-control-step hold. The current candidate is not close enough for assessment, so the next bounded work tests the largest observed deficit: inner-radius reach and hold.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Open inquiry I2 and proceed with one bounded exposure-controlled fresh PPO candidate, followed by a same-panel held-out research evaluation using the diagnostics stated in the closure condition. Do not request official assessment now because the evidence-backed candidate is at 65.625%, far below 98%, and no untested variant or unresolved mechanism justifies assessment.",
     "next_question": "Can a fresh PPO candidate trained with official inner-and-outer target exposure, while holding the baseline reward, observation/runtime, control semantics, and PPO hyperparameters fixed, eliminate the dominant inner-radius no-entry failures without sacrificing outer-band uninterrupted holds?",
-    "scientific_commit": "258a6b2c8484d0bf893be919421a5174c8fafb2b",
-    "session_id": "S3"
+    "scientific_commit": "78e9a671e90af1fa72f34592aab59b85683fe055",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1712,21 +1839,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e3d79aad-9c44-420d-8a82-fcd6d97731a0",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E7"
-    ],
-    "scientific_parent_commit": "237629cc03be3a8674b8095401b13b7541eaae8d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
