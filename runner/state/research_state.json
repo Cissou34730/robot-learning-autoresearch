@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close the inquiry after a fresh official-exposure candidate has been compared with T1:checkpoint-120832 on the same non-overlapping official-distribution research panel using success, radius/angle strata, and failure-class diagnostics. A positive bounded conclusion requires a substantial reduction in 6-14 cm never-reach failures with no material loss of 14-20 cm success; a negative or limited conclusion is warranted if inner failures persist, outer success degrades, or the comparison does not materially improve the overall candidate. In all cases, attribute the result to the compared artifacts and preserve branch, transient, dynamics, contact, and substep causes as unresolved unless directly measured.",
     "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the official 6-20 cm distribution. The current best-known candidate achieves 143/200, and M2 localizes most failures to never-reach episodes at 6-14 cm, so testing the omitted official inner regime directly addresses the dominant measured gap while protecting the already strong outer-radius behavior.",
-    "handoff_conclusion": "Established evidence: T1 trained the current PPO implementation under its existing 14-20 cm exposure; learning proxies reached 0.96 at checkpoints 115712 and 120832, but M1 measured only 68.0% and 71.5%, respectively, on the same 200-episode panel spanning the official 6-20 cm distribution. M2 validates that the terminal checkpoint's failures are predominantly never-reach failures (47 of 57), with 10 reached-but-failed-hold failures. Its radius-conditioned success is 32.7% at 6-10 cm, 67.2% at 10-14 cm, 96.4% at 14-18 cm, and 100.0% at 18-20 cm; angle-conditioned success is also asymmetric, ranging from 60.0% to 94.4%, but those pooled angle strata do not isolate a branch mechanism from radius. Interpretation: the sharp inner-radius transition supports the initial model's omitted-inner-regime and folded-posture/transient explanation as the leading direction. The low count of reached-but-failed-hold episodes means generic hold stabilization is not the first bottleneck for this artifact, although it remains consequential after coverage improves. The preterminal-versus-terminal gain is an artifact-level checkpoint comparison, not proof that additional steps caused the improvement. Unresolved alternatives include branch/shoulder-limit handling, singularity escape, and insufficient dynamic authority; M1/M2 contain no joint trajectories, actuator traces, contact traces, or causal intervention isolating these mechanisms. The evidence therefore supports changing exposure first, while limiting claims about the underlying controller mechanism.",
+    "handoff_conclusion": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
     "handoff_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
@@ -841,7 +841,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 2,
@@ -850,7 +850,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1931,33 +1931,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T21:52:27Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 from M1 and M2; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. No working candidate is assigned. No candidate meets the human goal and no official assessment is requested.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Before this session: one fresh T1 training request for 120000 steps completed at 120832 due to rollout rounding; M1 evaluated two T1 checkpoints on 200 shared episodes each (400 policy-episode executions); M2 analyzed the paired M1 artifacts; E1 assigned best-known. This goal-review session used one inquiry-opening operation E3 and no training or measurement allocation. No protected official assessment or external dependency was used.",
+        "current_goal_gap": "T1:checkpoint-120832 measured 71.5% (143/200) on M1, 53 successes short of a comparable 196/200 threshold. M2 attributes 47 of 57 terminal failures to never reaching, with success of 32.7% at 6-10 cm and 67.2% at 10-14 cm, while 14-18 cm and 18-20 cm achieve 96.4% and 100.0%. The candidate is not a protected official result.",
+        "current_synthesis": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
+        "decision_frontier": "The consequential distinction is whether the 6-14 cm never-reach mass is primarily a training-exposure/generalization deficit or whether it persists because of branch-aware transient, singularity-escape, or dynamic-authority limits. The bounded discriminator is a fresh candidate trained with official 6-20 cm exposure and otherwise the current PPO implementation, compared with T1:checkpoint-120832 on matched non-overlapping official-distribution research episodes using complete success, radius/angle strata, and failure-class diagnostics. A substantial inner-radius improvement without material outer-radius degradation supports continuing exposure development; persistent inner failures or outer degradation redirects toward mechanism-focused control or dynamics investigation. This result will not by itself resolve contact, compiled inertia, or substep semantics, which matter only insofar as they explain a failed or ambiguous exposure comparison.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign remains directed at achieving at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. The best measured candidate currently achieves 143/200, so the immediate scientific priority is reducing the concentrated inner-radius episode failures rather than requesting terminal assessment.",
+        "next_direction_or_closure": "The goal review opened inquiry I1 and this checkpoint completes the session boundary. In the fresh inquiry session, perform the bounded official-exposure versus current-exposure candidate comparison with matched official-distribution diagnostics. Close or redirect the inquiry based on the measured artifact comparison and failure classes, without treating an exposure result as a mechanism proof.",
+        "next_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "a45b2d31fbd57b521c1a846adc8fe1d2ceb86afc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 from M1 and M2; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. No working candidate is assigned. No candidate meets the human goal and no official assessment is requested.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Before this session: one fresh T1 training request for 120000 steps completed at 120832 due to rollout rounding; M1 evaluated two T1 checkpoints on 200 shared episodes each (400 policy-episode executions); M2 analyzed the paired M1 artifacts; E1 assigned best-known. This goal-review session used one inquiry-opening operation E3 and no training or measurement allocation. No protected official assessment or external dependency was used.",
+        "current_goal_gap": "T1:checkpoint-120832 measured 71.5% (143/200) on M1, 53 successes short of a comparable 196/200 threshold. M2 attributes 47 of 57 terminal failures to never reaching, with success of 32.7% at 6-10 cm and 67.2% at 10-14 cm, while 14-18 cm and 18-20 cm achieve 96.4% and 100.0%. The candidate is not a protected official result.",
+        "current_synthesis": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
+        "decision_frontier": "The consequential distinction is whether the 6-14 cm never-reach mass is primarily a training-exposure/generalization deficit or whether it persists because of branch-aware transient, singularity-escape, or dynamic-authority limits. The bounded discriminator is a fresh candidate trained with official 6-20 cm exposure and otherwise the current PPO implementation, compared with T1:checkpoint-120832 on matched non-overlapping official-distribution research episodes using complete success, radius/angle strata, and failure-class diagnostics. A substantial inner-radius improvement without material outer-radius degradation supports continuing exposure development; persistent inner failures or outer degradation redirects toward mechanism-focused control or dynamics investigation. This result will not by itself resolve contact, compiled inertia, or substep semantics, which matter only insofar as they explain a failed or ambiguous exposure comparison.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign remains directed at achieving at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. The best measured candidate currently achieves 143/200, so the immediate scientific priority is reducing the concentrated inner-radius episode failures rather than requesting terminal assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal review opened inquiry I1 and this checkpoint completes the session boundary. In the fresh inquiry session, perform the bounded official-exposure versus current-exposure candidate comparison with matched official-distribution diagnostics. Close or redirect the inquiry based on the measured artifact comparison and failure classes, without treating an exposure result as a mechanism proof.",
+        "next_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "647cd9d6-ecb6-4d4e-8bad-eb3cfa06bfa1",
+        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
+        "campaign_usage": "9m44s | 15.92 AIU | prompt 1.9m (86% cached) | output 58.7k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "870e790d3e1c23546c478f1f8f51a7d7e3565120",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 from M1 and M2; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. No working candidate is assigned. No candidate meets the human goal and no official assessment is requested.",
+        "completed_operations": [
+          "E3"
+        ],
+        "cumulative_resource_use": "Before this session: one fresh T1 training request for 120000 steps completed at 120832 due to rollout rounding; M1 evaluated two T1 checkpoints on 200 shared episodes each (400 policy-episode executions); M2 analyzed the paired M1 artifacts; E1 assigned best-known. This goal-review session used one inquiry-opening operation E3 and no training or measurement allocation. No protected official assessment or external dependency was used.",
+        "current_goal_gap": "T1:checkpoint-120832 measured 71.5% (143/200) on M1, 53 successes short of a comparable 196/200 threshold. M2 attributes 47 of 57 terminal failures to never reaching, with success of 32.7% at 6-10 cm and 67.2% at 10-14 cm, while 14-18 cm and 18-20 cm achieve 96.4% and 100.0%. The candidate is not a protected official result.",
+        "current_synthesis": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
+        "decision_frontier": "The consequential distinction is whether the 6-14 cm never-reach mass is primarily a training-exposure/generalization deficit or whether it persists because of branch-aware transient, singularity-escape, or dynamic-authority limits. The bounded discriminator is a fresh candidate trained with official 6-20 cm exposure and otherwise the current PPO implementation, compared with T1:checkpoint-120832 on matched non-overlapping official-distribution research episodes using complete success, radius/angle strata, and failure-class diagnostics. A substantial inner-radius improvement without material outer-radius degradation supports continuing exposure development; persistent inner failures or outer degradation redirects toward mechanism-focused control or dynamics investigation. This result will not by itself resolve contact, compiled inertia, or substep semantics, which matter only insofar as they explain a failed or ambiguous exposure comparison.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E1",
+          "E3"
+        ],
+        "human_goal_connection": "The campaign remains directed at achieving at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. The best measured candidate currently achieves 143/200, so the immediate scientific priority is reducing the concentrated inner-radius episode failures rather than requesting terminal assessment.",
+        "next_direction_or_closure": "The goal review opened inquiry I1 and this checkpoint completes the session boundary. In the fresh inquiry session, perform the bounded official-exposure versus current-exposure candidate comparison with matched official-distribution diagnostics. Close or redirect the inquiry based on the measured artifact comparison and failure classes, without treating an exposure result as a mechanism proof.",
+        "next_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?"
+      }
+    },
+    "request_fingerprint": "096ff77c360c82b1d72b3e8448b3cef28a225373e6cb60025911f40b6ad50fce",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 from M1 and M2. No working candidate is assigned. T1:checkpoint-115712 remains a measured comparison artifact, not a role assignment. No candidate meets the human goal, and no official assessment has been requested.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 from M1 and M2; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. No working candidate is assigned. No candidate meets the human goal and no official assessment is requested.",
     "completed_operations": [
-      "T1",
-      "M1",
-      "M2",
-      "E1"
+      "E3"
     ],
-    "cumulative_resource_use": "One fresh training operation T1 requested 120000 steps and produced checkpoints through 120832 because of the learning rollout boundary. One paired research evaluation M1 measured two complete checkpoints on 200 shared episodes each (400 policy-episode executions total). One deterministic analysis measurement M2 processed both M1 artifacts. One model-role assignment E1. No protected official assessment, additional training run, or external dependency was used.",
-    "current_goal_gap": "Best-known measured candidate T1:checkpoint-120832 achieved 71.5% (143/200) on M1, leaving 53 additional successes needed to reach the 196/200 objective on a comparable 200-episode panel. This is research evidence, not the protected official assessment. The main observed gap is concentrated at inner radii: M2 reports 32.7% for 6-10 cm and 67.2% for 10-14 cm, versus 96.4% and 100.0% for 14-18 cm and 18-20 cm.",
-    "current_synthesis": "Established evidence: T1 trained the current PPO implementation under its existing 14-20 cm exposure; learning proxies reached 0.96 at checkpoints 115712 and 120832, but M1 measured only 68.0% and 71.5%, respectively, on the same 200-episode panel spanning the official 6-20 cm distribution. M2 validates that the terminal checkpoint's failures are predominantly never-reach failures (47 of 57), with 10 reached-but-failed-hold failures. Its radius-conditioned success is 32.7% at 6-10 cm, 67.2% at 10-14 cm, 96.4% at 14-18 cm, and 100.0% at 18-20 cm; angle-conditioned success is also asymmetric, ranging from 60.0% to 94.4%, but those pooled angle strata do not isolate a branch mechanism from radius. Interpretation: the sharp inner-radius transition supports the initial model's omitted-inner-regime and folded-posture/transient explanation as the leading direction. The low count of reached-but-failed-hold episodes means generic hold stabilization is not the first bottleneck for this artifact, although it remains consequential after coverage improves. The preterminal-versus-terminal gain is an artifact-level checkpoint comparison, not proof that additional steps caused the improvement. Unresolved alternatives include branch/shoulder-limit handling, singularity escape, and insufficient dynamic authority; M1/M2 contain no joint trajectories, actuator traces, contact traces, or causal intervention isolating these mechanisms. The evidence therefore supports changing exposure first, while limiting claims about the underlying controller mechanism.",
-    "decision_frontier": "The consequential unresolved distinction is whether the 6-14 cm failure mass is primarily an exposure/generalization deficit that can be corrected by training on the official radius range, or whether it reflects a branch-aware transient/dynamic limitation that requires a controller or representation change. A discriminating next comparison is a fresh run with the official 6-20 cm target exposure and otherwise the current PPO implementation held fixed, measured against T1:checkpoint-120832 on the same official-distribution panel with the M2 radius/angle and failure-class diagnostics. If inner-radius never-reach failures fall substantially without sacrificing the already strong 14-20 cm behavior, exposure is the credible first intervention. If inner-radius failures persist or outer behavior degrades, the direction should shift toward branch/transient or dynamics-focused control investigation. Contact filtering, compiled inertial scale, and substep behavior remain unmeasured; they matter if the exposure comparison fails, but they do not need to be resolved before testing this direct, goal-relevant hypothesis.",
+    "cumulative_resource_use": "Before this session: one fresh T1 training request for 120000 steps completed at 120832 due to rollout rounding; M1 evaluated two T1 checkpoints on 200 shared episodes each (400 policy-episode executions); M2 analyzed the paired M1 artifacts; E1 assigned best-known. This goal-review session used one inquiry-opening operation E3 and no training or measurement allocation. No protected official assessment or external dependency was used.",
+    "current_goal_gap": "T1:checkpoint-120832 measured 71.5% (143/200) on M1, 53 successes short of a comparable 196/200 threshold. M2 attributes 47 of 57 terminal failures to never reaching, with success of 32.7% at 6-10 cm and 67.2% at 10-14 cm, while 14-18 cm and 18-20 cm achieve 96.4% and 100.0%. The candidate is not a protected official result.",
+    "current_synthesis": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
+    "decision_frontier": "The consequential distinction is whether the 6-14 cm never-reach mass is primarily a training-exposure/generalization deficit or whether it persists because of branch-aware transient, singularity-escape, or dynamic-authority limits. The bounded discriminator is a fresh candidate trained with official 6-20 cm exposure and otherwise the current PPO implementation, compared with T1:checkpoint-120832 on matched non-overlapping official-distribution research episodes using complete success, radius/angle strata, and failure-class diagnostics. A substantial inner-radius improvement without material outer-radius degradation supports continuing exposure development; persistent inner failures or outer degradation redirects toward mechanism-focused control or dynamics investigation. This result will not by itself resolve contact, compiled inertia, or substep semantics, which matter only insofar as they explain a failed or ambiguous exposure comparison.",
     "evidence_references": [
       "T1",
       "M1",
       "M2",
-      "E1"
+      "E1",
+      "E3"
     ],
-    "human_goal_connection": "The human objective requires at least 196 successes out of 200 under the official 6-20 cm, full-angle distribution with an uninterrupted 2-second hold. The first candidate achieves only 143/200 on an official-distribution research panel, so all scientific choices remain directed at closing that episode-success gap rather than optimizing training reward.",
+    "human_goal_connection": "The campaign remains directed at achieving at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. The best measured candidate currently achieves 143/200, so the immediate scientific priority is reducing the concentrated inner-radius episode failures rather than requesting terminal assessment.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Startup is complete. Carry the evidence-backed inner-radius coverage question into goal review and, if accepted there, open a bounded inquiry comparing official-range exposure against the current 14-20 cm baseline with the same PPO/control implementation and paired official-distribution diagnostics. Do not infer mechanism from the exposure result alone; use the failure-class and radius-conditioned outcomes to decide whether to continue exposure development or redirect to branch/transient dynamics.",
+    "next_direction_or_closure": "The goal review opened inquiry I1 and this checkpoint completes the session boundary. In the fresh inquiry session, perform the bounded official-exposure versus current-exposure candidate comparison with matched official-distribution diagnostics. Close or redirect the inquiry based on the measured artifact comparison and failure classes, without treating an exposure result as a mechanism proof.",
     "next_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-    "scientific_commit": "6daa1f1a4a16920ceefba9a1eeb86c9a195d4e10",
-    "session_id": "S1"
+    "scientific_commit": "870e790d3e1c23546c478f1f8f51a7d7e3565120",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1965,21 +2093,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "647cd9d6-ecb6-4d4e-8bad-eb3cfa06bfa1",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E3"
-    ],
-    "scientific_parent_commit": "a45b2d31fbd57b521c1a846adc8fe1d2ceb86afc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
