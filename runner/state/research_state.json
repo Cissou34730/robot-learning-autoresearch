@@ -1654,7 +1654,7 @@
     }
   },
   "counters": {
-    "event": 9,
+    "event": 10,
     "inquiry": 2,
     "measurement": 5,
     "session": 5,
@@ -1663,7 +1663,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -5190,35 +5190,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T22:27:51Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. No working candidate is assigned. T2:checkpoint-120832 remains a measured comparison artifact only. No candidate is retained.",
+        "completed_operations": [
+          "M5",
+          "E9"
+        ],
+        "cumulative_resource_use": "Before I2: two fresh 120,000-step training allocations (T1 and T2, each completed at 120,832 steps), five prior measurements M1-M4 plus analyses, model-role assignment E1, inquiry I1 and its checkpoints, and goal-review opening E7/E8. I2 used one reviewed PI-owned evaluator extension and M5: two 200-episode research evaluations on the same seed-200000 panel, with no new training allocation and no protected official assessment. E9 closed I2. Total training allocations used: 2 of 120,000 steps each; total research evaluation panels: 7 candidate evaluations across M1, M3 and M5.",
+        "current_goal_gap": "No candidate is near 196/200. T1 has 42 never-reached and 11 reached-but-failed-hold episodes on the matched panel; T2 has 120 never-reached and 10 reached-but-failed-hold episodes. M5 shows that T2's broad gap is not explained by a changed compiled plant or observed contact, but the compared exposure, seed, learned state and source provenance remain confounded, so no exposure-only causal claim is established.",
+        "current_synthesis": "Established observations: M5 repeated the matched 200-episode panel with trace instrumentation and preserved the prior complete-hold outcomes: T1 147/200 and T2 70/200, with 92 T1 wins, 15 T2 wins and 107 discordant episodes. The loaded MuJoCo summaries are identical for both artifacts: nq=nv=nu=2, 0.002 s integration, 0.020 s control interval, zero gravity, identical compiled body masses/inertias, damping, armature, gear and control limits. Every episode for both artifacts had zero contacts. On never-reached episodes, T2 had mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm and mean peak generalized actuator-force norm 6.72; T1 had 6.20 cm, 19.79 cm and 7.07. Representative paired traces at target radius 8.18 cm and angle 161.23 degrees show T1 leaving reset, reaching at control step 16 and ending near the open IK branch, while T2 follows a different transient and settles at about 7.51 cm from the target with nonzero errors to both branches. A reverse discordant pair at radius 6.59 cm and angle -55.50 degrees shows T2 can succeed where T1 fails, so geometry alone is not a universal impossibility. T1 successful endpoint holds can have internal substep distances above 1 cm, so endpoint success does not certify continuous-time containment under the coded evaluator. Interpretation: for this complete artifact comparison, learned reset/branch-transient and control-usage behavior is the dominant actionable signature; compiled-authority mismatch, self-contact and numerical plant differences are not supported as dominant explanations. Training-artifact variability remains inseparable from the changed exposure, seed and source provenance. The tested fresh 6-20 cm replacement remains a negative artifact-level result and neither disproves gradual exposure/branch curriculum nor proves exposure causality.",
+        "decision_frontier": "The unresolved research decision is how to raise T1's inner-radius complete-hold success toward 196/200 without repeating an undiagnosed artifact comparison. The next discriminating development should compare a branch-aware reset/trajectory-learning intervention against T1 while preserving complete-hold outcomes, radius/angle strata, reset-to-reach branch errors, effort and substep traces. It must determine whether explicit escape/branch coverage improves never-reach failures without trading away outer-radius holds. The causal claim must remain limited to the implemented candidate comparison; exposure, seed and source provenance need to be matched or varied deliberately. Hold timing remains a secondary constraint: if endpoint success is retained, substep excursions must be reported rather than treated as official failures unless the protected semantics change.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "M3",
+          "M4",
+          "M5",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 (73.5%) on M3/M5, 49 successes below the comparable objective; T2 is 70/200 (35.0%) and is not an assessment candidate. M5 identifies a credible next route toward the goal rather than supporting official assessment now.",
+        "next_direction_or_closure": "I2 is closed with a limited positive mechanism result through E9. Do not request official assessment: the best-known candidate is 49 episodes below the comparable target. At the next goal review, compare the expected contribution of a fresh branch-aware/reset-trajectory learning intervention against further mechanism measurement; the current evidence makes plant retuning and repetition of the wholesale 6-20 cm fresh replacement lower-priority routes. Preserve M5's trace instrumentation for the next complete candidate comparison.",
+        "next_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "f258877645a38b4118b67d0f62c6d1d3bac36dfa",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. No working candidate is assigned. T2:checkpoint-120832 remains a measured comparison artifact only. No candidate is retained.",
+        "completed_operations": [
+          "M5",
+          "E9"
+        ],
+        "cumulative_resource_use": "Before I2: two fresh 120,000-step training allocations (T1 and T2, each completed at 120,832 steps), five prior measurements M1-M4 plus analyses, model-role assignment E1, inquiry I1 and its checkpoints, and goal-review opening E7/E8. I2 used one reviewed PI-owned evaluator extension and M5: two 200-episode research evaluations on the same seed-200000 panel, with no new training allocation and no protected official assessment. E9 closed I2. Total training allocations used: 2 of 120,000 steps each; total research evaluation panels: 7 candidate evaluations across M1, M3 and M5.",
+        "current_goal_gap": "No candidate is near 196/200. T1 has 42 never-reached and 11 reached-but-failed-hold episodes on the matched panel; T2 has 120 never-reached and 10 reached-but-failed-hold episodes. M5 shows that T2's broad gap is not explained by a changed compiled plant or observed contact, but the compared exposure, seed, learned state and source provenance remain confounded, so no exposure-only causal claim is established.",
+        "current_synthesis": "Established observations: M5 repeated the matched 200-episode panel with trace instrumentation and preserved the prior complete-hold outcomes: T1 147/200 and T2 70/200, with 92 T1 wins, 15 T2 wins and 107 discordant episodes. The loaded MuJoCo summaries are identical for both artifacts: nq=nv=nu=2, 0.002 s integration, 0.020 s control interval, zero gravity, identical compiled body masses/inertias, damping, armature, gear and control limits. Every episode for both artifacts had zero contacts. On never-reached episodes, T2 had mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm and mean peak generalized actuator-force norm 6.72; T1 had 6.20 cm, 19.79 cm and 7.07. Representative paired traces at target radius 8.18 cm and angle 161.23 degrees show T1 leaving reset, reaching at control step 16 and ending near the open IK branch, while T2 follows a different transient and settles at about 7.51 cm from the target with nonzero errors to both branches. A reverse discordant pair at radius 6.59 cm and angle -55.50 degrees shows T2 can succeed where T1 fails, so geometry alone is not a universal impossibility. T1 successful endpoint holds can have internal substep distances above 1 cm, so endpoint success does not certify continuous-time containment under the coded evaluator. Interpretation: for this complete artifact comparison, learned reset/branch-transient and control-usage behavior is the dominant actionable signature; compiled-authority mismatch, self-contact and numerical plant differences are not supported as dominant explanations. Training-artifact variability remains inseparable from the changed exposure, seed and source provenance. The tested fresh 6-20 cm replacement remains a negative artifact-level result and neither disproves gradual exposure/branch curriculum nor proves exposure causality.",
+        "decision_frontier": "The unresolved research decision is how to raise T1's inner-radius complete-hold success toward 196/200 without repeating an undiagnosed artifact comparison. The next discriminating development should compare a branch-aware reset/trajectory-learning intervention against T1 while preserving complete-hold outcomes, radius/angle strata, reset-to-reach branch errors, effort and substep traces. It must determine whether explicit escape/branch coverage improves never-reach failures without trading away outer-radius holds. The causal claim must remain limited to the implemented candidate comparison; exposure, seed and source provenance need to be matched or varied deliberately. Hold timing remains a secondary constraint: if endpoint success is retained, substep excursions must be reported rather than treated as official failures unless the protected semantics change.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "M3",
+          "M4",
+          "M5",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 (73.5%) on M3/M5, 49 successes below the comparable objective; T2 is 70/200 (35.0%) and is not an assessment candidate. M5 identifies a credible next route toward the goal rather than supporting official assessment now.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed with a limited positive mechanism result through E9. Do not request official assessment: the best-known candidate is 49 episodes below the comparable target. At the next goal review, compare the expected contribution of a fresh branch-aware/reset-trajectory learning intervention against further mechanism measurement; the current evidence makes plant retuning and repetition of the wholesale 6-20 cm fresh replacement lower-priority routes. Preserve M5's trace instrumentation for the next complete candidate comparison.",
+        "next_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "ebf37a18-74a3-49a0-afeb-2a8b41f6353f",
+        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
+        "campaign_usage": "18m19s | 28.83 AIU | prompt 3.7m (86% cached) | output 98.8k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "4m14s | 5.04 AIU | prompt 622.7k (88% cached) | output 25.7k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ede6cada6322f894693eac12ee6ea1904f65dfd7",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "98b239d902405c9ccc12789d1149dfff0f0afd108f5cf431e8572d6c74c8991d",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. No working candidate is assigned. T2:checkpoint-120832 remains a measured comparison artifact only. No candidate is retained.",
+        "completed_operations": [
+          "M5",
+          "E9"
+        ],
+        "cumulative_resource_use": "Before I2: two fresh 120,000-step training allocations (T1 and T2, each completed at 120,832 steps), five prior measurements M1-M4 plus analyses, model-role assignment E1, inquiry I1 and its checkpoints, and goal-review opening E7/E8. I2 used one reviewed PI-owned evaluator extension and M5: two 200-episode research evaluations on the same seed-200000 panel, with no new training allocation and no protected official assessment. E9 closed I2. Total training allocations used: 2 of 120,000 steps each; total research evaluation panels: 7 candidate evaluations across M1, M3 and M5.",
+        "current_goal_gap": "No candidate is near 196/200. T1 has 42 never-reached and 11 reached-but-failed-hold episodes on the matched panel; T2 has 120 never-reached and 10 reached-but-failed-hold episodes. M5 shows that T2's broad gap is not explained by a changed compiled plant or observed contact, but the compared exposure, seed, learned state and source provenance remain confounded, so no exposure-only causal claim is established.",
+        "current_synthesis": "Established observations: M5 repeated the matched 200-episode panel with trace instrumentation and preserved the prior complete-hold outcomes: T1 147/200 and T2 70/200, with 92 T1 wins, 15 T2 wins and 107 discordant episodes. The loaded MuJoCo summaries are identical for both artifacts: nq=nv=nu=2, 0.002 s integration, 0.020 s control interval, zero gravity, identical compiled body masses/inertias, damping, armature, gear and control limits. Every episode for both artifacts had zero contacts. On never-reached episodes, T2 had mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm and mean peak generalized actuator-force norm 6.72; T1 had 6.20 cm, 19.79 cm and 7.07. Representative paired traces at target radius 8.18 cm and angle 161.23 degrees show T1 leaving reset, reaching at control step 16 and ending near the open IK branch, while T2 follows a different transient and settles at about 7.51 cm from the target with nonzero errors to both branches. A reverse discordant pair at radius 6.59 cm and angle -55.50 degrees shows T2 can succeed where T1 fails, so geometry alone is not a universal impossibility. T1 successful endpoint holds can have internal substep distances above 1 cm, so endpoint success does not certify continuous-time containment under the coded evaluator. Interpretation: for this complete artifact comparison, learned reset/branch-transient and control-usage behavior is the dominant actionable signature; compiled-authority mismatch, self-contact and numerical plant differences are not supported as dominant explanations. Training-artifact variability remains inseparable from the changed exposure, seed and source provenance. The tested fresh 6-20 cm replacement remains a negative artifact-level result and neither disproves gradual exposure/branch curriculum nor proves exposure causality.",
+        "decision_frontier": "The unresolved research decision is how to raise T1's inner-radius complete-hold success toward 196/200 without repeating an undiagnosed artifact comparison. The next discriminating development should compare a branch-aware reset/trajectory-learning intervention against T1 while preserving complete-hold outcomes, radius/angle strata, reset-to-reach branch errors, effort and substep traces. It must determine whether explicit escape/branch coverage improves never-reach failures without trading away outer-radius holds. The causal claim must remain limited to the implemented candidate comparison; exposure, seed and source provenance need to be matched or varied deliberately. Hold timing remains a secondary constraint: if endpoint success is retained, substep excursions must be reported rather than treated as official failures unless the protected semantics change.",
+        "evidence_references": [
+          "T1",
+          "T2",
+          "M3",
+          "M4",
+          "M5",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 (73.5%) on M3/M5, 49 successes below the comparable objective; T2 is 70/200 (35.0%) and is not an assessment candidate. M5 identifies a credible next route toward the goal rather than supporting official assessment now.",
+        "next_direction_or_closure": "I2 is closed with a limited positive mechanism result through E9. Do not request official assessment: the best-known candidate is 49 episodes below the comparable target. At the next goal review, compare the expected contribution of a fresh branch-aware/reset-trajectory learning intervention against further mechanism measurement; the current evidence makes plant retuning and repetition of the wholesale 6-20 cm fresh replacement lower-priority routes. Preserve M5's trace instrumentation for the next complete candidate comparison.",
+        "next_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?"
+      }
+    },
+    "request_fingerprint": "fa056c1eb592bb4e30723f89724a0e6e9824fb678e7d33122f56fb41222800ef",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from E1 and supported by M1 and M3; it is not goal-certified. T1:checkpoint-115712 is a measured comparison artifact. T2:checkpoint-115712 and T2:checkpoint-120832 are fresh official-exposure artifacts measured by M3 and both underperform matched T1 artifacts; neither is assigned working or retained status. No working candidate is assigned.",
+    "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. No working candidate is assigned. T2:checkpoint-120832 remains a measured comparison artifact only. No candidate is retained.",
     "completed_operations": [
-      "E7"
+      "M5",
+      "E9"
     ],
-    "cumulative_resource_use": "Before I2: T1 used one fresh 120,000-step allocation and completed 120,832 steps; M1 evaluated two T1 checkpoints on 200 episodes each; M2 analyzed the M1 artifacts; E1 assigned best-known; T2 used one fresh 120,000-step allocation and completed 120,832 steps; M3 evaluated four artifacts on one fresh matched 200-episode panel; M4 analyzed terminal diagnostics; E3 opened and E5 closed I1, with E4/E6 checkpoints. Goal review opened I2 as E7. No protected official assessment or external dependency has been used.",
-    "current_goal_gap": "The best-known T1 artifact is 24.5 percentage points below the 98% target on M3 and 28.5 points below it on M1. Its failures are concentrated in inner radii, while T2 is worse at every measured radius and also loses outer-radius performance. No candidate has development evidence near 196/200, and no official assessment has been requested.",
-    "current_synthesis": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure and measured 71.5% on M1 and 73.5% on fresh matched M3. T2 changed the PI-owned training target-radius range to 6-20 cm, used a fresh seed-1 PPO run with the same shared mechanics, reward, observations, timing and evaluation semantics, and measured 35.0% on M3. M4 reports T2 with 120 never-reached and 10 reached-but-failed-hold episodes versus T1 with 42 and 11, and T2 below T1 in all radius strata. This establishes a large degradation between complete compared artifacts, not that official exposure itself caused it; exposure, seed, learned state and source provenance changed together. Correction to the inherited interpretation: the broad never-reach count makes transient/branch and dynamic-authority explanations consequential, but does not discriminate them from optimization or artifact variability. Likewise, pooled angle asymmetry is a clue only, not a branch diagnosis. The initial physical model still makes reset singularity, branch-conditioned folded geometry, compiled inertia/actuator authority, self-contact, and endpoint-versus-substep hold semantics decision-relevant, but its nominal reachability and torque statements remain conditional on assumptions not yet measured. The existing endpoint diagnostics establish reach-versus-hold classes and geometry strata only; they contain no trajectories, controls, compiled fields, contact traces or substep distances. Therefore the tested 6-20 cm replacement is a negative artifact-level result and does not disprove broader exposure-based learning or establish a dynamics/branch cause.",
-    "decision_frontier": "The next route toward 196/200 depends on distinguishing an actionable reset/branch transient, insufficient or poorly timed dynamic authority, and training-artifact variability. A trajectory/control and compiled-dynamics signature would justify mechanism-focused controller, timing, simulator or instrumentation work; evidence that the signatures are absent or irreproducible would favor a redesigned learning comparison. The inquiry must preserve complete-hold success as the endpoint, separate never-reach from reached-but-failed-hold behavior, and limit causal conclusions to measured artifacts and official coded semantics. Contact and all-substep effects may be set aside only if measurements show they are immaterial; otherwise they constrain the interpretation rather than certify continuous-time behavior.",
+    "cumulative_resource_use": "Before I2: two fresh 120,000-step training allocations (T1 and T2, each completed at 120,832 steps), five prior measurements M1-M4 plus analyses, model-role assignment E1, inquiry I1 and its checkpoints, and goal-review opening E7/E8. I2 used one reviewed PI-owned evaluator extension and M5: two 200-episode research evaluations on the same seed-200000 panel, with no new training allocation and no protected official assessment. E9 closed I2. Total training allocations used: 2 of 120,000 steps each; total research evaluation panels: 7 candidate evaluations across M1, M3 and M5.",
+    "current_goal_gap": "No candidate is near 196/200. T1 has 42 never-reached and 11 reached-but-failed-hold episodes on the matched panel; T2 has 120 never-reached and 10 reached-but-failed-hold episodes. M5 shows that T2's broad gap is not explained by a changed compiled plant or observed contact, but the compared exposure, seed, learned state and source provenance remain confounded, so no exposure-only causal claim is established.",
+    "current_synthesis": "Established observations: M5 repeated the matched 200-episode panel with trace instrumentation and preserved the prior complete-hold outcomes: T1 147/200 and T2 70/200, with 92 T1 wins, 15 T2 wins and 107 discordant episodes. The loaded MuJoCo summaries are identical for both artifacts: nq=nv=nu=2, 0.002 s integration, 0.020 s control interval, zero gravity, identical compiled body masses/inertias, damping, armature, gear and control limits. Every episode for both artifacts had zero contacts. On never-reached episodes, T2 had mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm and mean peak generalized actuator-force norm 6.72; T1 had 6.20 cm, 19.79 cm and 7.07. Representative paired traces at target radius 8.18 cm and angle 161.23 degrees show T1 leaving reset, reaching at control step 16 and ending near the open IK branch, while T2 follows a different transient and settles at about 7.51 cm from the target with nonzero errors to both branches. A reverse discordant pair at radius 6.59 cm and angle -55.50 degrees shows T2 can succeed where T1 fails, so geometry alone is not a universal impossibility. T1 successful endpoint holds can have internal substep distances above 1 cm, so endpoint success does not certify continuous-time containment under the coded evaluator. Interpretation: for this complete artifact comparison, learned reset/branch-transient and control-usage behavior is the dominant actionable signature; compiled-authority mismatch, self-contact and numerical plant differences are not supported as dominant explanations. Training-artifact variability remains inseparable from the changed exposure, seed and source provenance. The tested fresh 6-20 cm replacement remains a negative artifact-level result and neither disproves gradual exposure/branch curriculum nor proves exposure causality.",
+    "decision_frontier": "The unresolved research decision is how to raise T1's inner-radius complete-hold success toward 196/200 without repeating an undiagnosed artifact comparison. The next discriminating development should compare a branch-aware reset/trajectory-learning intervention against T1 while preserving complete-hold outcomes, radius/angle strata, reset-to-reach branch errors, effort and substep traces. It must determine whether explicit escape/branch coverage improves never-reach failures without trading away outer-radius holds. The causal claim must remain limited to the implemented candidate comparison; exposure, seed and source provenance need to be matched or varied deliberately. Hold timing remains a secondary constraint: if endpoint success is retained, substep excursions must be reported rather than treated as official failures unless the protected semantics change.",
     "evidence_references": [
       "T1",
-      "M1",
-      "M2",
-      "E1",
       "T2",
       "M3",
       "M4",
-      "E5",
-      "E7"
+      "M5",
+      "E9"
     ],
-    "human_goal_connection": "The human goal is at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate but achieved 147/200 (73.5%) on matched M3, leaving a 49-episode gap to the comparable objective; T2 achieved 70/200 (35.0%) and is not a credible assessment candidate.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 is opened as a bounded mechanism-and-route inquiry. The first work should use the existing PI-owned measurement surface or a precise extension to obtain paired, geometry-conditioned complete-episode evidence that can discriminate reset/branch transients, dynamic authority and endpoint/substep stabilization, while retaining the option of a learning comparison if the signatures do not reproduce. The inquiry may close positive, negative or inconclusive; its purpose is to choose the next credible route toward 196/200, not to preserve the current exposure replacement.",
-    "next_question": "Can traces and compiled-dynamics evidence distinguish whether T2's broad never-reach and angle/radius degradation versus T1 is dominated by reset-singularity and branch-transient failure, insufficient or poorly timed dynamic authority, or training-artifact variability, and which resulting intervention is most credible toward at least 196/200 complete holds?",
-    "scientific_commit": "42ebb1afcb1412024e6795072e928d7ae27695a7",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 (73.5%) on M3/M5, 49 successes below the comparable objective; T2 is 70/200 (35.0%) and is not an assessment candidate. M5 identifies a credible next route toward the goal rather than supporting official assessment now.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed with a limited positive mechanism result through E9. Do not request official assessment: the best-known candidate is 49 episodes below the comparable target. At the next goal review, compare the expected contribution of a fresh branch-aware/reset-trajectory learning intervention against further mechanism measurement; the current evidence makes plant retuning and repetition of the wholesale 6-20 cm fresh replacement lower-priority routes. Preserve M5's trace instrumentation for the next complete candidate comparison.",
+    "next_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
+    "scientific_commit": "ede6cada6322f894693eac12ee6ea1904f65dfd7",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5226,22 +5368,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ebf37a18-74a3-49a0-afeb-2a8b41f6353f",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can traces and compiled-dynamics evidence distinguish whether T2's broad never-reach and angle/radius degradation versus T1 is dominated by reset-singularity and branch-transient failure, insufficient or poorly timed dynamic authority, or training-artifact variability, and which resulting intervention is most credible toward at least 196/200 complete holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M5",
-      "E9"
-    ],
-    "scientific_parent_commit": "f258877645a38b4118b67d0f62c6d1d3bac36dfa"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
