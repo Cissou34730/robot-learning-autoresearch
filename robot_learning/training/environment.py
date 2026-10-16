@@ -9,10 +9,9 @@ excluded from the research-evaluation semantics fingerprint.
 
 import gymnasium as gym
 
-from contracts.task_spec import TARGET_RADIUS_RANGE
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = TARGET_RADIUS_RANGE
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 def make_training_env() -> gym.Env:
