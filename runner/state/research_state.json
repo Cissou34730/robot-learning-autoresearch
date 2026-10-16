@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after the bounded full-distribution PPO allocation has produced a candidate and that candidate has been measured on a non-overlapping full 6-20 cm development panel with episode success, geometry-conditioned outcomes, first-entry diagnostics, longest uninterrupted hold, and interruption counts. A positive result is material improvement in total success with reduced low-radius/negative-angle non-entry and no compensating deterioration in hold completion; a null or adverse result is persistent safe-margin wrong-sector non-entry or concentrated hold failure despite the changed exposure, which makes branch-aware policy structure or stabilization intervention consequential. Either result is sufficient for the bounded conclusion; it need not establish the complete causal mechanism or official 98% attainment.",
+    "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment. T1:checkpoint-120832 achieved 110/160 = 68.75% on the full-radius development panel, with 42 non-entry and 8 hold failures, so a large goal gap remains. A matched full-distribution-trained artifact is the least confounded next test of whether the observed wrong-sector failures are coverage/exposure-limited while preserving the task-critical uninterrupted hold.",
+    "handoff_conclusion": "M3 provides the required synchronized full-panel traces for the best-known artifact. Catastrophic non-entry failures settle far from reachable targets while retaining large joint-limit margins and zero contacts; comparable low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. This supports branch/coverage selection failure as the dominant non-entry mechanism and weakens a primary finite-time, joint-limit, or contact explanation. Near-threshold hold failures instead show repeated sampled boundary crossings under alternating saturated actions with safe margins and no contacts, establishing a secondary stabilization failure. The evidence supports full-distribution learning as the next direction, but does not isolate training-radius exposure as the sole cause because no matched full-distribution-trained policy has yet been measured.",
+    "handoff_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+    "rationale": "The prior inquiry\u2019s synchronized traces support branch/coverage selection as the dominant non-entry signature and stabilization as a secondary failure, but they do not distinguish training-radius exposure from other properties of the learned artifact. T1 was trained only on 14-20 cm targets; its late training proxies are not development performance, and the terminal checkpoint has no privileged status. The full-distribution recipe changes the exposure while retaining the PPO architecture, direct torque interface, reward, timing, and physical task, so its paired development result can determine whether this method family is worth continuing toward 98%. Requesting the protected assessment now is not preferred: the strongest measured candidate is 29.25 percentage points below the development objective and has not been shown to meet the four-failure official allowance.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "2b6f9afdce853d1c7fa12e88b47adddf98fbe0ff",
     "id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
@@ -831,16 +842,16 @@
     }
   },
   "counters": {
-    "event": 10,
-    "inquiry": 2,
+    "event": 11,
+    "inquiry": 3,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -2254,9 +2265,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T19:54:53Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after the bounded full-distribution PPO allocation has produced a candidate and that candidate has been measured on a non-overlapping full 6-20 cm development panel with episode success, geometry-conditioned outcomes, first-entry diagnostics, longest uninterrupted hold, and interruption counts. A positive result is material improvement in total success with reduced low-radius/negative-angle non-entry and no compensating deterioration in hold completion; a null or adverse result is persistent safe-margin wrong-sector non-entry or concentrated hold failure despite the changed exposure, which makes branch-aware policy structure or stabilization intervention consequential. Either result is sufficient for the bounded conclusion; it need not establish the complete causal mechanism or official 98% attainment.",
+        "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment. T1:checkpoint-120832 achieved 110/160 = 68.75% on the full-radius development panel, with 42 non-entry and 8 hold failures, so a large goal gap remains. A matched full-distribution-trained artifact is the least confounded next test of whether the observed wrong-sector failures are coverage/exposure-limited while preserving the task-critical uninterrupted hold.",
+        "question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+        "rationale": "The prior inquiry\u2019s synchronized traces support branch/coverage selection as the dominant non-entry signature and stabilization as a secondary failure, but they do not distinguish training-radius exposure from other properties of the learned artifact. T1 was trained only on 14-20 cm targets; its late training proxies are not development performance, and the terminal checkpoint has no privileged status. The full-distribution recipe changes the exposure while retaining the PPO architecture, direct torque interface, reward, timing, and physical task, so its paired development result can determine whether this method family is worth continuing toward 98%. Requesting the protected assessment now is not preferred: the strongest measured candidate is 29.25 percentage points below the development objective and has not been shown to meet the four-failure official allowance."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after the bounded full-distribution PPO allocation has produced a candidate and that candidate has been measured on a non-overlapping full 6-20 cm development panel with episode success, geometry-conditioned outcomes, first-entry diagnostics, longest uninterrupted hold, and interruption counts. A positive result is material improvement in total success with reduced low-radius/negative-angle non-entry and no compensating deterioration in hold completion; a null or adverse result is persistent safe-margin wrong-sector non-entry or concentrated hold failure despite the changed exposure, which makes branch-aware policy structure or stabilization intervention consequential. Either result is sufficient for the bounded conclusion; it need not establish the complete causal mechanism or official 98% attainment.",
+          "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment. T1:checkpoint-120832 achieved 110/160 = 68.75% on the full-radius development panel, with 42 non-entry and 8 hold failures, so a large goal gap remains. A matched full-distribution-trained artifact is the least confounded next test of whether the observed wrong-sector failures are coverage/exposure-limited while preserving the task-critical uninterrupted hold.",
+          "handoff_conclusion": "M3 provides the required synchronized full-panel traces for the best-known artifact. Catastrophic non-entry failures settle far from reachable targets while retaining large joint-limit margins and zero contacts; comparable low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. This supports branch/coverage selection failure as the dominant non-entry mechanism and weakens a primary finite-time, joint-limit, or contact explanation. Near-threshold hold failures instead show repeated sampled boundary crossings under alternating saturated actions with safe margins and no contacts, establishing a secondary stabilization failure. The evidence supports full-distribution learning as the next direction, but does not isolate training-radius exposure as the sole cause because no matched full-distribution-trained policy has yet been measured.",
+          "handoff_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+          "rationale": "The prior inquiry\u2019s synchronized traces support branch/coverage selection as the dominant non-entry signature and stabilization as a secondary failure, but they do not distinguish training-radius exposure from other properties of the learned artifact. T1 was trained only on 14-20 cm targets; its late training proxies are not development performance, and the terminal checkpoint has no privileged status. The full-distribution recipe changes the exposure while retaining the PPO architecture, direct torque interface, reward, timing, and physical task, so its paired development result can determine whether this method family is worth continuing toward 98%. Requesting the protected assessment now is not preferred: the strongest measured candidate is 29.25 percentage points below the development objective and has not been shown to meet the four-failure official allowance.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after the bounded full-distribution PPO allocation has produced a candidate and that candidate has been measured on a non-overlapping full 6-20 cm development panel with episode success, geometry-conditioned outcomes, first-entry diagnostics, longest uninterrupted hold, and interruption counts. A positive result is material improvement in total success with reduced low-radius/negative-angle non-entry and no compensating deterioration in hold completion; a null or adverse result is persistent safe-margin wrong-sector non-entry or concentrated hold failure despite the changed exposure, which makes branch-aware policy structure or stabilization intervention consequential. Either result is sufficient for the bounded conclusion; it need not establish the complete causal mechanism or official 98% attainment.",
+        "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment. T1:checkpoint-120832 achieved 110/160 = 68.75% on the full-radius development panel, with 42 non-entry and 8 hold failures, so a large goal gap remains. A matched full-distribution-trained artifact is the least confounded next test of whether the observed wrong-sector failures are coverage/exposure-limited while preserving the task-critical uninterrupted hold.",
+        "question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+        "rationale": "The prior inquiry\u2019s synchronized traces support branch/coverage selection as the dominant non-entry signature and stabilization as a secondary failure, but they do not distinguish training-radius exposure from other properties of the learned artifact. T1 was trained only on 14-20 cm targets; its late training proxies are not development performance, and the terminal checkpoint has no privileged status. The full-distribution recipe changes the exposure while retaining the PPO architecture, direct torque interface, reward, timing, and physical task, so its paired development result can determine whether this method family is worth continuing toward 98%. Requesting the protected assessment now is not preferred: the strongest measured candidate is 29.25 percentage points below the development objective and has not been shown to meet the four-failure official allowance."
+      }
+    },
+    "request_fingerprint": "2f7ff19a51bc38211bab1e118d6e8e5123997312a2febf25d680035d178cc45e",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known based on M2 paired development evidence and is not officially eligible. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. M3 is a mechanism measurement of T1, not a new candidate.",
     "completed_operations": [
@@ -2291,6 +2365,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "93ad401c-d2f4-4e64-8995-0b6ead3f1e8f",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E11"
+    ],
+    "scientific_parent_commit": "5919a68b9e0ab01b46633bea6a43ba488cb2a5ac"
+  },
   "terminal_state": null
 }
