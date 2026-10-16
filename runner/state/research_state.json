@@ -181,7 +181,8 @@
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m4-T1-checkpoint-120832-160ep-seed4200-ef53b126206f.json"
       ],
       "fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
       "id": "T1:checkpoint-120832",
@@ -830,7 +831,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 3,
+    "measurement": 4,
     "session": 1,
     "training": 1
   },
@@ -1628,9 +1629,535 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T12:36:29Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Re-evaluate T1:checkpoint-120832 on the same 160-episode panel to preserve failure trajectories with post-step q/qdot, end-effector velocity, Jacobian determinant, and contact count.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "failure trajectory mechanism panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M3 established 93.75% development success but its compact diagnostics cannot distinguish the observed angular no-entry failures from joint-limit/branch or dynamic trajectory causes. The evaluator now adds failure-only outer-step traces while preserving the exact task outcome and panel. Reusing the same candidate and seeds makes the outcome comparison direct; the new trace fields are the discriminating evidence, not a replacement success criterion."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "failure trajectory mechanism panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m4-T1-checkpoint-120832-160ep-seed4200-ef53b126206f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/research_evidence/units/trajectory",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/step",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/qvel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/end_effector_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/end_effector_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/distance_cm",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/held_steps",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/jacobian_determinant",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/ncon",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38ddc73f4637ecafe305dbd3c7f370517da6c8a9745a50d0e108ed1d3e03c0f7",
+              "evaluation_semantics": "ef53b126206f",
+              "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "ef53b126206f",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "failure trajectory mechanism panel",
+          "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "failure trajectory mechanism panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m4-T1-checkpoint-120832-160ep-seed4200-ef53b126206f.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "entries": 10,
+                  "path": "/research_evidence/units/trajectory",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/step",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/qpos",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/qvel",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/end_effector_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/end_effector_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/distance_cm",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/held_steps",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/jacobian_determinant",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/trajectory/ncon",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "38ddc73f4637ecafe305dbd3c7f370517da6c8a9745a50d0e108ed1d3e03c0f7",
+            "evaluation_semantics": "ef53b126206f",
+            "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "failure trajectory mechanism panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/evaluation-4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264-m4-T1-checkpoint-120832-160ep-seed4200-ef53b126206f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/research_evidence/units/trajectory",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/step",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/qvel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/end_effector_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/end_effector_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/distance_cm",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/held_steps",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/jacobian_determinant",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/trajectory/ncon",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "38ddc73f4637ecafe305dbd3c7f370517da6c8a9745a50d0e108ed1d3e03c0f7",
+              "evaluation_semantics": "ef53b126206f",
+              "model_fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Re-evaluate T1:checkpoint-120832 on the same 160-episode panel to preserve failure trajectories with post-step q/qdot, end-effector velocity, Jacobian determinant, and contact count.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "failure trajectory mechanism panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M3 established 93.75% development success but its compact diagnostics cannot distinguish the observed angular no-entry failures from joint-limit/branch or dynamic trajectory causes. The evaluator now adds failure-only outer-step traces while preserving the exact task outcome and panel. Reusing the same candidate and seeds makes the outcome comparison direct; the new trace fields are the discriminating evidence, not a replacement success criterion."
+      }
+    },
+    "request_fingerprint": "4011d9ae8cd29bee45a8367233c2ea51fbd1a815f7bc93b23f9c2cb8507e3244",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1652,7 +2179,8 @@
     "operation_ids": [
       "M2",
       "T1",
-      "M3"
+      "M3",
+      "M4"
     ],
     "scientific_parent_commit": "83d81e402d5df7df94363cce100f4e515d56c258"
   },
