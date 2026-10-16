@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after the bounded full-distribution PPO allocation has produced a candidate and that candidate has been measured on a non-overlapping full 6-20 cm development panel with episode success, geometry-conditioned outcomes, first-entry diagnostics, longest uninterrupted hold, and interruption counts. A positive result is material improvement in total success with reduced low-radius/negative-angle non-entry and no compensating deterioration in hold completion; a null or adverse result is persistent safe-margin wrong-sector non-entry or concentrated hold failure despite the changed exposure, which makes branch-aware policy structure or stabilization intervention consequential. Either result is sufficient for the bounded conclusion; it need not establish the complete causal mechanism or official 98% attainment.",
     "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official assessment. T1:checkpoint-120832 achieved 110/160 = 68.75% on the full-radius development panel, with 42 non-entry and 8 hold failures, so a large goal gap remains. A matched full-distribution-trained artifact is the least confounded next test of whether the observed wrong-sector failures are coverage/exposure-limited while preserving the task-critical uninterrupted hold.",
-    "handoff_conclusion": "M3 provides the required synchronized full-panel traces for the best-known artifact. Catastrophic non-entry failures settle far from reachable targets while retaining large joint-limit margins and zero contacts; comparable low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. This supports branch/coverage selection failure as the dominant non-entry mechanism and weakens a primary finite-time, joint-limit, or contact explanation. Near-threshold hold failures instead show repeated sampled boundary crossings under alternating saturated actions with safe margins and no contacts, establishing a secondary stabilization failure. The evidence supports full-distribution learning as the next direction, but does not isolate training-radius exposure as the sole cause because no matched full-distribution-trained policy has yet been measured.",
+    "handoff_conclusion": "Observed evidence: M2 measured T1:checkpoint-120832 at 110/160 successes on the full 6-20 cm development panel, with non-entry dominant over hold failure; M3 supplied synchronized traces for the same artifact. M3 shows catastrophic non-entry episodes settling far from reachable targets while retaining large joint-limit margins and zero contacts, whereas matched low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. Near-threshold hold failures repeatedly cross the sampled 1 cm boundary under alternating saturated actions despite safe margins and no contacts. These observations support learned branch/coverage selection as the leading explanation for non-entry and a secondary stabilization explanation for hold failure, while weakening a primary finite-time, joint-limit, or contact explanation. Correction to the inherited interpretation: the evidence does not support training-radius exposure as the cause; it only makes full-distribution exposure the most direct next discriminating test, because T1 was trained on 14-20 cm while evaluated across 6-20 cm and no matched full-distribution-trained artifact exists. The T1 trajectory also shows a proxy/evaluation conflict: late training success_rate was 0.96-0.97, yet M2 measured only 0.6875 on the full panel, so reward and training proxies cannot nominate official readiness. Competing explanations remain consequential: full-distribution exposure may improve coverage and reduce wrong-sector non-entry; alternatively, the unchanged policy representation/control law may persistently select wrong sectors, requiring branch-aware structure; or hold interruptions may remain the limiting class and require stabilization-focused intervention. M3 counterevidence limits a primary physical-control attribution but does not rule out a policy-specific saturation/settling interaction. I3 is therefore a method comparison, not a causal claim about exposure alone.",
     "handoff_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
-    "handoff_source_session_id": "S5",
+    "handoff_source_session_id": "S6",
     "id": "I3",
     "opened_in_session": "S6",
     "question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
@@ -842,7 +842,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 3,
     "session": 6,
@@ -851,7 +851,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -2288,19 +2288,163 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T19:55:33Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M2 paired development evidence and M3 synchronized traces; it is not officially certified. T1:checkpoint-115712 is a measured alternative without a role. No working candidate is assigned. The 22 other T1 checkpoints are unmeasured on the full development panel and share the same 14-20 cm training exposure and direct-torque recipe, so none currently answers I3 better than the measured terminal artifact.",
+        "completed_operations": [
+          "E11"
+        ],
+        "cumulative_resource_use": "Campaign total through this checkpoint: three inquiries opened (I1, I2, I3), six scientific sessions including this goal-review checkpoint, three completed measurements (M1, M2, M3), one completed fresh training operation (T1) producing 24 archived checkpoints, no official assessment, and no additional training allocation spent in this goal-review session. I3 has consumed one inquiry allocation and no measurement or training operation yet.",
+        "current_goal_gap": "T1:checkpoint-120832 leaves 50/160 development failures and a 29.25 percentage-point gap to 98%; 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested. T1 training proxies reached 0.96-0.97 late in training, but those proxies were produced under 14-20 cm exposure and do not establish full-distribution performance.",
+        "current_synthesis": "Observed evidence: M2 measured T1:checkpoint-120832 at 110/160 successes on the full 6-20 cm development panel, with non-entry dominant over hold failure; M3 supplied synchronized traces for the same artifact. M3 shows catastrophic non-entry episodes settling far from reachable targets while retaining large joint-limit margins and zero contacts, whereas matched low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. Near-threshold hold failures repeatedly cross the sampled 1 cm boundary under alternating saturated actions despite safe margins and no contacts. These observations support learned branch/coverage selection as the leading explanation for non-entry and a secondary stabilization explanation for hold failure, while weakening a primary finite-time, joint-limit, or contact explanation. Correction to the inherited interpretation: the evidence does not support training-radius exposure as the cause; it only makes full-distribution exposure the most direct next discriminating test, because T1 was trained on 14-20 cm while evaluated across 6-20 cm and no matched full-distribution-trained artifact exists. The T1 trajectory also shows a proxy/evaluation conflict: late training success_rate was 0.96-0.97, yet M2 measured only 0.6875 on the full panel, so reward and training proxies cannot nominate official readiness. Competing explanations remain consequential: full-distribution exposure may improve coverage and reduce wrong-sector non-entry; alternatively, the unchanged policy representation/control law may persistently select wrong sectors, requiring branch-aware structure; or hold interruptions may remain the limiting class and require stabilization-focused intervention. M3 counterevidence limits a primary physical-control attribution but does not rule out a policy-specific saturation/settling interaction. I3 is therefore a method comparison, not a causal claim about exposure alone.",
+        "decision_frontier": "I3 must determine whether the unchanged direct-torque PPO method, when exposed to the full official 6-20 cm radius distribution, materially improves complete episode success and the geometry-conditioned non-entry tail without sacrificing uninterrupted hold. The decisive evidence is a newly trained candidate measured on a non-overlapping full-distribution panel with first-entry, longest-hold, interruption, and geometry diagnostics. Improvement concentrated in low-radius/negative-angle non-entry would justify continuing this method family toward 98%. Persistent safe-margin wrong-sector failures would make branch-aware policy structure or control consequential. Improved entry with persistent hold interruptions would shift priority to stabilization. New joint-limit, contact, or saturation signatures would reopen the physical-control explanation. The planned result may remain an artifact-level comparison if other learned properties differ; it need not prove exposure is the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "M3",
+          "E9",
+          "E11"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-control-step hold. The strongest measured artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% on the full-radius development panel, so the current evidence is far from supporting official assessment. I3 tests the highest-value remaining method question before committing to the protected assessment.",
+        "next_direction_or_closure": "I3 is open. After this checkpoint, use the bounded allocation to train the unchanged PPO direct-torque implementation over the full 6-20 cm radius distribution, then measure the resulting candidate against T1:checkpoint-120832 on a non-overlapping full-distribution development panel with geometry-conditioned and uninterrupted-hold diagnostics. The result will decide whether to continue this method family or redirect to branch-aware control/stabilization; it will not by itself certify the official 98% goal.",
+        "next_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "5919a68b9e0ab01b46633bea6a43ba488cb2a5ac",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M2 paired development evidence and M3 synchronized traces; it is not officially certified. T1:checkpoint-115712 is a measured alternative without a role. No working candidate is assigned. The 22 other T1 checkpoints are unmeasured on the full development panel and share the same 14-20 cm training exposure and direct-torque recipe, so none currently answers I3 better than the measured terminal artifact.",
+        "completed_operations": [
+          "E11"
+        ],
+        "cumulative_resource_use": "Campaign total through this checkpoint: three inquiries opened (I1, I2, I3), six scientific sessions including this goal-review checkpoint, three completed measurements (M1, M2, M3), one completed fresh training operation (T1) producing 24 archived checkpoints, no official assessment, and no additional training allocation spent in this goal-review session. I3 has consumed one inquiry allocation and no measurement or training operation yet.",
+        "current_goal_gap": "T1:checkpoint-120832 leaves 50/160 development failures and a 29.25 percentage-point gap to 98%; 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested. T1 training proxies reached 0.96-0.97 late in training, but those proxies were produced under 14-20 cm exposure and do not establish full-distribution performance.",
+        "current_synthesis": "Observed evidence: M2 measured T1:checkpoint-120832 at 110/160 successes on the full 6-20 cm development panel, with non-entry dominant over hold failure; M3 supplied synchronized traces for the same artifact. M3 shows catastrophic non-entry episodes settling far from reachable targets while retaining large joint-limit margins and zero contacts, whereas matched low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. Near-threshold hold failures repeatedly cross the sampled 1 cm boundary under alternating saturated actions despite safe margins and no contacts. These observations support learned branch/coverage selection as the leading explanation for non-entry and a secondary stabilization explanation for hold failure, while weakening a primary finite-time, joint-limit, or contact explanation. Correction to the inherited interpretation: the evidence does not support training-radius exposure as the cause; it only makes full-distribution exposure the most direct next discriminating test, because T1 was trained on 14-20 cm while evaluated across 6-20 cm and no matched full-distribution-trained artifact exists. The T1 trajectory also shows a proxy/evaluation conflict: late training success_rate was 0.96-0.97, yet M2 measured only 0.6875 on the full panel, so reward and training proxies cannot nominate official readiness. Competing explanations remain consequential: full-distribution exposure may improve coverage and reduce wrong-sector non-entry; alternatively, the unchanged policy representation/control law may persistently select wrong sectors, requiring branch-aware structure; or hold interruptions may remain the limiting class and require stabilization-focused intervention. M3 counterevidence limits a primary physical-control attribution but does not rule out a policy-specific saturation/settling interaction. I3 is therefore a method comparison, not a causal claim about exposure alone.",
+        "decision_frontier": "I3 must determine whether the unchanged direct-torque PPO method, when exposed to the full official 6-20 cm radius distribution, materially improves complete episode success and the geometry-conditioned non-entry tail without sacrificing uninterrupted hold. The decisive evidence is a newly trained candidate measured on a non-overlapping full-distribution panel with first-entry, longest-hold, interruption, and geometry diagnostics. Improvement concentrated in low-radius/negative-angle non-entry would justify continuing this method family toward 98%. Persistent safe-margin wrong-sector failures would make branch-aware policy structure or control consequential. Improved entry with persistent hold interruptions would shift priority to stabilization. New joint-limit, contact, or saturation signatures would reopen the physical-control explanation. The planned result may remain an artifact-level comparison if other learned properties differ; it need not prove exposure is the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "M3",
+          "E9",
+          "E11"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-control-step hold. The strongest measured artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% on the full-radius development panel, so the current evidence is far from supporting official assessment. I3 tests the highest-value remaining method question before committing to the protected assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I3 is open. After this checkpoint, use the bounded allocation to train the unchanged PPO direct-torque implementation over the full 6-20 cm radius distribution, then measure the resulting candidate against T1:checkpoint-120832 on a non-overlapping full-distribution development panel with geometry-conditioned and uninterrupted-hold diagnostics. The result will decide whether to continue this method family or redirect to branch-aware control/stabilization; it will not by itself certify the official 98% goal.",
+        "next_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "93ad401c-d2f4-4e64-8995-0b6ead3f1e8f",
+        "campaign_id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
+        "campaign_usage": "19m41s | 39.19 AIU | prompt 5.7m (87% cached) | output 116.9k",
+        "session_id": "S6",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0fb1ba208dc7ccd2c40770733d845aee2c4c37df",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M2 paired development evidence and M3 synchronized traces; it is not officially certified. T1:checkpoint-115712 is a measured alternative without a role. No working candidate is assigned. The 22 other T1 checkpoints are unmeasured on the full development panel and share the same 14-20 cm training exposure and direct-torque recipe, so none currently answers I3 better than the measured terminal artifact.",
+        "completed_operations": [
+          "E11"
+        ],
+        "cumulative_resource_use": "Campaign total through this checkpoint: three inquiries opened (I1, I2, I3), six scientific sessions including this goal-review checkpoint, three completed measurements (M1, M2, M3), one completed fresh training operation (T1) producing 24 archived checkpoints, no official assessment, and no additional training allocation spent in this goal-review session. I3 has consumed one inquiry allocation and no measurement or training operation yet.",
+        "current_goal_gap": "T1:checkpoint-120832 leaves 50/160 development failures and a 29.25 percentage-point gap to 98%; 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested. T1 training proxies reached 0.96-0.97 late in training, but those proxies were produced under 14-20 cm exposure and do not establish full-distribution performance.",
+        "current_synthesis": "Observed evidence: M2 measured T1:checkpoint-120832 at 110/160 successes on the full 6-20 cm development panel, with non-entry dominant over hold failure; M3 supplied synchronized traces for the same artifact. M3 shows catastrophic non-entry episodes settling far from reachable targets while retaining large joint-limit margins and zero contacts, whereas matched low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. Near-threshold hold failures repeatedly cross the sampled 1 cm boundary under alternating saturated actions despite safe margins and no contacts. These observations support learned branch/coverage selection as the leading explanation for non-entry and a secondary stabilization explanation for hold failure, while weakening a primary finite-time, joint-limit, or contact explanation. Correction to the inherited interpretation: the evidence does not support training-radius exposure as the cause; it only makes full-distribution exposure the most direct next discriminating test, because T1 was trained on 14-20 cm while evaluated across 6-20 cm and no matched full-distribution-trained artifact exists. The T1 trajectory also shows a proxy/evaluation conflict: late training success_rate was 0.96-0.97, yet M2 measured only 0.6875 on the full panel, so reward and training proxies cannot nominate official readiness. Competing explanations remain consequential: full-distribution exposure may improve coverage and reduce wrong-sector non-entry; alternatively, the unchanged policy representation/control law may persistently select wrong sectors, requiring branch-aware structure; or hold interruptions may remain the limiting class and require stabilization-focused intervention. M3 counterevidence limits a primary physical-control attribution but does not rule out a policy-specific saturation/settling interaction. I3 is therefore a method comparison, not a causal claim about exposure alone.",
+        "decision_frontier": "I3 must determine whether the unchanged direct-torque PPO method, when exposed to the full official 6-20 cm radius distribution, materially improves complete episode success and the geometry-conditioned non-entry tail without sacrificing uninterrupted hold. The decisive evidence is a newly trained candidate measured on a non-overlapping full-distribution panel with first-entry, longest-hold, interruption, and geometry diagnostics. Improvement concentrated in low-radius/negative-angle non-entry would justify continuing this method family toward 98%. Persistent safe-margin wrong-sector failures would make branch-aware policy structure or control consequential. Improved entry with persistent hold interruptions would shift priority to stabilization. New joint-limit, contact, or saturation signatures would reopen the physical-control explanation. The planned result may remain an artifact-level comparison if other learned properties differ; it need not prove exposure is the sole cause.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7",
+          "E8",
+          "M3",
+          "E9",
+          "E11"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-control-step hold. The strongest measured artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% on the full-radius development panel, so the current evidence is far from supporting official assessment. I3 tests the highest-value remaining method question before committing to the protected assessment.",
+        "next_direction_or_closure": "I3 is open. After this checkpoint, use the bounded allocation to train the unchanged PPO direct-torque implementation over the full 6-20 cm radius distribution, then measure the resulting candidate against T1:checkpoint-120832 on a non-overlapping full-distribution development panel with geometry-conditioned and uninterrupted-hold diagnostics. The result will decide whether to continue this method family or redirect to branch-aware control/stabilization; it will not by itself certify the official 98% goal.",
+        "next_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?"
+      }
+    },
+    "request_fingerprint": "a95c6b6080337c1e0fbb9b8e1272c6c555adb03a07522f421c09cf39b3f4c370",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains best-known based on M2 paired development evidence and is not officially eligible. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. M3 is a mechanism measurement of T1, not a new candidate.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M2 paired development evidence and M3 synchronized traces; it is not officially certified. T1:checkpoint-115712 is a measured alternative without a role. No working candidate is assigned. The 22 other T1 checkpoints are unmeasured on the full development panel and share the same 14-20 cm training exposure and direct-torque recipe, so none currently answers I3 better than the measured terminal artifact.",
     "completed_operations": [
-      "M3",
-      "E9"
+      "E11"
     ],
-    "cumulative_resource_use": "Before I2: M1 compiled-dynamics probe, E1 startup checkpoint, E2 opening of I1, E3 checkpoint, T1 fresh training requested for 120000 and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired 160-episode development evaluations, E4 best-known assignment, E5 closure of I1, E6 checkpoint, E7 opening of I2, and E8 checkpoint. I2 added M3 synchronized 160-episode trace evaluation and E9 inquiry closure. Total: two inquiries opened and both closed, three measurements in this line plus prior campaign measurements as recorded, one learned artifact, no official assessment resource consumed, and no additional training allocation spent in I2.",
-    "current_goal_gap": "T1:checkpoint-120832 achieved 110/160 = 68.75% on the full 6-20 cm development panel, leaving 50 failures and a 29.25 percentage-point gap to the 98% objective. Forty-two failures had no first in-tolerance step and eight entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested.",
-    "current_synthesis": "M3 provides the required synchronized full-panel traces for the best-known artifact. Catastrophic non-entry failures settle far from reachable targets while retaining large joint-limit margins and zero contacts; comparable low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. This supports branch/coverage selection failure as the dominant non-entry mechanism and weakens a primary finite-time, joint-limit, or contact explanation. Near-threshold hold failures instead show repeated sampled boundary crossings under alternating saturated actions with safe margins and no contacts, establishing a secondary stabilization failure. The evidence supports full-distribution learning as the next direction, but does not isolate training-radius exposure as the sole cause because no matched full-distribution-trained policy has yet been measured.",
-    "decision_frontier": "The physical redirect is not currently supported as the first response: the dominant non-entry traces show stable wrong-sector behavior without joint-limit or contact signatures, and successful matched sectors tolerate similar transient dynamics. The next decision is whether an unchanged direct-torque PPO recipe trained over the full official 6-20 cm radius distribution closes the coverage/branch gap while preserving hold behavior. If full-distribution training improves low-radius and negative-angle non-entry without worsening hold interruptions, attribute the remaining gap primarily to learned coverage/branch selection and continue that method family. If non-entry persists with the same safe-margin wrong-sector signatures, branch-aware control or policy structure becomes consequential. If hold failures remain concentrated despite improved entry, add a stabilization-focused intervention; if traces instead reveal new saturation or limit signatures, revisit the physical-control hypothesis.",
+    "cumulative_resource_use": "Campaign total through this checkpoint: three inquiries opened (I1, I2, I3), six scientific sessions including this goal-review checkpoint, three completed measurements (M1, M2, M3), one completed fresh training operation (T1) producing 24 archived checkpoints, no official assessment, and no additional training allocation spent in this goal-review session. I3 has consumed one inquiry allocation and no measurement or training operation yet.",
+    "current_goal_gap": "T1:checkpoint-120832 leaves 50/160 development failures and a 29.25 percentage-point gap to 98%; 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested. T1 training proxies reached 0.96-0.97 late in training, but those proxies were produced under 14-20 cm exposure and do not establish full-distribution performance.",
+    "current_synthesis": "Observed evidence: M2 measured T1:checkpoint-120832 at 110/160 successes on the full 6-20 cm development panel, with non-entry dominant over hold failure; M3 supplied synchronized traces for the same artifact. M3 shows catastrophic non-entry episodes settling far from reachable targets while retaining large joint-limit margins and zero contacts, whereas matched low-radius, negative-angle successes reach and hold despite high transient velocities and saturated actions. Near-threshold hold failures repeatedly cross the sampled 1 cm boundary under alternating saturated actions despite safe margins and no contacts. These observations support learned branch/coverage selection as the leading explanation for non-entry and a secondary stabilization explanation for hold failure, while weakening a primary finite-time, joint-limit, or contact explanation. Correction to the inherited interpretation: the evidence does not support training-radius exposure as the cause; it only makes full-distribution exposure the most direct next discriminating test, because T1 was trained on 14-20 cm while evaluated across 6-20 cm and no matched full-distribution-trained artifact exists. The T1 trajectory also shows a proxy/evaluation conflict: late training success_rate was 0.96-0.97, yet M2 measured only 0.6875 on the full panel, so reward and training proxies cannot nominate official readiness. Competing explanations remain consequential: full-distribution exposure may improve coverage and reduce wrong-sector non-entry; alternatively, the unchanged policy representation/control law may persistently select wrong sectors, requiring branch-aware structure; or hold interruptions may remain the limiting class and require stabilization-focused intervention. M3 counterevidence limits a primary physical-control attribution but does not rule out a policy-specific saturation/settling interaction. I3 is therefore a method comparison, not a causal claim about exposure alone.",
+    "decision_frontier": "I3 must determine whether the unchanged direct-torque PPO method, when exposed to the full official 6-20 cm radius distribution, materially improves complete episode success and the geometry-conditioned non-entry tail without sacrificing uninterrupted hold. The decisive evidence is a newly trained candidate measured on a non-overlapping full-distribution panel with first-entry, longest-hold, interruption, and geometry diagnostics. Improvement concentrated in low-radius/negative-angle non-entry would justify continuing this method family toward 98%. Persistent safe-margin wrong-sector failures would make branch-aware policy structure or control consequential. Improved entry with persistent hold interruptions would shift priority to stabilization. New joint-limit, contact, or saturation signatures would reopen the physical-control explanation. The planned result may remain an artifact-level comparison if other learned properties differ; it need not prove exposure is the sole cause.",
     "evidence_references": [
       "M1",
       "T1",
@@ -2310,14 +2454,15 @@
       "E7",
       "E8",
       "M3",
-      "E9"
+      "E9",
+      "E11"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successes in the fixed 200-episode official assessment, requiring every episode to complete the uninterrupted 100-control-step hold. T1:checkpoint-120832 is 68.75% on the 160-episode full 6-20 cm development panel, so the campaign is not eligible for official assessment. I2 determines whether the next intervention should address policy coverage/branch selection or first redesign the physical control mechanism.",
-    "inquiry_id": "I2",
-    "next_direction_or_closure": "I2 is closed. The next goal-review direction should be matched method development: train the unchanged PPO direct-torque implementation over 6-20 cm rather than first redesigning the simulator or joint controller. The training result must be measured on a non-overlapping full-distribution development panel with geometry-conditioned entry and uninterrupted-hold diagnostics; success-rate proxies from training alone cannot establish progress toward 98%.",
+    "human_goal_connection": "The human goal is at least 196 successes out of 200 official episodes, with every success requiring an uninterrupted 100-control-step hold. The strongest measured artifact, T1:checkpoint-120832, achieved 110/160 = 68.75% on the full-radius development panel, so the current evidence is far from supporting official assessment. I3 tests the highest-value remaining method question before committing to the protected assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I3 is open. After this checkpoint, use the bounded allocation to train the unchanged PPO direct-torque implementation over the full 6-20 cm radius distribution, then measure the resulting candidate against T1:checkpoint-120832 on a non-overlapping full-distribution development panel with geometry-conditioned and uninterrupted-hold diagnostics. The result will decide whether to continue this method family or redirect to branch-aware control/stabilization; it will not by itself certify the official 98% goal.",
     "next_question": "Can the unchanged direct-torque PPO recipe, trained over the full official 6-20 cm target-radius distribution for the next bounded allocation, materially improve geometry-conditioned episode success and uninterrupted hold completion relative to T1:checkpoint-120832?",
-    "scientific_commit": "8e4e5b5f90d3db7cf7b9becb2375a7fe568a1aee",
-    "session_id": "S5"
+    "scientific_commit": "0fb1ba208dc7ccd2c40770733d845aee2c4c37df",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2325,21 +2470,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "93ad401c-d2f4-4e64-8995-0b6ead3f1e8f",
-    "id": "S6",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E11"
-    ],
-    "scientific_parent_commit": "5919a68b9e0ab01b46633bea6a43ba488cb2a5ac"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
