@@ -369,47 +369,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a fresh candidate trained with the unchanged baseline PPO recipe has a completed official-distribution research evaluation and the preserved diagnostics identify whether performance is broadly capable or dominated by a consequential failure class: reach/no-entry, inner-versus-outer coverage, or entry followed by hold interruption/truncation. A limited or inconclusive result is sufficient if the evaluation does not discriminate these classes, provided the unresolved consequence is carried into the next direction.",
-          "goal_connection": "A candidate-level answer is the first route to the human objective because success requires at least 196 of 200 official episodes, each with a complete uninterrupted 100-step hold. It will distinguish whether the current implementation already provides a viable policy or whether development must address coverage, stabilization, reward/runtime alignment, or launch behavior.",
-          "handoff_conclusion": "M1 observation: under the exact reset, qpos and qvel are [0,0], the end effector is at [0.22,0,0.02], and the 16 deterministic targets span radii approximately 0.089-0.198 m and angles approximately -2.60 to 2.86 rad. The compiled model reports joint limits +/-2.967 rad, damping 0.5, armature 0.01, upper-arm and forearm masses approximately 0.09896 and 0.05248 kg, direct unit-gain actuators with control range [-1,1], gear 5, no actuator force limit, and first-pulse generalized actuator force +/-5. In the isolated 20 ms saturated pulses, endpoint qacc peaks were approximately 382 rad/s^2 for the shoulder and 448 rad/s^2 for the elbow; peak speeds were approximately 5.48 and 6.08 rad/s, and after 0.42 s of zero-control recovery joint speeds were below 1e-6 rad/s. The first 2 ms samples leave q_e=0 and generate both radial and tangential end-effector velocity, consistent with a brief bend-before-radial launch from the rank-deficient reset. Interpretation: insufficient compiled actuator authority or passive settling is weakened as the primary campaign blocker, and pure kinematic unreachability is not supported by this measurement. The singular launch remains a trajectory-design consideration because it produces a high-speed transient, but M1 used isolated pulses rather than a target-directed policy and cannot attribute failure or success to that mechanism. Competing explanations now move to policy learning and task coverage: (A) the baseline PPO recipe can learn target-directed launch and low-velocity stabilization from the available observation, (B) the outer-band-only training exposure produces an inner-radius generalization failure, or (C) the reward/runtime leads to partial entries and hold interruptions despite adequate physical authority. M1 does not distinguish these candidate-level explanations because it contains no learned policy, hold counter trajectory, or official-style outcome.",
-          "handoff_question": "Does a fresh candidate trained with the current baseline PPO recipe convert the measured actuation authority into target-directed, uninterrupted official-style holds across inner and outer radii, and which failure class dominates?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does a fresh candidate trained with the current baseline PPO recipe convert the measured actuation authority into target-directed, uninterrupted official-style holds across inner and outer radii, and which failure class dominates?",
-          "rationale": "M1 measured substantial compiled actuator authority and recovery from isolated saturated pulses, weakening insufficient actuation and pure kinematic unreachability as the first explanation, but it did not test target-directed control, inner-radius generalization, or uninterrupted holding. With no candidate or learning trajectory available, changing the recipe now would be speculative. The current baseline PPO implementation followed by official-distribution development evaluation has the highest expected information per bounded effort: strong stratified success could justify candidate selection, inner-band failures could motivate coverage changes, and rapid entry with interruptions could motivate stabilization or reward-alignment work. The result will remain recipe-specific and will not by itself certify the protected 200-episode assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a fresh candidate trained with the unchanged baseline PPO recipe has a completed official-distribution research evaluation and the preserved diagnostics identify whether performance is broadly capable or dominated by a consequential failure class: reach/no-entry, inner-versus-outer coverage, or entry followed by hold interruption/truncation. A limited or inconclusive result is sufficient if the evaluation does not discriminate these classes, provided the unresolved consequence is carried into the next direction.",
-        "goal_connection": "A candidate-level answer is the first route to the human objective because success requires at least 196 of 200 official episodes, each with a complete uninterrupted 100-step hold. It will distinguish whether the current implementation already provides a viable policy or whether development must address coverage, stabilization, reward/runtime alignment, or launch behavior.",
-        "question": "Does a fresh candidate trained with the current baseline PPO recipe convert the measured actuation authority into target-directed, uninterrupted official-style holds across inner and outer radii, and which failure class dominates?",
-        "rationale": "M1 measured substantial compiled actuator authority and recovery from isolated saturated pulses, weakening insufficient actuation and pure kinematic unreachability as the first explanation, but it did not test target-directed control, inner-radius generalization, or uninterrupted holding. With no candidate or learning trajectory available, changing the recipe now would be speculative. The current baseline PPO implementation followed by official-distribution development evaluation has the highest expected information per bounded effort: strong stratified success could justify candidate selection, inner-band failures could motivate coverage changes, and rapid entry with interruptions could motivate stabilization or reward-alignment work. The result will remain recipe-specific and will not by itself certify the protected 200-episode assessment."
-      }
-    },
-    "request_fingerprint": "ac172a2169355a5f5e165344d1306d46d34f67bd39bc4dacbc8c294b9e738f0a",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles remain empty.",
     "completed_operations": [
