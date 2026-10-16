@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "A complete frozen-T2 diagnostic on the same 160-episode panel records per-control-step q, qdot, actions, target geometry, both IK residuals and selected branch, joint-limit/manipulability indicators, boundary distance and hold age, plus all ten internal 2 ms distances during hold intervals and the saved runtime/recurrent metadata. Close when these data quantify outer failures and interruptions by no-entry versus post-entry behavior and determine whether one of branch/edge geometry, high-velocity or stabilization behavior, runtime/recurrent dependence, or inter-sample exits is dominant; if the traces do not discriminate, close with that limitation and carry the unresolved distinction into goal review.",
+    "goal_connection": "T2 is the best-known candidate but reaches only 60/67 outer targets and 150/160 overall, below the 196/200 objective. A trajectory-level distinction can select whether the next goal-directed effort should target branch-aware reach, stabilization/control and reward, runtime/memory handling, or evaluator-robust physical margins, instead of committing the protected assessment without knowing which failure class is actionable.",
+    "handoff_conclusion": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+    "handoff_question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+    "handoff_source_session_id": "S7",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+    "rationale": "M1 weakens insufficient actuator authority and passive settling, T1/T2 establish the exposure tradeoff, and T3 shows that the tested full hold-progress forfeiture is a broad negative recipe result rather than a repair. Existing T2 aggregates identify 438 outer interruptions but provide no q, qdot, action, branch, runtime-state, or internal-step evidence. One frozen-candidate diagnostic is lower cost than a terminal assessment and can change the next research direction; it does not assume that another reward variant is warranted or claim causality beyond the recorded traces.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "ca8153b246c4a9a04245096a0939cb5915e547fb",
     "id": "e0acf639-be47-4a77-bbc5-fa33eb706033",
@@ -2466,16 +2477,16 @@
     }
   },
   "counters": {
-    "event": 15,
-    "inquiry": 3,
+    "event": 16,
+    "inquiry": 4,
     "measurement": 6,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -5878,9 +5889,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T10:37:05Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "A complete frozen-T2 diagnostic on the same 160-episode panel records per-control-step q, qdot, actions, target geometry, both IK residuals and selected branch, joint-limit/manipulability indicators, boundary distance and hold age, plus all ten internal 2 ms distances during hold intervals and the saved runtime/recurrent metadata. Close when these data quantify outer failures and interruptions by no-entry versus post-entry behavior and determine whether one of branch/edge geometry, high-velocity or stabilization behavior, runtime/recurrent dependence, or inter-sample exits is dominant; if the traces do not discriminate, close with that limitation and carry the unresolved distinction into goal review.",
+        "goal_connection": "T2 is the best-known candidate but reaches only 60/67 outer targets and 150/160 overall, below the 196/200 objective. A trajectory-level distinction can select whether the next goal-directed effort should target branch-aware reach, stabilization/control and reward, runtime/memory handling, or evaluator-robust physical margins, instead of committing the protected assessment without knowing which failure class is actionable.",
+        "question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+        "rationale": "M1 weakens insufficient actuator authority and passive settling, T1/T2 establish the exposure tradeoff, and T3 shows that the tested full hold-progress forfeiture is a broad negative recipe result rather than a repair. Existing T2 aggregates identify 438 outer interruptions but provide no q, qdot, action, branch, runtime-state, or internal-step evidence. One frozen-candidate diagnostic is lower cost than a terminal assessment and can change the next research direction; it does not assume that another reward variant is warranted or claim causality beyond the recorded traces."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "A complete frozen-T2 diagnostic on the same 160-episode panel records per-control-step q, qdot, actions, target geometry, both IK residuals and selected branch, joint-limit/manipulability indicators, boundary distance and hold age, plus all ten internal 2 ms distances during hold intervals and the saved runtime/recurrent metadata. Close when these data quantify outer failures and interruptions by no-entry versus post-entry behavior and determine whether one of branch/edge geometry, high-velocity or stabilization behavior, runtime/recurrent dependence, or inter-sample exits is dominant; if the traces do not discriminate, close with that limitation and carry the unresolved distinction into goal review.",
+          "goal_connection": "T2 is the best-known candidate but reaches only 60/67 outer targets and 150/160 overall, below the 196/200 objective. A trajectory-level distinction can select whether the next goal-directed effort should target branch-aware reach, stabilization/control and reward, runtime/memory handling, or evaluator-robust physical margins, instead of committing the protected assessment without knowing which failure class is actionable.",
+          "handoff_conclusion": "Observed facts: M1 showed substantial compiled actuator response and rapid passive velocity recovery under open-loop probes, weakening insufficient authority and passive settling as primary explanations but not testing learned launch or hold control. T1 established that the unchanged outer-only exposure recipe was strong on outer targets but failed mainly by inner no-entry. T2 changed only training exposure to the full official [0.06, 0.20] m range and improved inner success to 90/93, but outer success fell to 60/67 with 438 outer interruptions. I3 then changed only the existing reward parameter HOLD_EXIT_FORFEIT_FRACTION from 0.0 to 1.0 while retaining T2 exposure and fixed PPO/runtime/control/seed conditions. T3's complete artifact scored 52/160 against T2's 150/160 on the identical panel; M6 found inner success 34/93 versus 90/93 and outer success 18/67 versus 60/67, with no-entry failures dominating both bands. T3's lower outer interruptions (96 versus 438) therefore reflect fewer entries rather than repaired stabilization; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Interpretation: full hold-progress forfeiture as implemented is a negative recipe-level result and should not be adopted. It weakens the specific hypothesis that this simple reward alignment repairs T2's outer regression, but does not disprove other reward designs or establish that control, branch, runtime, hidden hold state, or sampled timing is causal. The physical model's strict-hold consequence remains supported by the observed decomposition, while physical continuity between 20 ms checks, qdot/action traces, reward components, and hidden hold-state effects remain unmeasured.",
+          "handoff_question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+          "handoff_source_session_id": "S7",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+          "rationale": "M1 weakens insufficient actuator authority and passive settling, T1/T2 establish the exposure tradeoff, and T3 shows that the tested full hold-progress forfeiture is a broad negative recipe result rather than a repair. Existing T2 aggregates identify 438 outer interruptions but provide no q, qdot, action, branch, runtime-state, or internal-step evidence. One frozen-candidate diagnostic is lower cost than a terminal assessment and can change the next research direction; it does not assume that another reward variant is warranted or claim causality beyond the recorded traces.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "A complete frozen-T2 diagnostic on the same 160-episode panel records per-control-step q, qdot, actions, target geometry, both IK residuals and selected branch, joint-limit/manipulability indicators, boundary distance and hold age, plus all ten internal 2 ms distances during hold intervals and the saved runtime/recurrent metadata. Close when these data quantify outer failures and interruptions by no-entry versus post-entry behavior and determine whether one of branch/edge geometry, high-velocity or stabilization behavior, runtime/recurrent dependence, or inter-sample exits is dominant; if the traces do not discriminate, close with that limitation and carry the unresolved distinction into goal review.",
+        "goal_connection": "T2 is the best-known candidate but reaches only 60/67 outer targets and 150/160 overall, below the 196/200 objective. A trajectory-level distinction can select whether the next goal-directed effort should target branch-aware reach, stabilization/control and reward, runtime/memory handling, or evaluator-robust physical margins, instead of committing the protected assessment without knowing which failure class is actionable.",
+        "question": "Under the frozen T2 runtime and its fixed 160-episode development panel, which mechanism accounts for the consequential outer-band failures: branch or angular-edge/joint-limit launch difficulty, learned stabilization with residual velocity after entry, runtime or recurrent-state behavior, or physical exits between the evaluator's 20 ms samples?",
+        "rationale": "M1 weakens insufficient actuator authority and passive settling, T1/T2 establish the exposure tradeoff, and T3 shows that the tested full hold-progress forfeiture is a broad negative recipe result rather than a repair. Existing T2 aggregates identify 438 outer interruptions but provide no q, qdot, action, branch, runtime-state, or internal-step evidence. One frozen-candidate diagnostic is lower cost than a terminal assessment and can change the next research direction; it does not assume that another reward variant is warranted or claim causality beyond the recorded traces."
+      }
+    },
+    "request_fingerprint": "4563bed91732f276f70fe60e26336585af24333b017aba950fad8bc13391c83a",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, supported by T2, M3 and M4 at 150/160; it remains below the human objective and is not officially assessed. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator from M3/M4. T3:checkpoint-120832 is the tested reward-aligned artifact from T3/M5/M6 and is not assigned a role because it scored 52/160 and broadly degraded reach. No working or retained candidate is assigned.",
     "completed_operations": [
@@ -5926,6 +6000,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "ae12e8ff-42ac-4508-b295-de7e218dd85f",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E16"
+    ],
+    "scientific_parent_commit": "ae308f75aae29ea25339f8b7ab27026421663d61"
+  },
   "terminal_state": null
 }
