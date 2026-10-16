@@ -141,10 +141,12 @@ The handler waits for the stop handoff and native task idle state before
 unlocking operation submission.
 
 After the first completed handoff for an assignment, the handler starts an
-independent native `scientific-reviewer` using GPT-6 Luna with max reasoning.
+independent native `scientific-reviewer` using GPT-6 Luna with high reasoning.
 It receives the original request, supplied task context, actual changed files and diff.
 The review prioritizes coding defects and checks equations, units, physical
 assumptions, timing and measurement meaning in changed code.
+It checks whether the protocol and reported quantities can answer the PI's
+stated question and flags concrete confounds or missing conditions for the PI.
 An untested scientific hypothesis is not itself a defect.
 Corrections reuse that native reviewer. They provide the correction
 intent and context, incremental changes and previous completed

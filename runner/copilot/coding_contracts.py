@@ -33,7 +33,7 @@ REVIEW_TOOLS = ["view", "scientific_api_reference"]
 REVIEW_MODEL = "gpt-6-luna"
 
 
-REVIEW_REASONING = "max"
+REVIEW_REASONING = "high"
 
 
 def normalize_model(model: str) -> str:

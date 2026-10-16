@@ -7,7 +7,8 @@ runtime behavior and library/API use.
 Also check the science implemented by the code:
 - Equations and units represent the intended physical quantities.
 - Simulator state and measurements refer to the correct times and conditions.
-- Diagnostics compute the quantities and outcomes they claim to measure.
+- Check whether the protocol and reported quantities can answer the PI's stated
+  question. Flag concrete confounds or missing conditions for the PI.
 - The intervention changes the intended behavior while preserving the task
   semantics the PI asked to keep.
 
