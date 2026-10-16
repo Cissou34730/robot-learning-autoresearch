@@ -3495,38 +3495,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a limited positive answer: a complete candidate trained with 6-20 cm exposure is a credible route because T2:checkpoint-120832 improved development success from 124/160 (77.5%) to 151/160 (94.375%) and eliminated the measured inner-band acquisition deficit in the 6-14 cm bins. It is not sufficient for the 98% objective and does not establish exposure as the causal factor. M3 shows the remaining gap is now chiefly stabilization/hold behavior in outer-radius and angle-specific cases: T2's reached-episode success rate is 96.79% versus T1's 96.88%, with T2's [18,20] cm success at 84.6% versus 96.2% and 14 episodes with interruptions. T2 is therefore best-known, while full-radius exposure should be retained if further work continues and the next scientific direction should target hold stability, branch/control behavior, and only then compiled-dynamics or substep semantics if needed.",
-        "reason": "The closure condition is met by T2, M2, and M3: T2 was trained with the full official radius range, M2 compared it with T1:checkpoint-120832 on identical non-overlapping official-distribution development seeds, and M3 inspected radius- and angle-stratified first reach, minimum distance, maximum held steps, interruptions, and success/hold continuity. Inner-band acquisition improved materially without becoming the dominant failure class, but the candidate remains 45 successes short of the development-panel equivalent of 98% and shows a meaningful outer-band hold regression. This closes the bounded exposure question while preserving stabilization and dynamic/substep alternatives for goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a limited positive answer: a complete candidate trained with 6-20 cm exposure is a credible route because T2:checkpoint-120832 improved development success from 124/160 (77.5%) to 151/160 (94.375%) and eliminated the measured inner-band acquisition deficit in the 6-14 cm bins. It is not sufficient for the 98% objective and does not establish exposure as the causal factor. M3 shows the remaining gap is now chiefly stabilization/hold behavior in outer-radius and angle-specific cases: T2's reached-episode success rate is 96.79% versus T1's 96.88%, with T2's [18,20] cm success at 84.6% versus 96.2% and 14 episodes with interruptions. T2 is therefore best-known, while full-radius exposure should be retained if further work continues and the next scientific direction should target hold stability, branch/control behavior, and only then compiled-dynamics or substep semantics if needed.",
-        "reason": "The closure condition is met by T2, M2, and M3: T2 was trained with the full official radius range, M2 compared it with T1:checkpoint-120832 on identical non-overlapping official-distribution development seeds, and M3 inspected radius- and angle-stratified first reach, minimum distance, maximum held steps, interruptions, and success/hold continuity. Inner-band acquisition improved materially without becoming the dominant failure class, but the candidate remains 45 successes short of the development-panel equivalent of 98% and shows a meaningful outer-band hold regression. This closes the bounded exposure question while preserving stabilization and dynamic/substep alternatives for goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved with a limited positive answer: a complete candidate trained with 6-20 cm exposure is a credible route because T2:checkpoint-120832 improved development success from 124/160 (77.5%) to 151/160 (94.375%) and eliminated the measured inner-band acquisition deficit in the 6-14 cm bins. It is not sufficient for the 98% objective and does not establish exposure as the causal factor. M3 shows the remaining gap is now chiefly stabilization/hold behavior in outer-radius and angle-specific cases: T2's reached-episode success rate is 96.79% versus T1's 96.88%, with T2's [18,20] cm success at 84.6% versus 96.2% and 14 episodes with interruptions. T2 is therefore best-known, while full-radius exposure should be retained if further work continues and the next scientific direction should target hold stability, branch/control behavior, and only then compiled-dynamics or substep semantics if needed.",
-        "reason": "The closure condition is met by T2, M2, and M3: T2 was trained with the full official radius range, M2 compared it with T1:checkpoint-120832 on identical non-overlapping official-distribution development seeds, and M3 inspected radius- and angle-stratified first reach, minimum distance, maximum held steps, interruptions, and success/hold continuity. Inner-band acquisition improved materially without becoming the dominant failure class, but the candidate remains 45 successes short of the development-panel equivalent of 98% and shows a meaningful outer-band hold regression. This closes the bounded exposure question while preserving stabilization and dynamic/substep alternatives for goal review."
-      }
-    },
-    "request_fingerprint": "148b4380f0ef09c53d207ee540fca3222c8f8b045fcef30145c147c80259a6e0",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 from M1's paired comparison (110/160 versus 105/160). Working: none. T1:checkpoint-115712 remains a measured comparison artifact. No candidate has evidence near the official goal.",
     "completed_operations": [
