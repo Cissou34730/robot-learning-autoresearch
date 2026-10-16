@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a complete saved-runtime controller or policy-state artifact has been produced and compared on a fresh shared 200-episode research panel under the fixed official semantics against the relevant learned baseline(s), with radius/angle strata and never-reached versus reached-but-failed-hold diagnostics. A positive conclusion requires at least 196/200 while preserving both the T3-level inner outcomes and the T1/T3-level outer complete-hold outcomes; otherwise close with the measured negative, limited, or inconclusive result and carry forward the residual failure class. No result changes official success semantics or substitutes for the protected assessment.",
+    "goal_connection": "The human objective is at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. Current research artifacts are 145/200 for T1, 168/200 for T3, and 163/200 for T4, so the remaining gap is specifically the unresolved combination of inner-radius acquisition and outer-radius maintenance.",
+    "handoff_conclusion": "Observed: T4 implemented a new complete recipe relative to T1 and T3: transfer from T1, full 6-20 cm training exposure, branch/escape shaping limited to the pre-reach acquisition phase, and full forfeiture of accumulated hold progress after a maintenance-phase exit. Its training proxy peaked at 0.99 success and reward 104.46 at 105472 steps, then declined to 0.98 at 120832; the measured nonterminal checkpoint was selected because terminal position has no privileged status. Observed: on the fresh matched M8/M9 panel, T4 achieved 163/200 (81.5%) versus T1 145/200 (72.5%) and T3 168/200 (84.0%). Against T1, T4 reduced never-reached failures from 47 to 26 and improved inner success from 18/49 to 29/49 in [6,10) and from 33/55 to 45/55 in [10,14), with paired wins 16-5 and 13-1. However, T4 lost outer complete-hold successes: [14,18) was 66/68 versus T1 67/68 and [18,20) was 23/28 versus 27/28; reached-but-failed-hold was 11 versus 8. Against T3, T4 was lower overall and shifted the inner tradeoff: [6,10) was 29/49 versus T3 21/49, but [10,14) was 45/55 versus 53/55; T4 also had 11 reached-but-failed-hold versus T3's 7. Interpretation: the tested phase-separated reward artifact recovers much of T1's inner reach deficit and changes failure class composition, but reward-only separation does not preserve outer hold behavior and does not surpass the best pooled T3 artifact. The claim is limited to the complete T4 artifact: transfer, seed, source lineage, exposure, reward changes and checkpoint selection remain coupled, so phase separation alone is not established as causal or sufficient. Earlier evidence remains consequential: T2's wholesale full-range fresh replacement was 70/200 and degraded every stratum; M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison; M6/M7 found T3's inner gain with five outer losses and unchanged reset branch errors. These results support learned transient/coverage and terminal stabilization as competing artifact-level failure components, while leaving reset/branch causality, policy variability, and endpoint-versus-substep physical interpretation unresolved. The initial model's nominal reachability and singular-reset consequences remain useful but conditional; no evidence warrants plant retuning or official assessment.",
+    "handoff_question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+    "handoff_source_session_id": "S9",
+    "id": "I5",
+    "opened_in_session": "S10",
+    "question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+    "rationale": "Open this bounded route because the current best evidence is materially below the goal and the expected contribution of one explicit controller/state-separation allocation is credible: the physical model identifies hidden hold progress and a reset singularity, while T4 showed only that one coupled reward/exposure/transfer/checkpoint recipe shifts failures toward improved inner reach but loses outer holds. Correcting the inherited interpretation, T4 does not establish reward-only phase separation as the cause or rule out artifact variability; the logs also show training proxies are not development performance, with T3's high proxy concentrated near 68-71k steps and T4's proxy peak not translating to the combined panel result. The current saved runtime has no explicit acquisition/maintenance state machine, so this inquiry tests a genuinely unexercised method surface rather than repeating reward-only shaping. Official assessment of T1 would be terminal at 145/200 on the latest matched panel, whereas this bounded implementation-and-panel route can directly test whether the unresolved tradeoff is controller/state structure and is worth one training/measurement allocation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -3293,16 +3304,16 @@
     }
   },
   "counters": {
-    "event": 18,
-    "inquiry": 4,
+    "event": 19,
+    "inquiry": 5,
     "measurement": 9,
-    "session": 9,
+    "session": 10,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -10674,9 +10685,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T23:13:04Z",
+      "error": null,
+      "id": "E19",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a complete saved-runtime controller or policy-state artifact has been produced and compared on a fresh shared 200-episode research panel under the fixed official semantics against the relevant learned baseline(s), with radius/angle strata and never-reached versus reached-but-failed-hold diagnostics. A positive conclusion requires at least 196/200 while preserving both the T3-level inner outcomes and the T1/T3-level outer complete-hold outcomes; otherwise close with the measured negative, limited, or inconclusive result and carry forward the residual failure class. No result changes official success semantics or substitutes for the protected assessment.",
+        "goal_connection": "The human objective is at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. Current research artifacts are 145/200 for T1, 168/200 for T3, and 163/200 for T4, so the remaining gap is specifically the unresolved combination of inner-radius acquisition and outer-radius maintenance.",
+        "question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+        "rationale": "Open this bounded route because the current best evidence is materially below the goal and the expected contribution of one explicit controller/state-separation allocation is credible: the physical model identifies hidden hold progress and a reset singularity, while T4 showed only that one coupled reward/exposure/transfer/checkpoint recipe shifts failures toward improved inner reach but loses outer holds. Correcting the inherited interpretation, T4 does not establish reward-only phase separation as the cause or rule out artifact variability; the logs also show training proxies are not development performance, with T3's high proxy concentrated near 68-71k steps and T4's proxy peak not translating to the combined panel result. The current saved runtime has no explicit acquisition/maintenance state machine, so this inquiry tests a genuinely unexercised method surface rather than repeating reward-only shaping. Official assessment of T1 would be terminal at 145/200 on the latest matched panel, whereas this bounded implementation-and-panel route can directly test whether the unresolved tradeoff is controller/state structure and is worth one training/measurement allocation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a complete saved-runtime controller or policy-state artifact has been produced and compared on a fresh shared 200-episode research panel under the fixed official semantics against the relevant learned baseline(s), with radius/angle strata and never-reached versus reached-but-failed-hold diagnostics. A positive conclusion requires at least 196/200 while preserving both the T3-level inner outcomes and the T1/T3-level outer complete-hold outcomes; otherwise close with the measured negative, limited, or inconclusive result and carry forward the residual failure class. No result changes official success semantics or substitutes for the protected assessment.",
+          "goal_connection": "The human objective is at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. Current research artifacts are 145/200 for T1, 168/200 for T3, and 163/200 for T4, so the remaining gap is specifically the unresolved combination of inner-radius acquisition and outer-radius maintenance.",
+          "handoff_conclusion": "Observed: T4 implemented a new complete recipe relative to T1 and T3: transfer from T1, full 6-20 cm training exposure, branch/escape shaping limited to the pre-reach acquisition phase, and full forfeiture of accumulated hold progress after a maintenance-phase exit. Its training proxy peaked at 0.99 success and reward 104.46 at 105472 steps, then declined to 0.98 at 120832; the measured nonterminal checkpoint was selected because terminal position has no privileged status. Observed: on the fresh matched M8/M9 panel, T4 achieved 163/200 (81.5%) versus T1 145/200 (72.5%) and T3 168/200 (84.0%). Against T1, T4 reduced never-reached failures from 47 to 26 and improved inner success from 18/49 to 29/49 in [6,10) and from 33/55 to 45/55 in [10,14), with paired wins 16-5 and 13-1. However, T4 lost outer complete-hold successes: [14,18) was 66/68 versus T1 67/68 and [18,20) was 23/28 versus 27/28; reached-but-failed-hold was 11 versus 8. Against T3, T4 was lower overall and shifted the inner tradeoff: [6,10) was 29/49 versus T3 21/49, but [10,14) was 45/55 versus 53/55; T4 also had 11 reached-but-failed-hold versus T3's 7. Interpretation: the tested phase-separated reward artifact recovers much of T1's inner reach deficit and changes failure class composition, but reward-only separation does not preserve outer hold behavior and does not surpass the best pooled T3 artifact. The claim is limited to the complete T4 artifact: transfer, seed, source lineage, exposure, reward changes and checkpoint selection remain coupled, so phase separation alone is not established as causal or sufficient. Earlier evidence remains consequential: T2's wholesale full-range fresh replacement was 70/200 and degraded every stratum; M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison; M6/M7 found T3's inner gain with five outer losses and unchanged reset branch errors. These results support learned transient/coverage and terminal stabilization as competing artifact-level failure components, while leaving reset/branch causality, policy variability, and endpoint-versus-substep physical interpretation unresolved. The initial model's nominal reachability and singular-reset consequences remain useful but conditional; no evidence warrants plant retuning or official assessment.",
+          "handoff_question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+          "handoff_source_session_id": "S9",
+          "id": "I5",
+          "opened_in_session": "S10",
+          "question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+          "rationale": "Open this bounded route because the current best evidence is materially below the goal and the expected contribution of one explicit controller/state-separation allocation is credible: the physical model identifies hidden hold progress and a reset singularity, while T4 showed only that one coupled reward/exposure/transfer/checkpoint recipe shifts failures toward improved inner reach but loses outer holds. Correcting the inherited interpretation, T4 does not establish reward-only phase separation as the cause or rule out artifact variability; the logs also show training proxies are not development performance, with T3's high proxy concentrated near 68-71k steps and T4's proxy peak not translating to the combined panel result. The current saved runtime has no explicit acquisition/maintenance state machine, so this inquiry tests a genuinely unexercised method surface rather than repeating reward-only shaping. Official assessment of T1 would be terminal at 145/200 on the latest matched panel, whereas this bounded implementation-and-panel route can directly test whether the unresolved tradeoff is controller/state structure and is worth one training/measurement allocation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E19",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a complete saved-runtime controller or policy-state artifact has been produced and compared on a fresh shared 200-episode research panel under the fixed official semantics against the relevant learned baseline(s), with radius/angle strata and never-reached versus reached-but-failed-hold diagnostics. A positive conclusion requires at least 196/200 while preserving both the T3-level inner outcomes and the T1/T3-level outer complete-hold outcomes; otherwise close with the measured negative, limited, or inconclusive result and carry forward the residual failure class. No result changes official success semantics or substitutes for the protected assessment.",
+        "goal_connection": "The human objective is at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. Current research artifacts are 145/200 for T1, 168/200 for T3, and 163/200 for T4, so the remaining gap is specifically the unresolved combination of inner-radius acquisition and outer-radius maintenance.",
+        "question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
+        "rationale": "Open this bounded route because the current best evidence is materially below the goal and the expected contribution of one explicit controller/state-separation allocation is credible: the physical model identifies hidden hold progress and a reset singularity, while T4 showed only that one coupled reward/exposure/transfer/checkpoint recipe shifts failures toward improved inner reach but loses outer holds. Correcting the inherited interpretation, T4 does not establish reward-only phase separation as the cause or rule out artifact variability; the logs also show training proxies are not development performance, with T3's high proxy concentrated near 68-71k steps and T4's proxy peak not translating to the combined panel result. The current saved runtime has no explicit acquisition/maintenance state machine, so this inquiry tests a genuinely unexercised method surface rather than repeating reward-only shaping. Official assessment of T1 would be terminal at 145/200 on the latest matched panel, whereas this bounded implementation-and-panel route can directly test whether the unresolved tradeoff is controller/state structure and is worth one training/measurement allocation."
+      }
+    },
+    "request_fingerprint": "348492a8aaf0a19a4e51d655dafd234f8b7fc6b111973784278e87d092e8e570",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because it has the strongest supported outer-radius complete-hold behavior, despite only 145/200 on the fresh M8 panel and earlier 142/200 on M6. T3:checkpoint-70656 remains a measured limited-positive artifact at 168/200 on M8 but loses outer success relative to T1. T4:checkpoint-105472 is a measured limited artifact at 163/200: it improves T1's inner success and never-reach count but loses five outer successes and adds reached-but-failed-hold cases. T2 remains non-viable. No working or retained role is assigned; no candidate meets the human goal.",
     "completed_operations": [
@@ -10714,6 +10788,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "2efbcd07-5480-4d69-9564-b5fbfbf82922",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E19"
+    ],
+    "scientific_parent_commit": "30b5f3c42fab26ab54dd228de9a94795646997ce"
+  },
   "terminal_state": null
 }
