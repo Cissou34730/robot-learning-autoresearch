@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry after a fresh full-allocation PPO training run changes only the training target-radius distribution to 0.06-0.20 m and its resulting candidate is measured on a non-overlapping research-evaluation panel using the same complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. Treat the intervention as supporting the coverage route if inner-radius complete-hold success and no-reach failures improve materially while outer-radius performance is preserved; if inner-radius failures persist, outer performance degrades materially, or hold interruptions become the limiting residual class, redirect the next decision toward the corresponding unresolved dynamics or observation/history alternative. Do not claim that coverage alone reaches the 98% official goal unless the protected assessment establishes it.",
-    "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the fixed official distribution, with an uninterrupted two-second hold. The best-known baseline is 73.75% on the disjoint instrumented development panel, with 34 of 79 inner-radius episodes failing before reach and 78 of 81 outer-radius episodes succeeding. Testing full-range target exposure directly addresses the measured gap without consuming the protected assessment or changing task mechanics, observations, or success semantics.",
-    "handoff_conclusion": "Observed evidence: M1 found the exact native MuJoCo plant responsive to bounded direct torque, with substantial short-horizon joint and endpoint motion and near-zero velocity after settling; this makes stabilization physically plausible but does not make it policy-causal. T1 trained the unchanged PPO implementation only on 0.14-0.20 m; its preserved trajectory improved late to 0.97 training success proxy, with 0.96 at the terminal checkpoint, but that proxy is restricted-distribution training evidence rather than development performance. M2 and M3 measured the terminal artifact at 73.5% and 68.75%; M4 measured it at 73.75% on a disjoint instrumented panel. M4 observed 37 no-reach and 5 hold-interrupted failures; the inner-radius failures were predominantly no-reach, the outer-radius result was strong, all 123 reached episodes used the open elbow branch, and the five interruptions do not support high entry speed as the dominant baseline explanation. Interpretation: for this PPO recipe, candidate, and panels, omitted inner-radius exposure is the leading actionable explanation, but the result is an artifact-level diagnosis rather than proof that coverage alone is causal or sufficient for 98%. The full-range intervention remains a candidate comparison, not a clean mechanism proof if any other implementation factor changes. Competing unresolved explanations are dynamics-aware braking/regulation and observation/history sufficiency; the current evidence does not establish either as causal, and the responsive-plant and hidden hold-counter consequences remain relevant if coverage fails or creates interruption-dominated residual errors.",
-    "handoff_question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?",
-    "rationale": "The current best-known candidate is not a credible assessment choice at 73.75%, and the protected 200-episode assessment would terminate the campaign without testing the most directly supported route. M4 shows the gap is concentrated in the radius interval absent from baseline training, while only five of 160 episodes were hold-interrupted and all reached episodes followed the open branch; this weakens stabilization and branch explanations for this recipe but does not eliminate them after an intervention. T1's preserved late learning trajectory and 0.96 terminal training proxy are restricted-distribution proxies, not development performance, and no unmeasured checkpoint has evidence that it generalizes better. A full-range exposure run is therefore the lowest-cost consequential test of the current frontier: it can improve the dominant no-reach class while providing the same diagnostics needed to detect a newly dominant hold or dynamics failure.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a41925a8bae46586f31dbacf2a563bbc9bf87275",
     "id": "5c83824d-8c09-447e-b338-e3e036a23cbf",
@@ -1660,7 +1649,7 @@
     }
   },
   "counters": {
-    "event": 9,
+    "event": 10,
     "inquiry": 2,
     "measurement": 5,
     "session": 5,
@@ -1669,7 +1658,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T2:checkpoint-120832",
     "retained": {},
@@ -3593,9 +3582,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:22:50Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 supports the coverage-expanded candidate route with a limited positive result. The fresh T2 PPO artifact changed only the training target-radius range to the full official 0.06-0.20 m interval and, on the matched disjoint M5 panel, improved complete-hold success from 69.375% (111/160) for T1 to 93.75% (150/160) for T2. Inner-band success improved from 39/85 to 80/85 and inner no-reach failures fell from 34 to 5; outer-band success remained strong at 70/75 versus 72/75. T2's residual failures were 7 no-reach and 3 hold-interrupted, so hold interruption did not become the limiting class. The candidate remains below the 98% human goal, and the artifact comparison does not prove that radius coverage alone is causal.",
+        "reason": "The inquiry closure condition is met: a fresh full-allocation PPO run with only the training radius distribution changed completed as T2, and its resulting terminal candidate plus the T1 reference were evaluated on the non-overlapping 160-episode M5 panel with complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. The evidence supports selecting T2 as best-known and carrying forward the remaining no-reach and limited hold-interruption failures. Goal review must now decide whether this 93.75% development candidate justifies the protected official assessment or whether a new bounded inquiry targeting the remaining dynamics/observation-history limitation has higher expected value; the official 98% claim remains untested."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 supports the coverage-expanded candidate route with a limited positive result. The fresh T2 PPO artifact changed only the training target-radius range to the full official 0.06-0.20 m interval and, on the matched disjoint M5 panel, improved complete-hold success from 69.375% (111/160) for T1 to 93.75% (150/160) for T2. Inner-band success improved from 39/85 to 80/85 and inner no-reach failures fell from 34 to 5; outer-band success remained strong at 70/75 versus 72/75. T2's residual failures were 7 no-reach and 3 hold-interrupted, so hold interruption did not become the limiting class. The candidate remains below the 98% human goal, and the artifact comparison does not prove that radius coverage alone is causal.",
+        "reason": "The inquiry closure condition is met: a fresh full-allocation PPO run with only the training radius distribution changed completed as T2, and its resulting terminal candidate plus the T1 reference were evaluated on the non-overlapping 160-episode M5 panel with complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. The evidence supports selecting T2 as best-known and carrying forward the remaining no-reach and limited hold-interruption failures. Goal review must now decide whether this 93.75% development candidate justifies the protected official assessment or whether a new bounded inquiry targeting the remaining dynamics/observation-history limitation has higher expected value; the official 98% claim remains untested.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 supports the coverage-expanded candidate route with a limited positive result. The fresh T2 PPO artifact changed only the training target-radius range to the full official 0.06-0.20 m interval and, on the matched disjoint M5 panel, improved complete-hold success from 69.375% (111/160) for T1 to 93.75% (150/160) for T2. Inner-band success improved from 39/85 to 80/85 and inner no-reach failures fell from 34 to 5; outer-band success remained strong at 70/75 versus 72/75. T2's residual failures were 7 no-reach and 3 hold-interrupted, so hold interruption did not become the limiting class. The candidate remains below the 98% human goal, and the artifact comparison does not prove that radius coverage alone is causal.",
+        "reason": "The inquiry closure condition is met: a fresh full-allocation PPO run with only the training radius distribution changed completed as T2, and its resulting terminal candidate plus the T1 reference were evaluated on the non-overlapping 160-episode M5 panel with complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. The evidence supports selecting T2 as best-known and carrying forward the remaining no-reach and limited hold-interruption failures. Goal review must now decide whether this 93.75% development candidate justifies the protected official assessment or whether a new bounded inquiry targeting the remaining dynamics/observation-history limitation has higher expected value; the official 98% claim remains untested."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 supports the coverage-expanded candidate route with a limited positive result. The fresh T2 PPO artifact changed only the training target-radius range to the full official 0.06-0.20 m interval and, on the matched disjoint M5 panel, improved complete-hold success from 69.375% (111/160) for T1 to 93.75% (150/160) for T2. Inner-band success improved from 39/85 to 80/85 and inner no-reach failures fell from 34 to 5; outer-band success remained strong at 70/75 versus 72/75. T2's residual failures were 7 no-reach and 3 hold-interrupted, so hold interruption did not become the limiting class. The candidate remains below the 98% human goal, and the artifact comparison does not prove that radius coverage alone is causal.",
+        "reason": "The inquiry closure condition is met: a fresh full-allocation PPO run with only the training radius distribution changed completed as T2, and its resulting terminal candidate plus the T1 reference were evaluated on the non-overlapping 160-episode M5 panel with complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. The evidence supports selecting T2 as best-known and carrying forward the remaining no-reach and limited hold-interruption failures. Goal review must now decide whether this 93.75% development candidate justifies the protected official assessment or whether a new bounded inquiry targeting the remaining dynamics/observation-history limitation has higher expected value; the official 98% claim remains untested.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 supports the coverage-expanded candidate route with a limited positive result. The fresh T2 PPO artifact changed only the training target-radius range to the full official 0.06-0.20 m interval and, on the matched disjoint M5 panel, improved complete-hold success from 69.375% (111/160) for T1 to 93.75% (150/160) for T2. Inner-band success improved from 39/85 to 80/85 and inner no-reach failures fell from 34 to 5; outer-band success remained strong at 70/75 versus 72/75. T2's residual failures were 7 no-reach and 3 hold-interrupted, so hold interruption did not become the limiting class. The candidate remains below the 98% human goal, and the artifact comparison does not prove that radius coverage alone is causal.",
+        "reason": "The inquiry closure condition is met: a fresh full-allocation PPO run with only the training radius distribution changed completed as T2, and its resulting terminal candidate plus the T1 reference were evaluated on the non-overlapping 160-episode M5 panel with complete-hold, radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. The evidence supports selecting T2 as best-known and carrying forward the remaining no-reach and limited hold-interruption failures. Goal review must now decide whether this 93.75% development candidate justifies the protected official assessment or whether a new bounded inquiry targeting the remaining dynamics/observation-history limitation has higher expected value; the official 98% claim remains untested."
+      }
+    },
+    "request_fingerprint": "e383d8a90a6b29821ca2cb8072311a7a36c5c96c1020708ed680dbf0440cc2f4",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E4 using T1, M2, M3, and M4; it is a 73.75% development artifact, not a goal-certified policy. Working remains empty and no competing candidate exists. The unmeasured T1 checkpoints have training metadata and proxies only; none has development evidence that would justify replacing the best-known role.",
     "completed_operations": [
@@ -3642,7 +3685,8 @@
     "operation_ids": [
       "T2",
       "M5",
-      "E9"
+      "E9",
+      "E10"
     ],
     "scientific_parent_commit": "848b9348b66380d469155f96aabc60b9e6ac0d37"
   },
