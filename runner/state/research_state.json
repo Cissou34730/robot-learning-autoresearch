@@ -5382,55 +5382,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T3:checkpoint-105472",
-        "evidence": [
-          "M6",
-          "E14",
-          "T3"
-        ],
-        "reason": "Assign T3 as best-known because it is the strongest complete artifact on the matched disjoint M6 panel: 158/160 successes (98.75%) versus T2's 155/160 (96.875%), with all three discordant episodes favoring T3. T3 preserved the full official radial exposure and improved both observed failure classes relative to T2: no-reach fell from 4 to 2 and hold interruptions from 1 to 0, while inner-band success remained 92/93 and outer-band success rose from 63/67 to 66/67. The T3 training trajectory shows 1.00 proxy success through checkpoint 105472 and the saved components/runtime differ from T2, supporting a distinct candidate artifact; these proxies and the single development panel do not certify the official goal or isolate either reward term as causal."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/5c83824d-8c09-447e-b338-e3e036a23cbf/t3-ca3d05779-3da7c5a4322833867c6ac7dd771ffc86489fade52ba8545adebba4ff6e2517c8",
-        "fingerprint": "3da7c5a4322833867c6ac7dd771ffc86489fade52ba8545adebba4ff6e2517c8",
-        "source": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t3/checkpoint-105472"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-105472",
-        "evidence": [
-          "M6",
-          "E14",
-          "T3"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-105472",
-        "evidence": [
-          "M6",
-          "E14",
-          "T3"
-        ],
-        "reason": "Assign T3 as best-known because it is the strongest complete artifact on the matched disjoint M6 panel: 158/160 successes (98.75%) versus T2's 155/160 (96.875%), with all three discordant episodes favoring T3. T3 preserved the full official radial exposure and improved both observed failure classes relative to T2: no-reach fell from 4 to 2 and hold interruptions from 1 to 0, while inner-band success remained 92/93 and outer-band success rose from 63/67 to 66/67. The T3 training trajectory shows 1.00 proxy success through checkpoint 105472 and the saved components/runtime differ from T2, supporting a distinct candidate artifact; these proxies and the single development panel do not certify the official goal or isolate either reward term as causal."
-      }
-    },
-    "request_fingerprint": "86af208fd08f6499bf4cd42dc12b56a017499dc75dca8503b590f1bb26f0ddad",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
     "completed_operations": [
