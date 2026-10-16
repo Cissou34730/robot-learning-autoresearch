@@ -4,3 +4,4 @@
 |---|---|---|---|
 | T1 | training | - | completed |
 | M1 | measurement | - | completed |
+| M2 | measurement | - | completed |

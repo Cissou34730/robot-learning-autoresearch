@@ -832,7 +832,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 1,
+    "measurement": 2,
     "session": 1,
     "training": 1
   },
@@ -1526,9 +1526,919 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T21:49:14Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Analyze the paired M1 evaluation artifacts by official target-radius and angle strata, separating never-reached episodes from reached-but-failed-hold episodes and aggregating paired checkpoint wins by radius.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "{input:A}",
+              "--candidate-b",
+              "{input:B}",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+            ],
+            "artifact": "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json",
+            "inputs": {
+              "A": {
+                "artifact_index": 0,
+                "operation_id": "M1"
+              },
+              "B": {
+                "artifact_index": 1,
+                "operation_id": "M1"
+              }
+            },
+            "instrument": "python_module",
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "rationale": "The M1 comparison establishes a large official-distribution gap but pooled success cannot determine whether the next intervention should expand inner-radius exposure, improve branch/transient control, or stabilize reached targets. This deterministic analysis consumes only the preserved M1 artifacts, validates their diagnostic consistency, and reports the requested strata without rerunning evaluation or introducing a candidate-selection proxy."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+              "--candidate-b",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+            ],
+            "instrument": "python_module",
+            "label": "measurement 1",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M2-1-official_panel_diagnostics_m2.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_a",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_b",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate_a_wins",
+                      "candidate_b_wins",
+                      "discordant_episodes",
+                      "episodes",
+                      "ties"
+                    ],
+                    "path": "/paired_by_radius_bin",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_a/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_a/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_a/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_a/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_b/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_b/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_b/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_b/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f906529ba77e1bfe6c01bf51b183b5a7df3cbde5739c770f93bcfba65be7101b",
+              "input_artifacts": {
+                "A": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+                  "operation_id": "M1",
+                  "recorded_artifact_fingerprint": "3aa6271de437ffd8217c374c3a5604d2895ffab0ad97a8eb70ace574045d2f6e"
+                },
+                "B": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+                  "operation_id": "M1",
+                  "recorded_artifact_fingerprint": "d871a5f4991beab3daffa59ce28e520a8d506434a9f6c3d09b4b209eb46d155a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+            "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+            "manifest": [
+              {
+                "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+                "path": "robot_learning/lab/official_panel_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "991967472d78997528a685a305a69d42a056555e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/official_panel_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate-a",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+            "--candidate-b",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+            "--output",
+            "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+          ],
+          "artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/official_panel_diagnostics_m2.json",
+          "input_artifacts": {
+            "A": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+              "operation_id": "M1",
+              "recorded_artifact_fingerprint": "3aa6271de437ffd8217c374c3a5604d2895ffab0ad97a8eb70ace574045d2f6e"
+            },
+            "B": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+              "operation_id": "M1",
+              "recorded_artifact_fingerprint": "d871a5f4991beab3daffa59ce28e520a8d506434a9f6c3d09b4b209eb46d155a"
+            }
+          },
+          "inputs": {
+            "A": {
+              "artifact_index": 0,
+              "operation_id": "M1"
+            },
+            "B": {
+              "artifact_index": 1,
+              "operation_id": "M1"
+            }
+          },
+          "instrument": "python_module",
+          "label": "measurement 1",
+          "module": "robot_learning.lab.official_panel_diagnostics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+            "path": "robot_learning/lab/official_panel_diagnostics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+          "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+          "manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "991967472d78997528a685a305a69d42a056555e",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+            "path": "robot_learning/lab/official_panel_diagnostics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/official_panel_diagnostics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--candidate-a",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+            "--candidate-b",
+            "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+            "--output",
+            "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+          ],
+          "instrument": "python_module",
+          "label": "measurement 1",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M2-1-official_panel_diagnostics_m2.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 4,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis_schema_version",
+                  "type": "number"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate_a",
+                  "type": "object"
+                },
+                {
+                  "entries": 6,
+                  "path": "/candidate_b",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "candidate_a_wins",
+                    "candidate_b_wins",
+                    "discordant_episodes",
+                    "episodes",
+                    "ties"
+                  ],
+                  "path": "/paired_by_radius_bin",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_a/angle_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate_a/failure_classes",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate_a/model",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate_a/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_a/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/candidate_a/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_b/angle_bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/candidate_b/failure_classes",
+                  "type": "object"
+                },
+                {
+                  "path": "/candidate_b/model",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate_b/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "mean_first_reach_step",
+                    "never_reached",
+                    "reached_but_failed_hold",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidate_b/radius_bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/candidate_b/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/failure_classes/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_a/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/failure_classes/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate_b/overall/successes",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "f906529ba77e1bfe6c01bf51b183b5a7df3cbde5739c770f93bcfba65be7101b",
+            "input_artifacts": {
+              "A": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+                "operation_id": "M1",
+                "recorded_artifact_fingerprint": "3aa6271de437ffd8217c374c3a5604d2895ffab0ad97a8eb70ace574045d2f6e"
+              },
+              "B": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+                "operation_id": "M1",
+                "recorded_artifact_fingerprint": "d871a5f4991beab3daffa59ce28e520a8d506434a9f6c3d09b4b209eb46d155a"
+              }
+            }
+          },
+          "module": "robot_learning.lab.official_panel_diagnostics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+              "--candidate-b",
+              "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+            ],
+            "instrument": "python_module",
+            "label": "measurement 1",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/python-module-M2-1-official_panel_diagnostics_m2.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 4,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis_schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_a",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/candidate_b",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "candidate_a_wins",
+                      "candidate_b_wins",
+                      "discordant_episodes",
+                      "episodes",
+                      "ties"
+                    ],
+                    "path": "/paired_by_radius_bin",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_a/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_a/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_a/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_a/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_a/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/angle_bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/candidate_b/failure_classes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/candidate_b/model",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate_b/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "mean_first_reach_step",
+                      "never_reached",
+                      "reached_but_failed_hold",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidate_b/radius_bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate_b/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_a/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/failure_classes/reached_but_failed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate_b/overall/successes",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f906529ba77e1bfe6c01bf51b183b5a7df3cbde5739c770f93bcfba65be7101b",
+              "input_artifacts": {
+                "A": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-115712-200ep-seed100000-604d52985c97.json",
+                  "operation_id": "M1",
+                  "recorded_artifact_fingerprint": "3aa6271de437ffd8217c374c3a5604d2895ffab0ad97a8eb70ace574045d2f6e"
+                },
+                "B": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json",
+                  "operation_id": "M1",
+                  "recorded_artifact_fingerprint": "d871a5f4991beab3daffa59ce28e520a8d506434a9f6c3d09b4b209eb46d155a"
+                }
+              }
+            },
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "520d93a71f7c50208fb236d26eaa2f578593d832",
+            "fingerprint": "913b6487126132798fab971e5656b516ecfce4b22b5caecaf8661a7b1956e6fe",
+            "manifest": [
+              {
+                "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+                "path": "robot_learning/lab/official_panel_diagnostics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "991967472d78997528a685a305a69d42a056555e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+              "path": "robot_learning/lab/official_panel_diagnostics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/official_panel_diagnostics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Analyze the paired M1 evaluation artifacts by official target-radius and angle strata, separating never-reached episodes from reached-but-failed-hold episodes and aggregating paired checkpoint wins by radius.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate-a",
+              "{input:A}",
+              "--candidate-b",
+              "{input:B}",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json"
+            ],
+            "artifact": "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\official_panel_diagnostics_m2.json",
+            "inputs": {
+              "A": {
+                "artifact_index": 0,
+                "operation_id": "M1"
+              },
+              "B": {
+                "artifact_index": 1,
+                "operation_id": "M1"
+              }
+            },
+            "instrument": "python_module",
+            "module": "robot_learning.lab.official_panel_diagnostics"
+          }
+        ],
+        "rationale": "The M1 comparison establishes a large official-distribution gap but pooled success cannot determine whether the next intervention should expand inner-radius exposure, improve branch/transient control, or stabilize reached targets. This deterministic analysis consumes only the preserved M1 artifacts, validates their diagnostic consistency, and reports the requested strata without rerunning evaluation or introducing a candidate-selection proxy."
+      }
+    },
+    "request_fingerprint": "1ae82a4e999b2b80f5c377ff00192becb24f7d86bdbfadd6a4e0526effb0c8cf",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1549,7 +2459,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "M2"
     ],
     "scientific_parent_commit": "991967472d78997528a685a305a69d42a056555e"
   },
