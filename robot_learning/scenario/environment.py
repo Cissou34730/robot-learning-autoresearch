@@ -48,6 +48,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
         enable_trajectory_shaping: bool = False,
+        phase_separated_shaping: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
@@ -55,6 +56,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
         self.enable_trajectory_shaping = enable_trajectory_shaping
+        self.phase_separated_shaping = phase_separated_shaping
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -77,6 +79,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = 0.0
         self._held_steps = 0
+        self._hold_started = False
         self._outside_after_hold = False
         self._previous_branch_errors: np.ndarray | None = None
         self._previous_branch_validity: np.ndarray | None = None
@@ -127,6 +130,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
+        self._hold_started = False
         self._outside_after_hold = False
         if self.enable_trajectory_shaping:
             self._previous_branch_errors = ik_branch_errors(self.data)
@@ -152,6 +156,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
             self._held_steps += 1
+            self._hold_started = True
             self._outside_after_hold = False
         else:
             if previous_held_steps > 0:
@@ -171,6 +176,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 "previous_q2": self._previous_q2,
                 "current_q2": float(self.data.qpos[1]),
                 "target_elbow_magnitude": self._target_elbow_magnitude,
+                "phase_separated_shaping": self.phase_separated_shaping,
+                "approach_phase": not self._hold_started,
             }
         reward = reach_reward(
             self._previous_distance,

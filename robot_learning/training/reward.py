@@ -20,6 +20,7 @@ ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
+PHASE_SEPARATED_HOLD_EXIT_FORFEIT_FRACTION = 1.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
@@ -96,6 +97,8 @@ def reach_reward(
     previous_q2: float | None = None,
     current_q2: float | None = None,
     target_elbow_magnitude: float | None = None,
+    phase_separated_shaping: bool = False,
+    approach_phase: bool = True,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -110,9 +113,14 @@ def reach_reward(
         previous_held_steps, hold_steps_required
     )
     if held_steps == 0 and previous_held_steps > 0:
-        if not 0 <= HOLD_EXIT_FORFEIT_FRACTION <= 1:
-            raise ValueError("HOLD_EXIT_FORFEIT_FRACTION must be between 0 and 1")
-        hold_progress = -(HOLD_EXIT_FORFEIT_FRACTION * previous_hold_capital)
+        forfeiture_fraction = (
+            PHASE_SEPARATED_HOLD_EXIT_FORFEIT_FRACTION
+            if phase_separated_shaping
+            else HOLD_EXIT_FORFEIT_FRACTION
+        )
+        if not 0 <= forfeiture_fraction <= 1:
+            raise ValueError("hold exit forfeiture fraction must be between 0 and 1")
+        hold_progress = -(forfeiture_fraction * previous_hold_capital)
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
@@ -167,18 +175,22 @@ def reach_reward(
         current_branch_potential = _ik_branch_potential(
             current_branch_errors, current_branch_validity
         )
-        ik_branch_progress = IK_BRANCH_PROGRESS_COEFFICIENT * (
-            current_branch_potential - previous_branch_potential
-        )
-        previous_escape_potential = _reset_escape_potential(
-            previous_q2, target_elbow_magnitude
-        )
-        current_escape_potential = _reset_escape_potential(
-            current_q2, target_elbow_magnitude
-        )
-        reset_escape_progress = RESET_ESCAPE_PROGRESS_COEFFICIENT * (
-            current_escape_potential - previous_escape_potential
-        )
+        if phase_separated_shaping and not approach_phase:
+            ik_branch_progress = 0.0
+            reset_escape_progress = 0.0
+        else:
+            ik_branch_progress = IK_BRANCH_PROGRESS_COEFFICIENT * (
+                current_branch_potential - previous_branch_potential
+            )
+            previous_escape_potential = _reset_escape_potential(
+                previous_q2, target_elbow_magnitude
+            )
+            current_escape_potential = _reset_escape_potential(
+                current_q2, target_elbow_magnitude
+            )
+            reset_escape_progress = RESET_ESCAPE_PROGRESS_COEFFICIENT * (
+                current_escape_potential - previous_escape_potential
+            )
         reward += ik_branch_progress + reset_escape_progress
         components.update(
             {

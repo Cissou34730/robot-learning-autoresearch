@@ -11,7 +11,7 @@ import gymnasium as gym
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 
 
 def make_training_env() -> gym.Env:
@@ -19,4 +19,5 @@ def make_training_env() -> gym.Env:
     return TwoJointArmReachEnv(
         target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
         enable_trajectory_shaping=True,
+        phase_separated_shaping=True,
     )
