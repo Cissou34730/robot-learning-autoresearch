@@ -27,3 +27,4 @@
 | E14 | inquiry | I3 | completed |
 | E15 | checkpoint | I3 | checkpointed |
 | E16 | inquiry | I4 | completed |
+| E17 | checkpoint | - | checkpointed |
