@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a fresh official-exposure candidate has been compared with T1:checkpoint-120832 on the same non-overlapping official-distribution research panel using success, radius/angle strata, and failure-class diagnostics. A positive bounded conclusion requires a substantial reduction in 6-14 cm never-reach failures with no material loss of 14-20 cm success; a negative or limited conclusion is warranted if inner failures persist, outer success degrades, or the comparison does not materially improve the overall candidate. In all cases, attribute the result to the compared artifacts and preserve branch, transient, dynamics, contact, and substep causes as unresolved unless directly measured.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the official 6-20 cm distribution. The current best-known candidate achieves 143/200, and M2 localizes most failures to never-reach episodes at 6-14 cm, so testing the omitted official inner regime directly addresses the dominant measured gap while protecting the already strong outer-radius behavior.",
-    "handoff_conclusion": "Established observations: T1 used the current PPO implementation with 14-20 cm training exposure; its learning proxies reached 0.96, but M1 measured only 68.0% and 71.5% on the same 200-episode official-distribution research panel for checkpoints 115712 and 120832. M2 shows that the terminal artifact's failures are mostly never-reach failures, and that the deficit is sharply concentrated at 6-14 cm. M1's paired comparison supports treating the terminal artifact as the stronger measured artifact, not treating later training as a proven cause. Interpretation revised at goal review: the omitted inner regime is a credible first intervention hypothesis because the failure pattern matches it, but the exposure comparison will establish only a property of the compared artifacts, not exposure causality. The angle-stratified asymmetry does not isolate a branch mechanism because angle strata are pooled across radius. Branch/shoulder-limit handling, escape from the reset singularity, insufficient dynamic authority, self-contact, compiled dynamics, and endpoint-versus-substep behavior remain unresolved because M1/M2 contain no trajectories, actuator traces, contact traces, or causal interventions. Hold stabilization remains consequential but is not the first measured bottleneck for this artifact; it must still be checked after coverage changes against complete-hold success.",
-    "handoff_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-    "rationale": "Official assessment is premature because the strongest measured candidate is 71.5%, far below the 98% objective, despite high training proxies. Existing M2 evidence supports prioritizing the omitted inner-radius regime: success is 32.7% at 6-10 cm and 67.2% at 10-14 cm versus 96.4% and 100.0% outside it, with 47 of 57 failures never reaching. This revises the inherited interpretation only in scope: the pattern motivates an exposure comparison but does not establish that exposure, rather than branch handling, singularity escape, or dynamic authority, is causal; pooled angle asymmetry is also not a branch diagnosis because it is confounded with radius. A fresh official-range training run with the current PPO implementation held fixed is the lowest-cost goal-relevant comparison, and matched diagnostics determine whether it merits continued development or redirects the campaign toward mechanism-focused control work.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -1663,7 +1652,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 4,
     "session": 3,
@@ -4253,9 +4242,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T22:04:50Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Negative bounded result for the tested artifact comparison: the fresh T2 candidate trained with official 6-20 cm exposure did not reduce 6-14 cm never-reach failures and substantially degraded outer-radius success relative to T1:checkpoint-120832. On the matched M3 panel, T2 achieved 35.0% (70/200) versus T1's 73.5% (147/200), with paired success delta -38.5 percentage points. M4 attributes the difference to broad never-reach and hold degradation: T2 had 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% across 6-10, 10-14, 14-18, and 18-20 cm, versus T1's 31.6%, 75.4%, 100.0%, and 100.0%. The result is a property of the compared complete artifacts and does not establish exposure causality or disprove broader exposure-based learning.",
+        "reason": "I1 asked whether replacing 14-20 cm training exposure with 6-20 cm, keeping the current PPO implementation otherwise fixed, would reduce the dominant inner never-reach deficit without degrading outer hold success. T2 implemented the requested source-level exposure change and was evaluated on a fresh matched official-distribution panel against the measured T1 terminal artifact. Both the overall comparison (M3) and the required radius/failure diagnostics (M4) fail the positive closure condition and support redirecting the next inquiry toward consequential mechanism evidence or a control/training design that addresses the observed artifact difference. The comparison does not resolve branch-aware transient, reset-singularity escape, dynamic authority, self-contact, compiled dynamics, or endpoint/substep semantics; those remain unresolved and should be investigated only if they can distinguish the next route toward 196/200."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Negative bounded result for the tested artifact comparison: the fresh T2 candidate trained with official 6-20 cm exposure did not reduce 6-14 cm never-reach failures and substantially degraded outer-radius success relative to T1:checkpoint-120832. On the matched M3 panel, T2 achieved 35.0% (70/200) versus T1's 73.5% (147/200), with paired success delta -38.5 percentage points. M4 attributes the difference to broad never-reach and hold degradation: T2 had 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% across 6-10, 10-14, 14-18, and 18-20 cm, versus T1's 31.6%, 75.4%, 100.0%, and 100.0%. The result is a property of the compared complete artifacts and does not establish exposure causality or disprove broader exposure-based learning.",
+        "reason": "I1 asked whether replacing 14-20 cm training exposure with 6-20 cm, keeping the current PPO implementation otherwise fixed, would reduce the dominant inner never-reach deficit without degrading outer hold success. T2 implemented the requested source-level exposure change and was evaluated on a fresh matched official-distribution panel against the measured T1 terminal artifact. Both the overall comparison (M3) and the required radius/failure diagnostics (M4) fail the positive closure condition and support redirecting the next inquiry toward consequential mechanism evidence or a control/training design that addresses the observed artifact difference. The comparison does not resolve branch-aware transient, reset-singularity escape, dynamic authority, self-contact, compiled dynamics, or endpoint/substep semantics; those remain unresolved and should be investigated only if they can distinguish the next route toward 196/200.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Negative bounded result for the tested artifact comparison: the fresh T2 candidate trained with official 6-20 cm exposure did not reduce 6-14 cm never-reach failures and substantially degraded outer-radius success relative to T1:checkpoint-120832. On the matched M3 panel, T2 achieved 35.0% (70/200) versus T1's 73.5% (147/200), with paired success delta -38.5 percentage points. M4 attributes the difference to broad never-reach and hold degradation: T2 had 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% across 6-10, 10-14, 14-18, and 18-20 cm, versus T1's 31.6%, 75.4%, 100.0%, and 100.0%. The result is a property of the compared complete artifacts and does not establish exposure causality or disprove broader exposure-based learning.",
+        "reason": "I1 asked whether replacing 14-20 cm training exposure with 6-20 cm, keeping the current PPO implementation otherwise fixed, would reduce the dominant inner never-reach deficit without degrading outer hold success. T2 implemented the requested source-level exposure change and was evaluated on a fresh matched official-distribution panel against the measured T1 terminal artifact. Both the overall comparison (M3) and the required radius/failure diagnostics (M4) fail the positive closure condition and support redirecting the next inquiry toward consequential mechanism evidence or a control/training design that addresses the observed artifact difference. The comparison does not resolve branch-aware transient, reset-singularity escape, dynamic authority, self-contact, compiled dynamics, or endpoint/substep semantics; those remain unresolved and should be investigated only if they can distinguish the next route toward 196/200."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Negative bounded result for the tested artifact comparison: the fresh T2 candidate trained with official 6-20 cm exposure did not reduce 6-14 cm never-reach failures and substantially degraded outer-radius success relative to T1:checkpoint-120832. On the matched M3 panel, T2 achieved 35.0% (70/200) versus T1's 73.5% (147/200), with paired success delta -38.5 percentage points. M4 attributes the difference to broad never-reach and hold degradation: T2 had 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% across 6-10, 10-14, 14-18, and 18-20 cm, versus T1's 31.6%, 75.4%, 100.0%, and 100.0%. The result is a property of the compared complete artifacts and does not establish exposure causality or disprove broader exposure-based learning.",
+        "reason": "I1 asked whether replacing 14-20 cm training exposure with 6-20 cm, keeping the current PPO implementation otherwise fixed, would reduce the dominant inner never-reach deficit without degrading outer hold success. T2 implemented the requested source-level exposure change and was evaluated on a fresh matched official-distribution panel against the measured T1 terminal artifact. Both the overall comparison (M3) and the required radius/failure diagnostics (M4) fail the positive closure condition and support redirecting the next inquiry toward consequential mechanism evidence or a control/training design that addresses the observed artifact difference. The comparison does not resolve branch-aware transient, reset-singularity escape, dynamic authority, self-contact, compiled dynamics, or endpoint/substep semantics; those remain unresolved and should be investigated only if they can distinguish the next route toward 196/200.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Negative bounded result for the tested artifact comparison: the fresh T2 candidate trained with official 6-20 cm exposure did not reduce 6-14 cm never-reach failures and substantially degraded outer-radius success relative to T1:checkpoint-120832. On the matched M3 panel, T2 achieved 35.0% (70/200) versus T1's 73.5% (147/200), with paired success delta -38.5 percentage points. M4 attributes the difference to broad never-reach and hold degradation: T2 had 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% across 6-10, 10-14, 14-18, and 18-20 cm, versus T1's 31.6%, 75.4%, 100.0%, and 100.0%. The result is a property of the compared complete artifacts and does not establish exposure causality or disprove broader exposure-based learning.",
+        "reason": "I1 asked whether replacing 14-20 cm training exposure with 6-20 cm, keeping the current PPO implementation otherwise fixed, would reduce the dominant inner never-reach deficit without degrading outer hold success. T2 implemented the requested source-level exposure change and was evaluated on a fresh matched official-distribution panel against the measured T1 terminal artifact. Both the overall comparison (M3) and the required radius/failure diagnostics (M4) fail the positive closure condition and support redirecting the next inquiry toward consequential mechanism evidence or a control/training design that addresses the observed artifact difference. The comparison does not resolve branch-aware transient, reset-singularity escape, dynamic authority, self-contact, compiled dynamics, or endpoint/substep semantics; those remain unresolved and should be investigated only if they can distinguish the next route toward 196/200."
+      }
+    },
+    "request_fingerprint": "219b54e56647367f044a2a008e03a88e143403f17d4b326572b75d6fcad711fb",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E1 from M1 and M2; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. No working candidate is assigned. No candidate meets the human goal and no official assessment is requested.",
     "completed_operations": [
@@ -4299,7 +4342,8 @@
     "operation_ids": [
       "T2",
       "M3",
-      "M4"
+      "M4",
+      "E5"
     ],
     "scientific_parent_commit": "5cd795e94e5960b5201c6bbbaaeba43055eaa9aa"
   },
