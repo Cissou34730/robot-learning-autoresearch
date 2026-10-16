@@ -21,6 +21,7 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_ARTIFACT_VERSION = 6
 
 
 def evaluate_research_model(
@@ -70,6 +71,27 @@ def evaluate_research_model(
                     "qpos": [float(value) for value in info["qpos"]],
                     "qvel": [float(value) for value in info["qvel"]],
                     "action": [float(value) for value in info["action"]],
+                    "policy_action": [
+                        float(value) for value in info["policy_action"]
+                    ],
+                    "guidance_action": [
+                        float(value) for value in info["guidance_action"]
+                    ],
+                    "applied_action": [
+                        float(value) for value in info["applied_action"]
+                    ],
+                    "selected_branch": info["selected_branch"],
+                    "selected_ik_target": (
+                        None
+                        if info["selected_ik_target"] is None
+                        else [
+                            float(value)
+                            for value in info["selected_ik_target"]
+                        ]
+                    ),
+                    "branch_aware_activation": bool(
+                        info["branch_aware_activation"]
+                    ),
                     "distance_cm": 100.0 * float(info["diagnostic_distance"]),
                     "held_steps": int(info["diagnostic_held_steps"]),
                     "joint_limit_distance_rad": {
@@ -134,7 +156,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": RESEARCH_EVALUATION_ARTIFACT_VERSION,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,

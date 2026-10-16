@@ -25,8 +25,12 @@ from contracts.task_spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
+from robot_learning.scenario.branch_aware_control import BranchAwareController
 from robot_learning.scenario.observations import OBSERVATION_SIZE
-from robot_learning.scenario.policy_io import make_policy_io
+from robot_learning.scenario.policy_io import (
+    is_branch_aware_policy_io,
+    make_policy_io,
+)
 from robot_learning.training.reward import reach_reward
 
 
@@ -48,9 +52,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.branch_aware_active = is_branch_aware_policy_io(self.policy_io)
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        self._branch_controller = (
+            BranchAwareController(self.model)
+            if self.branch_aware_active
+            else None
+        )
         # Keep diagnostic kinematics separate from the live data.  MuJoCo's
         # integration step leaves derived site positions at the pre-integration
         # state; forwarding this copy lets research traces describe the actual
@@ -163,6 +173,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         mujoco.mj_forward(self.model, self.data)
         self._sample_target_position()
         mujoco.mj_forward(self.model, self.data)
+        if self._branch_controller is not None:
+            self._branch_controller.select_branch(self.data)
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
@@ -176,11 +188,19 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
-        action = np.clip(
+        policy_action = np.clip(
             np.asarray(self.policy_io.action(action), dtype=np.float64),
             self.action_space.low,
             self.action_space.high,
         )
+        if self._branch_controller is None:
+            guidance_action = np.zeros_like(policy_action)
+            applied_action = policy_action
+        else:
+            guidance_action, applied_action = self._branch_controller.apply(
+                policy_action, self.data
+            )
+        action = applied_action
         self.data.ctrl[:] = action
         self._max_contact_count = 0
         self._contact_geom_pairs = set()
@@ -228,6 +248,23 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # above intentionally retain their existing success semantics.
             "diagnostic_distance": diagnostic_distance,
             "diagnostic_held_steps": self._diagnostic_held_steps,
+            "policy_action": [float(value) for value in policy_action],
+            "guidance_action": [float(value) for value in guidance_action],
+            "applied_action": [float(value) for value in applied_action],
+            "branch_aware_activation": bool(self.branch_aware_active),
+            "selected_branch": (
+                None
+                if self._branch_controller is None
+                else self._branch_controller.selected_branch
+            ),
+            "selected_ik_target": (
+                None
+                if self._branch_controller is None
+                else [
+                    float(value)
+                    for value in self._branch_controller.selected_target
+                ]
+            ),
             "action": [float(value) for value in action],
             "qpos": [float(value) for value in self.data.qpos],
             "qvel": [float(value) for value in self.data.qvel],
