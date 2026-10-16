@@ -1011,7 +1011,7 @@
       "training_steps": 115712
     },
     "T2:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t2/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/5c83824d-8c09-447e-b338-e3e036a23cbf/t2-c8cf701d5-c2ba9836cbc4bc393af7e92b1551ee2d44839634894bc1de1bdbe56851bb2ca2",
       "evaluation_artifacts": [
         "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m5-T2-checkpoint-120832-160ep-seed4600-4e7f9d0fbcf5.json"
       ],
@@ -1660,7 +1660,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 5,
     "session": 5,
@@ -1669,9 +1669,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-120832",
+    "best_known": "T2:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -3564,9 +3564,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:22:27Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "T2",
+          "M5"
+        ],
+        "reason": "On the matched disjoint M5 research panel, the full-range-trained T2 artifact achieved 93.75% (150/160) versus 69.375% (111/160) for the T1 baseline, with 42 candidate wins and 3 reference wins. The decisive radius diagnostics show inner success 80/85 (94.1%) versus 39/85 (45.9%) and inner no-reach 5 versus 34, while outer success remains strong at 70/75 (93.3%) versus 72/75 (96.0%). T2 is therefore the strongest evidence-backed candidate, but it is not official-goal certified and remains below 98%."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "T2",
+          "M5"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T2:checkpoint-120832",
+        "evidence": [
+          "T2",
+          "M5"
+        ],
+        "reason": "On the matched disjoint M5 research panel, the full-range-trained T2 artifact achieved 93.75% (150/160) versus 69.375% (111/160) for the T1 baseline, with 42 candidate wins and 3 reference wins. The decisive radius diagnostics show inner success 80/85 (94.1%) versus 39/85 (45.9%) and inner no-reach 5 versus 34, while outer success remains strong at 70/75 (93.3%) versus 72/75 (96.0%). T2 is therefore the strongest evidence-backed candidate, but it is not official-goal certified and remains below 98%."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/5c83824d-8c09-447e-b338-e3e036a23cbf/t2-c8cf701d5-c2ba9836cbc4bc393af7e92b1551ee2d44839634894bc1de1bdbe56851bb2ca2",
+        "fingerprint": "c2ba9836cbc4bc393af7e92b1551ee2d44839634894bc1de1bdbe56851bb2ca2",
+        "source": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t2/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "T2",
+          "M5"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T2:checkpoint-120832",
+        "evidence": [
+          "T2",
+          "M5"
+        ],
+        "reason": "On the matched disjoint M5 research panel, the full-range-trained T2 artifact achieved 93.75% (150/160) versus 69.375% (111/160) for the T1 baseline, with 42 candidate wins and 3 reference wins. The decisive radius diagnostics show inner success 80/85 (94.1%) versus 39/85 (45.9%) and inner no-reach 5 versus 34, while outer success remains strong at 70/75 (93.3%) versus 72/75 (96.0%). T2 is therefore the strongest evidence-backed candidate, but it is not official-goal certified and remains below 98%."
+      }
+    },
+    "request_fingerprint": "76c4e7b71f250cbbf0914c0a046369a4e74d3726024f2a49110a75066967135a",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned by E4 using T1, M2, M3, and M4; it is a 73.75% development artifact, not a goal-certified policy. Working remains empty and no competing candidate exists. The unmeasured T1 checkpoints have training metadata and proxies only; none has development evidence that would justify replacing the best-known role.",
     "completed_operations": [
@@ -3612,7 +3686,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M5"
+      "M5",
+      "E9"
     ],
     "scientific_parent_commit": "848b9348b66380d469155f96aabc60b9e6ac0d37"
   },
