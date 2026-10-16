@@ -3708,38 +3708,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is resolved with a positive inner-band result but an outer-band stability tradeoff. The fresh official-exposure candidate T2:checkpoint-120832 was trained for 120,832 completed steps after changing only TRAINING_TARGET_RADIUS_RANGE from (0.14, 0.20) to (0.06, 0.20), with baseline reward, observation/runtime, control semantics, PPO hyperparameters, and seed held fixed. On the same held-out seeds 4200-4359 and evaluator semantics 604d52985c97, T2 achieved 150/160 = 93.75% versus T1's 105/160 = 65.625%. M4's required stratification shows inner success rose from 42/93 = 45.16% to 90/93 = 96.77% and inner no-entry fell from 45 to 3, while outer success fell from 63/67 = 94.03% to 60/67 = 89.55%; outer post-entry failures rose from 0 to 3 and outer hold interruptions from 2 to 438. The closure condition is met because the complete candidate comparison and all prescribed radius/angle, entry, distance, hold, interruption, and truncation diagnostics are available. The result supports an exposure-associated artifact improvement concentrated in the inner band, but it does not establish exposure alone as causal and does not meet the 98% campaign objective.",
-        "reason": "Close I2 because its bounded evidence requirement is complete and the result redirects the next design decision. T2 is the best-known candidate by paired held-out success, but its 4.48-point outer-band regression and concentrated interruption burden establish a coverage/stability tradeoff rather than preservation of outer performance. The next direction should seek a recipe that retains T2's inner reach while restoring outer uninterrupted stability, with reward/runtime alignment, launch/branch behavior, and inter-sample continuity still unresolved. Do not request the protected assessment: 93.75% on the 160-episode research panel is below the 98% objective, and development evidence does not certify the fixed 200-episode assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is resolved with a positive inner-band result but an outer-band stability tradeoff. The fresh official-exposure candidate T2:checkpoint-120832 was trained for 120,832 completed steps after changing only TRAINING_TARGET_RADIUS_RANGE from (0.14, 0.20) to (0.06, 0.20), with baseline reward, observation/runtime, control semantics, PPO hyperparameters, and seed held fixed. On the same held-out seeds 4200-4359 and evaluator semantics 604d52985c97, T2 achieved 150/160 = 93.75% versus T1's 105/160 = 65.625%. M4's required stratification shows inner success rose from 42/93 = 45.16% to 90/93 = 96.77% and inner no-entry fell from 45 to 3, while outer success fell from 63/67 = 94.03% to 60/67 = 89.55%; outer post-entry failures rose from 0 to 3 and outer hold interruptions from 2 to 438. The closure condition is met because the complete candidate comparison and all prescribed radius/angle, entry, distance, hold, interruption, and truncation diagnostics are available. The result supports an exposure-associated artifact improvement concentrated in the inner band, but it does not establish exposure alone as causal and does not meet the 98% campaign objective.",
-        "reason": "Close I2 because its bounded evidence requirement is complete and the result redirects the next design decision. T2 is the best-known candidate by paired held-out success, but its 4.48-point outer-band regression and concentrated interruption burden establish a coverage/stability tradeoff rather than preservation of outer performance. The next direction should seek a recipe that retains T2's inner reach while restoring outer uninterrupted stability, with reward/runtime alignment, launch/branch behavior, and inter-sample continuity still unresolved. Do not request the protected assessment: 93.75% on the 160-episode research panel is below the 98% objective, and development evidence does not certify the fixed 200-episode assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is resolved with a positive inner-band result but an outer-band stability tradeoff. The fresh official-exposure candidate T2:checkpoint-120832 was trained for 120,832 completed steps after changing only TRAINING_TARGET_RADIUS_RANGE from (0.14, 0.20) to (0.06, 0.20), with baseline reward, observation/runtime, control semantics, PPO hyperparameters, and seed held fixed. On the same held-out seeds 4200-4359 and evaluator semantics 604d52985c97, T2 achieved 150/160 = 93.75% versus T1's 105/160 = 65.625%. M4's required stratification shows inner success rose from 42/93 = 45.16% to 90/93 = 96.77% and inner no-entry fell from 45 to 3, while outer success fell from 63/67 = 94.03% to 60/67 = 89.55%; outer post-entry failures rose from 0 to 3 and outer hold interruptions from 2 to 438. The closure condition is met because the complete candidate comparison and all prescribed radius/angle, entry, distance, hold, interruption, and truncation diagnostics are available. The result supports an exposure-associated artifact improvement concentrated in the inner band, but it does not establish exposure alone as causal and does not meet the 98% campaign objective.",
-        "reason": "Close I2 because its bounded evidence requirement is complete and the result redirects the next design decision. T2 is the best-known candidate by paired held-out success, but its 4.48-point outer-band regression and concentrated interruption burden establish a coverage/stability tradeoff rather than preservation of outer performance. The next direction should seek a recipe that retains T2's inner reach while restoring outer uninterrupted stability, with reward/runtime alignment, launch/branch behavior, and inter-sample continuity still unresolved. Do not request the protected assessment: 93.75% on the 160-episode research panel is below the 98% objective, and development evidence does not certify the fixed 200-episode assessment."
-      }
-    },
-    "request_fingerprint": "e868fd38829c843c9562bf4f35d1f8ae122646e53ab24e8d2b48592e51eb15cd",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
     "completed_operations": [
