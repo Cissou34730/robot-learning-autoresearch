@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a fresh candidate trained with the unchanged baseline PPO recipe has a completed official-distribution research evaluation and the preserved diagnostics identify whether performance is broadly capable or dominated by a consequential failure class: reach/no-entry, inner-versus-outer coverage, or entry followed by hold interruption/truncation. A limited or inconclusive result is sufficient if the evaluation does not discriminate these classes, provided the unresolved consequence is carried into the next direction.",
-    "goal_connection": "A candidate-level answer is the first route to the human objective because success requires at least 196 of 200 official episodes, each with a complete uninterrupted 100-step hold. It will distinguish whether the current implementation already provides a viable policy or whether development must address coverage, stabilization, reward/runtime alignment, or launch behavior.",
-    "handoff_conclusion": "Observed in M1: under the exact reset, qpos and qvel were [0,0], the end effector began at [0.22,0,0.02], and the deterministic probe targets covered radii approximately 0.089-0.198 m and angles approximately -2.60 to 2.86 rad. The compiled model had joint limits +/-2.967 rad, damping 0.5, armature 0.01, approximately 0.09896 and 0.05248 kg link masses, direct unit-gain motors with gear 5 and no actuator force limit. Isolated 20 ms saturated pulses produced approximately 382 and 448 rad/s^2 peak joint accelerations, peak speeds approximately 5.48 and 6.08 rad/s, and speeds below 1e-6 rad/s after 0.42 s of zero-control recovery. The first 2 ms samples showed q_e initially unchanged while endpoint motion had radial and tangential components. These observations weaken insufficient compiled actuator authority, passive settling, and pure kinematic unreachability as primary explanations, but they are open-loop measurements rather than policy evidence. Correction to the inherited interpretation: the bend-before-radial pattern establishes a trajectory-design consideration at the singular reset, not a demonstrated learned-policy blocker; likewise, moving attention to policy learning, outer-band exposure, and reward/runtime is a decision direction, not evidence that any one cause dominates. The current baseline trains on radii 0.14-0.20 m while official evaluation spans 0.06-0.20 m, and the reward/runtime may value approach or re-entry without guaranteeing the complete hold, but neither issue has been behaviorally tested. There is no learned candidate, hold counter trace, or official-style outcome. E2 therefore opens a bounded candidate-capability inquiry: train the unchanged baseline PPO recipe, evaluate under the official target distribution, and use radius/angle-stratified success, first-entry time, minimum/final distance, maximum held steps, interruptions, truncation, and available hold diagnostics to distinguish no-entry/reach failure, inner-radius coverage failure, and post-entry stabilization failure. A result will remain specific to the tested recipe and runtime; it will not certify the protected assessment.",
-    "handoff_question": "Does a fresh candidate trained with the current baseline PPO recipe convert the measured actuation authority into target-directed, uninterrupted official-style holds across inner and outer radii, and which failure class dominates?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Does a fresh candidate trained with the current baseline PPO recipe convert the measured actuation authority into target-directed, uninterrupted official-style holds across inner and outer radii, and which failure class dominates?",
-    "rationale": "M1 measured substantial compiled actuator authority and recovery from isolated saturated pulses, weakening insufficient actuation and pure kinematic unreachability as the first explanation, but it did not test target-directed control, inner-radius generalization, or uninterrupted holding. With no candidate or learning trajectory available, changing the recipe now would be speculative. The current baseline PPO implementation followed by official-distribution development evaluation has the highest expected information per bounded effort: strong stratified success could justify candidate selection, inner-band failures could motivate coverage changes, and rapid entry with interruptions could motivate stabilization or reward-alignment work. The result will remain recipe-specific and will not by itself certify the protected 200-episode assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "ca8153b246c4a9a04245096a0939cb5915e547fb",
     "id": "e0acf639-be47-4a77-bbc5-fa33eb706033",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -848,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -1593,9 +1582,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T10:07:59Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
+        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
+        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
+        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
+        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
+        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach."
+      }
+    },
+    "request_fingerprint": "25a8716ab6f0a20a75a53427ee050447165fd0263cd87723ee9d9cc7bc3cd326",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty.",
     "completed_operations": [
@@ -1636,7 +1679,8 @@
     "operation_ids": [
       "T1",
       "M2",
-      "E4"
+      "E4",
+      "E5"
     ],
     "scientific_parent_commit": "b8a41e748c3ceeca82c9d2f1a3a86bc30ceecc7a"
   },
