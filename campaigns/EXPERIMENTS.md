@@ -39,3 +39,4 @@
 | M10 | measurement | I5 | completed |
 | M11 | measurement | I5 | completed |
 | E21 | inquiry | I5 | completed |
+| E22 | checkpoint | I5 | checkpointed |

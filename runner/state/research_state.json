@@ -4114,7 +4114,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 11,
     "session": 11,
@@ -4123,7 +4123,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -14496,36 +14496,193 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T23:40:15Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because prior matched evidence identifies it as the strongest outer-radius reference, although it is only 145/200 on M8. T3:checkpoint-70656 remains the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 remains a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is a complete, controller-enabled saved-runtime artifact at 156/200 on M10; it is not assigned working or best-known because it falls below T3 overall and below T3/T1 outer strata despite improving T4's maintenance-failure class. T2 remains non-viable. No candidate has protected assessment evidence.",
+        "completed_operations": [
+          "T5",
+          "M10",
+          "M11",
+          "E21"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened and I5 has now closed; this line used one additional 120,000-step training allocation (T5, 120,832 actual steps), two measurements (M10 and M11), and one inquiry-close event (E21) in the current session. Campaign cumulative use is five inquiries, eleven scientific sessions including this one, eleven development measurement operations, five training allocations of 120,000 requested steps each (120,832 actual for each completed run), and no protected official assessment.",
+        "current_goal_gap": "The strongest evidence-backed candidate remains T3:checkpoint-70656 at 168/200 on M8, 28 successes short of 196; T1:checkpoint-120832 remains the outer-behavior reference at 145/200 on M8, and T4:checkpoint-105472 scored 163/200. The new controller-enabled T5:checkpoint-10240 scored 156/200 on the fresh M10 panel, leaving a 40-success gap on that panel and 37 never-reached failures. No candidate has protected assessment evidence.",
+        "current_synthesis": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+        "decision_frontier": "I5 is resolved as a limited method result, not a positive route to the human goal. The next consequential distinction is acquisition: whether the remaining never-reached failures arise from reset-singularity escape/inner branch transients and can be reduced by an acquisition-focused intervention while preserving the partial maintenance benefit, versus learned-artifact variability or controller-induced loss of outer behavior. A further inquiry would need a new complete saved-runtime artifact with activation verified and a matched panel that specifically tests never-reached reduction and preserves T3-level inner and T1/T3-level outer holds; repeating the same v1 controller recipe is not justified by this evidence. If no acquisition-focused route has enough expected contribution, goal review may instead retain T1/T3 evidence-backed roles; no official assessment is requested in this checkpoint.",
+        "evidence_references": [
+          "E19",
+          "T5",
+          "M10",
+          "M11",
+          "E17",
+          "M8",
+          "M9",
+          "M6",
+          "M7",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. I5 tested whether a real saved-runtime acquisition-to-maintenance controller could close the measured inner-acquisition versus outer-maintenance gap; the tested artifact reached 156/200 and therefore does not justify official assessment or goal-level success.",
+        "next_direction_or_closure": "I5 is closed with the limited result recorded in E21. The controller method was genuinely exercised and partially reduced reached-but-failed-hold failures, but the positive closure criterion was not met. Return to goal review to decide whether the residual acquisition mechanism warrants one new bounded inquiry; any continuation should target never-reached inner/transient behavior and retain matched saved-runtime activation and failure-class diagnostics, not repeat the exact I5 recipe.",
+        "next_question": "Can an acquisition-focused intervention that directly addresses reset-singularity escape and inner-target transients reduce the controller artifact's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "73ebecb2edc5af9967ae0d115741dda0c1d757e5",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because prior matched evidence identifies it as the strongest outer-radius reference, although it is only 145/200 on M8. T3:checkpoint-70656 remains the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 remains a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is a complete, controller-enabled saved-runtime artifact at 156/200 on M10; it is not assigned working or best-known because it falls below T3 overall and below T3/T1 outer strata despite improving T4's maintenance-failure class. T2 remains non-viable. No candidate has protected assessment evidence.",
+        "completed_operations": [
+          "T5",
+          "M10",
+          "M11",
+          "E21"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened and I5 has now closed; this line used one additional 120,000-step training allocation (T5, 120,832 actual steps), two measurements (M10 and M11), and one inquiry-close event (E21) in the current session. Campaign cumulative use is five inquiries, eleven scientific sessions including this one, eleven development measurement operations, five training allocations of 120,000 requested steps each (120,832 actual for each completed run), and no protected official assessment.",
+        "current_goal_gap": "The strongest evidence-backed candidate remains T3:checkpoint-70656 at 168/200 on M8, 28 successes short of 196; T1:checkpoint-120832 remains the outer-behavior reference at 145/200 on M8, and T4:checkpoint-105472 scored 163/200. The new controller-enabled T5:checkpoint-10240 scored 156/200 on the fresh M10 panel, leaving a 40-success gap on that panel and 37 never-reached failures. No candidate has protected assessment evidence.",
+        "current_synthesis": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+        "decision_frontier": "I5 is resolved as a limited method result, not a positive route to the human goal. The next consequential distinction is acquisition: whether the remaining never-reached failures arise from reset-singularity escape/inner branch transients and can be reduced by an acquisition-focused intervention while preserving the partial maintenance benefit, versus learned-artifact variability or controller-induced loss of outer behavior. A further inquiry would need a new complete saved-runtime artifact with activation verified and a matched panel that specifically tests never-reached reduction and preserves T3-level inner and T1/T3-level outer holds; repeating the same v1 controller recipe is not justified by this evidence. If no acquisition-focused route has enough expected contribution, goal review may instead retain T1/T3 evidence-backed roles; no official assessment is requested in this checkpoint.",
+        "evidence_references": [
+          "E19",
+          "T5",
+          "M10",
+          "M11",
+          "E17",
+          "M8",
+          "M9",
+          "M6",
+          "M7",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. I5 tested whether a real saved-runtime acquisition-to-maintenance controller could close the measured inner-acquisition versus outer-maintenance gap; the tested artifact reached 156/200 and therefore does not justify official assessment or goal-level success.",
+        "inquiry_id": "I5",
+        "next_direction_or_closure": "I5 is closed with the limited result recorded in E21. The controller method was genuinely exercised and partially reduced reached-but-failed-hold failures, but the positive closure criterion was not met. Return to goal review to decide whether the residual acquisition mechanism warrants one new bounded inquiry; any continuation should target never-reached inner/transient behavior and retain matched saved-runtime activation and failure-class diagnostics, not repeat the exact I5 recipe.",
+        "next_question": "Can an acquisition-focused intervention that directly addresses reset-singularity escape and inner-target transients reduce the controller artifact's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+        "session_id": "S11"
+      },
+      "presentation": {
+        "backend_session_id": "2ef3945d-bacd-4270-a811-1e19743dd3f8",
+        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
+        "campaign_usage": "43m27s | 77.24 AIU | prompt 10.6m (85% cached) | output 202.9k",
+        "session_id": "S11",
+        "session_kind": "inquiry",
+        "session_usage": "2m06s | 3.28 AIU | prompt 256.5k (69% cached) | output 14k"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ee2e35b676b4c90bc2274346a641df0fec4ec440",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because prior matched evidence identifies it as the strongest outer-radius reference, although it is only 145/200 on M8. T3:checkpoint-70656 remains the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 remains a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is a complete, controller-enabled saved-runtime artifact at 156/200 on M10; it is not assigned working or best-known because it falls below T3 overall and below T3/T1 outer strata despite improving T4's maintenance-failure class. T2 remains non-viable. No candidate has protected assessment evidence.",
+        "completed_operations": [
+          "T5",
+          "M10",
+          "M11",
+          "E21"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened and I5 has now closed; this line used one additional 120,000-step training allocation (T5, 120,832 actual steps), two measurements (M10 and M11), and one inquiry-close event (E21) in the current session. Campaign cumulative use is five inquiries, eleven scientific sessions including this one, eleven development measurement operations, five training allocations of 120,000 requested steps each (120,832 actual for each completed run), and no protected official assessment.",
+        "current_goal_gap": "The strongest evidence-backed candidate remains T3:checkpoint-70656 at 168/200 on M8, 28 successes short of 196; T1:checkpoint-120832 remains the outer-behavior reference at 145/200 on M8, and T4:checkpoint-105472 scored 163/200. The new controller-enabled T5:checkpoint-10240 scored 156/200 on the fresh M10 panel, leaving a 40-success gap on that panel and 37 never-reached failures. No candidate has protected assessment evidence.",
+        "current_synthesis": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+        "decision_frontier": "I5 is resolved as a limited method result, not a positive route to the human goal. The next consequential distinction is acquisition: whether the remaining never-reached failures arise from reset-singularity escape/inner branch transients and can be reduced by an acquisition-focused intervention while preserving the partial maintenance benefit, versus learned-artifact variability or controller-induced loss of outer behavior. A further inquiry would need a new complete saved-runtime artifact with activation verified and a matched panel that specifically tests never-reached reduction and preserves T3-level inner and T1/T3-level outer holds; repeating the same v1 controller recipe is not justified by this evidence. If no acquisition-focused route has enough expected contribution, goal review may instead retain T1/T3 evidence-backed roles; no official assessment is requested in this checkpoint.",
+        "evidence_references": [
+          "E19",
+          "T5",
+          "M10",
+          "M11",
+          "E17",
+          "M8",
+          "M9",
+          "M6",
+          "M7",
+          "M5"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. I5 tested whether a real saved-runtime acquisition-to-maintenance controller could close the measured inner-acquisition versus outer-maintenance gap; the tested artifact reached 156/200 and therefore does not justify official assessment or goal-level success.",
+        "next_direction_or_closure": "I5 is closed with the limited result recorded in E21. The controller method was genuinely exercised and partially reduced reached-but-failed-hold failures, but the positive closure criterion was not met. Return to goal review to decide whether the residual acquisition mechanism warrants one new bounded inquiry; any continuation should target never-reached inner/transient behavior and retain matched saved-runtime activation and failure-class diagnostics, not repeat the exact I5 recipe.",
+        "next_question": "Can an acquisition-focused intervention that directly addresses reset-singularity escape and inner-target transients reduce the controller artifact's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?"
+      }
+    },
+    "request_fingerprint": "0517e5a2019e0282bc980b35ab73737b6ed7fcfc3b56e73ec12ba7923fed6d87",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because T1/T3/T4 evidence shows it preserves the strongest observed outer-radius complete-hold behavior, despite 145/200 on M8 and 142/200 on M6. T3:checkpoint-70656 is the strongest pooled measured artifact at 168/200 on M8 but loses outer holds. T4:checkpoint-105472 is a limited phase-separated artifact at 163/200: it improves T1's inner reach and never-reach count but does not preserve outer maintenance. T2 remains non-viable. No working candidate is assigned; I5 will create a new controller-enabled candidate only if its complete artifact is produced and measured.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because prior matched evidence identifies it as the strongest outer-radius reference, although it is only 145/200 on M8. T3:checkpoint-70656 remains the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 remains a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is a complete, controller-enabled saved-runtime artifact at 156/200 on M10; it is not assigned working or best-known because it falls below T3 overall and below T3/T1 outer strata despite improving T4's maintenance-failure class. T2 remains non-viable. No candidate has protected assessment evidence.",
     "completed_operations": [
-      "E19"
+      "T5",
+      "M10",
+      "M11",
+      "E21"
     ],
-    "cumulative_resource_use": "Across the campaign, five inquiries have been opened (I1-I5), ten scientific sessions have been recorded, four training allocations have completed at 120,832 actual steps each, nine development measurement operations have completed, and no protected official assessment has been requested. I5 has consumed no training or measurement allocation yet; this goal-review session added only the inquiry boundary and checkpoint.",
-    "current_goal_gap": "The latest fresh matched research panel leaves a gap of 28 successes to 196/200 for T3:checkpoint-70656, with T4:checkpoint-105472 at 163/200 and T1:checkpoint-120832 at 145/200. The remaining observed tradeoff is inner-radius never-reach/acquisition failures versus outer-radius reached-but-failed-hold failures. Official semantics are fixed and no official assessment has been requested.",
-    "current_synthesis": "Observed: the physical model predicts nominal reachability across 6-20 cm but a rank-one fully extended reset singularity, large elbow folds for inner targets, and a stabilization objective whose hold counter is not observable in the policy observation. M5 found identical compiled plant semantics and zero contacts in the T1/T2 comparison, so the current evidence does not support retuning the plant or attributing the T2 loss to contacts or compiled-dynamics differences. M6/M7 showed T3's branch-aware transfer artifact improved pooled success and inner outcomes but lost five outer complete holds relative to T1, with unchanged reset branch-error evidence. T4 then implemented one complete phase-separated reward recipe: transfer from T1, full 6-20 cm exposure, acquisition-only branch/escape shaping, and forfeiture after maintenance exits. On M8/M9 it reduced T1's never-reached failures and improved [6,10) and [10,14) outcomes, but lost outer successes and added reached-but-failed-hold cases; it also remained below T3 overall. Correction to the inherited interpretation: this is a property of the coupled T4 artifact, not a causal test that reward-only phase separation is insufficient, because transfer lineage, seed, exposure, reward, and checkpoint selection changed together; it also does not establish that the residual tradeoff is controller-state causality rather than learned-artifact variability. Training logs nominate no unmeasured checkpoint as development evidence: T3's 0.99-1.00 proxy was concentrated around 66.6-71k steps, while its measured 70,656-step artifact was 168/200 on M8; T4's proxy peak near 105,472 was 163/200. The runtime inspection establishes a consequential unexercised surface: saved evaluation executes the serialized PolicyIO, whose current action path is identity and whose runtime exposes only generic model recurrence, with no explicit acquisition/maintenance state machine. This makes I5 a method test rather than another reward-only description. Competing explanations remain: an explicit stateful controller may prevent maintenance oscillation and preserve outer holds; alternatively the tradeoff may arise from policy optimization variability or unmodeled transient/endpoint effects, in which case a controller will not combine the strata. The model's self-contact and substep-hold uncertainties remain relevant to claims about continuous embodied robustness, but cannot change the present official decision unless they alter protected semantics; all official decisions here remain under coded endpoint semantics. Evidence that would revise the direction is a fresh matched complete-artifact panel with controller activation verified in the saved runtime, stratified inner/outer success, never-reached and reached-but-failed-hold classes, and paired outcomes against the learned baselines.",
-    "decision_frontier": "I5 now tests whether the unresolved inner-acquisition versus outer-maintenance tradeoff is reduced by an explicit acquisition-to-maintenance controller or policy-state separation in the saved runtime, rather than by another reward-only phase recipe. The decisive comparison is a complete controller-enabled artifact against relevant learned baselines on one fresh shared 200-episode panel under fixed official semantics, with radius/angle and failure-class diagnostics. A positive route requires at least 196/200 while preserving T3-level inner outcomes and T1/T3-level outer complete-hold behavior; a lower or mixed result closes I5 with its measured limitation and redirects the campaign. The endpoint-versus-substep and self-contact uncertainties would revise only physical generalization claims unless evidence shows they affect the protected task semantics.",
+    "cumulative_resource_use": "Five inquiries have been opened and I5 has now closed; this line used one additional 120,000-step training allocation (T5, 120,832 actual steps), two measurements (M10 and M11), and one inquiry-close event (E21) in the current session. Campaign cumulative use is five inquiries, eleven scientific sessions including this one, eleven development measurement operations, five training allocations of 120,000 requested steps each (120,832 actual for each completed run), and no protected official assessment.",
+    "current_goal_gap": "The strongest evidence-backed candidate remains T3:checkpoint-70656 at 168/200 on M8, 28 successes short of 196; T1:checkpoint-120832 remains the outer-behavior reference at 145/200 on M8, and T4:checkpoint-105472 scored 163/200. The new controller-enabled T5:checkpoint-10240 scored 156/200 on the fresh M10 panel, leaving a 40-success gap on that panel and 37 never-reached failures. No candidate has protected assessment evidence.",
+    "current_synthesis": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+    "decision_frontier": "I5 is resolved as a limited method result, not a positive route to the human goal. The next consequential distinction is acquisition: whether the remaining never-reached failures arise from reset-singularity escape/inner branch transients and can be reduced by an acquisition-focused intervention while preserving the partial maintenance benefit, versus learned-artifact variability or controller-induced loss of outer behavior. A further inquiry would need a new complete saved-runtime artifact with activation verified and a matched panel that specifically tests never-reached reduction and preserves T3-level inner and T1/T3-level outer holds; repeating the same v1 controller recipe is not justified by this evidence. If no acquisition-focused route has enough expected contribution, goal review may instead retain T1/T3 evidence-backed roles; no official assessment is requested in this checkpoint.",
     "evidence_references": [
-      "T1",
-      "T3",
-      "T4",
-      "M5",
-      "M6",
-      "M7",
+      "E19",
+      "T5",
+      "M10",
+      "M11",
+      "E17",
       "M8",
       "M9",
-      "E17",
-      "E19"
+      "M6",
+      "M7",
+      "M5"
     ],
-    "human_goal_connection": "The human goal remains at least 196 of 200 official episodes succeeding through a complete uninterrupted 2-second hold. I5 is opened because the strongest measured research artifact is T3 at 168/200, while T1 preserves outer behavior but is 145/200 and T4 is 163/200; no candidate has protected assessment evidence.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I5 is opened as one bounded goal-linked inquiry. In the fresh inquiry session, develop the saved-runtime acquisition/maintenance state separation without changing official task semantics, then select the complete artifact and matched diagnostics that best discriminate controller benefit from learned-artifact variability. Do not request official assessment from T1, T3, or T4 before that comparison.",
-    "next_question": "Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200?",
-    "scientific_commit": "fa31ef53d6b952f0ea66d2444da537c3eca7c8d8",
-    "session_id": "S10"
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds in the fixed 200-episode official assessment. I5 tested whether a real saved-runtime acquisition-to-maintenance controller could close the measured inner-acquisition versus outer-maintenance gap; the tested artifact reached 156/200 and therefore does not justify official assessment or goal-level success.",
+    "inquiry_id": "I5",
+    "next_direction_or_closure": "I5 is closed with the limited result recorded in E21. The controller method was genuinely exercised and partially reduced reached-but-failed-hold failures, but the positive closure criterion was not met. Return to goal review to decide whether the residual acquisition mechanism warrants one new bounded inquiry; any continuation should target never-reached inner/transient behavior and retain matched saved-runtime activation and failure-class diagnostics, not repeat the exact I5 recipe.",
+    "next_question": "Can an acquisition-focused intervention that directly addresses reset-singularity escape and inner-target transients reduce the controller artifact's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+    "scientific_commit": "ee2e35b676b4c90bc2274346a641df0fec4ec440",
+    "session_id": "S11"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -14533,24 +14690,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "2ef3945d-bacd-4270-a811-1e19743dd3f8",
-    "id": "S11",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can an explicit acquisition-to-maintenance controller or policy-state separation, implemented in the saved runtime and evaluated under fixed official semantics, combine T3-level inner-radius reach with T1/T3-level outer complete-hold performance and move a frozen artifact toward at least 196/200? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T5",
-      "M10",
-      "M11",
-      "E21"
-    ],
-    "scientific_parent_commit": "73ebecb2edc5af9967ae0d115741dda0c1d757e5"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
