@@ -11,3 +11,4 @@
 | T2 | training | I1 | completed |
 | M2 | measurement | I1 | completed |
 | M3 | measurement | I1 | completed |
+| E5 | model_role | I1 | assigned |
