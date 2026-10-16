@@ -13,3 +13,4 @@
 | M3 | measurement | I1 | completed |
 | E5 | model_role | I1 | assigned |
 | E6 | inquiry | I1 | completed |
+| E7 | checkpoint | I1 | checkpointed |
