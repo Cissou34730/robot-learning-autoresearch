@@ -5263,47 +5263,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry when a completed implementation and candidate comparison against T1:checkpoint-120832 on a matched, non-overlapping official-distribution panel provides complete-hold success, radius/angle strata, never-reach versus reached-but-failed-hold classes, reset-to-reach branch errors and trajectory/control traces. A positive bounded conclusion requires a material reduction in inner-radius never-reach failures, no material loss of outer-radius or hold performance, and an overall result that moves credibly toward 196/200; a negative or limited conclusion is warranted if those gains do not occur or the candidate trades away existing performance. Attribute conclusions to the implemented artifact comparison only: training seed, source provenance and any remaining method components must stay explicit, and substep excursions must remain reported without changing official success semantics.",
-          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 on M3/M5, leaving a 49-episode gap, while the fresh 6-20 cm exposure artifact T2 achieved 70/200 and degraded every measured radius stratum. A branch-aware reset/trajectory-learning intervention directly targets the observed learned transient and branch-coverage signature while preserving the official complete-hold endpoint and the already strong outer-radius behavior as explicit constraints.",
-          "handoff_conclusion": "Established observations: M5 repeated the matched 200-episode panel with trace instrumentation and preserved the prior complete-hold outcomes: T1 147/200 and T2 70/200, with 92 T1 wins, 15 T2 wins and 107 discordant episodes. The loaded MuJoCo summaries are identical for both artifacts: nq=nv=nu=2, 0.002 s integration, 0.020 s control interval, zero gravity, identical compiled body masses/inertias, damping, armature, gear and control limits. Every episode for both artifacts had zero contacts. On never-reached episodes, T2 had mean minimum distance 11.55 cm, mean maximum internal-substep distance 26.34 cm and mean peak generalized actuator-force norm 6.72; T1 had 6.20 cm, 19.79 cm and 7.07. Representative paired traces at target radius 8.18 cm and angle 161.23 degrees show T1 leaving reset, reaching at control step 16 and ending near the open IK branch, while T2 follows a different transient and settles at about 7.51 cm from the target with nonzero errors to both branches. A reverse discordant pair at radius 6.59 cm and angle -55.50 degrees shows T2 can succeed where T1 fails, so geometry alone is not a universal impossibility. T1 successful endpoint holds can have internal substep distances above 1 cm, so endpoint success does not certify continuous-time containment under the coded evaluator. Interpretation: for this complete artifact comparison, learned reset/branch-transient and control-usage behavior is the dominant actionable signature; compiled-authority mismatch, self-contact and numerical plant differences are not supported as dominant explanations. Training-artifact variability remains inseparable from the changed exposure, seed and source provenance. The tested fresh 6-20 cm replacement remains a negative artifact-level result and neither disproves gradual exposure/branch curriculum nor proves exposure causality.",
-          "handoff_question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
-          "rationale": "M5 completed the prior mechanism inquiry: T1 and T2 had identical compiled MuJoCo fields and zero contacts, while their paired traces differed in reset escape, branch convergence and control usage; this makes learned transient/branch behavior the most actionable route for the compared artifacts, but does not prove branch-aware learning is causal or sufficient. The current implementation has no branch-aware reset or trajectory intervention: T2 only replaced the training radius range, and its fresh artifact fell to 35.0% versus T1's 73.5%. A new branch-aware intervention is therefore not a relabeling of the failed exposure comparison. It has higher expected contribution than official assessment of a candidate 49 episodes below the comparable objective, while costing one bounded development allocation and using the retained M5 trace evaluator. The inquiry will compare the complete resulting artifact with T1, distinguish candidate selection from mechanism attribution, and preserve unresolved seed/source confounding and endpoint-versus-substep limits.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry when a completed implementation and candidate comparison against T1:checkpoint-120832 on a matched, non-overlapping official-distribution panel provides complete-hold success, radius/angle strata, never-reach versus reached-but-failed-hold classes, reset-to-reach branch errors and trajectory/control traces. A positive bounded conclusion requires a material reduction in inner-radius never-reach failures, no material loss of outer-radius or hold performance, and an overall result that moves credibly toward 196/200; a negative or limited conclusion is warranted if those gains do not occur or the candidate trades away existing performance. Attribute conclusions to the implemented artifact comparison only: training seed, source provenance and any remaining method components must stay explicit, and substep excursions must remain reported without changing official success semantics.",
-        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds out of 200 under the official 6-20 cm, full-angle distribution. T1:checkpoint-120832 remains the strongest evidence-backed candidate at 147/200 on M3/M5, leaving a 49-episode gap, while the fresh 6-20 cm exposure artifact T2 achieved 70/200 and degraded every measured radius stratum. A branch-aware reset/trajectory-learning intervention directly targets the observed learned transient and branch-coverage signature while preserving the official complete-hold endpoint and the already strong outer-radius behavior as explicit constraints.",
-        "question": "Can a branch-aware reset/trajectory-learning intervention, developed from T1:checkpoint-120832 and evaluated under the official distribution with complete-hold and trace diagnostics, reduce the inner-radius never-reach deficit toward at least 196/200 without sacrificing outer-radius or hold performance?",
-        "rationale": "M5 completed the prior mechanism inquiry: T1 and T2 had identical compiled MuJoCo fields and zero contacts, while their paired traces differed in reset escape, branch convergence and control usage; this makes learned transient/branch behavior the most actionable route for the compared artifacts, but does not prove branch-aware learning is causal or sufficient. The current implementation has no branch-aware reset or trajectory intervention: T2 only replaced the training radius range, and its fresh artifact fell to 35.0% versus T1's 73.5%. A new branch-aware intervention is therefore not a relabeling of the failed exposure comparison. It has higher expected contribution than official assessment of a candidate 49 episodes below the comparable objective, while costing one bounded development allocation and using the retained M5 trace evaluator. The inquiry will compare the complete resulting artifact with T1, distinguish candidate selection from mechanism attribution, and preserve unresolved seed/source confounding and endpoint-versus-substep limits."
-      }
-    },
-    "request_fingerprint": "8626aca98d8a34d0e6d8ded27279decb2d48ab9eb59899e242038843edcb1ef3",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned previously by E1 and supported by M1 and M3/M5; it is not goal-certified. No working candidate is assigned. T2:checkpoint-120832 remains a measured comparison artifact only. No candidate is retained.",
     "completed_operations": [
