@@ -181,7 +181,7 @@
       "training_steps": 115712
     },
     "T1:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/20affb08-24cf-44e9-ab41-12a0f3496845/t1/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/20affb08-24cf-44e9-ab41-12a0f3496845/t1-c8cf701d5-3fea27340ab25ddc2da21e628a92b6e7490219be0f93b74a4b1f4d40415f798c",
       "evaluation_artifacts": [
         "campaigns/evaluations/20affb08-24cf-44e9-ab41-12a0f3496845/evaluation-20affb08-24cf-44e9-ab41-12a0f3496845-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
       ],
@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -839,9 +839,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -1486,9 +1486,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T08:14:02Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 is the only completed development evaluation and compares the two strongest late baseline artifacts on identical official-distribution seeds. T1:checkpoint-120832 achieved 110/160 (68.75%) versus 105/160 (65.625%) for T1:checkpoint-115712, with 9 paired wins versus 4 and 13 discordant episodes. Its detailed artifact shows many inner-band episodes with no first reach and large minimum distance, while most reached episodes complete the 100-step hold; this makes it the strongest evidence-backed candidate, not a goal certification or causal proof."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 is the only completed development evaluation and compares the two strongest late baseline artifacts on identical official-distribution seeds. T1:checkpoint-120832 achieved 110/160 (68.75%) versus 105/160 (65.625%) for T1:checkpoint-115712, with 9 paired wins versus 4 and 13 discordant episodes. Its detailed artifact shows many inner-band episodes with no first reach and large minimum distance, while most reached episodes complete the 100-step hold; this makes it the strongest evidence-backed candidate, not a goal certification or causal proof."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/20affb08-24cf-44e9-ab41-12a0f3496845/t1-c8cf701d5-3fea27340ab25ddc2da21e628a92b6e7490219be0f93b74a4b1f4d40415f798c",
+        "fingerprint": "3fea27340ab25ddc2da21e628a92b6e7490219be0f93b74a4b1f4d40415f798c",
+        "source": "campaigns/checkpoints/candidates/20affb08-24cf-44e9-ab41-12a0f3496845/t1/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 is the only completed development evaluation and compares the two strongest late baseline artifacts on identical official-distribution seeds. T1:checkpoint-120832 achieved 110/160 (68.75%) versus 105/160 (65.625%) for T1:checkpoint-115712, with 9 paired wins versus 4 and 13 discordant episodes. Its detailed artifact shows many inner-band episodes with no first reach and large minimum distance, while most reached episodes complete the 100-step hold; this makes it the strongest evidence-backed candidate, not a goal certification or causal proof."
+      }
+    },
+    "request_fingerprint": "bdd144f24ca01427e40ed9d6d017d904fbd3d82b10d020ca642e8189300423d2",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1509,7 +1583,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E1"
     ],
     "scientific_parent_commit": "0946b0a81035def50cdf829391cbca0fb283e516"
   },
