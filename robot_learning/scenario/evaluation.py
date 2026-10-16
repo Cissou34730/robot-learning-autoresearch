@@ -21,6 +21,70 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SCHEMA_VERSION = 6
+RADIUS_BIN_EDGES_CM = (6.0, 10.0, 14.0, 18.0, 20.0)
+
+
+def _radius_bin_label(radius_cm: float) -> str:
+    if radius_cm < RADIUS_BIN_EDGES_CM[0] or radius_cm > RADIUS_BIN_EDGES_CM[-1]:
+        raise ValueError(f"target radius is outside official range: {radius_cm}")
+    for lower, upper in zip(RADIUS_BIN_EDGES_CM[:-1], RADIUS_BIN_EDGES_CM[1:]):
+        if radius_cm < upper:
+            return f"{lower:g}-{upper:g} cm"
+    return f"{RADIUS_BIN_EDGES_CM[-2]:g}-{RADIUS_BIN_EDGES_CM[-1]:g} cm"
+
+
+def _empty_stratified_group() -> dict:
+    return {
+        "episodes": 0,
+        "successes": 0,
+        "success_percent": 0.0,
+        "episode_indices": [],
+    }
+
+
+def _add_to_stratified_group(
+    group: dict, success: bool, episode_index: int
+) -> None:
+    group["episodes"] += 1
+    group["successes"] += int(success)
+    group["success_percent"] = 100 * group["successes"] / group["episodes"]
+    group["episode_indices"].append(episode_index)
+
+
+def _stratified_diagnostics(
+    episode_diagnostics: list[dict], episode_results: list[dict]
+) -> dict:
+    radius_bins = {
+        _radius_bin_label(lower): _empty_stratified_group()
+        for lower in RADIUS_BIN_EDGES_CM[:-1]
+    }
+    branch_groups = {
+        branch: _empty_stratified_group() for branch in ("open", "folded")
+    }
+    for episode_index, (diagnostic, result) in enumerate(
+        zip(episode_diagnostics, episode_results)
+    ):
+        success = bool(result["success"])
+        radius_group = radius_bins[
+            _radius_bin_label(diagnostic["target_radius_cm"])
+        ]
+        _add_to_stratified_group(radius_group, success, episode_index)
+        observed_branches = set(diagnostic["branch_labels"])
+        for branch in observed_branches:
+            _add_to_stratified_group(
+                branch_groups[branch], success, episode_index
+            )
+    return {
+        "radius_bin_edges_cm": list(RADIUS_BIN_EDGES_CM),
+        "radius_bins": radius_bins,
+        # An episode that switches branches is intentionally counted in each
+        # branch it visibly occupies; branch counts therefore need not sum to
+        # the panel size. The indices provide compact access to the complete
+        # per-episode diagnostics without choosing unrequested summary
+        # statistics for those measures.
+        "branches": branch_groups,
+    }
 
 
 def evaluate_research_model(
@@ -55,6 +119,17 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        final_endpoint_velocity: list[float] = []
+        final_endpoint_velocity_magnitude = float("nan")
+        max_endpoint_velocity_magnitude = 0.0
+        final_action_magnitude = float("nan")
+        max_action_magnitude = 0.0
+        saturated_action_steps = 0
+        final_joint_limit_margins: list[float] = []
+        min_joint_limit_margin = float("inf")
+        branch_labels: list[str] = []
+        branch_switch_count = 0
+        previous_branch_label: str | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -72,6 +147,38 @@ def evaluate_research_model(
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
+            endpoint_velocity = np.asarray(
+                info["endpoint_linear_velocity"], dtype=np.float64
+            )
+            final_endpoint_velocity = endpoint_velocity.copy().tolist()
+            endpoint_velocity_magnitude = float(np.linalg.norm(endpoint_velocity))
+            final_endpoint_velocity_magnitude = endpoint_velocity_magnitude
+            max_endpoint_velocity_magnitude = max(
+                max_endpoint_velocity_magnitude, endpoint_velocity_magnitude
+            )
+            applied_action = np.asarray(info["applied_action"], dtype=np.float64)
+            action_magnitude = float(np.linalg.norm(applied_action))
+            final_action_magnitude = action_magnitude
+            max_action_magnitude = max(max_action_magnitude, action_magnitude)
+            if np.any(np.abs(applied_action) >= 1.0):
+                saturated_action_steps += 1
+            final_joint_limit_margins = [
+                float(margin)
+                for margin in info["joint_limit_margins"]
+            ]
+            min_joint_limit_margin = min(
+                min_joint_limit_margin,
+                min(final_joint_limit_margins),
+            )
+            elbow_position = float(info["joint_positions"][1])
+            branch_label = "open" if elbow_position >= 0.0 else "folded"
+            branch_labels.append(branch_label)
+            if (
+                previous_branch_label is not None
+                and branch_label != previous_branch_label
+            ):
+                branch_switch_count += 1
+            previous_branch_label = branch_label
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -103,6 +210,16 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "final_endpoint_velocity": final_endpoint_velocity,
+                "final_endpoint_velocity_magnitude": final_endpoint_velocity_magnitude,
+                "max_endpoint_velocity_magnitude": max_endpoint_velocity_magnitude,
+                "final_action_magnitude": final_action_magnitude,
+                "max_action_magnitude": max_action_magnitude,
+                "saturated_action_steps": saturated_action_steps,
+                "final_joint_limit_margins": final_joint_limit_margins,
+                "min_joint_limit_margin": min_joint_limit_margin,
+                "branch_labels": branch_labels,
+                "branch_switch_count": branch_switch_count,
             }
         )
         if progress_callback is not None:
@@ -110,7 +227,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": RESEARCH_EVALUATION_SCHEMA_VERSION,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +238,16 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "stratified_diagnostics": _stratified_diagnostics(
+                episode_diagnostics, episode_results
+            ),
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "endpoint_velocity": "m/s",
+                "action": "normalized actuator command",
+                "joint_limit_margin": "rad",
+            },
         },
     }
 
