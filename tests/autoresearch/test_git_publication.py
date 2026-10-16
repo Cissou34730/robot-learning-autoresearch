@@ -176,3 +176,169 @@ def test_pathspec_file_preserves_literal_paths_and_is_removed(monkeypatch, fail)
         repository.git_with_pathspecs("add", "-A", scope=scope)
     assert observed
     assert all(not path.exists() for path in observed)
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        "remote: Internal Server Error",
+        "remote: fatal error in commit_refs",
+        "fatal: The requested URL returned error: 500",
+        "error: RPC failed; HTTP 502 curl 22",
+        "fatal: The requested URL returned error: 503",
+        "fatal: The requested URL returned error: 504",
+    ],
+)
+def test_push_retries_transient_failure_with_fixed_commit_and_branch(
+    monkeypatch, failure
+):
+    commit = "a" * 40
+    destination = "refs/heads/research"
+    pushes = []
+    waits = []
+    resolutions = []
+    head = {"commit": commit, "branch": destination}
+
+    def git(*args):
+        if args == ("rev-parse", "HEAD"):
+            resolutions.append(args)
+            return head["commit"] + "\n"
+        if args == ("symbolic-ref", "--quiet", "HEAD"):
+            resolutions.append(args)
+            return head["branch"] + "\n"
+        pushes.append(args)
+        if len(pushes) == 1:
+            raise RuntimeError(failure)
+        return ""
+
+    def sleep(seconds):
+        waits.append(seconds)
+        head.update(commit="b" * 40, branch="refs/heads/different")
+
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(repository.time, "sleep", sleep)
+
+    repository.push_head()
+
+    assert pushes == [("push", "origin", f"{commit}:{destination}")] * 2
+    assert waits == [60]
+    assert resolutions == [
+        ("rev-parse", "HEAD"),
+        ("symbolic-ref", "--quiet", "HEAD"),
+    ]
+
+
+@pytest.mark.parametrize("failures", [0, 3, 4])
+def test_push_retry_limit_and_error_preservation(monkeypatch, failures):
+    pushes = []
+    waits = []
+
+    def git(*args):
+        if args == ("rev-parse", "HEAD"):
+            return "a" * 40
+        if args == ("symbolic-ref", "--quiet", "HEAD"):
+            return "refs/heads/research"
+        pushes.append(args)
+        if len(pushes) <= failures:
+            raise RuntimeError(f"remote: Internal Server Error\nrequest-{len(pushes)}")
+        return ""
+
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(repository.time, "sleep", waits.append)
+
+    if failures == 4:
+        with pytest.raises(repository.PublicationError, match="request-4") as raised:
+            repository.push_head()
+        assert isinstance(raised.value.__cause__, RuntimeError)
+    else:
+        repository.push_head()
+
+    assert len(pushes) == min(failures + 1, 4)
+    assert waits == [60] * min(failures, 3)
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        "fatal: Authentication failed",
+        "remote: GH001: Large files detected",
+        "rejected (non-fast-forward)",
+        "rejected (fetch first)",
+        "remote: GH013: Repository rule violations found",
+        "fatal: Could not resolve host: github.com",
+        "remote: Internal Server Error\nfatal: Authentication failed",
+    ],
+)
+def test_push_does_not_retry_permanent_or_unknown_errors(monkeypatch, failure):
+    pushes = []
+    waits = []
+
+    def git(*args):
+        if args == ("rev-parse", "HEAD"):
+            return "a" * 40
+        if args == ("symbolic-ref", "--quiet", "HEAD"):
+            return "refs/heads/research"
+        pushes.append(args)
+        raise RuntimeError(failure)
+
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(repository.time, "sleep", waits.append)
+
+    with pytest.raises(repository.PublicationError) as raised:
+        repository.push_head()
+
+    assert failure in str(raised.value)
+    assert len(pushes) == 1
+    assert waits == []
+
+
+def test_push_stops_retrying_when_rejection_becomes_permanent(monkeypatch):
+    failures = iter(
+        [
+            RuntimeError("remote: Internal Server Error"),
+            RuntimeError("rejected (non-fast-forward)"),
+        ]
+    )
+    pushes = []
+    waits = []
+
+    def git(*args):
+        if args == ("rev-parse", "HEAD"):
+            return "a" * 40
+        if args == ("symbolic-ref", "--quiet", "HEAD"):
+            return "refs/heads/research"
+        pushes.append(args)
+        raise next(failures)
+
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(repository.time, "sleep", waits.append)
+
+    with pytest.raises(repository.PublicationError, match="non-fast-forward"):
+        repository.push_head()
+
+    assert len(pushes) == 2
+    assert waits == [60]
+
+
+def test_push_retry_wait_is_interruptible(monkeypatch):
+    pushes = []
+
+    def git(*args):
+        if args == ("rev-parse", "HEAD"):
+            return "a" * 40
+        if args == ("symbolic-ref", "--quiet", "HEAD"):
+            return "refs/heads/research"
+        pushes.append(args)
+        raise RuntimeError("remote: Internal Server Error")
+
+    def sleep(seconds):
+        assert seconds == 60
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(repository.time, "sleep", sleep)
+
+    with pytest.raises(KeyboardInterrupt):
+        repository.push_head()
+
+    assert len(pushes) == 1

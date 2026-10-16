@@ -19,7 +19,7 @@ from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
-from runner import paths
+from runner import console, paths
 
 
 class PublicationError(RuntimeError):
@@ -30,6 +30,8 @@ STATE_SCHEMA_VERSION = 6
 DEFAULT_MAX_INQUIRIES = 15
 WINDOWS_COMMAND_LINE_LIMIT = 32_767
 ARTIFACT_CONTENTS_MAX_BYTES = 4_096
+GIT_PUSH_RETRIES = 3
+GIT_PUSH_RETRY_SECONDS = 60
 
 RUNNER_CONTROL_PATHS = {
     "pi_workspace/operation_request.json",
@@ -485,9 +487,59 @@ def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
     return stageable
 
 
+def _retryable_push_error(error: RuntimeError) -> bool:
+    message = str(error).lower()
+    if any(
+        marker in message
+        for marker in (
+            "authentication failed",
+            "permission denied",
+            "access denied",
+            "repository not found",
+            "non-fast-forward",
+            "fetch first",
+            "gh001",
+            "gh006",
+            "gh013",
+            "large files detected",
+            "exceeds github's file size limit",
+        )
+    ):
+        return False
+    return (
+        "remote: internal server error" in message
+        or "remote: fatal error in commit_refs" in message
+        or re.search(r"\b(?:returned error:|http)\s*(?:500|502|503|504)\b", message)
+        is not None
+    )
+
+
 def push_head() -> None:
     try:
-        git("push", "origin", "HEAD")
+        commit = git("rev-parse", "HEAD").strip()
+        destination = git("symbolic-ref", "--quiet", "HEAD").strip()
+        for retry in range(GIT_PUSH_RETRIES + 1):
+            try:
+                git("push", "origin", f"{commit}:{destination}")
+            except RuntimeError as error:
+                if retry == GIT_PUSH_RETRIES or not _retryable_push_error(error):
+                    raise
+                console.boundary(
+                    "warning",
+                    "PUBLICATION RETRY",
+                    f"retry {retry + 1}/{GIT_PUSH_RETRIES} "
+                    f"in {GIT_PUSH_RETRY_SECONDS} seconds",
+                    str(error),
+                )
+                time.sleep(GIT_PUSH_RETRY_SECONDS)
+            else:
+                if retry:
+                    console.boundary(
+                        "runner",
+                        "PUBLICATION RECOVERED",
+                        f"retry {retry}/{GIT_PUSH_RETRIES}",
+                    )
+                return
     except RuntimeError as error:
         raise PublicationError(
             "local commits could not be pushed to origin; refusing unpublished state\n"
