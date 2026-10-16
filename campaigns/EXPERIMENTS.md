@@ -26,3 +26,4 @@
 | E16 | checkpoint | - | checkpointed |
 | T3 | training | I4 | completed |
 | M5 | measurement | I4 | completed |
+| E17 | inquiry | I4 | completed |

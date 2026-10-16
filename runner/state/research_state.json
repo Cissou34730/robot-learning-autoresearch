@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a branch-aware candidate or control structure has been implemented and its complete artifact is measured against T1 on a full-range task-reference panel with episode success, target geometry, first entry, longest uninterrupted hold, and interruption diagnostics. A positive result requires a substantial reduction in non-entry with no task-relevant regression in complete hold and a clear improvement toward 98%; a negative result is persistent non-entry or worse success despite the branch-aware implementation; an entry improvement with remaining hold failures is a limited result that redirects the next decision to stabilization; an execution or diagnostic limitation that prevents these distinctions is inconclusive and remains explicit.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the uninterrupted 100-control-step hold. T1 reaches only 110/160 on the full-range development panel, with non-entry dominating its failures, so reducing distribution-tail entry failures while preserving complete hold is the most direct route toward the 98% threshold. The result will be judged by episode success and hold continuity, not reward.",
-    "handoff_conclusion": "Established observations: M2 measured T1:checkpoint-120832 at 110/160, and M3 traces showed catastrophic T1 non-entries settling far from the target with safe joint-limit margins and zero contacts, while matched successes and near-threshold failures implicated policy branch selection/approach and a smaller stabilization class. E9 supports branch/coverage selection as a leading explanation for the dominant non-entry tail and distinguishes hold interruption as a secondary task-critical failure. T2 was a fresh 120000-step direct-torque PPO run whose intended source change was training target-radius exposure from 14\u201320 cm to 6\u201320 cm; its training proxy had zero success at checkpoints, and M4 measured 59/160 versus 124/160 for T1 on the same seed-5200 panel, with T2 showing 98 non-entries, 3 entered-but-failed-hold episodes and 5 interruptions versus T1's 32, 4 and 4. Interpretation and correction: this is an adverse complete-artifact comparison of the tested full-range exposure recipe, not causal proof that radius exposure alone is harmful, because seed, normalization, learned weights and runtime artifact differ and no exact saved components matched. Likewise, the traces do not establish that T1 failures are literally a chosen wrong sector; safe-margin non-entry is consistent with branch/coverage selection, failure to leave the reset singularity, or optimization failure. The zero T2 training-success proxy leaves wider-distribution optimization as a consequential alternative. Existing evidence nevertheless makes entry/branch structure the leading next direction because both T1 and especially T2 are non-entry dominated, while hold diagnostics must remain a co-primary criterion. No evidence establishes a primary reachability, joint-limit or contact impossibility under the fixed task boundary.",
-    "handoff_question": "Can an explicitly branch-aware policy or control structure reduce T1's safe-margin non-entry tail across the full 6\u201320 cm distribution without exchanging it for uninterrupted-hold failures, and what failure mechanism limits it?",
-    "handoff_source_session_id": "S8",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can an explicitly branch-aware policy or control structure reduce T1's safe-margin non-entry tail across the full 6\u201320 cm distribution without exchanging it for uninterrupted-hold failures, and what failure mechanism limits it?",
-    "rationale": "T1 is the strongest measured candidate but is 29.25 percentage points below the development target, so official assessment is not the best use of the next bounded effort. E9's synchronized traces support branch/coverage selection as a leading explanation for T1's safe-margin, zero-contact non-entries and separately identify a smaller stabilization class, but they do not prove that the failures are caused by a particular wrong sector. M4 shows that the implemented T2 full-range exposure recipe was substantially worse than T1, dominated by 98 non-entries versus 3 entered-but-failed-hold episodes, while T2's zero training-success proxy and changed seed/runtime leave optimization failure under that recipe unresolved. This supports testing an explicitly branch-aware representation or controller rather than repeating exposure-only PPO, while preserving complete-hold diagnostics so that a successful entry conversion is not mistaken for progress if interruptions increase. The inquiry compares the new complete artifact with the already tested direct-torque PPO recipe; it does not claim that branch-aware control is effective before that evidence exists.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "2b6f9afdce853d1c7fa12e88b47adddf98fbe0ff",
     "id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
@@ -2480,7 +2469,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 5,
     "session": 9,
@@ -5287,9 +5276,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T20:26:41Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
+        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
+        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
+        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
+        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I4 closes with a limited negative result for the tested branch-aware complete artifact. T3:checkpoint-105472, trained with the explicitly latched feasible-IK-branch guidance plus PPO residual structure, achieved 33/200 = 16.5% on the protected task-reference-v1 panel, while the unchanged legacy T1:checkpoint-120832 reference achieved 147/200 = 73.5% on the identical panel. The branch-aware artifact therefore did not reduce the distributional failure gap; it was substantially worse than T1 and remains far from the 98% objective.",
+        "reason": "The closure condition is met by implementation and complete-artifact measurement: T3 was produced under the new branch-aware runtime and measured against T1 on the required 200-episode full-range task-reference panel. The result is an adverse artifact-level conclusion, not proof that branch awareness in general is ineffective or that any individual gain/loss is caused solely by the guidance law. The task-reference artifacts preserve target geometry, terminal success, steps, and final distance, but do not preserve first-entry step, longest uninterrupted hold, interruption count, selected branch, or policy/guidance/applied-action traces. Consequently, M5 establishes worse overall success and frequent far-from-target final states but does not discriminate whether the limiting mechanism was branch selection, guidance/approach dynamics, optimization/representation, or hold stabilization. This diagnostic limitation is unresolved and must be carried into goal review; the result does not justify official assessment and does not justify repeating the same branch-aware structure without redesign."
+      }
+    },
+    "request_fingerprint": "f87d131da0b67387aae2dd99b1b95f7b22bf66e0595d300f3ba375923399e69a",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2 and M3, but is not officially certified. T2:checkpoint-120832 is an adverse full-distribution exposure candidate measured by M4 and is not assigned a role. No working candidate supports official assessment. The active inquiry will compare any new complete branch-aware artifact against T1 rather than treating a training proxy or a new description as evidence of capability.",
     "completed_operations": [
@@ -5335,7 +5378,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can an explicitly branch-aware policy or control structure reduce T1's safe-margin non-entry tail across the full 6\u201320 cm distribution without exchanging it for uninterrupted-hold failures, and what failure mechanism limits it? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T3",
-      "M5"
+      "M5",
+      "E17"
     ],
     "scientific_parent_commit": "22ac5c0ff727dbc4c2b7116b5b0b15811a44ff2b"
   },
