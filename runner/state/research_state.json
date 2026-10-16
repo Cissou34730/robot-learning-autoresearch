@@ -2468,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 3,
     "measurement": 6,
     "session": 8,
@@ -2477,7 +2477,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T3:checkpoint-105472",
     "retained": {},
@@ -5380,9 +5380,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:33:54Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment for T3:checkpoint-105472, now explicitly assigned best-known by E16. T3 is the strongest evidence-backed complete artifact: on the matched disjoint M6 panel it achieved 158/160 successes (98.75%) versus T2's 155/160 (96.875%), all three discordant episodes favored T3, inner success was preserved at 92/93, outer success improved to 66/67, no-reach failures fell from 4 to 2, and hold interruptions fell from 1 to 0. The T3 training record also shows a sustained 1.00 training proxy around the selected 105472-step checkpoint, but this is only candidate-selection context and not development certification. Further bounded work has lower expected contribution now: the remaining questions about individual reward-term causality, observation/history sufficiency, and 2 ms intra-interval continuity are scientifically real but M6 does not show that resolving them would change the immediate candidate choice, and another development panel could not certify the human goal. The assessment is the only operation that can test the fixed official distribution and the required 196/200 complete uninterrupted holds. Residual uncertainty is material and preserved: M6 is a single 160-episode development panel with two T3 no-reach failures (one inner and one outer), the reward terms were changed together in one transferred PPO run, and no official result has yet been measured; therefore this is a justified terminal test, not a claim that the goal is already met or that either reward term alone caused the gain. Evidence: M6, E14, T3, E16."
+      },
+      "result": {
+        "model": "T3:checkpoint-105472",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T3:checkpoint-105472",
+        "reason": "Request the protected official assessment for T3:checkpoint-105472, now explicitly assigned best-known by E16. T3 is the strongest evidence-backed complete artifact: on the matched disjoint M6 panel it achieved 158/160 successes (98.75%) versus T2's 155/160 (96.875%), all three discordant episodes favored T3, inner success was preserved at 92/93, outer success improved to 66/67, no-reach failures fell from 4 to 2, and hold interruptions fell from 1 to 0. The T3 training record also shows a sustained 1.00 training proxy around the selected 105472-step checkpoint, but this is only candidate-selection context and not development certification. Further bounded work has lower expected contribution now: the remaining questions about individual reward-term causality, observation/history sufficiency, and 2 ms intra-interval continuity are scientifically real but M6 does not show that resolving them would change the immediate candidate choice, and another development panel could not certify the human goal. The assessment is the only operation that can test the fixed official distribution and the required 196/200 complete uninterrupted holds. Residual uncertainty is material and preserved: M6 is a single 160-episode development panel with two T3 no-reach failures (one inner and one outer), the reward terms were changed together in one transferred PPO run, and no official result has yet been measured; therefore this is a justified terminal test, not a claim that the goal is already met or that either reward term alone caused the gain. Evidence: M6, E14, T3, E16.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "8a1efe41-4ddf-4866-bc6a-3087c8ce8f42",
+        "campaign_id": "5c83824d-8c09-447e-b338-e3e036a23cbf",
+        "campaign_usage": "16m56s | 40.64 AIU | prompt 5.6m (86% cached) | output 106.9k",
+        "session_id": "S8",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "model": "T3:checkpoint-105472",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment for T3:checkpoint-105472, now explicitly assigned best-known by E16. T3 is the strongest evidence-backed complete artifact: on the matched disjoint M6 panel it achieved 158/160 successes (98.75%) versus T2's 155/160 (96.875%), all three discordant episodes favored T3, inner success was preserved at 92/93, outer success improved to 66/67, no-reach failures fell from 4 to 2, and hold interruptions fell from 1 to 0. The T3 training record also shows a sustained 1.00 training proxy around the selected 105472-step checkpoint, but this is only candidate-selection context and not development certification. Further bounded work has lower expected contribution now: the remaining questions about individual reward-term causality, observation/history sufficiency, and 2 ms intra-interval continuity are scientifically real but M6 does not show that resolving them would change the immediate candidate choice, and another development panel could not certify the human goal. The assessment is the only operation that can test the fixed official distribution and the required 196/200 complete uninterrupted holds. Residual uncertainty is material and preserved: M6 is a single 160-episode development panel with two T3 no-reach failures (one inner and one outer), the reward terms were changed together in one transferred PPO run, and no official result has yet been measured; therefore this is a justified terminal test, not a claim that the goal is already met or that either reward term alone caused the gain. Evidence: M6, E14, T3, E16."
+      }
+    },
+    "request_fingerprint": "59f542667134dff4e8c959839e849f6a1c6bce83707fad08f3659f0da4b58274",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
     "completed_operations": [
@@ -5418,21 +5471,10 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8a1efe41-4ddf-4866-bc6a-3087c8ce8f42",
-    "id": "S8",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E16"
-    ],
-    "scientific_parent_commit": "a27ef70059a12db35017b732d56212e8785fbb94"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T3:checkpoint-105472",
+    "reason": "Request the protected official assessment for T3:checkpoint-105472, now explicitly assigned best-known by E16. T3 is the strongest evidence-backed complete artifact: on the matched disjoint M6 panel it achieved 158/160 successes (98.75%) versus T2's 155/160 (96.875%), all three discordant episodes favored T3, inner success was preserved at 92/93, outer success improved to 66/67, no-reach failures fell from 4 to 2, and hold interruptions fell from 1 to 0. The T3 training record also shows a sustained 1.00 training proxy around the selected 105472-step checkpoint, but this is only candidate-selection context and not development certification. Further bounded work has lower expected contribution now: the remaining questions about individual reward-term causality, observation/history sufficiency, and 2 ms intra-interval continuity are scientifically real but M6 does not show that resolving them would change the immediate candidate choice, and another development panel could not certify the human goal. The assessment is the only operation that can test the fixed official distribution and the required 196/200 complete uninterrupted holds. Residual uncertainty is material and preserved: M6 is a single 160-episode development panel with two T3 no-reach failures (one inner and one outer), the reward terms were changed together in one transferred PPO run, and no official result has yet been measured; therefore this is a justified terminal test, not a claim that the goal is already met or that either reward term alone caused the gain. Evidence: M6, E14, T3, E16.",
+    "status": "official_assessment_requested"
+  }
 }

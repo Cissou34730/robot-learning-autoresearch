@@ -27,3 +27,4 @@
 | E14 | inquiry | I3 | completed |
 | E15 | checkpoint | I3 | checkpointed |
 | E16 | model_role | - | assigned |
+| E17 | campaign_conclusion | - | official_assessment_requested |
