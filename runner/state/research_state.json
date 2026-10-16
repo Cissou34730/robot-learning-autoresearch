@@ -5905,38 +5905,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "Limited mechanism resolution: synchronized M6 shows T1:checkpoint-120832 is dominated by persistent non-entry/approach failures (with saturated or stalled torque trajectories) and a smaller but clear post-entry interruption class with high residual velocity and repeated boundary crossings. On the same fresh 200-episode panel, the tested branch-aware T3 artifact reaches 195/200 and has only one non-entry failure plus four post-entry hold interruptions, so branch-aware approach coverage is a credible explanation for the fresh-panel improvement and stabilization remains its limiting class. However, M5 shows the same complete T3 artifact at only 33/200 on the protected task-reference panel, with failures concentrated at a different geometry mix; this is an unresolved artifact/distribution-tail difference, not evidence that the branch method is generally solved or generally invalid.",
-        "reason": "I5 closure condition is met because M6 contains synchronized episode/control diagnostics for both the unchanged direct-torque artifact and the adverse branch-aware comparison, including branch, applied versus policy action, joint state and velocity, distance, first entry, hold interruptions, limits, and contacts. These fields distinguish T1 non-entry from braking/hold failures and show that T3's fresh-panel failures are mostly post-entry instability. The protected M5 artifact remains aggregate and cannot attribute its poor T3 result, so the broader cause of the panel reversal stays unresolved. The next direction should therefore be one specific redesign: preserve branch-aware approach coverage but redesign the controller/training to reduce residual-velocity boundary crossings and explicitly cover the protected-panel angle/radius tails; do not repeat I4's fixed guidance blend unchanged, and do not request official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "Limited mechanism resolution: synchronized M6 shows T1:checkpoint-120832 is dominated by persistent non-entry/approach failures (with saturated or stalled torque trajectories) and a smaller but clear post-entry interruption class with high residual velocity and repeated boundary crossings. On the same fresh 200-episode panel, the tested branch-aware T3 artifact reaches 195/200 and has only one non-entry failure plus four post-entry hold interruptions, so branch-aware approach coverage is a credible explanation for the fresh-panel improvement and stabilization remains its limiting class. However, M5 shows the same complete T3 artifact at only 33/200 on the protected task-reference panel, with failures concentrated at a different geometry mix; this is an unresolved artifact/distribution-tail difference, not evidence that the branch method is generally solved or generally invalid.",
-        "reason": "I5 closure condition is met because M6 contains synchronized episode/control diagnostics for both the unchanged direct-torque artifact and the adverse branch-aware comparison, including branch, applied versus policy action, joint state and velocity, distance, first entry, hold interruptions, limits, and contacts. These fields distinguish T1 non-entry from braking/hold failures and show that T3's fresh-panel failures are mostly post-entry instability. The protected M5 artifact remains aggregate and cannot attribute its poor T3 result, so the broader cause of the panel reversal stays unresolved. The next direction should therefore be one specific redesign: preserve branch-aware approach coverage but redesign the controller/training to reduce residual-velocity boundary crossings and explicitly cover the protected-panel angle/radius tails; do not repeat I4's fixed guidance blend unchanged, and do not request official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E21",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited mechanism resolution: synchronized M6 shows T1:checkpoint-120832 is dominated by persistent non-entry/approach failures (with saturated or stalled torque trajectories) and a smaller but clear post-entry interruption class with high residual velocity and repeated boundary crossings. On the same fresh 200-episode panel, the tested branch-aware T3 artifact reaches 195/200 and has only one non-entry failure plus four post-entry hold interruptions, so branch-aware approach coverage is a credible explanation for the fresh-panel improvement and stabilization remains its limiting class. However, M5 shows the same complete T3 artifact at only 33/200 on the protected task-reference panel, with failures concentrated at a different geometry mix; this is an unresolved artifact/distribution-tail difference, not evidence that the branch method is generally solved or generally invalid.",
-        "reason": "I5 closure condition is met because M6 contains synchronized episode/control diagnostics for both the unchanged direct-torque artifact and the adverse branch-aware comparison, including branch, applied versus policy action, joint state and velocity, distance, first entry, hold interruptions, limits, and contacts. These fields distinguish T1 non-entry from braking/hold failures and show that T3's fresh-panel failures are mostly post-entry instability. The protected M5 artifact remains aggregate and cannot attribute its poor T3 result, so the broader cause of the panel reversal stays unresolved. The next direction should therefore be one specific redesign: preserve branch-aware approach coverage but redesign the controller/training to reduce residual-velocity boundary crossings and explicitly cover the protected-panel angle/radius tails; do not repeat I4's fixed guidance blend unchanged, and do not request official assessment."
-      }
-    },
-    "request_fingerprint": "fddd74233db149ec0011b9a3a26327c9c22200ac688271a055cacbfa9208524e",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, M4, and M5; this role denotes strongest evidence, not official eligibility. T3:checkpoint-105472 remains an adverse tested branch-aware artifact with no role. T2:checkpoint-120832 remains an adverse exposure-only artifact with no role. No working or retained candidate supports the official assessment.",
     "completed_operations": [
