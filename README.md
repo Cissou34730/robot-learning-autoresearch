@@ -9,7 +9,7 @@ OpenCode retains its legacy interface.
 
 Copilot scientific-model preparation uses the selected PI model with `max`
 reasoning, including continuations. Ordinary PI sessions use the launcher's
-`-Reasoning` setting. The coding reviewer remains at `high`.
+`-Reasoning` setting. The coding reviewer uses `max` reasoning.
 
 See [AGENTS.md](AGENTS.md) for ownership and execution boundaries,
 [scientific instruments](contracts/instruments.md) for tool contracts, and

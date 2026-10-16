@@ -73,7 +73,7 @@ scientific API versions above; it cannot install or change dependencies.
 Both roles can inspect installed APIs through `scientific_api_reference`.
 
 Each new coding assignment receives an independent native GPT-6 Luna review at
-high reasoning. The reviewer receives the original request, supplied contract
+max reasoning. The reviewer receives the original request, supplied contract
 context and actual changes. Corrections reuse that reviewer to check only the
 reported problems and errors introduced by the repair. Its reads remain exactly
 scoped, with no write or execution authority. The reviewer returns four fields:
