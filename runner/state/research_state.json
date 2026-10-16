@@ -191,7 +191,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json"
+      ],
       "fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
+    "measurement": 2,
     "session": 3,
     "training": 1
   },
@@ -1471,9 +1473,339 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:10:07Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure baseline candidate T1:checkpoint-120832 on the fixed non-overlapping task-reference development panel with complete-hold outcomes and target-stratified trajectory diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "baseline PPO terminal mature checkpoint"
+          }
+        ],
+        "rationale": "The baseline has now been trained, but its 0.96-0.97 training success proxy covers only radii 0.14-0.20 m and cannot establish the human goal. The task-reference panel measures actual episode success and the required diagnostics across the official radius range without consuming the protected official assessment. High first reach with high entry velocity, short held streaks, or interruptions would support responsive-dynamics stabilization as the dominant gap; stable outer-radius holds with failures concentrated at 0.06-0.14 m would support inner-radius generalization; simultaneous signatures would support both. The candidate is selected because it is the mature terminal artifact with the highest late reward and tied best recorded checkpoint proxy, while the non-terminal tie remains a selection uncertainty rather than a causal claim."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "baseline PPO terminal mature checkpoint",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c43a19e9e09c19aeabf62cdf0c9d9390ae53fbcdf488a1fa4953679986140388",
+              "evaluation_kind": "task_reference",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "schema_version": 1,
+              "seed": 7300,
+              "success_percent": 73.5,
+              "successes": 147
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "task_reference",
+          "label": "baseline PPO terminal mature checkpoint",
+          "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b"
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "task_reference",
+          "label": "baseline PPO terminal mature checkpoint",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 10,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_kind",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "c43a19e9e09c19aeabf62cdf0c9d9390ae53fbcdf488a1fa4953679986140388",
+            "evaluation_kind": "task_reference",
+            "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+            "official_benchmark": false,
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "schema_version": 1,
+            "seed": 7300,
+            "success_percent": 73.5,
+            "successes": 147
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "baseline PPO terminal mature checkpoint",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c43a19e9e09c19aeabf62cdf0c9d9390ae53fbcdf488a1fa4953679986140388",
+              "evaluation_kind": "task_reference",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "schema_version": 1,
+              "seed": 7300,
+              "success_percent": 73.5,
+              "successes": 147
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": {
+        "episodes": 200,
+        "panel": "task-reference-v1",
+        "panel_version": 1,
+        "seed": 7300
+      }
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure baseline candidate T1:checkpoint-120832 on the fixed non-overlapping task-reference development panel with complete-hold outcomes and target-stratified trajectory diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "baseline PPO terminal mature checkpoint"
+          }
+        ],
+        "rationale": "The baseline has now been trained, but its 0.96-0.97 training success proxy covers only radii 0.14-0.20 m and cannot establish the human goal. The task-reference panel measures actual episode success and the required diagnostics across the official radius range without consuming the protected official assessment. High first reach with high entry velocity, short held streaks, or interruptions would support responsive-dynamics stabilization as the dominant gap; stable outer-radius holds with failures concentrated at 0.06-0.14 m would support inner-radius generalization; simultaneous signatures would support both. The candidate is selected because it is the mature terminal artifact with the highest late reward and tied best recorded checkpoint proxy, while the non-terminal tie remains a selection uncertainty rather than a causal claim."
+      }
+    },
+    "request_fingerprint": "c43d2c4e852d56fd727500057f41c574c9fd96972ef2ebc13a721027c4afc40d",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working and best-known roles remain empty; M1 is a plant measurement and E2 records the bounded inquiry, neither is a policy artifact.",
     "completed_operations": [
@@ -1512,7 +1844,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the current baseline PPO implementation produce a policy whose official-distribution gap is primarily responsive-dynamics stabilization failure, inner-radius generalization failure, or both, when measured with target-stratified hold diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M2"
     ],
     "scientific_parent_commit": "aa9d490b893d89b004268c29cce8908d8c556f0b"
   },
