@@ -1760,52 +1760,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M2"
-        ],
-        "reason": "This is the only completed learned candidate and its development evaluation is the strongest current evidence: 150/160 visible complete-hold successes (93.75%). Its failure diagnostics classify 7 failures as no-entry reach/convergence failures and 3 as post-entry interruption/high-entry-velocity failures. It does not meet the human 98% objective or establish protected-panel performance, but it is currently the strongest evidence-backed candidate."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/b9d3f752-0619-4863-81cc-96c7df3918d4/t1-c8cf701d5-ce60e22121571cb2e54bc0568ffb6e696adfcaefe7d81447d26f52abbda5565a",
-        "fingerprint": "ce60e22121571cb2e54bc0568ffb6e696adfcaefe7d81447d26f52abbda5565a",
-        "source": "campaigns/checkpoints/candidates/b9d3f752-0619-4863-81cc-96c7df3918d4/t1/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M2"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M2"
-        ],
-        "reason": "This is the only completed learned candidate and its development evaluation is the strongest current evidence: 150/160 visible complete-hold successes (93.75%). Its failure diagnostics classify 7 failures as no-entry reach/convergence failures and 3 as post-entry interruption/high-entry-velocity failures. It does not meet the human 98% objective or establish protected-panel performance, but it is currently the strongest evidence-backed candidate."
-      }
-    },
-    "request_fingerprint": "f0cb52e92ce88cfbbaba34fe0d9e8d94b32a19014062782027cad26c213b45c0",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty; M1 is a mechanics artifact and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
