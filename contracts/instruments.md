@@ -321,6 +321,10 @@ remaining selection. Oversized individual objects remain available through
 
 Large JSON artifacts use a temporary, fingerprint-verified file-backed view.
 The tool validates the complete JSON syntax before it selects evidence.
+Each request verifies the source fingerprint. The reader process keeps a
+bounded cache of successful validation spans, keyed by fingerprint and runtime
+validation limits. Concurrent requests share one validation for matching content.
+The cache retains no snapshots or decoded artifact trees.
 It does not load the complete JSON tree. Query and output limits remain.
 Decoded individual scalars and field indexes have explicit memory limits.
 An exhausted limit is reported, not silently truncated input.

@@ -9,9 +9,11 @@ import mmap
 import re
 import sys
 import tempfile
+from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from contextlib import ExitStack
 from pathlib import Path
+from threading import Lock
 from typing import Any, Self
 
 _WHITESPACE = re.compile(rb"[ \t\r\n]*")
@@ -21,6 +23,9 @@ _NUMBER = re.compile(rb"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?")
 _FLOAT_PART = re.compile(rb"[.eE]")
 _HEX = frozenset(b"0123456789abcdefABCDEF")
 SCALAR_BYTES = 32 * 1024 * 1024
+_VALIDATED_ROOT_LIMIT = 128
+_VALIDATED_ROOTS: OrderedDict[tuple[str, int, int], tuple[int, int]] = OrderedDict()
+_VALIDATION_LOCK = Lock()
 
 
 class OutputBudgetExceeded(ValueError):
@@ -121,6 +126,22 @@ class JsonDocument:
         return end
 
     def root(self) -> Any:
+        key = (
+            self.fingerprint,
+            sys.get_int_max_str_digits(),
+            sys.getrecursionlimit(),
+        )
+        with _VALIDATION_LOCK:
+            span = _VALIDATED_ROOTS.get(key)
+            if span is None:
+                span = self._validate_root()
+                _VALIDATED_ROOTS[key] = span
+                if len(_VALIDATED_ROOTS) > _VALIDATED_ROOT_LIMIT:
+                    _VALIDATED_ROOTS.popitem(last=False)
+            _VALIDATED_ROOTS.move_to_end(key)
+        return self.value(*span)
+
+    def _validate_root(self) -> tuple[int, int]:
         # Validate the complete snapshot, including data outside the selection.
         stack = ["root:value"]
         position = 0
@@ -179,8 +200,7 @@ class JsonDocument:
                 position += 1
             else:
                 position = self.scalar_end(position)
-        start = self.space(0)
-        return self.value(start, root_end)
+        return self.space(0), root_end
 
     def value_end(self, position: int) -> int:
         if self.buffer[position] not in (91, 123):

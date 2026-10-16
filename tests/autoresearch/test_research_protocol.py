@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections import OrderedDict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier
 
 import pytest
 
@@ -305,6 +308,141 @@ def test_measurement_artifact_fingerprint_detects_replacement(monkeypatch, tmp_p
     artifact.write_text(json.dumps(_evaluation(10, [False, False])), encoding="utf-8")
     with pytest.raises(ValueError, match="content changed after recording"):
         repository.measurement_evidence(record)
+
+
+def test_large_json_queries_share_validation_and_close_snapshots(monkeypatch, tmp_path):
+    from runner import json_artifact_view as views
+
+    monkeypatch.setattr(views, "_VALIDATED_ROOTS", OrderedDict())
+    artifact = tmp_path / "trace.json"
+    artifact.write_text(json.dumps({"rows": list(range(100))}), encoding="utf-8")
+    original_validate = views.JsonDocument._validate_root
+    validations = []
+    documents = []
+    barrier = Barrier(4)
+
+    def validate(document):
+        validations.append(document.fingerprint)
+        return original_validate(document)
+
+    def query(_index):
+        with views.JsonDocument(artifact) as document:
+            documents.append(document)
+            barrier.wait(timeout=10)
+            return len(document.root()["rows"])
+
+    monkeypatch.setattr(views.JsonDocument, "_validate_root", validate)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        assert list(executor.map(query, range(4))) == [100] * 4
+    assert len(validations) == 1
+    assert len(documents) == 4
+    assert all(document.buffer.closed for document in documents)
+    assert all(document.snapshot.closed for document in documents)
+
+
+def test_large_json_validation_cache_preserves_integrity_and_syntax(
+    monkeypatch, tmp_path
+):
+    from runner import artifact_evidence_query as reader
+    from runner import json_artifact_view as views
+
+    monkeypatch.setattr(views, "_VALIDATED_ROOTS", OrderedDict())
+    monkeypatch.setattr(reader, "MAX_BYTES", 0)
+    monkeypatch.setattr(repository, "load_state", lambda **_kwargs: {})
+    artifact = tmp_path / "trace.json"
+    artifact.write_text('{"selected":1,"other":[2,3]}', encoding="utf-8")
+    fingerprint = repository.file_fingerprint(artifact)
+    monkeypatch.setattr(
+        reader,
+        "_recorded_artifact",
+        lambda *_args: (
+            artifact,
+            {"recorded_artifact_fingerprint": fingerprint},
+        ),
+    )
+    original_validate = views.JsonDocument._validate_root
+    validations = []
+
+    def validate(document):
+        validations.append(document.fingerprint)
+        return original_validate(document)
+
+    def query():
+        return json.loads(
+            reader.query_artifact(
+                {"action": "query", "operation_id": "M1", "path": "/selected"},
+                "campaign",
+            )
+        )
+
+    monkeypatch.setattr(views.JsonDocument, "_validate_root", validate)
+    assert query()["result"]["matches"][0]["value"] == 1
+    assert query()["result"]["matches"][0]["value"] == 1
+    assert len(validations) == 1
+
+    artifact.write_text('{"selected":2,"other":[2,3]}', encoding="utf-8")
+    assert query()["status"] == "fingerprint_mismatch"
+    assert len(validations) == 1
+    fingerprint = repository.file_fingerprint(artifact)
+    assert query()["result"]["matches"][0]["value"] == 2
+    assert len(validations) == 2
+
+    artifact.write_text('{"selected":2,"other":[2,]}', encoding="utf-8")
+    fingerprint = repository.file_fingerprint(artifact)
+    for _ in range(2):
+        response = query()
+        assert response["status"] == "query_failed"
+        assert "not valid JSON" in response["error"]
+    assert len(validations) == 4
+
+
+def test_large_json_validation_cache_is_bounded(monkeypatch, tmp_path):
+    from runner import json_artifact_view as views
+
+    monkeypatch.setattr(views, "_VALIDATED_ROOTS", OrderedDict())
+    monkeypatch.setattr(views, "_VALIDATED_ROOT_LIMIT", 1)
+    first = tmp_path / "first.json"
+    second = tmp_path / "second.json"
+    first.write_text("1", encoding="utf-8")
+    second.write_text("2", encoding="utf-8")
+    original_validate = views.JsonDocument._validate_root
+    validations = []
+
+    def validate(document):
+        validations.append(document.fingerprint)
+        return original_validate(document)
+
+    monkeypatch.setattr(views.JsonDocument, "_validate_root", validate)
+    for artifact in (first, second, first):
+        with views.JsonDocument(artifact) as document:
+            assert document.root().decoded() in (1, 2)
+    assert len(validations) == 3
+    assert len(views._VALIDATED_ROOTS) == 1
+
+
+@pytest.mark.parametrize(
+    ("source", "limit_name", "limit", "message"),
+    [
+        ("1234", "get_int_max_str_digits", 3, "digit limit"),
+        ("[[0]]", "getrecursionlimit", 2, "nesting"),
+    ],
+)
+def test_large_json_validation_cache_respects_current_runtime_limits(
+    monkeypatch, tmp_path, source, limit_name, limit, message
+):
+    from runner import json_artifact_view as views
+
+    monkeypatch.setattr(views, "_VALIDATED_ROOTS", OrderedDict())
+    artifact = tmp_path / "limited.json"
+    artifact.write_text(source, encoding="utf-8")
+    with views.JsonDocument(artifact) as document:
+        assert document.root().decoded() == json.loads(source)
+    monkeypatch.setattr(views.sys, limit_name, lambda: limit)
+    with (
+        views.JsonDocument(artifact) as document,
+        pytest.raises(ValueError, match=message),
+    ):
+        document.root()
 
 
 def test_artifact_contents_describe_actual_sections_without_measurement_values():
