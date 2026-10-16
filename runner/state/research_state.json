@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "End the inquiry after a completed, matched evaluation of an execution-focused T2-derived candidate against T2 on a disjoint research panel with radius-band, first-reach, branch, entry-speed, maximum-streak, interruption, minimum/final-distance, and failure-class diagnostics. A positive bounded conclusion requires fewer no-reach failures with preserved or improved inner-band success, no material outer-band degradation, and no increase in hold interruptions; a negative or limited conclusion is sufficient if the intervention fails to improve no-reach, trades away the coverage gains or hold reliability, or the completed evidence redirects the next decision to observation/history limits. The protected official assessment remains the only certification of the human goal.",
-    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official assessment. T2 is the best-known candidate at 150/160 (93.75%) on the matched M5 development panel, with residual failures dominated by 7 no-reach cases versus 3 hold interruptions. An execution-focused intervention could therefore address the largest observed gap without spending the protected assessment, while preserving the full-radius coverage that produced the inner-band gains.",
-    "handoff_conclusion": "Observed: M1 established bounded direct-torque response of the compiled plant but not policy causality. T1's restricted-radius training proxy did not predict its 73.75% M4 result, where inner no-reach failures dominated. T2 changed only training target-radius exposure to the full 0.06-0.20 m range and, on matched disjoint M5, improved success from T1's 111/160 (69.375%) to 150/160 (93.75%); inner success rose 39/85 to 80/85 and inner no-reach fell 34 to 5, while outer success remained strong at 70/75 versus 72/75. The artifact comparison supports T2 as the strongest tested candidate and supports full-range exposure for this PPO implementation, but does not establish coverage as the sole cause or establish official success. T2's residual pattern corrects the prior emphasis on possible hold-memory limitation: no-reach, not hold interruption, is the dominant residual class, so hidden hold state is not currently the limiting observed mechanism. Interpretation: bounded direct torque, braking requirements, and near-folded conditioning make execution a credible mechanism for the no-reach gap; unchanged observation/history representation remains a competing explanation, especially if an execution-focused change fails or causes more interruptions. The exact causal contribution of either mechanism is unresolved because no execution-focused candidate has yet been measured. The protected assessment is the only evidence that can certify the human goal.",
-    "handoff_question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability?",
-    "rationale": "The prior coverage expansion produced a large artifact-level improvement from 69.375% to 93.75%, especially in the inner band, but it left a consequential gap to 98%. The residual pattern makes execution versus representation a decision-relevant mechanism test: bounded direct torque and near-folded conditioning predict that a reach/braking-focused change could reduce no-reach, while unchanged observations leave history/representation as an alternative if no-reach persists or interruptions rise. T2's matched evidence supports further work, but does not prove execution causality or official success; one bounded inquiry has higher expected contribution than immediate assessment because it can either improve the candidate or rule out the largest residual mechanism before consuming the terminal test.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a41925a8bae46586f31dbacf2a563bbc9bf87275",
     "id": "5c83824d-8c09-447e-b338-e3e036a23cbf",
@@ -2479,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 6,
     "session": 7,
@@ -5296,9 +5285,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:31:56Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited positive: the completed matched M6 comparison supports the T2-derived execution-focused route for this implementation. T3:checkpoint-105472 achieved 158/160 (98.75%) versus T2:checkpoint-120832 at 155/160 (96.875%), with all three discordant episodes favoring T3. The required diagnostics show no-reach failures fell from 4 to 2, hold interruptions fell from 1 to 0, inner-band success was preserved at 92/93 for both, and outer-band success improved from 63/67 to 66/67. T3 therefore meets the bounded I3 condition without sacrificing the coverage gains or hold reliability. The artifact comparison does not prove that either added reward term alone caused the improvement: T3 was one transferred run and the mean entry speed was higher for T3 (0.598 versus 0.384 m/s) despite zero interruptions. The official 200-episode assessment remains the only certification of the human goal.",
+        "reason": "I3 closure is justified by completed M6 evidence against its explicit condition. T3 reduced the dominant residual no-reach class and did not degrade inner or outer performance or complete-hold reliability on the fresh matched panel. The remaining uncertainty is decision-relevant only at campaign level: M6 is development evidence from one candidate and one 160-episode panel, so it supports selecting T3 over T2 for possible official assessment but cannot certify at least 196 successes on the protected official distribution. The next goal-review decision should compare that expected assessment value against any further bounded work, while preserving the limitation that the broader execution mechanism and individual reward-term causality remain unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive: the completed matched M6 comparison supports the T2-derived execution-focused route for this implementation. T3:checkpoint-105472 achieved 158/160 (98.75%) versus T2:checkpoint-120832 at 155/160 (96.875%), with all three discordant episodes favoring T3. The required diagnostics show no-reach failures fell from 4 to 2, hold interruptions fell from 1 to 0, inner-band success was preserved at 92/93 for both, and outer-band success improved from 63/67 to 66/67. T3 therefore meets the bounded I3 condition without sacrificing the coverage gains or hold reliability. The artifact comparison does not prove that either added reward term alone caused the improvement: T3 was one transferred run and the mean entry speed was higher for T3 (0.598 versus 0.384 m/s) despite zero interruptions. The official 200-episode assessment remains the only certification of the human goal.",
+        "reason": "I3 closure is justified by completed M6 evidence against its explicit condition. T3 reduced the dominant residual no-reach class and did not degrade inner or outer performance or complete-hold reliability on the fresh matched panel. The remaining uncertainty is decision-relevant only at campaign level: M6 is development evidence from one candidate and one 160-episode panel, so it supports selecting T3 over T2 for possible official assessment but cannot certify at least 196 successes on the protected official distribution. The next goal-review decision should compare that expected assessment value against any further bounded work, while preserving the limitation that the broader execution mechanism and individual reward-term causality remain unresolved.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive: the completed matched M6 comparison supports the T2-derived execution-focused route for this implementation. T3:checkpoint-105472 achieved 158/160 (98.75%) versus T2:checkpoint-120832 at 155/160 (96.875%), with all three discordant episodes favoring T3. The required diagnostics show no-reach failures fell from 4 to 2, hold interruptions fell from 1 to 0, inner-band success was preserved at 92/93 for both, and outer-band success improved from 63/67 to 66/67. T3 therefore meets the bounded I3 condition without sacrificing the coverage gains or hold reliability. The artifact comparison does not prove that either added reward term alone caused the improvement: T3 was one transferred run and the mean entry speed was higher for T3 (0.598 versus 0.384 m/s) despite zero interruptions. The official 200-episode assessment remains the only certification of the human goal.",
+        "reason": "I3 closure is justified by completed M6 evidence against its explicit condition. T3 reduced the dominant residual no-reach class and did not degrade inner or outer performance or complete-hold reliability on the fresh matched panel. The remaining uncertainty is decision-relevant only at campaign level: M6 is development evidence from one candidate and one 160-episode panel, so it supports selecting T3 over T2 for possible official assessment but cannot certify at least 196 successes on the protected official distribution. The next goal-review decision should compare that expected assessment value against any further bounded work, while preserving the limitation that the broader execution mechanism and individual reward-term causality remain unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "Limited positive: the completed matched M6 comparison supports the T2-derived execution-focused route for this implementation. T3:checkpoint-105472 achieved 158/160 (98.75%) versus T2:checkpoint-120832 at 155/160 (96.875%), with all three discordant episodes favoring T3. The required diagnostics show no-reach failures fell from 4 to 2, hold interruptions fell from 1 to 0, inner-band success was preserved at 92/93 for both, and outer-band success improved from 63/67 to 66/67. T3 therefore meets the bounded I3 condition without sacrificing the coverage gains or hold reliability. The artifact comparison does not prove that either added reward term alone caused the improvement: T3 was one transferred run and the mean entry speed was higher for T3 (0.598 versus 0.384 m/s) despite zero interruptions. The official 200-episode assessment remains the only certification of the human goal.",
+        "reason": "I3 closure is justified by completed M6 evidence against its explicit condition. T3 reduced the dominant residual no-reach class and did not degrade inner or outer performance or complete-hold reliability on the fresh matched panel. The remaining uncertainty is decision-relevant only at campaign level: M6 is development evidence from one candidate and one 160-episode panel, so it supports selecting T3 over T2 for possible official assessment but cannot certify at least 196 successes on the protected official distribution. The next goal-review decision should compare that expected assessment value against any further bounded work, while preserving the limitation that the broader execution mechanism and individual reward-term causality remain unresolved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited positive: the completed matched M6 comparison supports the T2-derived execution-focused route for this implementation. T3:checkpoint-105472 achieved 158/160 (98.75%) versus T2:checkpoint-120832 at 155/160 (96.875%), with all three discordant episodes favoring T3. The required diagnostics show no-reach failures fell from 4 to 2, hold interruptions fell from 1 to 0, inner-band success was preserved at 92/93 for both, and outer-band success improved from 63/67 to 66/67. T3 therefore meets the bounded I3 condition without sacrificing the coverage gains or hold reliability. The artifact comparison does not prove that either added reward term alone caused the improvement: T3 was one transferred run and the mean entry speed was higher for T3 (0.598 versus 0.384 m/s) despite zero interruptions. The official 200-episode assessment remains the only certification of the human goal.",
+        "reason": "I3 closure is justified by completed M6 evidence against its explicit condition. T3 reduced the dominant residual no-reach class and did not degrade inner or outer performance or complete-hold reliability on the fresh matched panel. The remaining uncertainty is decision-relevant only at campaign level: M6 is development evidence from one candidate and one 160-episode panel, so it supports selecting T3 over T2 for possible official assessment but cannot certify at least 196 successes on the protected official distribution. The next goal-review decision should compare that expected assessment value against any further bounded work, while preserving the limitation that the broader execution mechanism and individual reward-term causality remain unresolved."
+      }
+    },
+    "request_fingerprint": "31e6891763a1aafc27933f3b6b1c66c1cebe165b23a1e2a2e949ca0be274b441",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, based on E9 and M5; 150/160 (93.75%) on the matched development panel, with full 0.06-0.20 m training-radius exposure. T1:checkpoint-120832 remains the matched reference at 111/160 (69.375%). No working candidate is assigned. Neither candidate is official-goal certified. I3 will produce and compare any new candidate against T2 before changing roles.",
     "completed_operations": [
@@ -5342,7 +5385,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a targeted execution-focused intervention reduce T2's remaining no-reach failures toward the 98% goal while preserving its inner-radius coverage gains, outer-radius performance, and complete-hold reliability? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T3",
-      "M6"
+      "M6",
+      "E14"
     ],
     "scientific_parent_commit": "891a88ce913e962f52f18b279e0ae1b5ce74f808"
   },
