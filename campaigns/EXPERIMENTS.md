@@ -28,3 +28,4 @@
 | E15 | checkpoint | I3 | checkpointed |
 | E16 | inquiry | I4 | completed |
 | E17 | checkpoint | - | checkpointed |
+| M7 | measurement | I4 | completed |
