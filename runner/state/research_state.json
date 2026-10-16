@@ -5829,38 +5829,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Negative, recipe-specific result. The fresh T3 artifact implemented the intended one-factor reward change: with T2's full [0.06, 0.20] m exposure, fixed PPO/runtime/control settings and seed, HOLD_EXIT_FORFEIT_FRACTION changed from 0.0 to 1.0. On the identical 160-seed held-out panel and evaluator semantics, T3 achieved 52/160 = 32.5% versus T2's 150/160 = 93.75%, with no T3 wins among 98 discordant episodes. T3 lost the inner reach gain (34/93 versus 90/93; 53 versus 3 no-entry failures) and outer performance (18/67 versus 60/67; 46 versus 4 no-entry failures). Its lower outer interruption count (96 versus 438) does not show restored stability because it entered far fewer outer targets; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Angle-stratified diagnostics show broad degradation, including zero success in both negative-middle angle bins. The tested full hold-progress forfeiture therefore did not align learning with the human outcome well enough to preserve reach or restore outer stability.",
-        "reason": "M5 and M6 satisfy I3's closure condition: they provide complete-artifact same-panel evaluation and deterministic overall, inner/outer radius, hold, interruption, truncation, and eight-bin angle diagnostics for T3 against T2. The evidence redirects the next decision away from adopting this exact reward intervention. It does not disprove reward alignment generally, because the evidence is one fresh PPO run with one forfeiture magnitude and terminal checkpoint selected from a changed-reward trajectory; nor does it identify the broader cause of T3's reach collapse. The apparent outer interruption reduction is not evidence of improved stabilization when no-entry failures dominate. The official sampled evaluator remains the operational semantics, and neither M5 nor M6 measures 2 ms inter-sample continuity, qdot, actions, or reward components."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "Negative, recipe-specific result. The fresh T3 artifact implemented the intended one-factor reward change: with T2's full [0.06, 0.20] m exposure, fixed PPO/runtime/control settings and seed, HOLD_EXIT_FORFEIT_FRACTION changed from 0.0 to 1.0. On the identical 160-seed held-out panel and evaluator semantics, T3 achieved 52/160 = 32.5% versus T2's 150/160 = 93.75%, with no T3 wins among 98 discordant episodes. T3 lost the inner reach gain (34/93 versus 90/93; 53 versus 3 no-entry failures) and outer performance (18/67 versus 60/67; 46 versus 4 no-entry failures). Its lower outer interruption count (96 versus 438) does not show restored stability because it entered far fewer outer targets; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Angle-stratified diagnostics show broad degradation, including zero success in both negative-middle angle bins. The tested full hold-progress forfeiture therefore did not align learning with the human outcome well enough to preserve reach or restore outer stability.",
-        "reason": "M5 and M6 satisfy I3's closure condition: they provide complete-artifact same-panel evaluation and deterministic overall, inner/outer radius, hold, interruption, truncation, and eight-bin angle diagnostics for T3 against T2. The evidence redirects the next decision away from adopting this exact reward intervention. It does not disprove reward alignment generally, because the evidence is one fresh PPO run with one forfeiture magnitude and terminal checkpoint selected from a changed-reward trajectory; nor does it identify the broader cause of T3's reach collapse. The apparent outer interruption reduction is not evidence of improved stabilization when no-entry failures dominate. The official sampled evaluator remains the operational semantics, and neither M5 nor M6 measures 2 ms inter-sample continuity, qdot, actions, or reward components.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative, recipe-specific result. The fresh T3 artifact implemented the intended one-factor reward change: with T2's full [0.06, 0.20] m exposure, fixed PPO/runtime/control settings and seed, HOLD_EXIT_FORFEIT_FRACTION changed from 0.0 to 1.0. On the identical 160-seed held-out panel and evaluator semantics, T3 achieved 52/160 = 32.5% versus T2's 150/160 = 93.75%, with no T3 wins among 98 discordant episodes. T3 lost the inner reach gain (34/93 versus 90/93; 53 versus 3 no-entry failures) and outer performance (18/67 versus 60/67; 46 versus 4 no-entry failures). Its lower outer interruption count (96 versus 438) does not show restored stability because it entered far fewer outer targets; post-entry failures were 9 versus 3 overall and truncations 108 versus 10. Angle-stratified diagnostics show broad degradation, including zero success in both negative-middle angle bins. The tested full hold-progress forfeiture therefore did not align learning with the human outcome well enough to preserve reach or restore outer stability.",
-        "reason": "M5 and M6 satisfy I3's closure condition: they provide complete-artifact same-panel evaluation and deterministic overall, inner/outer radius, hold, interruption, truncation, and eight-bin angle diagnostics for T3 against T2. The evidence redirects the next decision away from adopting this exact reward intervention. It does not disprove reward alignment generally, because the evidence is one fresh PPO run with one forfeiture magnitude and terminal checkpoint selected from a changed-reward trajectory; nor does it identify the broader cause of T3's reach collapse. The apparent outer interruption reduction is not evidence of improved stabilization when no-entry failures dominate. The official sampled evaluator remains the operational semantics, and neither M5 nor M6 measures 2 ms inter-sample continuity, qdot, actions, or reward components."
-      }
-    },
-    "request_fingerprint": "7326a31ac7eaa7a0cb57d561a5f8d2f7d12bcbe543399376596ea21dfeb94843",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned from T2, M3 and M4 as the strongest completed held-out artifact at 150/160; it is not goal-qualified. Reference: T1:checkpoint-115712 remains the outer-band-stability comparator at 105/160 on the paired panel. No working candidate is assigned and no candidate is retained. T2 intermediate checkpoints remain unmeasured; training proxies alone do not establish development performance.",
     "completed_operations": [
