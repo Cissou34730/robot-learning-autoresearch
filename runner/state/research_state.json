@@ -10633,38 +10633,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is resolved as a limited artifact-level result, not a goal-level success. On the fresh matched M8/M9 panel, T4:checkpoint-105472 achieved 163/200 (81.5%), versus T1:checkpoint-120832 at 145/200 (72.5%) and T3:checkpoint-70656 at 168/200 (84.0%). Against T1, T4 reduced never-reached failures from 47 to 26 and improved inner complete-hold success from 18/49 to 29/49 in [6,10) and from 33/55 to 45/55 in [10,14), with paired wins 16-5 and 13-1. However, it did not preserve outer performance: [14,18) was 66/68 versus T1's 67/68 and [18,20) was 23/28 versus 27/28, a five-success outer loss; reached-but-failed-hold was 11 versus T1's 8. T4 also remained below the 196/200 objective and below T3 overall. The tested phase-separated complete artifact therefore demonstrates improved inner coverage with a residual outer/hold tradeoff, not the required combined capability.",
-        "reason": "The I4 closure condition is met in its negative/limited form. T4 implemented the intended new recipe: transfer from T1, full official 6-20 cm training exposure, branch/escape shaping limited to pre-reach acquisition, and explicit hold-capital forfeiture during maintenance. The fixed-semantics complete-artifact comparison and stratified diagnostics show the intervention changes the failure partition and recovers T1's inner deficit, but the no-material-outer-loss criterion fails, especially in [18,20), and the overall result remains 33 episodes below 196/200. This is evidence about the tested T4 artifact, not causal proof that phase separation alone produced the gain; transfer, seed, source lineage, reward changes and checkpoint selection remain coupled. T2, T3, T4, M4, M6, M7, M8 and M9 together do not justify another continuation of I4 or official assessment. The unresolved physical cause of the residual outer/hold tradeoff can be carried into goal review only if a new route toward 196/200 warrants it."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is resolved as a limited artifact-level result, not a goal-level success. On the fresh matched M8/M9 panel, T4:checkpoint-105472 achieved 163/200 (81.5%), versus T1:checkpoint-120832 at 145/200 (72.5%) and T3:checkpoint-70656 at 168/200 (84.0%). Against T1, T4 reduced never-reached failures from 47 to 26 and improved inner complete-hold success from 18/49 to 29/49 in [6,10) and from 33/55 to 45/55 in [10,14), with paired wins 16-5 and 13-1. However, it did not preserve outer performance: [14,18) was 66/68 versus T1's 67/68 and [18,20) was 23/28 versus 27/28, a five-success outer loss; reached-but-failed-hold was 11 versus T1's 8. T4 also remained below the 196/200 objective and below T3 overall. The tested phase-separated complete artifact therefore demonstrates improved inner coverage with a residual outer/hold tradeoff, not the required combined capability.",
-        "reason": "The I4 closure condition is met in its negative/limited form. T4 implemented the intended new recipe: transfer from T1, full official 6-20 cm training exposure, branch/escape shaping limited to pre-reach acquisition, and explicit hold-capital forfeiture during maintenance. The fixed-semantics complete-artifact comparison and stratified diagnostics show the intervention changes the failure partition and recovers T1's inner deficit, but the no-material-outer-loss criterion fails, especially in [18,20), and the overall result remains 33 episodes below 196/200. This is evidence about the tested T4 artifact, not causal proof that phase separation alone produced the gain; transfer, seed, source lineage, reward changes and checkpoint selection remain coupled. T2, T3, T4, M4, M6, M7, M8 and M9 together do not justify another continuation of I4 or official assessment. The unresolved physical cause of the residual outer/hold tradeoff can be carried into goal review only if a new route toward 196/200 warrants it.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I4 is resolved as a limited artifact-level result, not a goal-level success. On the fresh matched M8/M9 panel, T4:checkpoint-105472 achieved 163/200 (81.5%), versus T1:checkpoint-120832 at 145/200 (72.5%) and T3:checkpoint-70656 at 168/200 (84.0%). Against T1, T4 reduced never-reached failures from 47 to 26 and improved inner complete-hold success from 18/49 to 29/49 in [6,10) and from 33/55 to 45/55 in [10,14), with paired wins 16-5 and 13-1. However, it did not preserve outer performance: [14,18) was 66/68 versus T1's 67/68 and [18,20) was 23/28 versus 27/28, a five-success outer loss; reached-but-failed-hold was 11 versus T1's 8. T4 also remained below the 196/200 objective and below T3 overall. The tested phase-separated complete artifact therefore demonstrates improved inner coverage with a residual outer/hold tradeoff, not the required combined capability.",
-        "reason": "The I4 closure condition is met in its negative/limited form. T4 implemented the intended new recipe: transfer from T1, full official 6-20 cm training exposure, branch/escape shaping limited to pre-reach acquisition, and explicit hold-capital forfeiture during maintenance. The fixed-semantics complete-artifact comparison and stratified diagnostics show the intervention changes the failure partition and recovers T1's inner deficit, but the no-material-outer-loss criterion fails, especially in [18,20), and the overall result remains 33 episodes below 196/200. This is evidence about the tested T4 artifact, not causal proof that phase separation alone produced the gain; transfer, seed, source lineage, reward changes and checkpoint selection remain coupled. T2, T3, T4, M4, M6, M7, M8 and M9 together do not justify another continuation of I4 or official assessment. The unresolved physical cause of the residual outer/hold tradeoff can be carried into goal review only if a new route toward 196/200 warrants it."
-      }
-    },
-    "request_fingerprint": "75ad109b825bc46f55ef83131c140b5f522d6a649273620d7fc9cac2d0c0fdf7",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest previously supported candidate and preserves the best observed outer-radius complete-hold performance, although it is only 142/200 on M6. T3:checkpoint-70656 is a measured I3 artifact with a positive but limited 159/200 comparison and is not best-known because of its outer-radius losses. T2 remains non-viable as a route based on its 147/200 matched comparison. No working or retained role is assigned.",
     "completed_operations": [
