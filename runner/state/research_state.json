@@ -423,47 +423,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a fresh candidate has been trained under the fixed task semantics and a completed development evaluation supplies episode success, first-entry timing, minimum and final distance, longest uninterrupted hold, interruption count, and radius/angle-stratified outcomes, with synchronized state/action or geometry/contact diagnostics when available; conclude positively, negatively, or inconclusively about this recipe and carry any unresolved bottleneck into goal review.",
-          "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official panel, with each success requiring an uninterrupted 100-control-step hold. No candidate has yet been trained or evaluated. This inquiry develops the first candidate under the immutable task semantics and measures the task-relevant success and failure structure needed to decide whether continued policy development or physical branch/contact characterization is the better route.",
-          "handoff_conclusion": "Repository facts from M1: the locked MuJoCo 3.12.0 model compiled with 0.002 s Euler integration, Newton solver, two coordinates and two actuators. The compiled link masses are approximately 0.099 kg (upper arm) and 0.052 kg (forearm); reset generalized inertia is [[0.01210, 0.000507],[0.000507,0.01019]] with condition number 1.215. Damping and armature are 0.5 and 0.01 per joint, actuator gear is 5 with control range [-1,1], and the arm geoms have collision type/affinity 1. The reset site is [0.22,0,0.02]. In six independent 0.2 s constant saturated-control trials from the exact reset, no contacts occurred; maximum joint speed was 9.996-10.180 rad/s and end-effector displacement was 0.156-0.344 m. In four 0.4 s equal-duration bang-bang trials, no contacts occurred; reversing the control changed the motion but left approximately 10 rad/s velocity at the final sample and 0.022-0.054 m displacement from reset. Interpretation: the observed compiled model does not support a weak-actuation or immediate-contact explanation for the initial difficulty, and the inertia is not ill-conditioned at reset. It does support the model's competing control explanation that reaching and holding require deliberate braking and stable low-motion commands; one symmetric reversal is not itself a settled equilibrium. These are physical-probe results, not policy evaluation and do not establish target reachability, branch usability near limits, or episode success. The apparent absence of contacts is limited to these reset-origin trajectories; self-contact remains a live branch-dependent unknown.",
-          "handoff_question": "Can a fresh direct-torque policy, trained against the fixed task semantics, achieve robust complete holds across the official radius-and-angle distribution, and do its first failures identify approach/braking/hold or branch/contact as the next causal bottleneck?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a fresh direct-torque policy, trained against the fixed task semantics, achieve robust complete holds across the official radius-and-angle distribution, and do its first failures identify approach/braking/hold or branch/contact as the next causal bottleneck?",
-          "rationale": "M1 established compiled dynamics and reset-origin torque authority, but it did not test target-directed control, braking, stable hold, reachability across the official distribution, or learned-runtime behavior. The absence of a candidate makes official assessment impossible, while the proposed inquiry has direct expected contribution: it can produce a candidate and distinguish late approach, residual-motion/hold failure, and branch/limit/contact concentration. A fresh-policy training and task-relevant evaluation therefore has higher goal value than another candidate-independent probe at this point; any physical interpretation will remain limited to the tested implementation and observed diagnostics.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a fresh candidate has been trained under the fixed task semantics and a completed development evaluation supplies episode success, first-entry timing, minimum and final distance, longest uninterrupted hold, interruption count, and radius/angle-stratified outcomes, with synchronized state/action or geometry/contact diagnostics when available; conclude positively, negatively, or inconclusively about this recipe and carry any unresolved bottleneck into goal review.",
-        "goal_connection": "The human goal requires at least 196 successes in the fixed 200-episode official panel, with each success requiring an uninterrupted 100-control-step hold. No candidate has yet been trained or evaluated. This inquiry develops the first candidate under the immutable task semantics and measures the task-relevant success and failure structure needed to decide whether continued policy development or physical branch/contact characterization is the better route.",
-        "question": "Can a fresh direct-torque policy, trained against the fixed task semantics, achieve robust complete holds across the official radius-and-angle distribution, and do its first failures identify approach/braking/hold or branch/contact as the next causal bottleneck?",
-        "rationale": "M1 established compiled dynamics and reset-origin torque authority, but it did not test target-directed control, braking, stable hold, reachability across the official distribution, or learned-runtime behavior. The absence of a candidate makes official assessment impossible, while the proposed inquiry has direct expected contribution: it can produce a candidate and distinguish late approach, residual-motion/hold failure, and branch/limit/contact concentration. A fresh-policy training and task-relevant evaluation therefore has higher goal value than another candidate-independent probe at this point; any physical interpretation will remain limited to the tested implementation and observed diagnostics."
-      }
-    },
-    "request_fingerprint": "0e13136c2e900a9716c570016632e5d4844986bc6f22c78eeea37d43c2582732",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists; working and best-known roles remain empty. M1 is a physical measurement artifact, not a policy candidate.",
     "completed_operations": [
