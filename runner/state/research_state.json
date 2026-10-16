@@ -1841,55 +1841,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "reason": "This is the strongest completed candidate evidence: it was trained on the complete official radial interval with the existing PPO feed-forward method and achieved 150/160 (93.75%) on the held-out research panel. M4 preserved the same outcome and adds failure traces showing zero contacts, several shoulder-limit-adjacent no-entry trajectories, and two high-interruption hold failures. It is below the human goal, but stronger than any other candidate because no alternative candidate has completed development evaluation."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1-c8cf701d5-91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
-        "fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
-        "source": "campaigns/checkpoints/candidates/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E1",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "reason": "This is the strongest completed candidate evidence: it was trained on the complete official radial interval with the existing PPO feed-forward method and achieved 150/160 (93.75%) on the held-out research panel. M4 preserved the same outcome and adds failure traces showing zero contacts, several shoulder-limit-adjacent no-entry trajectories, and two high-interruption hold failures. It is below the human goal, but stronger than any other candidate because no alternative candidate has completed development evaluation."
-      }
-    },
-    "request_fingerprint": "aa26b4efe31743d340cad6c546def757a44ab3bd01d2a6998296150d148bdf3f",
-    "session_id": "S1",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
