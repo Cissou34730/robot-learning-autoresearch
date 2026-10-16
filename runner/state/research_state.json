@@ -1933,47 +1933,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry after a fresh official-exposure candidate has been compared with T1:checkpoint-120832 on the same non-overlapping official-distribution research panel using success, radius/angle strata, and failure-class diagnostics. A positive bounded conclusion requires a substantial reduction in 6-14 cm never-reach failures with no material loss of 14-20 cm success; a negative or limited conclusion is warranted if inner failures persist, outer success degrades, or the comparison does not materially improve the overall candidate. In all cases, attribute the result to the compared artifacts and preserve branch, transient, dynamics, contact, and substep causes as unresolved unless directly measured.",
-          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the official 6-20 cm distribution. The current best-known candidate achieves 143/200, and M2 localizes most failures to never-reach episodes at 6-14 cm, so testing the omitted official inner regime directly addresses the dominant measured gap while protecting the already strong outer-radius behavior.",
-          "handoff_conclusion": "Established evidence: T1 trained the current PPO implementation under its existing 14-20 cm exposure; learning proxies reached 0.96 at checkpoints 115712 and 120832, but M1 measured only 68.0% and 71.5%, respectively, on the same 200-episode panel spanning the official 6-20 cm distribution. M2 validates that the terminal checkpoint's failures are predominantly never-reach failures (47 of 57), with 10 reached-but-failed-hold failures. Its radius-conditioned success is 32.7% at 6-10 cm, 67.2% at 10-14 cm, 96.4% at 14-18 cm, and 100.0% at 18-20 cm; angle-conditioned success is also asymmetric, ranging from 60.0% to 94.4%, but those pooled angle strata do not isolate a branch mechanism from radius. Interpretation: the sharp inner-radius transition supports the initial model's omitted-inner-regime and folded-posture/transient explanation as the leading direction. The low count of reached-but-failed-hold episodes means generic hold stabilization is not the first bottleneck for this artifact, although it remains consequential after coverage improves. The preterminal-versus-terminal gain is an artifact-level checkpoint comparison, not proof that additional steps caused the improvement. Unresolved alternatives include branch/shoulder-limit handling, singularity escape, and insufficient dynamic authority; M1/M2 contain no joint trajectories, actuator traces, contact traces, or causal intervention isolating these mechanisms. The evidence therefore supports changing exposure first, while limiting claims about the underlying controller mechanism.",
-          "handoff_question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-          "rationale": "Official assessment is premature because the strongest measured candidate is 71.5%, far below the 98% objective, despite high training proxies. Existing M2 evidence supports prioritizing the omitted inner-radius regime: success is 32.7% at 6-10 cm and 67.2% at 10-14 cm versus 96.4% and 100.0% outside it, with 47 of 57 failures never reaching. This revises the inherited interpretation only in scope: the pattern motivates an exposure comparison but does not establish that exposure, rather than branch handling, singularity escape, or dynamic authority, is causal; pooled angle asymmetry is also not a branch diagnosis because it is confounded with radius. A fresh official-range training run with the current PPO implementation held fixed is the lowest-cost goal-relevant comparison, and matched diagnostics determine whether it merits continued development or redirects the campaign toward mechanism-focused control work.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E3",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry after a fresh official-exposure candidate has been compared with T1:checkpoint-120832 on the same non-overlapping official-distribution research panel using success, radius/angle strata, and failure-class diagnostics. A positive bounded conclusion requires a substantial reduction in 6-14 cm never-reach failures with no material loss of 14-20 cm success; a negative or limited conclusion is warranted if inner failures persist, outer success degrades, or the comparison does not materially improve the overall candidate. In all cases, attribute the result to the compared artifacts and preserve branch, transient, dynamics, contact, and substep causes as unresolved unless directly measured.",
-        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the official 6-20 cm distribution. The current best-known candidate achieves 143/200, and M2 localizes most failures to never-reach episodes at 6-14 cm, so testing the omitted official inner regime directly addresses the dominant measured gap while protecting the already strong outer-radius behavior.",
-        "question": "Does replacing the current 14-20 cm training exposure with the official 6-20 cm exposure, while keeping the current PPO implementation otherwise fixed, reduce 6-14 cm never-reach failures enough to move the measured candidate toward the 98% objective without degrading outer-radius hold success?",
-        "rationale": "Official assessment is premature because the strongest measured candidate is 71.5%, far below the 98% objective, despite high training proxies. Existing M2 evidence supports prioritizing the omitted inner-radius regime: success is 32.7% at 6-10 cm and 67.2% at 10-14 cm versus 96.4% and 100.0% outside it, with 47 of 57 failures never reaching. This revises the inherited interpretation only in scope: the pattern motivates an exposure comparison but does not establish that exposure, rather than branch handling, singularity escape, or dynamic authority, is causal; pooled angle asymmetry is also not a branch diagnosis because it is confounded with radius. A fresh official-range training run with the current PPO implementation held fixed is the lowest-cost goal-relevant comparison, and matched diagnostics determine whether it merits continued development or redirects the campaign toward mechanism-focused control work."
-      }
-    },
-    "request_fingerprint": "5ea883ef4a8baeca0a57c02029d403f6cd73cbee1330e5c25f0032d29b4d861d",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 from M1 and M2. No working candidate is assigned. T1:checkpoint-115712 remains a measured comparison artifact, not a role assignment. No candidate meets the human goal, and no official assessment has been requested.",
     "completed_operations": [
