@@ -21,12 +21,36 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary or trace changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-RESEARCH_EVALUATION_ARTIFACT_VERSION = 7
+RESEARCH_EVALUATION_ARTIFACT_VERSION = 8
 
 
 def _optional_float(value) -> float | None:
     """Preserve unavailable controller-specific diagnostics as null."""
-    return None if value is None else float(value)
+    if value is None:
+        return None
+    converted = float(value)
+    return converted if np.isfinite(converted) else None
+
+
+def _optional_vector(value) -> list[float] | None:
+    """Serialize an optional controller vector without assuming its presence."""
+    return (
+        None
+        if value is None
+        else [float(component) for component in value]
+    )
+
+
+def _optional_matrix(value) -> list[list[float]] | None:
+    """Serialize an optional controller matrix without assuming its presence."""
+    return (
+        None
+        if value is None
+        else [
+            [float(component) for component in row]
+            for row in value
+        ]
+    )
 
 
 def evaluate_research_model(
@@ -113,6 +137,35 @@ def evaluate_research_model(
                     ),
                     "target_distance_m": _optional_float(
                         info.get("target_distance_m")
+                    ),
+                    "cartesian_error_m": _optional_vector(
+                        info.get("cartesian_error_m")
+                    ),
+                    "cartesian_error_norm_m": _optional_float(
+                        info.get("cartesian_error_norm_m")
+                    ),
+                    "cartesian_speed_m_s": _optional_vector(
+                        info.get("cartesian_speed_m_s")
+                    ),
+                    "cartesian_speed_norm_m_s": _optional_float(
+                        info.get("cartesian_speed_norm_m_s")
+                    ),
+                    "inward_cartesian_speed_m_s": _optional_float(
+                        info.get("inward_cartesian_speed_m_s")
+                    ),
+                    "planar_jacobian": _optional_matrix(
+                        info.get("planar_jacobian")
+                    ),
+                    "jacobian_condition": _optional_float(
+                        info.get("jacobian_condition")
+                    ),
+                    "controller_state_valid": (
+                        None
+                        if info.get("controller_state_valid") is None
+                        else bool(info["controller_state_valid"])
+                    ),
+                    "residual_action": _optional_vector(
+                        info.get("residual_action")
                     ),
                     "distance_cm": 100.0 * float(info["diagnostic_distance"]),
                     "held_steps": int(info["diagnostic_held_steps"]),

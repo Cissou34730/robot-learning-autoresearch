@@ -8,7 +8,10 @@ from contracts.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
 
-BRANCH_AWARE_RUNTIME_MARKER = "branch-aware-control-v1"
+# Versioned activation is intentional: only newly exported artifacts opt into
+# the redesigned task-space controller.  Older serialized runtimes do not
+# acquire new control semantics merely because this source file changed.
+BRANCH_AWARE_RUNTIME_MARKER = "branch-aware-task-space-control-v2"
 
 
 def physical_action(action):
@@ -29,7 +32,7 @@ def make_policy_io():
 
 
 def is_branch_aware_policy_io(policy_io) -> bool:
-    """Gate the new controller on the serialized artifact marker."""
+    """Gate the redesigned controller on its exact serialized marker."""
     return (
         getattr(policy_io, "runtime_marker", None)
         == BRANCH_AWARE_RUNTIME_MARKER

@@ -1,17 +1,22 @@
-"""Branch-aware inverse-kinematics guidance for the two-joint arm.
+"""Branch-conditioned task-space guidance for the two-joint arm.
 
-The controller is deliberately episode-scoped: :meth:`select_branch` is
-called once after a target is sampled, and the selected inverse-kinematics
-configuration is then latched until reset.  The learned action remains a
-bounded residual rather than being replaced by this guidance.
+The controller chooses one feasible inverse-kinematics branch at reset, but
+does not use that configuration as a joint-space servo target.  During the
+episode it measures the live MuJoCo end-effector position and site Jacobian,
+commands a bounded Cartesian velocity, and maps that velocity through a
+damped least-squares Jacobian inverse.  The selected branch is only a
+null-space preference, which keeps the task-space command distinct from the
+previous latched proportional joint controller.
 
-After branch selection, control moves through an approach, braking, and hold
-schedule.  The schedule is state-driven and one-way; it does not use the
-environment's hold counter or episode step count.
+The returned values are direct motor commands.  They are finite and smoothly
+norm-limited below the physical action-space boundary; a distant target
+therefore increases the bounded Cartesian request rather than intentionally
+producing a full-scale action.
 """
 
 from dataclasses import dataclass
 
+import mujoco
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
@@ -29,38 +34,52 @@ APPROACH_PHASE = "approach"
 BRAKING_PHASE = "braking"
 HOLD_PHASE = "hold"
 
-# The phase boundaries use both Cartesian target geometry and the latched
-# joint-space target.  They are deliberately margins around the 1 cm task
-# boundary rather than the task success counter.
-CLOSE_APPROACH_DISTANCE_M = 0.025
-CLOSE_APPROACH_ERROR_RAD = 0.35
-BRAKING_INWARD_SPEED_RAD_S = 1.5
-HOLD_ENTRY_DISTANCE_FRACTION = 0.80
-HOLD_ENTRY_ERROR_RAD = 0.12
-HOLD_ENTRY_SPEED_RAD_S = 0.35
+# Cartesian phase limits are finite physical command bounds, in SI units.
+# The final motor-command limits are deliberately below [-1, 1], so a large
+# Cartesian error is handled by a bounded velocity request, not saturation.
+CARTESIAN_APPROACH_SPEED_M_S = 0.24
+CARTESIAN_BRAKING_SPEED_M_S = 0.085
+CARTESIAN_HOLD_SPEED_M_S = 0.035
+GUIDANCE_ACTION_NORM_LIMIT = 0.78
+RESIDUAL_ACTION_NORM_LIMIT = 0.32
+APPLIED_ACTION_NORM_LIMIT = 0.90
 
-# Each phase has its own finite-time control schedule.  The hold schedule
-# retains enough proportional guidance to recover from a small interruption,
-# while its stronger velocity damping and small residual weight prevent a
-# learned command from undoing the branch target.
+# Phase transitions use the actual Cartesian velocity at the site.  The hold
+# envelope is stricter than the task's 1 cm boundary to leave settling margin.
+BRAKING_DISTANCE_M = 0.035
+BRAKING_INWARD_SPEED_M_S = 0.18
+HOLD_ENTRY_DISTANCE_FRACTION = 0.80
+HOLD_ENTRY_SPEED_M_S = 0.035
+HOLD_EXIT_SPEED_M_S = 0.12
+HOLD_EXIT_DISTANCE_FRACTION = 1.20
+
+# Damped least squares remains well-defined at the fully extended reset pose.
+TASK_JACOBIAN_DAMPING = 0.012
+NULL_SPACE_GAIN_S = 1.25
+JOINT_VELOCITY_LIMIT_RAD_S = 4.0
+
+# These gains act on Cartesian position and velocity, not on joint angles.
 PHASE_PARAMETERS = {
     APPROACH_PHASE: {
-        "proportional_gain": 1.0,
-        "velocity_damping": 0.10,
-        "guidance_weight": 1.0,
-        "residual_weight": 0.35,
+        "position_gain_s": 3.2,
+        "velocity_damping_s": 0.35,
+        "guidance_weight": 0.88,
+        "residual_weight": 0.18,
+        "cartesian_speed_limit": CARTESIAN_APPROACH_SPEED_M_S,
     },
     BRAKING_PHASE: {
-        "proportional_gain": 0.80,
-        "velocity_damping": 0.45,
-        "guidance_weight": 1.0,
-        "residual_weight": 0.12,
+        "position_gain_s": 3.0,
+        "velocity_damping_s": 1.35,
+        "guidance_weight": 0.94,
+        "residual_weight": 0.08,
+        "cartesian_speed_limit": CARTESIAN_BRAKING_SPEED_M_S,
     },
     HOLD_PHASE: {
-        "proportional_gain": 0.45,
-        "velocity_damping": 0.90,
-        "guidance_weight": 0.85,
-        "residual_weight": 0.05,
+        "position_gain_s": 2.4,
+        "velocity_damping_s": 1.80,
+        "guidance_weight": 0.82,
+        "residual_weight": 0.04,
+        "cartesian_speed_limit": CARTESIAN_HOLD_SPEED_M_S,
     },
 }
 
@@ -68,6 +87,23 @@ PHASE_PARAMETERS = {
 def _wrap_to_pi(angle):
     """Return an angle error in the half-open interval [-pi, pi)."""
     return (np.asarray(angle) + np.pi) % (2.0 * np.pi) - np.pi
+
+
+def _smooth_norm_limit(vector, limit: float) -> np.ndarray:
+    """Limit a finite vector smoothly, without component-wise saturation."""
+    try:
+        value = np.asarray(vector, dtype=np.float64)
+    except (TypeError, ValueError):
+        return np.zeros(2, dtype=np.float64)
+    if value.shape != (2,) or not np.all(np.isfinite(value)):
+        return np.zeros(2, dtype=np.float64)
+    if not np.isfinite(limit) or limit <= 0.0:
+        return np.zeros(2, dtype=np.float64)
+    norm = float(np.linalg.norm(value))
+    if norm <= np.finfo(np.float64).eps:
+        return value.copy()
+    ratio = norm / float(limit)
+    return value * (np.tanh(ratio) / ratio)
 
 
 @dataclass(frozen=True)
@@ -82,7 +118,7 @@ class FeasibleBranch:
 
 
 class BranchAwareController:
-    """Latch a feasible planar IK branch and provide scheduled guidance."""
+    """Use a feasible IK branch as a null-space preference for task control."""
 
     def __init__(self, model, *, success_threshold: float = 0.01) -> None:
         if int(model.njnt) < 2:
@@ -95,6 +131,23 @@ class BranchAwareController:
         self._qvel_indices = tuple(
             int(model.jnt_dofadr[joint_id]) for joint_id in self._joint_ids
         )
+        try:
+            self._site_id = int(
+                mujoco.mj_name2id(
+                    model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+                )
+            )
+        except (AttributeError, TypeError, ValueError):
+            self._site_id = -1
+        if self._site_id < 0:
+            raise ValueError("branch-aware control requires an end_effector site")
+        # Derived MuJoCo fields on the environment's live data are intentionally
+        # not refreshed here.  The environment evaluates task distance from
+        # that data after diagnostics, so changing it would change task
+        # semantics.  This private copy lets diagnostics and control derive
+        # kinematics from the current qpos without mutating live task state.
+        self._kinematic_data = mujoco.MjData(model)
+
         self.selected_branch: str | None = None
         self.selected_target: np.ndarray | None = None
         self._phase = APPROACH_PHASE
@@ -105,8 +158,14 @@ class BranchAwareController:
         self._success_threshold = (
             threshold if np.isfinite(threshold) and threshold > 0.0 else 0.01
         )
+        self._last_guidance = np.zeros(2, dtype=np.float64)
+        self._last_residual = np.zeros(2, dtype=np.float64)
+        self._last_applied = np.zeros(2, dtype=np.float64)
 
-    def _joint_state(self, data) -> tuple[np.ndarray, np.ndarray]:
+    def _joint_state(
+        self, data
+    ) -> tuple[np.ndarray, np.ndarray, bool]:
+        """Read the two arm joints and explicitly reject malformed state."""
         try:
             qpos = np.asarray(
                 data.qpos[list(self._qpos_indices)], dtype=np.float64
@@ -115,12 +174,23 @@ class BranchAwareController:
                 data.qvel[list(self._qvel_indices)], dtype=np.float64
             )
         except (AttributeError, IndexError, TypeError, ValueError):
-            return np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)
-        if qpos.shape != (2,) or qvel.shape != (2,):
-            return np.zeros(2, dtype=np.float64), np.zeros(2, dtype=np.float64)
-        qpos = np.nan_to_num(qpos, nan=0.0, posinf=0.0, neginf=0.0)
-        qvel = np.nan_to_num(qvel, nan=0.0, posinf=0.0, neginf=0.0)
-        return qpos, qvel
+            return (
+                np.zeros(2, dtype=np.float64),
+                np.zeros(2, dtype=np.float64),
+                False,
+            )
+        if (
+            qpos.shape != (2,)
+            or qvel.shape != (2,)
+            or not np.all(np.isfinite(qpos))
+            or not np.all(np.isfinite(qvel))
+        ):
+            return (
+                np.zeros(2, dtype=np.float64),
+                np.zeros(2, dtype=np.float64),
+                False,
+            )
+        return qpos, qvel, True
 
     @staticmethod
     def _policy_vector(policy_action) -> np.ndarray:
@@ -135,28 +205,110 @@ class BranchAwareController:
             policy, nan=0.0, posinf=ACTION_HIGH, neginf=ACTION_LOW
         )
 
-    def _target_distance(self, data) -> float:
+    def _task_state(self, data) -> dict:
+        """Return live planar task state, or a finite invalid-state record."""
+        invalid = {
+            "valid": False,
+            "qpos": np.zeros(2, dtype=np.float64),
+            "qvel": np.zeros(2, dtype=np.float64),
+            "target": np.zeros(2, dtype=np.float64),
+            "site": np.zeros(2, dtype=np.float64),
+            "error": np.zeros(2, dtype=np.float64),
+            "jacobian": np.zeros((2, 2), dtype=np.float64),
+            "site_velocity": np.zeros(2, dtype=np.float64),
+            "distance": None,
+        }
+        qpos, qvel, state_valid = self._joint_state(data)
+        if not state_valid:
+            return invalid
         try:
-            target = np.asarray(data.mocap_pos[0][:2], dtype=np.float64)
-            qpos = np.asarray(
-                data.qpos[list(self._qpos_indices)], dtype=np.float64
+            full_qpos = np.asarray(data.qpos, dtype=np.float64)
+            full_qvel = np.asarray(data.qvel, dtype=np.float64)
+            full_mocap_pos = np.asarray(data.mocap_pos, dtype=np.float64)
+            if (
+                full_qpos.shape != self._kinematic_data.qpos.shape
+                or full_qvel.shape != self._kinematic_data.qvel.shape
+                or full_mocap_pos.shape
+                != self._kinematic_data.mocap_pos.shape
+                or not np.all(np.isfinite(full_qpos))
+                or not np.all(np.isfinite(full_qvel))
+                or not np.all(np.isfinite(full_mocap_pos))
+            ):
+                return invalid
+            target_3d = full_mocap_pos[0]
+            if target_3d.shape != (3,) or not np.all(np.isfinite(target_3d)):
+                return invalid
+
+            # Copy only state needed to derive kinematics.  In particular,
+            # mj_forward must never run on the environment's live MjData.
+            self._kinematic_data.qpos[:] = full_qpos
+            self._kinematic_data.qvel[:] = full_qvel
+            self._kinematic_data.mocap_pos[:] = full_mocap_pos
+            mujoco.mj_forward(self.model, self._kinematic_data)
+            site_3d = np.asarray(
+                self._kinematic_data.site(self._site_id).xpos,
+                dtype=np.float64,
             )
-        except (AttributeError, IndexError, TypeError, ValueError):
-            return float("inf")
-        if target.shape != (2,) or qpos.shape != (2,):
-            return float("inf")
-        if not (np.all(np.isfinite(target)) and np.all(np.isfinite(qpos))):
-            return float("inf")
-        site = np.asarray(
-            [
-                UPPER_ARM_LENGTH * np.cos(qpos[0])
-                + FOREARM_LENGTH * np.cos(qpos[0] + qpos[1]),
-                UPPER_ARM_LENGTH * np.sin(qpos[0])
-                + FOREARM_LENGTH * np.sin(qpos[0] + qpos[1]),
-            ],
-            dtype=np.float64,
+            jacobian_3d = np.zeros(
+                (3, int(self.model.nv)), dtype=np.float64
+            )
+            mujoco.mj_jacSite(
+                self.model,
+                self._kinematic_data,
+                jacobian_3d,
+                None,
+                self._site_id,
+            )
+            jacobian = jacobian_3d[
+                :2, list(self._qvel_indices)
+            ]
+            site = site_3d[:2]
+            target = target_3d[:2]
+            if (
+                site_3d.shape != (3,)
+                or jacobian.shape != (2, 2)
+                or not np.all(np.isfinite(site_3d))
+                or not np.all(np.isfinite(jacobian))
+            ):
+                return invalid
+            error = target - site
+            site_velocity = jacobian @ qvel
+            if not (
+                np.all(np.isfinite(error))
+                and np.all(np.isfinite(site_velocity))
+            ):
+                return invalid
+            distance = float(np.linalg.norm(error))
+            if not np.isfinite(distance):
+                return invalid
+        except (
+            AttributeError,
+            IndexError,
+            TypeError,
+            ValueError,
+            FloatingPointError,
+            RuntimeError,
+        ):
+            return invalid
+        return {
+            "valid": True,
+            "qpos": qpos,
+            "qvel": qvel,
+            "target": target,
+            "site": site,
+            "error": error,
+            "jacobian": jacobian,
+            "site_velocity": site_velocity,
+            "distance": distance,
+        }
+
+    def _target_distance(self, data) -> float:
+        state = self._task_state(data)
+        return (
+            float(state["distance"])
+            if state["valid"]
+            else float("inf")
         )
-        return float(np.linalg.norm(site - target))
 
     @staticmethod
     def _shoulder_for_elbow(target_x: float, target_y: float, elbow: float) -> float:
@@ -238,29 +390,40 @@ class BranchAwareController:
 
     def select_branch(self, data) -> None:
         """Select and latch one feasible IK branch for the current episode."""
-        target = np.asarray(data.mocap_pos[0][:2], dtype=np.float64)
-        current, _ = self._joint_state(data)
+        try:
+            target_3d = np.asarray(data.mocap_pos[0], dtype=np.float64)
+            target = (
+                target_3d[:2]
+                if target_3d.shape == (3,)
+                else np.zeros(2, dtype=np.float64)
+            )
+        except (AttributeError, IndexError, TypeError, ValueError):
+            target = np.zeros(3, dtype=np.float64)[:2]
+        current, _, current_valid = self._joint_state(data)
+        if target.shape != (2,) or not np.all(np.isfinite(target)):
+            current_valid = False
         feasible: list[FeasibleBranch] = []
-        for name, solution in self._ik_solutions(target):
-            fitted = self._fit_solution_to_limits(solution, current)
-            if fitted is None:
-                continue
-            fitted_target, limit_margin = fitted
-            proximity_error = _wrap_to_pi(fitted_target - current)
-            proximity_cost = float(np.sum((proximity_error / np.pi) ** 2))
-            score = (
-                BRANCH_PROXIMITY_WEIGHT * proximity_cost
-                - BRANCH_LIMIT_MARGIN_WEIGHT * limit_margin
-            )
-            feasible.append(
-                FeasibleBranch(
-                    name=name,
-                    target=fitted_target,
-                    proximity_cost=proximity_cost,
-                    limit_margin=limit_margin,
-                    score=float(score),
+        if current_valid:
+            for name, solution in self._ik_solutions(target):
+                fitted = self._fit_solution_to_limits(solution, current)
+                if fitted is None:
+                    continue
+                fitted_target, limit_margin = fitted
+                proximity_error = _wrap_to_pi(fitted_target - current)
+                proximity_cost = float(np.sum((proximity_error / np.pi) ** 2))
+                score = (
+                    BRANCH_PROXIMITY_WEIGHT * proximity_cost
+                    - BRANCH_LIMIT_MARGIN_WEIGHT * limit_margin
                 )
-            )
+                feasible.append(
+                    FeasibleBranch(
+                        name=name,
+                        target=fitted_target,
+                        proximity_cost=proximity_cost,
+                        limit_margin=limit_margin,
+                        score=float(score),
+                    )
+                )
 
         if not feasible:
             self.selected_branch = None
@@ -277,94 +440,198 @@ class BranchAwareController:
         self.selected_branch = chosen.name
         self.selected_target = chosen.target.copy()
         self._phase = APPROACH_PHASE
+        self._last_guidance.fill(0.0)
+        self._last_residual.fill(0.0)
+        self._last_applied.fill(0.0)
 
-    def guidance_action(self, data) -> np.ndarray:
-        """Compute scheduled, bounded guidance toward the latched target."""
+    def _branch_error(self, qpos: np.ndarray) -> np.ndarray:
         if self.selected_target is None:
-            raise RuntimeError("branch-aware guidance requested before branch selection")
-        qpos, qvel = self._joint_state(data)
-        angle_error = _wrap_to_pi(self.selected_target - qpos)
-        error_norm = float(np.linalg.norm(angle_error))
-        speed_norm = float(np.linalg.norm(qvel))
+            return np.zeros(2, dtype=np.float64)
+        return _wrap_to_pi(self.selected_target - qpos).astype(np.float64)
+
+    def _update_phase(self, state: dict) -> None:
+        if not state["valid"]:
+            return
+        distance = float(state["distance"])
+        error = state["error"]
+        site_velocity = state["site_velocity"]
+        speed = float(np.linalg.norm(site_velocity))
         inward_speed = (
-            float(np.dot(qvel, angle_error) / error_norm)
-            if error_norm > np.finfo(np.float64).eps
+            float(np.dot(site_velocity, error) / distance)
+            if distance > np.finfo(np.float64).eps
             else 0.0
         )
-        target_distance = self._target_distance(data)
-
-        if self._phase == APPROACH_PHASE:
-            close_approach = (
-                target_distance <= CLOSE_APPROACH_DISTANCE_M
-                and error_norm <= CLOSE_APPROACH_ERROR_RAD
-            )
-            excessive_inward_speed = (
-                inward_speed >= BRAKING_INWARD_SPEED_RAD_S
-            )
-            if close_approach or excessive_inward_speed:
-                self._phase = BRAKING_PHASE
+        branch_error_norm = float(
+            np.linalg.norm(self._branch_error(state["qpos"]))
+        )
+        if self._phase == APPROACH_PHASE and (
+            distance <= BRAKING_DISTANCE_M
+            or inward_speed >= BRAKING_INWARD_SPEED_M_S
+        ):
+            self._phase = BRAKING_PHASE
         if self._phase == BRAKING_PHASE:
             hold_distance = (
                 HOLD_ENTRY_DISTANCE_FRACTION * self._success_threshold
             )
             if (
-                target_distance <= hold_distance
-                and error_norm <= HOLD_ENTRY_ERROR_RAD
-                and speed_norm <= HOLD_ENTRY_SPEED_RAD_S
+                distance <= hold_distance
+                and speed <= HOLD_ENTRY_SPEED_M_S
+                and branch_error_norm <= 0.45
             ):
                 self._phase = HOLD_PHASE
+        elif self._phase == HOLD_PHASE and (
+            distance
+            > HOLD_EXIT_DISTANCE_FRACTION * self._success_threshold
+            or speed > HOLD_EXIT_SPEED_M_S
+        ):
+            self._phase = BRAKING_PHASE
 
+    def _task_velocity_command(self, state: dict) -> np.ndarray:
         parameters = PHASE_PARAMETERS[self._phase]
-        guidance = (
-            parameters["proportional_gain"] * angle_error
-            - parameters["velocity_damping"] * qvel
+        raw_command = (
+            parameters["position_gain_s"] * state["error"]
+            - parameters["velocity_damping_s"] * state["site_velocity"]
         )
-        guidance = np.nan_to_num(
-            guidance, nan=0.0, posinf=ACTION_HIGH, neginf=ACTION_LOW
+        return _smooth_norm_limit(
+            raw_command, parameters["cartesian_speed_limit"]
         )
-        return np.clip(guidance, ACTION_LOW, ACTION_HIGH).astype(np.float64)
 
-    def diagnostics(self, data) -> dict[str, float | str | bool]:
-        """Return state-driven phase diagnostics for the current control state."""
-        qpos, qvel = self._joint_state(data)
+    def guidance_action(self, data) -> np.ndarray:
+        """Map bounded Cartesian approach/braking guidance to motor commands."""
         if self.selected_target is None:
-            angle_error = np.zeros(2, dtype=np.float64)
-        else:
-            angle_error = _wrap_to_pi(self.selected_target - qpos)
-        error_norm = float(np.linalg.norm(angle_error))
-        speed_norm = float(np.linalg.norm(qvel))
-        inward_speed = (
-            float(np.dot(qvel, angle_error) / error_norm)
-            if error_norm > np.finfo(np.float64).eps
-            else 0.0
+            raise RuntimeError("branch-aware guidance requested before branch selection")
+        state = self._task_state(data)
+        if not state["valid"]:
+            # A malformed state must not turn into a NaN or an accidental
+            # saturation; the explicit safe command is zero until recovery.
+            self._last_guidance.fill(0.0)
+            return self._last_guidance.copy()
+
+        self._update_phase(state)
+        desired_velocity = self._task_velocity_command(state)
+        jacobian = state["jacobian"]
+        damping_matrix = (
+            jacobian @ jacobian.T
+            + TASK_JACOBIAN_DAMPING**2 * np.eye(2, dtype=np.float64)
         )
+        try:
+            task_inverse = jacobian.T @ np.linalg.solve(
+                damping_matrix, np.eye(2, dtype=np.float64)
+            )
+            qdot_task = task_inverse @ desired_velocity
+            null_projector = np.eye(2, dtype=np.float64) - task_inverse @ jacobian
+            qdot_null = NULL_SPACE_GAIN_S * (
+                null_projector @ self._branch_error(state["qpos"])
+            )
+            qdot_command = _smooth_norm_limit(
+                qdot_task + qdot_null, JOINT_VELOCITY_LIMIT_RAD_S
+            )
+            # Direct motor control is treated as a bounded velocity-error
+            # guidance signal; it is not a position-servo replacement.
+            raw_guidance = 0.55 * (qdot_command - state["qvel"])
+            guidance = _smooth_norm_limit(
+                raw_guidance, GUIDANCE_ACTION_NORM_LIMIT
+            )
+        except (
+            FloatingPointError,
+            np.linalg.LinAlgError,
+            ValueError,
+            TypeError,
+        ):
+            guidance = np.zeros(2, dtype=np.float64)
+        self._last_guidance = guidance
+        return guidance.copy()
+
+    def diagnostics(self, data) -> dict:
+        """Return synchronized live task diagnostics and last commands."""
+        state = self._task_state(data)
+        if state["valid"]:
+            joint_error = self._branch_error(state["qpos"])
+            joint_speed = float(np.linalg.norm(state["qvel"]))
+            cartesian_error = state["error"]
+            cartesian_speed = state["site_velocity"]
+            distance = float(state["distance"])
+            inward_speed = (
+                float(
+                    np.dot(cartesian_speed, cartesian_error)
+                    / distance
+                )
+                if distance > np.finfo(np.float64).eps
+                else 0.0
+            )
+            inward_joint_speed = (
+                float(
+                    np.dot(state["qvel"], joint_error)
+                    / np.linalg.norm(joint_error)
+                )
+                if np.linalg.norm(joint_error)
+                > np.finfo(np.float64).eps
+                else 0.0
+            )
+            try:
+                condition = float(np.linalg.cond(state["jacobian"]))
+                jacobian_condition = (
+                    condition if np.isfinite(condition) else None
+                )
+            except (FloatingPointError, np.linalg.LinAlgError, ValueError):
+                jacobian_condition = float("inf")
+        else:
+            joint_error = np.zeros(2, dtype=np.float64)
+            joint_speed = 0.0
+            cartesian_error = np.zeros(2, dtype=np.float64)
+            cartesian_speed = np.zeros(2, dtype=np.float64)
+            distance = None
+            inward_speed = 0.0
+            inward_joint_speed = 0.0
+            jacobian_condition = None
         parameters = PHASE_PARAMETERS[self._phase]
         return {
             "control_phase": self._phase,
-            # Braking remains active in hold because hold is the conservative
-            # post-braking schedule, while `braking_phase` identifies the
-            # transitional phase itself.
             "braking_active": self._phase in (BRAKING_PHASE, HOLD_PHASE),
             "braking_phase": self._phase == BRAKING_PHASE,
             "guidance_weight": float(parameters["guidance_weight"]),
             "residual_weight": float(parameters["residual_weight"]),
-            "joint_error_norm_rad": error_norm,
-            "joint_speed_norm_rad_s": speed_norm,
-            "inward_joint_speed_rad_s": inward_speed,
-            "target_distance_m": self._target_distance(data),
+            "joint_error_norm_rad": float(np.linalg.norm(joint_error)),
+            "joint_speed_norm_rad_s": joint_speed,
+            "inward_joint_speed_rad_s": inward_joint_speed,
+            "target_distance_m": distance,
+            "cartesian_error_m": [float(value) for value in cartesian_error],
+            "cartesian_error_norm_m": float(np.linalg.norm(cartesian_error)),
+            "cartesian_speed_m_s": [float(value) for value in cartesian_speed],
+            "cartesian_speed_norm_m_s": float(np.linalg.norm(cartesian_speed)),
+            "inward_cartesian_speed_m_s": inward_speed,
+            "planar_jacobian": (
+                state["jacobian"].tolist()
+                if state["valid"]
+                else [[0.0, 0.0], [0.0, 0.0]]
+            ),
+            "jacobian_condition": jacobian_condition,
+            "controller_state_valid": bool(state["valid"]),
+            "guidance_action": [
+                float(value) for value in self._last_guidance
+            ],
+            "residual_action": [
+                float(value) for value in self._last_residual
+            ],
+            "applied_action": [
+                float(value) for value in self._last_applied
+            ],
         }
 
     def apply(self, policy_action, data) -> tuple[np.ndarray, np.ndarray]:
-        """Blend the scheduled guidance with a bounded policy residual."""
+        """Blend the learned residual with smoothly bounded task guidance."""
         policy = np.clip(
             self._policy_vector(policy_action), ACTION_LOW, ACTION_HIGH
         )
+        residual = _smooth_norm_limit(policy, RESIDUAL_ACTION_NORM_LIMIT)
         guidance = self.guidance_action(data)
         parameters = PHASE_PARAMETERS[self._phase]
-        applied = np.clip(
-            parameters["guidance_weight"] * guidance
-            + parameters["residual_weight"] * policy,
-            ACTION_LOW,
-            ACTION_HIGH,
+        weighted_guidance = parameters["guidance_weight"] * guidance
+        weighted_residual = parameters["residual_weight"] * residual
+        applied = _smooth_norm_limit(
+            weighted_guidance + weighted_residual,
+            APPLIED_ACTION_NORM_LIMIT,
         )
-        return guidance, applied.astype(np.float64)
+        self._last_residual = residual
+        self._last_applied = applied
+        return guidance.copy(), applied.copy()
