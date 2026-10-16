@@ -79,6 +79,25 @@ Create the next proposal at the same path when the previous request is absent.
 Do not update or delete a previous request without checking that it exists.
 A rejected proposal remains available for correction.
 
+### Saved controller execution
+
+Saved candidates include policy weights, normalization state when used, and the
+executable runtime defined in `contracts/policy_runtime.py`.
+
+Task-reference and official evaluations use protected environments, not the
+PI-owned research environment. The protected environment calls the saved
+`io.observe(data)` to construct each policy observation. The saved runtime
+performs policy inference with its normalization state. The environment calls
+`io.action(policy_action)`, then validates and clips the result before applying
+it to the robot. It calls the optional `io.reset()` callback at each episode reset.
+
+Controller logic affects protected evaluation only if the saved runtime executes
+it. A runtime marker alone does not cause the protected environment to call
+research-environment code. Research evaluation uses the PI-owned environment,
+which can apply additional control logic outside the saved runtime. Identical
+artifact fingerprints do not establish identical applied commands across these
+environments.
+
 ## Scientific coding interface
 
 Ordinary Copilot main PI sessions expose `scientific_coding` and
@@ -511,6 +530,9 @@ Set `instrument` to `task_reference`.
 The `candidate` field is required and must be non-empty.
 The `label` field is optional.
 This instrument uses its protected fixed panel.
+Its controller execution follows the saved-runtime contract under
+[Saved controller execution](#saved-controller-execution), not the PI-owned
+research environment.
 
 A `python_module` entry runs one PI-owned Python module as a measurement.
 It can characterize the embodied system, simulation, learning process, or

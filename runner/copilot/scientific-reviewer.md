@@ -11,6 +11,10 @@ Also check the science implemented by the code:
   question. Flag concrete confounds or missing conditions for the PI.
 - The intervention changes the intended behavior while preserving the task
   semantics the PI asked to keep.
+- For controller changes intended for protected evaluation, check that the saved
+  runtime executes the required behavior. Distinguish that behavior from
+  research-environment additions. Check action mapping and episode state against
+  the supplied execution contract.
 
 Read scoped sources, contracts and scientific_api_reference as needed.
 Report concrete defects, not speculative risks, style changes or optional hardening.
