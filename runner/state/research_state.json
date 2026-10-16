@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "End the inquiry after a complete saved-runtime artifact implementing a materially different acquisition phase has been activation-verified and measured on a matched 200-episode official-distribution development panel with never-reached, reached-but-failed-hold, radius/angle strata, and outer complete-hold diagnostics. Close positive only if it approaches the 196/200 goal while retaining the maintenance improvement and T1/T3-level outer behavior; otherwise close limited or negative with the residual failure classes and any unresolved implementation or artifact confounds carried to goal review.",
+    "goal_connection": "The strongest measured artifacts remain 28 or more successes short of the 196/200 objective, and T5's explicit maintenance reduced reached-but-failed-hold failures to 7 but left 37 never-reached failures and lost outer holds. A successful acquisition redesign could address the remaining dominant class without discarding the only tested stabilization benefit.",
+    "handoff_conclusion": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+    "handoff_question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+    "handoff_source_session_id": "S11",
+    "id": "I6",
+    "opened_in_session": "S12",
+    "question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+    "rationale": "The physical model predicts nominal reachability but identifies a rank-one fully extended reset and larger inner-target folds as consequential transient mechanisms. M11 localized T5's residual failures to acquisition (37 never-reached) while showing a large conditional maintenance improvement (7 reached-but-failed-hold versus T4's 25), so repeating v1 is not justified. The new question tests a distinct saved-runtime acquisition mechanism rather than attributing T5's artifact-level result to reward alone. Official assessment is premature: the best measured candidate is 168/200 and the explicit best-known T1 is 145/200 on the latest panel, whereas one bounded acquisition intervention could plausibly remove most of the 44 T5 failures at the cost of one training allocation and one matched measurement.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -4114,16 +4125,16 @@
     }
   },
   "counters": {
-    "event": 22,
-    "inquiry": 5,
+    "event": 23,
+    "inquiry": 6,
     "measurement": 11,
-    "session": 11,
+    "session": 12,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -14539,9 +14550,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T23:41:45Z",
+      "error": null,
+      "id": "E23",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "End the inquiry after a complete saved-runtime artifact implementing a materially different acquisition phase has been activation-verified and measured on a matched 200-episode official-distribution development panel with never-reached, reached-but-failed-hold, radius/angle strata, and outer complete-hold diagnostics. Close positive only if it approaches the 196/200 goal while retaining the maintenance improvement and T1/T3-level outer behavior; otherwise close limited or negative with the residual failure classes and any unresolved implementation or artifact confounds carried to goal review.",
+        "goal_connection": "The strongest measured artifacts remain 28 or more successes short of the 196/200 objective, and T5's explicit maintenance reduced reached-but-failed-hold failures to 7 but left 37 never-reached failures and lost outer holds. A successful acquisition redesign could address the remaining dominant class without discarding the only tested stabilization benefit.",
+        "question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+        "rationale": "The physical model predicts nominal reachability but identifies a rank-one fully extended reset and larger inner-target folds as consequential transient mechanisms. M11 localized T5's residual failures to acquisition (37 never-reached) while showing a large conditional maintenance improvement (7 reached-but-failed-hold versus T4's 25), so repeating v1 is not justified. The new question tests a distinct saved-runtime acquisition mechanism rather than attributing T5's artifact-level result to reward alone. Official assessment is premature: the best measured candidate is 168/200 and the explicit best-known T1 is 145/200 on the latest panel, whereas one bounded acquisition intervention could plausibly remove most of the 44 T5 failures at the cost of one training allocation and one matched measurement."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "End the inquiry after a complete saved-runtime artifact implementing a materially different acquisition phase has been activation-verified and measured on a matched 200-episode official-distribution development panel with never-reached, reached-but-failed-hold, radius/angle strata, and outer complete-hold diagnostics. Close positive only if it approaches the 196/200 goal while retaining the maintenance improvement and T1/T3-level outer behavior; otherwise close limited or negative with the residual failure classes and any unresolved implementation or artifact confounds carried to goal review.",
+          "goal_connection": "The strongest measured artifacts remain 28 or more successes short of the 196/200 objective, and T5's explicit maintenance reduced reached-but-failed-hold failures to 7 but left 37 never-reached failures and lost outer holds. A successful acquisition redesign could address the remaining dominant class without discarding the only tested stabilization benefit.",
+          "handoff_conclusion": "Observed: the physical model's point kinematics still predict nominal reachability across 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so the current evidence still does not support plant retuning or contact attribution. M6/M7 showed T3 improved pooled and inner outcomes but lost outer complete holds; M8/M9 showed T4's coupled phase-separated reward/exposure/transfer/checkpoint artifact reduced never-reached failures but lost outer holds. Those results were artifact-level, not causal tests of reward alone. I5 then implemented and serialized an actual stateful saved-runtime controller: learned acquisition actions switch on observed entry into the 1 cm band to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the saved runtime activation identifier and callable path and measured T5 at 156/200, tied with T3 on that panel and above T1/T4 aggregates. M11 resolved the mechanism-relevant classes: T5 had 37 never-reached and 7 reached-but-failed-hold failures; versus T4 it reduced reached-but-failed-hold from 25 to 7, but it did not recover T3/T1 outer behavior (T5 outer [14,20) was 73/83 versus T3 79/83 and T1 80/83) and remained acquisition-limited. This supports a limited claim for the tested T4-lineage plus v1 bounded IK/PD controller: explicit saved-runtime maintenance helps conditional hold stability, but it does not combine the required strata. It does not disprove other state-separation designs, and unexplained differences remain coupled artifact/training effects. Training proxies also remained non-predictive: T5's highest measured-checkpoint proxy was early at 10240 steps and later degraded, so terminal status was not treated as evidence. The scientific-model uncertainties about self-contact and endpoint-versus-substep semantics remain relevant only to continuous embodied-robustness claims unless they alter protected task semantics; all decisions here remain under coded endpoint semantics.",
+          "handoff_question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+          "handoff_source_session_id": "S11",
+          "id": "I6",
+          "opened_in_session": "S12",
+          "question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+          "rationale": "The physical model predicts nominal reachability but identifies a rank-one fully extended reset and larger inner-target folds as consequential transient mechanisms. M11 localized T5's residual failures to acquisition (37 never-reached) while showing a large conditional maintenance improvement (7 reached-but-failed-hold versus T4's 25), so repeating v1 is not justified. The new question tests a distinct saved-runtime acquisition mechanism rather than attributing T5's artifact-level result to reward alone. Official assessment is premature: the best measured candidate is 168/200 and the explicit best-known T1 is 145/200 on the latest panel, whereas one bounded acquisition intervention could plausibly remove most of the 44 T5 failures at the cost of one training allocation and one matched measurement.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E23",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "End the inquiry after a complete saved-runtime artifact implementing a materially different acquisition phase has been activation-verified and measured on a matched 200-episode official-distribution development panel with never-reached, reached-but-failed-hold, radius/angle strata, and outer complete-hold diagnostics. Close positive only if it approaches the 196/200 goal while retaining the maintenance improvement and T1/T3-level outer behavior; otherwise close limited or negative with the residual failure classes and any unresolved implementation or artifact confounds carried to goal review.",
+        "goal_connection": "The strongest measured artifacts remain 28 or more successes short of the 196/200 objective, and T5's explicit maintenance reduced reached-but-failed-hold failures to 7 but left 37 never-reached failures and lost outer holds. A successful acquisition redesign could address the remaining dominant class without discarding the only tested stabilization benefit.",
+        "question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
+        "rationale": "The physical model predicts nominal reachability but identifies a rank-one fully extended reset and larger inner-target folds as consequential transient mechanisms. M11 localized T5's residual failures to acquisition (37 never-reached) while showing a large conditional maintenance improvement (7 reached-but-failed-hold versus T4's 25), so repeating v1 is not justified. The new question tests a distinct saved-runtime acquisition mechanism rather than attributing T5's artifact-level result to reward alone. Official assessment is premature: the best measured candidate is 168/200 and the explicit best-known T1 is 145/200 on the latest panel, whereas one bounded acquisition intervention could plausibly remove most of the 44 T5 failures at the cost of one training allocation and one matched measurement."
+      }
+    },
+    "request_fingerprint": "db65f7aea4786f824101ee9b6a11ddaa303ec35480fbb451a636f0eb76a17b68",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832 because prior matched evidence identifies it as the strongest outer-radius reference, although it is only 145/200 on M8. T3:checkpoint-70656 remains the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 remains a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is a complete, controller-enabled saved-runtime artifact at 156/200 on M10; it is not assigned working or best-known because it falls below T3 overall and below T3/T1 outer strata despite improving T4's maintenance-failure class. T2 remains non-viable. No candidate has protected assessment evidence.",
     "completed_operations": [
@@ -14579,6 +14653,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4d107a85-8927-4e9a-9c00-db6855d2d76b",
+    "id": "S12",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E23"
+    ],
+    "scientific_parent_commit": "dc86824089ca69ff972f188f500656ab0f74032b"
+  },
   "terminal_state": null
 }
