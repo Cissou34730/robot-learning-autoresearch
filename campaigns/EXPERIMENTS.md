@@ -12,3 +12,4 @@
 | M2 | measurement | I1 | completed |
 | M3 | measurement | I1 | completed |
 | E5 | model_role | I1 | assigned |
+| E6 | inquiry | I1 | completed |
