@@ -51,6 +51,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        # Keep diagnostic kinematics separate from the live data.  MuJoCo's
+        # integration step leaves derived site positions at the pre-integration
+        # state; forwarding this copy lets research traces describe the actual
+        # post-block qpos without changing the established task state path.
+        self._diagnostic_data = mujoco.MjData(self.model)
 
         self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
@@ -71,6 +76,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._diagnostic_held_steps = 0
+        self._max_contact_count = 0
+        self._contact_geom_pairs: set[tuple[str, str]] = set()
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -99,6 +107,49 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
+    def _joint_limit_distances(self) -> dict[str, float]:
+        distances: dict[str, float] = {}
+        for joint_id in range(self.model.njnt):
+            if not self.model.jnt_limited[joint_id]:
+                continue
+            qpos_address = int(self.model.jnt_qposadr[joint_id])
+            position = float(self.data.qpos[qpos_address])
+            lower, upper = (
+                float(limit) for limit in self.model.jnt_range[joint_id]
+            )
+            if position < lower:
+                distance = position - lower
+            elif position > upper:
+                distance = upper - position
+            else:
+                distance = min(position - lower, upper - position)
+            distances[str(self.model.joint(joint_id).name)] = float(distance)
+        return distances
+
+    def _capture_contacts(self) -> None:
+        self._max_contact_count = max(
+            self._max_contact_count, int(self.data.ncon)
+        )
+        for contact_index in range(int(self.data.ncon)):
+            contact = self.data.contact[contact_index]
+            geom_names = (
+                str(self.model.geom(int(contact.geom1)).name),
+                str(self.model.geom(int(contact.geom2)).name),
+            )
+            self._contact_geom_pairs.add(geom_names)
+
+    def _diagnostic_distance(self) -> float:
+        self._diagnostic_data.qpos[:] = self.data.qpos
+        self._diagnostic_data.qvel[:] = self.data.qvel
+        self._diagnostic_data.mocap_pos[:] = self.data.mocap_pos
+        mujoco.mj_forward(self.model, self._diagnostic_data)
+        return float(
+            np.linalg.norm(
+                self._diagnostic_data.site("end_effector").xpos
+                - self._diagnostic_data.mocap_pos[0]
+            )
+        )
+
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
@@ -117,6 +168,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._diagnostic_held_steps = 0
+        self._max_contact_count = 0
+        self._contact_geom_pairs = set()
         return self._observation(), {}
 
     def step(
@@ -128,8 +182,17 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        self._max_contact_count = 0
+        self._contact_geom_pairs = set()
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            self._capture_contacts()
+
+        diagnostic_distance = self._diagnostic_distance()
+        if diagnostic_distance <= self.success_threshold:
+            self._diagnostic_held_steps += 1
+        else:
+            self._diagnostic_held_steps = 0
 
         distance = self._distance_to_target()
 
@@ -161,6 +224,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            # These fields are diagnostic-only.  The established task fields
+            # above intentionally retain their existing success semantics.
+            "diagnostic_distance": diagnostic_distance,
+            "diagnostic_held_steps": self._diagnostic_held_steps,
+            "action": [float(value) for value in action],
+            "qpos": [float(value) for value in self.data.qpos],
+            "qvel": [float(value) for value in self.data.qvel],
+            "joint_limit_distance_rad": self._joint_limit_distances(),
+            "max_contact_count": self._max_contact_count,
+            "contact_geom_pairs": [
+                list(pair) for pair in sorted(self._contact_geom_pairs)
+            ],
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,

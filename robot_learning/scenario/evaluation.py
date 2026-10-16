@@ -39,6 +39,7 @@ def evaluate_research_model(
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
+    episode_traces: list[list[dict]] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
@@ -55,6 +56,7 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        episode_trace: list[dict] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,6 +64,27 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            episode_trace.append(
+                {
+                    "control_step": steps,
+                    "qpos": [float(value) for value in info["qpos"]],
+                    "qvel": [float(value) for value in info["qvel"]],
+                    "action": [float(value) for value in info["action"]],
+                    "distance_cm": 100.0 * float(info["diagnostic_distance"]),
+                    "held_steps": int(info["diagnostic_held_steps"]),
+                    "joint_limit_distance_rad": {
+                        str(name): float(distance)
+                        for name, distance in info[
+                            "joint_limit_distance_rad"
+                        ].items()
+                    },
+                    "max_contact_count": int(info["max_contact_count"]),
+                    "contact_geom_pairs": [
+                        [str(name) for name in pair]
+                        for pair in info["contact_geom_pairs"]
+                    ],
+                }
+            )
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -105,6 +128,7 @@ def evaluate_research_model(
                 "hold_interruptions": hold_interruptions,
             }
         )
+        episode_traces.append(episode_trace)
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
@@ -121,6 +145,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
+            "episode_traces": episode_traces,
             "units": {"distance": "cm", "time": "control_steps"},
         },
     }
