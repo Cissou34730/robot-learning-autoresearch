@@ -3571,47 +3571,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry when completed evidence from a retained 6-20 cm candidate and its diagnostics either shows a materially improved complete-episode result with preserved inner-band acquisition and attributes the residual failures primarily to controllable stabilization or branch behavior, or shows persistent failures tied to compiled dynamics, contacts/limits, or control-step versus continuous semantics, or fails to discriminate despite the bounded work; in each case carry the resulting consequence into goal review rather than treating an unresolved cause as a success.",
-          "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T2 is the strongest measured candidate at 151/160 on a distinct development panel, but its 9 failures include four no-first-reach episodes and failures concentrated in outer-radius and negative-angle strata; resolving whether these failures are learnable control behavior or a plant/measurement constraint directly determines whether bounded development can plausibly close the 45-episode-equivalent gap before official assessment.",
-          "handoff_conclusion": "Established facts: T2 used a fresh 120,000-request-step run with 120,832 actual steps, changing only the PI-owned training target-radius range from 14-20 cm to the complete 6-20 cm official range; the PPO policy, runtime configuration, reward, observations, task mechanics, and evaluation semantics were preserved. T2's training proxy peaked at 0.58 at the terminal checkpoint, below T1's late proxy, so proxy rank did not establish its development capability. M2 compared T2:checkpoint-120832 and T1:checkpoint-120832 on identical non-overlapping seeds 5200-5359: T2 achieved 151/160 (94.375%) versus T1's 124/160 (77.5%), with 33 paired wins versus 6. M3 aligned the recorded success and diagnostic rows by episode seed and confirmed the route-relevant pattern: in [6,10) cm T2 had 45/45 first reaches and 45/45 successes versus T1's 24/45 first reaches and 21/45 successes; in [10,14) cm T2 had 43/43 and 43/43 versus T1's 35/43 and 34/43. T2's overall reached-episode success rate was 96.79% versus T1's 96.88%, so acquisition improvement did not remove the separate hold problem. T2 had 14 episodes with interruptions versus T1's 8, although fewer total interruption events (797 versus 923); its [18,20] cm success was 22/26 (84.6%) versus T1's 25/26 (96.2%), and its [14,18) cm success was 41/46 (89.1%) versus T1's 44/46 (95.7%). Angle strata also changed: T2 was perfect in both nonnegative-angle bins but retained failures in negative-angle bins, while T1 had substantial failures in the [0,90) bin. Interpretation: I1 has a limited positive answer at the artifact-comparison level: a full-radius-trained policy is a credible route because it removes the measured inner-band acquisition deficit and raises matched-panel success by 27 episodes. This does not establish full-radius exposure as the cause because exposure and learned artifact changed together, and M2/M3 contain no branch, action, joint, contact, or substep traces. The remaining failures are consistent with a stabilization/control or branch/angle-dependent explanation, but compiled dynamics, contacts/limits, and endpoint-versus-continuous hold semantics remain unresolved alternatives. The outer-band hold regression means full-radius exposure is not sufficient by itself, not that the exposure direction should be discarded.",
-          "handoff_question": "Can a policy developed while retaining 6-20 cm target exposure reduce the residual no-reach and hold-interruption failures across the outer-radius and negative-angle strata enough to make the 98% official objective credible, and do trajectory diagnostics attribute any improvement to controllable stabilization or branch behavior rather than compiled-dynamics, contact/limit, or sampling-semantics artifacts?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a policy developed while retaining 6-20 cm target exposure reduce the residual no-reach and hold-interruption failures across the outer-radius and negative-angle strata enough to make the 98% official objective credible, and do trajectory diagnostics attribute any improvement to controllable stabilization or branch behavior rather than compiled-dynamics, contact/limit, or sampling-semantics artifacts?",
-          "rationale": "Opening one bounded inquiry is preferable to requesting assessment now because T2 remains 5.625 percentage points below the development-panel equivalent of the 98% target, and M3 identifies a concentrated but unresolved failure set: 4 no-first-reach episodes, 14 episodes with interruptions, 84.6% success in [18,20] cm, and 87.2% success in [-180,-90) degrees. The artifact comparison supports retaining full-radius exposure, but it does not establish exposure as causal or establish the inherited claim that the remaining gap is chiefly stabilization. The observed negative-angle pattern could reflect acquisition, branch selection, control, limits, contacts, or endpoint sampling; trajectory-level evidence can change the direction among those alternatives. The late T2 proxy improvement from 0.43 to 0.58 while T1 reached a higher proxy and the terminal T2 artifact still measured 151/160 further shows that proxy rank cannot justify assessment or choose the intervention. A bounded effort that preserves the proven acquisition benefit while testing complete behavior and its mechanism has meaningful expected contribution at lower commitment than ending the campaign on an unready candidate.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry when completed evidence from a retained 6-20 cm candidate and its diagnostics either shows a materially improved complete-episode result with preserved inner-band acquisition and attributes the residual failures primarily to controllable stabilization or branch behavior, or shows persistent failures tied to compiled dynamics, contacts/limits, or control-step versus continuous semantics, or fails to discriminate despite the bounded work; in each case carry the resulting consequence into goal review rather than treating an unresolved cause as a success.",
-        "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T2 is the strongest measured candidate at 151/160 on a distinct development panel, but its 9 failures include four no-first-reach episodes and failures concentrated in outer-radius and negative-angle strata; resolving whether these failures are learnable control behavior or a plant/measurement constraint directly determines whether bounded development can plausibly close the 45-episode-equivalent gap before official assessment.",
-        "question": "Can a policy developed while retaining 6-20 cm target exposure reduce the residual no-reach and hold-interruption failures across the outer-radius and negative-angle strata enough to make the 98% official objective credible, and do trajectory diagnostics attribute any improvement to controllable stabilization or branch behavior rather than compiled-dynamics, contact/limit, or sampling-semantics artifacts?",
-        "rationale": "Opening one bounded inquiry is preferable to requesting assessment now because T2 remains 5.625 percentage points below the development-panel equivalent of the 98% target, and M3 identifies a concentrated but unresolved failure set: 4 no-first-reach episodes, 14 episodes with interruptions, 84.6% success in [18,20] cm, and 87.2% success in [-180,-90) degrees. The artifact comparison supports retaining full-radius exposure, but it does not establish exposure as causal or establish the inherited claim that the remaining gap is chiefly stabilization. The observed negative-angle pattern could reflect acquisition, branch selection, control, limits, contacts, or endpoint sampling; trajectory-level evidence can change the direction among those alternatives. The late T2 proxy improvement from 0.43 to 0.58 while T1 reached a higher proxy and the terminal T2 artifact still measured 151/160 further shows that proxy rank cannot justify assessment or choose the intervention. A bounded effort that preserves the proven acquisition benefit while testing complete behavior and its mechanism has meaningful expected contribution at lower commitment than ending the campaign on an unready candidate."
-      }
-    },
-    "request_fingerprint": "08a3d2eb06e9958f398fbd11db48083114440416ce1d7e7de7a61d644cf0294a",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T2:checkpoint-120832, assigned by E5 from M2/M3; it is the strongest measured artifact at 151/160 (94.375%) but is not official-goal certification. T1:checkpoint-120832 remains the measured 14-20 cm baseline comparison at 124/160 on the M2 panel; T1's earlier M1 panel was 110/160. Working: none. No candidate has completed the protected official assessment.",
     "completed_operations": [
