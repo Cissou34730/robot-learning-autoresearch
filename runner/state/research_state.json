@@ -193,7 +193,8 @@
       "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
       "evaluation_artifacts": [
         "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/task-reference-5c83824d-8c09-447e-b338-e3e036a23cbf-m2-T1-checkpoint-120832-task-reference-v1.json",
-        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m3-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m4-T1-checkpoint-120832-160ep-seed4400-4e7f9d0fbcf5.json"
       ],
       "fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
       "id": "T1:checkpoint-120832",
@@ -842,7 +843,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 3,
+    "measurement": 4,
     "session": 3,
     "training": 1
   },
@@ -1719,9 +1720,448 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:13:22Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Re-measure the frozen baseline PPO candidate with the completed research-evaluation diagnostics on a disjoint development panel.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+            "seed": 4400
+          }
+        ],
+        "rationale": "M3 was run before the evaluator instrumentation and therefore cannot close I1 despite recording first reach and hold streaks. The evaluator now records radius band, first-entry endpoint speed, elbow branch at entry, and explicit failure class while preserving the unchanged candidate and task mechanics. A disjoint seed range avoids reusing M3 episodes and provides the required radius- and branch-stratified evidence to decide whether the 68.75% baseline gap is stabilization-dominant, inner-radius-dominant, or coupled."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m4-T1-checkpoint-120832-160ep-seed4400-4e7f9d0fbcf5.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "entry_elbow_angle_rad",
+                      "entry_endpoint_speed_m_s",
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "realized_elbow_branch",
+                      "target_angle_degrees",
+                      "target_radius_band",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/entry_endpoint_speed_m_s",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/entry_elbow_angle_rad",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/realized_elbow_branch",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "91abf13675c3087d599e35660e6ca77ad33c05bcd228a23a14e586bc0d3194cf",
+              "evaluation_semantics": "4e7f9d0fbcf5",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4400,
+              "success_percent": 73.75,
+              "successes": 118
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "4e7f9d0fbcf5",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+          "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+          "seed": 4400
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m4-T1-checkpoint-120832-160ep-seed4400-4e7f9d0fbcf5.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "entry_elbow_angle_rad",
+                    "entry_endpoint_speed_m_s",
+                    "episode",
+                    "episode_seed",
+                    "failure_class",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "realized_elbow_branch",
+                    "target_angle_degrees",
+                    "target_radius_band",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/entry_endpoint_speed_m_s",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/entry_elbow_angle_rad",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/realized_elbow_branch",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "91abf13675c3087d599e35660e6ca77ad33c05bcd228a23a14e586bc0d3194cf",
+            "evaluation_semantics": "4e7f9d0fbcf5",
+            "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4400,
+            "success_percent": 73.75,
+            "successes": 118
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m4-T1-checkpoint-120832-160ep-seed4400-4e7f9d0fbcf5.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "entry_elbow_angle_rad",
+                      "entry_endpoint_speed_m_s",
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "realized_elbow_branch",
+                      "target_angle_degrees",
+                      "target_radius_band",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/entry_endpoint_speed_m_s",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/entry_elbow_angle_rad",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/realized_elbow_branch",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "91abf13675c3087d599e35660e6ca77ad33c05bcd228a23a14e586bc0d3194cf",
+              "evaluation_semantics": "4e7f9d0fbcf5",
+              "model_fingerprint": "0476925499da2f1ad3312fa4daaab38cb170b5365bc88156957cbcde7efa147b",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4400,
+              "success_percent": 73.75,
+              "successes": 118
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Re-measure the frozen baseline PPO candidate with the completed research-evaluation diagnostics on a disjoint development panel.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "baseline PPO diagnostic panel after evaluator instrumentation",
+            "seed": 4400
+          }
+        ],
+        "rationale": "M3 was run before the evaluator instrumentation and therefore cannot close I1 despite recording first reach and hold streaks. The evaluator now records radius band, first-entry endpoint speed, elbow branch at entry, and explicit failure class while preserving the unchanged candidate and task mechanics. A disjoint seed range avoids reusing M3 episodes and provides the required radius- and branch-stratified evidence to decide whether the 68.75% baseline gap is stabilization-dominant, inner-radius-dominant, or coupled."
+      }
+    },
+    "request_fingerprint": "dac613909cdb6bb88a1cdd94beb995994c395df653402dabe1c9b32761465c78",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate exists. Working and best-known roles remain empty; M1 is a plant measurement and E2 records the bounded inquiry, neither is a policy artifact.",
     "completed_operations": [
@@ -1762,7 +2202,8 @@
     "operation_ids": [
       "T1",
       "M2",
-      "M3"
+      "M3",
+      "M4"
     ],
     "scientific_parent_commit": "aa9d490b893d89b004268c29cce8908d8c556f0b"
   },
