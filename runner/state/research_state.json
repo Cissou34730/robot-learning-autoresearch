@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 5,
+    "event": 6,
     "inquiry": 1,
     "measurement": 4,
     "session": 3,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1915,47 +1915,171 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:15:02Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E4 on evidence from T1, M2, M3, and M4. It is a baseline artifact at 73.75% on M4, not a goal-certified policy. Working role remains empty; no competing candidate exists. E5 closed I1 with the bounded conclusion that inner-radius failures dominate this recipe's measured gap.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "cumulative_resource_use": "Across the campaign: M1 used one exact-runtime compiled-model measurement with 16 deterministic signed unit-pulse experiments and no training/evaluation episodes; T1 used one fresh 120,000-step allocation and completed 120,832 rollout steps, producing 24 archived checkpoints; M2 used 200 task-reference episodes; M3 used 160 research-evaluation episodes; M4 used 160 disjoint research-evaluation episodes after a research-only evaluator instrumentation change; E4 assigned the best-known role and E5 closed I1. No official assessment episodes have been used.",
+        "current_goal_gap": "No official assessment has been requested. The best-known baseline candidate reaches 73.75% on the instrumented development panel M4 (and 73.5% on M2), leaving a large unmeasured official-goal gap. Its failures are concentrated in the uncovered 0.06-0.14 m inner-radius interval, where 34 of 79 episodes never reached tolerance and only 40 succeeded.",
+        "current_synthesis": "M1 established that the exact native MuJoCo plant is responsive under bounded direct torque, making stabilization physically plausible but not policy-causal. T1 tested the unchanged PPO recipe trained only on 0.14-0.20 m and showed late learning on that exposed distribution, with a 0.96 terminal training proxy; this proxy is not development performance. M2 and M3 showed held-out success of 73.5% and 68.75%, while M4 repeated the candidate on a disjoint panel after adding research-only diagnostics. In M4, inner 6-14 cm produced 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm produced 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. The five interrupted episodes had mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successful entries, so the high-entry-speed, short-streak stabilization signature is not the dominant explanation for this tested baseline. This conclusion is limited to the unchanged PPO recipe, candidate, and measured panels: it supports an inner-radius coverage/generalization bottleneck, does not prove that coverage expansion alone will reach 98%, and leaves history-aware observation sufficiency and secondary stabilization effects unresolved.",
+        "decision_frontier": "The next consequential decision is whether expanding baseline PPO target exposure from 0.14-0.20 m to the full official 0.06-0.20 m interval materially improves complete-hold success while preserving the already strong outer-radius behavior. A matched training-and-development comparison using the same outcome and radius/branch/hold diagnostics would test that route; improvement concentrated in inner-radius no-reach failures would support coverage as the next direction, while persistent inner-radius failures or newly dominant interruptions would redirect work toward dynamics-aware stabilization or observation/history design. The current evidence does not justify official assessment or claim that missing task memory is causal.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the fixed official distribution, with an uninterrupted two-second, one-centimeter hold. I1 measured the first learned candidate without consuming the official assessment and identified the first intervention direction needed to reduce the current gap.",
+        "next_direction_or_closure": "I1 is closed and should return to goal review. Do not request the protected official assessment for the 73.75% best-known candidate. The next credible direction is a controlled training-coverage intervention over the full official radius interval, followed by the same held-out diagnostics; keep stabilization and observation sufficiency as secondary alternatives rather than treating them as resolved.",
+        "next_question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No candidate exists. Working and best-known roles remain empty; M1 is a plant measurement and E2 records the bounded inquiry, neither is a policy artifact.",
-    "completed_operations": [
-      "E2"
-    ],
-    "cumulative_resource_use": "One completed physical measurement (M1): exact-runtime compiled-model inspection and 16 deterministic signed unit-pulse experiments across four postures, with no training steps or evaluation episodes. One completed inquiry-opening event (E2); no training candidate or policy evaluation resource has yet been used.",
-    "current_goal_gap": "No learned candidate has yet been trained, evaluated, or assigned a role, so official success remains entirely unmeasured. The immediate gap is a baseline policy and development evidence that separates first reach from complete hold across the official radius interval, especially 0.06-0.14 m.",
-    "current_synthesis": "M1 shows that the exact native MuJoCo plant is responsive under bounded direct torque: the 0.020 s control interval and compiled actuator response can produce substantial joint and endpoint motion, while zero input removes velocity without returning the endpoint to its prior pose. This supports stabilization as a physically plausible constraint, but does not establish it as the cause of learned-policy failure. The baseline's policy-level gap, including the possible effect of omitted inner-radius training coverage and the sufficiency of the stateless observation, is unresolved because no policy has been tested. The goal-review correction is therefore to treat stabilization as a prior to discriminate, not as an established policy diagnosis.",
-    "decision_frontier": "The next decision is whether the current PPO recipe can produce reliable complete holds and, if not, whether failures are dominated by responsive-dynamics stabilization, inner-radius generalization, or both. A baseline candidate measured on a non-overlapping task-reference panel with radius- and branch-stratified success, first reach, entry velocity, maximum held streak, interruptions, minimum/final distance, and failure classes will resolve this. High first reach with short streaks or high entry velocity supports stabilization-first work; stable outer-radius behavior with concentrated 0.06-0.14 m failures supports expanding training coverage; concurrent signatures support a coupled intervention. If neither appears, the observed failure pattern must remain at artifact-comparison level rather than being assigned to an untested mechanism.",
-    "evidence_references": [
-      "M1",
-      "E2"
-    ],
-    "human_goal_connection": "The goal is at least 196 successful episodes out of 200 under the fixed official distribution, with uninterrupted two-second holds. The opened inquiry directly measures the first learned policy's complete-hold behavior and identifies whether the next intervention should address stabilization, inner-radius coverage, or both, without changing the protected task or official assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Proceed within inquiry I1 by training the unchanged baseline PPO recipe, then measure the resulting candidate on a distinct task-reference development panel with the specified target-stratified complete-hold diagnostics. Do not modify observations, reward, action semantics, or training radii until the baseline failure signature is observed. Close the inquiry only after that measurement supports one of the stated mechanisms or records that neither is supported and preserves the unresolved alternative for the next decision.",
-    "next_question": "Does the current baseline PPO implementation produce a policy whose official-distribution gap is primarily responsive-dynamics stabilization failure, inner-radius generalization failure, or both, when measured with target-stratified hold diagnostics?",
-    "scientific_commit": "9206eb46aaef31e16990362b5aec5f49dd682e33",
-    "session_id": "S2"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "61df7cdc694d46ce89195b4014675bfca5d30cc4",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "aa9d490b893d89b004268c29cce8908d8c556f0b",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E4 on evidence from T1, M2, M3, and M4. It is a baseline artifact at 73.75% on M4, not a goal-certified policy. Working role remains empty; no competing candidate exists. E5 closed I1 with the bounded conclusion that inner-radius failures dominate this recipe's measured gap.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "cumulative_resource_use": "Across the campaign: M1 used one exact-runtime compiled-model measurement with 16 deterministic signed unit-pulse experiments and no training/evaluation episodes; T1 used one fresh 120,000-step allocation and completed 120,832 rollout steps, producing 24 archived checkpoints; M2 used 200 task-reference episodes; M3 used 160 research-evaluation episodes; M4 used 160 disjoint research-evaluation episodes after a research-only evaluator instrumentation change; E4 assigned the best-known role and E5 closed I1. No official assessment episodes have been used.",
+        "current_goal_gap": "No official assessment has been requested. The best-known baseline candidate reaches 73.75% on the instrumented development panel M4 (and 73.5% on M2), leaving a large unmeasured official-goal gap. Its failures are concentrated in the uncovered 0.06-0.14 m inner-radius interval, where 34 of 79 episodes never reached tolerance and only 40 succeeded.",
+        "current_synthesis": "M1 established that the exact native MuJoCo plant is responsive under bounded direct torque, making stabilization physically plausible but not policy-causal. T1 tested the unchanged PPO recipe trained only on 0.14-0.20 m and showed late learning on that exposed distribution, with a 0.96 terminal training proxy; this proxy is not development performance. M2 and M3 showed held-out success of 73.5% and 68.75%, while M4 repeated the candidate on a disjoint panel after adding research-only diagnostics. In M4, inner 6-14 cm produced 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm produced 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. The five interrupted episodes had mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successful entries, so the high-entry-speed, short-streak stabilization signature is not the dominant explanation for this tested baseline. This conclusion is limited to the unchanged PPO recipe, candidate, and measured panels: it supports an inner-radius coverage/generalization bottleneck, does not prove that coverage expansion alone will reach 98%, and leaves history-aware observation sufficiency and secondary stabilization effects unresolved.",
+        "decision_frontier": "The next consequential decision is whether expanding baseline PPO target exposure from 0.14-0.20 m to the full official 0.06-0.20 m interval materially improves complete-hold success while preserving the already strong outer-radius behavior. A matched training-and-development comparison using the same outcome and radius/branch/hold diagnostics would test that route; improvement concentrated in inner-radius no-reach failures would support coverage as the next direction, while persistent inner-radius failures or newly dominant interruptions would redirect work toward dynamics-aware stabilization or observation/history design. The current evidence does not justify official assessment or claim that missing task memory is causal.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the fixed official distribution, with an uninterrupted two-second, one-centimeter hold. I1 measured the first learned candidate without consuming the official assessment and identified the first intervention direction needed to reduce the current gap.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed and should return to goal review. Do not request the protected official assessment for the 73.75% best-known candidate. The next credible direction is a controlled training-coverage intervention over the full official radius interval, followed by the same held-out diagnostics; keep stabilization and observation sufficiency as secondary alternatives rather than treating them as resolved.",
+        "next_question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "f76b0d64-3cc5-4296-b7e6-8aef6d386c18",
+        "campaign_id": "5c83824d-8c09-447e-b338-e3e036a23cbf",
+        "campaign_usage": "8m05s | 15.79 AIU | prompt 1.7m (82% cached) | output 54.1k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "52s | 1.36 AIU | prompt 76k (60% cached) | output 6.4k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "eed5e07968f3136d8a7b1c57c97c3f13514f8848",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "dec472061f0dad47a7364867dcdb08cdaf185db1b799e305006c651e345bf011",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
     },
-    "backend_session_id": "f76b0d64-3cc5-4296-b7e6-8aef6d386c18",
-    "id": "S3",
+    "failure": null,
+    "id": "E6",
     "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the current baseline PPO implementation produce a policy whose official-distribution gap is primarily responsive-dynamics stabilization failure, inner-radius generalization failure, or both, when measured with target-stratified hold diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E4 on evidence from T1, M2, M3, and M4. It is a baseline artifact at 73.75% on M4, not a goal-certified policy. Working role remains empty; no competing candidate exists. E5 closed I1 with the bounded conclusion that inner-radius failures dominate this recipe's measured gap.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "cumulative_resource_use": "Across the campaign: M1 used one exact-runtime compiled-model measurement with 16 deterministic signed unit-pulse experiments and no training/evaluation episodes; T1 used one fresh 120,000-step allocation and completed 120,832 rollout steps, producing 24 archived checkpoints; M2 used 200 task-reference episodes; M3 used 160 research-evaluation episodes; M4 used 160 disjoint research-evaluation episodes after a research-only evaluator instrumentation change; E4 assigned the best-known role and E5 closed I1. No official assessment episodes have been used.",
+        "current_goal_gap": "No official assessment has been requested. The best-known baseline candidate reaches 73.75% on the instrumented development panel M4 (and 73.5% on M2), leaving a large unmeasured official-goal gap. Its failures are concentrated in the uncovered 0.06-0.14 m inner-radius interval, where 34 of 79 episodes never reached tolerance and only 40 succeeded.",
+        "current_synthesis": "M1 established that the exact native MuJoCo plant is responsive under bounded direct torque, making stabilization physically plausible but not policy-causal. T1 tested the unchanged PPO recipe trained only on 0.14-0.20 m and showed late learning on that exposed distribution, with a 0.96 terminal training proxy; this proxy is not development performance. M2 and M3 showed held-out success of 73.5% and 68.75%, while M4 repeated the candidate on a disjoint panel after adding research-only diagnostics. In M4, inner 6-14 cm produced 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm produced 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. The five interrupted episodes had mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successful entries, so the high-entry-speed, short-streak stabilization signature is not the dominant explanation for this tested baseline. This conclusion is limited to the unchanged PPO recipe, candidate, and measured panels: it supports an inner-radius coverage/generalization bottleneck, does not prove that coverage expansion alone will reach 98%, and leaves history-aware observation sufficiency and secondary stabilization effects unresolved.",
+        "decision_frontier": "The next consequential decision is whether expanding baseline PPO target exposure from 0.14-0.20 m to the full official 0.06-0.20 m interval materially improves complete-hold success while preserving the already strong outer-radius behavior. A matched training-and-development comparison using the same outcome and radius/branch/hold diagnostics would test that route; improvement concentrated in inner-radius no-reach failures would support coverage as the next direction, while persistent inner-radius failures or newly dominant interruptions would redirect work toward dynamics-aware stabilization or observation/history design. The current evidence does not justify official assessment or claim that missing task memory is causal.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E4",
+          "E5"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the fixed official distribution, with an uninterrupted two-second, one-centimeter hold. I1 measured the first learned candidate without consuming the official assessment and identified the first intervention direction needed to reduce the current gap.",
+        "next_direction_or_closure": "I1 is closed and should return to goal review. Do not request the protected official assessment for the 73.75% best-known candidate. The next credible direction is a controlled training-coverage intervention over the full official radius interval, followed by the same held-out diagnostics; keep stabilization and observation sufficiency as secondary alternatives rather than treating them as resolved.",
+        "next_question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?"
+      }
+    },
+    "request_fingerprint": "f75f2af9d67cf4bc6900f752cc1ff07190d0d5ab43ae124ae3dfd9872a84f0b2",
+    "session_id": "S3",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "Best-known: T1:checkpoint-120832, explicitly assigned by E4 on evidence from T1, M2, M3, and M4. It is a baseline artifact at 73.75% on M4, not a goal-certified policy. Working role remains empty; no competing candidate exists. E5 closed I1 with the bounded conclusion that inner-radius failures dominate this recipe's measured gap.",
+    "completed_operations": [
       "T1",
       "M2",
       "M3",
@@ -1963,7 +2087,32 @@
       "E4",
       "E5"
     ],
-    "scientific_parent_commit": "aa9d490b893d89b004268c29cce8908d8c556f0b"
+    "cumulative_resource_use": "Across the campaign: M1 used one exact-runtime compiled-model measurement with 16 deterministic signed unit-pulse experiments and no training/evaluation episodes; T1 used one fresh 120,000-step allocation and completed 120,832 rollout steps, producing 24 archived checkpoints; M2 used 200 task-reference episodes; M3 used 160 research-evaluation episodes; M4 used 160 disjoint research-evaluation episodes after a research-only evaluator instrumentation change; E4 assigned the best-known role and E5 closed I1. No official assessment episodes have been used.",
+    "current_goal_gap": "No official assessment has been requested. The best-known baseline candidate reaches 73.75% on the instrumented development panel M4 (and 73.5% on M2), leaving a large unmeasured official-goal gap. Its failures are concentrated in the uncovered 0.06-0.14 m inner-radius interval, where 34 of 79 episodes never reached tolerance and only 40 succeeded.",
+    "current_synthesis": "M1 established that the exact native MuJoCo plant is responsive under bounded direct torque, making stabilization physically plausible but not policy-causal. T1 tested the unchanged PPO recipe trained only on 0.14-0.20 m and showed late learning on that exposed distribution, with a 0.96 terminal training proxy; this proxy is not development performance. M2 and M3 showed held-out success of 73.5% and 68.75%, while M4 repeated the candidate on a disjoint panel after adding research-only diagnostics. In M4, inner 6-14 cm produced 40 successes, 34 no-reach failures, and 5 hold-interrupted failures out of 79; outer 14-20 cm produced 78 successes and 3 no-reach failures out of 81. All 123 reached episodes used the open elbow branch. The five interrupted episodes had mean entry endpoint speed 0.104 m/s versus 0.455 m/s for successful entries, so the high-entry-speed, short-streak stabilization signature is not the dominant explanation for this tested baseline. This conclusion is limited to the unchanged PPO recipe, candidate, and measured panels: it supports an inner-radius coverage/generalization bottleneck, does not prove that coverage expansion alone will reach 98%, and leaves history-aware observation sufficiency and secondary stabilization effects unresolved.",
+    "decision_frontier": "The next consequential decision is whether expanding baseline PPO target exposure from 0.14-0.20 m to the full official 0.06-0.20 m interval materially improves complete-hold success while preserving the already strong outer-radius behavior. A matched training-and-development comparison using the same outcome and radius/branch/hold diagnostics would test that route; improvement concentrated in inner-radius no-reach failures would support coverage as the next direction, while persistent inner-radius failures or newly dominant interruptions would redirect work toward dynamics-aware stabilization or observation/history design. The current evidence does not justify official assessment or claim that missing task memory is causal.",
+    "evidence_references": [
+      "M1",
+      "T1",
+      "M2",
+      "M3",
+      "M4",
+      "E4",
+      "E5"
+    ],
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the fixed official distribution, with an uninterrupted two-second, one-centimeter hold. I1 measured the first learned candidate without consuming the official assessment and identified the first intervention direction needed to reduce the current gap.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed and should return to goal review. Do not request the protected official assessment for the 73.75% best-known candidate. The next credible direction is a controlled training-coverage intervention over the full official radius interval, followed by the same held-out diagnostics; keep stabilization and observation sufficiency as secondary alternatives rather than treating them as resolved.",
+    "next_question": "Does expanding the PPO training target-radius distribution to the full official 0.06-0.20 m interval, without changing task mechanics or policy observations, improve complete-hold success toward 98% while preserving the baseline's outer-radius performance?",
+    "scientific_commit": "eed5e07968f3136d8a7b1c57c97c3f13514f8848",
+    "session_id": "S3"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "61df7cdc694d46ce89195b4014675bfca5d30cc4",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
