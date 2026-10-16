@@ -36,3 +36,4 @@
 | E23 | inquiry | I6 | completed |
 | E24 | checkpoint | - | checkpointed |
 | T4 | training | I6 | completed |
+| M7 | measurement | I6 | completed |
