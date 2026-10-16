@@ -1648,16 +1648,16 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 6,
-    "session": 3,
+    "session": 4,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -3472,9 +3472,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T12:52:37Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official 200-episode assessment for the explicit best-known artifact T1:checkpoint-120832. T1 is the only complete policy with strong development evidence: it was trained with the full official 0.06-0.20 m radial exposure and achieved 150/160 = 93.75% on the held-out full-radius panel, reproduced on the identical panel with schema-7 diagnostics (M3, M4, M5), while preserving the official target distribution, 1 cm tolerance, 100 consecutive post-block hold checks, and unchanged physics and action timing. The physical model is supported in the tested regime: official targets have a feasible IK branch, failures showed no contacts, and the residual failures were structured mainly as branch/limit trajectory failures (7/10) with a consequential high-residual-velocity/hold-interruption class (2/10 plus one mixed case). T2 does not provide a viable replacement or a basis for another inquiry: its signed-margin observation-only implementation had zero training success at every checkpoint and only 25/160 = 15.625% development success, with unequal saved components/runtime, so this is a negative result for that fresh PPO artifact, not evidence against branch-aware control generally. No braking intervention has been tested, and the causal remedy remains unresolved; those are preserved limitations rather than reasons to treat an untested variant as a better candidate. The development score is below 98%, but the contract does not make that a barrier to assessment, and the protected 200-episode result is the direct campaign-level decision needed now. Further bounded work has no demonstrated viable complete artifact and would spend resources on an unvalidated intervention, whereas assessment of T1 directly determines whether the human goal is met or the campaign ends in failure."
+      },
+      "result": {
+        "model": "T1:checkpoint-120832",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T1:checkpoint-120832",
+        "reason": "Request the protected official 200-episode assessment for the explicit best-known artifact T1:checkpoint-120832. T1 is the only complete policy with strong development evidence: it was trained with the full official 0.06-0.20 m radial exposure and achieved 150/160 = 93.75% on the held-out full-radius panel, reproduced on the identical panel with schema-7 diagnostics (M3, M4, M5), while preserving the official target distribution, 1 cm tolerance, 100 consecutive post-block hold checks, and unchanged physics and action timing. The physical model is supported in the tested regime: official targets have a feasible IK branch, failures showed no contacts, and the residual failures were structured mainly as branch/limit trajectory failures (7/10) with a consequential high-residual-velocity/hold-interruption class (2/10 plus one mixed case). T2 does not provide a viable replacement or a basis for another inquiry: its signed-margin observation-only implementation had zero training success at every checkpoint and only 25/160 = 15.625% development success, with unequal saved components/runtime, so this is a negative result for that fresh PPO artifact, not evidence against branch-aware control generally. No braking intervention has been tested, and the causal remedy remains unresolved; those are preserved limitations rather than reasons to treat an untested variant as a better candidate. The development score is below 98%, but the contract does not make that a barrier to assessment, and the protected 200-episode result is the direct campaign-level decision needed now. Further bounded work has no demonstrated viable complete artifact and would spend resources on an unvalidated intervention, whereas assessment of T1 directly determines whether the human goal is met or the campaign ends in failure.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "c3645a7b-438a-4216-ae1f-29f0e683a334",
+        "campaign_id": "4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264",
+        "campaign_usage": "25m31s | 44.32 AIU | prompt 7m (90% cached) | output 149.3k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "model": "T1:checkpoint-120832",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official 200-episode assessment for the explicit best-known artifact T1:checkpoint-120832. T1 is the only complete policy with strong development evidence: it was trained with the full official 0.06-0.20 m radial exposure and achieved 150/160 = 93.75% on the held-out full-radius panel, reproduced on the identical panel with schema-7 diagnostics (M3, M4, M5), while preserving the official target distribution, 1 cm tolerance, 100 consecutive post-block hold checks, and unchanged physics and action timing. The physical model is supported in the tested regime: official targets have a feasible IK branch, failures showed no contacts, and the residual failures were structured mainly as branch/limit trajectory failures (7/10) with a consequential high-residual-velocity/hold-interruption class (2/10 plus one mixed case). T2 does not provide a viable replacement or a basis for another inquiry: its signed-margin observation-only implementation had zero training success at every checkpoint and only 25/160 = 15.625% development success, with unequal saved components/runtime, so this is a negative result for that fresh PPO artifact, not evidence against branch-aware control generally. No braking intervention has been tested, and the causal remedy remains unresolved; those are preserved limitations rather than reasons to treat an untested variant as a better candidate. The development score is below 98%, but the contract does not make that a barrier to assessment, and the protected 200-episode result is the direct campaign-level decision needed now. Further bounded work has no demonstrated viable complete artifact and would spend resources on an unvalidated intervention, whereas assessment of T1 directly determines whether the human goal is met or the campaign ends in failure."
+      }
+    },
+    "request_fingerprint": "c68723e3e8f077df5d3393531c026b1bc0eee7322d3f58eca13726cfbfa9db5e",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 using M3/M4 evidence and still supported by M5; it is 93.75% on the development panel and has not been officially assessed. T2:checkpoint-120832 is an experimental branch-feasibility observation variant with 15.625% development success in M6 and is not best-known. No working or retained candidate. T2's complete artifact is not scientifically adequate for selection, and the terminal checkpoint is not privileged by position.",
     "completed_operations": [
@@ -3515,5 +3568,9 @@
     "status": "ready"
   },
   "scientific_session": null,
-  "terminal_state": null
+  "terminal_state": {
+    "model": "T1:checkpoint-120832",
+    "reason": "Request the protected official 200-episode assessment for the explicit best-known artifact T1:checkpoint-120832. T1 is the only complete policy with strong development evidence: it was trained with the full official 0.06-0.20 m radial exposure and achieved 150/160 = 93.75% on the held-out full-radius panel, reproduced on the identical panel with schema-7 diagnostics (M3, M4, M5), while preserving the official target distribution, 1 cm tolerance, 100 consecutive post-block hold checks, and unchanged physics and action timing. The physical model is supported in the tested regime: official targets have a feasible IK branch, failures showed no contacts, and the residual failures were structured mainly as branch/limit trajectory failures (7/10) with a consequential high-residual-velocity/hold-interruption class (2/10 plus one mixed case). T2 does not provide a viable replacement or a basis for another inquiry: its signed-margin observation-only implementation had zero training success at every checkpoint and only 25/160 = 15.625% development success, with unequal saved components/runtime, so this is a negative result for that fresh PPO artifact, not evidence against branch-aware control generally. No braking intervention has been tested, and the causal remedy remains unresolved; those are preserved limitations rather than reasons to treat an untested variant as a better candidate. The development score is below 98%, but the contract does not make that a barrier to assessment, and the protected 200-episode result is the direct campaign-level decision needed now. Further bounded work has no demonstrated viable complete artifact and would spend resources on an unvalidated intervention, whereas assessment of T1 directly determines whether the human goal is met or the campaign ends in failure.",
+    "status": "official_assessment_requested"
+  }
 }

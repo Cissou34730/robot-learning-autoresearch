@@ -16,3 +16,4 @@
 | M6 | measurement | I1 | completed |
 | E5 | inquiry | I1 | completed |
 | E6 | checkpoint | I1 | checkpointed |
+| E7 | campaign_conclusion | - | official_assessment_requested |
