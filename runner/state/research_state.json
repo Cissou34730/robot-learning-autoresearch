@@ -1586,47 +1586,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a full-radius-trained candidate has been compared with T1:checkpoint-120832 on identical non-overlapping official-distribution development seeds with episode success, radius- and angle-stratified first reach and minimum distance, maximum held steps, interruptions, and hold continuity. Continue full-radius exposure if inner-band acquisition improves materially without broad hold regression; redirect toward stabilization, branch/control, or dynamic/substep investigation if acquisition does not improve or hold failures become dominant. An inconclusive result may close the inquiry while preserving those unresolved alternatives.",
-          "goal_connection": "The best-known candidate reaches only 110/160 (68.75%) on the official-distribution development panel, far below the 196/200 objective. M1 shows 42/160 episodes with no first reach and 12/160 with hold interruptions, while T1 trained only on 14-20 cm targets. Testing full 6-20 cm exposure directly targets the largest observed acquisition gap without changing the protected task or success criterion.",
-          "handoff_conclusion": "Established observations: T1 trained the existing PPO recipe on only 14-20 cm targets for 120,000 requested steps and completed 120,832 actual steps. Its training proxy success rose late from 0.50 at 90,112 steps to 0.97 at 117,760-119,808 and 0.96 at 120,832; these are learning-proxy facts, not development performance. M1 evaluated the two late artifacts on the same 160 official-distribution seeds: T1:checkpoint-115712 achieved 105/160 (65.625%) and T1:checkpoint-120832 achieved 110/160 (68.75%), with 13 discordant episodes, 9 paired wins for the latter and 4 for the former. In the detailed artifacts, many failures at inner radii from roughly 6-13 cm have no first reach and large minimum distance; most episodes that do enter tolerance complete the 100-sample hold, but some reached episodes show repeated interruptions and do not succeed. Interpretation: the current evidence makes omitted inner-band exposure and radius/branch conditioning the leading route-relevant explanation for the dominant gap, while stabilization under the 50 Hz zero-order-held control loop remains a consequential secondary explanation. This is an artifact-level association, not a causal claim: the baseline recipe did not vary exposure independently of the learned artifact, and no joint/action/substep/contact traces or branch labels were recorded. Unknown compiled dynamics and the endpoint-versus-continuous hold distinction therefore remain unresolved, but they need not block the next exposure comparison unless full-radius training fails to improve acquisition or introduces broad hold failures.",
-          "handoff_question": "Should the campaign open a bounded inquiry testing whether full official-radius training (6-20 cm), compared with the measured 14-20 cm baseline under matched evaluation, is a credible route toward the 98% uninterrupted-hold objective?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Should the campaign open a bounded inquiry testing whether full official-radius training (6-20 cm), compared with the measured 14-20 cm baseline under matched evaluation, is a credible route toward the 98% uninterrupted-hold objective?",
-          "rationale": "Opening is preferable to requesting the official assessment because the only measured candidate is 50 successes short of the development-panel equivalent of the 98% threshold, and the protected assessment would terminate the campaign without testing the most direct route suggested by the evidence. The result will be an artifact-level comparison, not a causal claim about exposure alone: T1 changed neither exposure independently nor the learned artifact, and M1 lacks branch, action, joint, contact, and substep traces. Those limits do not block this bounded candidate comparison because its decision criterion is whether a complete full-radius-trained policy improves the dominant observed inner-band acquisition failures while preserving the already competent hold behavior. The physical model also leaves compiled dynamics and endpoint-versus-continuous semantics unresolved; they remain redirect conditions rather than prerequisites unless the exposure comparison fails to explain the gap.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E3",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a full-radius-trained candidate has been compared with T1:checkpoint-120832 on identical non-overlapping official-distribution development seeds with episode success, radius- and angle-stratified first reach and minimum distance, maximum held steps, interruptions, and hold continuity. Continue full-radius exposure if inner-band acquisition improves materially without broad hold regression; redirect toward stabilization, branch/control, or dynamic/substep investigation if acquisition does not improve or hold failures become dominant. An inconclusive result may close the inquiry while preserving those unresolved alternatives.",
-        "goal_connection": "The best-known candidate reaches only 110/160 (68.75%) on the official-distribution development panel, far below the 196/200 objective. M1 shows 42/160 episodes with no first reach and 12/160 with hold interruptions, while T1 trained only on 14-20 cm targets. Testing full 6-20 cm exposure directly targets the largest observed acquisition gap without changing the protected task or success criterion.",
-        "question": "Should the campaign open a bounded inquiry testing whether full official-radius training (6-20 cm), compared with the measured 14-20 cm baseline under matched evaluation, is a credible route toward the 98% uninterrupted-hold objective?",
-        "rationale": "Opening is preferable to requesting the official assessment because the only measured candidate is 50 successes short of the development-panel equivalent of the 98% threshold, and the protected assessment would terminate the campaign without testing the most direct route suggested by the evidence. The result will be an artifact-level comparison, not a causal claim about exposure alone: T1 changed neither exposure independently nor the learned artifact, and M1 lacks branch, action, joint, contact, and substep traces. Those limits do not block this bounded candidate comparison because its decision criterion is whether a complete full-radius-trained policy improves the dominant observed inner-band acquisition failures while preserving the already competent hold behavior. The physical model also leaves compiled dynamics and endpoint-versus-continuous semantics unresolved; they remain redirect conditions rather than prerequisites unless the exposure comparison fails to explain the gap."
-      }
-    },
-    "request_fingerprint": "0e0946a24f3b98d072e8a64f83041adefaed95c7f6e20711be6b3b46659fac8e",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E1 from M1's paired comparison (110/160 versus 105/160). Working: none. T1:checkpoint-115712 remains a measured comparison artifact, not a role assignment. No candidate is near official-goal evidence.",
     "completed_operations": [
