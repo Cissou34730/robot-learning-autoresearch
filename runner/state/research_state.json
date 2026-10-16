@@ -181,7 +181,7 @@
       "training_steps": 115712
     },
     "T1:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/ecee0f08-9143-4c0f-87d0-3c21e527df42/t1/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/ecee0f08-9143-4c0f-87d0-3c21e527df42/t1-c8cf701d5-d29483901ff30c97fcc81dbe47d57e5696ee14ebb5ecc536973ab78fb97f11d1",
       "evaluation_artifacts": [
         "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m1-T1-checkpoint-120832-200ep-seed100000-604d52985c97.json"
       ],
@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 2,
     "session": 1,
@@ -839,9 +839,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -1829,9 +1829,88 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T21:49:49Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1",
+          "M2"
+        ],
+        "reason": "M1 measured this complete candidate at 71.5% on a shared 200-episode research panel covering the official 6-20 cm radius, exceeding the preterminal checkpoint's 68.0%. M2 shows the gain is concentrated in the omitted inner regime, especially 10-14 cm (67.2% versus 57.4%), while outer performance is already 96.4-100%; this is currently the strongest evidence-backed artifact, though it remains far below the 98% objective."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1",
+          "M2"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1",
+          "M2"
+        ],
+        "reason": "M1 measured this complete candidate at 71.5% on a shared 200-episode research panel covering the official 6-20 cm radius, exceeding the preterminal checkpoint's 68.0%. M2 shows the gain is concentrated in the omitted inner regime, especially 10-14 cm (67.2% versus 57.4%), while outer performance is already 96.4-100%; this is currently the strongest evidence-backed artifact, though it remains far below the 98% objective."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/ecee0f08-9143-4c0f-87d0-3c21e527df42/t1-c8cf701d5-d29483901ff30c97fcc81dbe47d57e5696ee14ebb5ecc536973ab78fb97f11d1",
+        "fingerprint": "d29483901ff30c97fcc81dbe47d57e5696ee14ebb5ecc536973ab78fb97f11d1",
+        "source": "campaigns/checkpoints/candidates/ecee0f08-9143-4c0f-87d0-3c21e527df42/t1/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1",
+          "M2"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M1",
+          "M2"
+        ],
+        "reason": "M1 measured this complete candidate at 71.5% on a shared 200-episode research panel covering the official 6-20 cm radius, exceeding the preterminal checkpoint's 68.0%. M2 shows the gain is concentrated in the omitted inner regime, especially 10-14 cm (67.2% versus 57.4%), while outer performance is already 96.4-100%; this is currently the strongest evidence-backed artifact, though it remains far below the 98% objective."
+      }
+    },
+    "request_fingerprint": "2f7dbc4e2396e45ea9b03630c7a03268cc3b0b04d6343aa5e7aebc446e00a636",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1853,7 +1932,8 @@
     "operation_ids": [
       "T1",
       "M1",
-      "M2"
+      "M2",
+      "E1"
     ],
     "scientific_parent_commit": "991967472d78997528a685a305a69d42a056555e"
   },
