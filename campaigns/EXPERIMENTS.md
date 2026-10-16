@@ -30,3 +30,4 @@
 | E18 | checkpoint | I4 | checkpointed |
 | E19 | inquiry | I5 | completed |
 | E20 | checkpoint | - | checkpointed |
+| M6 | measurement | I5 | completed |
