@@ -190,7 +190,7 @@
       "training_steps": 115712
     },
     "T1:checkpoint-120832": {
-      "artifact": "campaigns/checkpoints/candidates/b9d3f752-0619-4863-81cc-96c7df3918d4/t1/checkpoint-120832",
+      "artifact": "campaigns/checkpoints/retained/b9d3f752-0619-4863-81cc-96c7df3918d4/t1-c8cf701d5-ce60e22121571cb2e54bc0568ffb6e696adfcaefe7d81447d26f52abbda5565a",
       "evaluation_artifacts": [
         "campaigns/evaluations/b9d3f752-0619-4863-81cc-96c7df3918d4/evaluation-b9d3f752-0619-4863-81cc-96c7df3918d4-m2-T1-checkpoint-120832-160ep-seed4200-68fee4ee1518.json"
       ],
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -848,9 +848,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
@@ -1729,9 +1729,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T15:11:37Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M2"
+        ],
+        "reason": "This is the only completed learned candidate and its development evaluation is the strongest current evidence: 150/160 visible complete-hold successes (93.75%). Its failure diagnostics classify 7 failures as no-entry reach/convergence failures and 3 as post-entry interruption/high-entry-velocity failures. It does not meet the human 98% objective or establish protected-panel performance, but it is currently the strongest evidence-backed candidate."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M2"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M2"
+        ],
+        "reason": "This is the only completed learned candidate and its development evaluation is the strongest current evidence: 150/160 visible complete-hold successes (93.75%). Its failure diagnostics classify 7 failures as no-entry reach/convergence failures and 3 as post-entry interruption/high-entry-velocity failures. It does not meet the human 98% objective or establish protected-panel performance, but it is currently the strongest evidence-backed candidate."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/b9d3f752-0619-4863-81cc-96c7df3918d4/t1-c8cf701d5-ce60e22121571cb2e54bc0568ffb6e696adfcaefe7d81447d26f52abbda5565a",
+        "fingerprint": "ce60e22121571cb2e54bc0568ffb6e696adfcaefe7d81447d26f52abbda5565a",
+        "source": "campaigns/checkpoints/candidates/b9d3f752-0619-4863-81cc-96c7df3918d4/t1/checkpoint-120832"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M2"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-120832",
+        "evidence": [
+          "T1",
+          "M2"
+        ],
+        "reason": "This is the only completed learned candidate and its development evaluation is the strongest current evidence: 150/160 visible complete-hold successes (93.75%). Its failure diagnostics classify 7 failures as no-entry reach/convergence failures and 3 as post-entry interruption/high-entry-velocity failures. It does not meet the human 98% objective or establish protected-panel performance, but it is currently the strongest evidence-backed candidate."
+      }
+    },
+    "request_fingerprint": "f0cb52e92ce88cfbbaba34fe0d9e8d94b32a19014062782027cad26c213b45c0",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty; M1 is a mechanics artifact and E2 is an inquiry boundary, neither a policy candidate.",
     "completed_operations": [
@@ -1770,7 +1844,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a first learned policy, trained with an exposure that covers the official 0.06\u20130.20 m target range, achieve the complete uninterrupted hold, and do its failures arise from reach/branch selection or from sampled-data stabilization? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "044ae9fe473a6dd907e5737d6ed3b518ae9498dd"
   },
