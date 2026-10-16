@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close this inquiry once a synchronized full-panel trace of the best-known artifact has been inspected for failed and matched successful episodes, including qpos/qvel, actions, finite-time distance/hold behavior, joint-limit margins, and contact outcomes. A concentrated diagnostic signature may support a physical redirect; ordinary reachable trajectories without limit/contact signatures may support full-distribution method development; mixed or ambiguous signatures may yield a limited conclusion while preserving the unresolved cause.",
     "goal_connection": "The best-known policy is 68.75% on the full 6-20 cm development distribution, far below the 98% objective. Distinguishing a physical trajectory constraint from a coverage-sensitive policy failure determines whether the next bounded effort should redesign training exposure/control learning or redirect toward branch-aware and stabilization mechanisms.",
-    "handoff_conclusion": "M1 established only candidate-independent reset-origin facts: the compiled MuJoCo model has finite saturated-torque authority, well-conditioned reset inertia, and no contacts on six constant-control and four symmetric bang-bang reset trials, but one reversal did not settle the motion. T1 trained a fresh PPO direct-torque recipe with normalized 11-component state/geometry observations, tanh 64-64 policy, the current reward, 50 Hz zero-order-held actions, and a 14-20 cm training-radius range; its training proxy rose to 0.96 at both 115712 and 120832 steps, but this was not task evidence. M2 paired those complete artifacts on the same 160 full-distribution episodes: T1:checkpoint-115712 succeeded 105/160 (65.625%), while T1:checkpoint-120832 succeeded 110/160 (68.75%) and won 9 versus 4 discordant episodes. For the best-known artifact, 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold, with max-held values 1, 5, 7, 49, or 57; successful episodes generally entered and held in roughly 5-34 control steps. The non-entry failures are concentrated in many 6-13 cm cases and include a smaller approximately -130 to -150 degree sector at larger radii, while hold failures occur at several low-radius angles. These observations support a recipe/distribution mismatch and/or branch-sensitive physical edge case, but do not establish either: M2 has no state/action/contact/limit diagnostics, and candidate differences remain artifact-level comparisons. Thus the tested recipe is decisively below goal, while the broader PPO or direct-torque method is not disproved.",
+    "handoff_conclusion": "Completed evidence establishes that the tested fresh PPO direct-torque recipe, trained for 120832 steps on a 14-20 cm radius range, learned substantial target-directed behavior but is decisively below the task goal: M2 measured 105/160 and 110/160 for its two measured late checkpoints, with the terminal artifact best-known by paired wins. The M2 diagnostics show both catastrophic non-entry episodes, including several 6-11 cm targets near approximately -130 to -150 degrees that remain over 20 cm away, and near-threshold low-radius non-entry/hold-interruption episodes; this is evidence about the artifact, not proof of a causal training-coverage effect or a physical impossibility. The physical model makes all official targets ideally reachable through at least one IK branch, while the reset is singular and direct 50 Hz torque control must brake as well as approach. The current implementation now provides synchronized diagnostic traces for post-block qpos/qvel, applied action, post-block distance and hold progression, joint-limit margins, and contacts accumulated over internal substeps, while preserving the established task outcome path. Source inspection also corrects the inherited live hypothesis that self-contact is a consequential alternative: the protected XML disables collision for the non-arm geoms and MuJoCo parent filtering excludes the adjacent upper-arm/forearm pair; M1's no-contact trials are consistent with this boundary. Empty contact traces therefore cannot distinguish a mechanism, but contact is no longer a credible redirect. The consequential alternatives are now (A) ordinary learned coverage/branch selection failure from the 14-20 cm exposure, which should motivate matched full-distribution training, versus (B) finite-time torque, joint-limit, or stabilization constraints visible in synchronized trajectories, which would motivate a control/branch-aware redesign. Hold interruptions remain a secondary but task-critical control failure class.",
     "handoff_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
@@ -841,7 +841,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 2,
     "session": 4,
@@ -850,7 +850,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -2027,34 +2027,179 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T19:49:28Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from the paired M2 measurement by E4. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. The best-known role is an evidence-backed selection, not a claim of official eligibility.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed campaign operations before I2: M1 compiled-dynamics probe, E1 startup checkpoint, E2 opening of I1, E3 inquiry checkpoint, T1 fresh training requested for 120000 and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired 160-episode development evaluations, E4 best-known assignment, and E5 closure of I1. I2 opening E7 and this checkpoint consume no training allocation; two inquiries have been opened, one closed, two learned artifacts have been development-measured, and no official assessment resource has been consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 110/160 = 68.75% on the full 6-20 cm development panel, leaving 50 failures and a 29.25 percentage-point gap to the 98% objective. Forty-two failures had no first in-tolerance step and eight entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested.",
+        "current_synthesis": "Completed evidence establishes that the tested fresh PPO direct-torque recipe, trained for 120832 steps on a 14-20 cm radius range, learned substantial target-directed behavior but is decisively below the task goal: M2 measured 105/160 and 110/160 for its two measured late checkpoints, with the terminal artifact best-known by paired wins. The M2 diagnostics show both catastrophic non-entry episodes, including several 6-11 cm targets near approximately -130 to -150 degrees that remain over 20 cm away, and near-threshold low-radius non-entry/hold-interruption episodes; this is evidence about the artifact, not proof of a causal training-coverage effect or a physical impossibility. The physical model makes all official targets ideally reachable through at least one IK branch, while the reset is singular and direct 50 Hz torque control must brake as well as approach. The current implementation now provides synchronized diagnostic traces for post-block qpos/qvel, applied action, post-block distance and hold progression, joint-limit margins, and contacts accumulated over internal substeps, while preserving the established task outcome path. Source inspection also corrects the inherited live hypothesis that self-contact is a consequential alternative: the protected XML disables collision for the non-arm geoms and MuJoCo parent filtering excludes the adjacent upper-arm/forearm pair; M1's no-contact trials are consistent with this boundary. Empty contact traces therefore cannot distinguish a mechanism, but contact is no longer a credible redirect. The consequential alternatives are now (A) ordinary learned coverage/branch selection failure from the 14-20 cm exposure, which should motivate matched full-distribution training, versus (B) finite-time torque, joint-limit, or stabilization constraints visible in synchronized trajectories, which would motivate a control/branch-aware redesign. Hold interruptions remain a secondary but task-critical control failure class.",
+        "decision_frontier": "The next decision is whether the dominant 50 failures are primarily policy coverage/branch selection failures that should be attacked by exposing the unchanged direct-torque PPO recipe to 6-20 cm, or whether synchronized trajectories reveal finite-time approach, joint-limit proximity, or braking/stabilization constraints that require a different control intervention. The diagnostic must be interpreted as mechanism evidence only if failed episodes are compared with successful episodes across the same target geometry and the trace fields are synchronized. The absence of contacts is a model-boundary fact, not evidence that other mechanisms are absent. If failures show ordinary reachable motion with safe limit margins and no contact while remaining tied to untrained radii/branches, favor matched full-distribution method development; if they show saturation, limit proximity, persistent branch trapping, or residual-velocity/hold signatures, favor a control/branch redesign; if signatures overlap, retain a limited conclusion and do not overclaim causality.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official assessment, with every episode completing the uninterrupted 100-control-step hold inside the 1 cm target ball. The best-known policy is not close enough for official commitment, so this inquiry targets the mechanism most likely to determine whether a full-distribution learning change can close the gap.",
+        "next_direction_or_closure": "Checkpoint this goal-review decision and continue in inquiry I2 with the synchronized diagnostic measurement. The measurement is preferable to immediate full-distribution training because the current artifact already contains distinct catastrophic and near-threshold failure modes, and the trace can determine whether the next intervention should be learning exposure or control/branch redesign. It will not test a new policy's capability; it is a mechanism test that can prevent spending the next full training allocation on the wrong cause.",
+        "next_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "8ae98f8690b66f2c6611abcd5b918db43d6f4497",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from the paired M2 measurement by E4. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. The best-known role is an evidence-backed selection, not a claim of official eligibility.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed campaign operations before I2: M1 compiled-dynamics probe, E1 startup checkpoint, E2 opening of I1, E3 inquiry checkpoint, T1 fresh training requested for 120000 and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired 160-episode development evaluations, E4 best-known assignment, and E5 closure of I1. I2 opening E7 and this checkpoint consume no training allocation; two inquiries have been opened, one closed, two learned artifacts have been development-measured, and no official assessment resource has been consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 110/160 = 68.75% on the full 6-20 cm development panel, leaving 50 failures and a 29.25 percentage-point gap to the 98% objective. Forty-two failures had no first in-tolerance step and eight entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested.",
+        "current_synthesis": "Completed evidence establishes that the tested fresh PPO direct-torque recipe, trained for 120832 steps on a 14-20 cm radius range, learned substantial target-directed behavior but is decisively below the task goal: M2 measured 105/160 and 110/160 for its two measured late checkpoints, with the terminal artifact best-known by paired wins. The M2 diagnostics show both catastrophic non-entry episodes, including several 6-11 cm targets near approximately -130 to -150 degrees that remain over 20 cm away, and near-threshold low-radius non-entry/hold-interruption episodes; this is evidence about the artifact, not proof of a causal training-coverage effect or a physical impossibility. The physical model makes all official targets ideally reachable through at least one IK branch, while the reset is singular and direct 50 Hz torque control must brake as well as approach. The current implementation now provides synchronized diagnostic traces for post-block qpos/qvel, applied action, post-block distance and hold progression, joint-limit margins, and contacts accumulated over internal substeps, while preserving the established task outcome path. Source inspection also corrects the inherited live hypothesis that self-contact is a consequential alternative: the protected XML disables collision for the non-arm geoms and MuJoCo parent filtering excludes the adjacent upper-arm/forearm pair; M1's no-contact trials are consistent with this boundary. Empty contact traces therefore cannot distinguish a mechanism, but contact is no longer a credible redirect. The consequential alternatives are now (A) ordinary learned coverage/branch selection failure from the 14-20 cm exposure, which should motivate matched full-distribution training, versus (B) finite-time torque, joint-limit, or stabilization constraints visible in synchronized trajectories, which would motivate a control/branch-aware redesign. Hold interruptions remain a secondary but task-critical control failure class.",
+        "decision_frontier": "The next decision is whether the dominant 50 failures are primarily policy coverage/branch selection failures that should be attacked by exposing the unchanged direct-torque PPO recipe to 6-20 cm, or whether synchronized trajectories reveal finite-time approach, joint-limit proximity, or braking/stabilization constraints that require a different control intervention. The diagnostic must be interpreted as mechanism evidence only if failed episodes are compared with successful episodes across the same target geometry and the trace fields are synchronized. The absence of contacts is a model-boundary fact, not evidence that other mechanisms are absent. If failures show ordinary reachable motion with safe limit margins and no contact while remaining tied to untrained radii/branches, favor matched full-distribution method development; if they show saturation, limit proximity, persistent branch trapping, or residual-velocity/hold signatures, favor a control/branch redesign; if signatures overlap, retain a limited conclusion and do not overclaim causality.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official assessment, with every episode completing the uninterrupted 100-control-step hold inside the 1 cm target ball. The best-known policy is not close enough for official commitment, so this inquiry targets the mechanism most likely to determine whether a full-distribution learning change can close the gap.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint this goal-review decision and continue in inquiry I2 with the synchronized diagnostic measurement. The measurement is preferable to immediate full-distribution training because the current artifact already contains distinct catastrophic and near-threshold failure modes, and the trace can determine whether the next intervention should be learning exposure or control/branch redesign. It will not test a new policy's capability; it is a mechanism test that can prevent spending the next full training allocation on the wrong cause.",
+        "next_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "65bc64b9-cfc3-4850-bd83-7e666b02aa50",
+        "campaign_id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
+        "campaign_usage": "16m29s | 28.37 AIU | prompt 4m (88% cached) | output 100.6k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "4m34s | 4.58 AIU | prompt 443.1k (83% cached) | output 29.4k"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "9b7a67de8bcbfe01cfc2e329389a66a08b4c4133",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "e11c5100f8116021b214940739b2bca15fd95da3db36012bb59f44449ac678f4",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "8b3ef7280f8af4d723395dc74b2b054c1b10ed533e245be76c9aa341d13bdf15",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from the paired M2 measurement by E4. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. The best-known role is an evidence-backed selection, not a claim of official eligibility.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed campaign operations before I2: M1 compiled-dynamics probe, E1 startup checkpoint, E2 opening of I1, E3 inquiry checkpoint, T1 fresh training requested for 120000 and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired 160-episode development evaluations, E4 best-known assignment, and E5 closure of I1. I2 opening E7 and this checkpoint consume no training allocation; two inquiries have been opened, one closed, two learned artifacts have been development-measured, and no official assessment resource has been consumed.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 110/160 = 68.75% on the full 6-20 cm development panel, leaving 50 failures and a 29.25 percentage-point gap to the 98% objective. Forty-two failures had no first in-tolerance step and eight entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested.",
+        "current_synthesis": "Completed evidence establishes that the tested fresh PPO direct-torque recipe, trained for 120832 steps on a 14-20 cm radius range, learned substantial target-directed behavior but is decisively below the task goal: M2 measured 105/160 and 110/160 for its two measured late checkpoints, with the terminal artifact best-known by paired wins. The M2 diagnostics show both catastrophic non-entry episodes, including several 6-11 cm targets near approximately -130 to -150 degrees that remain over 20 cm away, and near-threshold low-radius non-entry/hold-interruption episodes; this is evidence about the artifact, not proof of a causal training-coverage effect or a physical impossibility. The physical model makes all official targets ideally reachable through at least one IK branch, while the reset is singular and direct 50 Hz torque control must brake as well as approach. The current implementation now provides synchronized diagnostic traces for post-block qpos/qvel, applied action, post-block distance and hold progression, joint-limit margins, and contacts accumulated over internal substeps, while preserving the established task outcome path. Source inspection also corrects the inherited live hypothesis that self-contact is a consequential alternative: the protected XML disables collision for the non-arm geoms and MuJoCo parent filtering excludes the adjacent upper-arm/forearm pair; M1's no-contact trials are consistent with this boundary. Empty contact traces therefore cannot distinguish a mechanism, but contact is no longer a credible redirect. The consequential alternatives are now (A) ordinary learned coverage/branch selection failure from the 14-20 cm exposure, which should motivate matched full-distribution training, versus (B) finite-time torque, joint-limit, or stabilization constraints visible in synchronized trajectories, which would motivate a control/branch-aware redesign. Hold interruptions remain a secondary but task-critical control failure class.",
+        "decision_frontier": "The next decision is whether the dominant 50 failures are primarily policy coverage/branch selection failures that should be attacked by exposing the unchanged direct-torque PPO recipe to 6-20 cm, or whether synchronized trajectories reveal finite-time approach, joint-limit proximity, or braking/stabilization constraints that require a different control intervention. The diagnostic must be interpreted as mechanism evidence only if failed episodes are compared with successful episodes across the same target geometry and the trace fields are synchronized. The absence of contacts is a model-boundary fact, not evidence that other mechanisms are absent. If failures show ordinary reachable motion with safe limit margins and no contact while remaining tied to untrained radii/branches, favor matched full-distribution method development; if they show saturation, limit proximity, persistent branch trapping, or residual-velocity/hold signatures, favor a control/branch redesign; if signatures overlap, retain a limited conclusion and do not overclaim causality.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official assessment, with every episode completing the uninterrupted 100-control-step hold inside the 1 cm target ball. The best-known policy is not close enough for official commitment, so this inquiry targets the mechanism most likely to determine whether a full-distribution learning change can close the gap.",
+        "next_direction_or_closure": "Checkpoint this goal-review decision and continue in inquiry I2 with the synchronized diagnostic measurement. The measurement is preferable to immediate full-distribution training because the current artifact already contains distinct catastrophic and near-threshold failure modes, and the trace can determine whether the next intervention should be learning exposure or control/branch redesign. It will not test a new policy's capability; it is a mechanism test that can prevent spending the next full training allocation on the wrong cause.",
+        "next_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?"
+      }
+    },
+    "request_fingerprint": "9e6c777f48ec5beb51172b5854eaae77dd346a58fde3935da60a86a3f15d71de",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-120832, assigned by E4 from the paired M2 evaluation. T1:checkpoint-115712 is a measured alternative but not assigned a role. No working candidate or retained candidate is assigned. The best-known role is not a claim of goal attainment or official eligibility.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832, assigned from the paired M2 measurement by E4. T1:checkpoint-115712 remains a measured alternative without a role. No working or retained candidate is assigned. The best-known role is an evidence-backed selection, not a claim of official eligibility.",
     "completed_operations": [
-      "T1",
-      "M2",
-      "E4",
-      "E5"
+      "E7"
     ],
-    "cumulative_resource_use": "Completed campaign operations: M1 compiled-dynamics measurement, E1 startup checkpoint, E2 opening of I1, E3 inquiry checkpoint, T1 fresh training requested for 120000 steps and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired two 160-episode development evaluations on seeds 4200-4359, E4 best-known assignment, and E5 inquiry closure. One inquiry is closed; two learned artifacts were evaluated; no official assessment resource has been consumed.",
-    "current_goal_gap": "The best-known candidate T1:checkpoint-120832 achieved 110/160 = 68.75% on the full development distribution, leaving a large gap to the 98% objective. Its failures are not yet physically attributed: most are non-entry failures, especially in the lower-radius tail, and a smaller set are hold interruptions after entry. No synchronized joint/action/contact/limit trace is available, and the official 200-episode panel remains unrequested.",
-    "current_synthesis": "M1 established only candidate-independent reset-origin facts: the compiled MuJoCo model has finite saturated-torque authority, well-conditioned reset inertia, and no contacts on six constant-control and four symmetric bang-bang reset trials, but one reversal did not settle the motion. T1 trained a fresh PPO direct-torque recipe with normalized 11-component state/geometry observations, tanh 64-64 policy, the current reward, 50 Hz zero-order-held actions, and a 14-20 cm training-radius range; its training proxy rose to 0.96 at both 115712 and 120832 steps, but this was not task evidence. M2 paired those complete artifacts on the same 160 full-distribution episodes: T1:checkpoint-115712 succeeded 105/160 (65.625%), while T1:checkpoint-120832 succeeded 110/160 (68.75%) and won 9 versus 4 discordant episodes. For the best-known artifact, 42 failures never entered tolerance and 8 entered but failed the uninterrupted hold, with max-held values 1, 5, 7, 49, or 57; successful episodes generally entered and held in roughly 5-34 control steps. The non-entry failures are concentrated in many 6-13 cm cases and include a smaller approximately -130 to -150 degree sector at larger radii, while hold failures occur at several low-radius angles. These observations support a recipe/distribution mismatch and/or branch-sensitive physical edge case, but do not establish either: M2 has no state/action/contact/limit diagnostics, and candidate differences remain artifact-level comparisons. Thus the tested recipe is decisively below goal, while the broader PPO or direct-torque method is not disproved.",
-    "decision_frontier": "The consequential unresolved distinction is whether the dominant 42/50 failures of the best-known artifact are primarily learned approach/generalization failures caused by training only on radii 14-20 cm, or whether a branch/angle-dependent physical mechanism (joint limits or self-contact) makes parts of the official distribution dynamically unusable. The separate 8/50 hold failures keep braking/stabilization as a secondary control bottleneck. A targeted synchronized rollout diagnostic for selected low-radius and -130 to -150 degree targets, recording joint state/action, joint-limit margins, contact pairs, distance and hold transitions, would discriminate physical edge cases from ordinary policy non-entry; a matched fresh training change covering the full radius distribution would test whether capability moves without changing task semantics. Neither reward nor the reset-origin M1 probe can decide this frontier.",
+    "cumulative_resource_use": "Completed campaign operations before I2: M1 compiled-dynamics probe, E1 startup checkpoint, E2 opening of I1, E3 inquiry checkpoint, T1 fresh training requested for 120000 and completed at 120832 simulator steps with 24 archived checkpoints, M2 paired 160-episode development evaluations, E4 best-known assignment, and E5 closure of I1. I2 opening E7 and this checkpoint consume no training allocation; two inquiries have been opened, one closed, two learned artifacts have been development-measured, and no official assessment resource has been consumed.",
+    "current_goal_gap": "T1:checkpoint-120832 achieved 110/160 = 68.75% on the full 6-20 cm development panel, leaving 50 failures and a 29.25 percentage-point gap to the 98% objective. Forty-two failures had no first in-tolerance step and eight entered but failed the uninterrupted hold. The official 200-episode panel remains unrequested.",
+    "current_synthesis": "Completed evidence establishes that the tested fresh PPO direct-torque recipe, trained for 120832 steps on a 14-20 cm radius range, learned substantial target-directed behavior but is decisively below the task goal: M2 measured 105/160 and 110/160 for its two measured late checkpoints, with the terminal artifact best-known by paired wins. The M2 diagnostics show both catastrophic non-entry episodes, including several 6-11 cm targets near approximately -130 to -150 degrees that remain over 20 cm away, and near-threshold low-radius non-entry/hold-interruption episodes; this is evidence about the artifact, not proof of a causal training-coverage effect or a physical impossibility. The physical model makes all official targets ideally reachable through at least one IK branch, while the reset is singular and direct 50 Hz torque control must brake as well as approach. The current implementation now provides synchronized diagnostic traces for post-block qpos/qvel, applied action, post-block distance and hold progression, joint-limit margins, and contacts accumulated over internal substeps, while preserving the established task outcome path. Source inspection also corrects the inherited live hypothesis that self-contact is a consequential alternative: the protected XML disables collision for the non-arm geoms and MuJoCo parent filtering excludes the adjacent upper-arm/forearm pair; M1's no-contact trials are consistent with this boundary. Empty contact traces therefore cannot distinguish a mechanism, but contact is no longer a credible redirect. The consequential alternatives are now (A) ordinary learned coverage/branch selection failure from the 14-20 cm exposure, which should motivate matched full-distribution training, versus (B) finite-time torque, joint-limit, or stabilization constraints visible in synchronized trajectories, which would motivate a control/branch-aware redesign. Hold interruptions remain a secondary but task-critical control failure class.",
+    "decision_frontier": "The next decision is whether the dominant 50 failures are primarily policy coverage/branch selection failures that should be attacked by exposing the unchanged direct-torque PPO recipe to 6-20 cm, or whether synchronized trajectories reveal finite-time approach, joint-limit proximity, or braking/stabilization constraints that require a different control intervention. The diagnostic must be interpreted as mechanism evidence only if failed episodes are compared with successful episodes across the same target geometry and the trace fields are synchronized. The absence of contacts is a model-boundary fact, not evidence that other mechanisms are absent. If failures show ordinary reachable motion with safe limit margins and no contact while remaining tied to untrained radii/branches, favor matched full-distribution method development; if they show saturation, limit proximity, persistent branch trapping, or residual-velocity/hold signatures, favor a control/branch redesign; if signatures overlap, retain a limited conclusion and do not overclaim causality.",
     "evidence_references": [
       "M1",
       "T1",
       "M2",
       "E4",
-      "E5"
+      "E5",
+      "E7"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successes in the fixed 200-episode official assessment, with every episode requiring an uninterrupted 100-control-step hold inside the 1 cm target ball. I1 produced the first learned candidate and measured its task-relevant failure structure, but no evidence supports official assessment readiness.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed with a limited negative conclusion for the tested PPO recipe: it learned substantial target-directed behavior but remained far below the required distributional success. Goal review should compare a mechanism-targeted physical diagnostic against a matched full-radius training intervention; because no contact/limit evidence was collected, a physical redirect is not yet justified solely by the angle/radius pattern, and because the current recipe was not exposed to 6-14 cm targets, a broader method claim is also premature.",
-    "next_question": "Which next bounded route most efficiently closes the remaining gap toward 98%: characterize the low-radius/angle non-entry failures for branch, joint-limit, and self-contact causes, or develop a matched direct-torque training recipe exposed to the full official radius distribution to test whether the dominant deficit is learned coverage?",
-    "scientific_commit": "cd77c4fdace72d35167d2c52719e9d7d19a66649",
-    "session_id": "S3"
+    "human_goal_connection": "The human goal is at least 196 successes in the fixed 200-episode official assessment, with every episode completing the uninterrupted 100-control-step hold inside the 1 cm target ball. The best-known policy is not close enough for official commitment, so this inquiry targets the mechanism most likely to determine whether a full-distribution learning change can close the gap.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Checkpoint this goal-review decision and continue in inquiry I2 with the synchronized diagnostic measurement. The measurement is preferable to immediate full-distribution training because the current artifact already contains distinct catastrophic and near-threshold failure modes, and the trace can determine whether the next intervention should be learning exposure or control/branch redesign. It will not test a new policy's capability; it is a mechanism test that can prevent spending the next full training allocation on the wrong cause.",
+    "next_question": "Do synchronized rollouts of T1:checkpoint-120832 show that its dominant non-entry and hold failures are caused by branch selection, joint-limit proximity, or finite-time approach/stabilization constraints, rather than primarily by learned coverage loss from training only on 14-20 cm targets?",
+    "scientific_commit": "9b7a67de8bcbfe01cfc2e329389a66a08b4c4133",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2062,21 +2207,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "65bc64b9-cfc3-4850-bd83-7e666b02aa50",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E7"
-    ],
-    "scientific_parent_commit": "8ae98f8690b66f2c6611abcd5b918db43d6f4497"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
