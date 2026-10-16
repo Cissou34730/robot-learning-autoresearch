@@ -25,7 +25,12 @@ from contracts.task_spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.scenario.observations import OBSERVATION_SIZE
+from robot_learning.scenario.observations import (
+    OBSERVATION_SIZE,
+    ik_branch_errors,
+    ik_branch_validity,
+    target_elbow_magnitude,
+)
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -42,12 +47,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        enable_trajectory_shaping: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.enable_trajectory_shaping = enable_trajectory_shaping
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -71,6 +78,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_branch_errors: np.ndarray | None = None
+        self._previous_branch_validity: np.ndarray | None = None
+        self._previous_q2: float | None = None
+        self._target_elbow_magnitude = 0.0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -117,6 +128,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        if self.enable_trajectory_shaping:
+            self._previous_branch_errors = ik_branch_errors(self.data)
+            self._previous_branch_validity = ik_branch_validity(self.data)
+            self._previous_q2 = float(self.data.qpos[1])
+            self._target_elbow_magnitude = target_elbow_magnitude(self.data)
         return self._observation(), {}
 
     def step(
@@ -142,6 +158,20 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
+        reward_kwargs: dict[str, Any] = {}
+        if self.enable_trajectory_shaping:
+            current_branch_errors = ik_branch_errors(self.data)
+            current_branch_validity = ik_branch_validity(self.data)
+            reward_kwargs = {
+                "trajectory_shaping": True,
+                "previous_branch_errors": self._previous_branch_errors,
+                "current_branch_errors": current_branch_errors,
+                "previous_branch_validity": self._previous_branch_validity,
+                "current_branch_validity": current_branch_validity,
+                "previous_q2": self._previous_q2,
+                "current_q2": float(self.data.qpos[1]),
+                "target_elbow_magnitude": self._target_elbow_magnitude,
+            }
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -151,8 +181,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            **reward_kwargs,
         )
         self._previous_distance = distance
+        if self.enable_trajectory_shaping:
+            self._previous_branch_errors = current_branch_errors
+            self._previous_branch_validity = current_branch_validity
+            self._previous_q2 = float(self.data.qpos[1])
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
@@ -171,7 +206,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+        target_radius_range=TARGET_RADIUS_RANGE,
+        policy_runtime=policy_runtime,
+        enable_trajectory_shaping=False,
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space

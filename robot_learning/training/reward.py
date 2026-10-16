@@ -23,6 +23,10 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+IK_BRANCH_PROGRESS_COEFFICIENT = 2.0
+RESET_ESCAPE_PROGRESS_COEFFICIENT = 1.0
+IK_BRANCH_ERROR_NORMALIZER = float(np.sqrt(2.0) * np.pi)
+TARGET_ELBOW_EPSILON = 1e-8
 
 
 @dataclass(frozen=True)
@@ -44,6 +48,37 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _ik_branch_potential(
+    branch_errors: np.ndarray, branch_validity: np.ndarray
+) -> float:
+    """Bound the nearer branch's wrapped joint error in radians to [0, 1]."""
+    errors = np.asarray(branch_errors, dtype=np.float64)
+    valid = np.asarray(branch_validity, dtype=bool)
+    if errors.shape != (2, 2) or valid.shape != (2,):
+        return 0.0
+    branch_norms = [
+        float(np.linalg.norm(branch_error))
+        for branch_error, is_valid in zip(errors, valid)
+        if is_valid and np.isfinite(branch_error).all()
+    ]
+    if not branch_norms:
+        return 0.0
+    normalized_error = np.clip(
+        min(branch_norms) / IK_BRANCH_ERROR_NORMALIZER, 0.0, 1.0
+    )
+    return float(1.0 - normalized_error)
+
+
+def _reset_escape_potential(q2: float, target_elbow_magnitude: float) -> float:
+    """Bound progress from q2=0 toward the target elbow magnitude."""
+    if not np.isfinite(q2) or not np.isfinite(target_elbow_magnitude):
+        return 0.0
+    if target_elbow_magnitude <= TARGET_ELBOW_EPSILON:
+        return 0.0
+    progress = abs(float(q2)) / float(target_elbow_magnitude)
+    return float(np.clip(progress, 0.0, 1.0))
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,6 +88,14 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    trajectory_shaping: bool = False,
+    previous_branch_errors: np.ndarray | None = None,
+    current_branch_errors: np.ndarray | None = None,
+    previous_branch_validity: np.ndarray | None = None,
+    current_branch_validity: np.ndarray | None = None,
+    previous_q2: float | None = None,
+    current_q2: float | None = None,
+    target_elbow_magnitude: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -95,14 +138,53 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    return RewardResult(
-        total=float(reward),
-        components={
-            "progress": float(progress),
-            "closeness": float(closeness),
-            "hold_progress": float(hold_progress),
-            "outside_band": float(outside_band),
-            "hold_complete": float(hold_complete),
-            "action_cost": float(action_cost),
-        },
-    )
+    components = {
+        "progress": float(progress),
+        "closeness": float(closeness),
+        "hold_progress": float(hold_progress),
+        "outside_band": float(outside_band),
+        "hold_complete": float(hold_complete),
+        "action_cost": float(action_cost),
+    }
+
+    if trajectory_shaping:
+        if (
+            previous_branch_errors is None
+            or current_branch_errors is None
+            or previous_branch_validity is None
+            or current_branch_validity is None
+            or previous_q2 is None
+            or current_q2 is None
+            or target_elbow_magnitude is None
+        ):
+            raise ValueError(
+                "trajectory shaping requires branch errors, q2 values, "
+                "and target elbow magnitude"
+            )
+        previous_branch_potential = _ik_branch_potential(
+            previous_branch_errors, previous_branch_validity
+        )
+        current_branch_potential = _ik_branch_potential(
+            current_branch_errors, current_branch_validity
+        )
+        ik_branch_progress = IK_BRANCH_PROGRESS_COEFFICIENT * (
+            current_branch_potential - previous_branch_potential
+        )
+        previous_escape_potential = _reset_escape_potential(
+            previous_q2, target_elbow_magnitude
+        )
+        current_escape_potential = _reset_escape_potential(
+            current_q2, target_elbow_magnitude
+        )
+        reset_escape_progress = RESET_ESCAPE_PROGRESS_COEFFICIENT * (
+            current_escape_potential - previous_escape_potential
+        )
+        reward += ik_branch_progress + reset_escape_progress
+        components.update(
+            {
+                "ik_branch_progress": float(ik_branch_progress),
+                "reset_escape_progress": float(reset_escape_progress),
+            }
+        )
+
+    return RewardResult(total=float(reward), components=components)
