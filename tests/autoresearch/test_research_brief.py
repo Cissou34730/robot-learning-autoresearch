@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from runner import build_brief as brief
 from runner import repository
 
@@ -160,6 +162,58 @@ def test_startup_brief_exposes_phase_operations_and_artifact_root(
     assert "measurement" in allowed
     assert "inquiry" not in allowed
     assert "campaigns/evaluations/campaign/" in text
+
+
+@pytest.mark.parametrize("status", ["passed", "failed"])
+def test_goal_gap_uses_official_assessment(status):
+    assessment = {
+        "status": status,
+        "model": "T1:checkpoint-120832",
+        "summary": f"assessment-result-{status}",
+    }
+    state = {
+        "official_assessment": assessment,
+        "pi_checkpoint": {"current_goal_gap": "earlier-pi-goal-gap"},
+    }
+
+    assert brief._goal_gap(state) == assessment["summary"]
+
+
+def test_goal_gap_keeps_unassessed_pi_checkpoint():
+    checkpoint = {"current_goal_gap": "current-pi-goal-gap"}
+    state = {"official_assessment": None, "pi_checkpoint": checkpoint}
+
+    assert brief._goal_gap(state) == checkpoint["current_goal_gap"]
+
+
+def test_assessed_checkpoint_preserves_historical_pi_data():
+    checkpoint = {
+        field: f"pi-{field}"
+        for field in (
+            "human_goal_connection",
+            "current_goal_gap",
+            "current_synthesis",
+            "decision_frontier",
+            "next_question",
+            "candidates_and_roles",
+            "next_direction_or_closure",
+            "cumulative_resource_use",
+        )
+    }
+    checkpoint.update(inquiry_id=None, completed_operations=[])
+    state = {
+        "official_assessment": {"summary": "official-result"},
+        "pi_checkpoint": checkpoint,
+        "active_inquiry": None,
+    }
+    before = json.dumps(state, sort_keys=True)
+
+    lines = brief._checkpoint_lines(state)
+
+    for value in checkpoint.values():
+        if isinstance(value, str):
+            assert any(value in line for line in lines)
+    assert json.dumps(state, sort_keys=True) == before
 
 
 def test_operation_feedback_is_factual_and_operation_specific():

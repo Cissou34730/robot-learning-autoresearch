@@ -272,6 +272,9 @@ def _best_evidence(state: dict) -> list[str]:
 
 
 def _goal_gap(state: dict) -> str:
+    assessment = state["official_assessment"]
+    if isinstance(assessment, dict):
+        return assessment["summary"]
     checkpoint = state["pi_checkpoint"]
     if isinstance(checkpoint, dict):
         return checkpoint["current_goal_gap"]
@@ -318,7 +321,17 @@ def _checkpoint_lines(state: dict) -> list[str]:
         if isinstance(state["active_inquiry"], dict)
         else "Proposed next inquiry question"
     )
+    historical_context = []
+    if isinstance(state["official_assessment"], dict):
+        historical_context = [
+            (
+                "- This checkpoint predates the official assessment. Its "
+                "statements describe the evidence available at that time."
+            ),
+            f"- Goal gap at checkpoint: {checkpoint['current_goal_gap']}",
+        ]
     return [
+        *historical_context,
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Human-goal connection: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
