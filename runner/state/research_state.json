@@ -3291,7 +3291,7 @@
     }
   },
   "counters": {
-    "event": 29,
+    "event": 30,
     "inquiry": 7,
     "measurement": 8,
     "session": 15,
@@ -3300,7 +3300,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -7888,33 +7888,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T21:00:45Z",
+      "error": null,
+      "id": "E30",
+      "inquiry_id": "I7",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known; M8 measured it at 154/200 on the fresh trace panel, below the 196/200 human-goal threshold. T4:checkpoint-75776 is rejected as a complete route toward the goal after 1/200 on M8 and 0/200 on M7; it is not retained as best-known or working.",
+        "completed_operations": [
+          "M8",
+          "E29"
+        ],
+        "cumulative_resource_use": "Session S15 used one 200-episode paired research evaluation (M8) and one inquiry closure (E29); no training steps or additional measurement allocation were used in this session. Campaign totals at checkpoint: 8 measurements, 4 training runs, 7 inquiries, 15 sessions.",
+        "current_goal_gap": "The human goal remains unmet. On the latest paired fresh panel, T1 is 154/200, 42 successes below the required 196/200; no candidate supports official assessment. T4 is 1/200.",
+        "current_synthesis": "M8 is the first complete trace-enabled mechanism test in this line. It found 167/200 T4 episodes with no first entry and 33/200 entries; of those entrants, 32 failed to complete the uninterrupted hold and one succeeded. T1 had 37/200 non-entries and 154/200 complete holds on identical seeds. T4 non-entry failures span the sampled radius and angular range, and representative traces show branch-aware phase transitions, saturated high-speed motion, no contact, and substantial joint-limit margin. The evidence distinguishes primary approach/branch-coverage or controller-trainability limitation in this tested T4 artifact from a secondary braking/hold instability among its entrants. It does not generalize that negative result to all branch-aware control, explicit braking, or representations. Earlier M5/M6 distribution reversals still limit claims based on any single panel.",
+        "decision_frontier": "I7 is closed with a bounded positive mechanism distinction. The next credible route is a redesigned controller/representation and learning experiment that targets approach coverage and trainability first, while retaining synchronized hold diagnostics and treating braking/hold stabilization as a separate acceptance criterion. Further uninstrumented variants or official assessment are not justified by the current evidence.",
+        "evidence_references": [
+          "M8",
+          "E29"
+        ],
+        "human_goal_connection": "The required outcome is at least 196/200 episodes with a complete uninterrupted 100-step hold. M8 shows why the rejected T4 artifact cannot close the 42-success gap: most failures occur before entry, and nearly all of its rare entries then lose the hold. The checkpoint preserves T1 as the best-known baseline for the next redesign rather than mistaking a mechanism diagnosis for goal attainment.",
+        "next_direction_or_closure": "I7 is closed. Continue only with a mechanism-directed redesign and fresh evidence: improve the policy/controller representation and approach coverage while instrumenting entry speed, phase, branch, and hold interruptions; accept a route only when complete-candidate evaluation approaches the 196/200 threshold. Do not request official assessment from T1 or T4.",
+        "next_question": "Can a redesigned policy/controller representation improve full-distribution approach and branch coverage toward at least 196/200 while retaining uninterrupted-hold stability, as shown by fresh complete-candidate evaluation?"
+      },
+      "result": {
+        "session_id": "S15",
+        "status": "checkpointed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "09c7f960cd3298d97012b79c5ee8e5f48252c203",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known; M8 measured it at 154/200 on the fresh trace panel, below the 196/200 human-goal threshold. T4:checkpoint-75776 is rejected as a complete route toward the goal after 1/200 on M8 and 0/200 on M7; it is not retained as best-known or working.",
+        "completed_operations": [
+          "M8",
+          "E29"
+        ],
+        "cumulative_resource_use": "Session S15 used one 200-episode paired research evaluation (M8) and one inquiry closure (E29); no training steps or additional measurement allocation were used in this session. Campaign totals at checkpoint: 8 measurements, 4 training runs, 7 inquiries, 15 sessions.",
+        "current_goal_gap": "The human goal remains unmet. On the latest paired fresh panel, T1 is 154/200, 42 successes below the required 196/200; no candidate supports official assessment. T4 is 1/200.",
+        "current_synthesis": "M8 is the first complete trace-enabled mechanism test in this line. It found 167/200 T4 episodes with no first entry and 33/200 entries; of those entrants, 32 failed to complete the uninterrupted hold and one succeeded. T1 had 37/200 non-entries and 154/200 complete holds on identical seeds. T4 non-entry failures span the sampled radius and angular range, and representative traces show branch-aware phase transitions, saturated high-speed motion, no contact, and substantial joint-limit margin. The evidence distinguishes primary approach/branch-coverage or controller-trainability limitation in this tested T4 artifact from a secondary braking/hold instability among its entrants. It does not generalize that negative result to all branch-aware control, explicit braking, or representations. Earlier M5/M6 distribution reversals still limit claims based on any single panel.",
+        "decision_frontier": "I7 is closed with a bounded positive mechanism distinction. The next credible route is a redesigned controller/representation and learning experiment that targets approach coverage and trainability first, while retaining synchronized hold diagnostics and treating braking/hold stabilization as a separate acceptance criterion. Further uninstrumented variants or official assessment are not justified by the current evidence.",
+        "evidence_references": [
+          "M8",
+          "E29"
+        ],
+        "human_goal_connection": "The required outcome is at least 196/200 episodes with a complete uninterrupted 100-step hold. M8 shows why the rejected T4 artifact cannot close the 42-success gap: most failures occur before entry, and nearly all of its rare entries then lose the hold. The checkpoint preserves T1 as the best-known baseline for the next redesign rather than mistaking a mechanism diagnosis for goal attainment.",
+        "inquiry_id": "I7",
+        "next_direction_or_closure": "I7 is closed. Continue only with a mechanism-directed redesign and fresh evidence: improve the policy/controller representation and approach coverage while instrumenting entry speed, phase, branch, and hold interruptions; accept a route only when complete-candidate evaluation approaches the 196/200 threshold. Do not request official assessment from T1 or T4.",
+        "next_question": "Can a redesigned policy/controller representation improve full-distribution approach and branch coverage toward at least 196/200 while retaining uninterrupted-hold stability, as shown by fresh complete-candidate evaluation?",
+        "session_id": "S15"
+      },
+      "presentation": {
+        "backend_session_id": "58351128-52c0-4a28-a2b8-9953775b2627",
+        "campaign_id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
+        "campaign_usage": "41m23s | 96.72 AIU | prompt 13.9m (86% cached) | output 234.3k",
+        "session_id": "S15",
+        "session_kind": "inquiry",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S15",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "b88398c997c72084ee3b1dcc999b9e3f7100b8a6",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E30",
+    "inquiry_id": "I7",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains best-known; M8 measured it at 154/200 on the fresh trace panel, below the 196/200 human-goal threshold. T4:checkpoint-75776 is rejected as a complete route toward the goal after 1/200 on M8 and 0/200 on M7; it is not retained as best-known or working.",
+        "completed_operations": [
+          "M8",
+          "E29"
+        ],
+        "cumulative_resource_use": "Session S15 used one 200-episode paired research evaluation (M8) and one inquiry closure (E29); no training steps or additional measurement allocation were used in this session. Campaign totals at checkpoint: 8 measurements, 4 training runs, 7 inquiries, 15 sessions.",
+        "current_goal_gap": "The human goal remains unmet. On the latest paired fresh panel, T1 is 154/200, 42 successes below the required 196/200; no candidate supports official assessment. T4 is 1/200.",
+        "current_synthesis": "M8 is the first complete trace-enabled mechanism test in this line. It found 167/200 T4 episodes with no first entry and 33/200 entries; of those entrants, 32 failed to complete the uninterrupted hold and one succeeded. T1 had 37/200 non-entries and 154/200 complete holds on identical seeds. T4 non-entry failures span the sampled radius and angular range, and representative traces show branch-aware phase transitions, saturated high-speed motion, no contact, and substantial joint-limit margin. The evidence distinguishes primary approach/branch-coverage or controller-trainability limitation in this tested T4 artifact from a secondary braking/hold instability among its entrants. It does not generalize that negative result to all branch-aware control, explicit braking, or representations. Earlier M5/M6 distribution reversals still limit claims based on any single panel.",
+        "decision_frontier": "I7 is closed with a bounded positive mechanism distinction. The next credible route is a redesigned controller/representation and learning experiment that targets approach coverage and trainability first, while retaining synchronized hold diagnostics and treating braking/hold stabilization as a separate acceptance criterion. Further uninstrumented variants or official assessment are not justified by the current evidence.",
+        "evidence_references": [
+          "M8",
+          "E29"
+        ],
+        "human_goal_connection": "The required outcome is at least 196/200 episodes with a complete uninterrupted 100-step hold. M8 shows why the rejected T4 artifact cannot close the 42-success gap: most failures occur before entry, and nearly all of its rare entries then lose the hold. The checkpoint preserves T1 as the best-known baseline for the next redesign rather than mistaking a mechanism diagnosis for goal attainment.",
+        "next_direction_or_closure": "I7 is closed. Continue only with a mechanism-directed redesign and fresh evidence: improve the policy/controller representation and approach coverage while instrumenting entry speed, phase, branch, and hold interruptions; accept a route only when complete-candidate evaluation approaches the 196/200 threshold. Do not request official assessment from T1 or T4.",
+        "next_question": "Can a redesigned policy/controller representation improve full-distribution approach and branch coverage toward at least 196/200 while retaining uninterrupted-hold stability, as shown by fresh complete-candidate evaluation?"
+      }
+    },
+    "request_fingerprint": "39c6c23bef40b1ad16987d4cdb691db8bfff3471f060aab7f404f1c9a8ca75d5",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains best-known because M5 measured 147/200 on the protected task-reference-v1 panel, supported by M3 and M6; this is evidence-backed selection, not goal certification. T3:checkpoint-105472 has no role because its 195/200 fresh-panel result is contradicted by 33/200 on protected M5. T4:checkpoint-75776 has no role because M7 measured 0/200 protected successes. No candidate is working or retained, and no candidate supports official assessment.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains best-known; M8 measured it at 154/200 on the fresh trace panel, below the 196/200 human-goal threshold. T4:checkpoint-75776 is rejected as a complete route toward the goal after 1/200 on M8 and 0/200 on M7; it is not retained as best-known or working.",
     "completed_operations": [
-      "E27"
+      "M8",
+      "E29"
     ],
-    "cumulative_resource_use": "Campaign total before I7: six inquiry lines, thirteen recorded scientific sessions, seven completed measurements, four completed fresh training operations, 96 archived checkpoints, one best-known candidate, no working or retained candidate, and no official assessment. E27 opened I7 without consuming training or measurement allocation; the campaign now has seven inquiries opened and the current session has one completed operation.",
-    "current_goal_gap": "T1:checkpoint-120832 remains 49 successes short at 147/200 (73.5%) on task-reference-v1. T4:checkpoint-75776 achieved 0/200, with all episodes truncating and final distance spanning 0.65-38.66 cm. No candidate supports official assessment. The unresolved gap is whether the next intervention should prioritize geometry/branch approach coverage, braking and uninterrupted-hold stabilization, or controller/representation trainability.",
-    "current_synthesis": "Established observations: M3 found T1-specific persistent non-entry failures with large joint-limit margin and no contact, plus a smaller high-velocity boundary-crossing hold class. Paired fresh M6 measured T1 at 144/200 and the exact tested T3 branch-aware artifact at 195/200; T3 had one non-entry and four post-entry interruptions on that panel. Protected M5 reversed the selection, measuring T1 at 147/200 and T3 at 33/200 with a different geometry mix. This is an artifact/distribution-tail discrepancy, not evidence that branch-aware control is generally solved or invalid. T4 materially changed the complete T3 artifact to a one-way approach/braking/hold schedule with velocity-aware braking, stronger hold damping, phase-dependent guidance/residual weights and trace instrumentation. Its training proxies were zero throughout and its selected checkpoint achieved 0/200 protected successes; this rejects that complete controller/training artifact as a route toward the goal, but not branch-aware control or explicit braking in general. Correction to the inherited interpretation: M7 did not provide the planned mechanism test. Its protected task-reference artifact contains no synchronized phase, velocity, branch or hold-interruption traces, and therefore cannot support a geometry-versus-stabilization attribution. The physical model still makes ideal reachability distinct from finite-time torque reachability; target geometry and branch choice can affect approach, while zero-order-held saturated commands and residual velocity can destroy the complete hold. The consequential competing explanations remain geometry/branch non-entry, braking/hold instability, and controller-trainability or representation failure. E27 opens a bounded mechanism inquiry rather than presuming another variant is justified.",
-    "decision_frontier": "I7 is the bounded decision point between mechanism-directed control redesign and further learning development. The decisive evidence is a completed non-overlapping trace-enabled evaluation whose synchronized fields actually distinguish approach/branch non-entry from post-entry braking/hold failure and from uniformly poor trainability. If those fields are absent or non-discriminating, preserve the uncertainty and do not treat a new description as a tested method.",
+    "cumulative_resource_use": "Session S15 used one 200-episode paired research evaluation (M8) and one inquiry closure (E29); no training steps or additional measurement allocation were used in this session. Campaign totals at checkpoint: 8 measurements, 4 training runs, 7 inquiries, 15 sessions.",
+    "current_goal_gap": "The human goal remains unmet. On the latest paired fresh panel, T1 is 154/200, 42 successes below the required 196/200; no candidate supports official assessment. T4 is 1/200.",
+    "current_synthesis": "M8 is the first complete trace-enabled mechanism test in this line. It found 167/200 T4 episodes with no first entry and 33/200 entries; of those entrants, 32 failed to complete the uninterrupted hold and one succeeded. T1 had 37/200 non-entries and 154/200 complete holds on identical seeds. T4 non-entry failures span the sampled radius and angular range, and representative traces show branch-aware phase transitions, saturated high-speed motion, no contact, and substantial joint-limit margin. The evidence distinguishes primary approach/branch-coverage or controller-trainability limitation in this tested T4 artifact from a secondary braking/hold instability among its entrants. It does not generalize that negative result to all branch-aware control, explicit braking, or representations. Earlier M5/M6 distribution reversals still limit claims based on any single panel.",
+    "decision_frontier": "I7 is closed with a bounded positive mechanism distinction. The next credible route is a redesigned controller/representation and learning experiment that targets approach coverage and trainability first, while retaining synchronized hold diagnostics and treating braking/hold stabilization as a separate acceptance criterion. Further uninstrumented variants or official assessment are not justified by the current evidence.",
     "evidence_references": [
-      "M3",
-      "M5",
-      "M6",
-      "T4",
-      "M7",
-      "E25",
-      "E27"
+      "M8",
+      "E29"
     ],
-    "human_goal_connection": "The campaign still seeks a learned policy with at least 196 successes in the fixed 200-episode official assessment, where every success requires the complete uninterrupted 100-control-step hold. The strongest protected artifact is T1:checkpoint-120832 at 147/200; T4 is 0/200, so the current work must identify a credible route to remove the 49-success gap before any terminal assessment commitment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I7 is open. The next action should be a non-overlapping trace-enabled research evaluation of T4 and an appropriate reference under identical episode seeds, retaining per-control-step first-entry, branch or phase, joint state and speed, distance, hold-interruption and outcome diagnostics. Use that evidence to choose one route toward 196/200 or close the inquiry with an explicit diagnostic limitation; do not repeat T4's schedule unchanged, infer mechanism from M7's aggregate artifact, or request official assessment on T1.",
-    "next_question": "Can protected-panel-relevant synchronized traces distinguish geometry/branch non-entry from braking/hold instability or controller-trainability failure well enough to choose the next credible route toward at least 196/200?",
-    "scientific_commit": "db9b11f8fa67df0df76d6bdd64bc938f9a5ac784",
-    "session_id": "S14"
+    "human_goal_connection": "The required outcome is at least 196/200 episodes with a complete uninterrupted 100-step hold. M8 shows why the rejected T4 artifact cannot close the 42-success gap: most failures occur before entry, and nearly all of its rare entries then lose the hold. The checkpoint preserves T1 as the best-known baseline for the next redesign rather than mistaking a mechanism diagnosis for goal attainment.",
+    "inquiry_id": "I7",
+    "next_direction_or_closure": "I7 is closed. Continue only with a mechanism-directed redesign and fresh evidence: improve the policy/controller representation and approach coverage while instrumenting entry speed, phase, branch, and hold interruptions; accept a route only when complete-candidate evaluation approaches the 196/200 threshold. Do not request official assessment from T1 or T4.",
+    "next_question": "Can a redesigned policy/controller representation improve full-distribution approach and branch coverage toward at least 196/200 while retaining uninterrupted-hold stability, as shown by fresh complete-candidate evaluation?",
+    "scientific_commit": "b88398c997c72084ee3b1dcc999b9e3f7100b8a6",
+    "session_id": "S15"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7922,22 +8042,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "58351128-52c0-4a28-a2b8-9953775b2627",
-    "id": "S15",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can protected-panel-relevant synchronized traces distinguish geometry/branch non-entry from braking/hold instability or controller-trainability failure well enough to choose the next credible route toward at least 196/200? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M8",
-      "E29"
-    ],
-    "scientific_parent_commit": "09c7f960cd3298d97012b79c5ee8e5f48252c203"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

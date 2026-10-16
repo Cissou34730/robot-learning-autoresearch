@@ -43,3 +43,4 @@
 | E28 | checkpoint | - | checkpointed |
 | M8 | measurement | I7 | completed |
 | E29 | inquiry | I7 | completed |
+| E30 | checkpoint | I7 | checkpointed |
