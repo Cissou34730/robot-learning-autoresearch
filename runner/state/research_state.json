@@ -7288,38 +7288,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "Limited negative conclusion: the materially revised branch-aware artifact did not advance toward the human goal. T4 trained the new state-driven approach/braking/hold schedule, and the selected non-terminal checkpoint T4:checkpoint-75776 achieved 0/200 on the protected task-reference-v1 panel in M7; all episodes truncated at 500 steps, with final distance ranging from 0.65 cm to 38.66 cm (mean 12.16 cm). This is far below the 196/200 requirement and is not a near-threshold hold deficit. The result is a property of the complete T4 artifact, not proof that branch-aware control or explicit braking is generally invalid. The protected task-reference artifact did not include synchronized phase, velocity, branch, or hold-interruption traces, so M7 cannot distinguish geometry/branch coverage from trainability or stabilization as the causal failure. T4 learning proxies were also zero success at every checkpoint and degraded after approximately 70\u201380k steps, but those proxies are not development performance evidence.",
-        "reason": "I6's closure condition is met by a materially revised artifact and completed protected measurement. The candidate is decisively below the objective, and the available protected artifact lacks the diagnostics required for the planned mechanism split. Preserve T1:checkpoint-120832 as best-known at 147/200; do not assign T4 a goal-directed role. Carry forward that the tested phase schedule was not a credible route under this training recipe, while the unresolved geometry-versus-stabilization distinction and the task-reference diagnostic limitation remain for goal review."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "Limited negative conclusion: the materially revised branch-aware artifact did not advance toward the human goal. T4 trained the new state-driven approach/braking/hold schedule, and the selected non-terminal checkpoint T4:checkpoint-75776 achieved 0/200 on the protected task-reference-v1 panel in M7; all episodes truncated at 500 steps, with final distance ranging from 0.65 cm to 38.66 cm (mean 12.16 cm). This is far below the 196/200 requirement and is not a near-threshold hold deficit. The result is a property of the complete T4 artifact, not proof that branch-aware control or explicit braking is generally invalid. The protected task-reference artifact did not include synchronized phase, velocity, branch, or hold-interruption traces, so M7 cannot distinguish geometry/branch coverage from trainability or stabilization as the causal failure. T4 learning proxies were also zero success at every checkpoint and degraded after approximately 70\u201380k steps, but those proxies are not development performance evidence.",
-        "reason": "I6's closure condition is met by a materially revised artifact and completed protected measurement. The candidate is decisively below the objective, and the available protected artifact lacks the diagnostics required for the planned mechanism split. Preserve T1:checkpoint-120832 as best-known at 147/200; do not assign T4 a goal-directed role. Carry forward that the tested phase schedule was not a credible route under this training recipe, while the unresolved geometry-versus-stabilization distinction and the task-reference diagnostic limitation remain for goal review.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E25",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative conclusion: the materially revised branch-aware artifact did not advance toward the human goal. T4 trained the new state-driven approach/braking/hold schedule, and the selected non-terminal checkpoint T4:checkpoint-75776 achieved 0/200 on the protected task-reference-v1 panel in M7; all episodes truncated at 500 steps, with final distance ranging from 0.65 cm to 38.66 cm (mean 12.16 cm). This is far below the 196/200 requirement and is not a near-threshold hold deficit. The result is a property of the complete T4 artifact, not proof that branch-aware control or explicit braking is generally invalid. The protected task-reference artifact did not include synchronized phase, velocity, branch, or hold-interruption traces, so M7 cannot distinguish geometry/branch coverage from trainability or stabilization as the causal failure. T4 learning proxies were also zero success at every checkpoint and degraded after approximately 70\u201380k steps, but those proxies are not development performance evidence.",
-        "reason": "I6's closure condition is met by a materially revised artifact and completed protected measurement. The candidate is decisively below the objective, and the available protected artifact lacks the diagnostics required for the planned mechanism split. Preserve T1:checkpoint-120832 as best-known at 147/200; do not assign T4 a goal-directed role. Carry forward that the tested phase schedule was not a credible route under this training recipe, while the unresolved geometry-versus-stabilization distinction and the task-reference diagnostic limitation remain for goal review."
-      }
-    },
-    "request_fingerprint": "a076a39ebaf6326009e563b11c69f04c6eb7a93657c0f079c9b6fb3883520310",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains best-known because it is the strongest protected-panel artifact at 147/200, supported by M2, M3, M4 and M5; this role is evidence-backed and not goal certification. T3:checkpoint-105472 has no role because its 195/200 M6 result is contradicted by 33/200 on protected M5. No working or retained candidate supports official assessment. I6's future revised artifact must earn a role from protected evidence.",
     "completed_operations": [
