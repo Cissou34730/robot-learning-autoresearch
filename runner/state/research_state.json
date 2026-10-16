@@ -4344,47 +4344,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed, goal-linked evidence either identifies a reproducible dominant failure signature and supports a specific next intervention or candidate-selection route, or shows that the competing mechanisms remain indistinguishable under the available instrumentation and records an inconclusive redirect. Sufficient discriminating evidence must preserve complete-hold outcomes while conditioning on radius and angle and, where the implementation permits, include reset-to-reach joint trajectories, velocities, branch errors, distances, controls/effort, compiled inertial and actuator quantities, contact state, and internal substep behavior; any causal claim must be limited to the measured artifact comparison and coded semantics.",
-          "goal_connection": "The best-known T1 artifact achieves 147/200 (73.5%) on the matched M3 panel, 49 successes below the comparable 196/200 objective. T2's official-exposure artifact achieves only 70/200 and is not a candidate for assessment. Resolving which failure mechanism is actionable can select a credible route to improve complete uninterrupted holds rather than terminally assess a policy with a large measured gap.",
-          "handoff_conclusion": "Established observations: T1 used the current PPO implementation with 14-20 cm exposure and was measured at 71.5% on M1 and 73.5% on the fresh matched M3 panel; its failures were concentrated in the inner radii on M2/M4, but its 14-20 cm success was strong. T2 changed only the PI-owned training target-radius range to 6-20 cm, used a fresh PPO run with seed 1 and 120,832 completed steps, and retained the same PPO settings, shared scenario mechanics, reward, observations, action timing, and evaluation semantics. T2 was materially worse than T1 on M3: 35.0% versus 73.5%, paired delta -38.5 percentage points. M4 reports T2 never-reached=120 and reached-but-failed-hold=10 versus T1=42 and 11; T2 radius success was 22.8%, 24.6%, 44.4%, and 65.2% for 6-10, 10-14, 14-18, and 18-20 cm, while T1 was 31.6%, 75.4%, 100.0%, and 100.0%. Interpretation: the tested official-exposure artifact did not support continuing this exposure replacement and degraded both inner and outer behavior. Because training exposure and learned artifact/seed changed together, this is a property of the compared artifacts, not proof that official exposure alone is harmful or that broader exposure-based learning is disproven. The broad never-reach increase makes a transient, branch, initialization, or dynamic-authority explanation consequential, while the outer hold loss shows that complete-hold stabilization remains relevant. The angle asymmetry in M4 is a clue but not a branch diagnosis because the angle strata remain pooled across radius. Nominal point-kinematic reachability, compiled inertia and actuator authority, self-contact, and endpoint-versus-substep behavior remain unresolved; neither T2 nor M4 measured trajectories, torques, contacts, compiled fields, or substep distances.",
-          "handoff_question": "Can traces and compiled-dynamics evidence distinguish whether T2's broad never-reach and angle/radius degradation versus T1 is dominated by reset-singularity and branch-transient failure, insufficient or poorly timed dynamic authority, or training-artifact variability, and which resulting intervention is most credible toward at least 196/200 complete holds?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can traces and compiled-dynamics evidence distinguish whether T2's broad never-reach and angle/radius degradation versus T1 is dominated by reset-singularity and branch-transient failure, insufficient or poorly timed dynamic authority, or training-artifact variability, and which resulting intervention is most credible toward at least 196/200 complete holds?",
-          "rationale": "Official assessment would end the campaign on the current best-known artifact despite a 24.5 percentage-point deficit to the goal and no evidence that it is near the required threshold. The matched M3/M4 comparison establishes a large artifact-level degradation: T2 has 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11, with T2 worse in every radius stratum, but it does not establish exposure causality, branch failure, dynamic insufficiency, or seed variability. The scientific model makes reset singularity, branch feasibility, compiled authority, and sampled-hold dynamics consequential, and the existing endpoint diagnostics cannot distinguish them. A bounded discriminating inquiry has higher expected contribution than terminal assessment now, while its closure permits a negative or inconclusive result without overstating the tested method.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed, goal-linked evidence either identifies a reproducible dominant failure signature and supports a specific next intervention or candidate-selection route, or shows that the competing mechanisms remain indistinguishable under the available instrumentation and records an inconclusive redirect. Sufficient discriminating evidence must preserve complete-hold outcomes while conditioning on radius and angle and, where the implementation permits, include reset-to-reach joint trajectories, velocities, branch errors, distances, controls/effort, compiled inertial and actuator quantities, contact state, and internal substep behavior; any causal claim must be limited to the measured artifact comparison and coded semantics.",
-        "goal_connection": "The best-known T1 artifact achieves 147/200 (73.5%) on the matched M3 panel, 49 successes below the comparable 196/200 objective. T2's official-exposure artifact achieves only 70/200 and is not a candidate for assessment. Resolving which failure mechanism is actionable can select a credible route to improve complete uninterrupted holds rather than terminally assess a policy with a large measured gap.",
-        "question": "Can traces and compiled-dynamics evidence distinguish whether T2's broad never-reach and angle/radius degradation versus T1 is dominated by reset-singularity and branch-transient failure, insufficient or poorly timed dynamic authority, or training-artifact variability, and which resulting intervention is most credible toward at least 196/200 complete holds?",
-        "rationale": "Official assessment would end the campaign on the current best-known artifact despite a 24.5 percentage-point deficit to the goal and no evidence that it is near the required threshold. The matched M3/M4 comparison establishes a large artifact-level degradation: T2 has 120 never-reached and 10 reached-but-failed-hold episodes versus T1's 42 and 11, with T2 worse in every radius stratum, but it does not establish exposure causality, branch failure, dynamic insufficiency, or seed variability. The scientific model makes reset singularity, branch feasibility, compiled authority, and sampled-hold dynamics consequential, and the existing endpoint diagnostics cannot distinguish them. A bounded discriminating inquiry has higher expected contribution than terminal assessment now, while its closure permits a negative or inconclusive result without overstating the tested method."
-      }
-    },
-    "request_fingerprint": "c267e96c526a8cf46747bb01c7832a2d031258c3baecc1d14faae960feb94bb7",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-120832, supported by M1 and M3 and assigned by E1; it is not goal-certified. T1:checkpoint-115712 remains a measured comparison artifact. T2:checkpoint-120832 and T2:checkpoint-115712 are fresh official-exposure comparison artifacts measured by M3, but neither is assigned a role because both terminal and earlier artifacts underperformed their T1 counterparts. No working or retained candidate is assigned.",
     "completed_operations": [
