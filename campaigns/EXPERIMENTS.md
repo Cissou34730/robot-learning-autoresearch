@@ -2,18 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| M1 | measurement | - | failed |
-| M2 | measurement | - | completed |
-| T1 | training | - | completed |
-| M3 | measurement | - | completed |
-| M4 | measurement | - | completed |
-| E1 | model_role | - | assigned |
-| E2 | checkpoint | - | checkpointed |
-| E3 | inquiry | I1 | completed |
-| E4 | checkpoint | - | checkpointed |
-| M5 | measurement | I1 | completed |
-| T2 | training | I1 | completed |
-| M6 | measurement | I1 | completed |
-| E5 | inquiry | I1 | completed |
-| E6 | checkpoint | I1 | checkpointed |
-| E7 | campaign_conclusion | - | official_assessment_failed |
