@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when synchronized episode/control diagnostics for the best-known direct-torque artifact and the relevant adverse branch-aware comparison establish a bounded positive, negative, limited, or inconclusive distinction among non-entry, braking, and hold-interruption mechanisms, and the evidence justifies either one specific next control direction or an explicit decision not to repeat the tested guidance blend. The inquiry may close with unresolved causes if the artifacts cannot support that distinction.",
+    "goal_connection": "The best-known artifact achieves only 147/200 protected task-reference successes, leaving 49 failures relative to the 196-success objective. Identifying the dominant failure mechanism is useful only insofar as it selects a redesign that can remove those failures while preserving the complete uninterrupted hold.",
+    "handoff_conclusion": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+    "handoff_question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+    "handoff_source_session_id": "S9",
+    "id": "I5",
+    "opened_in_session": "S10",
+    "question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+    "rationale": "Do not request official assessment: T1 is 49 successes short on the protected 200-episode panel, and no evidence supports 196/200. Do not repeat I4 unchanged: T3's 33/200 result is a negative result for that complete artifact, not a causal disproof of branch-aware control, but M5 records only geometry, outcome, steps, and final distance. M3 establishes that T1 includes dominant zero-contact non-entries and a smaller unstable-hold class, yet the missing synchronized branch, applied-action, and hold traces for the adverse comparison leave approach representation, guidance dynamics, optimization, and stabilization consequentially confounded. A bounded diagnostic inquiry therefore has higher expected decision value than another unmeasured variant; its result will determine whether to redesign approach/control structure, target stabilization, or abandon this branch-aware route for the next decision.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "2b6f9afdce853d1c7fa12e88b47adddf98fbe0ff",
     "id": "a5d7f35a-e420-46df-ae49-fbcd4467a9b6",
@@ -2469,16 +2480,16 @@
     }
   },
   "counters": {
-    "event": 18,
-    "inquiry": 4,
+    "event": 19,
+    "inquiry": 5,
     "measurement": 5,
-    "session": 9,
+    "session": 10,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -5343,9 +5354,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T20:28:58Z",
+      "error": null,
+      "id": "E19",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when synchronized episode/control diagnostics for the best-known direct-torque artifact and the relevant adverse branch-aware comparison establish a bounded positive, negative, limited, or inconclusive distinction among non-entry, braking, and hold-interruption mechanisms, and the evidence justifies either one specific next control direction or an explicit decision not to repeat the tested guidance blend. The inquiry may close with unresolved causes if the artifacts cannot support that distinction.",
+        "goal_connection": "The best-known artifact achieves only 147/200 protected task-reference successes, leaving 49 failures relative to the 196-success objective. Identifying the dominant failure mechanism is useful only insofar as it selects a redesign that can remove those failures while preserving the complete uninterrupted hold.",
+        "question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+        "rationale": "Do not request official assessment: T1 is 49 successes short on the protected 200-episode panel, and no evidence supports 196/200. Do not repeat I4 unchanged: T3's 33/200 result is a negative result for that complete artifact, not a causal disproof of branch-aware control, but M5 records only geometry, outcome, steps, and final distance. M3 establishes that T1 includes dominant zero-contact non-entries and a smaller unstable-hold class, yet the missing synchronized branch, applied-action, and hold traces for the adverse comparison leave approach representation, guidance dynamics, optimization, and stabilization consequentially confounded. A bounded diagnostic inquiry therefore has higher expected decision value than another unmeasured variant; its result will determine whether to redesign approach/control structure, target stabilization, or abandon this branch-aware route for the next decision."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when synchronized episode/control diagnostics for the best-known direct-torque artifact and the relevant adverse branch-aware comparison establish a bounded positive, negative, limited, or inconclusive distinction among non-entry, braking, and hold-interruption mechanisms, and the evidence justifies either one specific next control direction or an explicit decision not to repeat the tested guidance blend. The inquiry may close with unresolved causes if the artifacts cannot support that distinction.",
+          "goal_connection": "The best-known artifact achieves only 147/200 protected task-reference successes, leaving 49 failures relative to the 196-success objective. Identifying the dominant failure mechanism is useful only insofar as it selects a redesign that can remove those failures while preserving the complete uninterrupted hold.",
+          "handoff_conclusion": "Established evidence across the campaign shows that T1's dominant failures are safe-margin non-entries with zero contacts and large joint-limit margins in M3, while a smaller class has unstable hold crossings; T2's full-range exposure-only artifact was adverse and did not establish radius exposure as a sole cause. I4 implemented and trained an explicitly marked branch-aware residual controller: it selected and latched a feasible planar IK branch per episode, supplied bounded joint-space guidance, and retained PPO output as a residual; legacy T1 evaluation remained on the direct-torque path through runtime gating. T3 produced the complete branch-aware artifact, with high training proxies up to 0.99 at several nonterminal checkpoints, but M5 is the decisive task evidence: T3 achieved 33/200 versus T1's 147/200 on identical task-reference seeds. This is a negative artifact-level result for the tested controller and learned artifact, not a causal disproof of branch-aware methods generally. M5's task-reference artifacts preserve target geometry, success, steps, and final distance, but omit first-entry timing, longest uninterrupted hold, interruption count, selected branch, and policy/guidance/applied-action traces. Therefore many T3 failures ending far from target establish severe task failure but do not identify whether the limiting mechanism was incorrect branch selection, guidance/approach dynamics, optimization/representation, or stabilization. The missing diagnostics are an unresolved measurement limitation, not evidence that hold behavior was preserved or regressed.",
+          "handoff_question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+          "handoff_source_session_id": "S9",
+          "id": "I5",
+          "opened_in_session": "S10",
+          "question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+          "rationale": "Do not request official assessment: T1 is 49 successes short on the protected 200-episode panel, and no evidence supports 196/200. Do not repeat I4 unchanged: T3's 33/200 result is a negative result for that complete artifact, not a causal disproof of branch-aware control, but M5 records only geometry, outcome, steps, and final distance. M3 establishes that T1 includes dominant zero-contact non-entries and a smaller unstable-hold class, yet the missing synchronized branch, applied-action, and hold traces for the adverse comparison leave approach representation, guidance dynamics, optimization, and stabilization consequentially confounded. A bounded diagnostic inquiry therefore has higher expected decision value than another unmeasured variant; its result will determine whether to redesign approach/control structure, target stabilization, or abandon this branch-aware route for the next decision.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E19",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when synchronized episode/control diagnostics for the best-known direct-torque artifact and the relevant adverse branch-aware comparison establish a bounded positive, negative, limited, or inconclusive distinction among non-entry, braking, and hold-interruption mechanisms, and the evidence justifies either one specific next control direction or an explicit decision not to repeat the tested guidance blend. The inquiry may close with unresolved causes if the artifacts cannot support that distinction.",
+        "goal_connection": "The best-known artifact achieves only 147/200 protected task-reference successes, leaving 49 failures relative to the 196-success objective. Identifying the dominant failure mechanism is useful only insofar as it selects a redesign that can remove those failures while preserving the complete uninterrupted hold.",
+        "question": "Which mechanism limits T1:checkpoint-120832 under the official distribution\u2014branch/approach selection, finite-time braking, or uninterrupted-hold stabilization\u2014and what control redesign, if any, is justified by synchronized diagnostics without repeating I4's tested guidance blend?",
+        "rationale": "Do not request official assessment: T1 is 49 successes short on the protected 200-episode panel, and no evidence supports 196/200. Do not repeat I4 unchanged: T3's 33/200 result is a negative result for that complete artifact, not a causal disproof of branch-aware control, but M5 records only geometry, outcome, steps, and final distance. M3 establishes that T1 includes dominant zero-contact non-entries and a smaller unstable-hold class, yet the missing synchronized branch, applied-action, and hold traces for the adverse comparison leave approach representation, guidance dynamics, optimization, and stabilization consequentially confounded. A bounded diagnostic inquiry therefore has higher expected decision value than another unmeasured variant; its result will determine whether to redesign approach/control structure, target stabilization, or abandon this branch-aware route for the next decision."
+      }
+    },
+    "request_fingerprint": "91496dbe89544db445abddcb0b0f010e50affc91339f929ef90f2ee0df7ecf8e",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the explicit best-known candidate, supported by M2, M3, and M5, but it is not officially certified and is far below the 98% requirement. T3:checkpoint-105472 is an adverse branch-aware artifact measured by M5 and is not assigned a role. T2:checkpoint-120832 remains an adverse exposure-only artifact without a role. No working candidate supports official assessment and no candidate is retained under a new label.",
     "completed_operations": [
@@ -5384,6 +5458,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "19885dcc-b421-4099-adf2-26ed59e9a5f8",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E19"
+    ],
+    "scientific_parent_commit": "dcc965eebae597b782b551c92d5c8b41c2b1460b"
+  },
   "terminal_state": null
 }
