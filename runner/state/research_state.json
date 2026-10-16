@@ -1607,38 +1607,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
-        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
-        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved with a recipe-specific negative/limited result. The fresh unchanged baseline PPO candidate T1:checkpoint-115712 achieved 105/160 successes (65.625%) on the held-out official-radius research panel, far below the 98% campaign objective. The preserved diagnostics identify the dominant failure class: 49/55 failures had max_held_steps=0 and therefore never entered tolerance; only 6/55 failures entered but failed to complete 100 consecutive held steps. The radius split is strongly consequential: inner targets below 14 cm achieved 42/93 successes (45.2%), while outer targets at or above 14 cm achieved 63/67 (94.0%). This establishes that the tested outer-band-only baseline can learn strong outer-band behavior but does not convert it into full-distribution capability; it does not establish that PPO, the reward, or any single factor is intrinsically inadequate.",
-        "reason": "The closure condition is met: a fresh candidate trained with the unchanged baseline PPO recipe completed a held-out official-distribution evaluation, and the preserved outcome and episode diagnostics distinguish no-entry/inner-radius failure from post-entry hold failure. The candidate is not eligible for official assessment because its measured development success is far below 98%. The next direction should test a training-exposure intervention that includes the official inner-radius range while preserving the task boundary and, initially, the rest of the baseline runtime/reward; M2 does not prove exposure is causal, so that intervention must be compared as a complete candidate against this baseline. Residual post-entry interruptions and unmeasured 2 ms continuity remain consequential secondary questions, but they do not dominate the current failure or justify prioritizing stabilization before addressing inner-band reach."
-      }
-    },
-    "request_fingerprint": "25a8716ab6f0a20a75a53427ee050447165fd0263cd87723ee9d9cc7bc3cd326",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles are empty.",
     "completed_operations": [
