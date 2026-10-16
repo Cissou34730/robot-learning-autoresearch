@@ -1657,13 +1657,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 94.0%; 200 episodes",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/4a8bc5c7-6deb-4ea6-b88b-eb2da1be2264/t1-c8cf701d5-91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+    "completed_at": "2026-10-16T12:53:11Z",
+    "fingerprint": "91b73b3217df5eedea9cd1846bcce86bf6e3b60414ca51b92af6848da5c2bc3a",
+    "model": "T1:checkpoint-120832",
+    "status": "failed",
+    "summary": "goal not reached; success 94.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-16T12:25:10Z",
@@ -3474,7 +3481,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-16T12:52:37Z",
+      "completed_at": "2026-10-16T12:53:11Z",
       "error": null,
       "id": "E7",
       "inquiry_id": null,
@@ -3485,7 +3492,7 @@
       },
       "result": {
         "model": "T1:checkpoint-120832",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S4",
       "status": "completed",
@@ -3537,6 +3544,6 @@
   "terminal_state": {
     "model": "T1:checkpoint-120832",
     "reason": "Request the protected official 200-episode assessment for the explicit best-known artifact T1:checkpoint-120832. T1 is the only complete policy with strong development evidence: it was trained with the full official 0.06-0.20 m radial exposure and achieved 150/160 = 93.75% on the held-out full-radius panel, reproduced on the identical panel with schema-7 diagnostics (M3, M4, M5), while preserving the official target distribution, 1 cm tolerance, 100 consecutive post-block hold checks, and unchanged physics and action timing. The physical model is supported in the tested regime: official targets have a feasible IK branch, failures showed no contacts, and the residual failures were structured mainly as branch/limit trajectory failures (7/10) with a consequential high-residual-velocity/hold-interruption class (2/10 plus one mixed case). T2 does not provide a viable replacement or a basis for another inquiry: its signed-margin observation-only implementation had zero training success at every checkpoint and only 25/160 = 15.625% development success, with unequal saved components/runtime, so this is a negative result for that fresh PPO artifact, not evidence against branch-aware control generally. No braking intervention has been tested, and the causal remedy remains unresolved; those are preserved limitations rather than reasons to treat an untested variant as a better candidate. The development score is below 98%, but the contract does not make that a barrier to assessment, and the protected 200-episode result is the direct campaign-level decision needed now. Further bounded work has no demonstrated viable complete artifact and would spend resources on an unvalidated intervention, whereas assessment of T1 directly determines whether the human goal is met or the campaign ends in failure.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
