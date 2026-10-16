@@ -26,6 +26,9 @@ SCALAR_BYTES = 32 * 1024 * 1024
 _VALIDATED_ROOT_LIMIT = 128
 _VALIDATED_ROOTS: OrderedDict[tuple[str, int, int], tuple[int, int]] = OrderedDict()
 _VALIDATION_LOCK = Lock()
+_CONTAINER_END_LIMIT = 50_000
+_CONTAINER_ENDS: OrderedDict[tuple[str, int], int] = OrderedDict()
+_CONTAINER_LOCK = Lock()
 
 
 class OutputBudgetExceeded(ValueError):
@@ -205,6 +208,18 @@ class JsonDocument:
     def value_end(self, position: int) -> int:
         if self.buffer[position] not in (91, 123):
             return self.scalar_end(position)
+        key = (self.fingerprint, position)
+        with _CONTAINER_LOCK:
+            end = _CONTAINER_ENDS.get(key)
+            if end is None:
+                end = self._container_end(position)
+                _CONTAINER_ENDS[key] = end
+                if len(_CONTAINER_ENDS) > _CONTAINER_END_LIMIT:
+                    _CONTAINER_ENDS.popitem(last=False)
+            _CONTAINER_ENDS.move_to_end(key)
+        return end
+
+    def _container_end(self, position: int) -> int:
         depth = 1
         position += 1
         while match := _STRUCTURE.search(self.buffer, position):
