@@ -3696,55 +3696,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M3",
-          "M4"
-        ],
-        "reason": "M3 and M4 provide the strongest completed held-out evidence: on the paired seeds 4200-4359, T2 achieves 150/160 = 93.75% versus T1's 105/160 = 65.625%. M4 shows the improvement is concentrated in the inner band (90/93 = 96.77% versus 42/93 = 45.16%, with no-entry falling from 45 to 3), while outer performance regresses (60/67 = 89.55% versus 63/67 = 94.03%, with three post-entry failures and 438 interruptions). T2 is therefore the strongest evidence-backed complete artifact, but it is not goal-qualified and the exposure change remains a recipe-specific artifact difference rather than an established causal effect."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/e0acf639-be47-4a77-bbc5-fa33eb706033/t2-c8cf701d5-97f9e85ea42d44aa5287be1e5623f55ce3b6b3f2939bb67d7ba4b002554b2d99",
-        "fingerprint": "97f9e85ea42d44aa5287be1e5623f55ce3b6b3f2939bb67d7ba4b002554b2d99",
-        "source": "campaigns/checkpoints/candidates/e0acf639-be47-4a77-bbc5-fa33eb706033/t2/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M3",
-          "M4"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-120832",
-        "evidence": [
-          "T2",
-          "M3",
-          "M4"
-        ],
-        "reason": "M3 and M4 provide the strongest completed held-out evidence: on the paired seeds 4200-4359, T2 achieves 150/160 = 93.75% versus T1's 105/160 = 65.625%. M4 shows the improvement is concentrated in the inner band (90/93 = 96.77% versus 42/93 = 45.16%, with no-entry falling from 45 to 3), while outer performance regresses (60/67 = 89.55% versus 63/67 = 94.03%, with three post-entry failures and 438 interruptions). T2 is therefore the strongest evidence-backed complete artifact, but it is not goal-qualified and the exposure change remains a recipe-specific artifact difference rather than an established causal effect."
-      }
-    },
-    "request_fingerprint": "5c47289648d0a2fada8b7b7c86b5f1fdb03b1057067588e9d5ecb0421f9d8a6d",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned from M2 because it is the only candidate with held-out official-distribution evidence; it is not goal-qualified. Working: none. Retained: none. The new candidate will not receive a role implicitly; selection will follow complete held-out evidence.",
     "completed_operations": [
