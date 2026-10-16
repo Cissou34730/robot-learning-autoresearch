@@ -26,3 +26,4 @@
 | M6 | measurement | I3 | completed |
 | E14 | inquiry | I3 | completed |
 | E15 | checkpoint | I3 | checkpointed |
+| E16 | model_role | - | assigned |

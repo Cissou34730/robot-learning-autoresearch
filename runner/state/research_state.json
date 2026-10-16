@@ -1717,7 +1717,7 @@
       "training_steps": 10240
     },
     "T3:checkpoint-105472": {
-      "artifact": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t3/checkpoint-105472",
+      "artifact": "campaigns/checkpoints/retained/5c83824d-8c09-447e-b338-e3e036a23cbf/t3-ca3d05779-3da7c5a4322833867c6ac7dd771ffc86489fade52ba8545adebba4ff6e2517c8",
       "evaluation_artifacts": [
         "campaigns/evaluations/5c83824d-8c09-447e-b338-e3e036a23cbf/evaluation-5c83824d-8c09-447e-b338-e3e036a23cbf-m6-T3-checkpoint-105472-160ep-seed4800-e8875f662016.json"
       ],
@@ -2468,18 +2468,18 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 3,
     "measurement": 6,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T2:checkpoint-120832",
+    "best_known": "T3:checkpoint-105472",
     "retained": {},
     "working": null
   },
@@ -5349,9 +5349,88 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-16T00:33:31Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T3:checkpoint-105472",
+        "evidence": [
+          "M6",
+          "E14",
+          "T3"
+        ],
+        "reason": "Assign T3 as best-known because it is the strongest complete artifact on the matched disjoint M6 panel: 158/160 successes (98.75%) versus T2's 155/160 (96.875%), with all three discordant episodes favoring T3. T3 preserved the full official radial exposure and improved both observed failure classes relative to T2: no-reach fell from 4 to 2 and hold interruptions from 1 to 0, while inner-band success remained 92/93 and outer-band success rose from 63/67 to 66/67. The T3 training trajectory shows 1.00 proxy success through checkpoint 105472 and the saved components/runtime differ from T2, supporting a distinct candidate artifact; these proxies and the single development panel do not certify the official goal or isolate either reward term as causal."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T3:checkpoint-105472",
+        "evidence": [
+          "M6",
+          "E14",
+          "T3"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T3:checkpoint-105472",
+        "evidence": [
+          "M6",
+          "E14",
+          "T3"
+        ],
+        "reason": "Assign T3 as best-known because it is the strongest complete artifact on the matched disjoint M6 panel: 158/160 successes (98.75%) versus T2's 155/160 (96.875%), with all three discordant episodes favoring T3. T3 preserved the full official radial exposure and improved both observed failure classes relative to T2: no-reach fell from 4 to 2 and hold interruptions from 1 to 0, while inner-band success remained 92/93 and outer-band success rose from 63/67 to 66/67. The T3 training trajectory shows 1.00 proxy success through checkpoint 105472 and the saved components/runtime differ from T2, supporting a distinct candidate artifact; these proxies and the single development panel do not certify the official goal or isolate either reward term as causal."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/5c83824d-8c09-447e-b338-e3e036a23cbf/t3-ca3d05779-3da7c5a4322833867c6ac7dd771ffc86489fade52ba8545adebba4ff6e2517c8",
+        "fingerprint": "3da7c5a4322833867c6ac7dd771ffc86489fade52ba8545adebba4ff6e2517c8",
+        "source": "campaigns/checkpoints/candidates/5c83824d-8c09-447e-b338-e3e036a23cbf/t3/checkpoint-105472"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T3:checkpoint-105472",
+        "evidence": [
+          "M6",
+          "E14",
+          "T3"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T3:checkpoint-105472",
+        "evidence": [
+          "M6",
+          "E14",
+          "T3"
+        ],
+        "reason": "Assign T3 as best-known because it is the strongest complete artifact on the matched disjoint M6 panel: 158/160 successes (98.75%) versus T2's 155/160 (96.875%), with all three discordant episodes favoring T3. T3 preserved the full official radial exposure and improved both observed failure classes relative to T2: no-reach fell from 4 to 2 and hold interruptions from 1 to 0, while inner-band success remained 92/93 and outer-band success rose from 63/67 to 66/67. The T3 training trajectory shows 1.00 proxy success through checkpoint 105472 and the saved components/runtime differ from T2, supporting a distinct candidate artifact; these proxies and the single development panel do not certify the official goal or isolate either reward term as causal."
+      }
+    },
+    "request_fingerprint": "86af208fd08f6499bf4cd42dc12b56a017499dc75dca8503b590f1bb26f0ddad",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T2:checkpoint-120832 by the current explicit role assignment; T3:checkpoint-105472 has stronger completed M6 development evidence but has not yet been assigned a role. T1 remains the matched historical reference. No candidate is official-goal certified. The next goal-review session should explicitly compare and, if warranted, assign T3 as best-known before any official-assessment request.",
     "completed_operations": [
@@ -5387,6 +5466,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8a1efe41-4ddf-4866-bc6a-3087c8ce8f42",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E16"
+    ],
+    "scientific_parent_commit": "a27ef70059a12db35017b732d56212e8785fbb94"
+  },
   "terminal_state": null
 }
