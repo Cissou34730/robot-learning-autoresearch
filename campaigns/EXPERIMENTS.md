@@ -44,3 +44,4 @@
 | M15 | measurement | I5 | completed |
 | M16 | measurement | I5 | completed |
 | E22 | model_role | I5 | assigned |
+| E23 | inquiry | I5 | completed |

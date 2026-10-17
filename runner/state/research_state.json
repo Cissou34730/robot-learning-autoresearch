@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a complete transfer-trained artifact is evaluated on the matched 160-episode full-range development panel with the saved runtime verified and radius/angle, first-reach, no-reach, hold-failure, branch, endpoint-speed, interruption, and saturation diagnostics. The route is positive only if total success improves over T1, inner 6-14 cm no-reach and success improve, and outer 14-20 cm success and first reach are each no worse than T1's 63/67; it is negative if these preservation and improvement conditions fail, and limited if diagnostics show a useful partial capability without meeting both guardrails.",
-    "goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across 6-20 cm. T1 provides the strongest observed outer behavior but fails mainly on inner no-reach, while fresh full-range T2 failed to learn effectively and complete T3 traded inner gains for outer regression. Preserving existing outer competence while acquiring inner launch behavior is therefore the most direct remaining route toward reducing the dominant failure class without sacrificing already demonstrated capability.",
-    "handoff_conclusion": "Established observations: the model's kinematic analysis supports feasibility of the official annulus, while the singular fully extended reset makes launch and branch-conditioned trajectory acquisition consequential; direct torque control and the uninterrupted hold make reach and stabilization coupled. T1's complete saved artifact demonstrates useful outer-range reach and holds but leaves an inner launch/coverage deficit. T2 establishes that a fresh policy exposed to the full radial range can fail to acquire either useful training success or a strong complete candidate; it does not disprove full-range learning, but it makes another fresh full-range run a weak next direction. M12's research-only adapter improved T1's inner first reach, but T3 shows that carrying that stateful adapter into training and the saved runtime did not preserve outer behavior. T3's changed weights, runtime, action history and branch occupancy remain jointly confounded, so branch identity or the adapter is not an isolated established cause. Correction to the inherited direction: the goal-relevant distinction is no longer simply whether a complete candidate can be built under full-range exposure; it is whether T1's acquired outer capability can be retained while inner exposure is introduced through transfer, without relying on an evaluator-only intervention. The physical consequences that matter are preservation of the learned outer basin, escape from the singular reset into an inner target, branch/angle coverage, torque saturation and low-velocity hold margin. Compiled dynamics and the exact protected substep semantics remain unresolved, but available diagnostics already show the dominant complete-candidate decision is launch/coverage versus outer preservation, not missing static reachability.",
-    "handoff_question": "Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds?",
-    "handoff_source_session_id": "S10",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds?",
-    "rationale": "Immediate official assessment is not justified by T1's 105/160 development result. The inherited question remains goal-relevant, but the evidence requires correction of its next method: T2 already tested fresh full-range exposure and scored 54/160 with zero training-proxy success and persistent 500-step episodes, while T3's complete stateful launch adapter scored 95/160 and regressed outer success to 37/67. T1's 63/67 outer success and zero outer hold failures are valuable acquired behavior to preserve, so transfer from T1 is a consequential alternative to another fresh full-range run. This inquiry will compare complete artifacts, not claim that transfer alone causes any improvement; saved-runtime behavior, branch occupancy, and the remaining joint/runtime confounds will be reported as limits.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f3ce063992e51881c7e7e202bed8456c45ef8c44",
     "id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
@@ -3297,7 +3286,7 @@
     }
   },
   "counters": {
-    "event": 22,
+    "event": 23,
     "inquiry": 5,
     "measurement": 16,
     "session": 11,
@@ -3306,7 +3295,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-115712",
     "retained": {},
@@ -11174,9 +11163,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:59:33Z",
+      "error": null,
+      "id": "E23",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
+        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
+        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
+        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
+        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E23",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
+        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains."
+      }
+    },
+    "request_fingerprint": "a011111668554fb838b378de9676d3e4d685372f7e950c7a00fcf6ef66daee8f",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
@@ -11233,7 +11276,8 @@
       "T4",
       "M15",
       "M16",
-      "E22"
+      "E22",
+      "E23"
     ],
     "scientific_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87"
   },
