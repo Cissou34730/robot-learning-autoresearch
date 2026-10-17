@@ -11188,38 +11188,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
-        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
-        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E23",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited positive capability result: transfer from T1 under the restored default identity saved runtime and complete 6-20 cm training exposure produced T4:checkpoint-115712 at 148/160 successes on the matched development panel, with inner 6-14 cm success improving from 42/93 to 86/93 and inner no-reaches falling from 45 to 3. Outer first reach was preserved at 63/67, but outer success fell from 63/67 to 62/67, so the strict positive guardrails were not both met and I5 is not a positive closure.",
-        "reason": "M15 and M16 provide the required complete saved-runtime artifact comparison and diagnostics. They support transfer as a credible partial route for escaping the singular reset and acquiring inner coverage, while exposing a residual outer hold/success tradeoff. The model's reach/hold coupling remains consequential: T4 had 5 total hold failures and 7 no-reaches, with endpoint-speed and saturation summaries showing dynamic margin remains unresolved. Both policies ended on the open branch and all episodes experienced saturation, so branch identity is not isolated as a cause and saturation is a remaining mechanism-level concern. The inquiry is closed limited rather than extended because its stated preservation criterion failed; the human goal remains unmet and the next direction must address outer hold preservation and dynamic margin without discarding T4's inner launch gains."
-      }
-    },
-    "request_fingerprint": "a011111668554fb838b378de9676d3e4d685372f7e950c7a00fcf6ef66daee8f",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
