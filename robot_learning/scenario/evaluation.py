@@ -26,6 +26,36 @@ from robot_learning.scenario.environment import (
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
+def _finite_vector(
+    value, *, name: str, expected_size: int | None = None
+) -> np.ndarray:
+    vector = np.asarray(value, dtype=np.float64)
+    if vector.ndim != 1 or (
+        expected_size is not None and vector.size != expected_size
+    ):
+        expected = (
+            f" with {expected_size} elements" if expected_size is not None else ""
+        )
+        raise RuntimeError(
+            f"Research evaluation received an invalid {name}; expected a "
+            f"one-dimensional vector{expected}"
+        )
+    if not np.all(np.isfinite(vector)):
+        raise RuntimeError(
+            f"Research evaluation received non-finite values in {name}"
+        )
+    return vector.copy()
+
+
+def _finite_scalar(value, *, name: str) -> float:
+    scalar = float(value)
+    if not np.isfinite(scalar):
+        raise RuntimeError(
+            f"Research evaluation received a non-finite {name}"
+        )
+    return scalar
+
+
 def evaluate_research_model(
     model_path: Path,
     *,
@@ -68,6 +98,7 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        trajectory: list[dict] = []
         branch_occupancy_counts = dict.fromkeys(ELBOW_BRANCH_LABELS, 0)
         final_elbow_branch: str | None = None
         final_elbow_qpos_rad: float | None = None
@@ -78,16 +109,34 @@ def evaluate_research_model(
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            distance_cm = 100.0 * float(info["distance"])
+            end_effector_position_m = _finite_vector(
+                info["end_effector_position_m"],
+                name="end-effector position",
+                expected_size=3,
+            )
+            target_relative_error_m = end_effector_position_m - target_position
+            if not np.all(np.isfinite(target_relative_error_m)):
+                raise RuntimeError(
+                    "Research evaluation received non-finite target-relative "
+                    "end-effector error"
+                )
+            task_distance_m = _finite_scalar(info["distance"], name="distance")
+            distance_cm = 100.0 * task_distance_m
+            trajectory_distance_m = _finite_scalar(
+                np.linalg.norm(target_relative_error_m),
+                name="trajectory distance",
+            )
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
-            endpoint_speed_mps = float(info["endpoint_speed_mps"])
-            if not np.isfinite(endpoint_speed_mps):
-                raise RuntimeError(
-                    "Research evaluation received a non-finite endpoint speed "
-                    "from the scenario environment"
-                )
+            endpoint_velocity_mps = _finite_vector(
+                info["endpoint_velocity_mps"],
+                name="endpoint velocity",
+                expected_size=3,
+            )
+            endpoint_speed_mps = _finite_scalar(
+                info["endpoint_speed_mps"], name="endpoint speed"
+            )
             if max_endpoint_speed_mps is None:
                 max_endpoint_speed_mps = endpoint_speed_mps
             else:
@@ -113,6 +162,11 @@ def evaluate_research_model(
                     "Scenario action saturation instrumentation changed "
                     "joint shape during an episode"
                 )
+            applied_action = _finite_vector(
+                info["applied_action"],
+                name="applied action",
+                expected_size=action_saturated.size,
+            )
             action_saturation_count_per_joint += action_saturated
             action_saturation_count += int(np.count_nonzero(action_saturated))
             elbow_branch = str(info["elbow_branch"])
@@ -133,6 +187,35 @@ def evaluate_research_model(
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
+            joint_positions_rad = _finite_vector(
+                env.data.qpos, name="joint positions", expected_size=2
+            )
+            joint_velocities_rad_per_s = _finite_vector(
+                env.data.qvel, name="joint velocities", expected_size=2
+            )
+            trajectory.append(
+                {
+                    # Control steps are one-based, matching first_reach_step.
+                    "control_step": steps,
+                    "end_effector_position_m": end_effector_position_m.tolist(),
+                    "target_relative_error_m": target_relative_error_m.tolist(),
+                    "joint_positions_rad": joint_positions_rad.tolist(),
+                    "joint_velocities_rad_per_s": (
+                        joint_velocities_rad_per_s.tolist()
+                    ),
+                    "endpoint_velocity_mps": endpoint_velocity_mps.tolist(),
+                    "endpoint_speed_mps": endpoint_speed_mps,
+                    "distance_m": trajectory_distance_m,
+                    "applied_action": applied_action.tolist(),
+                    "action_saturated": action_saturated.tolist(),
+                    "elbow_qpos_rad": float(final_elbow_qpos_rad),
+                    "elbow_branch": elbow_branch,
+                    "held_steps": held_steps,
+                    "in_tolerance": bool(
+                        trajectory_distance_m <= env.success_threshold
+                    ),
+                }
+            )
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -197,6 +280,7 @@ def evaluate_research_model(
                 "action_saturation_fraction_per_joint": (
                     action_saturation_fraction_per_joint.tolist()
                 ),
+                "trajectory": trajectory,
             }
         )
         if progress_callback is not None:
@@ -221,6 +305,109 @@ def evaluate_research_model(
                 "endpoint_speed": "m_per_s",
                 "elbow_qpos": "rad",
                 "action_saturation_fraction": "proportion",
+            },
+            "trajectory_schema": {
+                "row_semantics": (
+                    "One row per visible control step, sampled at the "
+                    "post-control-boundary state. control_step is one-based "
+                    "and rows continue through termination or truncation."
+                ),
+                "fields": {
+                    "control_step": {
+                        "units": "control_steps",
+                        "semantics": "One-based visible control-step index.",
+                    },
+                    "end_effector_position_m": {
+                        "units": "m",
+                        "semantics": (
+                            "World-frame end-effector position after the "
+                            "control interval."
+                        ),
+                    },
+                    "target_relative_error_m": {
+                        "units": "m",
+                        "semantics": (
+                            "End-effector position minus the fixed target "
+                            "position at the same boundary."
+                        ),
+                    },
+                    "joint_positions_rad": {
+                        "units": "rad",
+                        "semantics": (
+                            "Two joint positions at the post-control "
+                            "boundary, ordered shoulder then elbow."
+                        ),
+                    },
+                    "joint_velocities_rad_per_s": {
+                        "units": "rad_per_s",
+                        "semantics": (
+                            "Two joint velocities at the post-control "
+                            "boundary, ordered shoulder then elbow."
+                        ),
+                    },
+                    "endpoint_velocity_mps": {
+                        "units": "m_per_s",
+                        "semantics": (
+                            "World-frame end-effector linear velocity at "
+                            "the post-control boundary."
+                        ),
+                    },
+                    "endpoint_speed_mps": {
+                        "units": "m_per_s",
+                        "semantics": (
+                            "Euclidean norm of endpoint_velocity_mps."
+                        ),
+                    },
+                    "distance_m": {
+                        "units": "m",
+                        "semantics": (
+                            "Three-dimensional Euclidean distance computed "
+                            "from the post-control-boundary position and "
+                            "target-relative error in this row."
+                        ),
+                    },
+                    "applied_action": {
+                        "units": "dimensionless_action",
+                        "semantics": (
+                            "Post-adapter action after environment clipping, "
+                            "in the order applied to the two actuators."
+                        ),
+                    },
+                    "action_saturated": {
+                        "units": "boolean_per_joint",
+                        "semantics": (
+                            "Whether the corresponding applied action equals "
+                            "an inclusive action bound."
+                        ),
+                    },
+                    "elbow_qpos_rad": {
+                        "units": "rad",
+                        "semantics": "Relative elbow joint configuration.",
+                    },
+                    "elbow_branch": {
+                        "units": "label",
+                        "semantics": (
+                            "Branch label derived from elbow_qpos_rad: open, "
+                            "folded, or singular."
+                        ),
+                    },
+                    "held_steps": {
+                        "units": "control_steps",
+                        "semantics": (
+                            "Existing environment task hold counter reported "
+                            "for this control step; zero after a task-level "
+                            "interruption."
+                        ),
+                    },
+                    "in_tolerance": {
+                        "units": "boolean",
+                        "semantics": (
+                            "Whether this row's post-control-boundary "
+                            "distance is within the success threshold; the "
+                            "existing task counter remains in held_steps."
+                        ),
+                    },
+                },
             },
         },
     }

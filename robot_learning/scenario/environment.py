@@ -87,8 +87,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._held_steps = 0
         self._outside_after_hold = False
 
-    def _end_effector_position(self) -> np.ndarray:
-        return self.data.site("end_effector").xpos.copy()
+    def _end_effector_position(self, data=None) -> np.ndarray:
+        source_data = self.data if data is None else data
+        return source_data.site("end_effector").xpos.copy()
 
     def _end_effector_velocity(self) -> np.ndarray:
         """Return boundary velocity without changing task-owned derived fields."""
@@ -196,7 +197,20 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
 
+        # _end_effector_velocity refreshes the isolated data copy from the
+        # post-integration joint state. Read the new position from that same
+        # copy so instrumentation is boundary-aligned without changing the
+        # task-owned derived fields used below.
         endpoint_velocity = self._end_effector_velocity()
+        end_effector_position = self._end_effector_position(self._velocity_data)
+        if (
+            end_effector_position.shape != (3,)
+            or not np.all(np.isfinite(end_effector_position))
+        ):
+            raise RuntimeError(
+                "MuJoCo did not provide a finite world-frame position for "
+                "the end_effector site"
+            )
         endpoint_speed = float(np.linalg.norm(endpoint_velocity))
         elbow_qpos, elbow_branch = self._elbow_configuration()
         distance = self._distance_to_target()
@@ -233,6 +247,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # inputs and do not participate in termination or reward.
             "applied_action": applied_action,
             "action_saturated": action_saturated,
+            "end_effector_position_m": end_effector_position,
             "endpoint_velocity_mps": endpoint_velocity,
             "endpoint_speed_mps": endpoint_speed,
             "elbow_qpos_rad": elbow_qpos,
