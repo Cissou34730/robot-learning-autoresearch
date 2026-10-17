@@ -2136,55 +2136,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-115712",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "reason": "This is the only learned candidate measured in the campaign and it is the strongest evidence-backed artifact currently available: it achieved 105/160 successes on a full-range development panel. M4 shows its dominant shortfall is no-reach in the 6-14 cm inner annulus, with only six reached-but-unsuccessful hold cases, so it is a valid baseline for the next exposure comparison but not a goal-certifying policy."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t1-cfbc9e22f-f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
-        "fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
-        "source": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t1/checkpoint-115712"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-115712",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-115712",
-        "evidence": [
-          "T1",
-          "M3",
-          "M4"
-        ],
-        "reason": "This is the only learned candidate measured in the campaign and it is the strongest evidence-backed artifact currently available: it achieved 105/160 successes on a full-range development panel. M4 shows its dominant shortfall is no-reach in the 6-14 cm inner annulus, with only six reached-but-unsuccessful hold cases, so it is a valid baseline for the next exposure comparison but not a goal-certifying policy."
-      }
-    },
-    "request_fingerprint": "05b8eeb972048054893f02fd0758997063c7d44df1c35ff9ccbb90bbb5513955",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
     "completed_operations": [
