@@ -53,3 +53,4 @@
 | M14 | measurement | I7 | failed |
 | M15 | measurement | I7 | failed |
 | M16 | measurement | I7 | completed |
+| E29 | inquiry | I7 | completed |

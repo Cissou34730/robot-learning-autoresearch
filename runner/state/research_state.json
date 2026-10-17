@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when matched, activation-verified evidence under controlled signed IK-branch choices and mirrored target angles records selected branch, acquisition actions or equivalent branch-directed behavior, first reach, and complete hold outcomes well enough either (a) to support a concrete repair path that can plausibly combine T3/T5-level performance with T7's conditional maintenance, or (b) to rule out branch/angle control as the consequential explanation or show that it cannot credibly close the 40-episode gap; preserve any remaining artifact-level confound if the diagnostic cannot distinguish it.",
-    "goal_connection": "The campaign is 40 successes short of the 196/200 objective with T3/T5 at 156/200, while T7's verified v2 runtime fell to 94/200 through 106 never-reached failures despite zero reached-but-failed-hold cases. A mechanism test could determine whether a repairable branch/angle runtime defect offers a materially better route than submitting the current best-known artifact for an expected fail assessment.",
-    "handoff_conclusion": "Established observations: the fixed physical model predicts at least one nominal joint-limit-compatible point-IK branch throughout the 6-20 cm target range, but reset begins at a rank-one fully extended singularity, inner targets require larger elbow folds, and success couples acquisition to a 100-control-step endpoint hold. M5 found identical compiled plant semantics and zero contacts for T1/T2, so plant retuning and contact attribution remain unsupported. T5 implemented an activation-verified stateful v1 runtime whose acquisition switched on observed 1 cm entry to bounded nearest-valid-IK maintenance with reacquisition after exits; M10/M11 measured T5 at 156/200, reducing reached-but-failed-hold failures to 7 but retaining 37 never-reached failures and weakening outer behavior relative to T3. I6 materially changed the runtime: v2 added bounded reset escape and latched joint-limit-aware branch acquisition; after T6 exposed full learned-action suppression, the reviewed repair blended learned actions with bounded branch feedback. T7 recovered nonzero training proxies, and M12 verified controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true, but T7 measured only 94/200. All 94 successes completed the full hold, while 106 failures never reached. M13 found never-reached failures in every radius bin and a strong angle pattern: 37/58 failures in [-180,-90), 46/53 in [-90,0), 23/42 in [0,90), and 0/47 in [90,180). This supports a limited conditional-maintenance claim for the tested runtime and a negative artifact-level result for its acquisition design; it does not establish that signed branch choice, target-angle convention, or learned-artifact interaction is causal because they changed together. T6 remains execution history, not evidence against the repaired method. The initial model's generic reset-singularity explanation is now explicitly weakened as a sufficient account of T7: a reset singularity is not expected by itself to produce the observed strong signed-angle asymmetry. This correction is based on M13's angle-stratified never-reach counts, while preserving the possibility that branch-dependent escape interacts with the singular reset. Endpoint/substep and self-contact uncertainties remain limits on physical generalization, not reasons to alter protected task semantics. I7 now tests the consequential distinction rather than assuming it: only a controlled, activation-verified intervention that forces or labels signed branches under mirrored angles can separate a branch/angle mechanism from a complete learned-artifact difference; otherwise the result remains artifact-level.",
-    "handoff_question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?",
-    "handoff_source_session_id": "S14",
-    "id": "I7",
-    "opened_in_session": "S14",
-    "question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?",
-    "rationale": "Opening one bounded diagnostic inquiry is preferable to terminal assessment now because the current best candidate is only 78% on the matched panel, but T7 contains a sharply asymmetric never-reach pattern and a reliable full hold after acquisition. That pattern is compatible with a localized signed-branch or angle-convention failure in the newly implemented runtime, although source changes, branch choice, and learned artifact were coupled. Another aggregate evaluation or unaltered v2 training run would not discriminate those alternatives; a controlled branch/angle test can, at lower cost than another 120,000-step training allocation, and its negative result would justify assessment or a direction change.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a023bf7f01b7eea1a4e9f735ac3e2609b0976b40",
     "id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
@@ -5763,7 +5752,7 @@
     }
   },
   "counters": {
-    "event": 28,
+    "event": 29,
     "inquiry": 7,
     "measurement": 16,
     "session": 15,
@@ -20694,9 +20683,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M15"
+    },
+    {
+      "completed_at": "2026-10-17T00:31:04Z",
+      "error": null,
+      "id": "E29",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Limited-negative mechanism result. M16 was activation-verified for the saved T7 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) and explicitly controlled open/folded IK branch signs over mirrored +/-45 and +/-135 degree targets at 7/11/15/19 cm while preserving unchanged 100-step endpoint hold semantics. The intervention establishes that branch sign is consequential: forced branch blend succeeded in 10/32 episodes overall, including 10/14 valid open-branch episodes but 0/14 valid folded-branch episodes; branch-only control succeeded in 0/32. Within valid open-branch mirrored pairs, outcomes were generally symmetric when branch sign was held fixed, so T7's original angle asymmetry is not adequately explained by angle sign or the reset singularity alone. However, no tested branch-controlled path approached a credible 196/200 route, and the 10/32 controlled blend result was below the raw learned diagnostic's 12/32. The result therefore redirects away from continued work on the tested v2 branch-controller lineage as a route to the human goal, without claiming that signed-IK control or the broader method is disproven.",
+        "reason": "The I7 closure condition is met through clause (b): controlled signed-branch evidence identifies branch sign as a real acquisition factor and weakens a generic angle-only explanation, but the tested valid-branch interventions do not materially improve complete-hold outcomes enough to plausibly close the 40-episode gap. The diagnostic holds T7's learned artifact fixed but changes action post-processing, and it does not compare independent learned artifacts under identical branch control; therefore learned-artifact/runtime interaction remains an explicit confound and the result is limited to this T7 diagnostic, not a universal causal claim. Preserve M12/M13's negative artifact-level result and carry the remaining decision to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "Limited-negative mechanism result. M16 was activation-verified for the saved T7 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) and explicitly controlled open/folded IK branch signs over mirrored +/-45 and +/-135 degree targets at 7/11/15/19 cm while preserving unchanged 100-step endpoint hold semantics. The intervention establishes that branch sign is consequential: forced branch blend succeeded in 10/32 episodes overall, including 10/14 valid open-branch episodes but 0/14 valid folded-branch episodes; branch-only control succeeded in 0/32. Within valid open-branch mirrored pairs, outcomes were generally symmetric when branch sign was held fixed, so T7's original angle asymmetry is not adequately explained by angle sign or the reset singularity alone. However, no tested branch-controlled path approached a credible 196/200 route, and the 10/32 controlled blend result was below the raw learned diagnostic's 12/32. The result therefore redirects away from continued work on the tested v2 branch-controller lineage as a route to the human goal, without claiming that signed-IK control or the broader method is disproven.",
+        "reason": "The I7 closure condition is met through clause (b): controlled signed-branch evidence identifies branch sign as a real acquisition factor and weakens a generic angle-only explanation, but the tested valid-branch interventions do not materially improve complete-hold outcomes enough to plausibly close the 40-episode gap. The diagnostic holds T7's learned artifact fixed but changes action post-processing, and it does not compare independent learned artifacts under identical branch control; therefore learned-artifact/runtime interaction remains an explicit confound and the result is limited to this T7 diagnostic, not a universal causal claim. Preserve M12/M13's negative artifact-level result and carry the remaining decision to goal review.",
+        "status": "completed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "Limited-negative mechanism result. M16 was activation-verified for the saved T7 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) and explicitly controlled open/folded IK branch signs over mirrored +/-45 and +/-135 degree targets at 7/11/15/19 cm while preserving unchanged 100-step endpoint hold semantics. The intervention establishes that branch sign is consequential: forced branch blend succeeded in 10/32 episodes overall, including 10/14 valid open-branch episodes but 0/14 valid folded-branch episodes; branch-only control succeeded in 0/32. Within valid open-branch mirrored pairs, outcomes were generally symmetric when branch sign was held fixed, so T7's original angle asymmetry is not adequately explained by angle sign or the reset singularity alone. However, no tested branch-controlled path approached a credible 196/200 route, and the 10/32 controlled blend result was below the raw learned diagnostic's 12/32. The result therefore redirects away from continued work on the tested v2 branch-controller lineage as a route to the human goal, without claiming that signed-IK control or the broader method is disproven.",
+        "reason": "The I7 closure condition is met through clause (b): controlled signed-branch evidence identifies branch sign as a real acquisition factor and weakens a generic angle-only explanation, but the tested valid-branch interventions do not materially improve complete-hold outcomes enough to plausibly close the 40-episode gap. The diagnostic holds T7's learned artifact fixed but changes action post-processing, and it does not compare independent learned artifacts under identical branch control; therefore learned-artifact/runtime interaction remains an explicit confound and the result is limited to this T7 diagnostic, not a universal causal claim. Preserve M12/M13's negative artifact-level result and carry the remaining decision to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "Limited-negative mechanism result. M16 was activation-verified for the saved T7 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) and explicitly controlled open/folded IK branch signs over mirrored +/-45 and +/-135 degree targets at 7/11/15/19 cm while preserving unchanged 100-step endpoint hold semantics. The intervention establishes that branch sign is consequential: forced branch blend succeeded in 10/32 episodes overall, including 10/14 valid open-branch episodes but 0/14 valid folded-branch episodes; branch-only control succeeded in 0/32. Within valid open-branch mirrored pairs, outcomes were generally symmetric when branch sign was held fixed, so T7's original angle asymmetry is not adequately explained by angle sign or the reset singularity alone. However, no tested branch-controlled path approached a credible 196/200 route, and the 10/32 controlled blend result was below the raw learned diagnostic's 12/32. The result therefore redirects away from continued work on the tested v2 branch-controller lineage as a route to the human goal, without claiming that signed-IK control or the broader method is disproven.",
+        "reason": "The I7 closure condition is met through clause (b): controlled signed-branch evidence identifies branch sign as a real acquisition factor and weakens a generic angle-only explanation, but the tested valid-branch interventions do not materially improve complete-hold outcomes enough to plausibly close the 40-episode gap. The diagnostic holds T7's learned artifact fixed but changes action post-processing, and it does not compare independent learned artifacts under identical branch control; therefore learned-artifact/runtime interaction remains an explicit confound and the result is limited to this T7 diagnostic, not a universal causal claim. Preserve M12/M13's negative artifact-level result and carry the remaining decision to goal review.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E29",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Limited-negative mechanism result. M16 was activation-verified for the saved T7 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) and explicitly controlled open/folded IK branch signs over mirrored +/-45 and +/-135 degree targets at 7/11/15/19 cm while preserving unchanged 100-step endpoint hold semantics. The intervention establishes that branch sign is consequential: forced branch blend succeeded in 10/32 episodes overall, including 10/14 valid open-branch episodes but 0/14 valid folded-branch episodes; branch-only control succeeded in 0/32. Within valid open-branch mirrored pairs, outcomes were generally symmetric when branch sign was held fixed, so T7's original angle asymmetry is not adequately explained by angle sign or the reset singularity alone. However, no tested branch-controlled path approached a credible 196/200 route, and the 10/32 controlled blend result was below the raw learned diagnostic's 12/32. The result therefore redirects away from continued work on the tested v2 branch-controller lineage as a route to the human goal, without claiming that signed-IK control or the broader method is disproven.",
+        "reason": "The I7 closure condition is met through clause (b): controlled signed-branch evidence identifies branch sign as a real acquisition factor and weakens a generic angle-only explanation, but the tested valid-branch interventions do not materially improve complete-hold outcomes enough to plausibly close the 40-episode gap. The diagnostic holds T7's learned artifact fixed but changes action post-processing, and it does not compare independent learned artifacts under identical branch control; therefore learned-artifact/runtime interaction remains an explicit confound and the result is limited to this T7 diagnostic, not a universal causal claim. Preserve M12/M13's negative artifact-level result and carry the remaining decision to goal review."
+      }
+    },
+    "request_fingerprint": "6fb4fef070b8eb28d9646e60933f2d3d12f769d9f88c2c85f94fc2739a7f16ac",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known role remains T1:checkpoint-120832 by the existing recorded role, but it is not goal-certified and scored 144/200 on the latest matched M12 panel. T3:checkpoint-70656 and T5:checkpoint-10240 are the strongest measured development artifacts at 156/200 on M12; T3 remains the pooled inner reference and T5 the maintenance reference. T4:checkpoint-105472 scored 146/200. T7:checkpoint-45056 is not assigned a role because its verified v2 runtime scored 94/200 and is negative for the tested acquisition design. No retained candidate exists and no candidate has protected assessment evidence.",
     "completed_operations": [
@@ -20747,7 +20790,8 @@
     "kind": "inquiry",
     "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M16"
+      "M16",
+      "E29"
     ],
     "scientific_parent_commit": "41556508674f4f02ca84d0bf1059e99af2433c98"
   },
