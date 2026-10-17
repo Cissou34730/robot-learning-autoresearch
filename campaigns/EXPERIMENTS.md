@@ -53,3 +53,4 @@
 | T5 | training | I6 | completed |
 | M19 | measurement | I6 | completed |
 | M20 | measurement | I6 | completed |
+| E27 | inquiry | I6 | completed |
