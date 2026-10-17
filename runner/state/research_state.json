@@ -3299,7 +3299,7 @@
   "counters": {
     "event": 21,
     "inquiry": 5,
-    "measurement": 15,
+    "measurement": 16,
     "session": 11,
     "training": 4
   },
@@ -10572,9 +10572,1730 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:58:32Z",
+      "error": null,
+      "id": "M16",
+      "inquiry_id": "I5",
+      "kind": "measurement",
+      "request": {
+        "description": "Validate and stratify the matched M15 T4-versus-T1 evaluation artifacts by radius and angle, including success, first reach, no-reach, hold interruptions/failures, branch occupancy, endpoint-speed diagnostics, and action saturation.",
+        "measurements": [
+          {
+            "args": [
+              "{input:candidate}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 0,
+                "operation_id": "M15"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I5-transfer-stratification",
+            "module": "robot_learning.lab.analyze_evaluation"
+          },
+          {
+            "args": [
+              "{input:reference}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json",
+            "inputs": {
+              "reference": {
+                "artifact_index": 1,
+                "operation_id": "M15"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I5-reference-stratification",
+            "module": "robot_learning.lab.analyze_evaluation"
+          }
+        ],
+        "rationale": "M15 established a large aggregate candidate gain but I5 closes only from complete diagnostics. The existing analysis module validates the preserved schema and computes descriptive bins from the exact saved-runtime episodes, allowing the inner 6-14 cm and outer 14-20 cm guardrails to be checked without introducing another policy execution or causal claim."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+            ],
+            "instrument": "python_module",
+            "label": "I5-transfer-stratification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-1-m16-t4-stratified.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analysis",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/input_artifact",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/angle_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/final_elbow_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/saturation_summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis/analysis_only",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/official_assessment",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/scientific_causality_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/input_artifact/path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifact/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/input_artifact/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/radius_bins/range_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/radius_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "label",
+                      "lower_cm",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_cm",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/angle_bins/range_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_degrees",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/final_elbow_branch_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/fraction_present_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/mean_action_saturation_fraction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0538789f5262a8adf81e9c7670da2ac0ef014a453b1045208b8af070160a3cc3",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                  "operation_id": "M15",
+                  "recorded_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_evaluation"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+            ],
+            "instrument": "python_module",
+            "label": "I5-reference-stratification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-2-m16-t1-stratified.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analysis",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/input_artifact",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/angle_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/final_elbow_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/saturation_summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis/analysis_only",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/official_assessment",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/scientific_causality_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/input_artifact/path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifact/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/input_artifact/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/radius_bins/range_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/radius_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "label",
+                      "lower_cm",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_cm",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/angle_bins/range_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_degrees",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/final_elbow_branch_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/fraction_present_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/mean_action_saturation_fraction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ba27312039ad5550630dc7b0e82ff478fbab1421856350cc10131b8ea94776a2",
+              "input_artifacts": {
+                "reference": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                  "operation_id": "M15",
+                  "recorded_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+              "path": "robot_learning/lab/analyze_evaluation.py"
+            },
+            {
+              "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+              "path": "robot_learning/lab/analyze_trajectory.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+              "path": "robot_learning/lab/evaluate_branch_launch.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6ba8f0f4ab0a3f8a127b41e9fad64f65aa7a5fb1",
+            "fingerprint": "4d07da755b148ea034e60a364c70285e861e36535a6a2703047072b2440a1a78",
+            "manifest": [
+              {
+                "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+                "path": "robot_learning/lab/analyze_evaluation.py"
+              },
+              {
+                "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+                "path": "robot_learning/lab/analyze_trajectory.py"
+              },
+              {
+                "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+                "path": "robot_learning/lab/characterize_arm.py"
+              },
+              {
+                "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+                "path": "robot_learning/lab/evaluate_branch_launch.py"
+              }
+            ]
+          },
+          "code_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+              "path": "robot_learning/lab/analyze_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+          ],
+          "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "operation_id": "M15",
+              "recorded_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 0,
+              "operation_id": "M15"
+            }
+          },
+          "instrument": "python_module",
+          "label": "I5-transfer-stratification",
+          "module": "robot_learning.lab.analyze_evaluation"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+          ],
+          "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json",
+          "input_artifacts": {
+            "reference": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "operation_id": "M15",
+              "recorded_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0"
+            }
+          },
+          "inputs": {
+            "reference": {
+              "artifact_index": 1,
+              "operation_id": "M15"
+            }
+          },
+          "instrument": "python_module",
+          "label": "I5-reference-stratification",
+          "module": "robot_learning.lab.analyze_evaluation"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+            "path": "robot_learning/lab/analyze_evaluation.py"
+          },
+          {
+            "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+            "path": "robot_learning/lab/analyze_trajectory.py"
+          },
+          {
+            "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+            "path": "robot_learning/lab/characterize_arm.py"
+          },
+          {
+            "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+            "path": "robot_learning/lab/evaluate_branch_launch.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "6ba8f0f4ab0a3f8a127b41e9fad64f65aa7a5fb1",
+          "fingerprint": "4d07da755b148ea034e60a364c70285e861e36535a6a2703047072b2440a1a78",
+          "manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+              "path": "robot_learning/lab/analyze_evaluation.py"
+            },
+            {
+              "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+              "path": "robot_learning/lab/analyze_trajectory.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+              "path": "robot_learning/lab/evaluate_branch_launch.py"
+            }
+          ]
+        },
+        "code_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+            "path": "robot_learning/lab/analyze_evaluation.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_evaluation.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+          ],
+          "instrument": "python_module",
+          "label": "I5-transfer-stratification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-1-m16-t4-stratified.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/analysis",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/input_artifact",
+                  "type": "object"
+                },
+                {
+                  "path": "/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 12,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/radius_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/angle_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/final_elbow_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/saturation_summary",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis/kind",
+                  "type": "string"
+                },
+                {
+                  "path": "/analysis/analysis_only",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/analysis/official_assessment",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/analysis/scientific_causality_inferred",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/input_artifact/path",
+                  "type": "string"
+                },
+                {
+                  "path": "/input_artifact/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/input_artifact/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/overall/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/first_reach_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/first_reach_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/no_reach_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/hold_failure_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_final_endpoint_speed_mps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_action_saturation_fraction",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/radius_bins/range_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/radius_bins/boundary_convention",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "field_names": [
+                    "label",
+                    "lower_cm",
+                    "lower_inclusive",
+                    "statistics",
+                    "upper_cm",
+                    "upper_inclusive"
+                  ],
+                  "path": "/radius_bins/bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/angle_bins/range_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/angle_bins/boundary_convention",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower_degrees",
+                    "lower_inclusive",
+                    "statistics",
+                    "upper_degrees",
+                    "upper_inclusive"
+                  ],
+                  "path": "/angle_bins/bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/final_elbow_branch_counts/open",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/fraction_present_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/saturated_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/saturated_episode_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/mean_action_saturation_fraction",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "0538789f5262a8adf81e9c7670da2ac0ef014a453b1045208b8af070160a3cc3",
+            "input_artifacts": {
+              "candidate": {
+                "artifact_index": 0,
+                "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                "operation_id": "M15",
+                "recorded_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_evaluation"
+        },
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+          ],
+          "instrument": "python_module",
+          "label": "I5-reference-stratification",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-2-m16-t1-stratified.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/analysis",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/input_artifact",
+                  "type": "object"
+                },
+                {
+                  "path": "/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 12,
+                  "path": "/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/radius_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/angle_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/final_elbow_branch_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/saturation_summary",
+                  "type": "object"
+                },
+                {
+                  "path": "/analysis/kind",
+                  "type": "string"
+                },
+                {
+                  "path": "/analysis/analysis_only",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/analysis/official_assessment",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/analysis/scientific_causality_inferred",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/input_artifact/path",
+                  "type": "string"
+                },
+                {
+                  "path": "/input_artifact/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/input_artifact/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/overall/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/success_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/first_reach_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/first_reach_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/no_reach_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/hold_failure_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_final_endpoint_speed_mps",
+                  "type": "number"
+                },
+                {
+                  "path": "/overall/mean_action_saturation_fraction",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/radius_bins/range_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/radius_bins/boundary_convention",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "field_names": [
+                    "label",
+                    "lower_cm",
+                    "lower_inclusive",
+                    "statistics",
+                    "upper_cm",
+                    "upper_inclusive"
+                  ],
+                  "path": "/radius_bins/bins",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/angle_bins/range_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/angle_bins/boundary_convention",
+                  "type": "string"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower_degrees",
+                    "lower_inclusive",
+                    "statistics",
+                    "upper_degrees",
+                    "upper_inclusive"
+                  ],
+                  "path": "/angle_bins/bins",
+                  "type": "array"
+                },
+                {
+                  "path": "/final_elbow_branch_counts/open",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/fraction_present_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/saturated_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/saturated_episode_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/saturation_summary/mean_action_saturation_fraction",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "ba27312039ad5550630dc7b0e82ff478fbab1421856350cc10131b8ea94776a2",
+            "input_artifacts": {
+              "reference": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                "operation_id": "M15",
+                "recorded_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_evaluation"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+            ],
+            "instrument": "python_module",
+            "label": "I5-transfer-stratification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-1-m16-t4-stratified.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analysis",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/input_artifact",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/angle_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/final_elbow_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/saturation_summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis/analysis_only",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/official_assessment",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/scientific_causality_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/input_artifact/path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifact/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/input_artifact/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/radius_bins/range_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/radius_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "label",
+                      "lower_cm",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_cm",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/angle_bins/range_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_degrees",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/final_elbow_branch_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/fraction_present_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/mean_action_saturation_fraction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0538789f5262a8adf81e9c7670da2ac0ef014a453b1045208b8af070160a3cc3",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 0,
+                  "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                  "operation_id": "M15",
+                  "recorded_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_evaluation"
+          },
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+            ],
+            "instrument": "python_module",
+            "label": "I5-reference-stratification",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M16-2-m16-t1-stratified.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analysis",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/input_artifact",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/radius_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/angle_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/final_elbow_branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/saturation_summary",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/analysis/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/analysis/analysis_only",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/official_assessment",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/analysis/scientific_causality_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/input_artifact/path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/input_artifact/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/input_artifact/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/success_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/first_reach_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/no_reach_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/hold_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_first_reach_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_final_endpoint_speed_mps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/overall/mean_action_saturation_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/radius_bins/range_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/radius_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "field_names": [
+                      "label",
+                      "lower_cm",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_cm",
+                      "upper_inclusive"
+                    ],
+                    "path": "/radius_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/angle_bins/range_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_bins/boundary_convention",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_degrees",
+                      "lower_inclusive",
+                      "statistics",
+                      "upper_degrees",
+                      "upper_inclusive"
+                    ],
+                    "path": "/angle_bins/bins",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/final_elbow_branch_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/fraction_present_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/saturated_episode_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/saturation_summary/mean_action_saturation_fraction",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ba27312039ad5550630dc7b0e82ff478fbab1421856350cc10131b8ea94776a2",
+              "input_artifacts": {
+                "reference": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+                  "operation_id": "M15",
+                  "recorded_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_evaluation"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+              "path": "robot_learning/lab/analyze_evaluation.py"
+            },
+            {
+              "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+              "path": "robot_learning/lab/analyze_trajectory.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+              "path": "robot_learning/lab/evaluate_branch_launch.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6ba8f0f4ab0a3f8a127b41e9fad64f65aa7a5fb1",
+            "fingerprint": "4d07da755b148ea034e60a364c70285e861e36535a6a2703047072b2440a1a78",
+            "manifest": [
+              {
+                "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+                "path": "robot_learning/lab/analyze_evaluation.py"
+              },
+              {
+                "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+                "path": "robot_learning/lab/analyze_trajectory.py"
+              },
+              {
+                "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+                "path": "robot_learning/lab/characterize_arm.py"
+              },
+              {
+                "fingerprint": "60cc4be4332e6a68ed9e2155b3f63e416646536fa6e0095c3f85760237a33f9b",
+                "path": "robot_learning/lab/evaluate_branch_launch.py"
+              }
+            ]
+          },
+          "code_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+              "path": "robot_learning/lab/analyze_evaluation.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_evaluation.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M16",
+    "inquiry_id": "I5",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Validate and stratify the matched M15 T4-versus-T1 evaluation artifacts by radius and angle, including success, first reach, no-reach, hold interruptions/failures, branch occupancy, endpoint-speed diagnostics, and action saturation.",
+        "measurements": [
+          {
+            "args": [
+              "{input:candidate}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t4-stratified.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 0,
+                "operation_id": "M15"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I5-transfer-stratification",
+            "module": "robot_learning.lab.analyze_evaluation"
+          },
+          {
+            "args": [
+              "{input:reference}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m16-t1-stratified.json",
+            "inputs": {
+              "reference": {
+                "artifact_index": 1,
+                "operation_id": "M15"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I5-reference-stratification",
+            "module": "robot_learning.lab.analyze_evaluation"
+          }
+        ],
+        "rationale": "M15 established a large aggregate candidate gain but I5 closes only from complete diagnostics. The existing analysis module validates the preserved schema and computes descriptive bins from the exact saved-runtime episodes, allowing the inner 6-14 cm and outer 14-20 cm guardrails to be checked without introducing another policy execution or causal claim."
+      }
+    },
+    "request_fingerprint": "93687fda3624dce3f705a84c35be43075bba7f6c2c098e836b0ce485cff612cf",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
@@ -10629,7 +12350,8 @@
     "operation_ids": [
       "E21",
       "T4",
-      "M15"
+      "M15",
+      "M16"
     ],
     "scientific_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87"
   },
