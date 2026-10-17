@@ -5752,7 +5752,7 @@
     }
   },
   "counters": {
-    "event": 25,
+    "event": 26,
     "inquiry": 6,
     "measurement": 13,
     "session": 13,
@@ -5761,7 +5761,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -20119,31 +20119,209 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T00:18:46Z",
+      "error": null,
+      "id": "E26",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 as the recorded outer-radius reference, although its latest matched M12 result is 144/200 and it is not goal-certified. T3:checkpoint-70656 remains the strongest pooled measured artifact at 156/200 on M12 and 168/200 on the earlier matched M8 panel, with the strongest inner reference but lost outer behavior. T4:checkpoint-105472 and T5:checkpoint-10240 remain measured lineage references at 146/200 and 156/200 on M12. T7:checkpoint-45056 is not assigned a role: its v2 runtime was activation-verified but achieved only 94/200 with 106 never-reached failures. T6 artifacts are not candidates for scientific comparison because their first implementation suppressed learned acquisition action and produced zero training success throughout. No candidate has protected assessment evidence and no retained candidate is assigned.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "cumulative_resource_use": "I6 used two 120000-step transfer training allocations (T6 and repaired rerun T7; each completed 120832 steps), one matched five-candidate 200-episode research evaluation M12 (1000 policy-episode executions), and one three-way deterministic radius/angle diagnostic operation M13 producing three analyses. T6 was an implementation-failure execution and T7 was the repaired scientific artifact. Across the campaign, six inquiries have closed, seven training allocations have completed, thirteen development measurement operations have completed, no protected official assessment has been requested, and no candidate has been retained.",
+        "current_goal_gap": "The human objective remains at least 196/200 complete uninterrupted holds under the protected official distribution. The strongest current pooled research artifact is T3:checkpoint-70656 at 156/200 on the latest matched M12 panel (40 short of the objective; its earlier M8 result was 168/200, 28 short). The I6 artifact T7 is much weaker at 94/200, so the new acquisition intervention did not reduce the goal gap.",
+        "current_synthesis": "Established observations: the initial physical model predicts a nominal IK branch throughout 6-20 cm but identifies a rank-one fully extended reset, larger elbow folds for inner targets, and a coupled reach/100-step endpoint-hold objective. M5 found identical compiled plant semantics and zero contacts for T1/T2, so plant retuning and contact attribution remain unsupported. T5 implemented and serialized an active stateful v1 runtime whose learned acquisition switched on observed 1 cm entry to bounded nearest-valid-IK position/velocity maintenance with reacquisition after exits. M10/M11 verified activation and measured T5 at 156/200 with 37 never-reached and 7 reached-but-failed-hold failures, including improved conditional holding but weaker outer success than T3. I6 then changed the source materially: v2 added a bounded reset-escape phase, latched joint-limit-aware branch acquisition, and retained v1-style maintenance; after T6 exposed a concrete training dead zone because acquisition fully replaced learned actions, the reviewed repair blended learned actions with bounded branch feedback while preserving deterministic escape and full maintenance takeover. T7 recovered nonzero training proxies, but M12 verified the saved v2 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) at only 94/200 on the matched panel. T7 had 106 never-reached and zero reached-but-failed-hold failures; all 94 successes completed the 100-step hold. M13 showed never-reached failures in every radius stratum (26/57, 41/60, 35/66, and 4/17) and strong signed-angle asymmetry (37/58 never reached in [-180,-90), 46/53 in [-90,0), 23/42 in [0,90), and 0/47 in [90,180)), while T7's conditional maintenance remained reliable. Interpretation: the tested saved-runtime v2 artifact supports only a limited conditional-maintenance claim and is negative for the specific acquisition design; it did not reduce T5's 37 never-reached failures, recover T1/T3 outer behavior, or approach 196/200. T6 is execution history, not scientific evidence against the method, because its action-suppression dead zone was repaired before T7. The angle pattern makes signed branch selection, target-angle convention, or learned-artifact interaction consequential alternatives to a generic reset-singularity explanation, but M12/M13 do not identify which is causal because branch choice, source changes, transfer lineage, seed, checkpoint, and learned policy changed together. No claim about plant, reward, contact, or continuous-time behavior is promoted. Endpoint/substep and self-contact uncertainties remain limits on physical generalization, not reasons to change coded task semantics.",
+        "decision_frontier": "I6 is closed with a limited negative result for the tested v2 artifact. The consequential unresolved distinction for goal review is whether T7's severe, signed-angle acquisition asymmetry reflects a branch-selection/angle-convention mechanism that can be isolated and repaired, or instead an artifact-level interaction in the learned policy and runtime. The evidence that would discriminate these alternatives is an activation-verified, matched diagnostic that records selected IK branch, elbow sign, acquisition actions and first-reach/failure by mirrored angle and radius under controlled branch choices; an aggregate success rerun or another unaltered v2 training run would not resolve it. If the distinction cannot yield a credible route toward 196/200, goal review should decline another controller-lineage inquiry rather than treat I6 closure as justification for continuation.",
+        "evidence_references": [
+          "T1",
+          "T3",
+          "T4",
+          "T5",
+          "M10",
+          "M11",
+          "E21",
+          "E23",
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "human_goal_connection": "The only campaign objective is at least 196 complete uninterrupted holds out of 200 under the fixed official task distribution. I6 directly tested whether a materially different saved-runtime acquisition phase could remove T5's dominant never-reached class while preserving its conditional maintenance benefit. The activation-verified artifact failed that goal-linked test at 94/200, so the campaign returns to goal review with the acquisition failure and signed-angle uncertainty explicit rather than requesting assessment or claiming success.",
+        "next_direction_or_closure": "I6 is closed limited-negative and the bounded work returns to goal review. Do not measure or retrain the unaltered v2 controller lineage, and do not assign T7 as working or best-known. At goal review, compare the expected contribution of one controlled signed-branch/angle mechanism test against the terminal cost of official assessment; only open another inquiry if that diagnostic can plausibly identify a route materially closer to 196/200. Otherwise preserve T3/T1 as development references and carry the unresolved causal distinction forward without promoting it to a plant or reward claim.",
+        "next_question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "fa420a4534896cea5d45ff950000d8568c02227f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 as the recorded outer-radius reference, although its latest matched M12 result is 144/200 and it is not goal-certified. T3:checkpoint-70656 remains the strongest pooled measured artifact at 156/200 on M12 and 168/200 on the earlier matched M8 panel, with the strongest inner reference but lost outer behavior. T4:checkpoint-105472 and T5:checkpoint-10240 remain measured lineage references at 146/200 and 156/200 on M12. T7:checkpoint-45056 is not assigned a role: its v2 runtime was activation-verified but achieved only 94/200 with 106 never-reached failures. T6 artifacts are not candidates for scientific comparison because their first implementation suppressed learned acquisition action and produced zero training success throughout. No candidate has protected assessment evidence and no retained candidate is assigned.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "cumulative_resource_use": "I6 used two 120000-step transfer training allocations (T6 and repaired rerun T7; each completed 120832 steps), one matched five-candidate 200-episode research evaluation M12 (1000 policy-episode executions), and one three-way deterministic radius/angle diagnostic operation M13 producing three analyses. T6 was an implementation-failure execution and T7 was the repaired scientific artifact. Across the campaign, six inquiries have closed, seven training allocations have completed, thirteen development measurement operations have completed, no protected official assessment has been requested, and no candidate has been retained.",
+        "current_goal_gap": "The human objective remains at least 196/200 complete uninterrupted holds under the protected official distribution. The strongest current pooled research artifact is T3:checkpoint-70656 at 156/200 on the latest matched M12 panel (40 short of the objective; its earlier M8 result was 168/200, 28 short). The I6 artifact T7 is much weaker at 94/200, so the new acquisition intervention did not reduce the goal gap.",
+        "current_synthesis": "Established observations: the initial physical model predicts a nominal IK branch throughout 6-20 cm but identifies a rank-one fully extended reset, larger elbow folds for inner targets, and a coupled reach/100-step endpoint-hold objective. M5 found identical compiled plant semantics and zero contacts for T1/T2, so plant retuning and contact attribution remain unsupported. T5 implemented and serialized an active stateful v1 runtime whose learned acquisition switched on observed 1 cm entry to bounded nearest-valid-IK position/velocity maintenance with reacquisition after exits. M10/M11 verified activation and measured T5 at 156/200 with 37 never-reached and 7 reached-but-failed-hold failures, including improved conditional holding but weaker outer success than T3. I6 then changed the source materially: v2 added a bounded reset-escape phase, latched joint-limit-aware branch acquisition, and retained v1-style maintenance; after T6 exposed a concrete training dead zone because acquisition fully replaced learned actions, the reviewed repair blended learned actions with bounded branch feedback while preserving deterministic escape and full maintenance takeover. T7 recovered nonzero training proxies, but M12 verified the saved v2 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) at only 94/200 on the matched panel. T7 had 106 never-reached and zero reached-but-failed-hold failures; all 94 successes completed the 100-step hold. M13 showed never-reached failures in every radius stratum (26/57, 41/60, 35/66, and 4/17) and strong signed-angle asymmetry (37/58 never reached in [-180,-90), 46/53 in [-90,0), 23/42 in [0,90), and 0/47 in [90,180)), while T7's conditional maintenance remained reliable. Interpretation: the tested saved-runtime v2 artifact supports only a limited conditional-maintenance claim and is negative for the specific acquisition design; it did not reduce T5's 37 never-reached failures, recover T1/T3 outer behavior, or approach 196/200. T6 is execution history, not scientific evidence against the method, because its action-suppression dead zone was repaired before T7. The angle pattern makes signed branch selection, target-angle convention, or learned-artifact interaction consequential alternatives to a generic reset-singularity explanation, but M12/M13 do not identify which is causal because branch choice, source changes, transfer lineage, seed, checkpoint, and learned policy changed together. No claim about plant, reward, contact, or continuous-time behavior is promoted. Endpoint/substep and self-contact uncertainties remain limits on physical generalization, not reasons to change coded task semantics.",
+        "decision_frontier": "I6 is closed with a limited negative result for the tested v2 artifact. The consequential unresolved distinction for goal review is whether T7's severe, signed-angle acquisition asymmetry reflects a branch-selection/angle-convention mechanism that can be isolated and repaired, or instead an artifact-level interaction in the learned policy and runtime. The evidence that would discriminate these alternatives is an activation-verified, matched diagnostic that records selected IK branch, elbow sign, acquisition actions and first-reach/failure by mirrored angle and radius under controlled branch choices; an aggregate success rerun or another unaltered v2 training run would not resolve it. If the distinction cannot yield a credible route toward 196/200, goal review should decline another controller-lineage inquiry rather than treat I6 closure as justification for continuation.",
+        "evidence_references": [
+          "T1",
+          "T3",
+          "T4",
+          "T5",
+          "M10",
+          "M11",
+          "E21",
+          "E23",
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "human_goal_connection": "The only campaign objective is at least 196 complete uninterrupted holds out of 200 under the fixed official task distribution. I6 directly tested whether a materially different saved-runtime acquisition phase could remove T5's dominant never-reached class while preserving its conditional maintenance benefit. The activation-verified artifact failed that goal-linked test at 94/200, so the campaign returns to goal review with the acquisition failure and signed-angle uncertainty explicit rather than requesting assessment or claiming success.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "I6 is closed limited-negative and the bounded work returns to goal review. Do not measure or retrain the unaltered v2 controller lineage, and do not assign T7 as working or best-known. At goal review, compare the expected contribution of one controlled signed-branch/angle mechanism test against the terminal cost of official assessment; only open another inquiry if that diagnostic can plausibly identify a route materially closer to 196/200. Otherwise preserve T3/T1 as development references and carry the unresolved causal distinction forward without promoting it to a plant or reward claim.",
+        "next_question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "ecccb9ab-6bcf-4f1e-83cc-1422f594d1ca",
+        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
+        "campaign_usage": "53m18s | 92.15 AIU | prompt 13m (86% cached) | output 239.4k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "2m32s | 4.16 AIU | prompt 468.1k (82% cached) | output 17.6k"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "8ee20f853200089911bb32de272d281d888024a6",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E26",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-120832 as the recorded outer-radius reference, although its latest matched M12 result is 144/200 and it is not goal-certified. T3:checkpoint-70656 remains the strongest pooled measured artifact at 156/200 on M12 and 168/200 on the earlier matched M8 panel, with the strongest inner reference but lost outer behavior. T4:checkpoint-105472 and T5:checkpoint-10240 remain measured lineage references at 146/200 and 156/200 on M12. T7:checkpoint-45056 is not assigned a role: its v2 runtime was activation-verified but achieved only 94/200 with 106 never-reached failures. T6 artifacts are not candidates for scientific comparison because their first implementation suppressed learned acquisition action and produced zero training success throughout. No candidate has protected assessment evidence and no retained candidate is assigned.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "cumulative_resource_use": "I6 used two 120000-step transfer training allocations (T6 and repaired rerun T7; each completed 120832 steps), one matched five-candidate 200-episode research evaluation M12 (1000 policy-episode executions), and one three-way deterministic radius/angle diagnostic operation M13 producing three analyses. T6 was an implementation-failure execution and T7 was the repaired scientific artifact. Across the campaign, six inquiries have closed, seven training allocations have completed, thirteen development measurement operations have completed, no protected official assessment has been requested, and no candidate has been retained.",
+        "current_goal_gap": "The human objective remains at least 196/200 complete uninterrupted holds under the protected official distribution. The strongest current pooled research artifact is T3:checkpoint-70656 at 156/200 on the latest matched M12 panel (40 short of the objective; its earlier M8 result was 168/200, 28 short). The I6 artifact T7 is much weaker at 94/200, so the new acquisition intervention did not reduce the goal gap.",
+        "current_synthesis": "Established observations: the initial physical model predicts a nominal IK branch throughout 6-20 cm but identifies a rank-one fully extended reset, larger elbow folds for inner targets, and a coupled reach/100-step endpoint-hold objective. M5 found identical compiled plant semantics and zero contacts for T1/T2, so plant retuning and contact attribution remain unsupported. T5 implemented and serialized an active stateful v1 runtime whose learned acquisition switched on observed 1 cm entry to bounded nearest-valid-IK position/velocity maintenance with reacquisition after exits. M10/M11 verified activation and measured T5 at 156/200 with 37 never-reached and 7 reached-but-failed-hold failures, including improved conditional holding but weaker outer success than T3. I6 then changed the source materially: v2 added a bounded reset-escape phase, latched joint-limit-aware branch acquisition, and retained v1-style maintenance; after T6 exposed a concrete training dead zone because acquisition fully replaced learned actions, the reviewed repair blended learned actions with bounded branch feedback while preserving deterministic escape and full maintenance takeover. T7 recovered nonzero training proxies, but M12 verified the saved v2 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) at only 94/200 on the matched panel. T7 had 106 never-reached and zero reached-but-failed-hold failures; all 94 successes completed the 100-step hold. M13 showed never-reached failures in every radius stratum (26/57, 41/60, 35/66, and 4/17) and strong signed-angle asymmetry (37/58 never reached in [-180,-90), 46/53 in [-90,0), 23/42 in [0,90), and 0/47 in [90,180)), while T7's conditional maintenance remained reliable. Interpretation: the tested saved-runtime v2 artifact supports only a limited conditional-maintenance claim and is negative for the specific acquisition design; it did not reduce T5's 37 never-reached failures, recover T1/T3 outer behavior, or approach 196/200. T6 is execution history, not scientific evidence against the method, because its action-suppression dead zone was repaired before T7. The angle pattern makes signed branch selection, target-angle convention, or learned-artifact interaction consequential alternatives to a generic reset-singularity explanation, but M12/M13 do not identify which is causal because branch choice, source changes, transfer lineage, seed, checkpoint, and learned policy changed together. No claim about plant, reward, contact, or continuous-time behavior is promoted. Endpoint/substep and self-contact uncertainties remain limits on physical generalization, not reasons to change coded task semantics.",
+        "decision_frontier": "I6 is closed with a limited negative result for the tested v2 artifact. The consequential unresolved distinction for goal review is whether T7's severe, signed-angle acquisition asymmetry reflects a branch-selection/angle-convention mechanism that can be isolated and repaired, or instead an artifact-level interaction in the learned policy and runtime. The evidence that would discriminate these alternatives is an activation-verified, matched diagnostic that records selected IK branch, elbow sign, acquisition actions and first-reach/failure by mirrored angle and radius under controlled branch choices; an aggregate success rerun or another unaltered v2 training run would not resolve it. If the distinction cannot yield a credible route toward 196/200, goal review should decline another controller-lineage inquiry rather than treat I6 closure as justification for continuation.",
+        "evidence_references": [
+          "T1",
+          "T3",
+          "T4",
+          "T5",
+          "M10",
+          "M11",
+          "E21",
+          "E23",
+          "T6",
+          "T7",
+          "M12",
+          "M13",
+          "E25"
+        ],
+        "human_goal_connection": "The only campaign objective is at least 196 complete uninterrupted holds out of 200 under the fixed official task distribution. I6 directly tested whether a materially different saved-runtime acquisition phase could remove T5's dominant never-reached class while preserving its conditional maintenance benefit. The activation-verified artifact failed that goal-linked test at 94/200, so the campaign returns to goal review with the acquisition failure and signed-angle uncertainty explicit rather than requesting assessment or claiming success.",
+        "next_direction_or_closure": "I6 is closed limited-negative and the bounded work returns to goal review. Do not measure or retrain the unaltered v2 controller lineage, and do not assign T7 as working or best-known. At goal review, compare the expected contribution of one controlled signed-branch/angle mechanism test against the terminal cost of official assessment; only open another inquiry if that diagnostic can plausibly identify a route materially closer to 196/200. Otherwise preserve T3/T1 as development references and carry the unresolved causal distinction forward without promoting it to a plant or reward claim.",
+        "next_question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?"
+      }
+    },
+    "request_fingerprint": "44091ee447a4787dc1454c5ebce864b738077c6603c94831eb5df8d9fc1096f0",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known role remains T1:checkpoint-120832 because the recorded role reflects the strongest outer-radius reference, although it scored only 145/200 on M8 and is not goal-certified. T3:checkpoint-70656 is the strongest pooled measured artifact at 168/200 on M8 and the inner-performance reference. T4:checkpoint-105472 is a limited phase-separated artifact at 163/200. T5:checkpoint-10240 is the complete controller-enabled artifact at 156/200 on M10 and is not assigned a role because its acquisition and outer strata remain inadequate. No candidate has protected assessment evidence.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-120832 as the recorded outer-radius reference, although its latest matched M12 result is 144/200 and it is not goal-certified. T3:checkpoint-70656 remains the strongest pooled measured artifact at 156/200 on M12 and 168/200 on the earlier matched M8 panel, with the strongest inner reference but lost outer behavior. T4:checkpoint-105472 and T5:checkpoint-10240 remain measured lineage references at 146/200 and 156/200 on M12. T7:checkpoint-45056 is not assigned a role: its v2 runtime was activation-verified but achieved only 94/200 with 106 never-reached failures. T6 artifacts are not candidates for scientific comparison because their first implementation suppressed learned acquisition action and produced zero training success throughout. No candidate has protected assessment evidence and no retained candidate is assigned.",
     "completed_operations": [
-      "E23"
+      "T6",
+      "T7",
+      "M12",
+      "M13",
+      "E25"
     ],
-    "cumulative_resource_use": "Campaign total after opening I6: six inquiries (I1-I6), twelve scientific sessions including this goal review, eleven completed development measurements, five completed 120,000-step training allocations (120,832 actual steps each), no protected official assessment, and no retained candidate. Current inquiry I6 has opened but has not yet consumed a training or measurement allocation.",
-    "current_goal_gap": "On the latest matched development panel, T3:checkpoint-70656 achieved 168/200, T4 achieved 163/200, and T5:checkpoint-10240 achieved 156/200; the nearest measured artifact is 28 successes short of 196. T5's class diagnostics report 37 never-reached and 7 reached-but-failed-hold failures, so at least 34 of those 44 failures would need to be removed even if the conditional hold result were perfectly preserved.",
-    "current_synthesis": "Established observations: point kinematics predict a nominal IK branch throughout 6-20 cm, while the reset is rank-one singular and inner targets require larger elbow folds. M5 found identical compiled plant semantics and zero contacts for the T1/T2 comparison, so plant retuning and contact attribution remain unsupported. Across artifact comparisons, T3 improved pooled and inner outcomes but lost some outer holds; T4 reduced never-reached failures but lost outer behavior; T5 implemented and serialized an actually active stateful saved-runtime controller whose learned acquisition switched on observed 1 cm entry to bounded nearest-valid-IK joint position/velocity maintenance, with reacquisition after exits. M10 verified the activation path and measured T5 at 156/200. M11 found T5 reduced reached-but-failed-hold failures versus T4 from 25 to 7 and improved the innermost stratum, but retained 37 never-reached failures and had outer success 73/83 versus T3's 79/83. Interpretation: the tested T4-lineage plus v1 runtime supports only a limited conditional-maintenance claim; it does not combine acquisition and outer behavior. The T5 training record shows fluctuating high proxies, with the measured 10,240-step checkpoint already the highest recorded training-success proxy and later terminal degradation; therefore selecting an unmeasured later checkpoint is not currently a stronger scientific route. Competing explanations remain a reset-singularity/inner-transient acquisition bottleneck, learned-artifact variability, and an interaction in which the controller improves holding but disrupts outer acquisition. The artifact diagnostics do not make the first explanation causal by themselves, so the new intervention must be judged by matched failure-class and outer-stratum outcomes. Contact and endpoint/substep uncertainties remain limits on continuous embodied claims, not reasons to change the coded task semantics or the next acquisition direction.",
-    "decision_frontier": "The consequential distinction is whether acquisition failures can be reduced by a materially different saved-runtime phase that explicitly escapes the fully extended reset and handles inner-target branch transients, while the already demonstrated maintenance benefit remains active. Positive evidence would require activation-verified runtime execution plus a matched panel showing a large reduction in never-reached failures, no return of reached-but-failed-hold failures, and recovery of T1/T3-level outer holds. Failure to obtain those outcomes would redirect the campaign away from this controller lineage; artifact-level differences must not be promoted to causal reward or plant claims.",
+    "cumulative_resource_use": "I6 used two 120000-step transfer training allocations (T6 and repaired rerun T7; each completed 120832 steps), one matched five-candidate 200-episode research evaluation M12 (1000 policy-episode executions), and one three-way deterministic radius/angle diagnostic operation M13 producing three analyses. T6 was an implementation-failure execution and T7 was the repaired scientific artifact. Across the campaign, six inquiries have closed, seven training allocations have completed, thirteen development measurement operations have completed, no protected official assessment has been requested, and no candidate has been retained.",
+    "current_goal_gap": "The human objective remains at least 196/200 complete uninterrupted holds under the protected official distribution. The strongest current pooled research artifact is T3:checkpoint-70656 at 156/200 on the latest matched M12 panel (40 short of the objective; its earlier M8 result was 168/200, 28 short). The I6 artifact T7 is much weaker at 94/200, so the new acquisition intervention did not reduce the goal gap.",
+    "current_synthesis": "Established observations: the initial physical model predicts a nominal IK branch throughout 6-20 cm but identifies a rank-one fully extended reset, larger elbow folds for inner targets, and a coupled reach/100-step endpoint-hold objective. M5 found identical compiled plant semantics and zero contacts for T1/T2, so plant retuning and contact attribution remain unsupported. T5 implemented and serialized an active stateful v1 runtime whose learned acquisition switched on observed 1 cm entry to bounded nearest-valid-IK position/velocity maintenance with reacquisition after exits. M10/M11 verified activation and measured T5 at 156/200 with 37 never-reached and 7 reached-but-failed-hold failures, including improved conditional holding but weaker outer success than T3. I6 then changed the source materially: v2 added a bounded reset-escape phase, latched joint-limit-aware branch acquisition, and retained v1-style maintenance; after T6 exposed a concrete training dead zone because acquisition fully replaced learned actions, the reviewed repair blended learned actions with bounded branch feedback while preserving deterministic escape and full maintenance takeover. T7 recovered nonzero training proxies, but M12 verified the saved v2 runtime (controller_activation_id=i6_acquisition_maintenance_v2 and controller_callable_path=true) at only 94/200 on the matched panel. T7 had 106 never-reached and zero reached-but-failed-hold failures; all 94 successes completed the 100-step hold. M13 showed never-reached failures in every radius stratum (26/57, 41/60, 35/66, and 4/17) and strong signed-angle asymmetry (37/58 never reached in [-180,-90), 46/53 in [-90,0), 23/42 in [0,90), and 0/47 in [90,180)), while T7's conditional maintenance remained reliable. Interpretation: the tested saved-runtime v2 artifact supports only a limited conditional-maintenance claim and is negative for the specific acquisition design; it did not reduce T5's 37 never-reached failures, recover T1/T3 outer behavior, or approach 196/200. T6 is execution history, not scientific evidence against the method, because its action-suppression dead zone was repaired before T7. The angle pattern makes signed branch selection, target-angle convention, or learned-artifact interaction consequential alternatives to a generic reset-singularity explanation, but M12/M13 do not identify which is causal because branch choice, source changes, transfer lineage, seed, checkpoint, and learned policy changed together. No claim about plant, reward, contact, or continuous-time behavior is promoted. Endpoint/substep and self-contact uncertainties remain limits on physical generalization, not reasons to change coded task semantics.",
+    "decision_frontier": "I6 is closed with a limited negative result for the tested v2 artifact. The consequential unresolved distinction for goal review is whether T7's severe, signed-angle acquisition asymmetry reflects a branch-selection/angle-convention mechanism that can be isolated and repaired, or instead an artifact-level interaction in the learned policy and runtime. The evidence that would discriminate these alternatives is an activation-verified, matched diagnostic that records selected IK branch, elbow sign, acquisition actions and first-reach/failure by mirrored angle and radius under controlled branch choices; an aggregate success rerun or another unaltered v2 training run would not resolve it. If the distinction cannot yield a credible route toward 196/200, goal review should decline another controller-lineage inquiry rather than treat I6 closure as justification for continuation.",
     "evidence_references": [
+      "T1",
+      "T3",
+      "T4",
       "T5",
       "M10",
       "M11",
       "E21",
-      "E23"
+      "E23",
+      "T6",
+      "T7",
+      "M12",
+      "M13",
+      "E25"
     ],
-    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the fixed official task distribution, with every success requiring the complete uninterrupted 100-step endpoint hold. The current measured candidates are far below that threshold, so the campaign needs a bounded route that addresses the dominant residual failure class rather than prematurely committing the protected assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open inquiry I6 and checkpoint it rather than request the official assessment. The assessment would terminate the campaign on a likely failure using a candidate 28 or more successes below the target, while the completed T5 class evidence identifies a concrete acquisition gap and one bounded, goal-linked saved-runtime redesign can directly test it. The inquiry must not repeat v1: it should implement an explicit reset-escape and inner-branch acquisition phase, retain the verified maintenance/reacquisition behavior where applicable, and then use a complete matched evaluation with activation and failure-class diagnostics.",
-    "next_question": "Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200?",
-    "scientific_commit": "de95a55fac6292c7010505d28c39764a16dc8a35",
-    "session_id": "S12"
+    "human_goal_connection": "The only campaign objective is at least 196 complete uninterrupted holds out of 200 under the fixed official task distribution. I6 directly tested whether a materially different saved-runtime acquisition phase could remove T5's dominant never-reached class while preserving its conditional maintenance benefit. The activation-verified artifact failed that goal-linked test at 94/200, so the campaign returns to goal review with the acquisition failure and signed-angle uncertainty explicit rather than requesting assessment or claiming success.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "I6 is closed limited-negative and the bounded work returns to goal review. Do not measure or retrain the unaltered v2 controller lineage, and do not assign T7 as working or best-known. At goal review, compare the expected contribution of one controlled signed-branch/angle mechanism test against the terminal cost of official assessment; only open another inquiry if that diagnostic can plausibly identify a route materially closer to 196/200. Otherwise preserve T3/T1 as development references and carry the unresolved causal distinction forward without promoting it to a plant or reward claim.",
+    "next_question": "Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics?",
+    "scientific_commit": "8ee20f853200089911bb32de272d281d888024a6",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -20151,25 +20329,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ecccb9ab-6bcf-4f1e-83cc-1422f594d1ca",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can a new saved-runtime acquisition controller that explicitly escapes the reset singularity and handles inner-target branch transients reduce T5's 37 never-reached failures while preserving its reduced reached-but-failed-hold rate and T1/T3-level outer complete-hold performance toward at least 196/200? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T6",
-      "T7",
-      "M12",
-      "M13",
-      "E25"
-    ],
-    "scientific_parent_commit": "fa420a4534896cea5d45ff950000d8568c02227f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
