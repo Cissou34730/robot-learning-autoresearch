@@ -69,3 +69,4 @@
 | T7 | training | I8 | completed |
 | M24 | measurement | I8 | completed |
 | M25 | measurement | I8 | completed |
+| E36 | inquiry | I8 | completed |
