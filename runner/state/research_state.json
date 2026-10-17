@@ -17029,52 +17029,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T6:checkpoint-60416",
-        "evidence": [
-          "M21",
-          "M22"
-        ],
-        "reason": "M21/M22 establish that T6:checkpoint-60416 is the strongest measured development artifact so far: 149/160 complete successes versus T4's 148/160 on the matched panel, with inner 6-14 cm success 87/93 versus 86/93 and outer 14-20 cm success 62/67 versus 62/67. It also reduces hold failures from 5 to 3 and mean final endpoint speed from 0.6486 to 0.4859 m/s. This is a limited improvement, not official-goal certification: no-reaches increase from 7 to 8, all episodes still saturate, and the active T5 reward remains part of the T6 training lineage, so the result is not a one-factor causal attribution to damping."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t6-cbab5a2d4-e6fa9ce03d6be36896d1c6fe705056c56c7d32d4c780b33c1cb57f51c99bd3c4",
-        "fingerprint": "e6fa9ce03d6be36896d1c6fe705056c56c7d32d4c780b33c1cb57f51c99bd3c4",
-        "source": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t6/checkpoint-60416"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T6:checkpoint-60416",
-        "evidence": [
-          "M21",
-          "M22"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E31",
-    "inquiry_id": "I7",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T6:checkpoint-60416",
-        "evidence": [
-          "M21",
-          "M22"
-        ],
-        "reason": "M21/M22 establish that T6:checkpoint-60416 is the strongest measured development artifact so far: 149/160 complete successes versus T4's 148/160 on the matched panel, with inner 6-14 cm success 87/93 versus 86/93 and outer 14-20 cm success 62/67 versus 62/67. It also reduces hold failures from 5 to 3 and mean final endpoint speed from 0.6486 to 0.4859 m/s. This is a limited improvement, not official-goal certification: no-reaches increase from 7 to 8, all episodes still saturate, and the active T5 reward remains part of the T6 training lineage, so the result is not a one-factor causal attribution to damping."
-      }
-    },
-    "request_fingerprint": "a1ae8371c3a42c20385d410f783268c74e9df84b0e1223aa61f4816788c44e2d",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 T4 reference; T4:checkpoint-120832 ties on earlier development evidence but has no terminal-checkpoint privilege. T5:checkpoint-65536 is the only measured I6 follow-on and is inferior on complete success and both radial strata, so it is neither working nor best-known. No candidate is assigned working or retained. I7 is an inquiry boundary, not a claim that a new candidate already exists.",
     "completed_operations": [
