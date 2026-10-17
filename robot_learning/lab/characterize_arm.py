@@ -249,10 +249,13 @@ def _find_ids(model: mujoco.MjModel) -> tuple[list[int], list[int], int]:
         mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
         for name in JOINT_NAMES
     ]
-    actuator_ids = [
-        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
-        for name in ACTUATOR_NAMES
-    ]
+    if model.nu != 2:
+        raise RuntimeError(
+            f"the compiled XML must contain exactly two actuators, got {model.nu}"
+        )
+    # The protected XML leaves both motor names unset; compiled actuator
+    # indices therefore follow the validated shoulder/elbow declaration order.
+    actuator_ids = list(range(model.nu))
     site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, SITE_NAME)
     if any(index < 0 for index in (*joint_ids, *actuator_ids)) or site_id < 0:
         raise RuntimeError(
