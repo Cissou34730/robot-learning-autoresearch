@@ -211,6 +211,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 "MuJoCo did not provide a finite world-frame position for "
                 "the end_effector site"
             )
+        endpoint_distance = float(
+            np.linalg.norm(end_effector_position - self.data.mocap_pos[0])
+        )
+        if not np.isfinite(endpoint_distance):
+            raise RuntimeError(
+                "MuJoCo did not provide a finite endpoint distance for "
+                "the end_effector site"
+            )
         endpoint_speed = float(np.linalg.norm(endpoint_velocity))
         elbow_qpos, elbow_branch = self._elbow_configuration()
         distance = self._distance_to_target()
@@ -233,6 +241,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            endpoint_speed=endpoint_speed,
+            endpoint_distance=endpoint_distance,
         )
         self._previous_distance = distance
 
