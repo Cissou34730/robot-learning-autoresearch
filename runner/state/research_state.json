@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 9,
+    "event": 10,
     "inquiry": 2,
     "measurement": 6,
     "session": 5,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -4379,33 +4379,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T07:38:08Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, retained from E4 because it has the strongest completed full-range diagnostic evidence: 105/160 successes and substantially better inner and outer reach/hold behavior than T2 in M5/M6. T2:checkpoint-120832 is the fresh 6-20 cm exposure candidate tested in I2; it is not assigned working, best-known, or retained because it achieved 54/160 and showed broad radius- and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
+        "completed_operations": [
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "cumulative_resource_use": "This inquiry added one fresh training run T2 (120000 requested, 120832 actual rollout-rounded steps), one matched two-candidate research evaluation M5 (160 episodes per candidate on the same seed panel), and one two-artifact stratified analysis M6. Across the campaign: 2 inquiries, 5 bounded scientific sessions, 5 completed measurements, 2 training operations, 2 learned candidates, no official assessment requested, and the maintainer allocation was respected for both runs.",
+        "current_goal_gap": "The best-known T1:checkpoint-115712 remains at 105/160 successes (65.625%) on the matched full-range development panel and has no official assessment evidence. T2:checkpoint-120832 achieved 54/160 (33.75%) and is not a viable replacement. The campaign remains 91 successes short of the 196/200 official threshold on the development panel, acknowledging that development and official panels are distinct.",
+        "current_synthesis": "Established facts: M2 measured the compiled arm and runtime as a 2 ms Euler system with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches throughout the official grid, and large one-interval endpoint responses. M3/M4 established that T1 under the baseline 14-20 cm training exposure reached 111/160 and succeeded in 105/160, with 45/49 no-reach failures in 6-14 cm, 92.5% outer-range success, six reached-then-failed holds, open-branch endings, and saturation in every episode. I2 changed only the training exposure in the tested source from 14-20 cm to 6-20 cm for a fresh T2 run; T2 completed 120832 rollout-rounded steps but had zero training success proxy throughout and was not superior by proxy. M5 matched T2:checkpoint-120832 against T1:checkpoint-115712 on the same 160 seeds: T2 had 54/160 successes versus 105/160, with 20 candidate wins and 71 reference wins. M6 showed that T2 worsened the inner annulus (30/93 successes, 31/93 first reaches, 62 no-reaches versus T1's 42/93, 48/93, and 45), and also sacrificed outer behavior (24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67, 63/67, 4, and 0). T2's mean maximum hold was 34.02 steps versus T1's 66.38, and its mean saturation fraction was lower (0.558 versus 0.824) without capability improvement; its 0% success in both 90-135 and 135-180 degree angle bins indicates severe directional conditioning. Interpretation: I2 is a negative complete-artifact comparison. Full-range exposure as implemented did not improve the consequential inner deficit and caused a broad reach/hold regression in this fresh realization. This does not establish radial exposure as the isolated cause or disprove full-range training generally: seed/training realization, singularity-exit launch, branch selection, angle-conditioned trajectory timing, and dynamic stabilization remain competing explanations. The lower saturation outcome despite worse capability weakens saturation fraction as a sufficient explanation but does not resolve launch or directional control mechanisms.",
+        "decision_frontier": "I2 is resolved negatively at the capability-comparison level. The next consequential distinction is whether T2's broad regression arose from directional launch/singularity-exit and branch/angle conditioning, from late trajectory convergence and hold stabilization, or from an unfavorable fresh learning realization; the evidence does not isolate these causes. This distinction matters because it determines whether the next work should instrument or redesign launch/branch-aware control and stabilization rather than repeat radial exposure. Evidence that would revise the direction is matched trajectory-level measurement or a candidate comparison that separates first-reach/no-reach by angle and branch, applied torque and saturation timing, endpoint residual motion and hold interruptions; persistent failure after successful launch would prioritize stabilization, whereas early directional no-reach with branch asymmetry would prioritize launch/trajectory structure. The tested result supports retaining T1 over T2, not declaring the broader full-range method impossible.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of the protected 200, with every success requiring an uninterrupted 100-control-step hold. I2 tested one bounded development route because T1:checkpoint-115712 had only 105/160 successes on a full-range development panel and was far from credible 98% capability. The fresh full-range candidate failed to advance that gap, so no official assessment is justified yet.",
+        "next_direction_or_closure": "I2 is closed negatively by E9 after the prespecified matched diagnostics were completed. Retain T1 as best-known and carry forward that full-range exposure alone, as implemented in T2, is not a credible next direction. At goal review, compare the remaining 65.625% development capability with the expected contribution of a targeted launch/branch/angle and stabilization investigation versus official assessment; the current evidence favors mechanism-discriminating work before assessment, but does not predetermine its implementation.",
+        "next_question": "Which launch, branch-selection, and angle-conditioned stabilization mechanism most limits T1's path from first reach to uninterrupted hold, and can a targeted control or trajectory intervention improve inner-annulus reach without sacrificing the outer-range capability required for the 98% goal?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "f0f47d6ae9dcc92a5b9473ffbc6b2f1acabcd8ca",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, retained from E4 because it has the strongest completed full-range diagnostic evidence: 105/160 successes and substantially better inner and outer reach/hold behavior than T2 in M5/M6. T2:checkpoint-120832 is the fresh 6-20 cm exposure candidate tested in I2; it is not assigned working, best-known, or retained because it achieved 54/160 and showed broad radius- and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
+        "completed_operations": [
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "cumulative_resource_use": "This inquiry added one fresh training run T2 (120000 requested, 120832 actual rollout-rounded steps), one matched two-candidate research evaluation M5 (160 episodes per candidate on the same seed panel), and one two-artifact stratified analysis M6. Across the campaign: 2 inquiries, 5 bounded scientific sessions, 5 completed measurements, 2 training operations, 2 learned candidates, no official assessment requested, and the maintainer allocation was respected for both runs.",
+        "current_goal_gap": "The best-known T1:checkpoint-115712 remains at 105/160 successes (65.625%) on the matched full-range development panel and has no official assessment evidence. T2:checkpoint-120832 achieved 54/160 (33.75%) and is not a viable replacement. The campaign remains 91 successes short of the 196/200 official threshold on the development panel, acknowledging that development and official panels are distinct.",
+        "current_synthesis": "Established facts: M2 measured the compiled arm and runtime as a 2 ms Euler system with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches throughout the official grid, and large one-interval endpoint responses. M3/M4 established that T1 under the baseline 14-20 cm training exposure reached 111/160 and succeeded in 105/160, with 45/49 no-reach failures in 6-14 cm, 92.5% outer-range success, six reached-then-failed holds, open-branch endings, and saturation in every episode. I2 changed only the training exposure in the tested source from 14-20 cm to 6-20 cm for a fresh T2 run; T2 completed 120832 rollout-rounded steps but had zero training success proxy throughout and was not superior by proxy. M5 matched T2:checkpoint-120832 against T1:checkpoint-115712 on the same 160 seeds: T2 had 54/160 successes versus 105/160, with 20 candidate wins and 71 reference wins. M6 showed that T2 worsened the inner annulus (30/93 successes, 31/93 first reaches, 62 no-reaches versus T1's 42/93, 48/93, and 45), and also sacrificed outer behavior (24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67, 63/67, 4, and 0). T2's mean maximum hold was 34.02 steps versus T1's 66.38, and its mean saturation fraction was lower (0.558 versus 0.824) without capability improvement; its 0% success in both 90-135 and 135-180 degree angle bins indicates severe directional conditioning. Interpretation: I2 is a negative complete-artifact comparison. Full-range exposure as implemented did not improve the consequential inner deficit and caused a broad reach/hold regression in this fresh realization. This does not establish radial exposure as the isolated cause or disprove full-range training generally: seed/training realization, singularity-exit launch, branch selection, angle-conditioned trajectory timing, and dynamic stabilization remain competing explanations. The lower saturation outcome despite worse capability weakens saturation fraction as a sufficient explanation but does not resolve launch or directional control mechanisms.",
+        "decision_frontier": "I2 is resolved negatively at the capability-comparison level. The next consequential distinction is whether T2's broad regression arose from directional launch/singularity-exit and branch/angle conditioning, from late trajectory convergence and hold stabilization, or from an unfavorable fresh learning realization; the evidence does not isolate these causes. This distinction matters because it determines whether the next work should instrument or redesign launch/branch-aware control and stabilization rather than repeat radial exposure. Evidence that would revise the direction is matched trajectory-level measurement or a candidate comparison that separates first-reach/no-reach by angle and branch, applied torque and saturation timing, endpoint residual motion and hold interruptions; persistent failure after successful launch would prioritize stabilization, whereas early directional no-reach with branch asymmetry would prioritize launch/trajectory structure. The tested result supports retaining T1 over T2, not declaring the broader full-range method impossible.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of the protected 200, with every success requiring an uninterrupted 100-control-step hold. I2 tested one bounded development route because T1:checkpoint-115712 had only 105/160 successes on a full-range development panel and was far from credible 98% capability. The fresh full-range candidate failed to advance that gap, so no official assessment is justified yet.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed negatively by E9 after the prespecified matched diagnostics were completed. Retain T1 as best-known and carry forward that full-range exposure alone, as implemented in T2, is not a credible next direction. At goal review, compare the remaining 65.625% development capability with the expected contribution of a targeted launch/branch/angle and stabilization investigation versus official assessment; the current evidence favors mechanism-discriminating work before assessment, but does not predetermine its implementation.",
+        "next_question": "Which launch, branch-selection, and angle-conditioned stabilization mechanism most limits T1's path from first reach to uninterrupted hold, and can a targeted control or trajectory intervention improve inner-annulus reach without sacrificing the outer-range capability required for the 98% goal?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "8be39220-0b26-45ca-ad39-b3eb6e85641c",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "20m41s | 37.37 AIU | prompt 5.4m (88% cached) | output 130.7k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "33s | 1.25 AIU | prompt 116.8k (58% cached) | output 2.2k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e397aca6e3cbc7e75edddbee0fa43a1b42a0d971",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, retained from E4 because it has the strongest completed full-range diagnostic evidence: 105/160 successes and substantially better inner and outer reach/hold behavior than T2 in M5/M6. T2:checkpoint-120832 is the fresh 6-20 cm exposure candidate tested in I2; it is not assigned working, best-known, or retained because it achieved 54/160 and showed broad radius- and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
+        "completed_operations": [
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "cumulative_resource_use": "This inquiry added one fresh training run T2 (120000 requested, 120832 actual rollout-rounded steps), one matched two-candidate research evaluation M5 (160 episodes per candidate on the same seed panel), and one two-artifact stratified analysis M6. Across the campaign: 2 inquiries, 5 bounded scientific sessions, 5 completed measurements, 2 training operations, 2 learned candidates, no official assessment requested, and the maintainer allocation was respected for both runs.",
+        "current_goal_gap": "The best-known T1:checkpoint-115712 remains at 105/160 successes (65.625%) on the matched full-range development panel and has no official assessment evidence. T2:checkpoint-120832 achieved 54/160 (33.75%) and is not a viable replacement. The campaign remains 91 successes short of the 196/200 official threshold on the development panel, acknowledging that development and official panels are distinct.",
+        "current_synthesis": "Established facts: M2 measured the compiled arm and runtime as a 2 ms Euler system with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches throughout the official grid, and large one-interval endpoint responses. M3/M4 established that T1 under the baseline 14-20 cm training exposure reached 111/160 and succeeded in 105/160, with 45/49 no-reach failures in 6-14 cm, 92.5% outer-range success, six reached-then-failed holds, open-branch endings, and saturation in every episode. I2 changed only the training exposure in the tested source from 14-20 cm to 6-20 cm for a fresh T2 run; T2 completed 120832 rollout-rounded steps but had zero training success proxy throughout and was not superior by proxy. M5 matched T2:checkpoint-120832 against T1:checkpoint-115712 on the same 160 seeds: T2 had 54/160 successes versus 105/160, with 20 candidate wins and 71 reference wins. M6 showed that T2 worsened the inner annulus (30/93 successes, 31/93 first reaches, 62 no-reaches versus T1's 42/93, 48/93, and 45), and also sacrificed outer behavior (24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67, 63/67, 4, and 0). T2's mean maximum hold was 34.02 steps versus T1's 66.38, and its mean saturation fraction was lower (0.558 versus 0.824) without capability improvement; its 0% success in both 90-135 and 135-180 degree angle bins indicates severe directional conditioning. Interpretation: I2 is a negative complete-artifact comparison. Full-range exposure as implemented did not improve the consequential inner deficit and caused a broad reach/hold regression in this fresh realization. This does not establish radial exposure as the isolated cause or disprove full-range training generally: seed/training realization, singularity-exit launch, branch selection, angle-conditioned trajectory timing, and dynamic stabilization remain competing explanations. The lower saturation outcome despite worse capability weakens saturation fraction as a sufficient explanation but does not resolve launch or directional control mechanisms.",
+        "decision_frontier": "I2 is resolved negatively at the capability-comparison level. The next consequential distinction is whether T2's broad regression arose from directional launch/singularity-exit and branch/angle conditioning, from late trajectory convergence and hold stabilization, or from an unfavorable fresh learning realization; the evidence does not isolate these causes. This distinction matters because it determines whether the next work should instrument or redesign launch/branch-aware control and stabilization rather than repeat radial exposure. Evidence that would revise the direction is matched trajectory-level measurement or a candidate comparison that separates first-reach/no-reach by angle and branch, applied torque and saturation timing, endpoint residual motion and hold interruptions; persistent failure after successful launch would prioritize stabilization, whereas early directional no-reach with branch asymmetry would prioritize launch/trajectory structure. The tested result supports retaining T1 over T2, not declaring the broader full-range method impossible.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "T2",
+          "M5",
+          "M6",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of the protected 200, with every success requiring an uninterrupted 100-control-step hold. I2 tested one bounded development route because T1:checkpoint-115712 had only 105/160 successes on a full-range development panel and was far from credible 98% capability. The fresh full-range candidate failed to advance that gap, so no official assessment is justified yet.",
+        "next_direction_or_closure": "I2 is closed negatively by E9 after the prespecified matched diagnostics were completed. Retain T1 as best-known and carry forward that full-range exposure alone, as implemented in T2, is not a credible next direction. At goal review, compare the remaining 65.625% development capability with the expected contribution of a targeted launch/branch/angle and stabilization investigation versus official assessment; the current evidence favors mechanism-discriminating work before assessment, but does not predetermine its implementation.",
+        "next_question": "Which launch, branch-selection, and angle-conditioned stabilization mechanism most limits T1's path from first reach to uninterrupted hold, and can a targeted control or trajectory intervention improve inner-annulus reach without sacrificing the outer-range capability required for the 98% goal?"
+      }
+    },
+    "request_fingerprint": "858d7c79db73466b935b60d132fd6982abff82444b762514a9a9f018ad692c50",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-115712, retained from E4 because it has the strongest completed full-range diagnostic evidence: 105/160 successes and substantially better inner and outer reach/hold behavior than T2 in M5/M6. T2:checkpoint-120832 is the fresh 6-20 cm exposure candidate tested in I2; it is not assigned working, best-known, or retained because it achieved 54/160 and showed broad radius- and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
     "completed_operations": [
-      "E7"
+      "T2",
+      "M5",
+      "M6",
+      "E9"
     ],
-    "cumulative_resource_use": "Completed operations carried into this session: T1 training (120000 requested steps; 120832 actual rollout-rounded steps), M3 research evaluation (160 episodes, seed 4200), M4 analysis, E4 best-known assignment, and E5 closure of I1. This goal-review session completed E7, opening I2. Total campaign resources now include 2 inquiries, 4 scientific sessions, 3 measurements, 1 training operation, and 1 learned candidate; no official assessment has been requested. I2 training remains bounded by the existing maintainer allocation.",
-    "current_goal_gap": "T1:checkpoint-115712 is not capable across the official distribution: it reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). The dominant measured deficit is inner-annulus reach, with 45 of 49 no-reach episodes in 6-14 cm; outer-range success was 92.5% overall in the 14-20 cm bins. Hold failure after reach was smaller (six episodes), but all episodes had some action saturation and all ended on the open branch, so launch dynamics, angular conditioning, saturation, and residual endpoint motion remain consequential risks.",
-    "current_synthesis": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
-    "decision_frontier": "I2 must determine whether full 6-20 cm exposure produces a candidate that advances the human goal by reducing 6-14 cm no-reach/failure while retaining outer-range reach and uninterrupted hold stability. The discriminating comparison is a fresh full-range candidate against T1:checkpoint-115712 with matched full-range diagnostics covering overall success, radius- and angle-stratified first reach, maximum uninterrupted hold and interruptions, endpoint speed or residual motion, and action saturation. If inner performance improves without a consequential outer hold tradeoff, full-range exposure becomes a credible development direction for further capability work, but not an isolated causal finding. If inner performance remains poor, or if outer reach/hold degrades materially, the next direction should prioritize launch trajectory, saturation, or stabilization/control structure. Missing candidate or diagnostic evidence remains unresolved rather than supporting either conclusion.",
+    "cumulative_resource_use": "This inquiry added one fresh training run T2 (120000 requested, 120832 actual rollout-rounded steps), one matched two-candidate research evaluation M5 (160 episodes per candidate on the same seed panel), and one two-artifact stratified analysis M6. Across the campaign: 2 inquiries, 5 bounded scientific sessions, 5 completed measurements, 2 training operations, 2 learned candidates, no official assessment requested, and the maintainer allocation was respected for both runs.",
+    "current_goal_gap": "The best-known T1:checkpoint-115712 remains at 105/160 successes (65.625%) on the matched full-range development panel and has no official assessment evidence. T2:checkpoint-120832 achieved 54/160 (33.75%) and is not a viable replacement. The campaign remains 91 successes short of the 196/200 official threshold on the development panel, acknowledging that development and official panels are distinct.",
+    "current_synthesis": "Established facts: M2 measured the compiled arm and runtime as a 2 ms Euler system with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches throughout the official grid, and large one-interval endpoint responses. M3/M4 established that T1 under the baseline 14-20 cm training exposure reached 111/160 and succeeded in 105/160, with 45/49 no-reach failures in 6-14 cm, 92.5% outer-range success, six reached-then-failed holds, open-branch endings, and saturation in every episode. I2 changed only the training exposure in the tested source from 14-20 cm to 6-20 cm for a fresh T2 run; T2 completed 120832 rollout-rounded steps but had zero training success proxy throughout and was not superior by proxy. M5 matched T2:checkpoint-120832 against T1:checkpoint-115712 on the same 160 seeds: T2 had 54/160 successes versus 105/160, with 20 candidate wins and 71 reference wins. M6 showed that T2 worsened the inner annulus (30/93 successes, 31/93 first reaches, 62 no-reaches versus T1's 42/93, 48/93, and 45), and also sacrificed outer behavior (24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67, 63/67, 4, and 0). T2's mean maximum hold was 34.02 steps versus T1's 66.38, and its mean saturation fraction was lower (0.558 versus 0.824) without capability improvement; its 0% success in both 90-135 and 135-180 degree angle bins indicates severe directional conditioning. Interpretation: I2 is a negative complete-artifact comparison. Full-range exposure as implemented did not improve the consequential inner deficit and caused a broad reach/hold regression in this fresh realization. This does not establish radial exposure as the isolated cause or disprove full-range training generally: seed/training realization, singularity-exit launch, branch selection, angle-conditioned trajectory timing, and dynamic stabilization remain competing explanations. The lower saturation outcome despite worse capability weakens saturation fraction as a sufficient explanation but does not resolve launch or directional control mechanisms.",
+    "decision_frontier": "I2 is resolved negatively at the capability-comparison level. The next consequential distinction is whether T2's broad regression arose from directional launch/singularity-exit and branch/angle conditioning, from late trajectory convergence and hold stabilization, or from an unfavorable fresh learning realization; the evidence does not isolate these causes. This distinction matters because it determines whether the next work should instrument or redesign launch/branch-aware control and stabilization rather than repeat radial exposure. Evidence that would revise the direction is matched trajectory-level measurement or a candidate comparison that separates first-reach/no-reach by angle and branch, applied torque and saturation timing, endpoint residual motion and hold interruptions; persistent failure after successful launch would prioritize stabilization, whereas early directional no-reach with branch asymmetry would prioritize launch/trajectory structure. The tested result supports retaining T1 over T2, not declaring the broader full-range method impossible.",
     "evidence_references": [
       "M2",
       "T1",
       "M3",
       "M4",
-      "E4",
-      "E5",
-      "E7"
+      "T2",
+      "M5",
+      "M6",
+      "E9"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The current best-known candidate has only 105/160 successes on a distinct full-range development panel, so official assessment is not yet the better decision; the opened inquiry tests a bounded route to improve the dominant observed gap toward the goal.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 is opened and this goal-review record checkpoints the exact active question. In the inquiry, first train a fresh candidate with official 6-20 cm radial exposure under the current bounded allocation, then obtain matched full-range radius-angle and hold diagnostics against T1:checkpoint-115712. Select, redirect, or close based on the prespecified inner-annulus improvement and outer-range stability outcomes; do not request official assessment before that evidence.",
-    "next_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?",
-    "scientific_commit": "93a827e6293f31a34527a0ff82ca8ef719403f46",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal remains at least 196 successful episodes out of the protected 200, with every success requiring an uninterrupted 100-control-step hold. I2 tested one bounded development route because T1:checkpoint-115712 had only 105/160 successes on a full-range development panel and was far from credible 98% capability. The fresh full-range candidate failed to advance that gap, so no official assessment is justified yet.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed negatively by E9 after the prespecified matched diagnostics were completed. Retain T1 as best-known and carry forward that full-range exposure alone, as implemented in T2, is not a credible next direction. At goal review, compare the remaining 65.625% development capability with the expected contribution of a targeted launch/branch/angle and stabilization investigation versus official assessment; the current evidence favors mechanism-discriminating work before assessment, but does not predetermine its implementation.",
+    "next_question": "Which launch, branch-selection, and angle-conditioned stabilization mechanism most limits T1's path from first reach to uninterrupted hold, and can a targeted control or trajectory intervention improve inner-annulus reach without sacrificing the outer-range capability required for the 98% goal?",
+    "scientific_commit": "e397aca6e3cbc7e75edddbee0fa43a1b42a0d971",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4413,24 +4565,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8be39220-0b26-45ca-ad39-b3eb6e85641c",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T2",
-      "M5",
-      "M6",
-      "E9"
-    ],
-    "scientific_parent_commit": "f0f47d6ae9dcc92a5b9473ffbc6b2f1acabcd8ca"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
