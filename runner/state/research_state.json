@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close after a fresh full-range-exposure candidate is trained and compared with T1:checkpoint-115712 using matched full-range diagnostics that report overall success, radius- and angle-stratified first reach, maximum uninterrupted hold, hold interruptions, endpoint-speed or residual-motion measures, and action saturation. A positive conclusion requires reduced inner-annulus no-reach/failure and no consequential loss of outer-range reach or hold stability; a negative conclusion requires unchanged or worsened inner-annulus capability or a consequential outer-range/hold tradeoff; an inconclusive conclusion is appropriate if the candidate or required matched diagnostics are unavailable. Any result is a comparison of complete artifacts and does not by itself establish radial exposure as the isolated cause.",
     "goal_connection": "The current best-known candidate achieves only 105/160 successes (65.625%) on a full-range development panel, so it is not credible to request the terminal 98% assessment. M4 found 45 of 49 no-reach episodes in the 6-14 cm annulus, while the 14-20 cm bins achieved 92.5% success overall; a full-range-trained candidate is the most direct bounded opportunity to improve coverage toward at least 196/200 official successes while preserving the already stronger outer-range behavior.",
-    "handoff_conclusion": "M2 established properties of the compiled arm and runtime: Euler integration at 2 ms, 20 ms visible control intervals, explicit 0.5 damping and 0.01 armature, compiled link masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These observations weaken static infeasibility and unspecified compiled defaults as the primary explanation, but do not establish learned capability. T1 trained the existing PPO implementation with its 14-20 cm exposure; high training proxies (0.96 at 115712 and 120832 steps) nominated but did not establish capability. M3 measured the nonterminal tied-proxy candidate T1:checkpoint-115712 from the contractual reset on 160 full-range episodes: 105/160 successes, 111/160 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 stratified the same artifact: the 6-14 cm bins contained 45 of 49 no-reach episodes and had success rates 0%, 45%, 46%, and 78%; the 14-20 cm bins had 100%, 89%, and 93% success. Only six episodes reached and then failed the hold. All episodes ended on the open branch and all had some saturation. These are artifact- and runtime-specific observations. They support inner-annulus capability/exposure as the first consequential gap, but because exposure, resulting policy, and behavior were not isolated one-factor changes, they do not establish exposure as the cause; angular launch asymmetry, aggressive saturated torque, and residual endpoint motion remain secondary unresolved mechanisms.",
+    "handoff_conclusion": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
     "handoff_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?",
-    "handoff_source_session_id": "S3",
+    "handoff_source_session_id": "S4",
     "id": "I2",
     "opened_in_session": "S4",
     "question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?",
@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 4,
     "session": 4,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -2220,36 +2220,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T07:27:31Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed operations carried into this session: T1 training (120000 requested steps; 120832 actual rollout-rounded steps), M3 research evaluation (160 episodes, seed 4200), M4 analysis, E4 best-known assignment, and E5 closure of I1. This goal-review session completed E7, opening I2. Total campaign resources now include 2 inquiries, 4 scientific sessions, 3 measurements, 1 training operation, and 1 learned candidate; no official assessment has been requested. I2 training remains bounded by the existing maintainer allocation.",
+        "current_goal_gap": "T1:checkpoint-115712 is not capable across the official distribution: it reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). The dominant measured deficit is inner-annulus reach, with 45 of 49 no-reach episodes in 6-14 cm; outer-range success was 92.5% overall in the 14-20 cm bins. Hold failure after reach was smaller (six episodes), but all episodes had some action saturation and all ended on the open branch, so launch dynamics, angular conditioning, saturation, and residual endpoint motion remain consequential risks.",
+        "current_synthesis": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
+        "decision_frontier": "I2 must determine whether full 6-20 cm exposure produces a candidate that advances the human goal by reducing 6-14 cm no-reach/failure while retaining outer-range reach and uninterrupted hold stability. The discriminating comparison is a fresh full-range candidate against T1:checkpoint-115712 with matched full-range diagnostics covering overall success, radius- and angle-stratified first reach, maximum uninterrupted hold and interruptions, endpoint speed or residual motion, and action saturation. If inner performance improves without a consequential outer hold tradeoff, full-range exposure becomes a credible development direction for further capability work, but not an isolated causal finding. If inner performance remains poor, or if outer reach/hold degrades materially, the next direction should prioritize launch trajectory, saturation, or stabilization/control structure. Missing candidate or diagnostic evidence remains unresolved rather than supporting either conclusion.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The current best-known candidate has only 105/160 successes on a distinct full-range development panel, so official assessment is not yet the better decision; the opened inquiry tests a bounded route to improve the dominant observed gap toward the goal.",
+        "next_direction_or_closure": "I2 is opened and this goal-review record checkpoints the exact active question. In the inquiry, first train a fresh candidate with official 6-20 cm radial exposure under the current bounded allocation, then obtain matched full-range radius-angle and hold diagnostics against T1:checkpoint-115712. Select, redirect, or close based on the prespecified inner-annulus improvement and outer-range stability outcomes; do not request official assessment before that evidence.",
+        "next_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b0042e4d7b7c893c381eef5e858dff618b295923",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed operations carried into this session: T1 training (120000 requested steps; 120832 actual rollout-rounded steps), M3 research evaluation (160 episodes, seed 4200), M4 analysis, E4 best-known assignment, and E5 closure of I1. This goal-review session completed E7, opening I2. Total campaign resources now include 2 inquiries, 4 scientific sessions, 3 measurements, 1 training operation, and 1 learned candidate; no official assessment has been requested. I2 training remains bounded by the existing maintainer allocation.",
+        "current_goal_gap": "T1:checkpoint-115712 is not capable across the official distribution: it reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). The dominant measured deficit is inner-annulus reach, with 45 of 49 no-reach episodes in 6-14 cm; outer-range success was 92.5% overall in the 14-20 cm bins. Hold failure after reach was smaller (six episodes), but all episodes had some action saturation and all ended on the open branch, so launch dynamics, angular conditioning, saturation, and residual endpoint motion remain consequential risks.",
+        "current_synthesis": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
+        "decision_frontier": "I2 must determine whether full 6-20 cm exposure produces a candidate that advances the human goal by reducing 6-14 cm no-reach/failure while retaining outer-range reach and uninterrupted hold stability. The discriminating comparison is a fresh full-range candidate against T1:checkpoint-115712 with matched full-range diagnostics covering overall success, radius- and angle-stratified first reach, maximum uninterrupted hold and interruptions, endpoint speed or residual motion, and action saturation. If inner performance improves without a consequential outer hold tradeoff, full-range exposure becomes a credible development direction for further capability work, but not an isolated causal finding. If inner performance remains poor, or if outer reach/hold degrades materially, the next direction should prioritize launch trajectory, saturation, or stabilization/control structure. Missing candidate or diagnostic evidence remains unresolved rather than supporting either conclusion.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The current best-known candidate has only 105/160 successes on a distinct full-range development panel, so official assessment is not yet the better decision; the opened inquiry tests a bounded route to improve the dominant observed gap toward the goal.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I2 is opened and this goal-review record checkpoints the exact active question. In the inquiry, first train a fresh candidate with official 6-20 cm radial exposure under the current bounded allocation, then obtain matched full-range radius-angle and hold diagnostics against T1:checkpoint-115712. Select, redirect, or close based on the prespecified inner-annulus improvement and outer-range stability outcomes; do not request official assessment before that evidence.",
+        "next_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "7c423f1d-d250-4248-be4d-ffc748921401",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "19m05s | 34.62 AIU | prompt 5.1m (89% cached) | output 125.5k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "93a827e6293f31a34527a0ff82ca8ef719403f46",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
+        "completed_operations": [
+          "E7"
+        ],
+        "cumulative_resource_use": "Completed operations carried into this session: T1 training (120000 requested steps; 120832 actual rollout-rounded steps), M3 research evaluation (160 episodes, seed 4200), M4 analysis, E4 best-known assignment, and E5 closure of I1. This goal-review session completed E7, opening I2. Total campaign resources now include 2 inquiries, 4 scientific sessions, 3 measurements, 1 training operation, and 1 learned candidate; no official assessment has been requested. I2 training remains bounded by the existing maintainer allocation.",
+        "current_goal_gap": "T1:checkpoint-115712 is not capable across the official distribution: it reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). The dominant measured deficit is inner-annulus reach, with 45 of 49 no-reach episodes in 6-14 cm; outer-range success was 92.5% overall in the 14-20 cm bins. Hold failure after reach was smaller (six episodes), but all episodes had some action saturation and all ended on the open branch, so launch dynamics, angular conditioning, saturation, and residual endpoint motion remain consequential risks.",
+        "current_synthesis": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
+        "decision_frontier": "I2 must determine whether full 6-20 cm exposure produces a candidate that advances the human goal by reducing 6-14 cm no-reach/failure while retaining outer-range reach and uninterrupted hold stability. The discriminating comparison is a fresh full-range candidate against T1:checkpoint-115712 with matched full-range diagnostics covering overall success, radius- and angle-stratified first reach, maximum uninterrupted hold and interruptions, endpoint speed or residual motion, and action saturation. If inner performance improves without a consequential outer hold tradeoff, full-range exposure becomes a credible development direction for further capability work, but not an isolated causal finding. If inner performance remains poor, or if outer reach/hold degrades materially, the next direction should prioritize launch trajectory, saturation, or stabilization/control structure. Missing candidate or diagnostic evidence remains unresolved rather than supporting either conclusion.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "M4",
+          "E4",
+          "E5",
+          "E7"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The current best-known candidate has only 105/160 successes on a distinct full-range development panel, so official assessment is not yet the better decision; the opened inquiry tests a bounded route to improve the dominant observed gap toward the goal.",
+        "next_direction_or_closure": "I2 is opened and this goal-review record checkpoints the exact active question. In the inquiry, first train a fresh candidate with official 6-20 cm radial exposure under the current bounded allocation, then obtain matched full-range radius-angle and hold diagnostics against T1:checkpoint-115712. Select, redirect, or close based on the prespecified inner-annulus improvement and outer-range stability outcomes; do not request official assessment before that evidence.",
+        "next_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?"
+      }
+    },
+    "request_fingerprint": "f24029616c37829dc384d293199781497535f0bb2f1e6d4e40eddc0e7c301139",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training success proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence.",
+    "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
     "completed_operations": [
-      "T1",
-      "M3",
-      "M4",
-      "E4",
-      "E5"
+      "E7"
     ],
-    "cumulative_resource_use": "Completed operations in this inquiry session: T1 training (requested 120000 steps; actual learning checkpoints through 120832 due rollout boundary), M3 research evaluation (160 episodes, seed 4200), M4 bound analysis of M3, E4 best-known assignment, and E5 inquiry closure. Prior campaign evidence includes M2 compiled-arm characterization and E2 inquiry opening. One learned candidate has been archived; one candidate has been measured; no official assessment has been requested. Training allocation used: 120000 requested steps for T1.",
-    "current_goal_gap": "The best-known baseline policy is not yet capable across the official distribution. Its dominant observed deficit is no reach in the 6-14 cm inner annulus, with secondary angular and high-saturation behavior; hold stabilization is a smaller observed deficit among episodes that do reach. No candidate trained with full 6-20 cm exposure has yet been produced or compared.",
-    "current_synthesis": "M2 established properties of the compiled arm and runtime: Euler integration at 2 ms, 20 ms visible control intervals, explicit 0.5 damping and 0.01 armature, compiled link masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These observations weaken static infeasibility and unspecified compiled defaults as the primary explanation, but do not establish learned capability. T1 trained the existing PPO implementation with its 14-20 cm exposure; high training proxies (0.96 at 115712 and 120832 steps) nominated but did not establish capability. M3 measured the nonterminal tied-proxy candidate T1:checkpoint-115712 from the contractual reset on 160 full-range episodes: 105/160 successes, 111/160 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 stratified the same artifact: the 6-14 cm bins contained 45 of 49 no-reach episodes and had success rates 0%, 45%, 46%, and 78%; the 14-20 cm bins had 100%, 89%, and 93% success. Only six episodes reached and then failed the hold. All episodes ended on the open branch and all had some saturation. These are artifact- and runtime-specific observations. They support inner-annulus capability/exposure as the first consequential gap, but because exposure, resulting policy, and behavior were not isolated one-factor changes, they do not establish exposure as the cause; angular launch asymmetry, aggressive saturated torque, and residual endpoint motion remain secondary unresolved mechanisms.",
-    "decision_frontier": "The next decision is whether a fresh candidate trained with official full 6-20 cm radial exposure improves the observed 6-14 cm no-reach deficit without trading away outer-range reach and hold stability. A matched diagnostic measurement using the same evaluator and radius/angle analysis can discriminate a candidate-level coverage improvement from unchanged launch/saturation or hold limitations. The current evidence cannot yet separate the effects of radial exposure from all other differences in a new training run, so any result must remain a comparison of complete artifacts. If full-range exposure leaves the inner deficit unchanged, the next frontier becomes launch trajectory/action saturation and model-based or control-structure alternatives; if inner success rises while outer hold remains stable, exposure becomes a credible next development direction but not a proven isolated cause.",
+    "cumulative_resource_use": "Completed operations carried into this session: T1 training (120000 requested steps; 120832 actual rollout-rounded steps), M3 research evaluation (160 episodes, seed 4200), M4 analysis, E4 best-known assignment, and E5 closure of I1. This goal-review session completed E7, opening I2. Total campaign resources now include 2 inquiries, 4 scientific sessions, 3 measurements, 1 training operation, and 1 learned candidate; no official assessment has been requested. I2 training remains bounded by the existing maintainer allocation.",
+    "current_goal_gap": "T1:checkpoint-115712 is not capable across the official distribution: it reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). The dominant measured deficit is inner-annulus reach, with 45 of 49 no-reach episodes in 6-14 cm; outer-range success was 92.5% overall in the 14-20 cm bins. Hold failure after reach was smaller (six episodes), but all episodes had some action saturation and all ended on the open branch, so launch dynamics, angular conditioning, saturation, and residual endpoint motion remain consequential risks.",
+    "current_synthesis": "M2 established the compiled arm/runtime facts: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. These weaken static infeasibility and unspecified compiled defaults as the primary first explanation, but do not establish learned capability. T1 used the existing 14-20 cm exposure; its high training proxies nominated checkpoints but did not establish development performance, and M3 measured the nonterminal 115712 checkpoint as 105/160 successes with 111 first reaches, mean first-reach step 13.88, mean first-reach endpoint speed 0.754 m/s, mean maximum hold 66.38 steps, mean final endpoint speed 0.686 m/s, and mean action saturation fraction 0.824. M4 localized 45/49 no-reach failures to 6-14 cm and found strong but imperfect outer-range performance. Correction to the inherited interpretation: inner-annulus exposure is the best-supported consequential gap and the highest-expected-contribution next comparison, not an established causal explanation; the prior baseline changed exposure, training outcome, and behavior together, and saturation/launch/hold mechanisms remain alternatives. I2 therefore compares complete artifacts and will not attribute any difference to exposure alone. The physical model makes the decisive observations radius/angle-stratified reach, convergence and uninterrupted hold, residual endpoint motion, and saturation rather than reward proxies or first reach alone.",
+    "decision_frontier": "I2 must determine whether full 6-20 cm exposure produces a candidate that advances the human goal by reducing 6-14 cm no-reach/failure while retaining outer-range reach and uninterrupted hold stability. The discriminating comparison is a fresh full-range candidate against T1:checkpoint-115712 with matched full-range diagnostics covering overall success, radius- and angle-stratified first reach, maximum uninterrupted hold and interruptions, endpoint speed or residual motion, and action saturation. If inner performance improves without a consequential outer hold tradeoff, full-range exposure becomes a credible development direction for further capability work, but not an isolated causal finding. If inner performance remains poor, or if outer reach/hold degrades materially, the next direction should prioritize launch trajectory, saturation, or stabilization/control structure. Missing candidate or diagnostic evidence remains unresolved rather than supporting either conclusion.",
     "evidence_references": [
       "M2",
       "T1",
       "M3",
       "M4",
       "E4",
-      "E5"
+      "E5",
+      "E7"
     ],
-    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The only measured candidate currently reaches 105/160 successes on a distinct full-range development panel, so the goal remains unmet; the measurement identifies the first gap that must be addressed before official assessment.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed. The next goal-review direction is a fresh full-range-exposure candidate comparison against T1:checkpoint-115712, followed by the same radius-angle and hold diagnostic panel. Do not request official assessment for the current 65.625% development candidate.",
-    "next_question": "At the next goal review, decide whether to open a bounded inquiry comparing the measured outer-exposure baseline with a fresh candidate trained over the full official 6-20 cm radial range, using matched full-range diagnostics to test whether the inner-annulus no-reach deficit is reduced without sacrificing uninterrupted hold stability.",
-    "scientific_commit": "981412b93172821c1e5b8195b07f467c3186d687",
-    "session_id": "S3"
+    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode panel, with every success requiring an uninterrupted 100-control-step hold. The current best-known candidate has only 105/160 successes on a distinct full-range development panel, so official assessment is not yet the better decision; the opened inquiry tests a bounded route to improve the dominant observed gap toward the goal.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I2 is opened and this goal-review record checkpoints the exact active question. In the inquiry, first train a fresh candidate with official 6-20 cm radial exposure under the current bounded allocation, then obtain matched full-range radius-angle and hold diagnostics against T1:checkpoint-115712. Select, redirect, or close based on the prespecified inner-annulus improvement and outer-range stability outcomes; do not request official assessment before that evidence.",
+    "next_question": "Does a fresh candidate trained with the official full 6-20 cm radial exposure improve full-range 6-14 cm inner-annulus reach and overall uninterrupted-hold success relative to T1:checkpoint-115712, without materially sacrificing outer-range reach or hold stability under matched diagnostics?",
+    "scientific_commit": "93a827e6293f31a34527a0ff82ca8ef719403f46",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2257,21 +2390,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7c423f1d-d250-4248-be4d-ffc748921401",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E7"
-    ],
-    "scientific_parent_commit": "b0042e4d7b7c893c381eef5e858dff618b295923"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
