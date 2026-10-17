@@ -50,3 +50,4 @@
 | M18 | measurement | - | completed |
 | E25 | inquiry | I6 | completed |
 | E26 | checkpoint | - | checkpointed |
+| T5 | training | I6 | completed |
