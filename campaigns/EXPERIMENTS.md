@@ -52,3 +52,4 @@
 | E28 | checkpoint | - | checkpointed |
 | M14 | measurement | I7 | failed |
 | M15 | measurement | I7 | failed |
+| M16 | measurement | I7 | completed |
