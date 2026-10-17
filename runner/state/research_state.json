@@ -4107,7 +4107,7 @@
     }
   },
   "counters": {
-    "event": 27,
+    "event": 28,
     "inquiry": 6,
     "measurement": 20,
     "session": 13,
@@ -4116,7 +4116,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-115712",
     "retained": {},
@@ -14393,31 +14393,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:18:48Z",
+      "error": null,
+      "id": "E28",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 reference evaluation. T4:checkpoint-120832 ties at 148/160 per M17/M18 and has no privileged terminal status. T5:checkpoint-65536 is the only follow-on candidate measured in I6; M19/M20 show it is inferior and it is not assigned working or best-known. No candidate is retained and no working candidate is assigned. I6 is closed with a negative, implementation-bounded result.",
+        "completed_operations": [
+          "T5",
+          "M19",
+          "M20",
+          "E27"
+        ],
+        "cumulative_resource_use": "Inquiries 6/15; sessions 13; measurements 16; training operations 5; current inquiry operations T5, M19, M20, and E27 completed. The I6 training allocation was 120,000 requested steps and T5 completed 120,832 rollout-rounded steps. No official assessment has been requested.",
+        "current_goal_gap": "Best-known remains T4:checkpoint-115712 at 148/160 (92.5%) on the matched development panel, below the 98% objective and its 196/200 official equivalent. The tested follow-on T5:checkpoint-65536 achieved 135/160 (84.375%) and is not a viable replacement. T4 still has 7 no-reaches and 5 hold failures in the M19 matched reference stratification, 0.9347 mean action-saturation fraction with saturation in all 160 episodes, and 0.6486 m/s mean final endpoint speed.",
+        "current_synthesis": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+        "decision_frontier": "The bounded I6 question is answered negatively for the tested localized endpoint-speed reward transfer: it reduced a proxy dynamic quantity but failed the complete-artifact, inner-coverage, outer-success, hold-interruption, and saturation guardrails. The consequential unresolved distinction for goal review is whether a materially different method\u2014such as explicit torque/braking control or a training design that preserves launch while shaping the whole capture trajectory\u2014can address saturation and late stabilization without T5's coverage loss, versus whether the evidence now justifies requesting official assessment for the below-goal T4 best-known artifact. Evidence that would support a new inquiry would need a clearly different implementation and a credible guardrail against both T4's high-speed holds and T5's coverage degradation; otherwise the bounded work should not continue by selecting more T5 checkpoints.",
+        "evidence_references": [
+          "M17",
+          "M18",
+          "T5",
+          "M19",
+          "M20"
+        ],
+        "human_goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. I6 tested one bounded route to improve the remaining launch and stabilization failures without losing T4's inner-annulus capability; the route did not improve the complete-artifact result, so the campaign must now decide at goal review whether T4's residual gap warrants official assessment or a materially different bounded inquiry.",
+        "next_direction_or_closure": "I6 is closed and this inquiry session is checkpointed. Return to goal review with T4 as the best-known but below-goal artifact. Do not request another T5 checkpoint measurement or treat the lower endpoint speed as sufficient progress. Goal review should decide whether the residual gap warrants an explicitly different inquiry or an irreversible official assessment.",
+        "next_question": "Given that T4 remains at 148/160 and the tested speed-shaped transfer candidate fell to 135/160 while failing to improve saturation or hold interruptions, should the campaign request official assessment of T4 or open one materially different bounded inquiry targeting direct-torque braking and full-range coverage?"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "6c64226eee7d4aeccf6aaedeede0e98a601daed1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 reference evaluation. T4:checkpoint-120832 ties at 148/160 per M17/M18 and has no privileged terminal status. T5:checkpoint-65536 is the only follow-on candidate measured in I6; M19/M20 show it is inferior and it is not assigned working or best-known. No candidate is retained and no working candidate is assigned. I6 is closed with a negative, implementation-bounded result.",
+        "completed_operations": [
+          "T5",
+          "M19",
+          "M20",
+          "E27"
+        ],
+        "cumulative_resource_use": "Inquiries 6/15; sessions 13; measurements 16; training operations 5; current inquiry operations T5, M19, M20, and E27 completed. The I6 training allocation was 120,000 requested steps and T5 completed 120,832 rollout-rounded steps. No official assessment has been requested.",
+        "current_goal_gap": "Best-known remains T4:checkpoint-115712 at 148/160 (92.5%) on the matched development panel, below the 98% objective and its 196/200 official equivalent. The tested follow-on T5:checkpoint-65536 achieved 135/160 (84.375%) and is not a viable replacement. T4 still has 7 no-reaches and 5 hold failures in the M19 matched reference stratification, 0.9347 mean action-saturation fraction with saturation in all 160 episodes, and 0.6486 m/s mean final endpoint speed.",
+        "current_synthesis": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+        "decision_frontier": "The bounded I6 question is answered negatively for the tested localized endpoint-speed reward transfer: it reduced a proxy dynamic quantity but failed the complete-artifact, inner-coverage, outer-success, hold-interruption, and saturation guardrails. The consequential unresolved distinction for goal review is whether a materially different method\u2014such as explicit torque/braking control or a training design that preserves launch while shaping the whole capture trajectory\u2014can address saturation and late stabilization without T5's coverage loss, versus whether the evidence now justifies requesting official assessment for the below-goal T4 best-known artifact. Evidence that would support a new inquiry would need a clearly different implementation and a credible guardrail against both T4's high-speed holds and T5's coverage degradation; otherwise the bounded work should not continue by selecting more T5 checkpoints.",
+        "evidence_references": [
+          "M17",
+          "M18",
+          "T5",
+          "M19",
+          "M20"
+        ],
+        "human_goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. I6 tested one bounded route to improve the remaining launch and stabilization failures without losing T4's inner-annulus capability; the route did not improve the complete-artifact result, so the campaign must now decide at goal review whether T4's residual gap warrants official assessment or a materially different bounded inquiry.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "I6 is closed and this inquiry session is checkpointed. Return to goal review with T4 as the best-known but below-goal artifact. Do not request another T5 checkpoint measurement or treat the lower endpoint speed as sufficient progress. Goal review should decide whether the residual gap warrants an explicitly different inquiry or an irreversible official assessment.",
+        "next_question": "Given that T4 remains at 148/160 and the tested speed-shaped transfer candidate fell to 135/160 while failing to improve saturation or hold interruptions, should the campaign request official assessment of T4 or open one materially different bounded inquiry targeting direct-torque braking and full-range coverage?",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "7de211a3-5b96-4bfe-a69c-705d7b792194",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "53m58s | 119.47 AIU | prompt 18.2m (87% cached) | output 320.3k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "2m08s | 3.51 AIU | prompt 486.4k (81% cached) | output 13.2k"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7e292f85b8e6cb7f3d5d35cf710a5d1595d5040c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E28",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 reference evaluation. T4:checkpoint-120832 ties at 148/160 per M17/M18 and has no privileged terminal status. T5:checkpoint-65536 is the only follow-on candidate measured in I6; M19/M20 show it is inferior and it is not assigned working or best-known. No candidate is retained and no working candidate is assigned. I6 is closed with a negative, implementation-bounded result.",
+        "completed_operations": [
+          "T5",
+          "M19",
+          "M20",
+          "E27"
+        ],
+        "cumulative_resource_use": "Inquiries 6/15; sessions 13; measurements 16; training operations 5; current inquiry operations T5, M19, M20, and E27 completed. The I6 training allocation was 120,000 requested steps and T5 completed 120,832 rollout-rounded steps. No official assessment has been requested.",
+        "current_goal_gap": "Best-known remains T4:checkpoint-115712 at 148/160 (92.5%) on the matched development panel, below the 98% objective and its 196/200 official equivalent. The tested follow-on T5:checkpoint-65536 achieved 135/160 (84.375%) and is not a viable replacement. T4 still has 7 no-reaches and 5 hold failures in the M19 matched reference stratification, 0.9347 mean action-saturation fraction with saturation in all 160 episodes, and 0.6486 m/s mean final endpoint speed.",
+        "current_synthesis": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+        "decision_frontier": "The bounded I6 question is answered negatively for the tested localized endpoint-speed reward transfer: it reduced a proxy dynamic quantity but failed the complete-artifact, inner-coverage, outer-success, hold-interruption, and saturation guardrails. The consequential unresolved distinction for goal review is whether a materially different method\u2014such as explicit torque/braking control or a training design that preserves launch while shaping the whole capture trajectory\u2014can address saturation and late stabilization without T5's coverage loss, versus whether the evidence now justifies requesting official assessment for the below-goal T4 best-known artifact. Evidence that would support a new inquiry would need a clearly different implementation and a credible guardrail against both T4's high-speed holds and T5's coverage degradation; otherwise the bounded work should not continue by selecting more T5 checkpoints.",
+        "evidence_references": [
+          "M17",
+          "M18",
+          "T5",
+          "M19",
+          "M20"
+        ],
+        "human_goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. I6 tested one bounded route to improve the remaining launch and stabilization failures without losing T4's inner-annulus capability; the route did not improve the complete-artifact result, so the campaign must now decide at goal review whether T4's residual gap warrants official assessment or a materially different bounded inquiry.",
+        "next_direction_or_closure": "I6 is closed and this inquiry session is checkpointed. Return to goal review with T4 as the best-known but below-goal artifact. Do not request another T5 checkpoint measurement or treat the lower endpoint speed as sufficient progress. Goal review should decide whether the residual gap warrants an explicitly different inquiry or an irreversible official assessment.",
+        "next_question": "Given that T4 remains at 148/160 and the tested speed-shaped transfer candidate fell to 135/160 while failing to improve saturation or hold interruptions, should the campaign request official assessment of T4 or open one materially different bounded inquiry targeting direct-torque braking and full-range coverage?"
+      }
+    },
+    "request_fingerprint": "89fee2a4f3b1e9b9294d40de57aff6687f3619ecab78c7cea65cdc220ab28d89",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T4:checkpoint-115712; T4:checkpoint-120832 is the terminal checkpoint measured in M17 and stratified in M18 but ties rather than exceeds the best-known 148/160 result. No working candidate is assigned. Inquiry I6 is active and will evaluate a bounded follow-on controller or training change against T4.",
+    "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 reference evaluation. T4:checkpoint-120832 ties at 148/160 per M17/M18 and has no privileged terminal status. T5:checkpoint-65536 is the only follow-on candidate measured in I6; M19/M20 show it is inferior and it is not assigned working or best-known. No candidate is retained and no working candidate is assigned. I6 is closed with a negative, implementation-bounded result.",
     "completed_operations": [
-      "M17",
-      "M18",
-      "E25"
+      "T5",
+      "M19",
+      "M20",
+      "E27"
     ],
-    "cumulative_resource_use": "Inquiries 6/15; sessions 12; measurements 14; training operations 4; current goal-review operations M17, M18, and E25 completed. The development measurement budget has been used for matched T4 checkpoint evaluation and stratification; no official assessment has been requested.",
-    "current_goal_gap": "The best-known complete artifact achieves 148/160 (92.5%) on the matched development panel, below the 98% human goal and its 196/200 official equivalent. M18 terminal stratification reports 8 no-reaches, 4 hold failures, 63/67 outer 14-20 cm successes, 85/93 inner 6-14 cm successes, 0.941 mean action-saturation fraction with saturation in all 160 episodes, and 0.636 m/s mean final endpoint speed.",
-    "current_synthesis": "M17 and M18 establish that selecting T4's terminal checkpoint does not improve the aggregate result: it ties the earlier T4 checkpoint at 148/160. The T4 artifact-level inner launch/coverage gain persists, and outer performance reaches 63/67, but the remaining failures include both launch failures and uninterrupted-hold failures, with persistent saturation and high endpoint speed. The aggregate evidence supports dynamic-margin/late-stabilization and angle-dependent coverage as consequential mechanisms, while not identifying whether controller design, training exposure, or their interaction is causal. Transfer alone remains unestablished as a causal claim.",
-    "decision_frontier": "The next decision is whether one bounded follow-on intervention can retain T4's large inner-annulus gain while reducing no-reaches, hold interruptions, saturation, and negative-angle weakness. A complete candidate should be compared with T4 on the matched full-range panel; continuation is supported by a meaningful complete-artifact improvement without surrendering inner coverage, while failure to improve the tradeoff should redirect to official assessment or closure rather than more checkpoint selection.",
+    "cumulative_resource_use": "Inquiries 6/15; sessions 13; measurements 16; training operations 5; current inquiry operations T5, M19, M20, and E27 completed. The I6 training allocation was 120,000 requested steps and T5 completed 120,832 rollout-rounded steps. No official assessment has been requested.",
+    "current_goal_gap": "Best-known remains T4:checkpoint-115712 at 148/160 (92.5%) on the matched development panel, below the 98% objective and its 196/200 official equivalent. The tested follow-on T5:checkpoint-65536 achieved 135/160 (84.375%) and is not a viable replacement. T4 still has 7 no-reaches and 5 hold failures in the M19 matched reference stratification, 0.9347 mean action-saturation fraction with saturation in all 160 episodes, and 0.6486 m/s mean final endpoint speed.",
+    "current_synthesis": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+    "decision_frontier": "The bounded I6 question is answered negatively for the tested localized endpoint-speed reward transfer: it reduced a proxy dynamic quantity but failed the complete-artifact, inner-coverage, outer-success, hold-interruption, and saturation guardrails. The consequential unresolved distinction for goal review is whether a materially different method\u2014such as explicit torque/braking control or a training design that preserves launch while shaping the whole capture trajectory\u2014can address saturation and late stabilization without T5's coverage loss, versus whether the evidence now justifies requesting official assessment for the below-goal T4 best-known artifact. Evidence that would support a new inquiry would need a clearly different implementation and a credible guardrail against both T4's high-speed holds and T5's coverage degradation; otherwise the bounded work should not continue by selecting more T5 checkpoints.",
     "evidence_references": [
       "M17",
       "M18",
-      "E25"
+      "T5",
+      "M19",
+      "M20"
     ],
-    "human_goal_connection": "The opened inquiry is directly aimed at the only unresolved path to the 196/200 complete-hold requirement: improve launch and stabilization across the full official distribution without sacrificing the capability gained on inner targets.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Run the bounded I6 intervention and matched complete-artifact measurement. Close I6 and request official assessment if it does not improve the goal-relevant tradeoff; retain or continue only if measured evidence shows a credible path toward the 98% requirement.",
-    "next_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
-    "scientific_commit": "0deb94f51710f5c5d5ce485d5fe3083cc7cab0bf",
-    "session_id": "S12"
+    "human_goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. I6 tested one bounded route to improve the remaining launch and stabilization failures without losing T4's inner-annulus capability; the route did not improve the complete-artifact result, so the campaign must now decide at goal review whether T4's residual gap warrants official assessment or a materially different bounded inquiry.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "I6 is closed and this inquiry session is checkpointed. Return to goal review with T4 as the best-known but below-goal artifact. Do not request another T5 checkpoint measurement or treat the lower endpoint speed as sufficient progress. Goal review should decide whether the residual gap warrants an explicitly different inquiry or an irreversible official assessment.",
+    "next_question": "Given that T4 remains at 148/160 and the tested speed-shaped transfer candidate fell to 135/160 while failing to improve saturation or hold interruptions, should the campaign request official assessment of T4 or open one materially different bounded inquiry targeting direct-torque braking and full-range coverage?",
+    "scientific_commit": "7e292f85b8e6cb7f3d5d35cf710a5d1595d5040c",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -14425,24 +14567,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7de211a3-5b96-4bfe-a69c-705d7b792194",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T5",
-      "M19",
-      "M20",
-      "E27"
-    ],
-    "scientific_parent_commit": "6c64226eee7d4aeccf6aaedeede0e98a601daed1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
