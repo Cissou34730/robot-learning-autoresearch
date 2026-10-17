@@ -52,3 +52,4 @@
 | E26 | checkpoint | - | checkpointed |
 | T5 | training | I6 | completed |
 | M19 | measurement | I6 | completed |
+| M20 | measurement | I6 | completed |
