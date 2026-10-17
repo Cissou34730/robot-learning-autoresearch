@@ -49,3 +49,4 @@
 | M17 | measurement | - | completed |
 | M18 | measurement | - | completed |
 | E25 | inquiry | I6 | completed |
+| E26 | checkpoint | - | checkpointed |
