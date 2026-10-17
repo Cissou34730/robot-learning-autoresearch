@@ -47,3 +47,4 @@
 | E23 | inquiry | I5 | completed |
 | E24 | checkpoint | I5 | checkpointed |
 | M17 | measurement | - | completed |
+| M18 | measurement | - | completed |
