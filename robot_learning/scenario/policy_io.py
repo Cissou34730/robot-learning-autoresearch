@@ -17,9 +17,32 @@ JOINT_DAMPING_GAIN = 0.2
 MAX_DAMPING_CORRECTION = 0.25
 MAX_DAMPING_VELOCITY_RAD_PER_S = MAX_DAMPING_CORRECTION / JOINT_DAMPING_GAIN
 
+# Additional regulation for the transfer variant.  The angle gate is a
+# smoothstep in the negative target-angle magnitude: it is exactly zero for
+# every nonnegative angle and reaches one at -90 degrees (and below).
+NEGATIVE_ANGLE_GATE_FULL_STRENGTH_RAD = np.pi / 2.0
+NEGATIVE_ANGLE_DAMPING_GAIN = 0.8
+MAX_NEGATIVE_ANGLE_DAMPING_CORRECTION = 1.0
+MAX_NEGATIVE_ANGLE_DAMPING_VELOCITY_RAD_PER_S = (
+    MAX_NEGATIVE_ANGLE_DAMPING_CORRECTION / NEGATIVE_ANGLE_DAMPING_GAIN
+)
+MAX_TOTAL_DAMPING_CORRECTION = (
+    MAX_DAMPING_CORRECTION + MAX_NEGATIVE_ANGLE_DAMPING_CORRECTION
+)
+
 
 def physical_action(action):
     return action
+
+
+def _negative_target_angle_gate(target_angle: float) -> float:
+    """Return smooth negative-angle strength, from zero to one."""
+    if target_angle >= 0.0:
+        return 0.0
+    normalized_angle = min(
+        1.0, -target_angle / NEGATIVE_ANGLE_GATE_FULL_STRENGTH_RAD
+    )
+    return normalized_angle**2 * (3.0 - 2.0 * normalized_angle)
 
 
 def make_policy_io():
@@ -43,9 +66,13 @@ def make_policy_io():
                     f"Policy IO received invalid {name}: expected finite shape "
                     f"{shape}, got {value.shape}"
                 )
+        target_angle = float(
+            np.arctan2(float(data.mocap_pos[0][1]), float(data.mocap_pos[0][0]))
+        )
         state["joint_positions"] = joint_positions.copy()
         state["joint_velocities"] = joint_velocities.copy()
         state["endpoint_error"] = endpoint_error.copy()
+        state["target_angle"] = target_angle
         return observation
 
     def action(policy_action):
@@ -90,6 +117,33 @@ def make_policy_io():
             MAX_DAMPING_CORRECTION,
         )
         correction = -damping
+        negative_angle_gate = _negative_target_angle_gate(state["target_angle"])
+        if negative_angle_gate > 0.0 and capture > 0.0:
+            # This extra term is active only inside the existing 5 cm capture
+            # region and for negative target angles.  It opposes the observed
+            # joint velocity and is independently capped at +/-1.0, allowing
+            # high-speed actions near either feed-forward saturation boundary
+            # to be pulled back before the environment's final clipping.
+            bounded_negative_angle_velocity = np.clip(
+                joint_velocities,
+                -MAX_NEGATIVE_ANGLE_DAMPING_VELOCITY_RAD_PER_S,
+                MAX_NEGATIVE_ANGLE_DAMPING_VELOCITY_RAD_PER_S,
+            )
+            negative_angle_damping = np.clip(
+                NEGATIVE_ANGLE_DAMPING_GAIN
+                * capture
+                * negative_angle_gate
+                * bounded_negative_angle_velocity,
+                -MAX_NEGATIVE_ANGLE_DAMPING_CORRECTION,
+                MAX_NEGATIVE_ANGLE_DAMPING_CORRECTION,
+            )
+            # Both damping terms oppose velocity, so this explicit outer bound
+            # records the largest possible total intervention as well.
+            correction = np.clip(
+                correction - negative_angle_damping,
+                -MAX_TOTAL_DAMPING_CORRECTION,
+                MAX_TOTAL_DAMPING_CORRECTION,
+            )
         if not np.all(np.isfinite(correction)):
             raise RuntimeError("Policy IO produced a non-finite damping correction")
 
