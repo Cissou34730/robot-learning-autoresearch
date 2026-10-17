@@ -70,3 +70,4 @@
 | M24 | measurement | I8 | completed |
 | M25 | measurement | I8 | completed |
 | E36 | inquiry | I8 | completed |
+| E37 | checkpoint | I8 | checkpointed |

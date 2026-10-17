@@ -5747,7 +5747,7 @@
     }
   },
   "counters": {
-    "event": 36,
+    "event": 37,
     "inquiry": 8,
     "measurement": 25,
     "session": 17,
@@ -5756,7 +5756,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T6:checkpoint-60416",
     "retained": {},
@@ -21501,35 +21501,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:51:40Z",
+      "error": null,
+      "id": "E37",
+      "inquiry_id": "I8",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T6:checkpoint-60416, supported by M21/M22/M23 and the matched M24 T6 reference at 149/160; it remains below the 98% objective and has no official assessment evidence. T7:checkpoint-5120 and T7:checkpoint-10240 are not working, best-known, or retained after both scored 134/160 and regressed inner and outer guardrails. No candidate has an official result. The T7 runtime change is recorded as a tested implementation lineage, not as a retained candidate role.",
+        "completed_operations": [
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 inquiries, 17 scientific sessions, 21 measurements, and 7 training operations, including the maintainer-allotted 120000-step T7 transfer. I8 used M23 trajectory diagnosis, one 120832-step transfer (T7), M24 complete saved-runtime comparison of two nominated checkpoints against T6, M25 aligned trajectory/radius/angle diagnostics, and E36 inquiry closure. No official assessment has been requested or completed.",
+        "current_goal_gap": "T6:checkpoint-60416 remains the best-known development artifact at 149/160 = 93.125%, which is 4.875 percentage points below the 98% objective when compared as a development rate. Its M23/M25-aligned T6 reference has 8 no-reaches and 3 hold failures; these are development findings, not official certification. The human goal of at least 196 complete uninterrupted holds in the protected 200-episode assessment remains unmet and untested officially.",
+        "current_synthesis": "Established: T6 improves the matched development result over T4 by one success, improves inner success from 86/93 to 87/93, preserves outer success at 62/67, and reduces hold failures from 5 to 3, but its no-reaches remain concentrated in negative-angle bins and it is below goal. M23 shows both T6 and T4 leave the singular branch by control step 20, so branch occupancy alone does not explain T6's residual no-reaches; T6 no-reaches remain near the target with persistent speed and saturation, making late command dynamics consequential but not proven causal. T7 implemented a bounded negative-angle near-target damping extension and was transferred from T6 for 120832 steps. M24 showed both measured T7 checkpoints at 134/160 versus T6 at 149/160, with paired net loss of 15 episodes. M25 showed T7-5120 had 19 no-reaches and 7 hold failures, inner 73/93 and outer 61/67; T7-10240 had 18 no-reaches and 8 hold failures, inner 75/93 and outer 59/67; all T7 episodes were open at step 20 and late saturation remained near-universal. Therefore the specific angle-conditioned damping transfer did not reduce the target failure classes and damaged complete success and radial guardrails. This is a negative artifact-level result for that runtime/training route, not a causal disproof of all command regulation, stabilization, or alternative control methods. I8 is closed without official assessment evidence.",
+        "decision_frontier": "The closed I8 leaves T6 as the best-known artifact and resolves the bounded route negatively, but does not identify a substitute mechanism that is credible enough to justify more training in this session. The consequential next decision is terminal: either carry T6 to the protected official assessment, accepting that its development rate is 93.125% and not evidence of 98%, or open a new goal-linked inquiry only if new evidence supplies a distinct mechanism and a guardrail-preserving protocol rather than repeating the failed angle-conditioned damping transfer. Universal saturation remains an observation, not a causal diagnosis. Any future work must preserve the distinction between development artifact comparison and official certification.",
+        "evidence_references": [
+          "M21",
+          "M22",
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode full-angle, 6-20 cm distribution. The bounded I8 route did not improve T6's complete success and instead fell to 134/160 while losing inner and outer guardrails, so T6 remains the only supported candidate for an assessment decision even though it is not goal-certified. The negative result prevents proxy rank or a runtime hypothesis from being mistaken for progress toward the required uninterrupted holds.",
+        "next_direction_or_closure": "I8 is explicitly closed on the limited negative branch. Carry T6:checkpoint-60416 to the next goal review for the assessment decision; do not treat T7 as a replacement and do not request official assessment from this inquiry checkpoint without a separate commitment. No further I8 operation is justified by the completed evidence.",
+        "next_question": "At the next goal review, should T6:checkpoint-60416 proceed to official assessment despite its 149/160 development result, or is a new bounded mechanism justified by evidence not tested in I8?"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "00a2c6341c235a91b6c8121eb745511e2d4cfa6d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T6:checkpoint-60416, supported by M21/M22/M23 and the matched M24 T6 reference at 149/160; it remains below the 98% objective and has no official assessment evidence. T7:checkpoint-5120 and T7:checkpoint-10240 are not working, best-known, or retained after both scored 134/160 and regressed inner and outer guardrails. No candidate has an official result. The T7 runtime change is recorded as a tested implementation lineage, not as a retained candidate role.",
+        "completed_operations": [
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 inquiries, 17 scientific sessions, 21 measurements, and 7 training operations, including the maintainer-allotted 120000-step T7 transfer. I8 used M23 trajectory diagnosis, one 120832-step transfer (T7), M24 complete saved-runtime comparison of two nominated checkpoints against T6, M25 aligned trajectory/radius/angle diagnostics, and E36 inquiry closure. No official assessment has been requested or completed.",
+        "current_goal_gap": "T6:checkpoint-60416 remains the best-known development artifact at 149/160 = 93.125%, which is 4.875 percentage points below the 98% objective when compared as a development rate. Its M23/M25-aligned T6 reference has 8 no-reaches and 3 hold failures; these are development findings, not official certification. The human goal of at least 196 complete uninterrupted holds in the protected 200-episode assessment remains unmet and untested officially.",
+        "current_synthesis": "Established: T6 improves the matched development result over T4 by one success, improves inner success from 86/93 to 87/93, preserves outer success at 62/67, and reduces hold failures from 5 to 3, but its no-reaches remain concentrated in negative-angle bins and it is below goal. M23 shows both T6 and T4 leave the singular branch by control step 20, so branch occupancy alone does not explain T6's residual no-reaches; T6 no-reaches remain near the target with persistent speed and saturation, making late command dynamics consequential but not proven causal. T7 implemented a bounded negative-angle near-target damping extension and was transferred from T6 for 120832 steps. M24 showed both measured T7 checkpoints at 134/160 versus T6 at 149/160, with paired net loss of 15 episodes. M25 showed T7-5120 had 19 no-reaches and 7 hold failures, inner 73/93 and outer 61/67; T7-10240 had 18 no-reaches and 8 hold failures, inner 75/93 and outer 59/67; all T7 episodes were open at step 20 and late saturation remained near-universal. Therefore the specific angle-conditioned damping transfer did not reduce the target failure classes and damaged complete success and radial guardrails. This is a negative artifact-level result for that runtime/training route, not a causal disproof of all command regulation, stabilization, or alternative control methods. I8 is closed without official assessment evidence.",
+        "decision_frontier": "The closed I8 leaves T6 as the best-known artifact and resolves the bounded route negatively, but does not identify a substitute mechanism that is credible enough to justify more training in this session. The consequential next decision is terminal: either carry T6 to the protected official assessment, accepting that its development rate is 93.125% and not evidence of 98%, or open a new goal-linked inquiry only if new evidence supplies a distinct mechanism and a guardrail-preserving protocol rather than repeating the failed angle-conditioned damping transfer. Universal saturation remains an observation, not a causal diagnosis. Any future work must preserve the distinction between development artifact comparison and official certification.",
+        "evidence_references": [
+          "M21",
+          "M22",
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode full-angle, 6-20 cm distribution. The bounded I8 route did not improve T6's complete success and instead fell to 134/160 while losing inner and outer guardrails, so T6 remains the only supported candidate for an assessment decision even though it is not goal-certified. The negative result prevents proxy rank or a runtime hypothesis from being mistaken for progress toward the required uninterrupted holds.",
+        "inquiry_id": "I8",
+        "next_direction_or_closure": "I8 is explicitly closed on the limited negative branch. Carry T6:checkpoint-60416 to the next goal review for the assessment decision; do not treat T7 as a replacement and do not request official assessment from this inquiry checkpoint without a separate commitment. No further I8 operation is justified by the completed evidence.",
+        "next_question": "At the next goal review, should T6:checkpoint-60416 proceed to official assessment despite its 149/160 development result, or is a new bounded mechanism justified by evidence not tested in I8?",
+        "session_id": "S17"
+      },
+      "presentation": {
+        "backend_session_id": "d6cc6989-442f-439c-bd97-5dac65f22035",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "1h04m | 141.99 AIU | prompt 21.9m (87% cached) | output 372k",
+        "session_id": "S17",
+        "session_kind": "inquiry",
+        "session_usage": "1m12s | 1.71 AIU | prompt 104.3k (58% cached) | output 8k"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "33f9641e1211bf83f7e6068aea8a0febee4b26c3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E37",
+    "inquiry_id": "I8",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T6:checkpoint-60416, supported by M21/M22/M23 and the matched M24 T6 reference at 149/160; it remains below the 98% objective and has no official assessment evidence. T7:checkpoint-5120 and T7:checkpoint-10240 are not working, best-known, or retained after both scored 134/160 and regressed inner and outer guardrails. No candidate has an official result. The T7 runtime change is recorded as a tested implementation lineage, not as a retained candidate role.",
+        "completed_operations": [
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "cumulative_resource_use": "The campaign has completed 8 inquiries, 17 scientific sessions, 21 measurements, and 7 training operations, including the maintainer-allotted 120000-step T7 transfer. I8 used M23 trajectory diagnosis, one 120832-step transfer (T7), M24 complete saved-runtime comparison of two nominated checkpoints against T6, M25 aligned trajectory/radius/angle diagnostics, and E36 inquiry closure. No official assessment has been requested or completed.",
+        "current_goal_gap": "T6:checkpoint-60416 remains the best-known development artifact at 149/160 = 93.125%, which is 4.875 percentage points below the 98% objective when compared as a development rate. Its M23/M25-aligned T6 reference has 8 no-reaches and 3 hold failures; these are development findings, not official certification. The human goal of at least 196 complete uninterrupted holds in the protected 200-episode assessment remains unmet and untested officially.",
+        "current_synthesis": "Established: T6 improves the matched development result over T4 by one success, improves inner success from 86/93 to 87/93, preserves outer success at 62/67, and reduces hold failures from 5 to 3, but its no-reaches remain concentrated in negative-angle bins and it is below goal. M23 shows both T6 and T4 leave the singular branch by control step 20, so branch occupancy alone does not explain T6's residual no-reaches; T6 no-reaches remain near the target with persistent speed and saturation, making late command dynamics consequential but not proven causal. T7 implemented a bounded negative-angle near-target damping extension and was transferred from T6 for 120832 steps. M24 showed both measured T7 checkpoints at 134/160 versus T6 at 149/160, with paired net loss of 15 episodes. M25 showed T7-5120 had 19 no-reaches and 7 hold failures, inner 73/93 and outer 61/67; T7-10240 had 18 no-reaches and 8 hold failures, inner 75/93 and outer 59/67; all T7 episodes were open at step 20 and late saturation remained near-universal. Therefore the specific angle-conditioned damping transfer did not reduce the target failure classes and damaged complete success and radial guardrails. This is a negative artifact-level result for that runtime/training route, not a causal disproof of all command regulation, stabilization, or alternative control methods. I8 is closed without official assessment evidence.",
+        "decision_frontier": "The closed I8 leaves T6 as the best-known artifact and resolves the bounded route negatively, but does not identify a substitute mechanism that is credible enough to justify more training in this session. The consequential next decision is terminal: either carry T6 to the protected official assessment, accepting that its development rate is 93.125% and not evidence of 98%, or open a new goal-linked inquiry only if new evidence supplies a distinct mechanism and a guardrail-preserving protocol rather than repeating the failed angle-conditioned damping transfer. Universal saturation remains an observation, not a causal diagnosis. Any future work must preserve the distinction between development artifact comparison and official certification.",
+        "evidence_references": [
+          "M21",
+          "M22",
+          "M23",
+          "T7",
+          "M24",
+          "M25",
+          "E36"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode full-angle, 6-20 cm distribution. The bounded I8 route did not improve T6's complete success and instead fell to 134/160 while losing inner and outer guardrails, so T6 remains the only supported candidate for an assessment decision even though it is not goal-certified. The negative result prevents proxy rank or a runtime hypothesis from being mistaken for progress toward the required uninterrupted holds.",
+        "next_direction_or_closure": "I8 is explicitly closed on the limited negative branch. Carry T6:checkpoint-60416 to the next goal review for the assessment decision; do not treat T7 as a replacement and do not request official assessment from this inquiry checkpoint without a separate commitment. No further I8 operation is justified by the completed evidence.",
+        "next_question": "At the next goal review, should T6:checkpoint-60416 proceed to official assessment despite its 149/160 development result, or is a new bounded mechanism justified by evidence not tested in I8?"
+      }
+    },
+    "request_fingerprint": "ed7e7115acad55715e6304af7ce1adb4e0fd2f8ec915d80512accc7e70ee279b",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T6:checkpoint-60416, assigned from M21/M22 because it achieved 149/160, improved inner success, preserved outer success, and reduced hold failures relative to T4. T4:checkpoint-115712 remains the matched reference at 148/160. T5:checkpoint-65536 remains inferior at 135/160. No working or retained role is assigned. T6 is not official-goal certified. T6's other archived checkpoints are available but unmeasured; neither their training proxy values nor terminal position grants them development status.",
+    "candidates_and_roles": "Best-known remains T6:checkpoint-60416, supported by M21/M22/M23 and the matched M24 T6 reference at 149/160; it remains below the 98% objective and has no official assessment evidence. T7:checkpoint-5120 and T7:checkpoint-10240 are not working, best-known, or retained after both scored 134/160 and regressed inner and outer guardrails. No candidate has an official result. The T7 runtime change is recorded as a tested implementation lineage, not as a retained candidate role.",
     "completed_operations": [
-      "E34"
+      "M23",
+      "T7",
+      "M24",
+      "M25",
+      "E36"
     ],
-    "cumulative_resource_use": "Inquiries 8/15; sessions 16 completed; measurements 18; training operations 6. I8 opening used E34 and no new training or measurement allocation. The campaign has not requested the official assessment.",
-    "current_goal_gap": "T6:checkpoint-60416 is the best-known development artifact at 149/160 = 93.125%, which is 4.875 percentage points below the 98% objective when compared as a development rate. Its matched panel has 8 no-reaches and 3 hold failures; this is not official assessment evidence and does not certify or rule out the protected goal.",
-    "current_synthesis": "Established evidence: T4 scored 148/160, T5 scored 135/160 with lower endpoint speed but worse complete success and unchanged universal saturation, and T6 added a saved-runtime target-gated joint-velocity damping path while retaining the T5 reward lineage. On the matched M21 panel T6 scored 149/160 versus T4 148/160, improved inner radial success 86/93 to 87/93, preserved outer success 62/67, reduced hold failures 5 to 3 and mean final endpoint speed 0.6486 to 0.4859 m/s, but increased no-reaches 7 to 8 and left saturation universal at about 0.935. Detailed M22 evidence shows T6 had 152 first reaches, 8 no-reaches, 3 hold failures, mean maximum hold 93.17 steps, and saturation in all 160 episodes; all 8 no-reaches were in the negative-angle bins [-180,-135) and [-135,-90), while the positive-angle bins were 100% successful. This supports an angle-conditioned residual failure pattern, but it does not by itself identify singularity exit, branch selection, torque limitation, or late stabilization as the cause. The lower final speed and fewer hold failures are consistent with improved late braking, but the simultaneous T5 reward lineage and runtime change limit causal attribution. T6 training records show a proxy peak around 56-60k steps and deterioration later; checkpoint 60416 was selected from the trajectory rather than terminal privilege, while the other archived checkpoints have not been development-measured. Competing consequential explanations are: (1) reset singularity and angle-dependent launch/branch timing causes no-reaches; (2) saturated direct-torque commands limit or distort launch and convergence; (3) residual velocity or boundary-margin dynamics cause the remaining hold failures after first reach. Universal saturation is an observation, not evidence that saturation is causal. The inherited statement that the gap was 47 percentage points is corrected here: the rate gap is 4.875 percentage points, while 47 is only the difference between the 196-success official target count and the 149-success development count and cannot be treated as a percentage-point gap. No official result exists.",
-    "decision_frontier": "The consequential distinction is whether the concentrated negative-angle failures arise primarily during singularity exit/launch, from command saturation and torque-limited trajectory generation, or from late stabilization after first reach. Evidence that changes the route must align target angle and radius with early elbow motion, first reach, applied command saturation, endpoint speed/error and uninterrupted hold behavior, and must compare complete saved artifacts rather than proxy rank. A candidate comparison can justify selection, but it cannot establish a cause when reward lineage and runtime behavior change together. If a bounded candidate reduces these failure classes while preserving both radial guardrails, further development is more credible; if not, the unresolved cause should be carried into the assessment decision rather than used to justify indefinite work. Compiled dynamics and protected-sampler details remain relevant to model-based or official interpretation but did not block the matched-panel comparison and are not the first discriminator for this angle-localized gap.",
+    "cumulative_resource_use": "The campaign has completed 8 inquiries, 17 scientific sessions, 21 measurements, and 7 training operations, including the maintainer-allotted 120000-step T7 transfer. I8 used M23 trajectory diagnosis, one 120832-step transfer (T7), M24 complete saved-runtime comparison of two nominated checkpoints against T6, M25 aligned trajectory/radius/angle diagnostics, and E36 inquiry closure. No official assessment has been requested or completed.",
+    "current_goal_gap": "T6:checkpoint-60416 remains the best-known development artifact at 149/160 = 93.125%, which is 4.875 percentage points below the 98% objective when compared as a development rate. Its M23/M25-aligned T6 reference has 8 no-reaches and 3 hold failures; these are development findings, not official certification. The human goal of at least 196 complete uninterrupted holds in the protected 200-episode assessment remains unmet and untested officially.",
+    "current_synthesis": "Established: T6 improves the matched development result over T4 by one success, improves inner success from 86/93 to 87/93, preserves outer success at 62/67, and reduces hold failures from 5 to 3, but its no-reaches remain concentrated in negative-angle bins and it is below goal. M23 shows both T6 and T4 leave the singular branch by control step 20, so branch occupancy alone does not explain T6's residual no-reaches; T6 no-reaches remain near the target with persistent speed and saturation, making late command dynamics consequential but not proven causal. T7 implemented a bounded negative-angle near-target damping extension and was transferred from T6 for 120832 steps. M24 showed both measured T7 checkpoints at 134/160 versus T6 at 149/160, with paired net loss of 15 episodes. M25 showed T7-5120 had 19 no-reaches and 7 hold failures, inner 73/93 and outer 61/67; T7-10240 had 18 no-reaches and 8 hold failures, inner 75/93 and outer 59/67; all T7 episodes were open at step 20 and late saturation remained near-universal. Therefore the specific angle-conditioned damping transfer did not reduce the target failure classes and damaged complete success and radial guardrails. This is a negative artifact-level result for that runtime/training route, not a causal disproof of all command regulation, stabilization, or alternative control methods. I8 is closed without official assessment evidence.",
+    "decision_frontier": "The closed I8 leaves T6 as the best-known artifact and resolves the bounded route negatively, but does not identify a substitute mechanism that is credible enough to justify more training in this session. The consequential next decision is terminal: either carry T6 to the protected official assessment, accepting that its development rate is 93.125% and not evidence of 98%, or open a new goal-linked inquiry only if new evidence supplies a distinct mechanism and a guardrail-preserving protocol rather than repeating the failed angle-conditioned damping transfer. Universal saturation remains an observation, not a causal diagnosis. Any future work must preserve the distinction between development artifact comparison and official certification.",
     "evidence_references": [
-      "T6",
-      "M19",
-      "M20",
-      "E27",
       "M21",
       "M22",
-      "E31",
-      "E32",
-      "E34"
+      "M23",
+      "T7",
+      "M24",
+      "M25",
+      "E36"
     ],
-    "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted holds in the protected 200-episode assessment over the full 6-20 cm radius and full angular distribution. I8 will determine whether bounded work can make a materially better candidate than T6 before the irreversible official assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I8 is opened as one bounded goal-linked investigation. The next work should prioritize a discriminating angle-conditioned launch/command diagnostic and, only if justified by that evidence, a complete candidate comparison with the M22 radial and uninterrupted-hold guardrails. I8 closes with either a materially improved complete artifact plus mechanism-relevant evidence or a limited/negative result that carries T6 forward for official assessment.",
-    "next_question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
-    "scientific_commit": "c2edd484957da3653a9eb5e562b7f00f870212c8",
-    "session_id": "S16"
+    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode full-angle, 6-20 cm distribution. The bounded I8 route did not improve T6's complete success and instead fell to 134/160 while losing inner and outer guardrails, so T6 remains the only supported candidate for an assessment decision even though it is not goal-certified. The negative result prevents proxy rank or a runtime hypothesis from being mistaken for progress toward the required uninterrupted holds.",
+    "inquiry_id": "I8",
+    "next_direction_or_closure": "I8 is explicitly closed on the limited negative branch. Carry T6:checkpoint-60416 to the next goal review for the assessment decision; do not treat T7 as a replacement and do not request official assessment from this inquiry checkpoint without a separate commitment. No further I8 operation is justified by the completed evidence.",
+    "next_question": "At the next goal review, should T6:checkpoint-60416 proceed to official assessment despite its 149/160 development result, or is a new bounded mechanism justified by evidence not tested in I8?",
+    "scientific_commit": "33f9641e1211bf83f7e6068aea8a0febee4b26c3",
+    "session_id": "S17"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -21537,25 +21687,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d6cc6989-442f-439c-bd97-5dac65f22035",
-    "id": "S17",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "M23",
-      "T7",
-      "M24",
-      "M25",
-      "E36"
-    ],
-    "scientific_parent_commit": "00a2c6341c235a91b6c8121eb745511e2d4cfa6d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
