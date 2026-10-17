@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a complete saved-runtime artifact comparison and aligned trajectory diagnostics establish either (a) a candidate that materially reduces the angle-conditioned no-reach/hold failures while preserving the inner and outer radial guardrails and provides evidence distinguishing launch from late-command mechanisms, or (b) no credible improvement or mechanism-directed route within the bounded work, in which case carry T6 forward as the best-known candidate for the official assessment. Universal saturation alone will not count as a mechanism diagnosis, and development evidence will not be treated as official certification.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode full-angle, 6-20 cm distribution. T6 is the best-known development artifact at 149/160 (93.125%), with 8 no-reaches and 3 hold failures; the detailed panel places all no-reaches in negative target-angle bins, while saturation is present in every episode. Resolving whether the actionable bottleneck is singularity-exit/launch timing, command limitation, or late stabilization could determine whether bounded work has a credible path to the 98% objective before the irreversible assessment.",
+    "handoff_conclusion": "Established observations: T4 identity-runtime transfer with full-range exposure scored 148/160, with 7 no-reaches, 5 hold failures, mean final endpoint speed 0.6486 m/s, and saturation in all episodes (M19, M20). T5's localized squared endpoint-speed reward with transfer and a new seed scored 135/160, reduced final speed to 0.4778 m/s, increased hold interruptions, and left saturation universal; that result is bounded to its combined reward/transfer artifact (M19, M20, E27). I7 then added a genuinely different saved-runtime command path: shared observation/action state applies bounded smooth target-gated joint-velocity damping to the learned direct-torque command within a 5 cm-to-1 cm approach band, while training retained full-range exposure, PPO, and the active T5 reward lineage (T6). The nonterminal 60,416-step candidate was selected from the training trajectory rather than by terminal privilege and measured against T4 on the matched panel (M21). T6 improved complete success to 149/160, improved inner 6-14 cm success from 86/93 to 87/93, preserved outer 14-20 cm success at 62/67, reduced hold failures 5 to 3 and mean final endpoint speed 0.6486 to 0.4859 m/s, but increased no-reaches 7 to 8 and left saturation universal at essentially the same fraction (M22). Thus I7 supports this complete braking artifact as a modest development improvement and best-known candidate, not a broad causal claim that damping solved launch or saturation, not a claim that the human goal is met, and not a one-factor attribution because the T5 reward remains in the T6 training lineage.",
+    "handoff_question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+    "handoff_source_session_id": "S15",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+    "rationale": "Official assessment would end the campaign and T6 is still 4.875 percentage points below the 98% development-rate threshold, with failures concentrated by angle rather than uniformly by radius. The T6/T4 matched comparison supports only a modest artifact-level improvement, and its inherited T5 reward lineage prevents a clean one-factor attribution. The new panel evidence makes a focused launch/command investigation more credible than another generic braking variant, while the explicit radial and complete-hold guardrails bound its cost and prevent optimizing a proxy at the expense of the human goal.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "f3ce063992e51881c7e7e202bed8456c45ef8c44",
     "id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
@@ -4926,16 +4937,16 @@
     }
   },
   "counters": {
-    "event": 33,
-    "inquiry": 7,
+    "event": 34,
+    "inquiry": 8,
     "measurement": 22,
-    "session": 15,
+    "session": 16,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T6:checkpoint-60416",
     "retained": {},
@@ -17081,9 +17092,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:35:32Z",
+      "error": null,
+      "id": "E34",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a complete saved-runtime artifact comparison and aligned trajectory diagnostics establish either (a) a candidate that materially reduces the angle-conditioned no-reach/hold failures while preserving the inner and outer radial guardrails and provides evidence distinguishing launch from late-command mechanisms, or (b) no credible improvement or mechanism-directed route within the bounded work, in which case carry T6 forward as the best-known candidate for the official assessment. Universal saturation alone will not count as a mechanism diagnosis, and development evidence will not be treated as official certification.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode full-angle, 6-20 cm distribution. T6 is the best-known development artifact at 149/160 (93.125%), with 8 no-reaches and 3 hold failures; the detailed panel places all no-reaches in negative target-angle bins, while saturation is present in every episode. Resolving whether the actionable bottleneck is singularity-exit/launch timing, command limitation, or late stabilization could determine whether bounded work has a credible path to the 98% objective before the irreversible assessment.",
+        "question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+        "rationale": "Official assessment would end the campaign and T6 is still 4.875 percentage points below the 98% development-rate threshold, with failures concentrated by angle rather than uniformly by radius. The T6/T4 matched comparison supports only a modest artifact-level improvement, and its inherited T5 reward lineage prevents a clean one-factor attribution. The new panel evidence makes a focused launch/command investigation more credible than another generic braking variant, while the explicit radial and complete-hold guardrails bound its cost and prevent optimizing a proxy at the expense of the human goal."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a complete saved-runtime artifact comparison and aligned trajectory diagnostics establish either (a) a candidate that materially reduces the angle-conditioned no-reach/hold failures while preserving the inner and outer radial guardrails and provides evidence distinguishing launch from late-command mechanisms, or (b) no credible improvement or mechanism-directed route within the bounded work, in which case carry T6 forward as the best-known candidate for the official assessment. Universal saturation alone will not count as a mechanism diagnosis, and development evidence will not be treated as official certification.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode full-angle, 6-20 cm distribution. T6 is the best-known development artifact at 149/160 (93.125%), with 8 no-reaches and 3 hold failures; the detailed panel places all no-reaches in negative target-angle bins, while saturation is present in every episode. Resolving whether the actionable bottleneck is singularity-exit/launch timing, command limitation, or late stabilization could determine whether bounded work has a credible path to the 98% objective before the irreversible assessment.",
+          "handoff_conclusion": "Established observations: T4 identity-runtime transfer with full-range exposure scored 148/160, with 7 no-reaches, 5 hold failures, mean final endpoint speed 0.6486 m/s, and saturation in all episodes (M19, M20). T5's localized squared endpoint-speed reward with transfer and a new seed scored 135/160, reduced final speed to 0.4778 m/s, increased hold interruptions, and left saturation universal; that result is bounded to its combined reward/transfer artifact (M19, M20, E27). I7 then added a genuinely different saved-runtime command path: shared observation/action state applies bounded smooth target-gated joint-velocity damping to the learned direct-torque command within a 5 cm-to-1 cm approach band, while training retained full-range exposure, PPO, and the active T5 reward lineage (T6). The nonterminal 60,416-step candidate was selected from the training trajectory rather than by terminal privilege and measured against T4 on the matched panel (M21). T6 improved complete success to 149/160, improved inner 6-14 cm success from 86/93 to 87/93, preserved outer 14-20 cm success at 62/67, reduced hold failures 5 to 3 and mean final endpoint speed 0.6486 to 0.4859 m/s, but increased no-reaches 7 to 8 and left saturation universal at essentially the same fraction (M22). Thus I7 supports this complete braking artifact as a modest development improvement and best-known candidate, not a broad causal claim that damping solved launch or saturation, not a claim that the human goal is met, and not a one-factor attribution because the T5 reward remains in the T6 training lineage.",
+          "handoff_question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+          "handoff_source_session_id": "S15",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+          "rationale": "Official assessment would end the campaign and T6 is still 4.875 percentage points below the 98% development-rate threshold, with failures concentrated by angle rather than uniformly by radius. The T6/T4 matched comparison supports only a modest artifact-level improvement, and its inherited T5 reward lineage prevents a clean one-factor attribution. The new panel evidence makes a focused launch/command investigation more credible than another generic braking variant, while the explicit radial and complete-hold guardrails bound its cost and prevent optimizing a proxy at the expense of the human goal.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E34",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a complete saved-runtime artifact comparison and aligned trajectory diagnostics establish either (a) a candidate that materially reduces the angle-conditioned no-reach/hold failures while preserving the inner and outer radial guardrails and provides evidence distinguishing launch from late-command mechanisms, or (b) no credible improvement or mechanism-directed route within the bounded work, in which case carry T6 forward as the best-known candidate for the official assessment. Universal saturation alone will not count as a mechanism diagnosis, and development evidence will not be treated as official certification.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the protected 200-episode full-angle, 6-20 cm distribution. T6 is the best-known development artifact at 149/160 (93.125%), with 8 no-reaches and 3 hold failures; the detailed panel places all no-reaches in negative target-angle bins, while saturation is present in every episode. Resolving whether the actionable bottleneck is singularity-exit/launch timing, command limitation, or late stabilization could determine whether bounded work has a credible path to the 98% objective before the irreversible assessment.",
+        "question": "Can a bounded, angle-conditioned launch-and-command investigation identify and materially reduce T6's residual no-reach and hold failures without sacrificing its matched-panel radial guardrails, or should T6 proceed to official assessment?",
+        "rationale": "Official assessment would end the campaign and T6 is still 4.875 percentage points below the 98% development-rate threshold, with failures concentrated by angle rather than uniformly by radius. The T6/T4 matched comparison supports only a modest artifact-level improvement, and its inherited T5 reward lineage prevents a clean one-factor attribution. The new panel evidence makes a focused launch/command investigation more credible than another generic braking variant, while the explicit radial and complete-hold guardrails bound its cost and prevent optimizing a proxy at the expense of the human goal."
+      }
+    },
+    "request_fingerprint": "c615bedceffe474f1ead80f7d3c00e9660b197c7ff6485c1d2f9ffb3e6d9d4dd",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T6:checkpoint-60416, assigned from M21/M22 because it achieved 149/160 with preserved inner and outer radial coverage and fewer hold failures than T4. T4:checkpoint-115712 remains the matched reference at 148/160. T5:checkpoint-65536 remains inferior at 135/160 and is not a role candidate. No working or retained role is assigned. T6 is not official-goal certified; its artifact comparison is below the protected 98% criterion.",
     "completed_operations": [
@@ -17120,6 +17194,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "659168e6-7715-4360-ae32-393efad258e1",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E34"
+    ],
+    "scientific_parent_commit": "331e55178ff0bf2bbd92e6283b1dfca646ef20dd"
+  },
   "terminal_state": null
 }
