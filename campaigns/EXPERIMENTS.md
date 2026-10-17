@@ -46,3 +46,4 @@
 | T7 | training | I6 | completed |
 | M12 | measurement | I6 | completed |
 | M13 | measurement | I6 | completed |
+| E25 | inquiry | I6 | completed |
