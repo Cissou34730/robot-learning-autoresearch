@@ -28,12 +28,11 @@ CATALOG_REFRESH_SECONDS = 24 * 60 * 60
 PROVIDERS = ("github-copilot", "opencode", "opencode-go")
 DEFAULT_MODEL = "gpt-6-luna"
 OPENCODE_DEFAULT_MODEL = "opencode/deepseek-v4.1-flash-free"
-ZEN_URL = "https://opencode.ai/zen/v1"
 # Offline fallback, as in pi-harness, when no catalog has ever been saved.
 SEED_CATALOG = {
     "opencode": {
         "npm": "@ai-sdk/openai-compatible",
-        "api": ZEN_URL,
+        "api": "https://opencode.ai/inference/openai/v1",
         "models": {
             "deepseek-v4.1-flash-free": {
                 "id": "deepseek-v4.1-flash-free",
@@ -275,10 +274,7 @@ def resolve_model(selection: str, catalog: dict) -> OpenCodeModel:
     package = override.get("npm", source.get("npm"))
     base_url = override.get("api", source.get("api"))
     cost = model.get("cost") or {}
-    if provider == "opencode" and cost.get("input") == 0 and cost.get("output") == 0:
-        # The OpenCode client sends every free Zen model as chat completions.
-        sdk_type, wire_api, base_url = "openai", "completions", ZEN_URL
-    elif package == "@ai-sdk/anthropic":
+    if package == "@ai-sdk/anthropic":
         sdk_type, wire_api = "anthropic", "completions"
     elif package in ("@ai-sdk/openai-compatible", "@ai-sdk/mistral"):
         sdk_type, wire_api = "openai", "completions"

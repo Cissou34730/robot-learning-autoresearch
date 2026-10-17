@@ -100,7 +100,12 @@ def test_provider_selection_is_a_launch_option_with_per_provider_defaults():
 @pytest.mark.parametrize(
     ("selection", "sdk_type", "wire_api", "endpoint"),
     [
-        ("opencode/free-model", "openai", "completions", "https://opencode.ai/zen/v1"),
+        (
+            "opencode/free-model",
+            "openai",
+            "completions",
+            "https://opencode.ai/inference/openai/v1",
+        ),
         (
             "opencode/luna",
             "openai",

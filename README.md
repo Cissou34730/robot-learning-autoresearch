@@ -35,8 +35,8 @@ Configure it locally, never in repository files or chat.
 
 The public OpenCode catalogue supplies model protocols, endpoints and limits.
 The cache refreshes after 24 hours; without any saved catalogue the free
-DeepSeek model remains available. Free Zen models use Chat Completions at
-`https://opencode.ai/zen/v1`, as the OpenCode client does. SDK 1.0.19 supports
+DeepSeek model remains available. Every model uses the protocol and endpoint
+listed in the catalogue. SDK 1.0.19 supports
 Chat Completions, Responses and Anthropic routes, not native Google transport.
 Unsupported selections never substitute another model.
 
