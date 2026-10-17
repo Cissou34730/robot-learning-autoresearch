@@ -45,3 +45,4 @@
 | T6 | training | I6 | completed |
 | T7 | training | I6 | completed |
 | M12 | measurement | I6 | completed |
+| M13 | measurement | I6 | completed |
