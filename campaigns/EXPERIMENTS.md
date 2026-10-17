@@ -71,3 +71,4 @@
 | M25 | measurement | I8 | completed |
 | E36 | inquiry | I8 | completed |
 | E37 | checkpoint | I8 | checkpointed |
+| E38 | campaign_conclusion | - | official_assessment_requested |
