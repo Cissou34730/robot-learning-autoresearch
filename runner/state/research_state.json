@@ -161,7 +161,8 @@
         "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m3-T1-checkpoint-115712-160ep-seed4200-9a7e25074b2a.json",
         "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m5-T1-checkpoint-115712-160ep-seed4200-9a7e25074b2a.json",
         "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m7-T1-checkpoint-115712-160ep-seed4200-3075383642c4.json",
-        "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m13-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
+        "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m13-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+        "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
       ],
       "fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
       "id": "T1:checkpoint-115712",
@@ -2614,7 +2615,9 @@
     },
     "T4:checkpoint-115712": {
       "artifact": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4/checkpoint-115712",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
+      ],
       "fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
       "id": "T4:checkpoint-115712",
       "name": "checkpoint-115712",
@@ -3296,7 +3299,7 @@
   "counters": {
     "event": 21,
     "inquiry": 5,
-    "measurement": 14,
+    "measurement": 15,
     "session": 11,
     "training": 4
   },
@@ -9860,9 +9863,2118 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:57:29Z",
+      "error": null,
+      "id": "M15",
+      "inquiry_id": "I5",
+      "kind": "measurement",
+      "request": {
+        "description": "Matched full-range development evaluation of T4:checkpoint-115712 and T1:checkpoint-115712 using the saved candidate runtimes, with paired radius-angle, first-reach, no-reach, hold-failure, branch, endpoint-speed, interruption, and saturation diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I5-transfer-candidate",
+            "seed": 4200
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I5-T1-reference",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "reference": "T1:checkpoint-115712"
+          }
+        ],
+        "rationale": "I5 is decided at complete-artifact level, not by training proxies. T4 transferred T1's learned state after E21 restored T1's default identity runtime while retaining 6-20 cm training exposure. The matched 160-episode panel at seed 4200 must establish whether inner 6-14 cm no-reach and success improve while outer 14-20 cm success and first reach are no worse than T1's 63/67, and must verify that the saved runtime\u2014not a research-only launch intervention\u2014produces the behavior."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "candidate_id": "T4:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "I5-transfer-candidate",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_count",
+                      "action_saturation_count_per_joint",
+                      "action_saturation_fraction",
+                      "action_saturation_fraction_per_joint",
+                      "elbow_branch_occupancy_counts",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "final_elbow_branch",
+                      "final_elbow_qpos_rad",
+                      "final_endpoint_speed_mps",
+                      "first_reach_endpoint_speed_mps",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_elbow_branch",
+                      "initial_elbow_qpos_rad",
+                      "max_endpoint_speed_mps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/elbow_qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action_saturation_fraction",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/row_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/research_evidence/trajectory_schema/fields",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/control_step",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83",
+              "evaluation_semantics": "dc9edffbe73b",
+              "model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 92.5,
+              "successes": 148
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "I5-T1-reference",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_count",
+                      "action_saturation_count_per_joint",
+                      "action_saturation_fraction",
+                      "action_saturation_fraction_per_joint",
+                      "elbow_branch_occupancy_counts",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "final_elbow_branch",
+                      "final_elbow_qpos_rad",
+                      "final_endpoint_speed_mps",
+                      "first_reach_endpoint_speed_mps",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_elbow_branch",
+                      "initial_elbow_qpos_rad",
+                      "max_endpoint_speed_mps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/elbow_qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action_saturation_fraction",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/row_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/research_evidence/trajectory_schema/fields",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/control_step",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0",
+              "evaluation_semantics": "dc9edffbe73b",
+              "model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 65.625,
+              "successes": 105
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "candidate_model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+            "candidate_wins": 44,
+            "discordant_episodes": 45,
+            "episodes": 160,
+            "net_wins": 43,
+            "reference": "T1:checkpoint-115712",
+            "reference_model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+            "reference_wins": 1,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
+            ],
+            "success_delta_percent": 26.875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "dc9edffbe73b",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4/checkpoint-115712",
+          "candidate": "T4:checkpoint-115712",
+          "candidate_id": "T4:checkpoint-115712",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I5-transfer-candidate",
+          "model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+          "seed": 4200
+        },
+        {
+          "artifact": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t1-cfbc9e22f-f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I5-T1-reference",
+          "model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T4:checkpoint-115712",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+          "reference": "T1:checkpoint-115712",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+          "shared_episode_seeds": [
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4217,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4226,
+            4227,
+            4228,
+            4229,
+            4230,
+            4231,
+            4232,
+            4233,
+            4234,
+            4235,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4260,
+            4261,
+            4262,
+            4263,
+            4264,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4287,
+            4288,
+            4289,
+            4290,
+            4291,
+            4292,
+            4293,
+            4294,
+            4295,
+            4296,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4305,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4320,
+            4321,
+            4322,
+            4323,
+            4324,
+            4325,
+            4326,
+            4327,
+            4328,
+            4329,
+            4330,
+            4331,
+            4332,
+            4333,
+            4334,
+            4335,
+            4336,
+            4337,
+            4338,
+            4339,
+            4340,
+            4341,
+            4342,
+            4343,
+            4344,
+            4345,
+            4346,
+            4347,
+            4348,
+            4349,
+            4350,
+            4351,
+            4352,
+            4353,
+            4354,
+            4355,
+            4356,
+            4357,
+            4358,
+            4359
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T4:checkpoint-115712",
+          "candidate_id": "T4:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "I5-transfer-candidate",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "action_saturation_count",
+                    "action_saturation_count_per_joint",
+                    "action_saturation_fraction",
+                    "action_saturation_fraction_per_joint",
+                    "elbow_branch_occupancy_counts",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "final_elbow_branch",
+                    "final_elbow_qpos_rad",
+                    "final_endpoint_speed_mps",
+                    "first_reach_endpoint_speed_mps",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "initial_elbow_branch",
+                    "initial_elbow_qpos_rad",
+                    "max_endpoint_speed_mps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/elbow_qpos",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action_saturation_fraction",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/row_semantics",
+                  "type": "string"
+                },
+                {
+                  "entries": 14,
+                  "path": "/research_evidence/trajectory_schema/fields",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/control_step",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                  "type": "string"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83",
+            "evaluation_semantics": "dc9edffbe73b",
+            "model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 92.5,
+            "successes": 148
+          }
+        },
+        {
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "I5-T1-reference",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "action_saturation_count",
+                    "action_saturation_count_per_joint",
+                    "action_saturation_fraction",
+                    "action_saturation_fraction_per_joint",
+                    "elbow_branch_occupancy_counts",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "final_elbow_branch",
+                    "final_elbow_qpos_rad",
+                    "final_endpoint_speed_mps",
+                    "first_reach_endpoint_speed_mps",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "initial_elbow_branch",
+                    "initial_elbow_qpos_rad",
+                    "max_endpoint_speed_mps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/elbow_qpos",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action_saturation_fraction",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/row_semantics",
+                  "type": "string"
+                },
+                {
+                  "entries": 14,
+                  "path": "/research_evidence/trajectory_schema/fields",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/control_step",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                  "type": "string"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0",
+            "evaluation_semantics": "dc9edffbe73b",
+            "model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 65.625,
+            "successes": 105
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "candidate_id": "T4:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "I5-transfer-candidate",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_count",
+                      "action_saturation_count_per_joint",
+                      "action_saturation_fraction",
+                      "action_saturation_fraction_per_joint",
+                      "elbow_branch_occupancy_counts",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "final_elbow_branch",
+                      "final_elbow_qpos_rad",
+                      "final_endpoint_speed_mps",
+                      "first_reach_endpoint_speed_mps",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_elbow_branch",
+                      "initial_elbow_qpos_rad",
+                      "max_endpoint_speed_mps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/elbow_qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action_saturation_fraction",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/row_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/research_evidence/trajectory_schema/fields",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/control_step",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "ac1192756a2c2a3cf4fa8361b33c6528dc203a1c9810bfb42db53a6a24fcfe83",
+              "evaluation_semantics": "dc9edffbe73b",
+              "model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 92.5,
+              "successes": 148
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "I5-T1-reference",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_count",
+                      "action_saturation_count_per_joint",
+                      "action_saturation_fraction",
+                      "action_saturation_fraction_per_joint",
+                      "elbow_branch_occupancy_counts",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "final_elbow_branch",
+                      "final_elbow_qpos_rad",
+                      "final_endpoint_speed_mps",
+                      "first_reach_endpoint_speed_mps",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_elbow_branch",
+                      "initial_elbow_qpos_rad",
+                      "max_endpoint_speed_mps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/elbow_qpos",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action_saturation_fraction",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/row_semantics",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 14,
+                    "path": "/research_evidence/trajectory_schema/fields",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/control_step",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/joint_velocities_rad_per_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_velocity_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/endpoint_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/distance_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/applied_action",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/action_saturated",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_qpos_rad",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/elbow_branch",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/held_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/trajectory_schema/fields/in_tolerance",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/control_step/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/end_effector_position_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/target_relative_error_m/semantics",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/units",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_schema/fields/joint_positions_rad/semantics",
+                    "type": "string"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0",
+              "evaluation_semantics": "dc9edffbe73b",
+              "model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 65.625,
+              "successes": 105
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "candidate_model_fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+            "candidate_wins": 44,
+            "discordant_episodes": 45,
+            "episodes": 160,
+            "net_wins": 43,
+            "reference": "T1:checkpoint-115712",
+            "reference_model_fingerprint": "f3ba60211eb0aa28399d1c83defa122267c9b36aaeef474b4ce1efb78f05d362",
+            "reference_wins": 1,
+            "shared_episode_seeds": [
+              4200,
+              4201,
+              4202,
+              4203,
+              4204,
+              4205,
+              4206,
+              4207,
+              4208,
+              4209,
+              4210,
+              4211,
+              4212,
+              4213,
+              4214,
+              4215,
+              4216,
+              4217,
+              4218,
+              4219,
+              4220,
+              4221,
+              4222,
+              4223,
+              4224,
+              4225,
+              4226,
+              4227,
+              4228,
+              4229,
+              4230,
+              4231,
+              4232,
+              4233,
+              4234,
+              4235,
+              4236,
+              4237,
+              4238,
+              4239,
+              4240,
+              4241,
+              4242,
+              4243,
+              4244,
+              4245,
+              4246,
+              4247,
+              4248,
+              4249,
+              4250,
+              4251,
+              4252,
+              4253,
+              4254,
+              4255,
+              4256,
+              4257,
+              4258,
+              4259,
+              4260,
+              4261,
+              4262,
+              4263,
+              4264,
+              4265,
+              4266,
+              4267,
+              4268,
+              4269,
+              4270,
+              4271,
+              4272,
+              4273,
+              4274,
+              4275,
+              4276,
+              4277,
+              4278,
+              4279,
+              4280,
+              4281,
+              4282,
+              4283,
+              4284,
+              4285,
+              4286,
+              4287,
+              4288,
+              4289,
+              4290,
+              4291,
+              4292,
+              4293,
+              4294,
+              4295,
+              4296,
+              4297,
+              4298,
+              4299,
+              4300,
+              4301,
+              4302,
+              4303,
+              4304,
+              4305,
+              4306,
+              4307,
+              4308,
+              4309,
+              4310,
+              4311,
+              4312,
+              4313,
+              4314,
+              4315,
+              4316,
+              4317,
+              4318,
+              4319,
+              4320,
+              4321,
+              4322,
+              4323,
+              4324,
+              4325,
+              4326,
+              4327,
+              4328,
+              4329,
+              4330,
+              4331,
+              4332,
+              4333,
+              4334,
+              4335,
+              4336,
+              4337,
+              4338,
+              4339,
+              4340,
+              4341,
+              4342,
+              4343,
+              4344,
+              4345,
+              4346,
+              4347,
+              4348,
+              4349,
+              4350,
+              4351,
+              4352,
+              4353,
+              4354,
+              4355,
+              4356,
+              4357,
+              4358,
+              4359
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T1-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
+            ],
+            "success_delta_percent": 26.875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M15",
+    "inquiry_id": "I5",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Matched full-range development evaluation of T4:checkpoint-115712 and T1:checkpoint-115712 using the saved candidate runtimes, with paired radius-angle, first-reach, no-reach, hold-failure, branch, endpoint-speed, interruption, and saturation diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I5-transfer-candidate",
+            "seed": 4200
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I5-T1-reference",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T4:checkpoint-115712",
+            "reference": "T1:checkpoint-115712"
+          }
+        ],
+        "rationale": "I5 is decided at complete-artifact level, not by training proxies. T4 transferred T1's learned state after E21 restored T1's default identity runtime while retaining 6-20 cm training exposure. The matched 160-episode panel at seed 4200 must establish whether inner 6-14 cm no-reach and success improve while outer 14-20 cm success and first reach are no worse than T1's 63/67, and must verify that the saved runtime\u2014not a research-only launch intervention\u2014produces the behavior."
+      }
+    },
+    "request_fingerprint": "d3a537e2ef3566072723cffa581983c15795ece39012fba2bfd36c90383c9424",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
@@ -9916,7 +12028,8 @@
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "E21",
-      "T4"
+      "T4",
+      "M15"
     ],
     "scientific_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87"
   },

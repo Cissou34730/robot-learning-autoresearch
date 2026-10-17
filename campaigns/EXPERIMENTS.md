@@ -41,3 +41,4 @@
 | E20 | checkpoint | - | checkpointed |
 | E21 | restore_recipe | I5 | restored |
 | T4 | training | I5 | completed |
+| M15 | measurement | I5 | completed |
