@@ -8558,38 +8558,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "Limited/negative: the complete T3 runtime converted some inner first reaches into holds but did not preserve the required outer behavior and did not improve total matched success. T3 achieved 58/93 inner successes and 59/93 inner first reaches versus T1's 42/93 and 48/93, with inner reached-but-unsuccessful counts 1 versus 6. However, outer success fell to 37/67 versus 63/67, outer no-reaches rose to 26 versus 4, and outer hold failures rose to 4 versus 0. Overall T3 was 95/160 with 60 no-reaches and 5 reached-but-unsuccessful episodes, versus T1's 105/160 with 49 no-reaches and 6 reached-but-unsuccessful episodes. The complete candidate therefore failed the inquiry's positive criterion of improving total success while preserving outer behavior, and residual no-reach remains the limiting deficit.",
-        "reason": "M13 is the matched complete-artifact comparison and confirms the persisted saved runtime executed for T3; M14 supplies the required phase and geometry diagnostics. The result supports a bounded capability conclusion only: training and evaluating with the exact M12-style stateful launch adapter improved inner reach/hold behavior on this panel but produced a branch/runtime artifact whose outer behavior regressed. The joint changes in learned weights, persisted adapter, and branch occupancy prevent attributing the outcome to branch identity or to stabilization alone. The next research direction should prioritize a complete candidate that retains inner launch coverage without sacrificing outer coverage, with branch occupancy and saved-runtime behavior treated as explicit guardrails; immediate official assessment is not justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "Limited/negative: the complete T3 runtime converted some inner first reaches into holds but did not preserve the required outer behavior and did not improve total matched success. T3 achieved 58/93 inner successes and 59/93 inner first reaches versus T1's 42/93 and 48/93, with inner reached-but-unsuccessful counts 1 versus 6. However, outer success fell to 37/67 versus 63/67, outer no-reaches rose to 26 versus 4, and outer hold failures rose to 4 versus 0. Overall T3 was 95/160 with 60 no-reaches and 5 reached-but-unsuccessful episodes, versus T1's 105/160 with 49 no-reaches and 6 reached-but-unsuccessful episodes. The complete candidate therefore failed the inquiry's positive criterion of improving total success while preserving outer behavior, and residual no-reach remains the limiting deficit.",
-        "reason": "M13 is the matched complete-artifact comparison and confirms the persisted saved runtime executed for T3; M14 supplies the required phase and geometry diagnostics. The result supports a bounded capability conclusion only: training and evaluating with the exact M12-style stateful launch adapter improved inner reach/hold behavior on this panel but produced a branch/runtime artifact whose outer behavior regressed. The joint changes in learned weights, persisted adapter, and branch occupancy prevent attributing the outcome to branch identity or to stabilization alone. The next research direction should prioritize a complete candidate that retains inner launch coverage without sacrificing outer coverage, with branch occupancy and saved-runtime behavior treated as explicit guardrails; immediate official assessment is not justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited/negative: the complete T3 runtime converted some inner first reaches into holds but did not preserve the required outer behavior and did not improve total matched success. T3 achieved 58/93 inner successes and 59/93 inner first reaches versus T1's 42/93 and 48/93, with inner reached-but-unsuccessful counts 1 versus 6. However, outer success fell to 37/67 versus 63/67, outer no-reaches rose to 26 versus 4, and outer hold failures rose to 4 versus 0. Overall T3 was 95/160 with 60 no-reaches and 5 reached-but-unsuccessful episodes, versus T1's 105/160 with 49 no-reaches and 6 reached-but-unsuccessful episodes. The complete candidate therefore failed the inquiry's positive criterion of improving total success while preserving outer behavior, and residual no-reach remains the limiting deficit.",
-        "reason": "M13 is the matched complete-artifact comparison and confirms the persisted saved runtime executed for T3; M14 supplies the required phase and geometry diagnostics. The result supports a bounded capability conclusion only: training and evaluating with the exact M12-style stateful launch adapter improved inner reach/hold behavior on this panel but produced a branch/runtime artifact whose outer behavior regressed. The joint changes in learned weights, persisted adapter, and branch occupancy prevent attributing the outcome to branch identity or to stabilization alone. The next research direction should prioritize a complete candidate that retains inner launch coverage without sacrificing outer coverage, with branch occupancy and saved-runtime behavior treated as explicit guardrails; immediate official assessment is not justified."
-      }
-    },
-    "request_fingerprint": "04871ca267c7bfe54d7917732360a10f217114cd9c785cd4a63e33a9146a2fd5",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, the strongest evidence-backed complete learned artifact; it has not met the human goal. No working candidate is assigned. M12's branch-aware launch residual is a research-only intervention on T1, not a separately archived learned checkpoint or protected candidate. T2:checkpoint-120832 remains unsupported after its negative complete-artifact comparison. I4 will compare complete candidate artifacts and retain M12's launch behavior as a guardrail rather than assigning it a model role.",
     "completed_operations": [
