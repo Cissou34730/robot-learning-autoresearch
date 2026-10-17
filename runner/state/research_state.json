@@ -17041,38 +17041,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "Positive but limited artifact-level result: the new full-range saved-runtime velocity-aware braking implementation produced 149/160 complete successes versus T4's 148/160 on the matched panel, improved inner success from 86/93 to 87/93, preserved outer success at 62/67, reduced hold failures from 5 to 3 and mean final endpoint speed from 0.6486 to 0.4859 m/s. It did not reduce launch no-reaches (8 versus 7), did not reduce universal action saturation (mean 0.9353 versus 0.9347), and remains below the 98% objective. The result supports retaining this artifact as best-known and carrying forward the braking direction as promising but unresolved, not accepting a broad causal claim about damping or saturation.",
-        "reason": "M21 and M22 satisfy I7's closure condition: one materially different velocity-aware direct-torque braking implementation was trained under full 6-20 cm exposure and compared with T4 using complete success, inner/outer radial success, launch/first-reach, hold, endpoint-speed, and saturation diagnostics. Complete success improved and neither radial guardrail lost coverage. The remaining launch and saturation limitations, plus the active T5 reward inherited in T6, make the conclusion implementation-bounded and require explicit preservation for the next goal review rather than another unbounded variant within I7."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "Positive but limited artifact-level result: the new full-range saved-runtime velocity-aware braking implementation produced 149/160 complete successes versus T4's 148/160 on the matched panel, improved inner success from 86/93 to 87/93, preserved outer success at 62/67, reduced hold failures from 5 to 3 and mean final endpoint speed from 0.6486 to 0.4859 m/s. It did not reduce launch no-reaches (8 versus 7), did not reduce universal action saturation (mean 0.9353 versus 0.9347), and remains below the 98% objective. The result supports retaining this artifact as best-known and carrying forward the braking direction as promising but unresolved, not accepting a broad causal claim about damping or saturation.",
-        "reason": "M21 and M22 satisfy I7's closure condition: one materially different velocity-aware direct-torque braking implementation was trained under full 6-20 cm exposure and compared with T4 using complete success, inner/outer radial success, launch/first-reach, hold, endpoint-speed, and saturation diagnostics. Complete success improved and neither radial guardrail lost coverage. The remaining launch and saturation limitations, plus the active T5 reward inherited in T6, make the conclusion implementation-bounded and require explicit preservation for the next goal review rather than another unbounded variant within I7.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Positive but limited artifact-level result: the new full-range saved-runtime velocity-aware braking implementation produced 149/160 complete successes versus T4's 148/160 on the matched panel, improved inner success from 86/93 to 87/93, preserved outer success at 62/67, reduced hold failures from 5 to 3 and mean final endpoint speed from 0.6486 to 0.4859 m/s. It did not reduce launch no-reaches (8 versus 7), did not reduce universal action saturation (mean 0.9353 versus 0.9347), and remains below the 98% objective. The result supports retaining this artifact as best-known and carrying forward the braking direction as promising but unresolved, not accepting a broad causal claim about damping or saturation.",
-        "reason": "M21 and M22 satisfy I7's closure condition: one materially different velocity-aware direct-torque braking implementation was trained under full 6-20 cm exposure and compared with T4 using complete success, inner/outer radial success, launch/first-reach, hold, endpoint-speed, and saturation diagnostics. Complete success improved and neither radial guardrail lost coverage. The remaining launch and saturation limitations, plus the active T5 reward inherited in T6, make the conclusion implementation-bounded and require explicit preservation for the next goal review rather than another unbounded variant within I7."
-      }
-    },
-    "request_fingerprint": "c6f779b34b3fbd8c1338a66667facbb22242a84bed5e5460fc7887c36817f3b1",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 T4 reference; T4:checkpoint-120832 ties on earlier development evidence but has no terminal-checkpoint privilege. T5:checkpoint-65536 is the only measured I6 follow-on and is inferior on complete success and both radial strata, so it is neither working nor best-known. No candidate is assigned working or retained. I7 is an inquiry boundary, not a claim that a new candidate already exists.",
     "completed_operations": [
