@@ -12,6 +12,7 @@ which never interprets its contents.
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any, Protocol
 
 import numpy as np
 
@@ -26,10 +27,34 @@ from robot_learning.scenario.environment import (
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
+class ActionIntervention(Protocol):
+    """Optional research-only action transformation for a scenario evaluation."""
+
+    def reset(self, observation: np.ndarray, info: dict[str, Any]) -> None:
+        """Initialize intervention state from one environment reset."""
+
+    def intervene(
+        self,
+        action: np.ndarray,
+        observation: np.ndarray,
+        control_step: int,
+    ) -> np.ndarray:
+        """Return the action to pass to the existing evaluation environment."""
+
+
 def _finite_vector(
     value, *, name: str, expected_size: int | None = None
 ) -> np.ndarray:
-    vector = np.asarray(value, dtype=np.float64)
+    try:
+        vector = np.asarray(value, dtype=np.float64)
+    except (TypeError, ValueError) as error:
+        expected = (
+            f" with {expected_size} elements" if expected_size is not None else ""
+        )
+        raise RuntimeError(
+            f"Research evaluation received an invalid {name}; expected a "
+            f"one-dimensional vector{expected}"
+        ) from error
     if vector.ndim != 1 or (
         expected_size is not None and vector.size != expected_size
     ):
@@ -63,6 +88,7 @@ def evaluate_research_model(
     seed: int,
     algorithm: str | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
+    action_intervention: ActionIntervention | None = None,
 ) -> dict:
     """Measure a deterministic panel with episode seeds starting at ``seed``."""
     if episodes < 1:
@@ -75,6 +101,8 @@ def evaluate_research_model(
     for episode in range(episodes):
         obs, reset_info = env.reset(seed=seed + episode)
         runtime.reset()
+        if action_intervention is not None:
+            action_intervention.reset(obs, reset_info)
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
         initial_elbow_branch = str(reset_info["elbow_branch"])
         if initial_elbow_branch not in ELBOW_BRANCH_LABELS:
@@ -106,6 +134,13 @@ def evaluate_research_model(
         action_saturation_count_per_joint: np.ndarray | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
+            if action_intervention is not None:
+                action = action_intervention.intervene(
+                    action, obs, steps + 1
+                )
+                action = _finite_vector(
+                    action, name="intervened action", expected_size=2
+                )
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
