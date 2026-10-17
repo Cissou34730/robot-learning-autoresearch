@@ -4456,47 +4456,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after time-resolved or otherwise phase-aligned trajectory evidence classifies T1's inner failures by launch versus post-reach stabilization, branch, angle, and radius, and a complete candidate comparison tests the selected branch-aware launch intervention against T1 on matched full-range development episodes. A positive result requires a meaningful increase in inner-annulus first reach and episode success with no material outer-range success regression; a negative or inconclusive result is sufficient if launch failures are not dominant, the intervention cannot improve inner reach, or outer capability is lost, in which case the next direction is stabilization, learning-realization analysis, or another explicitly supported mechanism rather than another radial-exposure repeat.",
-          "goal_connection": "The best-known T1 succeeds on only 105/160 development episodes, leaving a large gap to the 196/200 official requirement. Its 45/49 inner no-reach failures make early launch capability the highest-leverage candidate bottleneck, while its six reached-then-failed holds require a stabilization guardrail. Resolving and acting on this distinction can improve the complete uninterrupted-hold success required by the human goal without sacrificing T1's 92.5% outer-range capability.",
-          "handoff_conclusion": "Established facts: M2 measured the compiled arm and runtime as a 2 ms Euler system with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches throughout the official grid, and large one-interval endpoint responses. M3/M4 established that T1 under the baseline 14-20 cm training exposure reached 111/160 and succeeded in 105/160, with 45/49 no-reach failures in 6-14 cm, 92.5% outer-range success, six reached-then-failed holds, open-branch endings, and saturation in every episode. I2 changed only the training exposure in the tested source from 14-20 cm to 6-20 cm for a fresh T2 run; T2 completed 120832 rollout-rounded steps but had zero training success proxy throughout and was not superior by proxy. M5 matched T2:checkpoint-120832 against T1:checkpoint-115712 on the same 160 seeds: T2 had 54/160 successes versus 105/160, with 20 candidate wins and 71 reference wins. M6 showed that T2 worsened the inner annulus (30/93 successes, 31/93 first reaches, 62 no-reaches versus T1's 42/93, 48/93, and 45), and also sacrificed outer behavior (24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67, 63/67, 4, and 0). T2's mean maximum hold was 34.02 steps versus T1's 66.38, and its mean saturation fraction was lower (0.558 versus 0.824) without capability improvement; its 0% success in both 90-135 and 135-180 degree angle bins indicates severe directional conditioning. Interpretation: I2 is a negative complete-artifact comparison. Full-range exposure as implemented did not improve the consequential inner deficit and caused a broad reach/hold regression in this fresh realization. This does not establish radial exposure as the isolated cause or disprove full-range training generally: seed/training realization, singularity-exit launch, branch selection, angle-conditioned trajectory timing, and dynamic stabilization remain competing explanations. The lower saturation outcome despite worse capability weakens saturation fraction as a sufficient explanation but does not resolve launch or directional control mechanisms.",
-          "handoff_question": "Is T1's dominant inner-annulus deficit an early singularity-exit/branch-conditioned launch failure rather than late hold stabilization, and does a branch-aware launch intervention improve 6-14 cm first reach without reducing T1's outer-range success?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Is T1's dominant inner-annulus deficit an early singularity-exit/branch-conditioned launch failure rather than late hold stabilization, and does a branch-aware launch intervention improve 6-14 cm first reach without reducing T1's outer-range success?",
-          "rationale": "Further bounded work is preferable to the terminal official assessment because T1 is far below the 98% objective and the official result would end the campaign without resolving the largest observed failure class. Existing M3-M6 evidence establishes inner no-reach dominance, T1's strong outer behavior, and T2's broad regression, but the evaluation artifacts contain only episode-level aggregates and T2 differs in both seed and training exposure; therefore they do not identify launch, branch selection, stabilization, or exposure as the cause. The preserved learning logs add that T1's proxy plateaued near 0.95-0.97 while T2 remained at zero, which further weakens T2 as a clean mechanism test. This inquiry targets the most consequential unresolved distinction and explicitly protects the outer capability required for the goal.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after time-resolved or otherwise phase-aligned trajectory evidence classifies T1's inner failures by launch versus post-reach stabilization, branch, angle, and radius, and a complete candidate comparison tests the selected branch-aware launch intervention against T1 on matched full-range development episodes. A positive result requires a meaningful increase in inner-annulus first reach and episode success with no material outer-range success regression; a negative or inconclusive result is sufficient if launch failures are not dominant, the intervention cannot improve inner reach, or outer capability is lost, in which case the next direction is stabilization, learning-realization analysis, or another explicitly supported mechanism rather than another radial-exposure repeat.",
-        "goal_connection": "The best-known T1 succeeds on only 105/160 development episodes, leaving a large gap to the 196/200 official requirement. Its 45/49 inner no-reach failures make early launch capability the highest-leverage candidate bottleneck, while its six reached-then-failed holds require a stabilization guardrail. Resolving and acting on this distinction can improve the complete uninterrupted-hold success required by the human goal without sacrificing T1's 92.5% outer-range capability.",
-        "question": "Is T1's dominant inner-annulus deficit an early singularity-exit/branch-conditioned launch failure rather than late hold stabilization, and does a branch-aware launch intervention improve 6-14 cm first reach without reducing T1's outer-range success?",
-        "rationale": "Further bounded work is preferable to the terminal official assessment because T1 is far below the 98% objective and the official result would end the campaign without resolving the largest observed failure class. Existing M3-M6 evidence establishes inner no-reach dominance, T1's strong outer behavior, and T2's broad regression, but the evaluation artifacts contain only episode-level aggregates and T2 differs in both seed and training exposure; therefore they do not identify launch, branch selection, stabilization, or exposure as the cause. The preserved learning logs add that T1's proxy plateaued near 0.95-0.97 while T2 remained at zero, which further weakens T2 as a clean mechanism test. This inquiry targets the most consequential unresolved distinction and explicitly protects the outer capability required for the goal."
-      }
-    },
-    "request_fingerprint": "4d082ad7105cdc1fa2b30b201ead42777a092d891bf83b08c08bf67149c01b6e",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, retained from E4 because it has the strongest completed full-range diagnostic evidence: 105/160 successes and substantially better inner and outer reach/hold behavior than T2 in M5/M6. T2:checkpoint-120832 is the fresh 6-20 cm exposure candidate tested in I2; it is not assigned working, best-known, or retained because it achieved 54/160 and showed broad radius- and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
     "completed_operations": [
