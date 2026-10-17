@@ -2148,38 +2148,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 answered with a bounded negative capability result and a redirected next direction. The tested baseline candidate reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). M4 stratification shows 45 of 49 no-reach episodes were in the 6-14 cm inner annulus, whereas the 14-20 cm bins achieved 92.5% success overall; only 6 episodes reached and then failed the uninterrupted hold. The candidate always ended on the open branch, and all episodes exhibited some action saturation, so launch dynamics and angular conditioning remain secondary unresolved contributors. These are properties of T1:checkpoint-115712 under the tested runtime and do not establish that the omitted inner-radius exposure alone caused the gap.",
-        "reason": "The closure condition is met: M3 contains a learned-candidate full-range panel from the contractual reset with success, first reach, distance, endpoint speed, hold interruption, maximum hold, branch, and saturation diagnostics, and M4 separates the consequential failure classes by radius and angle. The evidence redirects the next work toward a candidate comparison that changes radial exposure to include 6-14 cm while preserving the protected task/runtime semantics, followed by the same diagnostic measurement. The current result does not justify official assessment at 65.625%, and it does not claim a causal effect for any untested intervention."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 answered with a bounded negative capability result and a redirected next direction. The tested baseline candidate reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). M4 stratification shows 45 of 49 no-reach episodes were in the 6-14 cm inner annulus, whereas the 14-20 cm bins achieved 92.5% success overall; only 6 episodes reached and then failed the uninterrupted hold. The candidate always ended on the open branch, and all episodes exhibited some action saturation, so launch dynamics and angular conditioning remain secondary unresolved contributors. These are properties of T1:checkpoint-115712 under the tested runtime and do not establish that the omitted inner-radius exposure alone caused the gap.",
-        "reason": "The closure condition is met: M3 contains a learned-candidate full-range panel from the contractual reset with success, first reach, distance, endpoint speed, hold interruption, maximum hold, branch, and saturation diagnostics, and M4 separates the consequential failure classes by radius and angle. The evidence redirects the next work toward a candidate comparison that changes radial exposure to include 6-14 cm while preserving the protected task/runtime semantics, followed by the same diagnostic measurement. The current result does not justify official assessment at 65.625%, and it does not claim a causal effect for any untested intervention.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 answered with a bounded negative capability result and a redirected next direction. The tested baseline candidate reached the hold region in 111/160 episodes and succeeded in 105/160 (65.625%). M4 stratification shows 45 of 49 no-reach episodes were in the 6-14 cm inner annulus, whereas the 14-20 cm bins achieved 92.5% success overall; only 6 episodes reached and then failed the uninterrupted hold. The candidate always ended on the open branch, and all episodes exhibited some action saturation, so launch dynamics and angular conditioning remain secondary unresolved contributors. These are properties of T1:checkpoint-115712 under the tested runtime and do not establish that the omitted inner-radius exposure alone caused the gap.",
-        "reason": "The closure condition is met: M3 contains a learned-candidate full-range panel from the contractual reset with success, first reach, distance, endpoint speed, hold interruption, maximum hold, branch, and saturation diagnostics, and M4 separates the consequential failure classes by radius and angle. The evidence redirects the next work toward a candidate comparison that changes radial exposure to include 6-14 cm while preserving the protected task/runtime semantics, followed by the same diagnostic measurement. The current result does not justify official assessment at 65.625%, and it does not claim a causal effect for any untested intervention."
-      }
-    },
-    "request_fingerprint": "40c2d15e93e361ff9543f1d4419e45f59997a03e0007964295697ea9ef77a5ca",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
     "completed_operations": [
