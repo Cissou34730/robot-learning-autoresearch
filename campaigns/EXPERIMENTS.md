@@ -25,3 +25,4 @@
 | M7 | measurement | I3 | completed |
 | M8 | measurement | I3 | failed |
 | M9 | measurement | I3 | completed |
+| M10 | measurement | I3 | failed |
