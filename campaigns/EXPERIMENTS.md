@@ -68,3 +68,4 @@
 | M23 | measurement | I8 | completed |
 | T7 | training | I8 | completed |
 | M24 | measurement | I8 | completed |
+| M25 | measurement | I8 | completed |
