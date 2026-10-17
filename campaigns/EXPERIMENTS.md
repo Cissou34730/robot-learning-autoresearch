@@ -66,3 +66,4 @@
 | E34 | inquiry | I8 | completed |
 | E35 | checkpoint | - | checkpointed |
 | M23 | measurement | I8 | completed |
+| T7 | training | I8 | completed |
