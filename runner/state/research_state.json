@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry after one materially different velocity-aware direct-torque braking implementation has been trained under full 6-20 cm exposure and compared with T4 on a matched development panel with radius-stratified success, launch/first-reach, hold interruptions, endpoint-speed, and saturation diagnostics. A positive conclusion requires improved complete success together with no material loss in either the 6-14 cm or 14-20 cm guardrail; a negative conclusion is warranted if the implementation fails to improve complete success or repeats the coverage/saturation failure; an inconclusive result may close the inquiry while preserving unresolved mechanism limits.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the official 6-20 cm distribution. T4 is the best measured artifact at 148/160 but remains below that objective, with launch and hold failures, pervasive action saturation, and high endpoint speed. A method that explicitly changes how bounded torques brake and stabilize across the full range could plausibly close that gap while preserving coverage; its success must be judged by complete episodes rather than speed or reward proxies.",
+    "handoff_conclusion": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+    "handoff_question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+    "handoff_source_session_id": "S13",
+    "id": "I7",
+    "opened_in_session": "S14",
+    "question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+    "rationale": "Goal review should not terminate on a below-goal candidate when the residual failures align with a physical consequence of the fixed task: bounded direct torque must both exit the singular reset and dissipate velocity before a 100-step hold. The T5 result is strong evidence against the tested localized endpoint-speed reward transfer, not against velocity-aware control as a class, because T5 changed transfer, reward, and seed together and retained the same identity action path. The proposed inquiry is bounded and decision-relevant: it tests a distinct control/training implementation against T4, retains full-range exposure, and has explicit safeguards against accepting lower speed or reward when complete success or radial coverage worsens. Official assessment remains available after this bounded test; requesting it now would irreversibly end the campaign on a candidate measured at only 92.5%.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "f3ce063992e51881c7e7e202bed8456c45ef8c44",
     "id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
@@ -4107,16 +4118,16 @@
     }
   },
   "counters": {
-    "event": 28,
-    "inquiry": 6,
+    "event": 29,
+    "inquiry": 7,
     "measurement": 20,
-    "session": 13,
+    "session": 14,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T4:checkpoint-115712",
     "retained": {},
@@ -14431,9 +14442,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:19:59Z",
+      "error": null,
+      "id": "E29",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one materially different velocity-aware direct-torque braking implementation has been trained under full 6-20 cm exposure and compared with T4 on a matched development panel with radius-stratified success, launch/first-reach, hold interruptions, endpoint-speed, and saturation diagnostics. A positive conclusion requires improved complete success together with no material loss in either the 6-14 cm or 14-20 cm guardrail; a negative conclusion is warranted if the implementation fails to improve complete success or repeats the coverage/saturation failure; an inconclusive result may close the inquiry while preserving unresolved mechanism limits.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the official 6-20 cm distribution. T4 is the best measured artifact at 148/160 but remains below that objective, with launch and hold failures, pervasive action saturation, and high endpoint speed. A method that explicitly changes how bounded torques brake and stabilize across the full range could plausibly close that gap while preserving coverage; its success must be judged by complete episodes rather than speed or reward proxies.",
+        "question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+        "rationale": "Goal review should not terminate on a below-goal candidate when the residual failures align with a physical consequence of the fixed task: bounded direct torque must both exit the singular reset and dissipate velocity before a 100-step hold. The T5 result is strong evidence against the tested localized endpoint-speed reward transfer, not against velocity-aware control as a class, because T5 changed transfer, reward, and seed together and retained the same identity action path. The proposed inquiry is bounded and decision-relevant: it tests a distinct control/training implementation against T4, retains full-range exposure, and has explicit safeguards against accepting lower speed or reward when complete success or radial coverage worsens. Official assessment remains available after this bounded test; requesting it now would irreversibly end the campaign on a candidate measured at only 92.5%."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      },
+      "session_id": "S14",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry after one materially different velocity-aware direct-torque braking implementation has been trained under full 6-20 cm exposure and compared with T4 on a matched development panel with radius-stratified success, launch/first-reach, hold interruptions, endpoint-speed, and saturation diagnostics. A positive conclusion requires improved complete success together with no material loss in either the 6-14 cm or 14-20 cm guardrail; a negative conclusion is warranted if the implementation fails to improve complete success or repeats the coverage/saturation failure; an inconclusive result may close the inquiry while preserving unresolved mechanism limits.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the official 6-20 cm distribution. T4 is the best measured artifact at 148/160 but remains below that objective, with launch and hold failures, pervasive action saturation, and high endpoint speed. A method that explicitly changes how bounded torques brake and stabilize across the full range could plausibly close that gap while preserving coverage; its success must be judged by complete episodes rather than speed or reward proxies.",
+          "handoff_conclusion": "Established observations: M17 and M18 showed that T4 terminal checkpoint selection did not improve over the earlier T4 artifact and that T4's remaining failures combine launch and uninterrupted-hold failures with persistent saturation and high endpoint speed. T5 implemented a distinct, bounded training change: transfer from T4 under the same full 6-20 cm exposure, PPO configuration, observation/action interface, and saved runtime, with a squared endpoint-speed penalty applied only in an aligned 2 cm capture band. Training proxies nominated T5:checkpoint-65536, but M19\u2014not the proxy\u2014established its development behavior. On the matched 160-episode panel, T5 scored 135/160 versus T4's 148/160, with 4 paired wins versus 17 reference wins. M20 shows T5 did not retain T4's coverage: inner 6-14 cm was 84/93 versus 86/93 and outer 14-20 cm was 51/67 versus 62/67. The intervention did lower mean final endpoint speed from 0.6486 to 0.4778 m/s, but mean hold interruptions increased from 2.394 to 3.375 and action saturation did not improve (0.9415 versus 0.9347; all episodes saturated). Interpretation is therefore limited to this artifact comparison: lower final speed alone did not produce a usable uninterrupted-hold margin, and the tested reward intervention degraded both complete success and radial coverage despite preserving the full-range exposure and saved runtime. This is not evidence that speed shaping, transfer, or controller redesign as broader classes are impossible. The physical-model distinction remains unresolved between direct-torque policy/controller limitations, training-reward/exposure interaction, and their combination; T5 did not isolate those causes because transfer, reward change, and one seed were combined. Both artifacts ended on the open elbow branch, so branch switching is not an explanation for their difference. The intervention result redirects the next decision away from more selection within T5 and toward an explicit goal-review choice between the still-subgoal T4 artifact and a materially different controller/training inquiry.",
+          "handoff_question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+          "handoff_source_session_id": "S13",
+          "id": "I7",
+          "opened_in_session": "S14",
+          "question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+          "rationale": "Goal review should not terminate on a below-goal candidate when the residual failures align with a physical consequence of the fixed task: bounded direct torque must both exit the singular reset and dissipate velocity before a 100-step hold. The T5 result is strong evidence against the tested localized endpoint-speed reward transfer, not against velocity-aware control as a class, because T5 changed transfer, reward, and seed together and retained the same identity action path. The proposed inquiry is bounded and decision-relevant: it tests a distinct control/training implementation against T4, retains full-range exposure, and has explicit safeguards against accepting lower speed or reward when complete success or radial coverage worsens. Official assessment remains available after this bounded test; requesting it now would irreversibly end the campaign on a candidate measured at only 92.5%.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E29",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one materially different velocity-aware direct-torque braking implementation has been trained under full 6-20 cm exposure and compared with T4 on a matched development panel with radius-stratified success, launch/first-reach, hold interruptions, endpoint-speed, and saturation diagnostics. A positive conclusion requires improved complete success together with no material loss in either the 6-14 cm or 14-20 cm guardrail; a negative conclusion is warranted if the implementation fails to improve complete success or repeats the coverage/saturation failure; an inconclusive result may close the inquiry while preserving unresolved mechanism limits.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the official 6-20 cm distribution. T4 is the best measured artifact at 148/160 but remains below that objective, with launch and hold failures, pervasive action saturation, and high endpoint speed. A method that explicitly changes how bounded torques brake and stabilize across the full range could plausibly close that gap while preserving coverage; its success must be judged by complete episodes rather than speed or reward proxies.",
+        "question": "Can a materially different full-range direct-torque braking controller/training method improve complete uninterrupted success over T4 by reducing launch and late-hold failures without sacrificing T4's inner- and outer-radius coverage?",
+        "rationale": "Goal review should not terminate on a below-goal candidate when the residual failures align with a physical consequence of the fixed task: bounded direct torque must both exit the singular reset and dissipate velocity before a 100-step hold. The T5 result is strong evidence against the tested localized endpoint-speed reward transfer, not against velocity-aware control as a class, because T5 changed transfer, reward, and seed together and retained the same identity action path. The proposed inquiry is bounded and decision-relevant: it tests a distinct control/training implementation against T4, retains full-range exposure, and has explicit safeguards against accepting lower speed or reward when complete success or radial coverage worsens. Official assessment remains available after this bounded test; requesting it now would irreversibly end the campaign on a candidate measured at only 92.5%."
+      }
+    },
+    "request_fingerprint": "d33fe6d14dbadaaabdb14aa962b4dfa33aa682f8e399f3074f33f3eba055e2c5",
+    "session_id": "S14",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T4:checkpoint-115712, supported by M15 and the matched M19 reference evaluation. T4:checkpoint-120832 ties at 148/160 per M17/M18 and has no privileged terminal status. T5:checkpoint-65536 is the only follow-on candidate measured in I6; M19/M20 show it is inferior and it is not assigned working or best-known. No candidate is retained and no working candidate is assigned. I6 is closed with a negative, implementation-bounded result.",
     "completed_operations": [
@@ -14466,6 +14540,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "19911acd-5b6c-4f8f-95cc-d1e9599ac4a1",
+    "id": "S14",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E29"
+    ],
+    "scientific_parent_commit": "8ca243ef29821c32e7ad403147c6c06538eff544"
+  },
   "terminal_state": null
 }
