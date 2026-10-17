@@ -5761,13 +5761,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 83.0%; 200 episodes",
   "model_roles": {
     "best_known": "T5:checkpoint-10240",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/ecee0f08-9143-4c0f-87d0-3c21e527df42/t5-cee65aa6e-6e08335b843c470c677549dec572a1f585121d05f4b2843deba7f5b1158c9ffb",
+    "completed_at": "2026-10-17T00:35:27Z",
+    "fingerprint": "6e08335b843c470c677549dec572a1f585121d05f4b2843deba7f5b1158c9ffb",
+    "model": "T5:checkpoint-10240",
+    "status": "failed",
+    "summary": "goal not reached; success 83.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-16T21:42:37Z",
@@ -20776,7 +20783,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-17T00:34:28Z",
+      "completed_at": "2026-10-17T00:35:27Z",
       "error": null,
       "id": "E32",
       "inquiry_id": null,
@@ -20787,7 +20794,7 @@
       },
       "result": {
         "model": "T5:checkpoint-10240",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S16",
       "status": "completed",
@@ -20833,6 +20840,6 @@
   "terminal_state": {
     "model": "T5:checkpoint-10240",
     "reason": "Request the protected official assessment of the explicit best-known candidate T5:checkpoint-10240. Candidate selection is supported by M10 and the corrected role assignment E31: T5 achieved 156/200 (78%) on the matched official-semantics development panel, tied with T3 and ahead of T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 verified that the saved controller-enabled runtime was active and improved reached-but-failed-hold failures, but 37 never-reached failures remained, so this is a realistic frozen candidate rather than a claim of goal attainment. The alternative of one more bounded inquiry has no evidence-backed route to recover the 40-success gap: E25/M16/E29 show the tested v2 acquisition and signed-branch interventions were negative at the artifact/mechanism level, with M16's controlled branch blend only 10/32 and 0/14 valid folded-branch successes. Those results do not disprove signed-IK control or diagnose the plant, reward, self-contact, or substep semantics, but the unresolved possibilities are not by themselves a credible new method. The protected assessment is therefore more decision-relevant and lower-cost than continuing the tested lineage or opening an ungrounded variant; its 196/200 criterion will determine pass or fail under the authoritative task distribution.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
