@@ -14395,38 +14395,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "I6 is closed with a negative, implementation-bounded result. The one follow-on candidate, T5:checkpoint-65536, was trained by transferring T4 while adding a localized squared endpoint-speed penalty inside the 2 cm capture band. On the matched 160-episode saved-runtime panel it achieved 135/160 (84.375%) versus T4's 148/160 (92.5%), with 4 paired wins versus 17 reference wins. Stratification shows the candidate did not retain the T4 tradeoff: inner 6-14 cm success was 84/93 versus 86/93, and outer 14-20 cm success was 51/67 versus 62/67. It lowered mean final endpoint speed (0.478 versus 0.649 m/s) but increased mean hold interruptions (3.375 versus 2.394) and did not reduce action saturation (0.9415 versus 0.9347; saturation occurred in all episodes). The tested reward intervention therefore failed the complete-artifact and coverage/hold guardrails. This does not establish that speed shaping, transfer, or controller redesign broadly cannot work; it establishes only that this localized reward implementation and selected transferred checkpoint did not improve I6.",
-        "reason": "The closure condition required at least one complete follow-on candidate measured against T4 on a matched full-range panel, or evidence that the bounded intervention could not improve the goal-relevant tradeoff. M19 and M20 supply that evidence. Continuing with more T5 checkpoint selection would not be justified because the selected candidate already degraded both inner and outer complete success, while the one improved proxy (lower final speed) did not reduce saturation or interruptions. The remaining mechanism distinction\u2014whether a different controller, reward schedule, or training exposure can exploit the lower-speed state without sacrificing launch and coverage\u2014remains unresolved and should be carried into goal review rather than treated as disproved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "I6 is closed with a negative, implementation-bounded result. The one follow-on candidate, T5:checkpoint-65536, was trained by transferring T4 while adding a localized squared endpoint-speed penalty inside the 2 cm capture band. On the matched 160-episode saved-runtime panel it achieved 135/160 (84.375%) versus T4's 148/160 (92.5%), with 4 paired wins versus 17 reference wins. Stratification shows the candidate did not retain the T4 tradeoff: inner 6-14 cm success was 84/93 versus 86/93, and outer 14-20 cm success was 51/67 versus 62/67. It lowered mean final endpoint speed (0.478 versus 0.649 m/s) but increased mean hold interruptions (3.375 versus 2.394) and did not reduce action saturation (0.9415 versus 0.9347; saturation occurred in all episodes). The tested reward intervention therefore failed the complete-artifact and coverage/hold guardrails. This does not establish that speed shaping, transfer, or controller redesign broadly cannot work; it establishes only that this localized reward implementation and selected transferred checkpoint did not improve I6.",
-        "reason": "The closure condition required at least one complete follow-on candidate measured against T4 on a matched full-range panel, or evidence that the bounded intervention could not improve the goal-relevant tradeoff. M19 and M20 supply that evidence. Continuing with more T5 checkpoint selection would not be justified because the selected candidate already degraded both inner and outer complete success, while the one improved proxy (lower final speed) did not reduce saturation or interruptions. The remaining mechanism distinction\u2014whether a different controller, reward schedule, or training exposure can exploit the lower-speed state without sacrificing launch and coverage\u2014remains unresolved and should be carried into goal review rather than treated as disproved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E27",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I6 is closed with a negative, implementation-bounded result. The one follow-on candidate, T5:checkpoint-65536, was trained by transferring T4 while adding a localized squared endpoint-speed penalty inside the 2 cm capture band. On the matched 160-episode saved-runtime panel it achieved 135/160 (84.375%) versus T4's 148/160 (92.5%), with 4 paired wins versus 17 reference wins. Stratification shows the candidate did not retain the T4 tradeoff: inner 6-14 cm success was 84/93 versus 86/93, and outer 14-20 cm success was 51/67 versus 62/67. It lowered mean final endpoint speed (0.478 versus 0.649 m/s) but increased mean hold interruptions (3.375 versus 2.394) and did not reduce action saturation (0.9415 versus 0.9347; saturation occurred in all episodes). The tested reward intervention therefore failed the complete-artifact and coverage/hold guardrails. This does not establish that speed shaping, transfer, or controller redesign broadly cannot work; it establishes only that this localized reward implementation and selected transferred checkpoint did not improve I6.",
-        "reason": "The closure condition required at least one complete follow-on candidate measured against T4 on a matched full-range panel, or evidence that the bounded intervention could not improve the goal-relevant tradeoff. M19 and M20 supply that evidence. Continuing with more T5 checkpoint selection would not be justified because the selected candidate already degraded both inner and outer complete success, while the one improved proxy (lower final speed) did not reduce saturation or interruptions. The remaining mechanism distinction\u2014whether a different controller, reward schedule, or training exposure can exploit the lower-speed state without sacrificing launch and coverage\u2014remains unresolved and should be carried into goal review rather than treated as disproved."
-      }
-    },
-    "request_fingerprint": "994ad14e1a34cbf22df4aea6d774d1c55c8982cb331eb197c26831aebeef033d",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T4:checkpoint-115712; T4:checkpoint-120832 is the terminal checkpoint measured in M17 and stratified in M18 but ties rather than exceeds the best-known 148/160 result. No working candidate is assigned. Inquiry I6 is active and will evaluate a bounded follow-on controller or training change against T4.",
     "completed_operations": [
