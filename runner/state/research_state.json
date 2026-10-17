@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -55,6 +55,429 @@
       "status": "failed",
       "superseded_by": "M2",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T07:05:59Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled two-joint arm, contractual singular reset, radius-angle inverse-kinematic conditioning, and deterministic one-interval unit-action responses at reset and representative feasible configurations.",
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/compiled_arm_characterization.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/compiled_arm_characterization.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics, kinematics, and known-action response",
+            "module": "robot_learning.lab.characterize_arm"
+          }
+        ],
+        "rationale": "The initial scientific distinction is whether direct-torque control is materially constrained by compiled dynamics and singularity exit, or whether the more consequential gap is learned coverage and two-second stabilization. This candidate-free measurement directly tests the former without conflating it with policy quality. Strong, configuration-dependent acceleration, persistent post-impulse motion, or poor singularity-exit authority would justify dynamics-aware control and identification before interpreting a learning result; regular fast response with feasible, well-conditioned target branches would redirect the next action toward training and radius/angle/hold-stratified policy evaluation. The artifact records observations only and does not infer a conclusion."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/compiled_arm_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics, kinematics, and known-action response",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M2-1-compiled_arm_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/schema",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/timing",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analytical_planar_kinematics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/dense_mass_matrices",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "impulse_action",
+                      "impulse_control_intervals",
+                      "initial_state",
+                      "physics_steps_per_control_interval",
+                      "sample_semantics",
+                      "samples",
+                      "summary",
+                      "zero_torque_control_intervals"
+                    ],
+                    "path": "/known_action_response_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema/name",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/schema/version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/tool",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/policy_training_or_evaluation",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement/scientific_conclusion_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/source/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source/xml_loaded_via",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/length",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/mass",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/generalized_torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/timing/physics_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/physics_steps_per_control_interval",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/expected_control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/control_rate_hz",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/trajectory_impulse_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/trajectory_zero_torque_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_model/dimensions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/compiled_model/options",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_model/gravity_m_per_s2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature_kg_m2",
+                      "damping_Nm_s_per_rad",
+                      "dof_address",
+                      "id",
+                      "limited",
+                      "name",
+                      "qpos_address",
+                      "range_rad"
+                    ],
+                    "path": "/compiled_model/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_limited",
+                      "control_range",
+                      "gear",
+                      "id",
+                      "name"
+                    ],
+                    "path": "/compiled_model/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia_kg_m2",
+                      "mass_kg",
+                      "name"
+                    ],
+                    "path": "/compiled_model/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/analytical_planar_kinematics/link_lengths_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/analytical_planar_kinematics/reset",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/analytical_planar_kinematics/grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "fk_residual_m",
+                      "label",
+                      "q_rad",
+                      "radius_m"
+                    ],
+                    "path": "/analytical_planar_kinematics/representative_feasible_states",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/dense_mass_matrices/matrix_units",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "branch",
+                      "label",
+                      "mass_matrix_kg_m2",
+                      "q_rad",
+                      "radius_m"
+                    ],
+                    "path": "/dense_mass_matrices/representative_configurations",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/na",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/ngeom",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nsite",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nmocap",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/timestep",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/cone",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "733e5ffc1127baf9d5c590e4e91317c9dc7dd20032bcd6ee106588bcba6be7d3"
+            },
+            "module": "robot_learning.lab.characterize_arm"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "91a8314aeb46bf1626f7b23faf3867dc52e6585b",
+            "fingerprint": "7ec0b6c615799e44af098e4c862d280bd27c53bc6a291f34e80bfc1714ff6cb5",
+            "manifest": [
+              {
+                "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+                "path": "robot_learning/lab/characterize_arm.py"
+              }
+            ]
+          },
+          "code_parent_commit": "954914c2b366521cdd5c03643eb35143476951c9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/characterize_arm.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M1"
     }
   ],
   "pending_operation": {
@@ -82,7 +505,20 @@
             "path": "robot_learning/lab/characterize_arm.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "91a8314aeb46bf1626f7b23faf3867dc52e6585b",
+          "fingerprint": "7ec0b6c615799e44af098e4c862d280bd27c53bc6a291f34e80bfc1714ff6cb5",
+          "manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ]
+        },
         "code_parent_commit": "954914c2b366521cdd5c03643eb35143476951c9",
         "effective_parameters": {
           "algorithm": {
@@ -123,15 +559,739 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/compiled_arm_characterization.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled dynamics, kinematics, and known-action response",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M2-1-compiled_arm_characterization.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 9,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/schema",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/measurement",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/source",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/timing",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/compiled_model",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/analytical_planar_kinematics",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/dense_mass_matrices",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "impulse_action",
+                    "impulse_control_intervals",
+                    "initial_state",
+                    "physics_steps_per_control_interval",
+                    "sample_semantics",
+                    "samples",
+                    "summary",
+                    "zero_torque_control_intervals"
+                  ],
+                  "path": "/known_action_response_trajectories",
+                  "type": "array"
+                },
+                {
+                  "path": "/schema/name",
+                  "type": "string"
+                },
+                {
+                  "path": "/schema/version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement/kind",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement/tool",
+                  "type": "string"
+                },
+                {
+                  "path": "/measurement/policy_training_or_evaluation",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/measurement/scientific_conclusion_inferred",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/source/xml_path",
+                  "type": "string"
+                },
+                {
+                  "path": "/source/xml_loaded_via",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/length",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/endpoint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/mass",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/inertia",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/generalized_torque",
+                  "type": "string"
+                },
+                {
+                  "path": "/timing/physics_timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/physics_steps_per_control_interval",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/control_interval_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/expected_control_interval_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/control_rate_hz",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/trajectory_impulse_intervals",
+                  "type": "number"
+                },
+                {
+                  "path": "/timing/trajectory_zero_torque_intervals",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/xml_path",
+                  "type": "string"
+                },
+                {
+                  "entries": 9,
+                  "path": "/compiled_model/dimensions",
+                  "type": "object"
+                },
+                {
+                  "entries": 28,
+                  "path": "/compiled_model/options",
+                  "type": "object"
+                },
+                {
+                  "path": "/compiled_model/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/compiled_model/gravity_m_per_s2",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "armature_kg_m2",
+                    "damping_Nm_s_per_rad",
+                    "dof_address",
+                    "id",
+                    "limited",
+                    "name",
+                    "qpos_address",
+                    "range_rad"
+                  ],
+                  "path": "/compiled_model/joints",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "control_limited",
+                    "control_range",
+                    "gear",
+                    "id",
+                    "name"
+                  ],
+                  "path": "/compiled_model/actuators",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "id",
+                    "inertia_kg_m2",
+                    "mass_kg",
+                    "name"
+                  ],
+                  "path": "/compiled_model/bodies",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/analytical_planar_kinematics/link_lengths_m",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/analytical_planar_kinematics/reset",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/analytical_planar_kinematics/grid",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "field_names": [
+                    "angle_rad",
+                    "branch",
+                    "fk_residual_m",
+                    "label",
+                    "q_rad",
+                    "radius_m"
+                  ],
+                  "path": "/analytical_planar_kinematics/representative_feasible_states",
+                  "type": "array"
+                },
+                {
+                  "path": "/dense_mass_matrices/matrix_units",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "branch",
+                    "label",
+                    "mass_matrix_kg_m2",
+                    "q_rad",
+                    "radius_m"
+                  ],
+                  "path": "/dense_mass_matrices/representative_configurations",
+                  "type": "array"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nv",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nu",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/na",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nbody",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/njnt",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/ngeom",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nsite",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/dimensions/nmocap",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/timestep",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/integrator",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_model/options/cone",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "733e5ffc1127baf9d5c590e4e91317c9dc7dd20032bcd6ee106588bcba6be7d3"
+          },
+          "module": "robot_learning.lab.characterize_arm"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/compiled_arm_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics, kinematics, and known-action response",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/python-module-M2-1-compiled_arm_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/schema",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/measurement",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/source",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/timing",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/compiled_model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/analytical_planar_kinematics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/dense_mass_matrices",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "impulse_action",
+                      "impulse_control_intervals",
+                      "initial_state",
+                      "physics_steps_per_control_interval",
+                      "sample_semantics",
+                      "samples",
+                      "summary",
+                      "zero_torque_control_intervals"
+                    ],
+                    "path": "/known_action_response_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/schema/name",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/schema/version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement/kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/tool",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/measurement/policy_training_or_evaluation",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/measurement/scientific_conclusion_inferred",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/source/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source/xml_loaded_via",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/length",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/endpoint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/mass",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/generalized_torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/timing/physics_timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/physics_steps_per_control_interval",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/expected_control_interval_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/control_rate_hz",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/trajectory_impulse_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/timing/trajectory_zero_torque_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/xml_path",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_model/dimensions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 28,
+                    "path": "/compiled_model/options",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/compiled_model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/compiled_model/gravity_m_per_s2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "armature_kg_m2",
+                      "damping_Nm_s_per_rad",
+                      "dof_address",
+                      "id",
+                      "limited",
+                      "name",
+                      "qpos_address",
+                      "range_rad"
+                    ],
+                    "path": "/compiled_model/joints",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "control_limited",
+                      "control_range",
+                      "gear",
+                      "id",
+                      "name"
+                    ],
+                    "path": "/compiled_model/actuators",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "id",
+                      "inertia_kg_m2",
+                      "mass_kg",
+                      "name"
+                    ],
+                    "path": "/compiled_model/bodies",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/analytical_planar_kinematics/link_lengths_m",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/analytical_planar_kinematics/reset",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/analytical_planar_kinematics/grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "field_names": [
+                      "angle_rad",
+                      "branch",
+                      "fk_residual_m",
+                      "label",
+                      "q_rad",
+                      "radius_m"
+                    ],
+                    "path": "/analytical_planar_kinematics/representative_feasible_states",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/dense_mass_matrices/matrix_units",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "branch",
+                      "label",
+                      "mass_matrix_kg_m2",
+                      "q_rad",
+                      "radius_m"
+                    ],
+                    "path": "/dense_mass_matrices/representative_configurations",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nu",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/na",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nbody",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/njnt",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/ngeom",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nsite",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/dimensions/nmocap",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/timestep",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_model/options/cone",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "733e5ffc1127baf9d5c590e4e91317c9dc7dd20032bcd6ee106588bcba6be7d3"
+            },
+            "module": "robot_learning.lab.characterize_arm"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "91a8314aeb46bf1626f7b23faf3867dc52e6585b",
+            "fingerprint": "7ec0b6c615799e44af098e4c862d280bd27c53bc6a291f34e80bfc1714ff6cb5",
+            "manifest": [
+              {
+                "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+                "path": "robot_learning/lab/characterize_arm.py"
+              }
+            ]
+          },
+          "code_parent_commit": "954914c2b366521cdd5c03643eb35143476951c9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/characterize_arm.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M2",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Characterize the compiled two-joint arm, contractual singular reset, radius-angle inverse-kinematic conditioning, and deterministic one-interval unit-action responses at reset and representative feasible configurations.",
@@ -171,7 +1331,9 @@
     "inquiry_id": null,
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M2"
+    ],
     "scientific_parent_commit": "954914c2b366521cdd5c03643eb35143476951c9"
   },
   "terminal_state": null
