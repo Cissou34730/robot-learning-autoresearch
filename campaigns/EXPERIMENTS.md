@@ -43,3 +43,4 @@
 | T4 | training | I5 | completed |
 | M15 | measurement | I5 | completed |
 | M16 | measurement | I5 | completed |
+| E22 | model_role | I5 | assigned |

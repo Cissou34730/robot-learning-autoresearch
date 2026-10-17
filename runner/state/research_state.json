@@ -2614,7 +2614,7 @@
       "training_steps": 110592
     },
     "T4:checkpoint-115712": {
-      "artifact": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4/checkpoint-115712",
+      "artifact": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4-cfbc9e22f-25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
       "evaluation_artifacts": [
         "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m15-T4-checkpoint-115712-160ep-seed4200-dc9edffbe73b.json"
       ],
@@ -3297,7 +3297,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 16,
     "session": 11,
@@ -3306,9 +3306,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-115712",
+    "best_known": "T4:checkpoint-115712",
     "retained": {},
     "working": null
   },
@@ -11145,9 +11145,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:59:08Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-115712",
+        "evidence": [
+          "M15",
+          "M16"
+        ],
+        "reason": "T4 is the strongest complete artifact measured in this inquiry: matched saved-runtime evaluation improved total success from T1's 105/160 to 148/160 and inner 6-14 cm success from 42/93 to 86/93 while reducing inner no-reaches from 45 to 3. It preserved outer first reach at 63/67, but outer success was 62/67 rather than T1's 63/67, so this role assignment records best observed development performance without goal certification or positive closure of I5."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-115712",
+        "evidence": [
+          "M15",
+          "M16"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T4:checkpoint-115712",
+        "evidence": [
+          "M15",
+          "M16"
+        ],
+        "reason": "T4 is the strongest complete artifact measured in this inquiry: matched saved-runtime evaluation improved total success from T1's 105/160 to 148/160 and inner 6-14 cm success from 42/93 to 86/93 while reducing inner no-reaches from 45 to 3. It preserved outer first reach at 63/67, but outer success was 62/67 rather than T1's 63/67, so this role assignment records best observed development performance without goal certification or positive closure of I5."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4-cfbc9e22f-25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+        "fingerprint": "25af17e88100899564ff58cf1f0055bfd5f4a401aedde78d11e65fce152f10a1",
+        "source": "campaigns/checkpoints/candidates/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t4/checkpoint-115712"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-115712",
+        "evidence": [
+          "M15",
+          "M16"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T4:checkpoint-115712",
+        "evidence": [
+          "M15",
+          "M16"
+        ],
+        "reason": "T4 is the strongest complete artifact measured in this inquiry: matched saved-runtime evaluation improved total success from T1's 105/160 to 148/160 and inner 6-14 cm success from 42/93 to 86/93 while reducing inner no-reaches from 45 to 3. It preserved outer first reach at 63/67, but outer success was 62/67 rather than T1's 63/67, so this role assignment records best observed development performance without goal certification or positive closure of I5."
+      }
+    },
+    "request_fingerprint": "ebcfec783ef570567c040eb24c618926eb03840fbbea7a2bc8d6aa8977811fac",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
@@ -11203,7 +11277,8 @@
       "E21",
       "T4",
       "M15",
-      "M16"
+      "M16",
+      "E22"
     ],
     "scientific_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87"
   },
