@@ -48,3 +48,4 @@
 | E24 | checkpoint | I5 | checkpointed |
 | M17 | measurement | - | completed |
 | M18 | measurement | - | completed |
+| E25 | inquiry | I6 | completed |

@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry after measuring at least one complete follow-on candidate against T4 on a matched full-range panel, or when the bounded work shows that the intervention cannot improve the goal-relevant tradeoff. Continuation is supported only if the candidate retains the inner gain while improving the outer and/or hold/saturation failure pattern; otherwise redirect to official assessment or close with the residual gap recorded.",
+    "goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. T4's saved runtime remains 148/160 on both measured checkpoints, so the campaign needs a bounded intervention that improves the remaining launch and stabilization failures without giving back the large inner-annulus capability gain.",
+    "handoff_conclusion": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+    "handoff_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+    "handoff_source_session_id": "S11",
+    "id": "I6",
+    "opened_in_session": "S12",
+    "question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+    "rationale": "M17 and its completed M18 stratification settle that later checkpoint selection is not the missing solution: T4's terminal checkpoint also achieves 148/160, with 8 no-reaches and 4 hold failures, 0.941 mean action-saturation fraction in all 160 episodes, and final endpoint speed 0.636 m/s. The terminal artifact reaches 63/67 in the outer 14-20 cm range while retaining 85/93 inner successes, so the artifact-level launch/coverage gain persists, but performance is concentrated in the negative-angle sectors (80.0% and 76.9%) and the full-range score remains far below the 98% goal. This corrects the inherited emphasis on outer checkpoint selection: the consequential unresolved problem is a coupled launch-and-stabilization/coverage failure, not a privileged terminal checkpoint. The physical model predicts that direct bounded torque with persistent saturation can produce high-speed late corrections and interrupted holds; M18 supports that mechanism at aggregate level but does not establish whether a controller change, training change, or their interaction is causal. That uncertainty is consequential because it determines the next method. One bounded, goal-linked intervention is preferable to requesting an irreversible official assessment of a candidate already 8 percentage points below the development target; official assessment remains the closure route if the intervention does not improve the complete-artifact tradeoff.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "f3ce063992e51881c7e7e202bed8456c45ef8c44",
     "id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
@@ -3288,8 +3299,8 @@
     }
   },
   "counters": {
-    "event": 24,
-    "inquiry": 5,
+    "event": 25,
+    "inquiry": 6,
     "measurement": 18,
     "session": 12,
     "training": 4
@@ -11845,9 +11856,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:04:54Z",
+      "error": null,
+      "id": "E25",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after measuring at least one complete follow-on candidate against T4 on a matched full-range panel, or when the bounded work shows that the intervention cannot improve the goal-relevant tradeoff. Continuation is supported only if the candidate retains the inner gain while improving the outer and/or hold/saturation failure pattern; otherwise redirect to official assessment or close with the residual gap recorded.",
+        "goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. T4's saved runtime remains 148/160 on both measured checkpoints, so the campaign needs a bounded intervention that improves the remaining launch and stabilization failures without giving back the large inner-annulus capability gain.",
+        "question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+        "rationale": "M17 and its completed M18 stratification settle that later checkpoint selection is not the missing solution: T4's terminal checkpoint also achieves 148/160, with 8 no-reaches and 4 hold failures, 0.941 mean action-saturation fraction in all 160 episodes, and final endpoint speed 0.636 m/s. The terminal artifact reaches 63/67 in the outer 14-20 cm range while retaining 85/93 inner successes, so the artifact-level launch/coverage gain persists, but performance is concentrated in the negative-angle sectors (80.0% and 76.9%) and the full-range score remains far below the 98% goal. This corrects the inherited emphasis on outer checkpoint selection: the consequential unresolved problem is a coupled launch-and-stabilization/coverage failure, not a privileged terminal checkpoint. The physical model predicts that direct bounded torque with persistent saturation can produce high-speed late corrections and interrupted holds; M18 supports that mechanism at aggregate level but does not establish whether a controller change, training change, or their interaction is causal. That uncertainty is consequential because it determines the next method. One bounded, goal-linked intervention is preferable to requesting an irreversible official assessment of a candidate already 8 percentage points below the development target; official assessment remains the closure route if the intervention does not improve the complete-artifact tradeoff."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry after measuring at least one complete follow-on candidate against T4 on a matched full-range panel, or when the bounded work shows that the intervention cannot improve the goal-relevant tradeoff. Continuation is supported only if the candidate retains the inner gain while improving the outer and/or hold/saturation failure pattern; otherwise redirect to official assessment or close with the residual gap recorded.",
+          "goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. T4's saved runtime remains 148/160 on both measured checkpoints, so the campaign needs a bounded intervention that improves the remaining launch and stabilization failures without giving back the large inner-annulus capability gain.",
+          "handoff_conclusion": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+          "handoff_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+          "handoff_source_session_id": "S11",
+          "id": "I6",
+          "opened_in_session": "S12",
+          "question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+          "rationale": "M17 and its completed M18 stratification settle that later checkpoint selection is not the missing solution: T4's terminal checkpoint also achieves 148/160, with 8 no-reaches and 4 hold failures, 0.941 mean action-saturation fraction in all 160 episodes, and final endpoint speed 0.636 m/s. The terminal artifact reaches 63/67 in the outer 14-20 cm range while retaining 85/93 inner successes, so the artifact-level launch/coverage gain persists, but performance is concentrated in the negative-angle sectors (80.0% and 76.9%) and the full-range score remains far below the 98% goal. This corrects the inherited emphasis on outer checkpoint selection: the consequential unresolved problem is a coupled launch-and-stabilization/coverage failure, not a privileged terminal checkpoint. The physical model predicts that direct bounded torque with persistent saturation can produce high-speed late corrections and interrupted holds; M18 supports that mechanism at aggregate level but does not establish whether a controller change, training change, or their interaction is causal. That uncertainty is consequential because it determines the next method. One bounded, goal-linked intervention is preferable to requesting an irreversible official assessment of a candidate already 8 percentage points below the development target; official assessment remains the closure route if the intervention does not improve the complete-artifact tradeoff.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E25",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after measuring at least one complete follow-on candidate against T4 on a matched full-range panel, or when the bounded work shows that the intervention cannot improve the goal-relevant tradeoff. Continuation is supported only if the candidate retains the inner gain while improving the outer and/or hold/saturation failure pattern; otherwise redirect to official assessment or close with the residual gap recorded.",
+        "goal_connection": "The human goal requires at least 196/200 complete uninterrupted holds across the full 6-20 cm distribution. T4's saved runtime remains 148/160 on both measured checkpoints, so the campaign needs a bounded intervention that improves the remaining launch and stabilization failures without giving back the large inner-annulus capability gain.",
+        "question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+        "rationale": "M17 and its completed M18 stratification settle that later checkpoint selection is not the missing solution: T4's terminal checkpoint also achieves 148/160, with 8 no-reaches and 4 hold failures, 0.941 mean action-saturation fraction in all 160 episodes, and final endpoint speed 0.636 m/s. The terminal artifact reaches 63/67 in the outer 14-20 cm range while retaining 85/93 inner successes, so the artifact-level launch/coverage gain persists, but performance is concentrated in the negative-angle sectors (80.0% and 76.9%) and the full-range score remains far below the 98% goal. This corrects the inherited emphasis on outer checkpoint selection: the consequential unresolved problem is a coupled launch-and-stabilization/coverage failure, not a privileged terminal checkpoint. The physical model predicts that direct bounded torque with persistent saturation can produce high-speed late corrections and interrupted holds; M18 supports that mechanism at aggregate level but does not establish whether a controller change, training change, or their interaction is causal. That uncertainty is consequential because it determines the next method. One bounded, goal-linked intervention is preferable to requesting an irreversible official assessment of a candidate already 8 percentage points below the development target; official assessment remains the closure route if the intervention does not improve the complete-artifact tradeoff."
+      }
+    },
+    "request_fingerprint": "0f0bb3ddd99a2ceacdddd1b1009d41615f5a08e6a298a828cbbe64dd018310d3",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known is T4:checkpoint-115712, assigned by E22 on M15/M16 complete saved-runtime evidence; it is not goal-certified. T1:checkpoint-115712 remains the outer-preserving reference at 63/67 outer successes and 63/67 outer first reaches. T2 and T3 remain prior negative or limited comparisons and are not assigned. No working or retained candidate is assigned.",
     "completed_operations": [
@@ -11896,7 +11970,8 @@
     "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
     "operation_ids": [
       "M17",
-      "M18"
+      "M18",
+      "E25"
     ],
     "scientific_parent_commit": "9f23844a9bdaf91fa82fa7040fb052f4d33d82ee"
   },
