@@ -50,3 +50,4 @@
 | E26 | checkpoint | I6 | checkpointed |
 | E27 | inquiry | I7 | completed |
 | E28 | checkpoint | - | checkpointed |
+| M14 | measurement | I7 | failed |

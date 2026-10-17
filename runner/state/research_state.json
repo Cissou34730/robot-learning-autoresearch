@@ -5765,8 +5765,8 @@
   "counters": {
     "event": 28,
     "inquiry": 7,
-    "measurement": 13,
-    "session": 14,
+    "measurement": 15,
+    "session": 15,
     "training": 7
   },
   "human_goal": {
@@ -20244,9 +20244,143 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T00:28:00Z",
+      "error": "robot_learning.lab.signed_branch_diagnostic failed:\n\nerror: --candidate must be a candidate directory: C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\6\\checkpoint-45056\n\nAccepted invocation: module=robot_learning.lab.signed_branch_diagnostic, args=[\"--candidate\", \"campaigns\\\\checkpoints\\\\candidates\\\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\\\6\\\\checkpoint-45056\", \"--output\", \"campaigns\\\\evaluations\\\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\\\i7-signed-branch-diagnostic.json\"], declared_artifact=campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/i7-signed-branch-diagnostic.json",
+      "id": "M14",
+      "inquiry_id": "I7",
+      "kind": "measurement",
+      "request": {
+        "description": "Run an activation-verified I7 mechanism diagnostic on the exact T7 checkpoint, comparing raw learned actions with explicit forced signed-IK branch blend and branch-only control across mirrored target angles and four official radius strata. Preserve branch validity, selected branch sign, acquisition commands, first reach, interruptions, complete hold outcomes, and paired mirror comparisons under unchanged environment timing and success semantics.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\6\\checkpoint-45056",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\i7-signed-branch-diagnostic.json"
+            ],
+            "artifact": "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\i7-signed-branch-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I7 activation-verified controlled signed-branch and mirrored-angle diagnostic",
+            "module": "robot_learning.lab.signed_branch_diagnostic"
+          }
+        ],
+        "rationale": "M12/M13 establish T7's 94/200 artifact-level result and a strong signed-angle asymmetry but cannot identify whether the asymmetry is caused by the v2 branch/angle runtime or by the learned artifact because those factors changed together. The submitted laboratory intervention holds T7's learned weights, normalization, and policy state fixed; verifies the saved i6 runtime activation; then bypasses only its saved action post-processing to compare raw learned behavior against explicitly controlled open and folded branches. The decision-relevant outcomes are: (1) controlled valid-branch acquisition becomes materially more symmetric and preserves the full hold, supporting a concrete runtime repair route; or (2) asymmetry persists or controlled valid-branch reach remains far below a credible 196/200 path, supporting limited/negative closure while preserving the artifact-level confound. Invalid nominal branches are retained and separately stratified rather than silently interpreted as failures of a valid branch."
+      },
+      "result": {
+        "error": "robot_learning.lab.signed_branch_diagnostic failed:\n\nerror: --candidate must be a candidate directory: C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\6\\checkpoint-45056\n\nAccepted invocation: module=robot_learning.lab.signed_branch_diagnostic, args=[\"--candidate\", \"campaigns\\\\checkpoints\\\\candidates\\\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\\\6\\\\checkpoint-45056\", \"--output\", \"campaigns\\\\evaluations\\\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\\\i7-signed-branch-diagnostic.json\"], declared_artifact=campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/i7-signed-branch-diagnostic.json",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "M15",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns\\checkpoints\\candidates\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\7\\checkpoint-45056",
+            "--output",
+            "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\i7-signed-branch-diagnostic.json"
+          ],
+          "artifact": "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/i7-signed-branch-diagnostic.json",
+          "instrument": "python_module",
+          "label": "I7 activation-verified controlled signed-branch and mirrored-angle diagnostic",
+          "module": "robot_learning.lab.signed_branch_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "def03519686045b45373ab439c276af3d3dec7b99e1f080dab9c94af55fe4a22",
+            "path": "robot_learning/lab/official_panel_diagnostics.py"
+          },
+          {
+            "fingerprint": "da07dc1f2e5bfcf62c4bdce4228e5c1b667df6cf7bcbec590d2467118001982b",
+            "path": "robot_learning/lab/signed_branch_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "41556508674f4f02ca84d0bf1059e99af2433c98",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "da07dc1f2e5bfcf62c4bdce4228e5c1b667df6cf7bcbec590d2467118001982b",
+            "path": "robot_learning/lab/signed_branch_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/signed_branch_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M15",
+    "inquiry_id": "I7",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Run an activation-verified I7 mechanism diagnostic on the exact T7 checkpoint, comparing raw learned actions with explicit forced signed-IK branch blend and branch-only control across mirrored target angles and four official radius strata. Preserve branch validity, selected branch sign, acquisition commands, first reach, interruptions, complete hold outcomes, and paired mirror comparisons under unchanged environment timing and success semantics.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\7\\checkpoint-45056",
+              "--output",
+              "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\i7-signed-branch-diagnostic.json"
+            ],
+            "artifact": "campaigns\\evaluations\\ecee0f08-9143-4c0f-87d0-3c21e527df42\\i7-signed-branch-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I7 activation-verified controlled signed-branch and mirrored-angle diagnostic",
+            "module": "robot_learning.lab.signed_branch_diagnostic"
+          }
+        ],
+        "rationale": "M12/M13 establish T7's 94/200 artifact-level result and a strong signed-angle asymmetry but cannot identify whether the asymmetry is caused by the v2 branch/angle runtime or by the learned artifact because those factors changed together. The submitted laboratory intervention holds T7's learned weights, normalization, and policy state fixed; verifies the saved i6 runtime activation; then bypasses only its saved action post-processing to compare raw learned behavior against explicitly controlled open and folded branches. The decision-relevant outcomes are: (1) controlled valid-branch acquisition becomes materially more symmetric and preserves the full hold, supporting a concrete runtime repair route; or (2) asymmetry persists or controlled valid-branch reach remains far below a credible 196/200 path, supporting limited/negative closure while preserving the artifact-level confound. Invalid nominal branches are retained and separately stratified rather than silently interpreted as failures of a valid branch."
+      }
+    },
+    "request_fingerprint": "f1d255a8a08f7736bb79d879973f015909f3ddde2db7418dbd4cecf69924d616",
+    "session_id": "S15",
+    "supersedes": "M14"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known role remains T1:checkpoint-120832 by the existing recorded role, but it is not goal-certified and scored 144/200 on the latest matched M12 panel. T3:checkpoint-70656 and T5:checkpoint-10240 are the strongest measured development artifacts at 156/200 on M12; T3 remains the pooled inner reference and T5 the maintenance reference. T4:checkpoint-105472 scored 146/200. T7:checkpoint-45056 is not assigned a role because its verified v2 runtime scored 94/200 and is negative for the tested acquisition design. No retained candidate exists and no candidate has protected assessment evidence.",
     "completed_operations": [
@@ -20285,6 +20419,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f87ec658-49f5-4dfe-9a11-00cd6cb1e78e",
+    "id": "S15",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can an activation-verified, controlled signed-IK-branch and mirrored-angle mechanism test distinguish T7's angle-dependent acquisition failures from learned-artifact variability well enough to identify a credible route toward at least 196/200 under the fixed official semantics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "41556508674f4f02ca84d0bf1059e99af2433c98"
+  },
   "terminal_state": null
 }
