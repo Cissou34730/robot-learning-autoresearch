@@ -5756,13 +5756,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 97.0%; 200 episodes",
   "model_roles": {
     "best_known": "T6:checkpoint-60416",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/t6-cbab5a2d4-e6fa9ce03d6be36896d1c6fe705056c56c7d32d4c780b33c1cb57f51c99bd3c4",
+    "completed_at": "2026-10-17T09:54:06Z",
+    "fingerprint": "e6fa9ce03d6be36896d1c6fe705056c56c7d32d4c780b33c1cb57f51c99bd3c4",
+    "model": "T6:checkpoint-60416",
+    "status": "failed",
+    "summary": "goal not reached; success 97.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-17T07:05:46Z",
@@ -21544,7 +21551,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-17T09:53:14Z",
+      "completed_at": "2026-10-17T09:54:06Z",
       "error": null,
       "id": "E38",
       "inquiry_id": null,
@@ -21555,7 +21562,7 @@
       },
       "result": {
         "model": "T6:checkpoint-60416",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S18",
       "status": "completed",
@@ -21603,6 +21610,6 @@
   "terminal_state": {
     "model": "T6:checkpoint-60416",
     "reason": "Request the protected official assessment for the explicit best-known candidate T6:checkpoint-60416. This is a terminal commitment to the human goal, not a claim that development performance certifies success: T6 achieved 149/160 = 93.125% on the matched development panel (M21 and M24), with 87/93 inner-radius and 62/67 outer-radius successes and 8 no-reaches plus 3 hold failures in the aligned M23/M25 diagnostics. T6 is nevertheless the strongest evidence-backed artifact: it improved over the matched T4 reference by one success and reduced hold failures, whereas the only bounded alternative tested in I8, T7's changed saved-runtime angle-conditioned near-target damping route, scored 134/160 at both measured checkpoints, lost 15 paired episodes against T6, increased no-reaches and hold failures, and regressed both inner and outer guardrails (M24, M25, E36). The model-based concern that direct-torque dynamics, saturation, and residual velocity may matter remains a hypothesis rather than a causal result; M23 shows branch exit by step 20 for both T6 and T4, and the T7 artifact comparison does not isolate or validate a general command-regulation method. No unmeasured checkpoint is nominated by the learning trajectory with evidence stronger than T6, and the contract explicitly does not require a development score at the goal before assessment or justify inquiry solely from an untested variant or unresolved cause. Further bounded work therefore lacks a distinct mechanism and guardrail-preserving protocol with credible expected contribution, while assessment directly supplies the only remaining campaign-level evidence against the fixed 196/200 criterion. Preserve the residual uncertainty: the official result may fail, and development evidence cannot be pooled with the protected 200-episode result.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
