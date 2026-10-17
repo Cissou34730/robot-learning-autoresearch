@@ -348,10 +348,22 @@ rejects both original bad accesses. This is engineering validation, not a
 measurement of the campaign robot. No campaign source, state or evidence
 was edited. Campaign error rates and cost improvement remain unmeasured.
 
-Copilot is the selected agent runtime, not a drop-in model-provider interface.
+At that stage, Copilot was the selected agent runtime.
 Scientific operations, evidence resolution and parsing remain ordinary harness
-functions, exposed through SDK wrappers. OpenCode keeps its legacy interfaces,
+functions, exposed through SDK wrappers. The separate OpenCode runtime kept its legacy interfaces,
 without equivalent native-subagent or custom-tool capabilities.
+
+The maintainer later approved OpenCode Zen/Go inference within the Copilot SDK,
+using the working `pi-harness` reference rather than porting its runtime tools.
+Provider and model are launch selections, with Luna as the default.
+PI, coder and reviewer use that route while retaining distinct roles.
+Native tool compatibility required scoped UTF-8 `read` and SDK JSON editors.
+Inherited child tool definitions do not expand execution authority:
+existing hooks retain exact role/tool/file bindings and deny main/reviewer writes.
+Installed-runtime loopback checks cover routing, headers, all three configured
+transports, native edits and resume. They do not establish remote OpenCode
+acceptance or better campaign outcomes. No scientific source or campaign state
+was changed. The legacy runtime remains until replacement acceptance.
 
 The evidence decision is one JSON-query interface, retaining the existing
 campaign-scoped, fingerprint-verified `artifact_evidence_query`, plus a

@@ -862,10 +862,8 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         BACKEND_DESCRIPTOR_FIELDS,
         "scientific_session backend_descriptor",
     )
-    if backend["adapter"] not in {"copilot", "opencode"}:
-        raise ValueError(
-            "scientific_session backend adapter must be copilot or opencode"
-        )
+    if backend["adapter"] != "copilot":
+        raise ValueError("scientific_session backend adapter must be copilot")
     for field in ("model", "reasoning"):
         _nonempty(
             backend,
@@ -1661,7 +1659,9 @@ def _validate_completed_training_result(result: dict) -> None:
             allow_zero=True,
         )
         if runtime_equal > runtime_compared:
-            raise ValueError("saved-component runtime equal count exceeds compared count")
+            raise ValueError(
+                "saved-component runtime equal count exceeds compared count"
+            )
         exact_matches = entry["exact_component_matches"]
         if not isinstance(exact_matches, list):
             raise TypeError("saved-component exact matches must be a list")
@@ -2195,10 +2195,8 @@ def start_scientific_session(
         "model": backend_model,
         "reasoning": backend_reasoning,
     }
-    if descriptor["adapter"] not in {"copilot", "opencode"}:
-        raise ValueError(
-            "scientific session backend adapter must be copilot or opencode"
-        )
+    if descriptor["adapter"] != "copilot":
+        raise ValueError("scientific session backend adapter must be copilot")
     for field, value in descriptor.items():
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"scientific session backend {field} must be non-empty")
@@ -2509,10 +2507,7 @@ def saved_component_fingerprints(artifact: Path) -> dict:
     except (OSError, zipfile.BadZipFile):
         model_format = "unsupported"
         components.update(
-            {
-                component: {"status": "unsupported"}
-                for component in SAVED_MODEL_MEMBERS
-            }
+            {component: {"status": "unsupported"} for component in SAVED_MODEL_MEMBERS}
         )
     normalization = artifact / "vecnormalize.pkl"
     components["normalization"] = (

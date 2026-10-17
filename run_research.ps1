@@ -1,11 +1,13 @@
 # Goal-centered robot-learning research launcher.
 
 param(
-    [ValidateSet("copilot", "opencode")]
-    [string]$PIBackend = "copilot",
-
     [ValidateNotNullOrEmpty()]
     [string]$Model,
+
+    [ValidateSet("github-copilot", "opencode", "opencode-go")]
+    [string]$Provider,
+
+    [switch]$ListModels,
 
     [ValidateSet("low", "medium", "high", "xhigh", "max")]
     [string]$Reasoning = "high",
@@ -23,6 +25,18 @@ param(
 )
 
 Set-Location $PSScriptRoot
+
+if ($ListModels) {
+    $listingArgs = @(
+        "run", "--no-sync", "--group", "researcher", "python",
+        "runner\copilot\copilot_adapter.py", "--list-models"
+    )
+    if ($Provider) {
+        $listingArgs += @("--provider", $Provider)
+    }
+    & uv @listingArgs
+    exit $LASTEXITCODE
+}
 
 $script:CampaignExitCode = 0
 $script:CampaignStopRequested = $false
@@ -52,15 +66,24 @@ if ($script:StopRequestPath) {
     }
 }
 
-$backendDefaultModel = @{
-    copilot  = "gpt-5.6-luna"
-    opencode = "opencode-go/deepseek-v4.1-flash"
-}
 if (-not $Model) {
-    $Model = $backendDefaultModel[$PIBackend]
+    $Model = if (-not $Provider -or $Provider -eq "github-copilot") {
+        "gpt-6-luna"
+    }
+    else {
+        # One OpenCode key covers Zen and Go; the free Zen model is the default for both.
+        "opencode/deepseek-v4.1-flash-free"
+    }
 }
-if ($PIBackend -eq "opencode" -and $Reasoning -eq "max") {
-    throw "The OpenCode runtime has no 'max' reasoning effort for these models. Use 'xhigh'."
+elseif ($Provider) {
+    if ($Model.Contains("/")) {
+        if ($Model.Split("/", 2)[0] -ne $Provider) {
+            throw "The model prefix and selected provider do not match."
+        }
+    }
+    elseif ($Provider -ne "github-copilot") {
+        $Model = "$Provider/$Model"
+    }
 }
 
 $piPersona = @(
@@ -331,136 +354,6 @@ function Test-StopAfterOperation {
     return $true
 }
 
-function Get-OpenCodeNode {
-    $node = Get-Command node -ErrorAction SilentlyContinue
-    if (-not $node) {
-        throw "The OpenCode runtime needs Node.js on PATH."
-    }
-    $version = (& node --version) -replace '^v', ''
-    $parts = $version.Split('.')
-    $major = [int]$parts[0]
-    $minor = if ($parts.Length -gt 1) { [int]$parts[1] } else { 0 }
-    $strip = if ($major -gt 23 -or ($major -eq 23 -and $minor -ge 6)) {
-        @()
-    }
-    else {
-        @("--experimental-strip-types")
-    }
-    return @{ Path = $node.Source; Strip = $strip }
-}
-
-function Get-OpenCodeServerExecutable {
-    $command = Get-Command opencode -CommandType Application -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-    if (-not $command) {
-        throw "The OpenCode runtime needs the opencode CLI on PATH."
-    }
-    if ([System.IO.Path]::GetExtension($command.Source) -ieq ".exe") {
-        return $command.Source
-    }
-
-    $volta = Get-Command volta -CommandType Application -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-    if ($volta) {
-        $packageEntry = (& $volta.Source which opencode).Trim()
-        if ($LASTEXITCODE -eq 0 -and $packageEntry) {
-            $candidate = Join-Path (Split-Path -Parent $packageEntry) `
-                "node_modules\opencode-ai\bin\opencode.exe"
-            if (Test-Path -LiteralPath $candidate) {
-                return $candidate
-            }
-        }
-    }
-    throw "The OpenCode server executable could not be resolved behind $($command.Source)."
-}
-
-function Start-OpenCodeCampaignServer {
-    $separator = $Model.IndexOf("/")
-    if ($separator -le 0 -or $separator -eq ($Model.Length - 1)) {
-        throw "OpenCode needs a provider-qualified model, received '$Model'."
-    }
-    $providerId = $Model.Substring(0, $separator)
-    $modelId = $Model.Substring($separator + 1)
-    $models = @{}
-    $models[$modelId] = @{ options = @{ reasoningEffort = $Reasoning } }
-    $providers = @{}
-    $providers[$providerId] = @{ models = $models }
-    $config = @{
-        permission = @{ bash = "ask" }
-        provider = $providers
-    } | ConvertTo-Json -Depth 10 -Compress
-
-    $listener = [System.Net.Sockets.TcpListener]::new(
-        [System.Net.IPAddress]::Loopback,
-        0
-    )
-    $listener.Start()
-    $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
-    $listener.Stop()
-    $url = "http://127.0.0.1:$port"
-    $executable = Get-OpenCodeServerExecutable
-    $previousConfig = $env:OPENCODE_CONFIG_CONTENT
-    try {
-        $env:OPENCODE_CONFIG_CONTENT = $config
-        $process = Start-Process -FilePath $executable -ArgumentList @(
-            "serve",
-            "--hostname=127.0.0.1",
-            "--port=$port"
-        ) -PassThru -WindowStyle Hidden
-    }
-    finally {
-        if ($null -eq $previousConfig) {
-            Remove-Item Env:OPENCODE_CONFIG_CONTENT -ErrorAction SilentlyContinue
-        }
-        else {
-            $env:OPENCODE_CONFIG_CONTENT = $previousConfig
-        }
-    }
-
-    try {
-        $ready = $false
-        for ($attempt = 0; $attempt -lt 120; $attempt++) {
-            if ($process.HasExited) {
-                break
-            }
-            try {
-                $response = Invoke-WebRequest -Uri "$url/path" -TimeoutSec 1 -UseBasicParsing
-                if ($response.StatusCode -eq 200) {
-                    $ready = $true
-                    break
-                }
-            }
-            catch {
-            }
-            [System.Threading.Thread]::Sleep(250)
-        }
-        if (-not $ready) {
-            throw "The OpenCode campaign server did not become ready at $url."
-        }
-        return @{ Process = $process; Url = $url }
-    }
-    catch {
-        if (-not $process.HasExited) {
-            $process.Kill()
-            $process.WaitForExit()
-        }
-        $process.Dispose()
-        throw
-    }
-}
-
-function Stop-OpenCodeCampaignServer {
-    if ($script:OpenCodeServerProcess) {
-        if (-not $script:OpenCodeServerProcess.HasExited) {
-            $script:OpenCodeServerProcess.Kill()
-            $script:OpenCodeServerProcess.WaitForExit()
-        }
-        $script:OpenCodeServerProcess.Dispose()
-        $script:OpenCodeServerProcess = $null
-        $script:OpenCodeServerUrl = $null
-    }
-}
-
 . "$PSScriptRoot\researcher_mutex.ps1"
 
 $createdNew = $false
@@ -548,30 +441,9 @@ function Invoke-PISession {
         $sessionArgs += "--preliminary"
     }
 
-    if ($PIBackend -eq "opencode") {
-        $entry = "researcher_opencode/src/main.ts"
-        if (-not (Test-Path -LiteralPath $entry)) {
-            throw "The OpenCode runtime entry point is missing: $entry"
-        }
-        $node = Get-OpenCodeNode
-        if (-not $script:OpenCodeServerUrl) {
-            throw "The OpenCode campaign server is not running."
-        }
-        $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
-        $nodeArgs = @()
-        $nodeArgs += $node.Strip
-        $nodeArgs += $entry
-        $nodeArgs += $sessionArgs
-        $nodeArgs += $Prompt
-        $script:PIExitCode = Invoke-CooperativeProcess `
-            -FilePath $node.Path -ArgumentList $nodeArgs `
-            -Operation "OpenCode PI"
-    }
-    else {
-        $script:PIExitCode = Invoke-PersistentCopilotSession `
-            -SessionArguments $sessionArgs -Prompt $Prompt -State $state `
-            -Preliminary:$Preliminary
-    }
+    $script:PIExitCode = Invoke-PersistentCopilotSession `
+        -SessionArguments $sessionArgs -Prompt $Prompt -State $state `
+        -Preliminary:$Preliminary
 }
 
 function Update-ResearchBrief {
@@ -978,9 +850,7 @@ function New-ScientificSessionPrompt {
     else {
         "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
     }
-    if ($PIBackend -eq "copilot") {
-        $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Do not write the internal exchange file. Continue within this context until checkpoint or terminal commitment ends it."
-    }
+    $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Do not write the internal exchange file. Continue within this context until checkpoint or terminal commitment ends it."
 
     $sections = @(
         $piPersona
@@ -1107,10 +977,8 @@ function Invoke-PendingOperation {
     param([Parameter(Mandatory)]$State)
 
     $pending = $State.pending_operation
-    if ($PIBackend -eq "copilot") {
-        Stop-OnPublicationFailure -State $State
-    }
-    if ($PIBackend -eq "copilot" -and $pending.failure) {
+    Stop-OnPublicationFailure -State $State
+    if ($pending.failure) {
         Update-ResearchBrief
         if (
             -not $State.scientific_session -or
@@ -1133,70 +1001,6 @@ function Invoke-PendingOperation {
         Assert-CopilotSessionOutcome
         return 0
     }
-    if ($pending.failure) {
-        Update-ResearchBrief
-        if (
-            -not $State.scientific_session -or
-            $State.scientific_session.id -ne $pending.session_id
-        ) {
-            throw "The failed operation has no matching active scientific session."
-        }
-        if ($script:PISessionStateId -ne $State.scientific_session.id) {
-            $script:PISessionStateId = $State.scientific_session.id
-            $script:PISessionId = [string]$State.scientific_session.backend_session_id
-            $script:PISessionInvocation = 0
-        }
-        $repairPrompt = @(
-            (
-                New-ScientificSessionPrompt -State $State
-            )
-            "The requested action $($pending.id) failed: $($pending.failure)"
-            "An execution failure or a training collapse is not a scientific result about the method under investigation. Distinguish the failed run's outcome from what it establishes about the explanation or method it was intended to investigate."
-            "Diagnose and correct the scientific implementation, or choose a different action if the failure changes the scientific decision."
-        ) -join "`n`n"
-        Invoke-PISession -Prompt $repairPrompt -Phase $State.scientific_session.kind `
-            -Continue:$([bool]$script:PISessionId)
-        if (Test-StopAfterOperation $script:PIExitCode "PI session") {
-            return 130
-        }
-
-        $request = Get-Content "pi_workspace\operation_request.json" -Raw |
-            ConvertFrom-Json
-        $replacementRequested = -not $request._runner_accepted_operation
-        if ($replacementRequested -and -not (Test-OperationRequest)) {
-            $retryPrompt = @(
-                (
-                    New-ScientificSessionPrompt -State $State `
-                        -ValidationError $script:OperationValidationFeedback
-                )
-                "Correct or replace the proposed action while preserving valid scientific work."
-            ) -join "`n`n"
-            Invoke-PISession -Prompt $retryPrompt -Phase $State.scientific_session.kind `
-                -Continue
-            if (Test-StopAfterOperation $script:PIExitCode "PI session") {
-                return 130
-            }
-            $request = Get-Content "pi_workspace\operation_request.json" -Raw |
-                ConvertFrom-Json
-            $replacementRequested = -not $request._runner_accepted_operation
-            if ($replacementRequested -and -not (Test-OperationRequest)) {
-                throw "PI ended twice without a valid replacement operation request: $script:OperationValidationFeedback"
-            }
-        }
-        if ($replacementRequested) {
-            $exitCode = Invoke-Runner
-            if ($exitCode -ne 0) {
-                return $exitCode
-            }
-            return 0
-        }
-        else {
-            $exitCode = Invoke-Runner -Arguments @("--reaccept-pending")
-            if ($exitCode -ne 0) {
-                throw "The Runner could not reaccept the corrected operation."
-            }
-        }
-    }
     $exitCode = Invoke-Runner -Arguments @("--execute-pending")
     if (Test-StopAfterOperation $exitCode "research runner") {
         return 130
@@ -1215,7 +1019,7 @@ function Invoke-PendingOperation {
 try {
     $backendExitCode = Invoke-Runner -Arguments @(
         "--validate-session-backend",
-        "--backend-adapter", $PIBackend,
+        "--backend-adapter", "copilot",
         "--backend-model", $Model,
         "--backend-reasoning", $Reasoning
     )
@@ -1251,12 +1055,6 @@ try {
         "$campaignAction | goal-centered research | " +
         (Get-CampaignResourceSummary -State $launchState)
     ) -Color White -Label campaign
-
-    if ($PIBackend -eq "opencode") {
-        $openCodeServer = Start-OpenCodeCampaignServer
-        $script:OpenCodeServerProcess = $openCodeServer.Process
-        $script:OpenCodeServerUrl = $openCodeServer.Url
-    }
 
     :CampaignLoop while ($true) {
         if (Test-CampaignStopRequested) {
@@ -1346,7 +1144,7 @@ try {
                 "--start-session", $kind,
                 "--session-objective", $objective,
                 "--backend-session-id", ([guid]::NewGuid().ToString()),
-                "--backend-adapter", $PIBackend,
+                "--backend-adapter", "copilot",
                 "--backend-model", $Model,
                 "--backend-reasoning", $Reasoning
             )
@@ -1404,40 +1202,7 @@ try {
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
             break
         }
-        if ($PIBackend -eq "copilot") {
-            Assert-CopilotSessionOutcome
-            continue
-        }
-
-        if (-not (Test-OperationRequest)) {
-            $retryPrompt = New-ScientificSessionPrompt -State $state `
-                -ValidationError $script:OperationValidationFeedback
-            Invoke-PISession -Prompt $retryPrompt -Phase $state.scientific_session.kind `
-                -Continue
-            if (Test-StopAfterOperation $script:PIExitCode "PI session") {
-                break CampaignLoop
-            }
-            if (-not (Test-OperationRequest)) {
-                throw "PI ended twice without a valid schema-6 operation request: $script:OperationValidationFeedback"
-            }
-        }
-
-        $exitCode = Invoke-Runner
-        if (Test-StopAfterOperation $exitCode "research runner") {
-            break
-        }
-        if ($exitCode -eq 130) {
-            break
-        }
-        if ($exitCode -ne 0) {
-            $failed = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
-            Stop-OnPublicationFailure -State $failed
-            if (-not $failed.pending_operation.failure) {
-                throw "The Runner operation failed without recoverable pending state."
-            }
-            continue
-        }
-        Update-ResearchBrief
+        Assert-CopilotSessionOutcome
     }
 }
 catch {
@@ -1451,12 +1216,7 @@ catch {
 }
 finally {
     try {
-        try {
-            Stop-PersistentCopilotRuntime
-        }
-        finally {
-            Stop-OpenCodeCampaignServer
-        }
+        Stop-PersistentCopilotRuntime
     }
     finally {
         $loopMutex.ReleaseMutex()

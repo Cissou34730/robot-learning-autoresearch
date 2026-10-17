@@ -57,8 +57,6 @@ RESERVED_SCRIPT_PATHS = (
     "runner/query_training_log.py",
     "researcher_*.py",
     "researcher_*.ps1",
-    "researcher_opencode",
-    "researcher_opencode/*",
     "tools",
     "tools/campaign_report.py",
     "docs",

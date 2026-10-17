@@ -26,6 +26,368 @@ SOURCE = (ROOT / "runner/copilot/copilot_adapter.py").read_text(encoding="utf-8"
 def test_the_provider_prefix_is_stripped_from_the_model():
     assert adapter.normalize_model("github-copilot/gpt-5.6-luna") == "gpt-5.6-luna"
     assert adapter.normalize_model("gpt-5.6-luna") == "gpt-5.6-luna"
+    assert adapter.normalize_model("opencode/other-model") == "opencode/other-model"
+    assert (
+        adapter.normalize_model("opencode-go/other-model") == "opencode-go/other-model"
+    )
+
+
+def provider_catalog():
+    limits = {"context": 200000, "output": 32000}
+    models = {
+        "free-model": {
+            "reasoning": True,
+            "tool_call": True,
+            "cost": {"input": 0, "output": 0},
+            "limit": limits,
+        },
+        "luna": {
+            "reasoning": True,
+            "limit": limits,
+            "provider": {
+                "npm": "@ai-sdk/openai",
+                "api": "https://opencode.ai/inference/openai/v1",
+            },
+        },
+        "claude": {
+            "reasoning": True,
+            "limit": limits,
+            "provider": {
+                "npm": "@ai-sdk/anthropic",
+                "api": "https://opencode.ai/inference/anthropic/v1",
+            },
+        },
+        "plain-model": {"reasoning": False, "limit": limits},
+    }
+    return {
+        provider: {
+            "npm": "@ai-sdk/openai-compatible",
+            "api": f"https://opencode.ai/inference/{prefix}openai/v1",
+            "models": models,
+        }
+        for provider, prefix in (("opencode", ""), ("opencode-go", "go/"))
+    }
+
+
+def test_provider_selection_is_a_launch_option_with_per_provider_defaults():
+    from runner.copilot.opencode_provider import DEFAULT_MODEL, OPENCODE_DEFAULT_MODEL
+
+    assert DEFAULT_MODEL == "gpt-6-luna"
+    assert adapter.parse_args(["p", "--session-id", "s"]).model == DEFAULT_MODEL
+    for provider in ("opencode", "opencode-go"):
+        args = adapter.parse_args(["p", "--session-id", "s", "--provider", provider])
+        assert args.model == OPENCODE_DEFAULT_MODEL
+        assert (
+            adapter.parse_args(
+                ["p", "--session-id", "s", "--model", f"{provider}/any-model"]
+            ).model
+            == f"{provider}/any-model"
+        )
+    with pytest.raises(SystemExit):
+        adapter.parse_args(
+            [
+                "p",
+                "--session-id",
+                "s",
+                "--provider",
+                "opencode",
+                "--model",
+                "opencode-go/luna",
+            ]
+        )
+
+
+@pytest.mark.parametrize(
+    ("selection", "sdk_type", "wire_api", "endpoint"),
+    [
+        ("opencode/free-model", "openai", "completions", "https://opencode.ai/zen/v1"),
+        (
+            "opencode/luna",
+            "openai",
+            "responses",
+            "https://opencode.ai/inference/openai/v1",
+        ),
+        (
+            "opencode/claude",
+            "anthropic",
+            "completions",
+            "https://opencode.ai/inference/anthropic/v1",
+        ),
+        (
+            "opencode-go/plain-model",
+            "openai",
+            "completions",
+            "https://opencode.ai/inference/go/openai/v1",
+        ),
+    ],
+)
+def test_provider_routes_use_catalog_protocol_and_limits(
+    selection, sdk_type, wire_api, endpoint
+):
+    from runner.copilot.opencode_provider import resolve_model
+
+    model = resolve_model(selection, provider_catalog())
+    assert (model.sdk_type, model.wire_api, model.base_url) == (
+        sdk_type,
+        wire_api,
+        endpoint,
+    )
+    options = model.session_options(
+        "ses_0123456789abABCDEFGHIJKLMN", "local-key", "project"
+    )
+    expected_base = (
+        endpoint.removesuffix("/v1") if sdk_type == "anthropic" else endpoint
+    )
+    assert options["providers"][0]["base_url"] == expected_base
+    assert options["model"] == selection
+    assert options["providers"][0]["api_key"] == "local-key"
+    assert options["models"][0]["wire_model"] == selection.split("/", 1)[1]
+    assert options["models"][0]["max_context_window_tokens"] == 200000
+    assert options["models"][0]["max_output_tokens"] == 32000
+    assert options["models"][0]["max_prompt_tokens"] == 168000
+
+
+def test_provider_identity_is_restored_without_changing_model(tmp_path, monkeypatch):
+    from runner.copilot import opencode_provider as provider
+
+    monkeypatch.setattr(provider, "STATE_DIRECTORY", tmp_path)
+    first = provider.session_identity("sdk-one", "opencode/free-model")
+    assert (
+        provider.session_identity("sdk-one", "opencode/free-model", resume=True)
+        == first
+    )
+    assert provider.session_identity("sdk-two", "opencode/free-model") != first
+    headers = provider.identity_headers(first, "project")
+    assert headers["User-Agent"].startswith("opencode/latest/")
+    assert headers["x-opencode-client"] == "cli"
+    for name in (
+        "x-opencode-session",
+        "x-opencode-session-id",
+        "x-session-affinity",
+        "x-session-id",
+    ):
+        assert headers[name] == first
+    assert headers["x-opencode-project"] == "project"
+    with pytest.raises(ValueError, match="another model route"):
+        provider.session_identity("sdk-one", "opencode/luna", resume=True)
+    with pytest.raises(ValueError, match="persisted session identity"):
+        provider.session_identity("missing", "opencode/free-model", resume=True)
+
+
+def test_provider_credential_is_one_opencode_key(monkeypatch):
+    from runner.copilot.opencode_provider import api_key
+
+    monkeypatch.delenv("OPENCODE_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="OPENCODE_API_KEY"):
+        api_key()
+    monkeypatch.setenv("OPENCODE_API_KEY", "local-key")
+    assert api_key() == "local-key"
+
+
+def test_provider_catalog_refresh_keeps_choices_and_reports_stale_cache(
+    tmp_path, monkeypatch
+):
+    from io import StringIO
+    from urllib.error import URLError
+
+    from runner.copilot import opencode_provider as provider
+
+    catalog = provider_catalog()
+    monkeypatch.setattr(provider, "STATE_DIRECTORY", tmp_path)
+
+    def fetch(_request, **_kwargs):
+        return StringIO(json.dumps(catalog))
+
+    monkeypatch.setattr(provider, "urlopen", fetch)
+    assert provider.load_catalog() == catalog
+
+    def unavailable(*_args, **_kwargs):
+        raise URLError("offline")
+
+    monkeypatch.setattr(provider, "urlopen", unavailable)
+    assert provider.load_catalog() == catalog
+    monkeypatch.setattr(provider, "CATALOG_REFRESH_SECONDS", -1)
+    with pytest.warns(UserWarning, match="using the saved catalog"):
+        assert provider.load_catalog() == catalog
+
+
+def test_provider_native_read_is_preloaded_and_preserves_file_scope(
+    tmp_path, monkeypatch
+):
+    from copilot import ToolInvocation
+
+    from runner.copilot import path_policy
+    from runner.copilot.opencode_provider import resolve_model
+
+    monkeypatch.setattr(adapter, "ROOT", tmp_path)
+    monkeypatch.setattr(path_policy, "ROOT", tmp_path)
+    source = tmp_path / "robot_learning" / "training" / "fixture.txt"
+    source.parent.mkdir(parents=True)
+    source.write_text("first\nsecond\nthird\n", encoding="utf-8")
+    args = adapter.parse_args(
+        ["p", "--session-id", "s", "--model", "opencode/free-model"]
+    )
+    args.provider_model = resolve_model(args.model, provider_catalog())
+    args.provider_identity = "ses_0123456789abABCDEFGHIJKLMN"
+    args.provider_project = "project"
+    monkeypatch.setenv("OPENCODE_API_KEY", "local-key")
+    options = adapter.session_options(args, adapter.Console(), asyncio.Event())
+    read = next(tool for tool in options["tools"] if tool.name == "read")
+    assert read.defer == "never"
+    assert "custom:read" in options["available_tools"].to_list()
+    result = asyncio.run(
+        read.handler(
+            ToolInvocation(
+                session_id="s", arguments={"path": str(source), "view_range": [2, 2]}
+            )
+        )
+    )
+    assert result.result_type == "success"
+    assert result.text_result_for_llm == "second\n"
+    denied = asyncio.run(
+        read.handler(ToolInvocation(session_id="s", arguments={"path": "tests"}))
+    )
+    assert denied.result_type == "failure"
+    denied = asyncio.run(
+        read.handler(
+            ToolInvocation(
+                session_id="s",
+                agent_id="unknown-child",
+                arguments={"path": str(source)},
+            )
+        )
+    )
+    assert denied.result_type == "failure"
+
+
+def test_provider_native_roles_stay_on_copilot_with_role_tools(monkeypatch):
+    from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
+    from runner.copilot.coding_session import ScientificCoding
+    from runner.copilot.opencode_provider import DEFAULT_MODEL, resolve_model
+
+    args = adapter.parse_args(
+        ["p", "--session-id", "s", "--model", "opencode/plain-model"]
+    )
+    args.provider_model = resolve_model(args.model, provider_catalog())
+    coding = ScientificCoding(None, args, adapter.Console())
+    for agent in (coding.agent(), coding.reviewer_agent()):
+        assert agent["model"] == DEFAULT_MODEL
+        assert agent["reasoning_effort"] == "high"
+    assert coding.agent()["tools"] == CODING_TOOLS
+    assert coding.reviewer_agent()["tools"] == REVIEW_TOOLS
+    main_read = {
+        "sessionId": "s",
+        "toolName": "read",
+        "toolArgs": {"path": "robot_learning/training/environment.py"},
+    }
+    assert coding.pre_tool_use(main_read, {"session_id": "s"}) is None
+    coding.busy = True
+    coding.active_handle = "authorized-child"
+    coding.binding = {
+        "allowed_paths": [],
+        "read_paths": ["robot_learning/training/environment.py"],
+    }
+    allowed = {
+        "sessionId": "authorized-child",
+        "toolName": "view",
+        "toolArgs": {"path": "robot_learning/training/environment.py"},
+    }
+    assert coding.pre_tool_use(allowed, {"session_id": "s"}) is None
+    denied = {**allowed, "toolArgs": {"path": "AGENTS.md"}}
+    assert (
+        coding.pre_tool_use(denied, {"session_id": "s"})["permissionDecision"] == "deny"
+    )
+    coding.binding["allowed_paths"] = coding.binding["read_paths"]
+    for tool in (
+        "read",
+        "create",
+        "edit",
+        "scientific_coding",
+        "submit_operation",
+        "artifact_evidence_query",
+        "training_log_query",
+        "powershell",
+        "rg",
+        "glob",
+    ):
+        denied = {**allowed, "toolName": tool}
+        assert (
+            coding.pre_tool_use(denied, {"session_id": "s"})["permissionDecision"]
+            == "deny"
+        )
+
+
+def test_provider_native_json_editors_keep_main_and_preliminary_boundaries():
+    from runner.copilot.coding_session import scoped_tool_hook
+
+    for tool in ("create", "edit"):
+        request = {
+            "toolName": tool,
+            "toolArgs": {"path": "pi_workspace/scientific_model.md"},
+        }
+        main = scoped_tool_hook(json_editors=True)
+        assert main(request, {})["permissionDecision"] == "deny"
+        preliminary = scoped_tool_hook(preliminary=True, json_editors=True)
+        assert preliminary(request, {}) is None
+        request["toolArgs"] = {"path": "robot_learning/training/environment.py"}
+        assert preliminary(request, {})["permissionDecision"] == "deny"
+
+
+def test_provider_usage_preserves_units_and_does_not_invent_external_aiu(
+    tmp_path, monkeypatch
+):
+    from runner.copilot import copilot_console
+    from runner.copilot.opencode_provider import resolve_model
+
+    monkeypatch.setattr(copilot_console, "ROOT", tmp_path)
+    args = adapter.parse_args(
+        [
+            "p",
+            "--session-id",
+            "s",
+            "--model",
+            "opencode/free-model",
+            "--campaign-id",
+            "00000000-0000-0000-0000-000000000001",
+        ]
+    )
+    args.provider_model = resolve_model(args.model, provider_catalog())
+    args.effective_reasoning = "high"
+    console = adapter.Console()
+    console.provider = "opencode"
+    console.reported_usage = {"aiu", "input_tokens"}
+    console.prompt_tokens = 100
+    copilot_console.record_usage(args, console, 1.0, 0)
+    path = next((tmp_path / "reports" / "session_usage").glob("*.jsonl"))
+    row = json.loads(path.read_text(encoding="utf-8"))
+    assert row["aiu"] is None
+    assert row["provider"] == "opencode"
+    assert row["model"] == args.model
+    assert row["input_tokens"] == 100
+    assert row["provider_token_prices_per_million"] == {"input": 0, "output": 0}
+    assert "AIU" not in console.usage()
+
+
+def test_provider_review_identity_requires_the_copilot_reviewer():
+    from runner.copilot.coding_session import ScientificCoding
+    from runner.copilot.opencode_provider import DEFAULT_MODEL, resolve_model
+
+    args = adapter.parse_args(
+        ["p", "--session-id", "s", "--model", "opencode/free-model"]
+    )
+    args.provider_model = resolve_model(args.model, provider_catalog())
+    coding = ScientificCoding(None, args, adapter.Console())
+    coding.child_models = {DEFAULT_MODEL}
+    coding.child_reasoning = {"high"}
+    coding.verify_reviewer_identity()
+    for models in (
+        {"opencode/free-model"},
+        {"free-model"},
+        {DEFAULT_MODEL, "opencode/free-model"},
+    ):
+        coding.child_models = models
+        with pytest.raises(ValueError, match="was not verified"):
+            coding.verify_reviewer_identity()
 
 
 # --- the command policy -----------------------------------------------------
@@ -536,7 +898,7 @@ def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree(preliminary
 
     options = adapter.session_options(args, adapter.Console(), asyncio.Event())
 
-    assert options["model"] == "gpt-5.6-luna"
+    assert options["model"] == "gpt-6-luna"
     assert options["reasoning_effort"] == "medium"
     assert options["working_directory"] == str(ROOT)
     assert options["streaming"] is True

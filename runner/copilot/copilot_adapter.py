@@ -50,6 +50,17 @@ from runner.copilot.copilot_console import (
     Console,
     record_usage,
 )
+from runner.copilot.opencode_provider import (
+    DEFAULT_MODEL,
+    PROVIDERS,
+    api_key,
+    load_catalog,
+    project_id,
+    provider_of,
+    resolve_model,
+    select_model,
+    session_identity,
+)
 from runner.copilot.operation_submission import (
     ControllerChannel,
     OperationSubmission,
@@ -143,12 +154,13 @@ def session_options(
 ) -> dict:
     from copilot import ToolSet, define_tool
     from copilot.session_events import AssistantMessageData
+    from pydantic import BaseModel, ConfigDict, Field
 
     from runner.artifact_evidence_query import (
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
-    from runner.copilot.copilot_scoped_search import ScopedSearch
+    from runner.copilot.copilot_scoped_search import MAX_OUTPUT_BYTES, ScopedSearch
     from runner.query_training_log import TrainingLogQueryParams, query_training_log
     from runner.scientific_api_reference import (
         ScientificAPIReferenceParams,
@@ -358,6 +370,54 @@ def session_options(
         rg_path,
         authorize_reader,
     )
+    external = getattr(args, "provider_model", None)
+    console.provider = provider_of(args.model)
+
+    class ReadParams(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        path: str
+        view_range: list[int] | None = Field(default=None, min_length=2, max_length=2)
+        forceReadLargeFiles: bool = False
+
+    async def native_read(params, invocation) -> str:
+        if (
+            invocation.session_id != args.session_id
+            or getattr(invocation, "agent_id", None) is not None
+        ):
+            raise ValueError("Read belongs to the OpenCode-routed main session only.")
+        arguments = params.model_dump(exclude_none=True)
+        hook = scoped_tool_hook(
+            operations=operations, coding=coding, preliminary=args.preliminary
+        )
+        decision = hook(
+            {
+                "sessionId": args.session_id,
+                "toolName": "view",
+                "toolArgs": arguments,
+            },
+            {"session_id": args.session_id},
+        )
+        if decision and decision.get("permissionDecision") == "deny":
+            raise ValueError(decision["permissionDecisionReason"])
+        path = search.target(params.path)
+        if not path.is_file():
+            raise ValueError("Read requires an exact permitted text file.")
+        first, last = params.view_range or (1, -1)
+        if first < 1 or (last != -1 and last < first):
+            raise ValueError("view_range requires a positive start and ordered end.")
+        lines = []
+        size = 0
+        with path.open(encoding="utf-8") as stream:
+            for number, line in enumerate(stream, 1):
+                if last != -1 and number > last:
+                    break
+                if number < first:
+                    continue
+                size += len(line.encode("utf-8"))
+                if size > MAX_OUTPUT_BYTES and not params.forceReadLargeFiles:
+                    raise ValueError("Read exceeds the page budget; narrow view_range.")
+                lines.append(line)
+        return "".join(lines)
 
     handle_event, on_permission_request = build_handlers(
         console,
@@ -398,6 +458,26 @@ def session_options(
         .add_custom("training_log_query")
         .add_custom("scientific_api_reference")
     )
+    if external is not None:
+        tools.append(
+            define_tool(
+                "read",
+                description=(
+                    "Read UTF-8 text from an exact permitted file. "
+                    "Use optional view_range for line pages. "
+                    "The same file scopes apply as for view. "
+                    "Use native view for images."
+                ),
+                handler=native_read,
+                params_type=ReadParams,
+                defer="never",
+                skip_permission=True,
+            )
+        )
+        available.add_custom("read")
+        if args.preliminary:
+            # Non-GPT routes may not drive freeform patches for the model document.
+            available.add_builtin(["create", "edit"])
     if not args.preliminary and coding is not None:
         tools.append(coding.tool())
         available.add_custom("scientific_coding")
@@ -407,7 +487,7 @@ def session_options(
         available.add_custom("submit_operation")
     options = {
         "model": normalize_model(args.model),
-        "reasoning_effort": args.reasoning,
+        "reasoning_effort": getattr(args, "effective_reasoning", args.reasoning),
         "on_event": on_event,
         "on_permission_request": on_permission_request,
         "tools": tools,
@@ -435,7 +515,11 @@ def session_options(
     }
     options["hooks"] = {
         "on_pre_tool_use": scoped_tool_hook(
-            operations=operations, coding=coding, preliminary=args.preliminary
+            operations=operations,
+            coding=coding,
+            preliminary=args.preliminary,
+            read_alias=external is not None,
+            json_editors=external is not None,
         ),
         "on_error_occurred": on_error_occurred,
     }
@@ -448,7 +532,61 @@ def session_options(
         options["enable_file_hooks"] = False
         options["enable_host_git_operations"] = False
         options["request_extensions"] = False
+    if external is not None:
+        options.update(
+            external.session_options(
+                args.provider_identity,
+                api_key(),
+                args.provider_project,
+            )
+        )
     return options
+
+
+async def prepare_provider(args) -> None:
+    if provider_of(args.model) == "github-copilot":
+        return
+    if getattr(args, "provider_model", None) is None:
+        catalog = await asyncio.to_thread(load_catalog)
+        args.provider_model = resolve_model(args.model, catalog)
+        args.provider_project = await asyncio.to_thread(project_id)
+    api_key()
+    args.effective_reasoning = args.reasoning if args.provider_model.reasoning else None
+
+
+async def list_model_choices(args) -> int:
+    if args.provider in (None, "github-copilot"):
+        from copilot import CopilotClient
+
+        client = CopilotClient(working_directory=str(ROOT))
+        try:
+            await client.start()
+            status = await client.get_auth_status()
+            if not getattr(status, "isAuthenticated", False):
+                raise RuntimeError("Sign in to Copilot to list its available models.")
+            for model in await client.list_models():
+                print(f"github-copilot/{model.id}")
+        finally:
+            await client.stop()
+    if args.provider != "github-copilot":
+        catalog = await asyncio.to_thread(load_catalog)
+        for provider, entry in catalog.items():
+            if args.provider is not None and provider != args.provider:
+                continue
+            for model_id, model in sorted(entry["models"].items()):
+                selection = f"{provider}/{model_id}"
+                try:
+                    resolve_model(selection, catalog)
+                    note = (
+                        "free"
+                        if model.get("cost", {}).get("input") == 0
+                        and (model.get("cost", {}).get("output") == 0)
+                        else ""
+                    )
+                except (TypeError, ValueError) as error:
+                    note = str(error)
+                print(f"{selection}" + (f"\t{note}" if note else ""))
+    return EXIT_OK
 
 
 async def open_session(client, args, options: dict):
@@ -521,8 +659,9 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
 async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
-    if args.preliminary:
+    if args.preliminary and provider_of(args.model) == "github-copilot":
         args.reasoning = "max"
+    await prepare_provider(args)
 
     console = getattr(args, "usage_console", None) or Console()
     finished = asyncio.Event()
@@ -551,8 +690,14 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
     try:
         if owned_client:
             await client.start()
-        status = await client.get_auth_status() if owned_client else None
-        if owned_client and not getattr(status, "isAuthenticated", False):
+        # Native coder and reviewer always run on Copilot, even for OpenCode PIs.
+        if provider_of(model) == "github-copilot":
+            required = model
+        else:
+            required = None if args.preliminary else DEFAULT_MODEL
+        copilot_auth = owned_client and required is not None
+        status = await client.get_auth_status() if copilot_auth else None
+        if copilot_auth and not getattr(status, "isAuthenticated", False):
             print(
                 "Copilot is not authenticated. Run `copilot` once and sign in.",
                 file=sys.stderr,
@@ -560,16 +705,25 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
             return EXIT_NOT_AUTHENTICATED
 
         available = (
-            [entry.id for entry in await client.list_models()] if owned_client else []
+            [entry.id for entry in await client.list_models()] if copilot_auth else []
         )
-        if owned_client and model not in available:
+        if copilot_auth and required not in available:
             print(
-                f"Model '{model}' is not available to this Copilot account. "
+                f"Model '{required}' is not available to this Copilot account. "
                 f"Available: {', '.join(available)}",
                 file=sys.stderr,
             )
             return EXIT_MODEL_UNAVAILABLE
 
+        if getattr(args, "provider_model", None) is not None:
+            existing = args.resume
+            if args.resume_or_create:
+                existing = (
+                    await client.get_session_metadata(args.session_id) is not None
+                )
+            args.provider_identity = session_identity(
+                args.session_id, args.model, resume=existing
+            )
         session = await open_session(
             client,
             args,
@@ -694,7 +848,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--session-id")
     parser.add_argument("--controller-port", type=int)
     parser.add_argument("--controller-token")
-    parser.add_argument("--model", default="gpt-5.6-luna")
+    parser.add_argument("--model")
+    parser.add_argument("--provider", choices=PROVIDERS)
+    parser.add_argument("--list-models", action="store_true")
     parser.add_argument(
         "--reasoning", default="high", choices=["low", "medium", "high", "xhigh", "max"]
     )
@@ -710,7 +866,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--preliminary", action="store_true")
     parser.add_argument("--attempt", type=int, default=1)
     args = parser.parse_args(argv)
-    if args.controller_port:
+    try:
+        args.model = select_model(args.model, args.provider)
+    except ValueError as error:
+        parser.error(str(error))
+    if args.list_models:
+        if args.prompt or args.session_id or args.controller_port:
+            parser.error("--list-models cannot start or resume a session")
+    elif args.controller_port:
         if not args.controller_token or args.session_id or args.prompt:
             parser.error(
                 "controller mode requires a token and no direct session/prompt"
@@ -736,12 +899,19 @@ async def serve(args) -> int:
     console = Console()
     try:
         await client.start()
+        await prepare_provider(args)
+        # The controller serves preparation and ordinary sessions; the latter need Copilot children.
         status = await client.get_auth_status()
         if not getattr(status, "isAuthenticated", False):
             raise RuntimeError("Copilot is not authenticated.")
         available = [entry.id for entry in await client.list_models()]
-        if normalize_model(args.model) not in available:
-            raise RuntimeError(f"Configured model {args.model!r} is unavailable.")
+        required = (
+            normalize_model(args.model)
+            if provider_of(args.model) == "github-copilot"
+            else DEFAULT_MODEL
+        )
+        if required not in available:
+            raise RuntimeError(f"Configured model {required!r} is unavailable.")
         await channel.send({"type": "ready", "token": args.controller_token})
         while not stop_requested():
             command = await channel.receive()
@@ -760,6 +930,9 @@ async def serve(args) -> int:
                     "Controller invocation binding/configuration mismatch."
                 )
             invocation_args.usage_console = Console(console_label(invocation_args))
+            if getattr(args, "provider_model", None) is not None:
+                invocation_args.provider_model = args.provider_model
+                invocation_args.provider_project = args.provider_project
             started = time.monotonic()
             exit_code = EXIT_RUNTIME_FAILURE
             error = None
@@ -835,7 +1008,10 @@ def main(argv: list[str] | None = None) -> int:
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     try:
-        exit_code = asyncio.run(serve(args) if args.controller_port else run(args))
+        if args.list_models:
+            exit_code = asyncio.run(list_model_choices(args))
+        else:
+            exit_code = asyncio.run(serve(args) if args.controller_port else run(args))
     except KeyboardInterrupt:
         exit_code = EXIT_INTERRUPTED
     except Exception as error:  # noqa: BLE001 - the launcher needs a code, not a traceback

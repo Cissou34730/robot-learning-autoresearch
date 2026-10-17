@@ -15,7 +15,6 @@ from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
     REVIEW_INSTRUCTIONS,
-    REVIEW_MODEL,
     REVIEW_REASONING,
     REVIEW_TOOLS,
     CodingReport,
@@ -32,6 +31,7 @@ from runner.copilot.copilot_console import (
     Console,
     record_usage,
 )
+from runner.copilot.opencode_provider import DEFAULT_MODEL, provider_of
 from runner.copilot.path_policy import (
     CODING_PERMISSION_DENIAL,
     CODING_SCOPE_DENIAL,
@@ -83,6 +83,8 @@ def scoped_tool_hook(
     operations=None,
     coding=None,
     preliminary: bool = False,
+    read_alias: bool = False,
+    json_editors: bool = False,
 ):
     """Check every patch target, including moves, before a built-in runs."""
 
@@ -90,6 +92,8 @@ def scoped_tool_hook(
         if coding is not None:
             return coding.pre_tool_use(request, invocation)
         name = request.get("toolName")
+        if read_alias and name == "read":
+            name = "view"
         arguments = request.get("toolArgs")
         allowed = (
             CODING_TOOLS
@@ -103,6 +107,8 @@ def scoped_tool_hook(
                 "submit_operation",
             ]
         )
+        if json_editors and preliminary:
+            allowed = [*allowed, "create", "edit"]
         reason = None
         if operations is not None and (operations.busy or operations.closed):
             reason = "Runner is executing or this bounded session has ended."
@@ -141,6 +147,11 @@ def scoped_tool_hook(
                 )
                 if reason:
                     break
+        elif name in {"create", "edit"}:
+            target = arguments.get("path") if isinstance(arguments, dict) else None
+            reason = scoped_edit_denial(
+                target, coding_paths=coding_paths, preliminary=preliminary
+            )
         elif coding_paths is not None and name == "view":
             target = arguments.get("path") if isinstance(arguments, dict) else None
             if (
@@ -425,8 +436,32 @@ class ScientificCoding:
         self.cancellation_unconfirmed = False
         self.quiescent = False
 
+    @property
+    def external_pi(self) -> bool:
+        return provider_of(self.args.model) != "github-copilot"
+
+    @property
+    def reviewer_model(self) -> str:
+        # Native children stay on Copilot when the PI uses an OpenCode route.
+        return DEFAULT_MODEL if self.external_pi else normalize_model(self.args.model)
+
+    @property
+    def reviewer_reasoning(self) -> str:
+        return REVIEW_REASONING
+
+    def verify_reviewer_identity(self) -> None:
+        if self.child_models != {self.reviewer_model} or self.child_reasoning != {
+            self.reviewer_reasoning
+        }:
+            raise ValueError(
+                f"Requested reviewer {self.reviewer_model!r}/"
+                f"{self.reviewer_reasoning!r} "
+                f"was not verified; reported models: {sorted(self.child_models)}, "
+                f"reasoning: {sorted(self.child_reasoning)}."
+            )
+
     def agent(self) -> dict:
-        return {
+        agent = {
             "name": "scientific-coder",
             "description": "Bounded scientific source author.",
             "prompt": CODING_INSTRUCTIONS,
@@ -434,6 +469,10 @@ class ScientificCoding:
             "infer": False,
             "mcp_servers": {},
         }
+        if self.external_pi:
+            agent["model"] = self.reviewer_model
+            agent["reasoning_effort"] = self.reviewer_reasoning
+        return agent
 
     def reviewer_agent(self) -> dict:
         return {
@@ -442,8 +481,8 @@ class ScientificCoding:
             "description": "Read-only implementation and logic reviewer.",
             "prompt": REVIEW_INSTRUCTIONS,
             "tools": REVIEW_TOOLS,
-            "model": REVIEW_MODEL,
-            "reasoning_effort": REVIEW_REASONING,
+            "model": self.reviewer_model,
+            "reasoning_effort": self.reviewer_reasoning,
             "infer": False,
             "mcp_servers": {},
         }
@@ -573,6 +612,8 @@ class ScientificCoding:
                     "permissionDecision": "deny",
                     "permissionDecisionReason": "Unknown child or coding/Runner context is locked.",
                 }
+            if request.get("toolName") == "read" and self.external_pi:
+                request = {**request, "toolName": "view"}
             return scoped_tool_hook(operations=self.operations)(request, invocation)
         except Exception:
             # SDK hook exceptions otherwise fail open. Malformed calls must not.
@@ -781,6 +822,7 @@ class ScientificCoding:
 
         started = time.monotonic()
         child_console = CodingConsole()
+        child_console.provider = provider_of(self.reviewer_model)
         self.child_console = child_console
         self.child_events, _ = build_handlers(
             child_console, asyncio.Event(), child_accounting=True
@@ -835,14 +877,7 @@ class ScientificCoding:
             if self.child_error or child_console.session_error:
                 raise RuntimeError(self.child_error or child_console.session_error)
             if agent == "scientific-reviewer":
-                if self.child_models != {REVIEW_MODEL} or self.child_reasoning != {
-                    REVIEW_REASONING
-                }:
-                    raise ValueError(
-                        f"Requested reviewer {REVIEW_MODEL!r}/{REVIEW_REASONING!r} "
-                        f"was not verified; reported models: {sorted(self.child_models)}, "
-                        f"reasoning: {sorted(self.child_reasoning)}."
-                    )
+                self.verify_reviewer_identity()
                 report = ReviewReport.model_validate_json(self.stop_response)
                 result.update(report.model_dump())
             else:
@@ -920,12 +955,14 @@ class ScientificCoding:
             }
             try:
                 usage_args = self.args
-                if agent == "scientific-reviewer":
+                if agent == "scientific-reviewer" or self.external_pi:
                     usage_args = argparse.Namespace(
                         **{
                             **vars(self.args),
-                            "model": REVIEW_MODEL,
-                            "reasoning": REVIEW_REASONING,
+                            "model": self.reviewer_model,
+                            "reasoning": self.reviewer_reasoning,
+                            "effective_reasoning": self.reviewer_reasoning,
+                            "provider_model": None,
                         }
                     )
                 record_usage(
@@ -1070,7 +1107,8 @@ class ScientificCoding:
                 }
                 result["review"] = review
                 self.console.line(
-                    f"  > scientific_coding: {review_mode} review ({REVIEW_MODEL}, {REVIEW_REASONING})"
+                    f"  > scientific_coding: {review_mode} review "
+                    f"({self.reviewer_model}, {self.reviewer_reasoning})"
                 )
                 review_request = {
                     "mode": review_mode,

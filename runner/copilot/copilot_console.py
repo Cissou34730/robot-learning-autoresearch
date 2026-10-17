@@ -15,6 +15,7 @@ from pathlib import Path, PureWindowsPath
 from runner.copilot.coding_contracts import (
     normalize_model,
 )
+from runner.copilot.opencode_provider import provider_of
 from runner.copilot.path_policy import (
     ROOT,
 )
@@ -219,6 +220,7 @@ class Console:
         # Which experiment and phase this session is, so one long console log
         # stays attributable without reading backwards for the last banner.
         self.label = label
+        self.provider = "github-copilot"
         self._mid_stream = False
         self._at_line_start = True
         self._message_width = max((columns or _console_width()) - 4, 20)
@@ -610,6 +612,8 @@ class Console:
         if self.prompt_tokens:
             share = round(100 * self.cache_read_tokens / self.prompt_tokens)
             prompt += f" ({share}% cached)"
+        if self.provider != "github-copilot":
+            return f"provider cost unavailable, {prompt}"
         return f"{self.nano_aiu / 1e9:.2f} AIU{self.cost_split()}, {prompt}"
 
     def cost_split(self) -> str:
@@ -667,7 +671,8 @@ def record_usage(
         "parent_session_id": parent_session_id,
         "recorded_at": datetime.now(UTC).isoformat(),
         "model": normalize_model(args.model),
-        "reasoning": args.reasoning,
+        "provider": provider_of(args.model),
+        "reasoning": getattr(args, "effective_reasoning", args.reasoning),
         # Child time is reported in its own row, not again in the PI row.
         "duration_seconds": round(
             max(
@@ -691,10 +696,15 @@ def record_usage(
         "output_tokens": console.output_tokens
         if "output_tokens" in console.reported_usage
         else None,
-        "aiu": console.nano_aiu / 1e9 if "aiu" in console.reported_usage else None,
+        "aiu": console.nano_aiu / 1e9
+        if provider_of(args.model) == "github-copilot" and "aiu" in console.reported_usage
+        else None,
         "tool_calls": console.tool_calls,
         "tools_by_name": console.tool_counts,
     }
+    external = getattr(args, "provider_model", None)
+    if external is not None:
+        row["provider_token_prices_per_million"] = external.cost
     if actual_models is not None:
         row["actual_models"] = actual_models
     if actual_reasoning_efforts is not None:

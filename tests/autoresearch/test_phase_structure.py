@@ -563,7 +563,7 @@ finally {{ Pop-Location }}
     result = json.loads(completed.stdout)
     assert result["stopped"]
     assert operation_id in result["message"]
-    assert result["runner_calls"] == 1
+    assert result["runner_calls"] == 0
     assert result["pi_calls"] == 0
     assert (
         json.loads(

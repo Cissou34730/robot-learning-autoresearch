@@ -2,20 +2,22 @@
 
 ## Status and decisions
 
-This is a maintainer design plan, dated 2026-10-17. Approval of this plan
-does not authorize implementation, model calls, or campaign execution.
+This is a maintainer design plan, dated 2026-10-17.
+The maintainer separately approved the provider implementation and bounded SDK
+checks. It is implemented with local transport/authority checks.
+Remote OpenCode acceptance awaits a locally configured credential.
+The other workstreams remain planned. No campaign execution is authorized here.
 The installed baseline is `github-copilot-sdk==1.0.19`.
 
 Retain one agent runtime: the Copilot SDK and its native agent lifecycle.
-Use GitHub Copilot and OpenCode Go as inference sources within that runtime.
-OpenCode Go supplies inference; it does not supply a second agent runtime.
+Use GitHub Copilot, OpenCode Zen and OpenCode Go as inference sources.
+OpenCode supplies inference, not a second agent runtime.
 
 The approved workstreams are:
 
 - Customize the actual PI system message.
 - Add one PI-selected, named-sections context tool.
-- Integrate OpenCode Go through SDK providers after the targeted
-  custom-header investigation and integration-specific verification below.
+- Integrate catalogue-selected OpenCode inference through SDK providers.
 - Retire the separate TypeScript OpenCode runtime after supported provider
   operation works.
 
@@ -29,12 +31,10 @@ G4 report or harness-experiment log as part of this documentation task.
 
 ## Existing integration boundaries
 
-The existing adapter builds session options without `system_message` or
-`providers` in `runner\copilot\copilot_adapter.py:409-453`. Client construction
-around line 539 defaults to `copilot-cli`. The account-only
-`get_auth_status` / `list_models` checks around lines 552-572 need
-provider-aware treatment; a Copilot model listing alone cannot establish
-that a Go route exists.
+The adapter now configures named SDK providers/models and provider-aware startup.
+It does not customize `system_message`. Client construction still uses the
+installed Copilot runtime. A Copilot account model list does not establish that
+an OpenCode route exists.
 
 Keep native SDK tools, hooks, permissions, and agent lifecycle. Preserve
 `submit_operation` and `scientific_coding`, exact child file bindings, and
@@ -143,11 +143,11 @@ identify themselves with a client-specific `User-Agent`, rather than a
 generic SDK/library name, and to send a stable `x-opencode-session` for each
 conversation. It also expects typical coding-agent traffic.
 
-Conclusion: SDK type support and Python serialization support exist in the
-installed package, and upstream source exercises header routing. Actual
-installed CLI/runtime delivery of Go's required headers, and OpenCode Go's
-acceptance of this integration, remain unverified. No credentials were read,
-no model request was sent, and no live header behavior was tested here.
+Those were the planning-time findings.
+Implementation checks now capture actual installed-runtime requests on loopback.
+Reference identity headers reach Chat Completions, Responses and Anthropic
+requests. Native coder/reviewer calls and resume preserve the selected route
+and conversation identity. No remote OpenCode inference request was made.
 
 ### Remaining integration-specific verification
 
@@ -165,29 +165,36 @@ Before accepting the Go route, verify on the actual installed runtime:
 - The intended scientific agent traffic is acceptable under Go's documented
   coding-agent usage expectations.
 
-These checks require separate implementation/validation authorization. If
-the direct SDK path fails them, report the specific blocker before changing
-the design. Do not invent a proxy, assume an upgrade fixes it, or claim that
-Go's support for other clients proves this client's behavior.
+The maintainer separately authorized implementation and bounded SDK checks.
+Local checks establish request construction, not remote service acceptance.
+Do not invent a proxy, assume an upgrade fixes a protocol mismatch, or claim
+that another client's success establishes this client's remote behavior.
 
-## OpenCode Go provider integration
+## Implemented OpenCode provider integration
 
-Use the experimental named `providers` / `models` registry, additive to
-Copilot authentication, to allow mixed model routes across native agents.
-Do not use the singular whole-session BYOK mode as a substitute for this
-mixed setup. Copilot authentication is still required.
+Use the experimental named `providers` / `models` registry in the existing SDK.
+The maintainer chooses provider and model at launch, not through a model picker
+or separate role settings. Luna remains the default.
+The OpenCode catalogue determines protocols, endpoints, limits and capabilities.
+It refreshes after 24 hours and retains a valid stale cache with an explicit warning.
+There is no single-model whitelist or silent model fallback.
 
-The initial intended Go route is `deepseek-v4.1-flash`, with provider type
-`openai`, `wire_api` set to `completions`, and base URL
-`https://opencode.ai/inference/go/openai/v1`. Go GPT models require
-`responses`; do not assume one wire protocol serves every Go model.
-Document only routes actually verified, not blanket Go model support.
+Chat Completions, Responses and Anthropic pass installed-runtime loopback checks.
+The SDK Anthropic transport appends `/v1/messages`, so its configured base removes
+the catalogue's final `/v1`. Native Google transport is not exposed by SDK 1.0.19.
+Incompatible catalogue entries remain listed with an explicit diagnostic.
+No alternate Google-compatible route was tested or substituted.
+External-only operation without a Copilot login remains unverified.
+
+Reuse identity/header and catalogue behavior from the maintainer's working
+`pi-harness\src\opencode` reference. Send its exact OpenCode CLI identity headers,
+including stable session/project identities. Persist the identity per SDK session
+without credentials. Zen credentials take precedence, with Go fallback for free
+Zen routes.
 
 Preserve provider-qualified selection IDs throughout configuration,
 native-agent selection, validation, persistence, and resume.
-`runner\copilot\coding_contracts.py:39-41` currently strips the provider
-prefix in `normalize_model`; that behavior is incompatible with named BYOK
-route identity and must not remain on provider-qualified paths.
+`normalize_model` strips only the GitHub Copilot prefix.
 Distinguish selection ID, provider connection, wire model, and capability
 lookup model rather than conflating their purposes.
 
@@ -196,11 +203,19 @@ model, reasoning setting, protocol, and required native tool behavior for
 each supported role/route. Reject unsupported selections explicitly; never
 silently fall back to another provider, model, or reasoning level.
 
-By default, the scientific coder inherits the PI's selected route.
-The independent reviewer stays on Copilot `gpt-6-luna` with high reasoning
-unless the maintainer separately approves a change. Mixed routing must not
-change reviewer independence or the native same-coder/same-reviewer
-correction loop.
+PI, coder and independent reviewer use the selected campaign model route.
+Reviewer reasoning remains high when supported and is omitted otherwise.
+The reviewer remains independent, read-only and retained for same-change repairs.
+
+Every OpenCode inference request includes a tool named `read`, without porting
+Pi's reader or glob implementation. The scoped UTF-8 reader reuses existing
+path authorization. Explicit native-child tool selectors omit custom `read`
+in the installed runtime. The approved adaptation inherits definitions while
+hooks retain exact role/tool/file authority.
+Chat Completions omits freeform `apply_patch`, so native SDK JSON `create` and
+`edit` are available within the same coder and preliminary write boundaries.
+Main PI and reviewer writes remain denied. Isolated native read/edit checks
+confirm those boundaries without editing scientific sources.
 
 Bind resume to the original provider/model identity and stable conversation
 identity. Reconstruct and verify required configuration before continuing;
@@ -212,10 +227,10 @@ Keep provider usage and cost units separate from Copilot AIU. Record source
 and units when available. Mark unknown external charges as unavailable,
 not zero; do not invent an AIU conversion or implied cost equivalence.
 
-Acceptance boundary: the explicitly supported Go route passes the header,
-model/reasoning, tool, resume, and correction checks above; the mixed Copilot
-reviewer still works; permissions and Runner authority are unchanged.
-Failure of any required check blocks declaring that route supported.
+Acceptance boundary: local header, route, tool and resume checks pass while
+permissions and Runner authority remain unchanged. Remote acceptance remains
+pending a local credential and the separately authorized bounded model calls.
+Campaign effectiveness remains unmeasured.
 
 ## Proposed delivery stages
 
@@ -225,16 +240,15 @@ These are future implementation stages, not execution permission.
    role-isolation and creation/resume boundaries above.
 2. Implement the single named-sections context tool and verify exactness,
    authorization, continuation, and measured retrieval effects.
-3. Integrate the selected Go provider route using the header evidence above.
-   Complete the remaining route-specific verification before declaring
-   support. Do not insert a standalone broad compatibility phase.
+3. Provider integration is implemented ahead of the other workstreams.
+   Complete remote acceptance before declaring service compatibility.
 4. Only after supported provider operation works, retire the separate
    TypeScript OpenCode runtime, backend-selection path, and obsolete
    runtime-specific instructions. Update directly affected documentation
    to describe the single SDK runtime and supported inference choices.
 
 Use proportional, maintainer-authorized validation of changed behavior.
-This documentation task runs no tests, campaigns, or inference.
+Implementation checks do not authorize campaigns.
 
 The transition is not a long-lived dual-runtime architecture. Do not add
 old-session translation, campaign migration, history cleanup, or a generic

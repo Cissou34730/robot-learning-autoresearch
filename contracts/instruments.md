@@ -70,14 +70,6 @@ Stop requests remain cooperative. If the launcher deadline expires, it stops
 only its owned process tree and preserves the existing transaction for recovery.
 
 Copilot main PI sessions never author the exchange file.
-The optional OpenCode backend retains its existing file-based interface:
-write one operation object to `pi_workspace/operation_request.json`.
-For this legacy interface, the Runner replaces an accepted proposal with an acceptance marker.
-The Runner removes that marker after it finalizes the operation.
-The request file can therefore be absent after an accepted operation completes.
-Create the next proposal at the same path when the previous request is absent.
-Do not update or delete a previous request without checking that it exists.
-A rejected proposal remains available for correction.
 
 ### Saved controller execution
 
@@ -148,6 +140,7 @@ The default/main agent excludes file-write tools. The registered coder has
 scoped `view`, `apply_patch` and `scientific_api_reference`. It cannot execute
 code, delegate further or submit campaign operations. Hooks and permission
 callbacks bind its calls to the authorized native child and file scope.
+Main PI writes remain denied.
 Permission callbacks use the native permission event's identity and current
 file binding, not the arrival of a tool-start event. Unknown or stale identities
 fail closed with a harness authorization error.
@@ -160,7 +153,7 @@ The handler waits for the stop handoff and native task idle state before
 unlocking operation submission.
 
 After the first completed handoff for an assignment, the handler starts an
-independent native `scientific-reviewer` using GPT-6 Luna with high reasoning.
+independent native `scientific-reviewer` with high reasoning.
 It receives the original request, supplied task context, actual changed files and diff.
 The review prioritizes coding defects and checks equations, units, physical
 assumptions, timing and measurement meaning in changed code.
@@ -602,7 +595,8 @@ A paired-comparison entry uses this interface:
 ```
 
 Both fields are required and must be non-empty.
-Both candidates must appear in planned esearch_evaluation measurements that
+Both candidates must appear in planned 
+esearch_evaluation measurements that
 use the same episode seeds.
 
 The result keeps the accepted candidate artifacts, evaluator semantics, module

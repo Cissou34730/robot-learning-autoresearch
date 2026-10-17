@@ -25,7 +25,7 @@ PROTECTED_RUNNER_PATHS = {
     "researcher_mutex.ps1",
 }
 PROTECTED_RUNTIME_PATHS = {"runner/copilot/copilot_adapter.py"}
-PROTECTED_RUNTIME_PREFIXES = ("runner/", "tools/", "researcher_opencode/")
+PROTECTED_RUNTIME_PREFIXES = ("runner/", "tools/")
 PROTECTED_MEASUREMENT_PATHS = {"benchmark/paired_evidence.py"}
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
@@ -43,7 +43,6 @@ HUMAN_OWNED_PREFIXES = (
     "docs/",
     "runner/",
     "tools/",
-    "researcher_opencode/",
     *PROTECTED_TEST_PREFIXES,
 )
 VALIDATED_TEST_PATHS = ("tests/benchmark", "tests/autoresearch")
@@ -504,7 +503,8 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
                     f"and start with {campaign_prefix}"
                 )
             spec = {
-                **entry, "artifact": artifact,
+                **entry,
+                "artifact": artifact,
                 "label": str(entry.get("label") or f"measurement {index}").strip(),
             }
             if "inputs" in entry:
@@ -517,7 +517,9 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
                 spec["args"] = [
                     re.sub(
                         r"\{input:([^{}]+)\}",
-                        lambda match, inputs=spec["input_artifacts"]: inputs[match[1]]["artifact_path"],
+                        lambda match, inputs=spec["input_artifacts"]: inputs[match[1]][
+                            "artifact_path"
+                        ],
                         argument,
                     )
                     for argument in entry["args"]
@@ -550,8 +552,15 @@ def resolved_measurement_inputs(spec: dict, state: dict) -> dict:
     for name, reference in spec.get("inputs", {}).items():
         try:
             resolved[name] = resolve_artifact_reference(state, reference)
-        except (ArtifactUnavailableError, FingerprintMismatchError, OSError, ValueError) as error:
-            raise ValueError(f"python_module input '{name}' could not be resolved: {error}") from error
+        except (
+            ArtifactUnavailableError,
+            FingerprintMismatchError,
+            OSError,
+            ValueError,
+        ) as error:
+            raise ValueError(
+                f"python_module input '{name}' could not be resolved: {error}"
+            ) from error
     return resolved
 
 

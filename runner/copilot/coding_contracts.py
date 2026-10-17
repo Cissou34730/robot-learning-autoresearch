@@ -30,15 +30,12 @@ CODING_TOOLS = ["view", "apply_patch", "scientific_api_reference"]
 REVIEW_TOOLS = ["view", "scientific_api_reference"]
 
 
-REVIEW_MODEL = "gpt-6-luna"
-
-
 REVIEW_REASONING = "high"
 
 
 def normalize_model(model: str) -> str:
-    """OpenCode named the provider inside the model; the SDK names only the model."""
-    return model.split("/", 1)[1] if "/" in model else model
+    """Keep external routing; only Copilot's own provider prefix is redundant."""
+    return model.removeprefix("github-copilot/")
 
 
 class ScientificCodingParams(BaseModel):

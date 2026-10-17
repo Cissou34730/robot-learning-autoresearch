@@ -22,8 +22,8 @@ installed libraries to the PI and authorized coding child. It does not expose
 arbitrary paths, private attributes or API execution.
 
 The Copilot agent runtime uses `github-copilot-sdk==1.0.19`. Its native
-subagents, hooks and custom tools are harness integration, not an interchangeable
-model-provider interface. The scientific stack and Runner operations remain
+subagents, hooks and custom tools remain the agent runtime.
+The scientific stack and Runner operations remain
 separate from the SDK. Dependencies remain human-owned.
 
 JSON evidence is read through `artifact_evidence_query`; preserved training
@@ -66,14 +66,16 @@ and executes the structured request through Runner and returns factual results
 and current state to the same conversation. Scientific source edits use the
 `scientific_coding` tool, which dispatches a native Copilot coding subagent.
 The main agent's tool set excludes file writes; only the registered coder
-receives scoped `view` and `apply_patch`. Its readable and writable files are
+receives scoped reads and native SDK editors.
+Its readable and writable files are
 bound mechanically to the explicit request. Copilot main and coding agents
 have no shell tools. Native start instructions remind the coder of the locked
 scientific API versions above; it cannot install or change dependencies.
 Both roles can inspect installed APIs through `scientific_api_reference`.
 
-Each new coding assignment receives an independent native GPT-6 Luna review at
-high reasoning. The reviewer receives the original request, supplied contract
+Each new coding assignment receives an independent native review with high
+reasoning.
+The reviewer receives the original request, supplied contract
 context and actual changes. Corrections reuse that reviewer to check only the
 reported problems and errors introduced by the repair. Its reads remain exactly
 scoped, with no write or execution authority. The reviewer returns four fields:
@@ -99,10 +101,6 @@ Ordinary scientific measurements remain separate PI-authorized operations.
 Analysis code is authored in the PI laboratory and executed by Runner.
 The preliminary analyst retains its existing tools and scientific-model
 publication permission; coding delegation is not exposed in that phase.
-These SDK interfaces apply to Copilot. The optional OpenCode backend retains
-its legacy request-file, scientific-edit and command-policy interfaces; it does
-not expose `submit_operation` or `scientific_coding`. Its launcher and Runner
-ownership, validation and bounded-session controls remain unchanged.
 Read-only Git remains permitted when the bounded objective requires code
 provenance or a delta, not as routine discovery. No PI session may inspect,
 modify, or directly execute the human-owned test suite; install dependencies;
@@ -153,7 +151,6 @@ The PI must not modify these paths during a scientific session:
 - `runner/` - lifecycle runner and protocol enforcement;
 - `benchmark/` - final and task-reference evaluation implementation;
 - `tools/` - maintainer utilities;
-- `researcher_opencode/` - optional runtime implementation;
 - `AGENTS.md`, `contracts/program.md`, `contracts/scenario.md`,
   `contracts/instruments.md`, `pi_workspace/scientific_model.md` (after its
   campaign-start PI session);
@@ -200,8 +197,7 @@ not an operating-system filesystem sandbox.
 - the preliminary deliverable `pi_workspace/scientific_model.md` (only while its
   preliminary session is active);
 - `pi_workspace/operation_request.json` is internal Copilot controller/Runner
-  exchange, not a main PI writable path. OpenCode retains legacy proposal
-  authoring at this path while a bounded scientific session is active.
+  exchange, not a main PI writable path.
 
 Within this surface, the PI has unrestricted scientific authority. Retain,
 rewrite, combine, replace, or remove PI-owned implementations and tools
