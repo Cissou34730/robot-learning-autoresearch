@@ -23,8 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-ENDPOINT_SPEED_CAPTURE_BAND_WIDTH = 0.02
-ENDPOINT_SPEED_PENALTY_COEFFICIENT = 1.0
 
 
 @dataclass(frozen=True)
@@ -55,32 +53,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    endpoint_speed: float = 0.0,
-    endpoint_distance: float | None = None,
 ) -> RewardResult:
-    try:
-        endpoint_speed = float(endpoint_speed)
-    except (OverflowError, TypeError, ValueError) as error:
-        raise ValueError(
-            "endpoint_speed must be a finite non-negative scalar"
-        ) from error
-    if not np.isfinite(endpoint_speed) or endpoint_speed < 0.0:
-        raise ValueError("endpoint_speed must be a finite non-negative scalar")
-
-    if endpoint_distance is None:
-        endpoint_distance = current_distance
-    else:
-        try:
-            endpoint_distance = float(endpoint_distance)
-        except (OverflowError, TypeError, ValueError) as error:
-            raise ValueError(
-                "endpoint_distance must be a finite non-negative scalar"
-            ) from error
-        if not np.isfinite(endpoint_distance) or endpoint_distance < 0.0:
-            raise ValueError(
-                "endpoint_distance must be a finite non-negative scalar"
-            )
-
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
 
@@ -112,17 +85,6 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
-    endpoint_speed_penalty = 0.0
-    if endpoint_distance <= ENDPOINT_SPEED_CAPTURE_BAND_WIDTH:
-        if ENDPOINT_SPEED_CAPTURE_BAND_WIDTH <= 0:
-            raise ValueError(
-                "ENDPOINT_SPEED_CAPTURE_BAND_WIDTH must be positive"
-            )
-        endpoint_speed_penalty = -(
-            ENDPOINT_SPEED_PENALTY_COEFFICIENT * endpoint_speed**2
-        )
-    reward += endpoint_speed_penalty
-
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -140,7 +102,6 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
-            "endpoint_speed_penalty": float(endpoint_speed_penalty),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
         },
