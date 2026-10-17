@@ -36,3 +36,4 @@
 | M13 | measurement | I4 | completed |
 | M14 | measurement | I4 | completed |
 | E17 | inquiry | I4 | completed |
+| E18 | checkpoint | I4 | checkpointed |

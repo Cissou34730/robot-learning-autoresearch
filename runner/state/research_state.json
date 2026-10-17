@@ -2467,7 +2467,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 14,
     "session": 9,
@@ -2476,7 +2476,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -8556,38 +8556,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:46:40Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M5, M7 and M13; it is not goal-certified. T3:checkpoint-120832 is a complete saved-runtime candidate measured in M13 but is unassigned because it is inferior overall and regresses outer behavior. No working or retained candidate is assigned. The M12 branch-aware launch residual remains a tested research direction, not a model role.",
+        "completed_operations": [
+          "T3",
+          "M13",
+          "M14",
+          "E17"
+        ],
+        "cumulative_resource_use": "Four inquiries have been completed, including I4; three fresh 120,000-step training allocations have completed (T1, T2, T3, with algorithm rollout rounding); ten measurement operations have completed in the campaign, including the M13 matched complete-artifact comparison and M14 trajectory stratification; one best-known learned artifact remains assigned; no official assessment has been requested or executed. I4 additionally changed the PI-owned policy I/O source and exercised that saved runtime in T3/M13.",
+        "current_goal_gap": "T1:checkpoint-115712 remains best-known at 105/160 on the matched M13 development panel and is far below the 196/200 official threshold. T3:checkpoint-120832, trained and evaluated with a persisted M12-style launch adapter, scored 95/160, with 60 no-reaches and 5 reached-but-unsuccessful episodes. No candidate is near the official goal, and the development panels are not official evidence.",
+        "current_synthesis": "Established observations: T1 has 49 no-reaches and 6 reached-but-unsuccessful episodes overall on M13, with inner 6-14 cm performance of 42/93 success, 48/93 first reach, 45 no-reaches and 6 hold failures, while outer 14-20 cm performance is 63/67 success, 63/67 first reach, 4 no-reaches and zero hold failures. The complete T3 artifact used the stateful saved runtime implementing the exact M12 launch residual and achieved 95/160 overall; it improved inner performance to 58/93 success and 59/93 first reach with one hold failure, but outer performance fell to 37/67 success and 41/67 first reach with 26 no-reaches and 4 hold failures. Its overall no-reach count remained 60, larger than its five post-reach failures. The trajectory artifact also shows T3's selected/occupied launch behavior ended on the folded branch for all panel episodes, whereas T1 occupied the open branch, and T3's complete training/runtime/weights differed from T1. These are artifact-level facts, not proof that branch identity caused the regression: learned weights, stateful runtime, action history and branch occupancy changed jointly. The bounded scientific conclusion is that this exact complete implementation can improve inner reach/hold behavior but is not a viable candidate direction as tested because it sacrifices outer coverage and leaves no-reach dominant. The physical model's dynamic hold explanation remains consequential but is not the current dominant complete-candidate deficit; launch/coverage and preserving behavior across branches/runtime now have priority. The complete saved-runtime boundary was exercised by M13, but branch causality and generalization beyond the matched panel remain unresolved.",
+        "decision_frontier": "The next consequential distinction is whether a complete learned policy can reduce the inner-annulus no-reach deficit while retaining T1's outer 14-20 cm reach and hold behavior, rather than trading one radial region for the other through a runtime or branch artifact. Evidence that would redirect this frontier is a matched complete-artifact comparison reporting inner/outer first reach and success, no-reach and hold-failure counts, angle/radius strata, branch occupancy, endpoint speed and distance margin, interruptions, and saturation, with the saved runtime verified. A candidate that improves inner no-reach without outer regression would support continued full-range launch/coverage development; another tradeoff or runtime-dependent branch collapse would require redesigning the policy interface/training exposure or changing direction. T3 does not establish that branch locking itself is harmful because its training and saved runtime changed together with the learned policy.",
+        "evidence_references": [
+          "M13",
+          "M14",
+          "T3",
+          "M12",
+          "E13",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, each requiring an uninterrupted 100-control-step hold. I4 tested whether M12's launch capability could become a complete candidate without losing the strongest observed outer behavior; the result does not justify official assessment because the complete candidate reached only 95/160 on development evidence and regressed outer performance.",
+        "next_direction_or_closure": "I4 is closed as limited/negative. Return to goal review to decide whether to open a new inquiry around preserving outer coverage while improving inner launch/coverage, or whether any available evidence justifies another campaign-level decision. Immediate official assessment is not supported by the current 95/160 and 105/160 development results.",
+        "next_question": "Can a complete candidate preserve T1's observed outer-range reach and uninterrupted holds while reducing the residual inner-annulus no-reach deficit under the official full-range task, without relying on a research-only runtime intervention?"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "663f672434402e12a09342b053259b56e173e441",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M5, M7 and M13; it is not goal-certified. T3:checkpoint-120832 is a complete saved-runtime candidate measured in M13 but is unassigned because it is inferior overall and regresses outer behavior. No working or retained candidate is assigned. The M12 branch-aware launch residual remains a tested research direction, not a model role.",
+        "completed_operations": [
+          "T3",
+          "M13",
+          "M14",
+          "E17"
+        ],
+        "cumulative_resource_use": "Four inquiries have been completed, including I4; three fresh 120,000-step training allocations have completed (T1, T2, T3, with algorithm rollout rounding); ten measurement operations have completed in the campaign, including the M13 matched complete-artifact comparison and M14 trajectory stratification; one best-known learned artifact remains assigned; no official assessment has been requested or executed. I4 additionally changed the PI-owned policy I/O source and exercised that saved runtime in T3/M13.",
+        "current_goal_gap": "T1:checkpoint-115712 remains best-known at 105/160 on the matched M13 development panel and is far below the 196/200 official threshold. T3:checkpoint-120832, trained and evaluated with a persisted M12-style launch adapter, scored 95/160, with 60 no-reaches and 5 reached-but-unsuccessful episodes. No candidate is near the official goal, and the development panels are not official evidence.",
+        "current_synthesis": "Established observations: T1 has 49 no-reaches and 6 reached-but-unsuccessful episodes overall on M13, with inner 6-14 cm performance of 42/93 success, 48/93 first reach, 45 no-reaches and 6 hold failures, while outer 14-20 cm performance is 63/67 success, 63/67 first reach, 4 no-reaches and zero hold failures. The complete T3 artifact used the stateful saved runtime implementing the exact M12 launch residual and achieved 95/160 overall; it improved inner performance to 58/93 success and 59/93 first reach with one hold failure, but outer performance fell to 37/67 success and 41/67 first reach with 26 no-reaches and 4 hold failures. Its overall no-reach count remained 60, larger than its five post-reach failures. The trajectory artifact also shows T3's selected/occupied launch behavior ended on the folded branch for all panel episodes, whereas T1 occupied the open branch, and T3's complete training/runtime/weights differed from T1. These are artifact-level facts, not proof that branch identity caused the regression: learned weights, stateful runtime, action history and branch occupancy changed jointly. The bounded scientific conclusion is that this exact complete implementation can improve inner reach/hold behavior but is not a viable candidate direction as tested because it sacrifices outer coverage and leaves no-reach dominant. The physical model's dynamic hold explanation remains consequential but is not the current dominant complete-candidate deficit; launch/coverage and preserving behavior across branches/runtime now have priority. The complete saved-runtime boundary was exercised by M13, but branch causality and generalization beyond the matched panel remain unresolved.",
+        "decision_frontier": "The next consequential distinction is whether a complete learned policy can reduce the inner-annulus no-reach deficit while retaining T1's outer 14-20 cm reach and hold behavior, rather than trading one radial region for the other through a runtime or branch artifact. Evidence that would redirect this frontier is a matched complete-artifact comparison reporting inner/outer first reach and success, no-reach and hold-failure counts, angle/radius strata, branch occupancy, endpoint speed and distance margin, interruptions, and saturation, with the saved runtime verified. A candidate that improves inner no-reach without outer regression would support continued full-range launch/coverage development; another tradeoff or runtime-dependent branch collapse would require redesigning the policy interface/training exposure or changing direction. T3 does not establish that branch locking itself is harmful because its training and saved runtime changed together with the learned policy.",
+        "evidence_references": [
+          "M13",
+          "M14",
+          "T3",
+          "M12",
+          "E13",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, each requiring an uninterrupted 100-control-step hold. I4 tested whether M12's launch capability could become a complete candidate without losing the strongest observed outer behavior; the result does not justify official assessment because the complete candidate reached only 95/160 on development evidence and regressed outer performance.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "I4 is closed as limited/negative. Return to goal review to decide whether to open a new inquiry around preserving outer coverage while improving inner launch/coverage, or whether any available evidence justifies another campaign-level decision. Immediate official assessment is not supported by the current 95/160 and 105/160 development results.",
+        "next_question": "Can a complete candidate preserve T1's observed outer-range reach and uninterrupted holds while reducing the residual inner-annulus no-reach deficit under the official full-range task, without relying on a research-only runtime intervention?",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "f3fce86e-aa89-472d-9f57-450965287812",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "43m54s | 90.17 AIU | prompt 13m (86% cached) | output 272.2k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "1m24s | 2.00 AIU | prompt 135k (59% cached) | output 8.8k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "d6fedcbe0dbefe3f72b4286e7cba88e14d544ca0",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M5, M7 and M13; it is not goal-certified. T3:checkpoint-120832 is a complete saved-runtime candidate measured in M13 but is unassigned because it is inferior overall and regresses outer behavior. No working or retained candidate is assigned. The M12 branch-aware launch residual remains a tested research direction, not a model role.",
+        "completed_operations": [
+          "T3",
+          "M13",
+          "M14",
+          "E17"
+        ],
+        "cumulative_resource_use": "Four inquiries have been completed, including I4; three fresh 120,000-step training allocations have completed (T1, T2, T3, with algorithm rollout rounding); ten measurement operations have completed in the campaign, including the M13 matched complete-artifact comparison and M14 trajectory stratification; one best-known learned artifact remains assigned; no official assessment has been requested or executed. I4 additionally changed the PI-owned policy I/O source and exercised that saved runtime in T3/M13.",
+        "current_goal_gap": "T1:checkpoint-115712 remains best-known at 105/160 on the matched M13 development panel and is far below the 196/200 official threshold. T3:checkpoint-120832, trained and evaluated with a persisted M12-style launch adapter, scored 95/160, with 60 no-reaches and 5 reached-but-unsuccessful episodes. No candidate is near the official goal, and the development panels are not official evidence.",
+        "current_synthesis": "Established observations: T1 has 49 no-reaches and 6 reached-but-unsuccessful episodes overall on M13, with inner 6-14 cm performance of 42/93 success, 48/93 first reach, 45 no-reaches and 6 hold failures, while outer 14-20 cm performance is 63/67 success, 63/67 first reach, 4 no-reaches and zero hold failures. The complete T3 artifact used the stateful saved runtime implementing the exact M12 launch residual and achieved 95/160 overall; it improved inner performance to 58/93 success and 59/93 first reach with one hold failure, but outer performance fell to 37/67 success and 41/67 first reach with 26 no-reaches and 4 hold failures. Its overall no-reach count remained 60, larger than its five post-reach failures. The trajectory artifact also shows T3's selected/occupied launch behavior ended on the folded branch for all panel episodes, whereas T1 occupied the open branch, and T3's complete training/runtime/weights differed from T1. These are artifact-level facts, not proof that branch identity caused the regression: learned weights, stateful runtime, action history and branch occupancy changed jointly. The bounded scientific conclusion is that this exact complete implementation can improve inner reach/hold behavior but is not a viable candidate direction as tested because it sacrifices outer coverage and leaves no-reach dominant. The physical model's dynamic hold explanation remains consequential but is not the current dominant complete-candidate deficit; launch/coverage and preserving behavior across branches/runtime now have priority. The complete saved-runtime boundary was exercised by M13, but branch causality and generalization beyond the matched panel remain unresolved.",
+        "decision_frontier": "The next consequential distinction is whether a complete learned policy can reduce the inner-annulus no-reach deficit while retaining T1's outer 14-20 cm reach and hold behavior, rather than trading one radial region for the other through a runtime or branch artifact. Evidence that would redirect this frontier is a matched complete-artifact comparison reporting inner/outer first reach and success, no-reach and hold-failure counts, angle/radius strata, branch occupancy, endpoint speed and distance margin, interruptions, and saturation, with the saved runtime verified. A candidate that improves inner no-reach without outer regression would support continued full-range launch/coverage development; another tradeoff or runtime-dependent branch collapse would require redesigning the policy interface/training exposure or changing direction. T3 does not establish that branch locking itself is harmful because its training and saved runtime changed together with the learned policy.",
+        "evidence_references": [
+          "M13",
+          "M14",
+          "T3",
+          "M12",
+          "E13",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, each requiring an uninterrupted 100-control-step hold. I4 tested whether M12's launch capability could become a complete candidate without losing the strongest observed outer behavior; the result does not justify official assessment because the complete candidate reached only 95/160 on development evidence and regressed outer performance.",
+        "next_direction_or_closure": "I4 is closed as limited/negative. Return to goal review to decide whether to open a new inquiry around preserving outer coverage while improving inner launch/coverage, or whether any available evidence justifies another campaign-level decision. Immediate official assessment is not supported by the current 95/160 and 105/160 development results.",
+        "next_question": "Can a complete candidate preserve T1's observed outer-range reach and uninterrupted holds while reducing the residual inner-annulus no-reach deficit under the official full-range task, without relying on a research-only runtime intervention?"
+      }
+    },
+    "request_fingerprint": "5f4ef7fb42cbe522f122f925fd6dc53885e21277fb9390feb6b06d87e9501f50",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T1:checkpoint-115712, the strongest evidence-backed complete learned artifact; it has not met the human goal. No working candidate is assigned. M12's branch-aware launch residual is a research-only intervention on T1, not a separately archived learned checkpoint or protected candidate. T2:checkpoint-120832 remains unsupported after its negative complete-artifact comparison. I4 will compare complete candidate artifacts and retain M12's launch behavior as a guardrail rather than assigning it a model role.",
+    "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M5, M7 and M13; it is not goal-certified. T3:checkpoint-120832 is a complete saved-runtime candidate measured in M13 but is unassigned because it is inferior overall and regresses outer behavior. No working or retained candidate is assigned. The M12 branch-aware launch residual remains a tested research direction, not a model role.",
     "completed_operations": [
-      "E15"
+      "T3",
+      "M13",
+      "M14",
+      "E17"
     ],
-    "cumulative_resource_use": "Campaign resources to date are two fresh training runs using the 120,000-step requested allocation (actual checkpoints through 120,832 steps), eight completed measurement operations, four inquiry boundaries including I4, no official assessment, and one best-known learned artifact. M10 and M11 failed before producing evidence and remain execution history only. I4 is bounded to the existing allocation and evidence resources; no new training or measurement has yet been executed in this session.",
-    "current_goal_gap": "The best learned artifact remains T1:checkpoint-115712 with 105/160 development successes; the M12 research-only launch intervention reached 118/160. On the M12 panel, 32 episodes still did not first-reach and 10 first-reached but failed the uninterrupted hold, all remaining failures being in the inner annulus; outer performance was 63/67 with no outer hold failures. The 160-episode panels are development evidence, not the fixed official 200-episode result, and no candidate has been shown near 196/200.",
-    "current_synthesis": "Established observations are: compiled dynamics are 2 ms Euler with 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, and a rank-1 Jacobian at the 22 cm reset (M2); inverse branches are feasible across the official grid and both branches are physically valid position solutions (M2 and the initial model). T1's baseline deficit was concentrated in inner-annulus first reach: 45 inner no-reaches versus six reached-but-unsuccessful holds, while the outer annulus had 63/67 successes and no hold failures (M7, M9). M12's complete research evaluation of the specified branch-aware launch residual raised first reaches to 128/160 and success to 118/160, with inner first reaches 65/93 and success 55/93, outer first reach and success unchanged at 63/67, 15 paired improvements and two regressions. The intervention also produced 10 reached-but-unsuccessful episodes. The supported artifact-level conclusion is that the tested launch intervention is a promising development direction and preserves outer behavior; it does not identify branch selection as the cause because branch choice, residual blending and action history changed jointly, and it does not establish stabilization as the sole or dominant remaining cause because 32 no-reaches still exceed the 10 post-reach failures. Competing consequential explanations are therefore (a) residual inner no-reach caused by singularity-exit, angle/radius conditioning or saturation, and (b) post-reach dynamic overshoot or insufficient velocity regulation. Direct torque dynamics and the 100-step hold make (b) physically plausible; the singular reset and omitted inner training exposure make (a) plausible. The next inquiry must compare complete artifacts and measure both failure classes rather than infer mechanism from aggregate success. Runtime differences remain a separate threat to interpreting a research-only intervention as a protected candidate result.",
-    "decision_frontier": "I4 must determine whether preserving M12's launch condition in a complete candidate reduces inner hold interruptions and residual endpoint motion enough to convert first reaches into uninterrupted holds, or whether inner no-reach remains the limiting failure. The discriminating evidence is a matched full-range comparison reporting inner/outer first reach and success, reached-but-unsuccessful counts, hold interruptions, endpoint speed and distance margin, angle/radius strata, and saturation, while verifying the complete saved runtime. If post-reach failures fall without outer regression, stabilization-focused development is supported; if no-reaches remain dominant, launch/coverage or trajectory generation must remain the priority; if neither improves, the direction should be reconsidered at goal review. M12's confounding and research-only runtime mean causal claims about branch identity or protected performance remain unresolved.",
+    "cumulative_resource_use": "Four inquiries have been completed, including I4; three fresh 120,000-step training allocations have completed (T1, T2, T3, with algorithm rollout rounding); ten measurement operations have completed in the campaign, including the M13 matched complete-artifact comparison and M14 trajectory stratification; one best-known learned artifact remains assigned; no official assessment has been requested or executed. I4 additionally changed the PI-owned policy I/O source and exercised that saved runtime in T3/M13.",
+    "current_goal_gap": "T1:checkpoint-115712 remains best-known at 105/160 on the matched M13 development panel and is far below the 196/200 official threshold. T3:checkpoint-120832, trained and evaluated with a persisted M12-style launch adapter, scored 95/160, with 60 no-reaches and 5 reached-but-unsuccessful episodes. No candidate is near the official goal, and the development panels are not official evidence.",
+    "current_synthesis": "Established observations: T1 has 49 no-reaches and 6 reached-but-unsuccessful episodes overall on M13, with inner 6-14 cm performance of 42/93 success, 48/93 first reach, 45 no-reaches and 6 hold failures, while outer 14-20 cm performance is 63/67 success, 63/67 first reach, 4 no-reaches and zero hold failures. The complete T3 artifact used the stateful saved runtime implementing the exact M12 launch residual and achieved 95/160 overall; it improved inner performance to 58/93 success and 59/93 first reach with one hold failure, but outer performance fell to 37/67 success and 41/67 first reach with 26 no-reaches and 4 hold failures. Its overall no-reach count remained 60, larger than its five post-reach failures. The trajectory artifact also shows T3's selected/occupied launch behavior ended on the folded branch for all panel episodes, whereas T1 occupied the open branch, and T3's complete training/runtime/weights differed from T1. These are artifact-level facts, not proof that branch identity caused the regression: learned weights, stateful runtime, action history and branch occupancy changed jointly. The bounded scientific conclusion is that this exact complete implementation can improve inner reach/hold behavior but is not a viable candidate direction as tested because it sacrifices outer coverage and leaves no-reach dominant. The physical model's dynamic hold explanation remains consequential but is not the current dominant complete-candidate deficit; launch/coverage and preserving behavior across branches/runtime now have priority. The complete saved-runtime boundary was exercised by M13, but branch causality and generalization beyond the matched panel remain unresolved.",
+    "decision_frontier": "The next consequential distinction is whether a complete learned policy can reduce the inner-annulus no-reach deficit while retaining T1's outer 14-20 cm reach and hold behavior, rather than trading one radial region for the other through a runtime or branch artifact. Evidence that would redirect this frontier is a matched complete-artifact comparison reporting inner/outer first reach and success, no-reach and hold-failure counts, angle/radius strata, branch occupancy, endpoint speed and distance margin, interruptions, and saturation, with the saved runtime verified. A candidate that improves inner no-reach without outer regression would support continued full-range launch/coverage development; another tradeoff or runtime-dependent branch collapse would require redesigning the policy interface/training exposure or changing direction. T3 does not establish that branch locking itself is harmful because its training and saved runtime changed together with the learned policy.",
     "evidence_references": [
-      "M2",
-      "M3",
-      "M4",
-      "M5",
-      "M6",
-      "E9",
-      "E11",
-      "M7",
-      "M9",
+      "M13",
+      "M14",
+      "T3",
       "M12",
       "E13",
-      "E15"
+      "E17"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. M12 improved the matched development artifact comparison from 105/160 to 118/160 and inner first reach from 48/93 to 65/93 while preserving outer success at 63/67, but this remains far below the goal and is not an official assessment. I4 directly tests whether that launch capability can be converted into valid inner holds without giving up the preserved outer behavior.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I4 is the bounded goal-linked inquiry opened from goal review. Its first work should select or build a complete candidate that preserves the M12 launch condition, then measure it against T1 on a non-overlapping matched full-range development panel with hold and dynamic diagnostics. The inquiry closes when the stated closure condition classifies the candidate as positive, limited/negative, or inconclusive; unresolved branch causality or runtime details will be carried forward rather than overstated.",
-    "next_question": "Can a complete candidate that preserves M12's branch-aware launch condition convert inner first reaches into uninterrupted 100-step holds while maintaining the observed outer-range success, or do residual inner no-reaches remain the limiting failure mode?",
-    "scientific_commit": "6dc75e118e6caffae0541c4bf3a5789caa9392d1",
-    "session_id": "S8"
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200, each requiring an uninterrupted 100-control-step hold. I4 tested whether M12's launch capability could become a complete candidate without losing the strongest observed outer behavior; the result does not justify official assessment because the complete candidate reached only 95/160 on development evidence and regressed outer performance.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "I4 is closed as limited/negative. Return to goal review to decide whether to open a new inquiry around preserving outer coverage while improving inner launch/coverage, or whether any available evidence justifies another campaign-level decision. Immediate official assessment is not supported by the current 95/160 and 105/160 development results.",
+    "next_question": "Can a complete candidate preserve T1's observed outer-range reach and uninterrupted holds while reducing the residual inner-annulus no-reach deficit under the official full-range task, without relying on a research-only runtime intervention?",
+    "scientific_commit": "d6fedcbe0dbefe3f72b4286e7cba88e14d544ca0",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -8595,24 +8734,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "f3fce86e-aa89-472d-9f57-450965287812",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can a complete candidate that preserves M12's branch-aware launch condition convert inner first reaches into uninterrupted 100-step holds while maintaining the observed outer-range success, or do residual inner no-reaches remain the limiting failure mode? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T3",
-      "M13",
-      "M14",
-      "E17"
-    ],
-    "scientific_parent_commit": "663f672434402e12a09342b053259b56e173e441"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
