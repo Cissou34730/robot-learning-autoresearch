@@ -20795,41 +20795,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T5:checkpoint-10240",
-        "reason": "Request the protected official assessment of the explicit best-known candidate T5:checkpoint-10240. Candidate selection is supported by M10 and the corrected role assignment E31: T5 achieved 156/200 (78%) on the matched official-semantics development panel, tied with T3 and ahead of T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 verified that the saved controller-enabled runtime was active and improved reached-but-failed-hold failures, but 37 never-reached failures remained, so this is a realistic frozen candidate rather than a claim of goal attainment. The alternative of one more bounded inquiry has no evidence-backed route to recover the 40-success gap: E25/M16/E29 show the tested v2 acquisition and signed-branch interventions were negative at the artifact/mechanism level, with M16's controlled branch blend only 10/32 and 0/14 valid folded-branch successes. Those results do not disprove signed-IK control or diagnose the plant, reward, self-contact, or substep semantics, but the unresolved possibilities are not by themselves a credible new method. The protected assessment is therefore more decision-relevant and lower-cost than continuing the tested lineage or opening an ungrounded variant; its 196/200 criterion will determine pass or fail under the authoritative task distribution.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "b150f546-c90e-4514-be0e-3dc36f6dd434",
-        "campaign_id": "ecee0f08-9143-4c0f-87d0-3c21e527df42",
-        "campaign_usage": "1h07m | 116.26 AIU | prompt 17.2m (87% cached) | output 296.9k",
-        "session_id": "S16",
-        "session_kind": "goal_review",
-        "session_usage": "usage unavailable"
-      },
-      "result": {
-        "model": "T5:checkpoint-10240",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "Request the protected official assessment of the explicit best-known candidate T5:checkpoint-10240. Candidate selection is supported by M10 and the corrected role assignment E31: T5 achieved 156/200 (78%) on the matched official-semantics development panel, tied with T3 and ahead of T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 verified that the saved controller-enabled runtime was active and improved reached-but-failed-hold failures, but 37 never-reached failures remained, so this is a realistic frozen candidate rather than a claim of goal attainment. The alternative of one more bounded inquiry has no evidence-backed route to recover the 40-success gap: E25/M16/E29 show the tested v2 acquisition and signed-branch interventions were negative at the artifact/mechanism level, with M16's controlled branch blend only 10/32 and 0/14 valid folded-branch successes. Those results do not disprove signed-IK control or diagnose the plant, reward, self-contact, or substep semantics, but the unresolved possibilities are not by themselves a credible new method. The protected assessment is therefore more decision-relevant and lower-cost than continuing the tested lineage or opening an ungrounded variant; its 196/200 criterion will determine pass or fail under the authoritative task distribution."
-      }
-    },
-    "request_fingerprint": "4c7d2072b5ae09ea8e6d1e9c53740312937b1fe147e41ca3df391b04d6969528",
-    "session_id": "S16",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "The existing best-known role remains T1:checkpoint-120832 by recorded campaign role, but it is not goal-certified and scored 144/200 on the latest matched M12 panel. T3:checkpoint-70656 and T5:checkpoint-10240 remain the strongest measured development artifacts at 156/200; T3 is the pooled-inner reference and T5 the maintenance reference. T7:checkpoint-45056 remains negative for the tested v2 acquisition design and has no role assignment. No candidate is retained and no candidate has protected assessment evidence.",
     "completed_operations": [
