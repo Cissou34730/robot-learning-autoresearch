@@ -5887,47 +5887,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when matched full-range development evidence has compared a complete candidate against the retained T1 baseline and the M12 launch condition, with inner and outer first reach and success, reached-but-unsuccessful counts, hold interruptions, endpoint speed and distance margin, angle/radius strata, and saturation. Classify the inquiry as positive if the complete candidate materially reduces inner hold failures and improves total success without sacrificing the preserved outer behavior; limited or negative if hold stability does not improve or launch/no-reach failures remain the limiting deficit; inconclusive if the required diagnostics or complete-artifact comparison are unavailable.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M12 raised matched development success from 105/160 to 118/160 and inner first reach from 48/93 to 65/93 while preserving outer success at 63/67, but the candidate still has 32 no-reaches and 10 reached-but-unsuccessful episodes. A complete artifact that preserves the launch gain and reduces post-reach failures is therefore a direct route toward the missing inner-annulus successes, whereas immediate official assessment would commit a candidate far below the goal.",
-          "handoff_conclusion": "M2 established the compiled physical context: 2 ms Euler integration, 20 ms visible control intervals, explicit damping and armature, compiled masses near 0.099 and 0.052 kg, a rank-1 22 cm reset Jacobian, feasible inverse branches across the official grid, and large one-interval endpoint responses. M7/M9 then showed that T1's dominant deficit was early inner-annulus no-reach rather than late hold failure: 45 inner no-reaches versus six reached-but-unsuccessful holds; outer behavior was 63/67 successes with no outer hold failures, and T1 occupied the open branch at all measured endpoints. M12 tested the complete research-only branch-aware launch residual on the identical 160-episode panel: reset branch selection was 78 open and 82 folded, overall success rose to 118/160, first reaches to 128/160, inner success to 55/93, and inner first reaches to 65/93, with 15 paired improvements and two regressions. Outer first reach and success stayed 63/67 with zero outer hold failures. This supports launch capability as the higher-leverage bottleneck for this T1 artifact and justifies retaining the intervention as a development direction, but it does not isolate branch identity as the cause because selected branch, residual blending, and action history changed jointly and all final episodes still ended open. The intervention also increased reached-but-unsuccessful episodes to 10, indicating that improved launch exposes a consequential stabilization/residual-motion problem. T2 remains a negative complete-artifact comparison rather than evidence that radial exposure caused its regression.",
-          "handoff_question": "Can a complete candidate that preserves M12's branch-aware launch condition convert inner first reaches into uninterrupted 100-step holds while maintaining the observed outer-range success, or do residual inner no-reaches remain the limiting failure mode?",
-          "handoff_source_session_id": "S7",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can a complete candidate that preserves M12's branch-aware launch condition convert inner first reaches into uninterrupted 100-step holds while maintaining the observed outer-range success, or do residual inner no-reaches remain the limiting failure mode?",
-          "rationale": "Requesting assessment now would test a best-known artifact at 118/160 on development evidence, far from the 196/200 objective, and M12 is a research-only intervention rather than a frozen learned/runtime candidate. The prior comparison supports retaining launch capability as a guardrail, but branch identity, residual blending, and action history changed jointly, so it does not establish branch choice or stabilization as the cause. A bounded complete-candidate inquiry has high expected contribution because it can either convert the demonstrated inner reach gain into valid holds or show that the remaining no-reach deficit requires redirecting effort, while the required outer-range diagnostics protect the strongest preserved behavior.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when matched full-range development evidence has compared a complete candidate against the retained T1 baseline and the M12 launch condition, with inner and outer first reach and success, reached-but-unsuccessful counts, hold interruptions, endpoint speed and distance margin, angle/radius strata, and saturation. Classify the inquiry as positive if the complete candidate materially reduces inner hold failures and improves total success without sacrificing the preserved outer behavior; limited or negative if hold stability does not improve or launch/no-reach failures remain the limiting deficit; inconclusive if the required diagnostics or complete-artifact comparison are unavailable.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M12 raised matched development success from 105/160 to 118/160 and inner first reach from 48/93 to 65/93 while preserving outer success at 63/67, but the candidate still has 32 no-reaches and 10 reached-but-unsuccessful episodes. A complete artifact that preserves the launch gain and reduces post-reach failures is therefore a direct route toward the missing inner-annulus successes, whereas immediate official assessment would commit a candidate far below the goal.",
-        "question": "Can a complete candidate that preserves M12's branch-aware launch condition convert inner first reaches into uninterrupted 100-step holds while maintaining the observed outer-range success, or do residual inner no-reaches remain the limiting failure mode?",
-        "rationale": "Requesting assessment now would test a best-known artifact at 118/160 on development evidence, far from the 196/200 objective, and M12 is a research-only intervention rather than a frozen learned/runtime candidate. The prior comparison supports retaining launch capability as a guardrail, but branch identity, residual blending, and action history changed jointly, so it does not establish branch choice or stabilization as the cause. A bounded complete-candidate inquiry has high expected contribution because it can either convert the demonstrated inner reach gain into valid holds or show that the remaining no-reach deficit requires redirecting effort, while the required outer-range diagnostics protect the strongest preserved behavior."
-      }
-    },
-    "request_fingerprint": "2338b16c4849ad585b15d89ffc992ab4edd0053c65d1150308c937069d3e1de1",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, the strongest saved learned artifact with the established baseline evaluation and no protected official result. Working: none. M12's branch-aware launch condition is a research-only action intervention applied to T1, not a separately archived learned checkpoint or an official candidate runtime; it improved the matched development comparison but is not assigned a model role. T2:checkpoint-120832 remains unsupported as a replacement after its 54/160 regression.",
     "completed_operations": [
