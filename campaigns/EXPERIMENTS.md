@@ -57,3 +57,4 @@
 | E28 | checkpoint | I6 | checkpointed |
 | E29 | inquiry | I7 | completed |
 | E30 | checkpoint | - | checkpointed |
+| T6 | training | I7 | completed |
