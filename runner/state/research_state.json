@@ -1661,7 +1661,7 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 7,
+    "measurement": 9,
     "session": 7,
     "training": 2
   },
@@ -4768,9 +4768,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T07:55:43Z",
+      "error": "robot_learning.lab.analyze_trajectory failed:\n\ntrajectory analysis failed: malformed trajectory research evaluation: episode_diagnostics[0].min_distance_cm is inconsistent with trajectory rows\n\nAccepted invocation: module=robot_learning.lab.analyze_trajectory, args=[\"campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m7-T1-checkpoint-115712-160ep-seed4200-3075383642c4.json\", \"campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json\"], declared_artifact=campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json",
+      "id": "M8",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Analyze M7's phase-aligned T1 trajectories by launch versus post-reach hold phase, radius, angle, and elbow branch with explicit conditional denominators and outer-range guardrails.",
+        "measurements": [
+          {
+            "args": [
+              "{input:evaluation}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json",
+            "inputs": {
+              "evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M7"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I3 T1 launch-versus-hold trajectory analysis",
+            "module": "robot_learning.lab.analyze_trajectory"
+          }
+        ],
+        "rationale": "M7 supplies the missing time-resolved evidence, but its raw trajectory rows are too large for direct conversational inspection. This bounded analysis validates the complete artifact and compresses only the quantities needed for I3: early 1-20-step launch speed, joint speed, distance, and saturation; first-reach timing and speed; post-first-reach distance, speed, saturation, and interruptions; no-reach versus reached-but-unsuccessful classification; and branch-conditioned outcomes in inner and outer strata. It is descriptive and non-causal. Its result will decide whether a branch-aware launch intervention is scientifically supported, whether stabilization is the more consequential direction, or whether the phase evidence remains inconclusive."
+      },
+      "result": {
+        "error": "robot_learning.lab.analyze_trajectory failed:\n\ntrajectory analysis failed: malformed trajectory research evaluation: episode_diagnostics[0].min_distance_cm is inconsistent with trajectory rows\n\nAccepted invocation: module=robot_learning.lab.analyze_trajectory, args=[\"campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m7-T1-checkpoint-115712-160ep-seed4200-3075383642c4.json\", \"campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json\"], declared_artifact=campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json",
+        "status": "failed"
+      },
+      "session_id": "S7",
+      "status": "failed",
+      "superseded_by": "M9",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m7-T1-checkpoint-115712-160ep-seed4200-3075383642c4.json",
+            "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json"
+          ],
+          "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json",
+          "input_artifacts": {
+            "evaluation": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/evaluation-6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa-m7-T1-checkpoint-115712-160ep-seed4200-3075383642c4.json",
+              "operation_id": "M7",
+              "recorded_artifact_fingerprint": "1b4ff5c5f3d7d51ed97cb4c8c80e9c1d3e43fce13adb05f1872f19777c61c9c0"
+            }
+          },
+          "inputs": {
+            "evaluation": {
+              "artifact_index": 0,
+              "operation_id": "M7"
+            }
+          },
+          "instrument": "python_module",
+          "label": "I3 T1 launch-versus-hold trajectory analysis",
+          "module": "robot_learning.lab.analyze_trajectory"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "f9cbb1a6f908a2546fdd31913b94aae1aa24f0a6b5e368eea5eec972e3bd583c",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "0316228a616caa7ea5f379d05c5ee153b154d3363c2949ff758d368bf4617fe2",
+            "path": "robot_learning/lab/analyze_evaluation.py"
+          },
+          {
+            "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+            "path": "robot_learning/lab/analyze_trajectory.py"
+          },
+          {
+            "fingerprint": "305a1242d15788ec6aef6e5484d8efb31f81bdc8700f71187ede535972e95d71",
+            "path": "robot_learning/lab/characterize_arm.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "aec049a0dac698ed8f50f8b052c6c09a2f4d615e",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "87dad692c4fa27e28a84d1f8aedb77cea347729f4f3b12824fa112cb055ae2f3",
+            "path": "robot_learning/lab/analyze_trajectory.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_trajectory.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "74dbd5a8715d43593446363c43a51185c4570f4c82647894b2d3d1b803d86f04",
+            "path": "robot_learning/scenario/environment.py"
+          },
+          {
+            "exists": true,
+            "fingerprint": "bcd515e814af162a697a2fe43b695247090475eadab3f466eee3a4e245e992c1",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Analyze M7's phase-aligned T1 trajectories by launch versus post-reach hold phase, radius, angle, and elbow branch with explicit conditional denominators and outer-range guardrails.",
+        "measurements": [
+          {
+            "args": [
+              "{input:evaluation}",
+              "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json"
+            ],
+            "artifact": "campaigns/evaluations/6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa/m8-m7-trajectory-stratified.json",
+            "inputs": {
+              "evaluation": {
+                "artifact_index": 0,
+                "operation_id": "M7"
+              }
+            },
+            "instrument": "python_module",
+            "label": "I3 T1 launch-versus-hold trajectory analysis",
+            "module": "robot_learning.lab.analyze_trajectory"
+          }
+        ],
+        "rationale": "M7 supplies the missing time-resolved evidence, but its raw trajectory rows are too large for direct conversational inspection. This bounded analysis validates the complete artifact and compresses only the quantities needed for I3: early 1-20-step launch speed, joint speed, distance, and saturation; first-reach timing and speed; post-first-reach distance, speed, saturation, and interruptions; no-reach versus reached-but-unsuccessful classification; and branch-conditioned outcomes in inner and outer strata. It is descriptive and non-causal. Its result will decide whether a branch-aware launch intervention is scientifically supported, whether stabilization is the more consequential direction, or whether the phase evidence remains inconclusive."
+      }
+    },
+    "request_fingerprint": "ab3667d5ae3c4910e68550c7c5a498ecc6fb8e74fd5dc646d0b18b55ea35566d",
+    "session_id": "S7",
+    "supersedes": "M8"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3-M6 and retained as the strongest complete artifact. T2:checkpoint-120832 is not working, best-known, or retained because its matched performance is 54/160 with broad inner, outer, and angle-conditioned regression. No candidate has official assessment evidence or meets the human goal.",
     "completed_operations": [
