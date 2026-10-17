@@ -3332,7 +3332,7 @@
       "training_steps": 100352
     },
     "T5:checkpoint-10240": {
-      "artifact": "campaigns/checkpoints/candidates/ecee0f08-9143-4c0f-87d0-3c21e527df42/t5/checkpoint-10240",
+      "artifact": "campaigns/checkpoints/retained/ecee0f08-9143-4c0f-87d0-3c21e527df42/t5-cee65aa6e-6e08335b843c470c677549dec572a1f585121d05f4b2843deba7f5b1158c9ffb",
       "evaluation_artifacts": [
         "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m10-T5-checkpoint-10240-200ep-seed500000-62a9779ec014.json",
         "campaigns/evaluations/ecee0f08-9143-4c0f-87d0-3c21e527df42/evaluation-ecee0f08-9143-4c0f-87d0-3c21e527df42-m12-T5-checkpoint-10240-200ep-seed500000-62a9779ec014.json"
@@ -5752,18 +5752,18 @@
     }
   },
   "counters": {
-    "event": 30,
+    "event": 31,
     "inquiry": 7,
     "measurement": 16,
-    "session": 15,
+    "session": 16,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-120832",
+    "best_known": "T5:checkpoint-10240",
     "retained": {},
     "working": null
   },
@@ -20745,9 +20745,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T00:34:02Z",
+      "error": null,
+      "id": "E31",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-10240",
+        "evidence": [
+          "M10",
+          "E21"
+        ],
+        "reason": "Correct the inherited T1 role using the completed matched candidate comparison. T5 achieved 156/200 (78%) on M10, tied with T3 and exceeding T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 also verified the saved controller-enabled runtime and showed that T5 reduced reached-but-failed-hold failures, although 37 never-reached failures remained. This makes T5 the strongest explicit candidate for the terminal assessment, while preserving that it is 40 successes below the 196/200 goal and not goal-certified."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-10240",
+        "evidence": [
+          "M10",
+          "E21"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T5:checkpoint-10240",
+        "evidence": [
+          "M10",
+          "E21"
+        ],
+        "reason": "Correct the inherited T1 role using the completed matched candidate comparison. T5 achieved 156/200 (78%) on M10, tied with T3 and exceeding T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 also verified the saved controller-enabled runtime and showed that T5 reduced reached-but-failed-hold failures, although 37 never-reached failures remained. This makes T5 the strongest explicit candidate for the terminal assessment, while preserving that it is 40 successes below the 196/200 goal and not goal-certified."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/ecee0f08-9143-4c0f-87d0-3c21e527df42/t5-cee65aa6e-6e08335b843c470c677549dec572a1f585121d05f4b2843deba7f5b1158c9ffb",
+        "fingerprint": "6e08335b843c470c677549dec572a1f585121d05f4b2843deba7f5b1158c9ffb",
+        "source": "campaigns/checkpoints/candidates/ecee0f08-9143-4c0f-87d0-3c21e527df42/t5/checkpoint-10240"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-10240",
+        "evidence": [
+          "M10",
+          "E21"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E31",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-10240",
+        "evidence": [
+          "M10",
+          "E21"
+        ],
+        "reason": "Correct the inherited T1 role using the completed matched candidate comparison. T5 achieved 156/200 (78%) on M10, tied with T3 and exceeding T1 at 144/200 and T4 at 146/200; paired outcomes gave T5 net wins of +12 versus T1, 0 versus T3, and +10 versus T4. E21 also verified the saved controller-enabled runtime and showed that T5 reduced reached-but-failed-hold failures, although 37 never-reached failures remained. This makes T5 the strongest explicit candidate for the terminal assessment, while preserving that it is 40 successes below the 196/200 goal and not goal-certified."
+      }
+    },
+    "request_fingerprint": "a923c3b85a10b466229acaabd2d0aa16ec4149defd07b477a3f7cd440efee326",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "The existing best-known role remains T1:checkpoint-120832 by recorded campaign role, but it is not goal-certified and scored 144/200 on the latest matched M12 panel. T3:checkpoint-70656 and T5:checkpoint-10240 remain the strongest measured development artifacts at 156/200; T3 is the pooled-inner reference and T5 the maintenance reference. T7:checkpoint-45056 remains negative for the tested v2 acquisition design and has no role assignment. No candidate is retained and no candidate has protected assessment evidence.",
     "completed_operations": [
@@ -20781,6 +20855,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b150f546-c90e-4514-be0e-3dc36f6dd434",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E31"
+    ],
+    "scientific_parent_commit": "39a23466bcad3214d435c8aecd9f8618d355d0dc"
+  },
   "terminal_state": null
 }

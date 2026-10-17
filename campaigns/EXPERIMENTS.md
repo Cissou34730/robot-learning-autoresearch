@@ -55,3 +55,4 @@
 | M16 | measurement | I7 | completed |
 | E29 | inquiry | I7 | completed |
 | E30 | checkpoint | I7 | checkpointed |
+| E31 | model_role | - | assigned |
