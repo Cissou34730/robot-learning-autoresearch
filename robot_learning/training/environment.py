@@ -1,4 +1,4 @@
-"""Training-only environment construction for the branch-aware recipe.
+"""Training-only environment construction for the baseline recipe.
 
 Only the target distribution the policy trains on lives here. Task mechanics,
 success semantics and evaluation behavior stay in
@@ -10,17 +10,10 @@ excluded from the research-evaluation semantics fingerprint.
 import gymnasium as gym
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
-from robot_learning.scenario.policy_io import make_policy_io
 
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    environment = TwoJointArmReachEnv(
-        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
-        enable_trajectory_shaping=True,
-        phase_separated_shaping=True,
-    )
-    environment.policy_io = make_policy_io(controller_enabled=True)
-    return environment
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)

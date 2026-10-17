@@ -28,7 +28,7 @@ def export_runtime(directory: Path, *, stats_path: Path | None):
     normalizer = load_observation_normalizer(model_path) if stats_path else None
     save_runtime(
         model_path,
-        policy_io=make_policy_io(controller_enabled=True),
+        policy_io=make_policy_io(),
         loader=load_policy,
         normalizer=normalizer,
         stats_path=stats_path,
