@@ -332,10 +332,6 @@ def _validate_row(
             f"{label}.in_tolerance disagrees with the documented 1 cm "
             "success threshold"
         )
-    if in_tolerance != (held_steps > 0):
-        raise _fail(
-            f"{label}.held_steps is phase-inconsistent with in_tolerance"
-        )
     return {
         "control_step": control_step,
         "end_effector_position_m": end_position,
@@ -495,14 +491,18 @@ def _validate_diagnostic(
 
     if not rows:
         raise _fail(f"{label} has no trajectory rows")
-    if rows[0]["held_steps"] != (1 if rows[0]["in_tolerance"] else 0):
+    if rows[0]["held_steps"] not in (0, 1):
         raise _fail(
             f"{label} first trajectory row has an invalid held_steps phase"
         )
-    if first_reach != next(
-        (row["control_step"] for row in rows if row["in_tolerance"]), None
-    ):
-        raise _fail(f"{label}.first_reach_step is inconsistent with trajectory rows")
+    task_first_reach = next(
+        (row["control_step"] for row in rows if row["held_steps"] > 0), None
+    )
+    if first_reach != task_first_reach:
+        raise _fail(
+            f"{label}.first_reach_step is inconsistent with the task "
+            "held_steps phase"
+        )
     if first_reach is None and first_reach_speed is not None:
         raise _fail(f"{label}.first_reach_endpoint_speed_mps must be null without reach")
     if first_reach is not None:
@@ -516,22 +516,20 @@ def _validate_diagnostic(
             )
     if max_held != max(row["held_steps"] for row in rows):
         raise _fail(f"{label}.max_held_steps is inconsistent with trajectory rows")
-    if in_tolerance_steps != sum(row["in_tolerance"] for row in rows):
-        raise _fail(f"{label}.in_tolerance_steps is inconsistent with trajectory rows")
+    if in_tolerance_steps != sum(row["held_steps"] > 0 for row in rows):
+        raise _fail(
+            f"{label}.in_tolerance_steps is inconsistent with the task "
+            "held_steps phase"
+        )
     expected_interruptions = sum(
-        previous["in_tolerance"] and not current["in_tolerance"]
+        previous["held_steps"] > 0 and current["held_steps"] == 0
         for previous, current in zip(rows, rows[1:])
     )
     if hold_interruptions != expected_interruptions:
-        raise _fail(f"{label}.hold_interruptions is inconsistent with trajectory rows")
-    if not _close(
-        diagnostic["min_distance_cm"], 100.0 * min(row["distance_m"] for row in rows)
-    ):
-        raise _fail(f"{label}.min_distance_cm is inconsistent with trajectory rows")
-    if not _close(
-        diagnostic["final_distance_cm"], 100.0 * rows[-1]["distance_m"]
-    ):
-        raise _fail(f"{label}.final_distance_cm is inconsistent with trajectory rows")
+        raise _fail(
+            f"{label}.hold_interruptions is inconsistent with the task "
+            "held_steps phase"
+        )
     if not _close(
         diagnostic["max_endpoint_speed_mps"],
         max(row["endpoint_speed_mps"] for row in rows),
@@ -683,7 +681,9 @@ def _validate_input(
                     "be one-based and strictly ordered"
                 )
         for previous, current in zip(rows, rows[1:]):
-            expected_held = previous["held_steps"] + 1 if current["in_tolerance"] else 0
+            expected_held = (
+                previous["held_steps"] + 1 if current["held_steps"] > 0 else 0
+            )
             if current["held_steps"] != expected_held:
                 raise _fail(
                     f"episode {episode} trajectory held_steps is not "
@@ -905,8 +905,8 @@ def _branch_conditioned(episodes: list[Episode]) -> dict[str, Any]:
         },
         "first_reach": {
             "selection_definition": (
-                "Only reached episodes are assigned using elbow_branch on "
-                "their first-reach row."
+                "Only episodes with a task first_reach_step are assigned "
+                "using elbow_branch on that task first-reach row."
             ),
             "branches": {
                 branch: _branch_record(members, branch)
@@ -1083,8 +1083,25 @@ def analyze_trajectory(artifact: Any, input_path: str) -> dict[str, Any]:
                 "distance_m": SUCCESS_THRESHOLD_M,
                 "distance_cm": 1.0,
                 "meaning": (
-                    "in_tolerance is true when the post-control-boundary "
-                    "distance is at most 1 cm."
+                    "Trajectory in_tolerance is true when the independent "
+                    "post-integration geometric distance_m is at most 1 cm."
+                ),
+            },
+            "phase_semantics": {
+                "classification_basis": (
+                    "Episode phase classification uses the task-owned "
+                    "held_steps counter and diagnostic first_reach_step. "
+                    "A task reach is the first row with held_steps > 0."
+                ),
+                "task_diagnostics": (
+                    "held_steps, first_reach_step, in_tolerance_steps, hold "
+                    "interruptions, min/final task distance, and success are "
+                    "preserved legacy task-owned measurements."
+                ),
+                "geometric_instrumentation": (
+                    "Trajectory distance_m and in_tolerance are independent "
+                    "post-integration geometric instrumentation and are not "
+                    "required to equal the task phase fields."
                 ),
             },
             "launch_window": {
@@ -1095,7 +1112,8 @@ def analyze_trajectory(artifact: Any, input_path: str) -> dict[str, Any]:
             "post_first_reach_window": {
                 "definition": (
                     "Rows with control_step >= first_reach_step for episodes "
-                    "that reached tolerance; the first-reach row is included."
+                    "with a task first_reach_step; the task first-reach row "
+                    "is included."
                 ),
                 "first_reach_row_included": True,
             },
@@ -1111,15 +1129,28 @@ def analyze_trajectory(artifact: Any, input_path: str) -> dict[str, Any]:
             "phase_classification_table": [
                 {
                     "phase": "no_reach",
-                    "definition": "first_reach_step is null; no row entered the 1 cm tolerance.",
+                    "definition": (
+                        "The task held_steps counter never became positive "
+                        "and diagnostic first_reach_step is null."
+                    ),
                     "count": overall["no_reach_count"],
-                    "interpretation": "Report launch and full-trajectory observations without causal attribution.",
+                    "interpretation": (
+                        "Report launch and full-trajectory observations "
+                        "without causal attribution; geometric "
+                        "in_tolerance is a separate flag."
+                    ),
                 },
                 {
                     "phase": "reached_but_unsuccessful",
-                    "definition": "first_reach_step is present and success is false.",
+                    "definition": (
+                        "The task first_reach_step is present and task "
+                        "success is false."
+                    ),
                     "count": overall["hold_failure_count"],
-                    "interpretation": "Report post-reach observations and hold interruptions without causal attribution.",
+                    "interpretation": (
+                        "Report post-reach observations and task hold "
+                        "interruptions without causal attribution."
+                    ),
                 },
             ],
         },
