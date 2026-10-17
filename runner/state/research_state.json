@@ -3286,7 +3286,7 @@
     }
   },
   "counters": {
-    "event": 23,
+    "event": 24,
     "inquiry": 5,
     "measurement": 16,
     "session": 11,
@@ -3295,7 +3295,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T4:checkpoint-115712",
     "retained": {},
@@ -11186,61 +11186,160 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T09:00:12Z",
+      "error": null,
+      "id": "E24",
+      "inquiry_id": "I5",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Best-known is T4:checkpoint-115712, assigned by E22 on M15/M16 complete saved-runtime evidence; it is not goal-certified. T1:checkpoint-115712 remains the outer-preserving reference at 63/67 outer successes and 63/67 outer first reaches. T2 and T3 remain prior negative or limited comparisons and are not assigned. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened; I5 used E21 restore, one 120,000-step transfer allocation T4 (actual completion 120,832), matched 160-episode saved-runtime evaluation M15, two stratification analyses in M16, best-known assignment E22, and closure E23. Four training allocations and twelve measurement operations are now complete in the campaign. No official assessment has been requested; T4 is the sole current best-known candidate.",
+        "current_goal_gap": "T4 achieves 148/160 (92.5%) with the saved default identity runtime. Inner 6-14 cm performance improves to 86/93 successes with 3 no-reaches, from T1's 42/93 successes and 45 no-reaches. Outer 14-20 cm first reach is 63/67, equal to T1, but outer success is 62/67 versus T1's 63/67. T4 still has 7 no-reaches and 5 hold failures overall; the development gap and the official 196/200 threshold remain unresolved.",
+        "current_synthesis": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+        "decision_frontier": "The unresolved next distinction is whether T4's inner launch/coverage basin can be retained while reducing the saturation-driven dynamic-margin and outer hold failures, or whether the inner gain intrinsically trades away outer stabilization under the current direct-torque PPO implementation. Discriminating evidence should compare a complete candidate against T4 on the same saved-runtime panel with outer 14-20 cm success and first reach, inner no-reach, hold interruptions, endpoint speed, action saturation, and angle stratification; a candidate that restores at least 63/67 outer successes without surrendering the inner gain would support continuation, while another tradeoff would redirect the method. Branch identity remains non-consequential to the immediate route unless a future intervention changes branch occupancy independently.",
+        "evidence_references": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 official episodes. T4:checkpoint-115712 is the strongest measured candidate but reaches 148/160 on the matched development panel, so it is substantially short of the goal and is not official evidence.",
+        "next_direction_or_closure": "I5 is closed limited by E23. Continue only through a new goal-review decision focused on preserving T4's inner capability while repairing outer hold/dynamic margin; do not request official assessment from the 148/160 development artifact. The next question is proposed for goal review rather than treated as an active inquiry in this checkpoint.",
+        "next_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
-    "completed_operations": [
-      "E19"
-    ],
-    "cumulative_resource_use": "Five inquiries have now been opened, with I4 closed limited/negative and I5 newly opened; three fresh 120,000-step training allocations have completed (T1, T2, T3, with actual rollout-rounded completion at 120,832); ten measurement operations have completed, including matched comparisons and trajectory analyses; one best-known learned artifact remains assigned and no official assessment has been requested. The new inquiry is bounded by the existing maintainer allocation and adds no claim that prior failed operations are evidence.",
-    "current_goal_gap": "T1:checkpoint-115712 achieved 105/160 on the matched development panel, with 42/93 inner and 63/67 outer successes; its failures were dominated by 45 inner no-reaches and only 6 reached-but-unsuccessful episodes. T2:checkpoint-120832, trained freshly over 6-20 cm, achieved 54/160 and had zero recorded training-proxy success with 500-step training episodes late in the run. T3:checkpoint-120832, using the persisted M12-style stateful launch runtime, achieved 95/160, improved inner performance but fell to 37/67 outer success. No candidate is close to the official 196/200 criterion.",
-    "current_synthesis": "Established observations: the model's kinematic analysis supports feasibility of the official annulus, while the singular fully extended reset makes launch and branch-conditioned trajectory acquisition consequential; direct torque control and the uninterrupted hold make reach and stabilization coupled. T1's complete saved artifact demonstrates useful outer-range reach and holds but leaves an inner launch/coverage deficit. T2 establishes that a fresh policy exposed to the full radial range can fail to acquire either useful training success or a strong complete candidate; it does not disprove full-range learning, but it makes another fresh full-range run a weak next direction. M12's research-only adapter improved T1's inner first reach, but T3 shows that carrying that stateful adapter into training and the saved runtime did not preserve outer behavior. T3's changed weights, runtime, action history and branch occupancy remain jointly confounded, so branch identity or the adapter is not an isolated established cause. Correction to the inherited direction: the goal-relevant distinction is no longer simply whether a complete candidate can be built under full-range exposure; it is whether T1's acquired outer capability can be retained while inner exposure is introduced through transfer, without relying on an evaluator-only intervention. The physical consequences that matter are preservation of the learned outer basin, escape from the singular reset into an inner target, branch/angle coverage, torque saturation and low-velocity hold margin. Compiled dynamics and the exact protected substep semantics remain unresolved, but available diagnostics already show the dominant complete-candidate decision is launch/coverage versus outer preservation, not missing static reachability.",
-    "decision_frontier": "The consequential distinction is whether transfer from T1 can add inner-annulus launch/coverage without destroying the outer reach-and-hold behavior that fresh full-range T2 failed to acquire and complete T3 failed to preserve. A complete artifact comparison on the same panel, with saved-runtime verification and inner/outer first reach, success, no-reach, hold-failure, branch, endpoint-speed, interruption and saturation diagnostics, will decide whether this is a credible route. If transfer preserves outer behavior and improves inner failures, continue toward candidate selection; if it repeats the tradeoff or fails to learn, redirect rather than attribute the result to branch identity or to transfer in isolation.",
-    "evidence_references": [
-      "M2",
-      "T1",
-      "M3",
-      "M4",
-      "T2",
-      "M5",
-      "M6",
-      "M7",
-      "M9",
-      "M12",
-      "E13",
-      "T3",
-      "M13",
-      "M14",
-      "E17",
-      "E19"
-    ],
-    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200, where every success requires an uninterrupted 100-control-step hold across the official 6-20 cm range. The strongest complete artifact is far below that threshold, so the goal-review decision is to pursue one bounded transfer-learning inquiry rather than request terminal assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Open and checkpoint inquiry I5. In the fresh inquiry session, implement or restore only the complete transfer-training path needed to preserve T1's default saved runtime and expose the transferred policy to the official radial range, then measure the selected complete checkpoint against T1 with the stated guardrails. Close with positive, negative or limited evidence according to the recorded closure condition; do not request official assessment unless a complete artifact first becomes the explicit best-supported candidate.",
-    "next_question": "Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds?",
-    "scientific_commit": "76fd1fce3f2f17aa1332bd54ddd91fe9996e91b5",
-    "session_id": "S10"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "c508e0f7ebf8b60ce4f40129e9d384d02a841702",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Best-known is T4:checkpoint-115712, assigned by E22 on M15/M16 complete saved-runtime evidence; it is not goal-certified. T1:checkpoint-115712 remains the outer-preserving reference at 63/67 outer successes and 63/67 outer first reaches. T2 and T3 remain prior negative or limited comparisons and are not assigned. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened; I5 used E21 restore, one 120,000-step transfer allocation T4 (actual completion 120,832), matched 160-episode saved-runtime evaluation M15, two stratification analyses in M16, best-known assignment E22, and closure E23. Four training allocations and twelve measurement operations are now complete in the campaign. No official assessment has been requested; T4 is the sole current best-known candidate.",
+        "current_goal_gap": "T4 achieves 148/160 (92.5%) with the saved default identity runtime. Inner 6-14 cm performance improves to 86/93 successes with 3 no-reaches, from T1's 42/93 successes and 45 no-reaches. Outer 14-20 cm first reach is 63/67, equal to T1, but outer success is 62/67 versus T1's 63/67. T4 still has 7 no-reaches and 5 hold failures overall; the development gap and the official 196/200 threshold remain unresolved.",
+        "current_synthesis": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+        "decision_frontier": "The unresolved next distinction is whether T4's inner launch/coverage basin can be retained while reducing the saturation-driven dynamic-margin and outer hold failures, or whether the inner gain intrinsically trades away outer stabilization under the current direct-torque PPO implementation. Discriminating evidence should compare a complete candidate against T4 on the same saved-runtime panel with outer 14-20 cm success and first reach, inner no-reach, hold interruptions, endpoint speed, action saturation, and angle stratification; a candidate that restores at least 63/67 outer successes without surrendering the inner gain would support continuation, while another tradeoff would redirect the method. Branch identity remains non-consequential to the immediate route unless a future intervention changes branch occupancy independently.",
+        "evidence_references": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 official episodes. T4:checkpoint-115712 is the strongest measured candidate but reaches 148/160 on the matched development panel, so it is substantially short of the goal and is not official evidence.",
+        "inquiry_id": "I5",
+        "next_direction_or_closure": "I5 is closed limited by E23. Continue only through a new goal-review decision focused on preserving T4's inner capability while repairing outer hold/dynamic margin; do not request official assessment from the 148/160 development artifact. The next question is proposed for goal review rather than treated as an active inquiry in this checkpoint.",
+        "next_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+        "session_id": "S11"
+      },
+      "presentation": {
+        "backend_session_id": "08462f2a-9013-4bd8-8660-fe08fe607bd1",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "46m54s | 101.78 AIU | prompt 15m (86% cached) | output 288.6k",
+        "session_id": "S11",
+        "session_kind": "inquiry",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "dd1caa928ee71e6bb244f59dce451cd1dd641e3a",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "08462f2a-9013-4bd8-8660-fe08fe607bd1",
-    "id": "S11",
+    "failure": null,
+    "id": "E24",
     "inquiry_id": "I5",
-    "kind": "inquiry",
-    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Best-known is T4:checkpoint-115712, assigned by E22 on M15/M16 complete saved-runtime evidence; it is not goal-certified. T1:checkpoint-115712 remains the outer-preserving reference at 63/67 outer successes and 63/67 outer first reaches. T2 and T3 remain prior negative or limited comparisons and are not assigned. No working or retained candidate is assigned.",
+        "completed_operations": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "cumulative_resource_use": "Five inquiries have been opened; I5 used E21 restore, one 120,000-step transfer allocation T4 (actual completion 120,832), matched 160-episode saved-runtime evaluation M15, two stratification analyses in M16, best-known assignment E22, and closure E23. Four training allocations and twelve measurement operations are now complete in the campaign. No official assessment has been requested; T4 is the sole current best-known candidate.",
+        "current_goal_gap": "T4 achieves 148/160 (92.5%) with the saved default identity runtime. Inner 6-14 cm performance improves to 86/93 successes with 3 no-reaches, from T1's 42/93 successes and 45 no-reaches. Outer 14-20 cm first reach is 63/67, equal to T1, but outer success is 62/67 versus T1's 63/67. T4 still has 7 no-reaches and 5 hold failures overall; the development gap and the official 196/200 threshold remain unresolved.",
+        "current_synthesis": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+        "decision_frontier": "The unresolved next distinction is whether T4's inner launch/coverage basin can be retained while reducing the saturation-driven dynamic-margin and outer hold failures, or whether the inner gain intrinsically trades away outer stabilization under the current direct-torque PPO implementation. Discriminating evidence should compare a complete candidate against T4 on the same saved-runtime panel with outer 14-20 cm success and first reach, inner no-reach, hold interruptions, endpoint speed, action saturation, and angle stratification; a candidate that restores at least 63/67 outer successes without surrendering the inner gain would support continuation, while another tradeoff would redirect the method. Branch identity remains non-consequential to the immediate route unless a future intervention changes branch occupancy independently.",
+        "evidence_references": [
+          "E21",
+          "T4",
+          "M15",
+          "M16",
+          "E22",
+          "E23"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 official episodes. T4:checkpoint-115712 is the strongest measured candidate but reaches 148/160 on the matched development panel, so it is substantially short of the goal and is not official evidence.",
+        "next_direction_or_closure": "I5 is closed limited by E23. Continue only through a new goal-review decision focused on preserving T4's inner capability while repairing outer hold/dynamic margin; do not request official assessment from the 148/160 development artifact. The next question is proposed for goal review rather than treated as an active inquiry in this checkpoint.",
+        "next_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?"
+      }
+    },
+    "request_fingerprint": "8290ab5b9415437ade8941b2a2cb63fb75a6ab78c6c5b7e7e74a714e0ce89096",
+    "session_id": "S11",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "Best-known is T4:checkpoint-115712, assigned by E22 on M15/M16 complete saved-runtime evidence; it is not goal-certified. T1:checkpoint-115712 remains the outer-preserving reference at 63/67 outer successes and 63/67 outer first reaches. T2 and T3 remain prior negative or limited comparisons and are not assigned. No working or retained candidate is assigned.",
+    "completed_operations": [
       "E21",
       "T4",
       "M15",
@@ -11248,7 +11347,31 @@
       "E22",
       "E23"
     ],
-    "scientific_parent_commit": "28bb5586d33a5a26bd69d4b4f0c1ece660cdfa87"
+    "cumulative_resource_use": "Five inquiries have been opened; I5 used E21 restore, one 120,000-step transfer allocation T4 (actual completion 120,832), matched 160-episode saved-runtime evaluation M15, two stratification analyses in M16, best-known assignment E22, and closure E23. Four training allocations and twelve measurement operations are now complete in the campaign. No official assessment has been requested; T4 is the sole current best-known candidate.",
+    "current_goal_gap": "T4 achieves 148/160 (92.5%) with the saved default identity runtime. Inner 6-14 cm performance improves to 86/93 successes with 3 no-reaches, from T1's 42/93 successes and 45 no-reaches. Outer 14-20 cm first reach is 63/67, equal to T1, but outer success is 62/67 versus T1's 63/67. T4 still has 7 no-reaches and 5 hold failures overall; the development gap and the official 196/200 threshold remain unresolved.",
+    "current_synthesis": "Established by E21, T4, M15 and M16: restoring T1's default identity policy I/O while retaining the full 6-20 cm training sampler and transferring from T1 produced a complete saved-runtime artifact with a large inner-annulus capability gain and a 43-episode net paired advantage over T1. This supports the artifact-level conclusion that transfer plus complete exposure can add launch/coverage capability without the severe T3 outer collapse, but it does not establish transfer alone as a causal factor because the implementation and source provenance differ across the campaign. The physical model's singular-reset interpretation is supported by the conversion of T1's inner no-reach failures into first reaches and holds; static reachability remains unlikely to be the dominant gap. The reach/hold coupling remains consequential: T4 has 5 hold failures, and its mean action-saturation fraction is 0.935 with saturation present in all 160 episodes, versus T1's 0.824, while outer success loses one episode. This makes dynamic margin, torque saturation and late stabilization the next decision-relevant alternatives to inner launch failure. Both candidates finish on the open branch in the measured panel, so branch occupancy does not isolate a cause. Angle-stratified results show T4 improves most angle sectors but retains weaker negative-angle sectors, so uniform aggregate success is not sufficient evidence of official coverage.",
+    "decision_frontier": "The unresolved next distinction is whether T4's inner launch/coverage basin can be retained while reducing the saturation-driven dynamic-margin and outer hold failures, or whether the inner gain intrinsically trades away outer stabilization under the current direct-torque PPO implementation. Discriminating evidence should compare a complete candidate against T4 on the same saved-runtime panel with outer 14-20 cm success and first reach, inner no-reach, hold interruptions, endpoint speed, action saturation, and angle stratification; a candidate that restores at least 63/67 outer successes without surrendering the inner gain would support continuation, while another tradeoff would redirect the method. Branch identity remains non-consequential to the immediate route unless a future intervention changes branch occupancy independently.",
+    "evidence_references": [
+      "E21",
+      "T4",
+      "M15",
+      "M16",
+      "E22",
+      "E23"
+    ],
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted holds out of 200 official episodes. T4:checkpoint-115712 is the strongest measured candidate but reaches 148/160 on the matched development panel, so it is substantially short of the goal and is not official evidence.",
+    "inquiry_id": "I5",
+    "next_direction_or_closure": "I5 is closed limited by E23. Continue only through a new goal-review decision focused on preserving T4's inner capability while repairing outer hold/dynamic margin; do not request official assessment from the 148/160 development artifact. The next question is proposed for goal review rather than treated as an active inquiry in this checkpoint.",
+    "next_question": "Can a follow-on controller or training change retain T4's inner-annulus launch and coverage gains while restoring outer 14-20 cm uninterrupted success and reducing action saturation and hold failures under the default saved runtime?",
+    "scientific_commit": "dd1caa928ee71e6bb244f59dce451cd1dd641e3a",
+    "session_id": "S11"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "c508e0f7ebf8b60ce4f40129e9d384d02a841702",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }

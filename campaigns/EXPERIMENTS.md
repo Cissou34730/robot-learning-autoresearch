@@ -45,3 +45,4 @@
 | M16 | measurement | I5 | completed |
 | E22 | model_role | I5 | assigned |
 | E23 | inquiry | I5 | completed |
+| E24 | checkpoint | I5 | checkpointed |
