@@ -26,3 +26,4 @@
 | M8 | measurement | I3 | failed |
 | M9 | measurement | I3 | completed |
 | M10 | measurement | I3 | failed |
+| M11 | measurement | I3 | failed |
