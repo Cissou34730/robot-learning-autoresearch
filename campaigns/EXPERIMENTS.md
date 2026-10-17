@@ -60,3 +60,4 @@
 | T6 | training | I7 | completed |
 | M21 | measurement | I7 | completed |
 | M22 | measurement | I7 | completed |
+| E31 | model_role | I7 | assigned |
