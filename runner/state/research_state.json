@@ -4381,38 +4381,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Negative capability comparison: the fresh full-range candidate T2:checkpoint-120832 did not improve the 6-14 cm inner annulus and materially degraded both outer-range reach and uninterrupted hold relative to T1:checkpoint-115712 under matched diagnostics.",
-        "reason": "T2 was trained fresh for the full 120000-step allocation with the only intended source change being 6-20 cm training-radius exposure. In matched M5 evaluation on 160 identical episode seeds, T2 achieved 54/160 successes (33.75%) versus T1's 105/160 (65.625%), with 20 candidate wins versus 71 reference wins. M6 shows the mechanism-relevant comparison: in 6-14 cm, T2 had 30/93 successes, 31/93 first reaches, and 62 no-reaches versus T1's 42/93 successes, 48/93 first reaches, and 45 no-reaches; in 14-20 cm, T2 had 24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67 successes, 63/67 first reaches, 4 no-reaches, and zero hold failures. Overall mean maximum uninterrupted hold fell from 66.38 to 34.02 steps. T2 also showed severe angle-conditioned degradation, including 0% success in both [90,135) and [135,180) degree bins, despite lower mean action saturation (0.558 versus 0.824); therefore saturation reduction is not sufficient evidence of improved control. These are properties of complete compared artifacts under the tested implementation and do not isolate radial exposure from training realization, launch, branch, or directional-control mechanisms. I2 is nevertheless resolved negatively because its prespecified capability and outer-stability closure criteria are met."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Negative capability comparison: the fresh full-range candidate T2:checkpoint-120832 did not improve the 6-14 cm inner annulus and materially degraded both outer-range reach and uninterrupted hold relative to T1:checkpoint-115712 under matched diagnostics.",
-        "reason": "T2 was trained fresh for the full 120000-step allocation with the only intended source change being 6-20 cm training-radius exposure. In matched M5 evaluation on 160 identical episode seeds, T2 achieved 54/160 successes (33.75%) versus T1's 105/160 (65.625%), with 20 candidate wins versus 71 reference wins. M6 shows the mechanism-relevant comparison: in 6-14 cm, T2 had 30/93 successes, 31/93 first reaches, and 62 no-reaches versus T1's 42/93 successes, 48/93 first reaches, and 45 no-reaches; in 14-20 cm, T2 had 24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67 successes, 63/67 first reaches, 4 no-reaches, and zero hold failures. Overall mean maximum uninterrupted hold fell from 66.38 to 34.02 steps. T2 also showed severe angle-conditioned degradation, including 0% success in both [90,135) and [135,180) degree bins, despite lower mean action saturation (0.558 versus 0.824); therefore saturation reduction is not sufficient evidence of improved control. These are properties of complete compared artifacts under the tested implementation and do not isolate radial exposure from training realization, launch, branch, or directional-control mechanisms. I2 is nevertheless resolved negatively because its prespecified capability and outer-stability closure criteria are met.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative capability comparison: the fresh full-range candidate T2:checkpoint-120832 did not improve the 6-14 cm inner annulus and materially degraded both outer-range reach and uninterrupted hold relative to T1:checkpoint-115712 under matched diagnostics.",
-        "reason": "T2 was trained fresh for the full 120000-step allocation with the only intended source change being 6-20 cm training-radius exposure. In matched M5 evaluation on 160 identical episode seeds, T2 achieved 54/160 successes (33.75%) versus T1's 105/160 (65.625%), with 20 candidate wins versus 71 reference wins. M6 shows the mechanism-relevant comparison: in 6-14 cm, T2 had 30/93 successes, 31/93 first reaches, and 62 no-reaches versus T1's 42/93 successes, 48/93 first reaches, and 45 no-reaches; in 14-20 cm, T2 had 24/67 successes, 32/67 first reaches, 35 no-reaches, and 8 hold failures versus T1's 63/67 successes, 63/67 first reaches, 4 no-reaches, and zero hold failures. Overall mean maximum uninterrupted hold fell from 66.38 to 34.02 steps. T2 also showed severe angle-conditioned degradation, including 0% success in both [90,135) and [135,180) degree bins, despite lower mean action saturation (0.558 versus 0.824); therefore saturation reduction is not sufficient evidence of improved control. These are properties of complete compared artifacts under the tested implementation and do not isolate radial exposure from training realization, launch, branch, or directional-control mechanisms. I2 is nevertheless resolved negatively because its prespecified capability and outer-stability closure criteria are met."
-      }
-    },
-    "request_fingerprint": "3028c281a0717e2e64286d4e8707494a0993b8c3a691b5ab7838528c02c0b94e",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known: T1:checkpoint-115712, assigned by E4 because it is the only learned candidate with full-range diagnostic evidence (M3/M4) and ties the terminal checkpoint's training proxy without relying on terminal position. Working: none. No candidate meets the human goal or has protected official assessment evidence. I2 will produce and compare a fresh full-range candidate against this baseline; the baseline remains best-known until completed evidence supports a change.",
     "completed_operations": [
