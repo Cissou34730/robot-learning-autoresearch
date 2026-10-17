@@ -2,9 +2,9 @@
   "active_inquiry": {
     "closure_condition": "Close when a completed learned-candidate artifact has been measured from the contractual reset on a radius- and angle-stratified panel spanning the full 6--20 cm official radial range, preserving episode success, first-reach step, minimum and final distance, endpoint-velocity or hold-interruption diagnostics, maximum held steps, elbow branch, and action saturation, and the evidence supports a bounded conclusion about whether launch/overshoot, inner-annulus coverage, or uninterrupted-hold stabilization is the consequential next direction (including an inconclusive conclusion if the diagnostics cannot discriminate them).",
     "goal_connection": "The human goal requires a learned policy to complete the uninterrupted 2-second, 1 cm hold in at least 196 of 200 official episodes. No learned candidate has been trained or evaluated, so this inquiry is the necessary next step to establish whether end-to-end capability exists and which failure class blocks progress toward 98% success.",
-    "handoff_conclusion": "Observed in completed M2: the compiled model has two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit 0.5 damping and 0.01 armature, and compiled link masses of about 0.099 kg and 0.052 kg. Dense generalized mass matrices are about 0.010--0.012 kg*m^2 on the shoulder and 0.0102 kg*m^2 on the elbow across the sampled configurations. The contractual reset has FK at 0.22 m and a rank-1 endpoint Jacobian with singular values 0.2417 and 0.0. On a 24-point grid spanning radii 0.06, 0.14, and 0.20 m and eight angles, every target had at least one joint-limit-feasible inverse branch; all 48 branch solutions were full-rank with condition numbers from 1.67 to 5.29, although two individual branch solutions were joint-limit-infeasible. A one-control-interval unit action from reset or representative IK states generated roughly 5.5--6.1 rad/s peak joint speed and up to 4.4 cm endpoint displacement over the subsequent one-second open-loop response, while zero-torque velocity decayed to numerical zero by the final sample. Interpretation: the mechanism is not statically unreachable and has substantial direct-torque authority plus damping, but a one-interval command can move farther than the 1 cm hold ball, making velocity shaping and early capture plausible bottlenecks. Competing explanations remain: (A) a learned policy will mainly fail because the singular launch and direct-torque transient delay or overshoot first reach; (B) the dominant gap will be the visible training exposure mismatch, especially the omitted 6--14 cm inner annulus; (C) first reach will be adequate but residual endpoint motion will interrupt the 100-step hold. M2 supports the physical premises behind A and weakens static-feasibility and unknown-compiled-default explanations, but it does not test a policy, target-conditioned launch, closed-loop settling, runtime fidelity, or official protected semantics. The unit-action response is open-loop and cannot establish task success or causal failure attribution.",
+    "handoff_conclusion": "M2 observed the compiled arm with two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit damping and armature, compiled link masses near 0.099 kg and 0.052 kg, and generalized shoulder/elbow inertias near 0.010--0.012 kg*m^2. It also observed the contractual reset at 22 cm with a rank-1 endpoint Jacobian, feasible inverse branches for every sampled target on the 6--20 cm grid, full-rank branch solutions away from reset, and substantial but potentially overshooting response to a one-interval unit action. These observations weaken static infeasibility and substantially reduce the earlier concern that unknown compiled defaults alone explain the control problem; they do not establish protected-runtime fidelity, learned behavior, or hold success. The consequential competing explanations remain: (A) singularity exit and direct-torque transients cause delayed reach or overshoot; (B) the baseline exposure gap causes failures in the official 6--14 cm inner annulus; and (C) policies reach the target but fail the complete hold through residual endpoint motion. Aggregate reward or minimum distance cannot distinguish them. The inquiry will test a learned artifact from the contractual reset and retain first reach, distance, endpoint-velocity/hold interruption, maximum hold, branch, saturation, and radius/angle diagnostics. Results will be interpreted as properties of the tested candidate and runtime, not as proof that any broader method or intended factor caused the outcome.",
     "handoff_question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization.",
-    "handoff_source_session_id": "S1",
+    "handoff_source_session_id": "S2",
     "id": "I1",
     "opened_in_session": "S2",
     "question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization.",
@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 2,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -543,27 +543,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T07:08:10Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed measurements: M2 (one candidate-free compiled-arm characterization). Completed inquiry boundary: E2/I1. Training steps: 0; learned candidates: 0. M1 remains failed execution history and is not scientific evidence.",
+        "current_goal_gap": "No learned candidate exists, so official success and even development capability remain unquantified. The remaining gap is end-to-end policy acquisition and regulation from the singular reset across the full official radial range, with launch timing/overshoot, inner-annulus coverage, and uninterrupted-hold stability unresolved.",
+        "current_synthesis": "M2 observed the compiled arm with two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit damping and armature, compiled link masses near 0.099 kg and 0.052 kg, and generalized shoulder/elbow inertias near 0.010--0.012 kg*m^2. It also observed the contractual reset at 22 cm with a rank-1 endpoint Jacobian, feasible inverse branches for every sampled target on the 6--20 cm grid, full-rank branch solutions away from reset, and substantial but potentially overshooting response to a one-interval unit action. These observations weaken static infeasibility and substantially reduce the earlier concern that unknown compiled defaults alone explain the control problem; they do not establish protected-runtime fidelity, learned behavior, or hold success. The consequential competing explanations remain: (A) singularity exit and direct-torque transients cause delayed reach or overshoot; (B) the baseline exposure gap causes failures in the official 6--14 cm inner annulus; and (C) policies reach the target but fail the complete hold through residual endpoint motion. Aggregate reward or minimum distance cannot distinguish them. The inquiry will test a learned artifact from the contractual reset and retain first reach, distance, endpoint-velocity/hold interruption, maximum hold, branch, saturation, and radius/angle diagnostics. Results will be interpreted as properties of the tested candidate and runtime, not as proof that any broader method or intended factor caused the outcome.",
+        "decision_frontier": "Determine whether the first consequential policy gap is launch/overshoot from the singular reset, official inner-annulus coverage, or local uninterrupted-hold stabilization. A full-range radius- and angle-stratified candidate artifact with trajectory and hold diagnostics will discriminate these alternatives; inability to preserve or separate those diagnostics will leave the cause unresolved and redirect the inquiry toward measurement capability rather than a causal intervention.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the protected full 6--20 cm target distribution, with each success requiring an uninterrupted 100-control-step hold inside 1 cm. The opened inquiry directly tests the missing learned-policy capability from the contractual reset and preserves failure diagnostics needed to choose the next route to that goal.",
+        "next_direction_or_closure": "Continue into inquiry I1. First produce or measure a learned candidate using the existing protected-compatible task semantics, then select the candidate artifact and diagnostic panel that best distinguishes launch/overshoot, inner-annulus coverage, and hold stabilization. Do not request official assessment until a candidate exists and its prospects are evidence-backed.",
+        "next_question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e09517683aaa07094d2ce723b173ccb366e6460f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed measurements: M2 (one candidate-free compiled-arm characterization). Completed inquiry boundary: E2/I1. Training steps: 0; learned candidates: 0. M1 remains failed execution history and is not scientific evidence.",
+        "current_goal_gap": "No learned candidate exists, so official success and even development capability remain unquantified. The remaining gap is end-to-end policy acquisition and regulation from the singular reset across the full official radial range, with launch timing/overshoot, inner-annulus coverage, and uninterrupted-hold stability unresolved.",
+        "current_synthesis": "M2 observed the compiled arm with two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit damping and armature, compiled link masses near 0.099 kg and 0.052 kg, and generalized shoulder/elbow inertias near 0.010--0.012 kg*m^2. It also observed the contractual reset at 22 cm with a rank-1 endpoint Jacobian, feasible inverse branches for every sampled target on the 6--20 cm grid, full-rank branch solutions away from reset, and substantial but potentially overshooting response to a one-interval unit action. These observations weaken static infeasibility and substantially reduce the earlier concern that unknown compiled defaults alone explain the control problem; they do not establish protected-runtime fidelity, learned behavior, or hold success. The consequential competing explanations remain: (A) singularity exit and direct-torque transients cause delayed reach or overshoot; (B) the baseline exposure gap causes failures in the official 6--14 cm inner annulus; and (C) policies reach the target but fail the complete hold through residual endpoint motion. Aggregate reward or minimum distance cannot distinguish them. The inquiry will test a learned artifact from the contractual reset and retain first reach, distance, endpoint-velocity/hold interruption, maximum hold, branch, saturation, and radius/angle diagnostics. Results will be interpreted as properties of the tested candidate and runtime, not as proof that any broader method or intended factor caused the outcome.",
+        "decision_frontier": "Determine whether the first consequential policy gap is launch/overshoot from the singular reset, official inner-annulus coverage, or local uninterrupted-hold stabilization. A full-range radius- and angle-stratified candidate artifact with trajectory and hold diagnostics will discriminate these alternatives; inability to preserve or separate those diagnostics will leave the cause unresolved and redirect the inquiry toward measurement capability rather than a causal intervention.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the protected full 6--20 cm target distribution, with each success requiring an uninterrupted 100-control-step hold inside 1 cm. The opened inquiry directly tests the missing learned-policy capability from the contractual reset and preserves failure diagnostics needed to choose the next route to that goal.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Continue into inquiry I1. First produce or measure a learned candidate using the existing protected-compatible task semantics, then select the candidate artifact and diagnostic panel that best distinguishes launch/overshoot, inner-annulus coverage, and hold stabilization. Do not request official assessment until a candidate exists and its prospects are evidence-backed.",
+        "next_question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "7e2700d8-b2e5-4533-9290-ad233d9e027c",
+        "campaign_id": "6f2f5ffc-d6d6-4eff-bfe1-476b8d8725aa",
+        "campaign_usage": "10m22s | 19.49 AIU | prompt 2.9m (90% cached) | output 69.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "usage unavailable"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "cc804ec2a43ef80200b55ddf590c68d48c3711dd",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "Completed measurements: M2 (one candidate-free compiled-arm characterization). Completed inquiry boundary: E2/I1. Training steps: 0; learned candidates: 0. M1 remains failed execution history and is not scientific evidence.",
+        "current_goal_gap": "No learned candidate exists, so official success and even development capability remain unquantified. The remaining gap is end-to-end policy acquisition and regulation from the singular reset across the full official radial range, with launch timing/overshoot, inner-annulus coverage, and uninterrupted-hold stability unresolved.",
+        "current_synthesis": "M2 observed the compiled arm with two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit damping and armature, compiled link masses near 0.099 kg and 0.052 kg, and generalized shoulder/elbow inertias near 0.010--0.012 kg*m^2. It also observed the contractual reset at 22 cm with a rank-1 endpoint Jacobian, feasible inverse branches for every sampled target on the 6--20 cm grid, full-rank branch solutions away from reset, and substantial but potentially overshooting response to a one-interval unit action. These observations weaken static infeasibility and substantially reduce the earlier concern that unknown compiled defaults alone explain the control problem; they do not establish protected-runtime fidelity, learned behavior, or hold success. The consequential competing explanations remain: (A) singularity exit and direct-torque transients cause delayed reach or overshoot; (B) the baseline exposure gap causes failures in the official 6--14 cm inner annulus; and (C) policies reach the target but fail the complete hold through residual endpoint motion. Aggregate reward or minimum distance cannot distinguish them. The inquiry will test a learned artifact from the contractual reset and retain first reach, distance, endpoint-velocity/hold interruption, maximum hold, branch, saturation, and radius/angle diagnostics. Results will be interpreted as properties of the tested candidate and runtime, not as proof that any broader method or intended factor caused the outcome.",
+        "decision_frontier": "Determine whether the first consequential policy gap is launch/overshoot from the singular reset, official inner-annulus coverage, or local uninterrupted-hold stabilization. A full-range radius- and angle-stratified candidate artifact with trajectory and hold diagnostics will discriminate these alternatives; inability to preserve or separate those diagnostics will leave the cause unresolved and redirect the inquiry toward measurement capability rather than a causal intervention.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the protected full 6--20 cm target distribution, with each success requiring an uninterrupted 100-control-step hold inside 1 cm. The opened inquiry directly tests the missing learned-policy capability from the contractual reset and preserves failure diagnostics needed to choose the next route to that goal.",
+        "next_direction_or_closure": "Continue into inquiry I1. First produce or measure a learned candidate using the existing protected-compatible task semantics, then select the candidate artifact and diagnostic panel that best distinguishes launch/overshoot, inner-annulus coverage, and hold stabilization. Do not request official assessment until a candidate exists and its prospects are evidence-backed.",
+        "next_question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization."
+      }
+    },
+    "request_fingerprint": "088e7030f5be4b12d6c51f11f199b6356a45f18770beb29b26fe521b307dfeeb",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidates exist. Working and best-known roles remain empty; M2 is a candidate-free physical characterization, not a policy artifact.",
+    "candidates_and_roles": "No learned candidate has been trained or measured. Working and best-known roles are empty; M2 is candidate-free physical characterization and E2 records the inquiry boundary, not a policy artifact.",
     "completed_operations": [
-      "M2"
+      "E2"
     ],
-    "cumulative_resource_use": "One completed measurement (M2) and one failed execution attempt (M1, implementation history only; no evidence or completed measurement). No training steps or learned candidates have been used.",
-    "current_goal_gap": "No learned candidate has yet been trained or measured, so the gap to 98% official success is completely unquantified. The candidate-free evidence narrows the gap to end-to-end acquisition and regulation from the singular contractual reset across the full 6--20 cm radial distribution, with launch timing, action-induced overshoot, and hold interruptions still unresolved.",
-    "current_synthesis": "Observed in completed M2: the compiled model has two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit 0.5 damping and 0.01 armature, and compiled link masses of about 0.099 kg and 0.052 kg. Dense generalized mass matrices are about 0.010--0.012 kg*m^2 on the shoulder and 0.0102 kg*m^2 on the elbow across the sampled configurations. The contractual reset has FK at 0.22 m and a rank-1 endpoint Jacobian with singular values 0.2417 and 0.0. On a 24-point grid spanning radii 0.06, 0.14, and 0.20 m and eight angles, every target had at least one joint-limit-feasible inverse branch; all 48 branch solutions were full-rank with condition numbers from 1.67 to 5.29, although two individual branch solutions were joint-limit-infeasible. A one-control-interval unit action from reset or representative IK states generated roughly 5.5--6.1 rad/s peak joint speed and up to 4.4 cm endpoint displacement over the subsequent one-second open-loop response, while zero-torque velocity decayed to numerical zero by the final sample. Interpretation: the mechanism is not statically unreachable and has substantial direct-torque authority plus damping, but a one-interval command can move farther than the 1 cm hold ball, making velocity shaping and early capture plausible bottlenecks. Competing explanations remain: (A) a learned policy will mainly fail because the singular launch and direct-torque transient delay or overshoot first reach; (B) the dominant gap will be the visible training exposure mismatch, especially the omitted 6--14 cm inner annulus; (C) first reach will be adequate but residual endpoint motion will interrupt the 100-step hold. M2 supports the physical premises behind A and weakens static-feasibility and unknown-compiled-default explanations, but it does not test a policy, target-conditioned launch, closed-loop settling, runtime fidelity, or official protected semantics. The unit-action response is open-loop and cannot establish task success or causal failure attribution.",
-    "decision_frontier": "The unresolved scientific distinction is whether the first end-to-end learning gap is (A) singularity-exit/torque-transient control, (B) coverage of the official inner radial annulus, or (C) local low-velocity stabilization for the uninterrupted hold. The discriminating evidence is a complete candidate artifact measured from the contractual reset on a radius- and angle-stratified development panel, preserving first-reach step, minimum/final distance, endpoint velocity or hold interruptions, maximum held steps, elbow branch, and action saturation. Outcomes concentrated in late first reach or large early excursions would favor a launch/trajectory intervention; comparable reach but short or interrupted holds would favor stabilization; failures concentrated at 6--14 cm would favor changing training exposure. Aggregate reward or minimum distance alone would not discriminate these alternatives.",
+    "cumulative_resource_use": "Completed measurements: M2 (one candidate-free compiled-arm characterization). Completed inquiry boundary: E2/I1. Training steps: 0; learned candidates: 0. M1 remains failed execution history and is not scientific evidence.",
+    "current_goal_gap": "No learned candidate exists, so official success and even development capability remain unquantified. The remaining gap is end-to-end policy acquisition and regulation from the singular reset across the full official radial range, with launch timing/overshoot, inner-annulus coverage, and uninterrupted-hold stability unresolved.",
+    "current_synthesis": "M2 observed the compiled arm with two enabled gear-5 actuators, 2 ms Euler physics, a 20 ms visible control interval, zero gravity, explicit damping and armature, compiled link masses near 0.099 kg and 0.052 kg, and generalized shoulder/elbow inertias near 0.010--0.012 kg*m^2. It also observed the contractual reset at 22 cm with a rank-1 endpoint Jacobian, feasible inverse branches for every sampled target on the 6--20 cm grid, full-rank branch solutions away from reset, and substantial but potentially overshooting response to a one-interval unit action. These observations weaken static infeasibility and substantially reduce the earlier concern that unknown compiled defaults alone explain the control problem; they do not establish protected-runtime fidelity, learned behavior, or hold success. The consequential competing explanations remain: (A) singularity exit and direct-torque transients cause delayed reach or overshoot; (B) the baseline exposure gap causes failures in the official 6--14 cm inner annulus; and (C) policies reach the target but fail the complete hold through residual endpoint motion. Aggregate reward or minimum distance cannot distinguish them. The inquiry will test a learned artifact from the contractual reset and retain first reach, distance, endpoint-velocity/hold interruption, maximum hold, branch, saturation, and radius/angle diagnostics. Results will be interpreted as properties of the tested candidate and runtime, not as proof that any broader method or intended factor caused the outcome.",
+    "decision_frontier": "Determine whether the first consequential policy gap is launch/overshoot from the singular reset, official inner-annulus coverage, or local uninterrupted-hold stabilization. A full-range radius- and angle-stratified candidate artifact with trajectory and hold diagnostics will discriminate these alternatives; inability to preserve or separate those diagnostics will leave the cause unresolved and redirect the inquiry toward measurement capability rather than a causal intervention.",
     "evidence_references": [
       "M2"
     ],
-    "human_goal_connection": "The human goal requires a learned policy to complete the full uninterrupted 2-second, 1 cm hold in at least 196 of 200 official episodes. M2 supplies the physical context needed to choose a learning experiment without mistaking static reachability or compiled defaults for demonstrated task success.",
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the protected full 6--20 cm target distribution, with each success requiring an uninterrupted 100-control-step hold inside 1 cm. The opened inquiry directly tests the missing learned-policy capability from the contractual reset and preserves failure diagnostics needed to choose the next route to that goal.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup with the candidate-free physical fork narrowed and move to goal review. The next credible direction is an end-to-end policy experiment\u2014fresh training under an explicitly chosen exposure followed by matched radius/angle/hold diagnostics\u2014because the current evidence shows enough actuation and branch feasibility to make policy behavior the next missing causal layer.",
+    "next_direction_or_closure": "Continue into inquiry I1. First produce or measure a learned candidate using the existing protected-compatible task semantics, then select the candidate artifact and diagnostic panel that best distinguishes launch/overshoot, inner-annulus coverage, and hold stabilization. Do not request official assessment until a candidate exists and its prospects are evidence-backed.",
     "next_question": "At goal review, decide whether to open a bounded inquiry testing end-to-end policy capability from the contractual singular reset across the full official radial range, with failure-class diagnostics separating launch/overshoot, inner-annulus coverage, and uninterrupted-hold stabilization.",
-    "scientific_commit": "5d42ae688f59ebef4111639429d68a7ce26a1ce0",
-    "session_id": "S1"
+    "scientific_commit": "cc804ec2a43ef80200b55ddf590c68d48c3711dd",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -571,21 +689,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7e2700d8-b2e5-4533-9290-ad233d9e027c",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "e09517683aaa07094d2ce723b173ccb366e6460f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
