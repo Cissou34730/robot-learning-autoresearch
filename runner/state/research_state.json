@@ -2478,16 +2478,16 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 5,
     "measurement": 14,
-    "session": 10,
+    "session": 11,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": "T1:checkpoint-115712",
     "retained": {},
@@ -8675,9 +8675,113 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-17T08:50:17Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": "I5",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-115712",
+        "paths": [
+          "robot_learning\\scenario\\policy_io.py",
+          "robot_learning\\training\\current_params.json"
+        ],
+        "reason": "I5 requires transfer from T1's learned outer-range capability under complete official-range exposure and the default saved runtime. T1 was trained with the baseline identity policy I/O, whereas the current policy_io.py contains T3's stateful branch-launch adapter. Restore T1's policy runtime/config files only, while deliberately retaining the current full-range training sampler in robot_learning/training/environment.py, so the next training run tests transfer plus exposure rather than T3's adapter."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-115712",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "scientific_commit": "7da09e752d9a976c0bbd4285dc434670df3aab72",
+        "status": "restored"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-115712",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "7da09e752d9a976c0bbd4285dc434670df3aab72",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "session_id": "S11"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "8c59e7492873dfe49100a81748b5bd7d22c382f6a974a2cf0922600b0cbded2d",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "cfe124768ac105d053b83c7dced0285cb24f23e71571f781a5804db174cb3d0c",
+          "path": "robot_learning/training/current_params.json"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-115712",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/current_params.json"
+        ],
+        "scientific_commit": "7da09e752d9a976c0bbd4285dc434670df3aab72",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": "I5",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-115712",
+        "paths": [
+          "robot_learning\\scenario\\policy_io.py",
+          "robot_learning\\training\\current_params.json"
+        ],
+        "reason": "I5 requires transfer from T1's learned outer-range capability under complete official-range exposure and the default saved runtime. T1 was trained with the baseline identity policy I/O, whereas the current policy_io.py contains T3's stateful branch-launch adapter. Restore T1's policy runtime/config files only, while deliberately retaining the current full-range training sampler in robot_learning/training/environment.py, so the next training run tests transfer plus exposure rather than T3's adapter."
+      }
+    },
+    "request_fingerprint": "1df97f8b2caa4fd3d1d9fcfbb94547c784918e80937ce514be4d5d363f15a2f5",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-115712, supported by M3, M4, M13 and the retained complete artifact; it is not goal-certified. T2:checkpoint-120832 is a measured negative complete comparison from M5/M6 and is not assigned. T3:checkpoint-120832 is a measured limited/negative complete comparison from M13/M14/E17 and is not assigned. No working candidate is assigned. The new inquiry will begin from T1 as a transfer parent; that planned parent choice is not evidence of success.",
     "completed_operations": [
@@ -8718,6 +8822,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "08462f2a-9013-4bd8-8660-fe08fe607bd1",
+    "id": "S11",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can transfer training from T1's learned outer-range capability, with complete official-range exposure and the default saved runtime rather than a research-only launch intervention, produce a complete candidate that reduces inner-annulus no-reach failures while preserving T1's outer-range reach and uninterrupted holds? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E21"
+    ],
+    "scientific_parent_commit": "7da09e752d9a976c0bbd4285dc434670df3aab72"
+  },
   "terminal_state": null
 }
