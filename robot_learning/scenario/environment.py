@@ -30,6 +30,10 @@ from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
 
+ELBOW_SINGULAR_TOLERANCE_RAD = 1e-8
+ELBOW_BRANCH_LABELS = ("open", "folded", "singular")
+
+
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     metadata: ClassVar[dict[str, Any]] = {"render_modes": []}
 
@@ -51,6 +55,17 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        self._velocity_data = mujoco.MjData(self.model)
+        self._end_effector_site_id = int(
+            mujoco.mj_name2id(
+                self.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+            )
+        )
+        if self._end_effector_site_id < 0:
+            raise RuntimeError(
+                "The scenario model has no required end_effector site for "
+                "endpoint-velocity instrumentation"
+            )
 
         self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
@@ -74,6 +89,47 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
+
+    def _end_effector_velocity(self) -> np.ndarray:
+        """Return boundary velocity without changing task-owned derived fields."""
+        # mj_step leaves the task's existing derived fields untouched for the
+        # distance and observation reads below. Refresh an isolated data copy
+        # from the post-integration joint state so the velocity uses current
+        # position-dependent kinematics without changing those reads.
+        self._velocity_data.qpos[:] = self.data.qpos
+        self._velocity_data.qvel[:] = self.data.qvel
+        mujoco.mj_forward(self.model, self._velocity_data)
+        object_velocity = np.empty(6, dtype=np.float64)
+        mujoco.mj_objectVelocity(
+            self.model,
+            self._velocity_data,
+            mujoco.mjtObj.mjOBJ_SITE,
+            self._end_effector_site_id,
+            object_velocity,
+            0,
+        )
+        velocity = np.asarray(object_velocity[3:6], dtype=np.float64).copy()
+        if velocity.shape != (3,) or not np.all(np.isfinite(velocity)):
+            raise RuntimeError(
+                "MuJoCo did not provide a finite world-frame velocity for "
+                "the end_effector site"
+            )
+        return velocity
+
+    def _elbow_configuration(self) -> tuple[float, str]:
+        elbow_qpos = float(self.data.qpos[1])
+        if not np.isfinite(elbow_qpos):
+            raise RuntimeError(
+                "MuJoCo did not provide a finite elbow configuration for "
+                "branch attribution"
+            )
+        if abs(elbow_qpos) <= ELBOW_SINGULAR_TOLERANCE_RAD:
+            branch = "singular"
+        elif elbow_qpos > 0.0:
+            branch = "open"
+        else:
+            branch = "folded"
+        return elbow_qpos, branch
 
     def _distance_to_target(self) -> float:
         return float(
@@ -117,7 +173,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        return self._observation(), {}
+        elbow_qpos, elbow_branch = self._elbow_configuration()
+        return self._observation(), {
+            "elbow_qpos_rad": elbow_qpos,
+            "elbow_branch": elbow_branch,
+        }
 
     def step(
         self, action: np.ndarray
@@ -127,10 +187,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
+        applied_action = action.copy()
+        action_saturated = np.logical_or(
+            applied_action == self.action_space.low,
+            applied_action == self.action_space.high,
+        )
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
 
+        endpoint_velocity = self._end_effector_velocity()
+        endpoint_speed = float(np.linalg.norm(endpoint_velocity))
+        elbow_qpos, elbow_branch = self._elbow_configuration()
         distance = self._distance_to_target()
 
         previous_held_steps = self._held_steps
@@ -161,6 +229,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            # Researcher-owned instrumentation. These values are not policy
+            # inputs and do not participate in termination or reward.
+            "applied_action": applied_action,
+            "action_saturated": action_saturated,
+            "endpoint_velocity_mps": endpoint_velocity,
+            "endpoint_speed_mps": endpoint_speed,
+            "elbow_qpos_rad": elbow_qpos,
+            "elbow_branch": elbow_branch,
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,
