@@ -8,3 +8,4 @@
 | E2 | checkpoint | - | checkpointed |
 | E3 | inquiry | I1 | completed |
 | E4 | checkpoint | - | checkpointed |
+| T2 | training | I1 | completed |
