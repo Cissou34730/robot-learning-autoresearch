@@ -250,6 +250,15 @@ operation count. It may span several evidence-producing actions and ends when
 the PI saves a scientific session record through the `checkpoint` operation or
 makes a terminal goal-level decision.
 
+Choose a session-sized deliverable within the active inquiry.
+The deliverable need not answer the entire inquiry question.
+Checkpoint when the deliverable is complete or useful intermediate work is
+ready to preserve. Record supported findings, limitations and remaining work,
+even if no research direction is settled.
+The inquiry may remain active across sessions.
+Its closure condition and unresolved mechanisms do not require further work
+before checkpointing.
+
 The scientific session record preserves the human-goal connection, current
 synthesis, supporting evidence, remaining gap, decision frontier, and next
 question, direction or closure assessment. A later fresh session continues

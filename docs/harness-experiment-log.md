@@ -355,6 +355,8 @@ operations and must remain separate from campaign execution:
 
 | 2026-10-18 | Approved restoration of the 30-minute PI deadline | Implemented / campaign effect unmeasured. Campaign `fb0baa2a` stopped in S5 at 11:03:48 local after exhausting the 900-second active-session budget during evidence analysis. Restore the default to 1,800 seconds. Coding and review still consume the same budget; Runner execution waits remain excluded. Explicit timeout overrides, timeout failure handling, model settings and reasoning remain unchanged. Next action: None. No campaign is launched, resumed, reset or mutated by this change. |
 
+| 2026-10-18 | Approved session-sized deliverables within an inquiry | Implemented / campaign effect unmeasured. The resumed S5 in `fb0baa2a` exhausted its fresh 30-minute active budget while developing, repairing and interpreting trajectory analysis. Its objective largely repeated the broader inquiry, and the prompt tied checkpointing to a stable decision. Separate the inquiry from its session deliverable. New inquiry-session objectives and inquiry prompts explicitly permit checkpointing completed or useful intermediate work with supported findings, limitations and remaining work, without resolving all mechanisms or closing the inquiry. Apply the prompt guidance to resumed sessions without rewriting their stored objectives. Existing checkpoint fields, inquiry transitions, operation permissions, timeout accounting and PI scientific authority remain unchanged. No campaign state or PI-owned source is changed. No campaign is launched or resumed. |
+
 ## Evidence index
 
 | Evidence | Role |

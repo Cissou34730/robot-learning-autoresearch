@@ -768,7 +768,16 @@ function New-ScientificSessionPrompt {
                 "Preserve relevant residual failures, counterevidence and uncertainty in the chosen operation's reason."
             }
             else {
-                "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction. Checkpoint when the line of work reaches a stable decision."
+                "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction."
+                if ($session.kind -eq "inquiry") {
+                    "Choose a session-sized deliverable within the active inquiry, distinct from answering the whole inquiry."
+                    "Checkpoint when that deliverable is complete or useful intermediate work is ready to preserve."
+                    "Record supported findings, limitations and remaining work even if no research direction is settled."
+                    "The inquiry may remain active across sessions. Its closure condition and unresolved mechanisms do not require further work before checkpointing."
+                }
+                else {
+                    "Checkpoint when the line of work reaches a stable decision."
+                }
             }
             "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis, decision_frontier and next_question. Apply those meanings to the current state shown above."
             if ($session.kind -eq "goal_review") {
@@ -1132,12 +1141,13 @@ try {
             }
             else {
                 (
-                    "Advance $($state.active_inquiry.id) toward an evidence-supported " +
-                    "answer to its scientific question: $($state.active_inquiry.question) " +
-                    "Before choosing the next action, compare the accumulated evidence " +
-                    "with the closure condition. Choose the supported operation that best " +
-                    "advances the bounded work; no operation is the default. Close the " +
-                    "inquiry when the condition is met."
+                    "Advance $($state.active_inquiry.id) with a session-sized deliverable, " +
+                    "not necessarily a complete answer to the inquiry. Choose the deliverable " +
+                    "from completed evidence and the remaining scientific question. " +
+                    "Checkpoint supported findings, limitations and remaining work when " +
+                    "that deliverable is complete or useful intermediate work is ready to preserve. " +
+                    "The inquiry may remain active across sessions. Close it when completed " +
+                    "evidence warrants closure."
                 )
             }
             $startArguments = @(
