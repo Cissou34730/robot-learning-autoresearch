@@ -1665,7 +1665,7 @@
   "counters": {
     "event": 4,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 2
   },
@@ -3465,9 +3465,1269 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-18T08:37:22Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Analyze the complete M2 paired research panel for radius- and angle-stratified success, first reach and hold behavior, validating episode-seed and target alignment.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "{input:candidate}",
+              "--reference",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+            ],
+            "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M2"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M2"
+              }
+            },
+            "instrument": "python_module",
+            "label": "radius-angle-paired-analysis",
+            "module": "robot_learning.lab.analyze_coverage_comparison"
+          }
+        ],
+        "rationale": "M2 establishes an artifact-level disadvantage for the changed-exposure candidate (153/200 versus 172/200 research success; 21 reference wins, 2 candidate wins) but its aggregate comparison does not show whether the difference comes from radius-conditioned acquisition, angular no-reach, or post-reach hold failure. The PI-owned analyzer validates all 200 episode outcomes against diagnostics, joins by episode seed, checks identical target coordinates between the candidates, and reports paired wins plus success, no-reach/post-reach failures, first-reach timing, max held steps and interruptions by official-radius bins and 45-degree sectors. This directly satisfies I1's target-stratified discriminator and can determine whether the single tested 6\u201320 cm recipe merits further coverage work or whether the next direction should shift toward acquisition/branch behavior or stabilization. The analysis is limited to recorded control-step research diagnostics; it cannot establish protected within-step occupancy or official benchmark success."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+              "--reference",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+            ],
+            "instrument": "python_module",
+            "label": "radius-angle-paired-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M3-1-m3-coverage-comparison.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/interpretation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/candidate/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/paired/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/interpretation/no_reach_failure",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation/post_reach_failure",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation/reach_timing",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower_inclusive",
+                      "upper_exclusive",
+                      "upper_inclusive"
+                    ],
+                    "path": "/interpretation/radial_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_inclusive",
+                      "upper_exclusive"
+                    ],
+                    "path": "/interpretation/angular_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/post_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/reached_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/6\u2013<10 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/10\u2013<14 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/14\u2013<18 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/18\u201320 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-180,-135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-135,-90)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-90,-45)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-45,0)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[0,45)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[45,90)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[90,135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[135,180)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/post_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/reached_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/6\u2013<10 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/10\u2013<14 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/14\u2013<18 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/18\u201320 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/angular_sectors/[-180,-135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/paired/overall/episode_count",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "dd7423867b7dd224d8737e4bfb07123a1f230bd6a681fa1ac1593918798d091a",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "3c2f9d07c80c83d7e85720d0d15289fc558697b341b22695b5498015664298cd"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "625e4d0fd5d57f51746c1de2947273d8c1f364e1a650b5c7cd091eeed0a9b07c"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_coverage_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+              "path": "robot_learning/lab/analyze_coverage_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "dd05f13902a348d5f83e780c92300e83db5a8db7",
+            "fingerprint": "afd288e81e7a64c5d774816ec676a6bd9d56a7e589b5586468078a087c023ecd",
+            "manifest": [
+              {
+                "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+                "path": "robot_learning/lab/analyze_coverage_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ca5ac21ad855fc7d8b4dc89265c22f5014db1ae2",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+              "path": "robot_learning/lab/analyze_coverage_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_coverage_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+            "--reference",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+            "--output",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+          ],
+          "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json",
+          "input_artifacts": {
+            "candidate": {
+              "artifact_index": 1,
+              "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+              "operation_id": "M2",
+              "recorded_artifact_fingerprint": "3c2f9d07c80c83d7e85720d0d15289fc558697b341b22695b5498015664298cd"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+              "operation_id": "M2",
+              "recorded_artifact_fingerprint": "625e4d0fd5d57f51746c1de2947273d8c1f364e1a650b5c7cd091eeed0a9b07c"
+            }
+          },
+          "inputs": {
+            "candidate": {
+              "artifact_index": 1,
+              "operation_id": "M2"
+            },
+            "reference": {
+              "artifact_index": 2,
+              "operation_id": "M2"
+            }
+          },
+          "instrument": "python_module",
+          "label": "radius-angle-paired-analysis",
+          "module": "robot_learning.lab.analyze_coverage_comparison"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+            "path": "robot_learning/lab/analyze_coverage_comparison.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "dd05f13902a348d5f83e780c92300e83db5a8db7",
+          "fingerprint": "afd288e81e7a64c5d774816ec676a6bd9d56a7e589b5586468078a087c023ecd",
+          "manifest": [
+            {
+              "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+              "path": "robot_learning/lab/analyze_coverage_comparison.py"
+            }
+          ]
+        },
+        "code_parent_commit": "ca5ac21ad855fc7d8b4dc89265c22f5014db1ae2",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+            "path": "robot_learning/lab/analyze_coverage_comparison.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_coverage_comparison.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+            "--reference",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+            "--output",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+          ],
+          "instrument": "python_module",
+          "label": "radius-angle-paired-analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M3-1-m3-coverage-comparison.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/episode_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/candidate",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/paired",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/interpretation",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/candidate/radial_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/candidate/angular_sectors",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/reference/radial_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angular_sectors",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/paired/overall",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/paired/radial_bins",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/paired/angular_sectors",
+                  "type": "object"
+                },
+                {
+                  "path": "/interpretation/no_reach_failure",
+                  "type": "string"
+                },
+                {
+                  "path": "/interpretation/post_reach_failure",
+                  "type": "string"
+                },
+                {
+                  "path": "/interpretation/reach_timing",
+                  "type": "string"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "label",
+                    "lower_inclusive",
+                    "upper_exclusive",
+                    "upper_inclusive"
+                  ],
+                  "path": "/interpretation/radial_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "label",
+                    "lower_inclusive",
+                    "upper_exclusive"
+                  ],
+                  "path": "/interpretation/angular_sectors_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/candidate/overall/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/post_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/reached_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/mean_max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/candidate/overall/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/radial_bins/6\u2013<10 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/radial_bins/10\u2013<14 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/radial_bins/14\u2013<18 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/radial_bins/18\u201320 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[-180,-135)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[-135,-90)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[-90,-45)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[-45,0)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[0,45)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[45,90)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[90,135)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/candidate/angular_sectors/[135,180)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "path": "/reference/overall/episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/no_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/post_reach_failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/reached_episode_count",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/mean_max_held_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/overall/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/radial_bins/6\u2013<10 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/radial_bins/10\u2013<14 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/radial_bins/14\u2013<18 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/radial_bins/18\u201320 cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 10,
+                  "path": "/reference/angular_sectors/[-180,-135)\u00b0",
+                  "type": "object"
+                },
+                {
+                  "path": "/paired/overall/episode_count",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "dd7423867b7dd224d8737e4bfb07123a1f230bd6a681fa1ac1593918798d091a",
+            "input_artifacts": {
+              "candidate": {
+                "artifact_index": 1,
+                "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+                "operation_id": "M2",
+                "recorded_artifact_fingerprint": "3c2f9d07c80c83d7e85720d0d15289fc558697b341b22695b5498015664298cd"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+                "operation_id": "M2",
+                "recorded_artifact_fingerprint": "625e4d0fd5d57f51746c1de2947273d8c1f364e1a650b5c7cd091eeed0a9b07c"
+              }
+            }
+          },
+          "module": "robot_learning.lab.analyze_coverage_comparison"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+              "--reference",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+            ],
+            "instrument": "python_module",
+            "label": "radius-angle-paired-analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M3-1-m3-coverage-comparison.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/candidate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/paired",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/interpretation",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/candidate/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/candidate/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/reference/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired/overall",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/paired/radial_bins",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/paired/angular_sectors",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/interpretation/no_reach_failure",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation/post_reach_failure",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/interpretation/reach_timing",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "label",
+                      "lower_inclusive",
+                      "upper_exclusive",
+                      "upper_inclusive"
+                    ],
+                    "path": "/interpretation/radial_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "label",
+                      "lower_inclusive",
+                      "upper_exclusive"
+                    ],
+                    "path": "/interpretation/angular_sectors_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/candidate/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/post_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/reached_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/candidate/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/6\u2013<10 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/10\u2013<14 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/14\u2013<18 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/radial_bins/18\u201320 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-180,-135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-135,-90)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-90,-45)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[-45,0)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[0,45)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[45,90)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[90,135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/candidate/angular_sectors/[135,180)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/overall/episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/no_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/post_reach_failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/reached_episode_count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_max_held_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/overall/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/6\u2013<10 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/10\u2013<14 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/14\u2013<18 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/radial_bins/18\u201320 cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/reference/angular_sectors/[-180,-135)\u00b0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/paired/overall/episode_count",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "dd7423867b7dd224d8737e4bfb07123a1f230bd6a681fa1ac1593918798d091a",
+              "input_artifacts": {
+                "candidate": {
+                  "artifact_index": 1,
+                  "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T2-checkpoint-120832-200ep-seed2026101800-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "3c2f9d07c80c83d7e85720d0d15289fc558697b341b22695b5498015664298cd"
+                },
+                "reference": {
+                  "artifact_index": 2,
+                  "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m2-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json",
+                  "operation_id": "M2",
+                  "recorded_artifact_fingerprint": "625e4d0fd5d57f51746c1de2947273d8c1f364e1a650b5c7cd091eeed0a9b07c"
+                }
+              }
+            },
+            "module": "robot_learning.lab.analyze_coverage_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+              "path": "robot_learning/lab/analyze_coverage_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "dd05f13902a348d5f83e780c92300e83db5a8db7",
+            "fingerprint": "afd288e81e7a64c5d774816ec676a6bd9d56a7e589b5586468078a087c023ecd",
+            "manifest": [
+              {
+                "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+                "path": "robot_learning/lab/analyze_coverage_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ca5ac21ad855fc7d8b4dc89265c22f5014db1ae2",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+              "path": "robot_learning/lab/analyze_coverage_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_coverage_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Analyze the complete M2 paired research panel for radius- and angle-stratified success, first reach and hold behavior, validating episode-seed and target alignment.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "{input:candidate}",
+              "--reference",
+              "{input:reference}",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json"
+            ],
+            "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/m3-coverage-comparison.json",
+            "inputs": {
+              "candidate": {
+                "artifact_index": 1,
+                "operation_id": "M2"
+              },
+              "reference": {
+                "artifact_index": 2,
+                "operation_id": "M2"
+              }
+            },
+            "instrument": "python_module",
+            "label": "radius-angle-paired-analysis",
+            "module": "robot_learning.lab.analyze_coverage_comparison"
+          }
+        ],
+        "rationale": "M2 establishes an artifact-level disadvantage for the changed-exposure candidate (153/200 versus 172/200 research success; 21 reference wins, 2 candidate wins) but its aggregate comparison does not show whether the difference comes from radius-conditioned acquisition, angular no-reach, or post-reach hold failure. The PI-owned analyzer validates all 200 episode outcomes against diagnostics, joins by episode seed, checks identical target coordinates between the candidates, and reports paired wins plus success, no-reach/post-reach failures, first-reach timing, max held steps and interruptions by official-radius bins and 45-degree sectors. This directly satisfies I1's target-stratified discriminator and can determine whether the single tested 6\u201320 cm recipe merits further coverage work or whether the next direction should shift toward acquisition/branch behavior or stabilization. The analysis is limited to recorded control-step research diagnostics; it cannot establish protected within-step occupancy or official benchmark success."
+      }
+    },
+    "request_fingerprint": "8f16301b25987a78f978abe299111ad93b18987e13169b212812ea3f5954004e",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-110592, assigned by E1 from M1 evidence (181/200 task-reference; 172/200 paired research), not officially assessed. T1:checkpoint-120832 is a measured, lower-performing comparison, not preferred because it is terminal. T1 archived 24 checkpoints; the training trajectory shows the proxy plateau but does not establish development performance. T1:checkpoint-115712 is an unmeasured archived checkpoint with the same 0.97 proxy at 115,712 steps; the proxy does not single it out over the already measured 110,592-step checkpoint, and no evidence currently warrants measuring every remaining checkpoint before testing the actionable distribution mismatch. No working candidate. Neither M1 panel nor proxy ranks certify official success.",
     "completed_operations": [
@@ -3510,7 +4770,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does a fresh, full-budget PPO run that changes only the baseline training-radius lower bound from 14 cm to 6 cm improve complete-episode success on the official distribution, especially for inner-radius targets, or do angle-specific no-reach and post-reach hold failures persist enough to redirect development toward reset/IK-branch control or stabilization? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M2"
+      "M2",
+      "M3"
     ],
     "scientific_parent_commit": "ca5ac21ad855fc7d8b4dc89265c22f5014db1ae2"
   },
