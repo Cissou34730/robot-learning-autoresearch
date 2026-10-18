@@ -1921,52 +1921,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-120832",
-        "evidence": [
-          "M1",
-          "M2"
-        ],
-        "reason": "On M1's shared 160-episode research panel, this artifact succeeded on 110/160 episodes (68.75%) versus 105/160 (65.625%) for checkpoint 115712, with 9 versus 4 discordant wins (net +5). M2 shows the difference is confined to the <14 cm stratum (9 versus 4 reference/candidate wins); both artifacts have identical 63/67 success in the >=14 cm stratum. The terminal checkpoint is therefore the strongest currently measured candidate, but this is a limited development-panel selection result, not official success or a causal claim about the final training updates."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/66bece48-af88-4e08-96e8-f964274ac5e3/t1-c8cf701d5-94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
-        "fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
-        "source": "campaigns/checkpoints/candidates/66bece48-af88-4e08-96e8-f964274ac5e3/t1/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "M1",
-          "M2"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E1",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "M1",
-          "M2"
-        ],
-        "reason": "On M1's shared 160-episode research panel, this artifact succeeded on 110/160 episodes (68.75%) versus 105/160 (65.625%) for checkpoint 115712, with 9 versus 4 discordant wins (net +5). M2 shows the difference is confined to the <14 cm stratum (9 versus 4 reference/candidate wins); both artifacts have identical 63/67 success in the >=14 cm stratum. The terminal checkpoint is therefore the strongest currently measured candidate, but this is a limited development-panel selection result, not official success or a causal claim about the final training updates."
-      }
-    },
-    "request_fingerprint": "dace0a95d407d8e8704d8ceb1fad6a98ff6d8c08e333d157e5815ca197643a0f",
-    "session_id": "S1",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
