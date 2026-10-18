@@ -111,7 +111,7 @@
       "training_steps": 105472
     },
     "T1:checkpoint-110592": {
-      "artifact": "campaigns/checkpoints/candidates/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1/checkpoint-110592",
+      "artifact": "campaigns/checkpoints/retained/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-c720dc389-63896ba63356cb51406e53c040c336bb7b9e731ad2836f4e4abb1ff9b80ec78f",
       "evaluation_artifacts": [
         "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/task-reference-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m1-T1-checkpoint-110592-task-reference-v1.json",
         "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/evaluation-fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0-m1-T1-checkpoint-110592-200ep-seed2026101800-604d52985c97.json"
@@ -832,7 +832,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -841,9 +841,9 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-110592",
     "retained": {},
     "working": null
   },
@@ -1704,9 +1704,78 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-18T08:11:03Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-110592",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "Among the only two candidates measured, T1:checkpoint-110592 has the stronger completed-episode evidence: 90.5% (181/200) on the fixed task-reference panel versus 85.5% (171/200) for T1:checkpoint-120832, and 86% versus 84% on the paired official-range research panel. The paired research outcomes are modest (four discordant episodes, all won by this candidate), so this is a provisional best-known role, not proof of broad superiority or achievement of the 98% goal. It is the more defensible artifact for continuity while a causal training-exposure comparison is investigated."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-110592",
+        "evidence": [
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-110592",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "Among the only two candidates measured, T1:checkpoint-110592 has the stronger completed-episode evidence: 90.5% (181/200) on the fixed task-reference panel versus 85.5% (171/200) for T1:checkpoint-120832, and 86% versus 84% on the paired official-range research panel. The paired research outcomes are modest (four discordant episodes, all won by this candidate), so this is a provisional best-known role, not proof of broad superiority or achievement of the 98% goal. It is the more defensible artifact for continuity while a causal training-exposure comparison is investigated."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-c720dc389-63896ba63356cb51406e53c040c336bb7b9e731ad2836f4e4abb1ff9b80ec78f",
+        "fingerprint": "63896ba63356cb51406e53c040c336bb7b9e731ad2836f4e4abb1ff9b80ec78f",
+        "source": "campaigns/checkpoints/candidates/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1/checkpoint-110592"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-110592",
+        "evidence": [
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-110592",
+        "evidence": [
+          "M1"
+        ],
+        "reason": "Among the only two candidates measured, T1:checkpoint-110592 has the stronger completed-episode evidence: 90.5% (181/200) on the fixed task-reference panel versus 85.5% (171/200) for T1:checkpoint-120832, and 86% versus 84% on the paired official-range research panel. The paired research outcomes are modest (four discordant episodes, all won by this candidate), so this is a provisional best-known role, not proof of broad superiority or achievement of the 98% goal. It is the more defensible artifact for continuity while a causal training-exposure comparison is investigated."
+      }
+    },
+    "request_fingerprint": "a38a255c885f55820f9e8e3a89d630332ac30299f06665f5e4fb1302ac1ef6b6",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1727,7 +1796,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E1"
     ],
     "scientific_parent_commit": "95e92976dddec5715a678cde36263ee0b19dcf8e"
   },
