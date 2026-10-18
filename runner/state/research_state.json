@@ -1733,49 +1733,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-110592",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "Among the only two candidates measured, T1:checkpoint-110592 has the stronger completed-episode evidence: 90.5% (181/200) on the fixed task-reference panel versus 85.5% (171/200) for T1:checkpoint-120832, and 86% versus 84% on the paired official-range research panel. The paired research outcomes are modest (four discordant episodes, all won by this candidate), so this is a provisional best-known role, not proof of broad superiority or achievement of the 98% goal. It is the more defensible artifact for continuity while a causal training-exposure comparison is investigated."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-c720dc389-63896ba63356cb51406e53c040c336bb7b9e731ad2836f4e4abb1ff9b80ec78f",
-        "fingerprint": "63896ba63356cb51406e53c040c336bb7b9e731ad2836f4e4abb1ff9b80ec78f",
-        "source": "campaigns/checkpoints/candidates/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1/checkpoint-110592"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-110592",
-        "evidence": [
-          "M1"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E1",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-110592",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "Among the only two candidates measured, T1:checkpoint-110592 has the stronger completed-episode evidence: 90.5% (181/200) on the fixed task-reference panel versus 85.5% (171/200) for T1:checkpoint-120832, and 86% versus 84% on the paired official-range research panel. The paired research outcomes are modest (four discordant episodes, all won by this candidate), so this is a provisional best-known role, not proof of broad superiority or achievement of the 98% goal. It is the more defensible artifact for continuity while a causal training-exposure comparison is investigated."
-      }
-    },
-    "request_fingerprint": "a38a255c885f55820f9e8e3a89d630332ac30299f06665f5e4fb1302ac1ef6b6",
-    "session_id": "S1",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
