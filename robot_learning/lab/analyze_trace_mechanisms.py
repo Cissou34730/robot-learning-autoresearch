@@ -1126,6 +1126,40 @@ NUMERIC_FEATURES = (
     for metric in ("error_norm_rad", "cumulative_joint_error_rad")
 )
 
+RADIUS_ANGLE_FEATURES = (
+    "target_radius_cm",
+    "target_angle_degrees",
+    "first_reach_step",
+    "initial_endpoint_error_m",
+    "minimum_endpoint_error_m",
+    "final_endpoint_error_m",
+    "initial_environment_reported_distance_m",
+    "minimum_environment_reported_distance_m",
+    "final_environment_reported_distance_m",
+    *(
+        f"{branch}_error_norm_rad_at_{context}"
+        for context in ("reset", "first_reach", "minimum_error", "final")
+        for branch in ("elbow_positive", "elbow_negative")
+    ),
+    "peak_pre_reach_qdot_norm_rad_s",
+    "peak_post_reach_qdot_norm_rad_s",
+    "minimum_joint_limit_margin_rad_overall",
+    "minimum_joint_limit_margin_rad_at_first_reach",
+    "maximum_acquisition_clipped_command_norm",
+    "maximum_acquisition_nominal_torque_norm_nm",
+    "maximum_acquisition_measured_torque_norm_nm",
+    "longest_held_run_length",
+    "terminal_successful_hold_start_step",
+    "hold_run_mean_qdot_norm_rad_s",
+    "hold_run_max_qdot_norm_rad_s",
+    "hold_run_mean_q_derived_endpoint_error_m",
+    "hold_run_max_q_derived_endpoint_error_m",
+    "hold_run_mean_environment_reported_distance_m",
+    "hold_run_max_environment_reported_distance_m",
+    "hold_run_mean_nominal_actuator_torque_norm_nm",
+    "hold_run_max_nominal_actuator_torque_norm_nm",
+)
+
 
 def _summarize_group(rows: list[dict[str, Any]]) -> dict[str, Any]:
     outcome_counts = {outcome: 0 for outcome in OUTCOMES}
@@ -1308,6 +1342,178 @@ def _post_reach_curves(population: list[dict[str, Any]]) -> dict[str, Any]:
     return groups
 
 
+def _episode_feature_summaries(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    summaries = {}
+    for feature in RADIUS_ANGLE_FEATURES:
+        values = [row[feature] for row in rows if row[feature] is not None]
+        summaries[feature] = {
+            "sample_size": len(values),
+            "missing_count": len(rows) - len(values),
+            "mean": sum(values) / len(values) if values else None,
+            "median": statistics.median(values) if values else None,
+        }
+    return summaries
+
+
+def _minimum_joint_limit_margin(sample: dict[str, Any]) -> float:
+    margins = sample["joint_limit_margins_rad"]
+    return min(
+        margins[joint][direction]
+        for joint in ("shoulder", "elbow")
+        for direction in ("to_lower_limit_rad", "to_upper_limit_rad")
+    )
+
+
+def _radius_angle_control_step_means(
+    population: list[dict[str, Any]], episode_count: int
+) -> list[dict[str, Any]]:
+    steps = []
+    for control_step in range(21):
+        samples = [
+            row["trajectory"][control_step]
+            for row in population
+            if control_step <= row["steps"]
+        ]
+        metric_values = {
+            "q_rad": [sample["q_rad"] for sample in samples],
+            "q_shoulder_rad": [sample["q_rad"][0] for sample in samples],
+            "q_elbow_rad": [sample["q_rad"][1] for sample in samples],
+            "qdot_shoulder_rad_s": [sample["qdot_rad_s"][0] for sample in samples],
+            "qdot_elbow_rad_s": [sample["qdot_rad_s"][1] for sample in samples],
+            "qdot_norm_rad_s": [sample["qdot_norm_rad_s"] for sample in samples],
+            "q_derived_endpoint_error_m": [
+                sample["endpoint_error_norm_m"] for sample in samples
+            ],
+            "environment_reported_distance_m": [
+                sample["environment_reported_distance_m"] for sample in samples
+            ],
+            "elbow_positive_error_norm_rad": [
+                _norm(sample["ik_branch_joint_errors_rad"]["elbow_positive"])
+                for sample in samples
+            ],
+            "elbow_negative_error_norm_rad": [
+                _norm(sample["ik_branch_joint_errors_rad"]["elbow_negative"])
+                for sample in samples
+            ],
+            "minimum_joint_limit_margin_rad": [
+                _minimum_joint_limit_margin(sample) for sample in samples
+            ],
+            "held_steps": [float(sample["held_steps"]) for sample in samples],
+            "clipped_command_norm": [
+                _norm_at(sample, "clipped_applied_command") for sample in samples
+            ],
+            "nominal_torque_norm_nm": [
+                _norm_at(sample, "nominal_command_times_gear_torque_nm")
+                for sample in samples
+            ],
+            "measured_torque_norm_nm": [
+                _norm_at(sample, "measured_generalized_applied_joint_torque_nm")
+                for sample in samples
+            ],
+        }
+        means = {}
+        for feature, values in metric_values.items():
+            present = [value for value in values if value is not None]
+            mean = (
+                _mean_vector(present, 2)
+                if feature == "q_rad"
+                else _mean_or_none(present)
+            )
+            means[feature] = {
+                "sample_size": len(present),
+                "missing_count": len(samples) - len(present),
+                "mean": mean,
+            }
+        steps.append(
+            {
+                "control_step": control_step,
+                "sample_size": len(samples),
+                "episodes_without_sample": episode_count - len(samples),
+                "means": means,
+            }
+        )
+    return steps
+
+
+def _target_radius_angle_summaries(
+    episode_features: list[dict[str, Any]],
+    validated_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    feature_groups = {
+        (radius_label, sector_label): []
+        for radius_label, _, _ in RADIAL_BINS
+        for sector_label, _, _ in ANGULAR_SECTORS
+    }
+    trajectories_by_seed = {
+        row["episode_seed"]: row for row in validated_rows
+    }
+    for row in episode_features:
+        cell = (
+            _radial_label(row["target_radius_cm"]),
+            _angular_label(row["target_angle_degrees"]),
+        )
+        feature_groups[cell].append(row)
+
+    cells = []
+    for radius_label, radius_lower, radius_upper in RADIAL_BINS:
+        for sector_label, angle_lower, angle_upper in ANGULAR_SECTORS:
+            cell_rows = feature_groups[(radius_label, sector_label)]
+            outcome_counts = {
+                outcome: sum(row["outcome"] == outcome for row in cell_rows)
+                for outcome in OUTCOMES
+            }
+            outcome_summaries = {}
+            for outcome in OUTCOMES:
+                selected_features = [
+                    row for row in cell_rows if row["outcome"] == outcome
+                ]
+                if selected_features:
+                    selected_trajectories = [
+                        trajectories_by_seed[row["episode_seed"]]
+                        for row in selected_features
+                    ]
+                    outcome_summaries[outcome] = {
+                        "episode_count": len(selected_features),
+                        "episode_feature_summaries": _episode_feature_summaries(
+                            selected_features
+                        ),
+                        "control_step_means_reset_through_step_20": (
+                            _radius_angle_control_step_means(
+                                selected_trajectories, len(selected_features)
+                            )
+                        ),
+                    }
+                else:
+                    outcome_summaries[outcome] = {
+                        "episode_count": 0,
+                        "episode_feature_summaries": None,
+                        "control_step_means_reset_through_step_20": None,
+                    }
+            cells.append(
+                {
+                    "target_radius_bin": {
+                        "label": radius_label,
+                        "lower_inclusive_cm": radius_lower,
+                        "upper_cm": radius_upper,
+                        "upper_inclusive": radius_label == RADIAL_BINS[-1][0],
+                    },
+                    "target_angle_sector": {
+                        "label": sector_label,
+                        "lower_inclusive_degrees": angle_lower,
+                        "upper_exclusive_degrees": angle_upper,
+                    },
+                    "episode_count": len(cell_rows),
+                    "outcome_counts": outcome_counts,
+                    "outcomes": outcome_summaries,
+                }
+            )
+    return {
+        "cell_count": len(cells),
+        "cell_order": "radial_bins_then_angular_sectors",
+        "cells": cells,
+    }
+
+
 def build_analysis(artifact: Any) -> dict[str, Any]:
     """Validate an M5 artifact and build descriptive episode/stratum summaries."""
     _check_finite_json(artifact)
@@ -1333,6 +1539,9 @@ def build_analysis(artifact: Any) -> dict[str, Any]:
     }
     sector_summaries, radial_summaries, cell_summaries = _stratified_summaries(
         episode_features
+    )
+    radius_angle_summaries = _target_radius_angle_summaries(
+        episode_features, rows
     )
     sector_population = [
         row
@@ -1374,6 +1583,7 @@ def build_analysis(artifact: Any) -> dict[str, Any]:
             "radial_bins": radial_summaries,
             "sector_by_radius": cell_summaries,
         },
+        "target_radius_angle_summaries": radius_angle_summaries,
         "episodes": episode_features,
         "control_step_means_reset_through_step_20": control_curves,
         "post_first_reach_means_up_to_100_samples": post_reach_curves,
@@ -1398,6 +1608,24 @@ def build_analysis(artifact: Any) -> dict[str, Any]:
             ),
             "interpretation": (
                 "Summaries are descriptive; no inferential or causal claims are made."
+            ),
+            "target_radius_angle_cross_stratification": (
+                "All four radial bins are crossed with all eight angular sectors. "
+                "Each cell reports all three outcome counts; an empty outcome "
+                "subgroup has count zero and null feature and trajectory summaries."
+            ),
+            "cross_stratified_missing_values": (
+                "Episode-feature sample_size counts non-null episode values; "
+                "missing_count is the subgroup episode count minus sample_size. "
+                "Control-step metric missing_count is among trajectories available "
+                "at that step; episodes without a step are counted separately. "
+                "Null reset command and torque values are not imputed."
+            ),
+            "cross_stratified_control_step_curves": (
+                "Outcome-conditioned means use available control-step samples "
+                "from reset through step 20. q-derived endpoint error and "
+                "environment-reported distance are separate channels; both IK "
+                "branch errors are Euclidean joint-error norms."
             ),
             "minimum_error_sample": (
                 "The first sample attaining the minimum q-derived endpoint error."
