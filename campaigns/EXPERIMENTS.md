@@ -20,3 +20,4 @@
 | M6 | measurement | I2 | failed |
 | M7 | measurement | I2 | failed |
 | M8 | measurement | I2 | completed |
+| M9 | measurement | I2 | completed |
