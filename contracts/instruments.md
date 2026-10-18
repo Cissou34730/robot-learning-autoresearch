@@ -99,7 +99,7 @@ shell tools. `scientific_api_reference` reads installed library definitions
 for PI and authorized coding/review children. The preliminary scientific-model
 session retains its existing publication interface and does not expose coding.
 
-The default Copilot PI deadline is 15 minutes of active session time.
+The default Copilot PI deadline is 30 minutes of active session time.
 Coding and review consume that same budget. Runner execution waits are excluded.
 
 `scientific_coding` accepts:
