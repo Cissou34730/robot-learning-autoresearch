@@ -183,7 +183,8 @@
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/retained/66bece48-af88-4e08-96e8-f964274ac5e3/t1-c8cf701d5-94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
       "evaluation_artifacts": [
-        "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/evaluation-66bece48-af88-4e08-96e8-f964274ac5e3-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/evaluation-66bece48-af88-4e08-96e8-f964274ac5e3-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/task-reference-66bece48-af88-4e08-96e8-f964274ac5e3-m3-T1-checkpoint-120832-task-reference-v1.json"
       ],
       "fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
       "id": "T1:checkpoint-120832",
@@ -832,14 +833,14 @@
   "counters": {
     "event": 1,
     "inquiry": 0,
-    "measurement": 2,
+    "measurement": 3,
     "session": 1,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T1:checkpoint-120832",
     "retained": {},
@@ -1919,9 +1920,339 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-18T22:36:18Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the currently best-known candidate T1:checkpoint-120832 on the protected task-reference development panel using its saved controller runtime.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "best-known-protected-task-reference"
+          }
+        ],
+        "rationale": "The paired M1/M2 research evaluation shows a large inner-radius deficit and an artifact-level advantage for this candidate, but it ran through the PI-owned research environment. The scientific model leaves protected reset and hold-check cadence unresolved, and the protected evaluator executes each saved candidate's actual runtime. A single task_reference measurement of the strongest evidence-backed artifact directly tests whether the poor research result transfers to the protected development surface before committing the next inquiry to changing training coverage. If task-reference performance is similarly poor, the radius-associated reach gap remains a credible route for inquiry; if materially different, goal review should revise priorities toward reset/runtime/hold-check fidelity and inspect available diagnostics. Neither outcome is official assessment or establishes success under the immutable final panel."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "best-known-protected-task-reference",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/task-reference-66bece48-af88-4e08-96e8-f964274ac5e3-m3-T1-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7d127338e76f141d6352c550cad3728be26ebba9573395def991068efa27a14e",
+              "evaluation_kind": "task_reference",
+              "model_fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
+              "official_benchmark": false,
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "schema_version": 1,
+              "seed": 7300,
+              "success_percent": 73.5,
+              "successes": 147
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/retained/66bece48-af88-4e08-96e8-f964274ac5e3/t1-c8cf701d5-94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "task_reference",
+          "label": "best-known-protected-task-reference",
+          "model_fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f"
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "task_reference",
+          "label": "best-known-protected-task-reference",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/task-reference-66bece48-af88-4e08-96e8-f964274ac5e3-m3-T1-checkpoint-120832-task-reference-v1.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 10,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/evaluation_kind",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel",
+                  "type": "string"
+                },
+                {
+                  "path": "/panel_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "7d127338e76f141d6352c550cad3728be26ebba9573395def991068efa27a14e",
+            "evaluation_kind": "task_reference",
+            "model_fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
+            "official_benchmark": false,
+            "panel": "task-reference-v1",
+            "panel_version": 1,
+            "schema_version": 1,
+            "seed": 7300,
+            "success_percent": 73.5,
+            "successes": 147
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "best-known-protected-task-reference",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/66bece48-af88-4e08-96e8-f964274ac5e3/task-reference-66bece48-af88-4e08-96e8-f964274ac5e3-m3-T1-checkpoint-120832-task-reference-v1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/evaluation_kind",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/panel_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7d127338e76f141d6352c550cad3728be26ebba9573395def991068efa27a14e",
+              "evaluation_kind": "task_reference",
+              "model_fingerprint": "94695c41634d808014e3f20b713de2105889d575739dd252770580a9e83e338f",
+              "official_benchmark": false,
+              "panel": "task-reference-v1",
+              "panel_version": 1,
+              "schema_version": 1,
+              "seed": 7300,
+              "success_percent": 73.5,
+              "successes": 147
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": {
+        "episodes": 200,
+        "panel": "task-reference-v1",
+        "panel_version": 1,
+        "seed": 7300
+      }
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the currently best-known candidate T1:checkpoint-120832 on the protected task-reference development panel using its saved controller runtime.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "instrument": "task_reference",
+            "label": "best-known-protected-task-reference"
+          }
+        ],
+        "rationale": "The paired M1/M2 research evaluation shows a large inner-radius deficit and an artifact-level advantage for this candidate, but it ran through the PI-owned research environment. The scientific model leaves protected reset and hold-check cadence unresolved, and the protected evaluator executes each saved candidate's actual runtime. A single task_reference measurement of the strongest evidence-backed artifact directly tests whether the poor research result transfers to the protected development surface before committing the next inquiry to changing training coverage. If task-reference performance is similarly poor, the radius-associated reach gap remains a credible route for inquiry; if materially different, goal review should revise priorities toward reset/runtime/hold-check fidelity and inspect available diagnostics. Neither outcome is official assessment or establishes success under the immutable final panel."
+      }
+    },
+    "request_fingerprint": "16ff8d39894ed1b387f6d66cb014330cc752f776c6dc3b6eb639ca2340e93235",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1944,7 +2275,8 @@
       "T1",
       "M1",
       "M2",
-      "E1"
+      "E1",
+      "M3"
     ],
     "scientific_parent_commit": "cc1703503bacaafa756c8172baac5c5ef9292611"
   },
