@@ -55,6 +55,10 @@ class OperationSubmission:
         self.active_tasks: set[asyncio.Task] = set()
         self.closing = False
 
+    @property
+    def locked(self) -> bool:
+        return self.busy or self.closed
+
     def tool(self):
         from copilot import define_tool
 
@@ -176,13 +180,15 @@ class OperationSubmission:
             self.request_stop()
             return json.dumps({"status": self.status, "error": self.error})
         finally:
-            self.console.runner_wait_seconds += time.monotonic() - self.wait_started
+            self.console.usage.runner_wait_seconds += (
+                time.monotonic() - self.wait_started
+            )
             self.wait_started = None
             self.busy = False
             self.active_tasks.discard(task)
 
     def current_wait_seconds(self) -> float:
-        return self.console.runner_wait_seconds + (
+        return self.console.usage.runner_wait_seconds + (
             time.monotonic() - self.wait_started
             if self.wait_started is not None
             else 0.0

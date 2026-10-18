@@ -1,0 +1,309 @@
+"""Copilot runtime boundary: permissions, OpenCode routing, native children, usage."""
+
+import asyncio
+import json
+from types import SimpleNamespace
+
+import pytest
+
+from runner.copilot import copilot_adapter as adapter
+from runner.copilot import opencode_provider as provider
+from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
+from runner.copilot.coding_session import ScientificCoding
+from runner.copilot.copilot_console import Console, tool_detail
+from runner.copilot.tool_policy import scoped_tool_hook, tool_denial
+
+SOURCE = "robot_learning/training/environment.py"
+LIMITS = {"context": 200000, "output": 32000}
+
+
+def catalog():
+    openai = "https://opencode.ai/inference/openai/v1"
+    return {
+        "opencode": {
+            "npm": "@ai-sdk/openai-compatible",
+            "api": openai,
+            "models": {
+                "free-model": {
+                    "reasoning": True,
+                    "cost": {"input": 0, "output": 0},
+                    "limit": LIMITS,
+                },
+                "luna": {
+                    "limit": LIMITS,
+                    "provider": {"npm": "@ai-sdk/openai", "api": openai},
+                },
+                "claude": {
+                    "limit": LIMITS,
+                    "provider": {
+                        "npm": "@ai-sdk/anthropic",
+                        "api": "https://opencode.ai/inference/anthropic/v1",
+                    },
+                },
+                "gemini": {"limit": LIMITS, "provider": {"npm": "@ai-sdk/google"}},
+                "old": {"limit": LIMITS, "status": "deprecated"},
+            },
+        },
+        "opencode-go": {
+            "npm": "@ai-sdk/openai-compatible",
+            "api": "https://opencode.ai/inference/go/openai/v1",
+            "models": {"plain-model": {"limit": LIMITS}},
+        },
+    }
+
+
+def opencode_args(model="opencode/free-model", *extra):
+    args = adapter.parse_args(["p", "--session-id", "s", "--model", model, *extra])
+    args.provider_model = provider.resolve_model(args.model, catalog())
+    args.provider_identity = provider.create_session_id()
+    args.provider_project = "project"
+    return args
+
+
+# --- model selection and OpenCode routing -----------------------------------
+
+
+def test_default_models_per_provider():
+    assert adapter.parse_args(["p", "--session-id", "s"]).model == "gpt-6-luna"
+    for name in ("opencode", "opencode-go"):
+        args = adapter.parse_args(["p", "--session-id", "s", "--provider", name])
+        assert args.model == "opencode/deepseek-v4.1-flash-free"
+    with pytest.raises(SystemExit):
+        adapter.parse_args(
+            [
+                "p",
+                "--session-id",
+                "s",
+                "--provider",
+                "opencode",
+                "--model",
+                "opencode-go/x",
+            ]
+        )
+
+
+@pytest.mark.parametrize(
+    ("selection", "sdk_type", "wire_api", "base_url"),
+    [
+        (
+            "opencode/free-model",
+            "openai",
+            "completions",
+            "https://opencode.ai/inference/openai/v1",
+        ),
+        (
+            "opencode/luna",
+            "openai",
+            "responses",
+            "https://opencode.ai/inference/openai/v1",
+        ),
+        (
+            "opencode/claude",
+            "anthropic",
+            "completions",
+            "https://opencode.ai/inference/anthropic/v1",
+        ),
+        (
+            "opencode-go/plain-model",
+            "openai",
+            "completions",
+            "https://opencode.ai/inference/go/openai/v1",
+        ),
+    ],
+)
+def test_catalog_selects_protocol_and_endpoint(selection, sdk_type, wire_api, base_url):
+    model = provider.resolve_model(selection, catalog())
+    assert (model.sdk_type, model.wire_api, model.base_url) == (
+        sdk_type,
+        wire_api,
+        base_url,
+    )
+
+
+@pytest.mark.parametrize(
+    "selection", ["opencode/gemini", "opencode/old", "opencode/absent"]
+)
+def test_unsupported_models_are_refused_not_substituted(selection):
+    with pytest.raises((TypeError, ValueError)):
+        provider.resolve_model(selection, catalog())
+
+
+def test_session_identity_persists_and_headers_match_the_opencode_client(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(provider, "STATE_DIRECTORY", tmp_path)
+    identity = provider.session_identity("sdk", "opencode/free-model")
+    assert (
+        provider.session_identity("sdk", "opencode/free-model", resume=True) == identity
+    )
+    with pytest.raises(ValueError):
+        provider.session_identity("unknown", "opencode/free-model", resume=True)
+    headers = provider.identity_headers(identity, "project")
+    assert headers["User-Agent"].startswith("opencode/latest/")
+    assert headers["x-opencode-client"] == "cli"
+    assert headers["x-opencode-project"] == "project"
+    for name in (
+        "x-opencode-session",
+        "x-opencode-session-id",
+        "x-session-affinity",
+        "x-session-id",
+    ):
+        assert headers[name] == identity
+
+
+def test_one_opencode_key_serves_zen_and_go(monkeypatch):
+    monkeypatch.delenv("OPENCODE_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="OPENCODE_API_KEY"):
+        provider.api_key()
+    monkeypatch.setenv("OPENCODE_API_KEY", "key")
+    assert provider.api_key() == "key"
+
+
+# --- session profile ---------------------------------------------------------
+
+
+def test_opencode_sessions_always_send_read_and_identity(monkeypatch):
+    pytest.importorskip("copilot")
+    monkeypatch.setenv("OPENCODE_API_KEY", "key")
+    args = opencode_args("opencode/free-model", "--preliminary")
+    options = adapter.session_options(args, Console(), asyncio.Event())
+    read = next(tool for tool in options["tools"] if tool.name == "read")
+    assert read.defer == "never"
+    assert "custom:read" in options["available_tools"].to_list()
+    route = options["providers"][0]
+    assert route["api_key"] == "key"
+    assert route["headers"]["x-opencode-session"] == args.provider_identity
+    assert options["models"][0]["wire_model"] == "free-model"
+
+
+def test_copilot_sessions_have_no_read_alias():
+    pytest.importorskip("copilot")
+    args = adapter.parse_args(["p", "--session-id", "s", "--preliminary"])
+    options = adapter.session_options(args, Console(), asyncio.Event())
+    assert all(tool.name != "read" for tool in options["tools"])
+    assert "providers" not in options
+
+
+# --- tool permissions ----------------------------------------------------------
+
+
+def test_main_pi_cannot_write_or_run_shell_or_read_reserved_files():
+    for name, arguments in (
+        ("apply_patch", {"input": f"*** Update File: {SOURCE}\n"}),
+        ("create", {"path": SOURCE}),
+        ("powershell", {"command": "dir"}),
+        ("view", {"path": "tests/autoresearch"}),
+        ("view", {"path": "runner/run_experiment.py"}),
+    ):
+        assert tool_denial(name, arguments), name
+    assert tool_denial("view", {"path": SOURCE}) is None
+
+
+def test_preliminary_editors_reach_only_the_scientific_model():
+    model = {"path": "pi_workspace/scientific_model.md"}
+    assert tool_denial("create", model, preliminary=True, json_editors=True) is None
+    assert tool_denial("create", {"path": SOURCE}, preliminary=True, json_editors=True)
+    assert tool_denial("create", model, json_editors=True)
+
+
+def test_coder_is_confined_to_its_binding():
+    scope = {"coding_paths": frozenset({SOURCE}), "read_paths": frozenset({SOURCE})}
+    assert (
+        tool_denial("apply_patch", {"input": f"*** Update File: {SOURCE}\n"}, **scope)
+        is None
+    )
+    assert tool_denial(
+        "apply_patch", {"input": "*** Update File: AGENTS.md\n"}, **scope
+    )
+    assert tool_denial("apply_patch", {"input": "*** Move to: runner/x.py\n"}, **scope)
+    assert tool_denial("view", {"path": "AGENTS.md"}, **scope)
+    assert tool_denial("submit_operation", {}, **scope)
+
+
+def test_a_locked_runner_denies_every_call():
+    hook = scoped_tool_hook(operations=SimpleNamespace(locked=True))
+    decision = hook({"toolName": "view", "toolArgs": {"path": SOURCE}}, {})
+    assert decision["permissionDecision"] == "deny"
+
+
+# --- native children ----------------------------------------------------------------
+
+
+def test_native_children_stay_on_copilot_with_role_tools():
+    coding = ScientificCoding(None, opencode_args("opencode/free-model"), Console())
+    coder, reviewer = coding.agent(), coding.reviewer_agent()
+    assert (coder["model"], reviewer["model"]) == ("gpt-6-luna", "gpt-6-luna")
+    assert (coder["tools"], reviewer["tools"]) == (CODING_TOOLS, REVIEW_TOOLS)
+    coding.busy, coding.active_handle = True, "child"
+    coding.binding = {"allowed_paths": [SOURCE], "read_paths": [SOURCE]}
+    for tool in ("read", "create", "powershell", "submit_operation"):
+        request = {"sessionId": "child", "toolName": tool, "toolArgs": {"path": SOURCE}}
+        assert (
+            coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
+            == "deny"
+        )
+    coding.active_agent = "scientific-reviewer"
+    request = {"sessionId": "child", "toolName": "apply_patch", "toolArgs": {}}
+    assert (
+        coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
+        == "deny"
+    )
+
+
+def test_reviewer_identity_must_match_the_requested_copilot_model():
+    coding = ScientificCoding(None, opencode_args("opencode/free-model"), Console())
+    coding.child_models, coding.child_reasoning = {"gpt-6-luna"}, {"high"}
+    coding.verify_reviewer_identity()
+    coding.child_models = {"opencode/free-model"}
+    with pytest.raises(ValueError, match="was not verified"):
+        coding.verify_reviewer_identity()
+
+
+# --- usage, console and launcher outcome --------------------------------------
+
+
+def test_usage_row_never_invents_external_aiu(tmp_path, monkeypatch):
+    from runner.copilot import usage as usage_module
+
+    monkeypatch.setattr(usage_module, "ROOT", tmp_path)
+    args = opencode_args(
+        "opencode/free-model", "--campaign-id", "00000000-0000-0000-0000-000000000001"
+    )
+    console = Console()
+    console.usage.add_assistant_usage(
+        SimpleNamespace(
+            input_tokens=100,
+            output_tokens=None,
+            cache_read_tokens=None,
+            cache_write_tokens=None,
+            copilot_usage=SimpleNamespace(total_nano_aiu=5),
+        )
+    )
+    usage_module.record_usage(args, console.usage, 1.0, 0)
+    row = json.loads(
+        next((tmp_path / "reports" / "session_usage").glob("*.jsonl")).read_text()
+    )
+    assert (row["provider"], row["aiu"], row["input_tokens"], row["output_tokens"]) == (
+        "opencode",
+        None,
+        100,
+        None,
+    )
+    assert row["provider_token_prices_per_million"] == {"input": 0, "output": 0}
+
+
+def test_console_shows_patch_targets_not_patch_bodies():
+    detail = tool_detail(
+        "apply_patch", {"input": f"*** Update File: {SOURCE}\n+secret = 1\n"}
+    )
+    assert "environment.py" in detail and "secret" not in detail
+
+
+def test_launcher_outcome_reports_timeouts_and_unexplained_failures():
+    args = SimpleNamespace(
+        timeout=5, usage_console=Console(), operation_submission=None
+    )
+    assert adapter.session_outcome(5, args, None)[0] == "controller_fatal"
+    assert adapter.session_outcome(130, args, None)[0] == "interrupted"
+    assert adapter.session_outcome(6, args, None)[0] == "controller_fatal"
+    assert adapter.session_outcome(0, args, None) == ("preliminary", None)

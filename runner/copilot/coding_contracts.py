@@ -131,6 +131,87 @@ REVIEW_INSTRUCTIONS = (_PROMPT_DIRECTORY / "scientific-reviewer.md").read_text(
     encoding="utf-8"
 )
 
+CODING_TOOL_DESCRIPTION = (
+    "Use scientific_coding for scientific source changes.\n\n"
+    "In intent, state the expected output precisely. "
+    "The coder chooses how to implement it, not what the output means.\n\n"
+    "Select exact writable files in allowed_paths and additional "
+    "readable source and caller files in read_paths.\n\n"
+    "Put supporting facts, caller context and observed errors "
+    "in source_context. The child "
+    "does not receive your conversation. The harness supplies current "
+    "scenario, authority and operation-contract text to both authors "
+    "and reviewers, without expanding their file permissions.\n\n"
+    "An independent reviewer examines the initial delivery. "
+    "A failed review goes unchanged to the same coder. "
+    "The same reviewer checks the correction. "
+    "You receive the final source, review, repair history "
+    "or a needs_pi reason. No verification module or executable check "
+    "proposal is required. Scientific choices and operation requests "
+    "remain yours. Only Runner executes scientific operations.\n\n"
+    "Continue the same change using session_handle; its file "
+    "permissions remain unchanged."
+)
+
+CODER_START_CONTEXT = (
+    "Installed scientific APIs: native MuJoCo 3.12.0, NOT mujoco-py; "
+    "Gymnasium 1.3.0; Stable-Baselines3 2.9.0. Dependencies and manifests "
+    "are fixed and human-owned. SDK 1.0.19 is a harness runtime detail, "
+    "not permission to edit the harness. Author only the requested "
+    "scoped source; execute nothing. Read the supplied task_context "
+    "and relevant authorized source and callers before editing. "
+    "Use scientific_api_reference for unfamiliar installed APIs. "
+    "Do not add mandatory check modules or execution proposals. "
+    "The reviewer checks implementation errors and logic. "
+    "The parent PI must review actual diffs. "
+    "No engineering handoff certifies science or Runner acceptance.\n"
+)
+
+REVIEWER_START_CONTEXT = (
+    "Installed APIs: native MuJoCo 3.12.0, Gymnasium 1.3.0, "
+    "Stable-Baselines3 2.9.0. Dependencies are fixed. "
+    "Review only the supplied change and exact readable files. "
+    "All writes, execution, delegation and operations are denied. "
+    "Do not trust coder-authored expectations without checking them. "
+    "Request complete engineering repair batches through your handoff. "
+    "Return scientific choices or blocked requirements to the PI. "
+    "No review certifies science.\n"
+)
+
+REPAIR_INTENT = (
+    "Correct the problems described by the reviewer in source_context. "
+    "Preserve the PI's requested output and authorized file scope. "
+    "Report unclear requirements instead of guessing."
+)
+
+
+def _excerpt(text: str, start: str, end: str) -> str:
+    _, found, tail = text.partition(start)
+    if not found:
+        raise ValueError(f"Required coding-context section is missing: {start}")
+    selected, found, _ = tail.partition(end)
+    if not found:
+        raise ValueError(f"Required coding-context boundary is missing: {end}")
+    return start + selected
+
+
+def load_task_context(root: Path) -> dict[str, str]:
+    """Fixed contract text given to every coder and reviewer."""
+    authority = (root / "AGENTS.md").read_text(encoding="utf-8")
+    instruments = (root / "contracts" / "instruments.md").read_text(encoding="utf-8")
+    return {
+        "authority": _excerpt(authority, "## Environment", "## Layout"),
+        "scenario": (root / "contracts" / "scenario.md").read_text(encoding="utf-8"),
+        "operation_envelope": _excerpt(
+            instruments,
+            "## Operation request envelope",
+            "## Scientific coding interface",
+        ),
+        "python_module": _excerpt(
+            instruments, "A `python_module` entry", "A paired-comparison entry"
+        ),
+    }
+
 
 class OperationSubmissionParams(BaseModel):
     model_config = ConfigDict(extra="forbid")

@@ -11,45 +11,30 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import shutil
 import subprocess
 import sys
 import time
-from pathlib import Path
-
-from copilot import ToolResult
 
 from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
     normalize_model,
 )
-from runner.copilot.coding_session import (
+from runner.copilot.coding_session import ScientificCoding
+from runner.copilot.constants import (
     EXIT_INTERRUPTED,
+    EXIT_MODEL_UNAVAILABLE,
+    EXIT_NOT_AUTHENTICATED,
     EXIT_OK,
     EXIT_RUNTIME_FAILURE,
     EXIT_SESSION_ERROR,
     EXIT_TIMEOUT,
+    FORCE_STOP_TIMEOUT_SECONDS,
     LARGE_OUTPUT_DIR,
     LARGE_OUTPUT_MAX_BYTES,
     SHUTDOWN_TIMEOUT_SECONDS,
-    ScientificCoding,
-    build_handlers,
-    scoped_tool_hook,
 )
-from runner.copilot.command_policy import (  # noqa: F401 - preserve existing policy imports
-    DEPENDENCY_DENIAL,
-    EXECUTION_DENIAL,
-    GIT_DENIAL,
-    SUITE_DENIAL,
-    command_denial,
-    execution_target,
-    shell_command_text,
-)
-from runner.copilot.copilot_console import (
-    Console,
-    record_usage,
-)
+from runner.copilot.copilot_console import Console
 from runner.copilot.opencode_provider import (
     DEFAULT_MODEL,
     PROVIDERS,
@@ -65,38 +50,48 @@ from runner.copilot.operation_submission import (
     ControllerChannel,
     OperationSubmission,
 )
-from runner.copilot.path_policy import (  # noqa: F401 - preserve existing policy imports
-    FILE_EDIT_DENIAL,
-    FILE_READ_DENIAL,
-    file_edit_denial,
-    file_read_denial,
+from runner.copilot.path_policy import ROOT
+from runner.copilot.pi_tools import (
+    evidence_tools,
+    read_tool,
+    reader_guard,
+    scoped_search,
 )
+from runner.copilot.session_events import (
+    ModelCallRetry,
+    event_handler,
+    permission_handler,
+)
+from runner.copilot.tool_policy import scoped_tool_hook
+from runner.copilot.usage import record_usage
 from runner.stop_control import stop_requested, wait_for_stop_request
 
-ROOT = Path(__file__).resolve().parents[2]
+RESUMED_STATE_PROMPT = (
+    "\n\nRecovered current Runner state (factual metadata, not new "
+    "scientific evidence). Automatic pending-work replay is disabled; "
+    "continue from this durable state, not an unfinished old tool call:\n"
+)
 
+CONTINUE_PROMPT = (
+    "This bounded session is still active. Continue from the actual "
+    "operation results in this conversation. Submit the next supported "
+    "action or the scientific checkpoint through submit_operation. "
+    "Current factual state: "
+)
 
-EXIT_NOT_AUTHENTICATED = 3
-
-
-EXIT_MODEL_UNAVAILABLE = 4
-
-
-FORCE_STOP_TIMEOUT_SECONDS = 10.0
-
-
-MODEL_CALL_RETRY_LIMIT = 5
-
-
-MODEL_CALL_RETRY_DELAY_SECONDS = 5.0
+# Session statuses that do not by themselves explain a nonzero exit code.
+UNEXPLAINED_EXIT_STATUSES = {
+    None,
+    "preliminary",
+    "completed",
+    "rejected",
+    "implementation_error",
+    "session_ended",
+}
 
 
 def worktree_status() -> dict[str, str]:
-    """Path to Git status, so a file written by any means is still observed.
-
-    The runtime's own change events only cover its edit tools, and this
-    researcher writes most files through the shell.
-    """
+    """Path to Git status, so a file written by any means is still observed."""
     try:
         completed = subprocess.run(
             ["git", "status", "--porcelain", "--untracked-files=all"],
@@ -122,26 +117,7 @@ def changed_since(before: dict[str, str]) -> list[str]:
     )
 
 
-def offload_snapshot() -> set[str]:
-    if not LARGE_OUTPUT_DIR.is_dir():
-        return set()
-    return {entry.name for entry in LARGE_OUTPUT_DIR.iterdir() if entry.is_file()}
-
-
-def offloaded_since(before: set[str]) -> tuple[int, int]:
-    """How much tool output never entered the context, as count and bytes.
-
-    Per-session cost tracks how much work the researcher chose to do, so only a
-    direct measure of the mechanism can say whether offloading is doing anything.
-    """
-    if not LARGE_OUTPUT_DIR.is_dir():
-        return (0, 0)
-    written = [
-        entry
-        for entry in LARGE_OUTPUT_DIR.iterdir()
-        if entry.is_file() and entry.name not in before
-    ]
-    return (len(written), sum(entry.stat().st_size for entry in written))
+# --- session configuration -------------------------------------------------
 
 
 def session_options(
@@ -152,306 +128,23 @@ def session_options(
     operations=None,
     client=None,
 ) -> dict:
-    from copilot import ToolSet, define_tool
-    from copilot.session_events import AssistantMessageData
-    from pydantic import BaseModel, ConfigDict, Field
+    from copilot import ToolSet
 
-    from runner.artifact_evidence_query import (
-        ArtifactEvidenceQueryParams,
-        query_artifact,
-    )
-    from runner.copilot.copilot_scoped_search import MAX_OUTPUT_BYTES, ScopedSearch
-    from runner.query_training_log import TrainingLogQueryParams, query_training_log
-    from runner.scientific_api_reference import (
-        ScientificAPIReferenceParams,
-        read_reference,
-    )
-
-    def authorize_reader(invocation) -> None:
-        if (
-            invocation.session_id != args.session_id
-            or getattr(invocation, "agent_id", None) is not None
-            or (coding is not None and (coding.busy or coding.closed))
-            or (operations is not None and (operations.busy or operations.closed))
-        ):
-            raise ValueError("Only the active, unlocked main/preliminary PI may query.")
-
-    model_call_retries = 0
-
-    async def on_error_occurred(request, invocation):
-        nonlocal model_call_retries
-        if (
-            invocation.get("session_id") != args.session_id
-            or request.get("sessionId") != args.session_id
-            or request.get("errorContext") != "model_call"
-            or request.get("recoverable") is not True
-            or (operations is not None and operations.closed)
-            or (coding is not None and coding.closed)
-            or stop_requested()
-        ):
-            return None
-        error = request.get("error")
-        message = error.get("message") if isinstance(error, dict) else error
-        if not isinstance(message, str):
-            return None
-        try:
-            details = json.loads(message)
-        except json.JSONDecodeError:
-            return None
-        if not isinstance(details, dict) or (
-            details.get("code") != "invalid_request_body"
-            or details.get("type") != "websocket_error"
-            or details.get("message") != "internal server error"
-        ):
-            return None
-        if model_call_retries >= MODEL_CALL_RETRY_LIMIT:
-            console.line(
-                "  ! Copilot model request failed after five retries; stopping"
-            )
-            return {"errorHandling": "abort"}
-        model_call_retries += 1
-        console.line(
-            f"  ! Copilot model request failed; retry "
-            f"{model_call_retries}/{MODEL_CALL_RETRY_LIMIT} "
-            f"in {MODEL_CALL_RETRY_DELAY_SECONDS:g}s"
-        )
-        await asyncio.sleep(MODEL_CALL_RETRY_DELAY_SECONDS)
-        if (
-            stop_requested()
-            or (operations is not None and operations.closed)
-            or (coding is not None and coding.closed)
-        ):
-            return {"errorHandling": "abort"}
-        return {"errorHandling": "retry", "retryCount": 1}
-
-    async def artifact_evidence_query(params, invocation) -> str:
-        authorize_reader(invocation)
-        return await asyncio.to_thread(
-            query_artifact,
-            params.model_dump(),
-            campaign_id=str(args.campaign_id or ""),
-        )
-
-    artifact_evidence_tool = define_tool(
-        "artifact_evidence_query",
-        description=(
-            "Read-only campaign-bound JSON evidence, including large measurement artifacts. "
-            "Selected queries and complete byte-paged reads use this reader, not view. "
-            "Provide operation identity, "
-            "not a filesystem path. operations pages the operation index; metadata "
-            "selects an operation's record, artifact references or checkpoint metadata "
-            "without loading artifact contents. Metadata paths are /operation, /record, "
-            "/artifacts/* and /checkpoints/*. For an accepted pending operation, "
-            "/pending contains the exact request, resolved measurements and failure; "
-            "these are execution metadata, not completed evidence. "
-            "Use recorded operation_id/artifact_index "
-            "as named python_module inputs instead of transcribing filenames. "
-            "YOU choose full original content (action=read) "
-            "or any selected subsets (query/batch path/where/select), including "
-            "several distinct subsets; no summary or projection is compulsory. "
-            "discover helps learn shape; aggregates are optional. Array paths expand "
-            "to rows when selecting/filtering/aggregating. Missing filter fields are "
-            "reported separately from zero matches. Page limits are small by default; "
-            "increase limit explicitly for more rows. Set max_bytes on the request. "
-            "All batch items share that selected-value budget. Query items reject max_bytes. "
-            "Omit select for complete rows; a supplied pointer cannot be empty. Filtering occurs "
-            "before data enters PI context. Full reads use byte offset/max_bytes, "
-            "UTF-8 content or explicit base64, and fingerprint-bound continuation. "
-            "query/batch raw and value_counts use offset paging after selection. "
-            "Follow reported next offsets/fingerprints; report transport/traversal "
-            "limits honestly and never mistake one truncated page for full retrieval."
-        ),
-        handler=artifact_evidence_query,
-        params_type=ArtifactEvidenceQueryParams,
-        defer="auto",
-        skip_permission=True,
-    )
-
-    def training_log_query(params, invocation) -> str:
-        authorize_reader(invocation)
-        return query_training_log(
-            params.model_dump(exclude_none=True),
-            campaign_id=str(args.campaign_id or ""),
-        )
-
-    training_log_tool = define_tool(
-        "training_log_query",
-        description=(
-            "Read-only training execution logs by operation_id in this campaign. "
-            "Omitting action discovers attempt/step/metric metadata without log values. "
-            "YOU choose detailed records, any attempt/time-step/metric subsets "
-            "(action=records, attempts/from_step/to_step/metrics), or full original "
-            "logs (action=raw); request several distinct subsets if useful. No "
-            "forced summary. Records require exact metrics or explicit all_metrics=true; "
-            "small row/byte pages are the default, not full trajectories. Filtering "
-            "occurs before data enters PI context. "
-            "Records have offset/limit with expected_log_fingerprints on continuation; "
-            "raw pages have byte offset/max_bytes/expected_fingerprint, readable "
-            "UTF-8 by default or explicit base64. Follow provenance and continuation, "
-            "and report limits rather than claim incomplete transport is complete. "
-            "Failed/pending-failure logs are execution history, NOT scientific evidence."
-        ),
-        handler=training_log_query,
-        params_type=TrainingLogQueryParams,
-        defer="auto",
-        skip_permission=True,
-    )
-
-    async def scientific_api_reference(params, invocation) -> str | ToolResult:
-        if getattr(invocation, "agent_id", None) is None:
-            authorize_reader(invocation)
-        elif (
-            invocation.session_id != args.session_id
-            or coding is None
-            or not coding.busy
-            or coding.closed
-            or coding.binding is None
-            or invocation.agent_id != coding.active_handle
-            or (operations is not None and (operations.busy or operations.closed))
-        ):
-            raise ValueError(
-                "Only the active main PI or its authorized scientific child may read APIs."
-            )
-        try:
-            reference = await asyncio.to_thread(read_reference, params)
-        except ValueError as error:
-            message = str(error)
-            return ToolResult(
-                text_result_for_llm=json.dumps(
-                    {
-                        "status": "lookup_failed",
-                        "library": params.library,
-                        "symbol": params.symbol,
-                        "error": message,
-                    },
-                    ensure_ascii=False,
-                ),
-                result_type="failure",
-                error=message,
-                tool_telemetry={},
-            )
-        return json.dumps(reference, ensure_ascii=False)
-
-    api_reference_tool = define_tool(
-        "scientific_api_reference",
-        description=(
-            "Read-only installed API definitions for mujoco, gymnasium or stable_baselines3. "
-            "Select library and a public dotted symbol relative to that library. "
-            "No filesystem paths, private attributes, arbitrary code, constructors, "
-            "or scientific API calls are accepted. Imports load only the fixed library roots. "
-            "action=members lists public names with optional contains filtering; "
-            "offset/limit page member rows. action=definition returns installed signature, "
-            "documentation, available Python source and native MuJoCo declaration; "
-            "offset/max_bytes page UTF-8 definition bytes. Missing symbols and unavailable "
-            "source/signatures are explicit, not guessed. Follow next_offset for complete "
-            "retrieval. Main PI and its exact-scope coding/review children can use this reader. "
-            "Reference availability is not proof that a production integration executes."
-        ),
-        handler=scientific_api_reference,
-        params_type=ScientificAPIReferenceParams,
-        defer="auto",
-        skip_permission=True,
-    )
-    # The pinned SDK exposes the actual spawned runtime connection. Locate its
-    # bundled rg, rather than invoking a model-controlled shell or directory search.
-    runtime_path = getattr(getattr(client, "_connection", None), "path", None)
-    runtime_directory = Path(runtime_path).parent if runtime_path else None
-    candidates = (
-        sorted(runtime_directory.glob("ripgrep\\bin\\*\\rg.exe"))
-        if runtime_directory is not None
-        else []
-    )
-    rg_path = (
-        Path(shutil.which("rg")) if shutil.which("rg") else next(iter(candidates), None)
-    )
-    search = ScopedSearch(
-        ROOT,
-        lambda path: file_read_denial(path, preliminary=args.preliminary),
-        rg_path,
-        authorize_reader,
-    )
     external = getattr(args, "provider_model", None)
-    console.provider = provider_of(args.model)
-
-    class ReadParams(BaseModel):
-        model_config = ConfigDict(extra="forbid")
-        path: str
-        view_range: list[int] | None = Field(default=None, min_length=2, max_length=2)
-        forceReadLargeFiles: bool = False
-
-    async def native_read(params, invocation) -> str:
-        if (
-            invocation.session_id != args.session_id
-            or getattr(invocation, "agent_id", None) is not None
-        ):
-            raise ValueError("Read belongs to the OpenCode-routed main session only.")
-        arguments = params.model_dump(exclude_none=True)
-        hook = scoped_tool_hook(
-            operations=operations, coding=coding, preliminary=args.preliminary
-        )
-        decision = hook(
-            {
-                "sessionId": args.session_id,
-                "toolName": "view",
-                "toolArgs": arguments,
-            },
-            {"session_id": args.session_id},
-        )
-        if decision and decision.get("permissionDecision") == "deny":
-            raise ValueError(decision["permissionDecisionReason"])
-        path = search.target(params.path)
-        if not path.is_file():
-            raise ValueError("Read requires an exact permitted text file.")
-        first, last = params.view_range or (1, -1)
-        if first < 1 or (last != -1 and last < first):
-            raise ValueError("view_range requires a positive start and ordered end.")
-        lines = []
-        size = 0
-        with path.open(encoding="utf-8") as stream:
-            for number, line in enumerate(stream, 1):
-                if last != -1 and number > last:
-                    break
-                if number < first:
-                    continue
-                size += len(line.encode("utf-8"))
-                if size > MAX_OUTPUT_BYTES and not params.forceReadLargeFiles:
-                    raise ValueError("Read exceeds the page budget; narrow view_range.")
-                lines.append(line)
-        return "".join(lines)
-
-    handle_event, on_permission_request = build_handlers(
-        console,
-        finished,
-        preliminary=args.preliminary,
-        operations=operations,
-        coding=coding,
-    )
+    authorize = reader_guard(args, coding, operations)
+    search = scoped_search(args, client, authorize)
+    retry = ModelCallRetry(args.session_id, console, coding, operations)
+    handle_event = event_handler(console, finished, coding=coding)
 
     def on_event(event) -> None:
-        nonlocal model_call_retries
-        if (
-            getattr(event, "agent_id", None) is None
-            and isinstance(event.data, AssistantMessageData)
-            and event.data.interaction_id is not None
-        ):
-            model_call_retries = 0
+        retry.reset_after(event)
         handle_event(event)
 
-    tools = [
-        *search.tools(),
-        artifact_evidence_tool,
-        training_log_tool,
-        api_reference_tool,
-    ]
+    builtin = RESEARCH_TOOLS if args.preliminary else MAIN_PI_TOOLS
+    tools = [*search.tools(), *evidence_tools(args, authorize, coding, operations)]
     available = (
         ToolSet()
-        .add_builtin(
-            [
-                name
-                for name in (RESEARCH_TOOLS if args.preliminary else MAIN_PI_TOOLS)
-                if name not in {"rg", "glob"}
-            ]
-        )
+        .add_builtin([name for name in builtin if name not in {"rg", "glob"}])
         .add_custom("rg")
         .add_custom("glob")
         .add_custom("artifact_evidence_query")
@@ -459,21 +152,7 @@ def session_options(
         .add_custom("scientific_api_reference")
     )
     if external is not None:
-        tools.append(
-            define_tool(
-                "read",
-                description=(
-                    "Read UTF-8 text from an exact permitted file. "
-                    "Use optional view_range for line pages. "
-                    "The same file scopes apply as for view. "
-                    "Use native view for images."
-                ),
-                handler=native_read,
-                params_type=ReadParams,
-                defer="never",
-                skip_permission=True,
-            )
-        )
+        tools.append(read_tool(args, search, coding, operations))
         available.add_custom("read")
         if args.preliminary:
             # Non-GPT routes may not drive freeform patches for the model document.
@@ -489,7 +168,12 @@ def session_options(
         "model": normalize_model(args.model),
         "reasoning_effort": getattr(args, "effective_reasoning", args.reasoning),
         "on_event": on_event,
-        "on_permission_request": on_permission_request,
+        "on_permission_request": permission_handler(
+            console,
+            preliminary=args.preliminary,
+            operations=operations,
+            coding=coding,
+        ),
         "tools": tools,
         "available_tools": available,
         "working_directory": str(ROOT),
@@ -512,16 +196,16 @@ def session_options(
             "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
             "output_directory": str(LARGE_OUTPUT_DIR),
         },
-    }
-    options["hooks"] = {
-        "on_pre_tool_use": scoped_tool_hook(
-            operations=operations,
-            coding=coding,
-            preliminary=args.preliminary,
-            read_alias=external is not None,
-            json_editors=external is not None,
-        ),
-        "on_error_occurred": on_error_occurred,
+        "hooks": {
+            "on_pre_tool_use": scoped_tool_hook(
+                operations=operations,
+                coding=coding,
+                preliminary=args.preliminary,
+                read_alias=external is not None,
+                json_editors=external is not None,
+            ),
+            "on_error_occurred": retry.on_error_occurred,
+        },
     }
     if not args.preliminary:
         options["include_sub_agent_streaming_events"] = True
@@ -535,12 +219,13 @@ def session_options(
     if external is not None:
         options.update(
             external.session_options(
-                args.provider_identity,
-                api_key(),
-                args.provider_project,
+                args.provider_identity, api_key(), args.provider_project
             )
         )
     return options
+
+
+# --- inference provider and Copilot access ---------------------------------
 
 
 async def prepare_provider(args) -> None:
@@ -552,6 +237,35 @@ async def prepare_provider(args) -> None:
         args.provider_project = await asyncio.to_thread(project_id)
     api_key()
     args.effective_reasoning = args.reasoning if args.provider_model.reasoning else None
+
+
+def required_copilot_model(args) -> str | None:
+    """The Copilot model this session needs; native children always run on Copilot."""
+    if provider_of(args.model) == "github-copilot":
+        return normalize_model(args.model)
+    return None if args.preliminary else DEFAULT_MODEL
+
+
+async def copilot_access_failure(client, required: str | None):
+    """Return (exit code, message) when Copilot cannot serve `required`."""
+    if required is None:
+        return None
+    status = await client.get_auth_status()
+    if not getattr(status, "isAuthenticated", False):
+        return (
+            EXIT_NOT_AUTHENTICATED,
+            "Copilot is not authenticated. Run `copilot` once and sign in.",
+        )
+    available = [entry.id for entry in await client.list_models()]
+    if required not in available:
+        return (
+            EXIT_MODEL_UNAVAILABLE,
+            (
+                f"Model '{required}' is not available to this Copilot account. "
+                f"Available: {', '.join(available)}"
+            ),
+        )
+    return None
 
 
 async def list_model_choices(args) -> int:
@@ -575,18 +289,21 @@ async def list_model_choices(args) -> int:
                 continue
             for model_id, model in sorted(entry["models"].items()):
                 selection = f"{provider}/{model_id}"
+                cost = model.get("cost", {})
                 try:
                     resolve_model(selection, catalog)
                     note = (
                         "free"
-                        if model.get("cost", {}).get("input") == 0
-                        and (model.get("cost", {}).get("output") == 0)
+                        if cost.get("input") == 0 and cost.get("output") == 0
                         else ""
                     )
                 except (TypeError, ValueError) as error:
                     note = str(error)
                 print(f"{selection}" + (f"\t{note}" if note else ""))
     return EXIT_OK
+
+
+# --- one bounded session ---------------------------------------------------
 
 
 async def open_session(client, args, options: dict):
@@ -610,8 +327,18 @@ async def open_session(client, args, options: dict):
             return await client.resume_session(
                 args.session_id, continue_pending_work=False, **options
             )
-        return await client.create_session(session_id=args.session_id, **options)
     return await client.create_session(session_id=args.session_id, **options)
+
+
+async def assign_provider_identity(client, args) -> None:
+    if getattr(args, "provider_model", None) is None:
+        return
+    existing = args.resume
+    if args.resume_or_create:
+        existing = await client.get_session_metadata(args.session_id) is not None
+    args.provider_identity = session_identity(
+        args.session_id, args.model, resume=existing
+    )
 
 
 async def shutdown_runtime(client, session, console: Console, *, abort: bool) -> None:
@@ -656,33 +383,97 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
         raise interruption
 
 
+async def active_timeout(limit: float, started: float, operations) -> None:
+    """Expire after `limit` seconds of PI activity; Runner waits do not count."""
+    while True:
+        waited = operations.current_wait_seconds() if operations is not None else 0.0
+        if time.monotonic() - started - waited >= limit:
+            return
+        await asyncio.sleep(0.25)
+
+
+async def converse(session, args, console: Console, finished, operations):
+    """Drive one bounded conversation; return (exit code, abort the session)."""
+    before = worktree_status()
+    started = time.monotonic()
+    finished_task = asyncio.create_task(finished.wait())
+    stop_task = asyncio.create_task(wait_for_stop_request())
+    timeout_task = asyncio.create_task(
+        active_timeout(args.timeout, started, operations)
+    )
+
+    def timed_out():
+        console.line(f"  ! session timed out after {args.timeout}s")
+        console.summary(changed_since(before))
+        return EXIT_TIMEOUT, True
+
+    try:
+        prompt = args.prompt
+        if operations is not None and args.resumed_session:
+            prompt += RESUMED_STATE_PROMPT + json.dumps(
+                operations.state, ensure_ascii=False
+            )
+        await session.send(prompt)
+        for attempt in range(2):
+            done, _ = await asyncio.wait(
+                (finished_task, stop_task, timeout_task),
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            if (
+                stop_task in done
+                or timeout_task in done
+                or args.preliminary
+                or console.session_error
+                or (operations is not None and operations.closed)
+            ):
+                break
+            if attempt == 0:
+                finished.clear()
+                finished_task = asyncio.create_task(finished.wait())
+                await session.send(CONTINUE_PROMPT + json.dumps(operations.state))
+        if stop_task in done:
+            console.line("  ! session interrupted")
+            return EXIT_INTERRUPTED, True
+        if timeout_task in done:
+            return timed_out()
+    except TimeoutError:
+        return timed_out()
+    except KeyboardInterrupt:
+        console.line("  ! session interrupted")
+        return EXIT_INTERRUPTED, True
+    finally:
+        for task in (finished_task, stop_task, timeout_task):
+            task.cancel()
+        await asyncio.gather(
+            finished_task, stop_task, timeout_task, return_exceptions=True
+        )
+    console.summary(changed_since(before))
+    if operations is not None and operations.status != "session_ended":
+        return EXIT_SESSION_ERROR, False
+    return (EXIT_SESSION_ERROR if console.session_error else EXIT_OK), False
+
+
 async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
     if args.preliminary and provider_of(args.model) == "github-copilot":
         args.reasoning = "max"
     await prepare_provider(args)
-
     console = getattr(args, "usage_console", None) or Console()
     finished = asyncio.Event()
-    model = normalize_model(args.model)
-
     if stop_requested():
         return EXIT_INTERRUPTED
-
     owned_client = client is None
     if not args.preliminary and channel is None:
         raise ValueError(
             "Ordinary Copilot PI sessions require the trusted launcher controller."
         )
     client = client or CopilotClient(working_directory=str(ROOT))
-    coding = ScientificCoding(client, args, console) if not args.preliminary else None
-    operations = (
-        OperationSubmission(channel, binding, console, coding)
-        if not args.preliminary
-        else None
-    )
-    if coding is not None:
+    coding = None
+    operations = None
+    if not args.preliminary:
+        coding = ScientificCoding(client, args, console)
+        operations = OperationSubmission(channel, binding, console, coding)
         coding.operations = operations
     args.operation_submission = operations
     session = None
@@ -690,40 +481,12 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
     try:
         if owned_client:
             await client.start()
-        # Native coder and reviewer always run on Copilot, even for OpenCode PIs.
-        if provider_of(model) == "github-copilot":
-            required = model
-        else:
-            required = None if args.preliminary else DEFAULT_MODEL
-        copilot_auth = owned_client and required is not None
-        status = await client.get_auth_status() if copilot_auth else None
-        if copilot_auth and not getattr(status, "isAuthenticated", False):
-            print(
-                "Copilot is not authenticated. Run `copilot` once and sign in.",
-                file=sys.stderr,
-            )
-            return EXIT_NOT_AUTHENTICATED
-
-        available = (
-            [entry.id for entry in await client.list_models()] if copilot_auth else []
-        )
-        if copilot_auth and required not in available:
-            print(
-                f"Model '{required}' is not available to this Copilot account. "
-                f"Available: {', '.join(available)}",
-                file=sys.stderr,
-            )
-            return EXIT_MODEL_UNAVAILABLE
-
-        if getattr(args, "provider_model", None) is not None:
-            existing = args.resume
-            if args.resume_or_create:
-                existing = (
-                    await client.get_session_metadata(args.session_id) is not None
-                )
-            args.provider_identity = session_identity(
-                args.session_id, args.model, resume=existing
-            )
+            failure = await copilot_access_failure(client, required_copilot_model(args))
+            if failure is not None:
+                exit_code, message = failure
+                print(message, file=sys.stderr)
+                return exit_code
+        await assign_provider_identity(client, args)
         session = await open_session(
             client,
             args,
@@ -731,102 +494,14 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
         )
         if coding is not None:
             coding.session = session
-        before = worktree_status()
-        before_offload = offload_snapshot()
-        started = time.monotonic()
-        finished_task = asyncio.create_task(finished.wait())
-        stop_task = asyncio.create_task(wait_for_stop_request())
-
-        async def active_timeout() -> None:
-            while True:
-                waited = (
-                    operations.current_wait_seconds() if operations is not None else 0.0
-                )
-                if time.monotonic() - started - waited >= args.timeout:
-                    return
-                await asyncio.sleep(0.25)
-
-        timeout_task = asyncio.create_task(active_timeout())
         try:
-            prompt = args.prompt
-            if operations is not None and args.resumed_session:
-                prompt += (
-                    "\n\nRecovered current Runner state (factual metadata, not new "
-                    "scientific evidence). Automatic pending-work replay is disabled; "
-                    "continue from this durable state, not an unfinished old tool call:\n"
-                    + json.dumps(operations.state, ensure_ascii=False)
-                )
-            await session.send(prompt)
-            for attempt in range(2):
-                done, _ = await asyncio.wait(
-                    (finished_task, stop_task, timeout_task),
-                    return_when=asyncio.FIRST_COMPLETED,
-                )
-                if (
-                    stop_task in done
-                    or timeout_task in done
-                    or args.preliminary
-                    or console.session_error
-                    or (operations is not None and operations.closed)
-                ):
-                    break
-                if attempt == 0:
-                    finished.clear()
-                    finished_task = asyncio.create_task(finished.wait())
-                    await session.send(
-                        "This bounded session is still active. Continue from the actual "
-                        "operation results in this conversation. Submit the next supported "
-                        "action or the scientific checkpoint through submit_operation. "
-                        "Current factual state: " + json.dumps(operations.state)
-                    )
-            if stop_task in done:
-                abort_session = True
-                console.line("  ! session interrupted")
-                return EXIT_INTERRUPTED
-            if timeout_task in done:
-                abort_session = True
-                console.line(f"  ! session timed out after {args.timeout}s")
-                console.summary(
-                    session.session_id,
-                    changed_since(before),
-                    offloaded_since(before_offload),
-                    elapsed_seconds=time.monotonic() - started,
-                )
-                return EXIT_TIMEOUT
-        except TimeoutError:
-            abort_session = True
-            console.line(f"  ! session timed out after {args.timeout}s")
-            console.summary(
-                session.session_id,
-                changed_since(before),
-                offloaded_since(before_offload),
-                elapsed_seconds=time.monotonic() - started,
+            exit_code, abort_session = await converse(
+                session, args, console, finished, operations
             )
-            return EXIT_TIMEOUT
-        except KeyboardInterrupt:
-            abort_session = True
-            console.line("  ! session interrupted")
-            return EXIT_INTERRUPTED
         except asyncio.CancelledError:
             abort_session = True
             raise
-        finally:
-            finished_task.cancel()
-            stop_task.cancel()
-            timeout_task.cancel()
-            await asyncio.gather(
-                finished_task, stop_task, timeout_task, return_exceptions=True
-            )
-
-        console.summary(
-            session.session_id,
-            changed_since(before),
-            offloaded_since(before_offload),
-            elapsed_seconds=time.monotonic() - started,
-        )
-        if operations is not None and operations.status != "session_ended":
-            return EXIT_SESSION_ERROR
-        return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
+        return exit_code
     finally:
         try:
             if operations is not None:
@@ -840,6 +515,9 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
                 if abort_session:
                     await asyncio.wait_for(session.abort(), SHUTDOWN_TIMEOUT_SECONDS)
                 await asyncio.wait_for(session.disconnect(), SHUTDOWN_TIMEOUT_SECONDS)
+
+
+# --- command line and launcher controller ----------------------------------
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -883,9 +561,73 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def console_label(args) -> str:
-    """The bounded phase a session belongs to, for the console only."""
-    return str(args.phase or "")
+def session_outcome(exit_code: int, invocation_args, error: str | None):
+    """The status and error the launcher receives for one bounded session."""
+    operations = getattr(invocation_args, "operation_submission", None)
+    status = operations.status if operations is not None else "preliminary"
+    message = (
+        error
+        or (operations.error if operations is not None else None)
+        or invocation_args.usage_console.session_error
+    )
+    if exit_code == EXIT_TIMEOUT:
+        return (
+            "controller_fatal",
+            f"Copilot bounded session timed out after {invocation_args.timeout}s.",
+        )
+    if exit_code == EXIT_INTERRUPTED:
+        return "interrupted", "Copilot bounded session interrupted."
+    if exit_code != EXIT_OK and status in UNEXPLAINED_EXIT_STATUSES:
+        return "controller_fatal", message or (
+            f"Copilot bounded session exited with code {exit_code} "
+            "without a successful session outcome."
+        )
+    return status, message
+
+
+async def serve_session(args, client, channel, command: dict) -> int:
+    invocation_args = parse_args(command["arguments"])
+    if (
+        invocation_args.session_id != command["session_id"]
+        or invocation_args.campaign_id != command["campaign_id"]
+        or normalize_model(invocation_args.model) != normalize_model(args.model)
+        or invocation_args.reasoning != args.reasoning
+    ):
+        raise ValueError("Controller invocation binding/configuration mismatch.")
+    invocation_args.usage_console = Console()
+    if getattr(args, "provider_model", None) is not None:
+        invocation_args.provider_model = args.provider_model
+        invocation_args.provider_project = args.provider_project
+    started = time.monotonic()
+    exit_code = EXIT_RUNTIME_FAILURE
+    error = None
+    try:
+        exit_code = await run(
+            invocation_args, client=client, channel=channel, binding=command
+        )
+    except Exception as exc:  # noqa: BLE001 - preserve bounded runtime failure
+        error = f"{type(exc).__name__}: {exc}"
+    finally:
+        try:
+            record_usage(
+                invocation_args,
+                invocation_args.usage_console.usage,
+                time.monotonic() - started,
+                exit_code,
+            )
+        except (OSError, ValueError) as exc:
+            print(f"Session usage could not be recorded: {exc}", file=sys.stderr)
+    status, message = session_outcome(exit_code, invocation_args, error)
+    await channel.send(
+        {
+            "type": "session_result",
+            "invocation_id": command["invocation_id"],
+            "exit_code": exit_code,
+            "status": status,
+            "error": message,
+        }
+    )
+    return exit_code
 
 
 async def serve(args) -> int:
@@ -896,22 +638,12 @@ async def serve(args) -> int:
     )
     channel = ControllerChannel(reader, writer)
     client = CopilotClient(working_directory=str(ROOT))
-    console = Console()
     try:
         await client.start()
         await prepare_provider(args)
-        # The controller serves preparation and ordinary sessions; the latter need Copilot children.
-        status = await client.get_auth_status()
-        if not getattr(status, "isAuthenticated", False):
-            raise RuntimeError("Copilot is not authenticated.")
-        available = [entry.id for entry in await client.list_models()]
-        required = (
-            normalize_model(args.model)
-            if provider_of(args.model) == "github-copilot"
-            else DEFAULT_MODEL
-        )
-        if required not in available:
-            raise RuntimeError(f"Configured model {required!r} is unavailable.")
+        failure = await copilot_access_failure(client, required_copilot_model(args))
+        if failure is not None:
+            raise RuntimeError(failure[1])
         await channel.send({"type": "ready", "token": args.controller_token})
         while not stop_requested():
             command = await channel.receive()
@@ -919,84 +651,13 @@ async def serve(args) -> int:
                 break
             if command.get("type") != "session":
                 raise ValueError("Unexpected controller command.")
-            invocation_args = parse_args(command["arguments"])
-            if (
-                invocation_args.session_id != command["session_id"]
-                or invocation_args.campaign_id != command["campaign_id"]
-                or normalize_model(invocation_args.model) != normalize_model(args.model)
-                or invocation_args.reasoning != args.reasoning
-            ):
-                raise ValueError(
-                    "Controller invocation binding/configuration mismatch."
-                )
-            invocation_args.usage_console = Console(console_label(invocation_args))
-            if getattr(args, "provider_model", None) is not None:
-                invocation_args.provider_model = args.provider_model
-                invocation_args.provider_project = args.provider_project
-            started = time.monotonic()
-            exit_code = EXIT_RUNTIME_FAILURE
-            error = None
-            try:
-                exit_code = await run(
-                    invocation_args, client=client, channel=channel, binding=command
-                )
-            except Exception as exc:  # noqa: BLE001 - preserve bounded runtime failure
-                error = f"{type(exc).__name__}: {exc}"
-            finally:
-                try:
-                    record_usage(
-                        invocation_args,
-                        invocation_args.usage_console,
-                        time.monotonic() - started,
-                        exit_code,
-                    )
-                except (OSError, ValueError) as exc:
-                    print(
-                        f"Session usage could not be recorded: {exc}", file=sys.stderr
-                    )
-            operations = getattr(invocation_args, "operation_submission", None)
-            outcome_status = (
-                operations.status if operations is not None else "preliminary"
-            )
-            outcome_error = (
-                error
-                or (operations.error if operations is not None else None)
-                or invocation_args.usage_console.session_error
-            )
-            if exit_code == EXIT_TIMEOUT:
-                outcome_status = "controller_fatal"
-                outcome_error = f"Copilot bounded session timed out after {invocation_args.timeout}s."
-            elif exit_code == EXIT_INTERRUPTED:
-                outcome_status = "interrupted"
-                outcome_error = "Copilot bounded session interrupted."
-            elif exit_code != EXIT_OK and outcome_status in {
-                None,
-                "preliminary",
-                "completed",
-                "rejected",
-                "implementation_error",
-                "session_ended",
-            }:
-                outcome_status = "controller_fatal"
-                outcome_error = outcome_error or (
-                    f"Copilot bounded session exited with code {exit_code} "
-                    "without a successful session outcome."
-                )
-            await channel.send(
-                {
-                    "type": "session_result",
-                    "invocation_id": command["invocation_id"],
-                    "exit_code": exit_code,
-                    "status": outcome_status,
-                    "error": outcome_error,
-                }
-            )
+            exit_code = await serve_session(args, client, channel, command)
             if exit_code not in {EXIT_OK, EXIT_SESSION_ERROR}:
                 break
         return EXIT_OK
     finally:
         try:
-            await shutdown_runtime(client, None, console, abort=False)
+            await shutdown_runtime(client, None, Console(), abort=False)
         finally:
             writer.close()
             await writer.wait_closed()
@@ -1004,7 +665,7 @@ async def serve(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    args.usage_console = Console(console_label(args))
+    args.usage_console = Console()
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     try:
@@ -1019,7 +680,7 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         try:
             record_usage(
-                args, args.usage_console, time.monotonic() - started, exit_code
+                args, args.usage_console.usage, time.monotonic() - started, exit_code
             )
         except (OSError, ValueError) as error:
             # Accounting failure must not invalidate a scientific deliverable.

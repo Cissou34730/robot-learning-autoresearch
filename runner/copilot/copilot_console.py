@@ -1,4 +1,4 @@
-"""Copilot console rendering and existing session usage accounting."""
+"""What the human sees of a Copilot session; nothing here is read back."""
 
 from __future__ import annotations
 
@@ -7,18 +7,11 @@ import ntpath
 import re
 import shutil
 import sys
-import time
-import uuid
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
-from runner.copilot.coding_contracts import (
-    normalize_model,
-)
-from runner.copilot.opencode_provider import provider_of
-from runner.copilot.path_policy import (
-    ROOT,
-)
+from runner.copilot.path_policy import ROOT
+from runner.copilot.usage import SessionUsage
 
 UUID_PATTERN = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
@@ -81,17 +74,6 @@ _MARKER_COLORS = {
     "--": "\033[1;96m",
     "[session]": "\033[95m",
 }
-
-
-def format_duration(seconds: float) -> str:
-    total = max(int(seconds), 0)
-    minutes, seconds = divmod(total, 60)
-    hours, minutes = divmod(minutes, 60)
-    if hours:
-        return f"{hours}h{minutes:02d}m"
-    if minutes:
-        return f"{minutes}m{seconds:02d}s"
-    return f"{seconds}s"
 
 
 def format_console_line(text: str) -> str:
@@ -205,22 +187,170 @@ def unresolved_console_suffix_start(text: str) -> int:
     return start
 
 
-def thousands(count: int) -> str:
-    return f"{count / 1000:.0f}k" if count >= 1000 else str(count)
-
-
 def _console_width() -> int:
     return max(shutil.get_terminal_size(fallback=(100, 24)).columns, 40)
+
+
+def _artifact_query_detail(arguments: dict) -> str:
+    action = arguments.get("action")
+    pointers: list[str] = []
+    if action == "discover":
+        pointers.append(compact_json_pointer(str(arguments.get("prefix") or "/")))
+    elif action == "batch":
+        queries = arguments.get("queries")
+        if isinstance(queries, list):
+            rendered = [
+                compact_artifact_query_spec(query)
+                for query in queries
+                if isinstance(query, dict)
+                and isinstance(query.get("path"), str)
+                and query["path"].startswith("/")
+            ]
+            pointers.extend(rendered[:3])
+            if len(rendered) > 3:
+                pointers.append(f"+{len(rendered) - 3} more")
+    elif isinstance(arguments.get("path"), str):
+        pointers.append(compact_artifact_query_spec(arguments))
+    artifact = (
+        f"artifact {arguments.get('artifact_index', 0)}"
+        if action not in {"operations", "metadata"}
+        else None
+    )
+    parts = [
+        str(value)
+        for value in (arguments.get("operation_id"), artifact, action)
+        if isinstance(value, (str, int)) and str(value)
+    ]
+    if pointers:
+        parts.append(", ".join(pointers))
+    return " | ".join(parts)
+
+
+def _training_log_detail(arguments: dict) -> str:
+    parts = [
+        str(arguments.get("operation_id") or ""),
+        str(arguments.get("action") or "discover"),
+    ]
+    for key in (
+        "attempts",
+        "from_step",
+        "to_step",
+        "metrics",
+        "all_metrics",
+        "offset",
+        "limit",
+        "max_bytes",
+    ):
+        if key in arguments:
+            parts.append(f"{key}={arguments[key]}")
+    return " | ".join(part for part in parts if part)
+
+
+def _api_reference_detail(arguments: dict) -> str:
+    values = (
+        arguments.get("library", "-"),
+        arguments.get("symbol") or "library root",
+        arguments.get("action", "definition"),
+        arguments.get("contains"),
+    )
+    return " | ".join(str(value) for value in values if value)
+
+
+def _powershell_detail(arguments: dict) -> str:
+    values = (arguments.get("description"), f"cwd {ROOT}", arguments.get("command"))
+    return " | ".join(
+        str(value) for value in values if isinstance(value, str) and value
+    )
+
+
+def _search_detail(arguments: dict) -> str:
+    pattern = arguments.get("pattern") or arguments.get("query")
+    paths = arguments.get("paths") or arguments.get("path")
+    if isinstance(paths, str):
+        rendered = [full_console_path(paths)]
+    elif isinstance(paths, list):
+        rendered = [full_console_path(str(path)) for path in paths]
+    else:
+        rendered = [str(ROOT.resolve())]
+    parts = [f"pattern {pattern}"] if pattern else []
+    if rendered:
+        parts.append("paths " + ", ".join(rendered))
+    return " | ".join(parts)
+
+
+_GENERIC_DETAIL_KEYS = (
+    "description",
+    "path",
+    "filePath",
+    "file_path",
+    "command",
+    "commandLine",
+    "query",
+    "pattern",
+    "shellId",
+    "shell_id",
+    "session_id",
+)
+
+
+def _generic_detail(arguments: dict) -> str:
+    for key in _GENERIC_DETAIL_KEYS:
+        raw = arguments.get(key)
+        if isinstance(raw, (str, int)) and raw != "":
+            if isinstance(raw, str) and key in {"path", "filePath", "file_path"}:
+                return full_console_path(raw)
+            return str(raw)
+    return ""
+
+
+def _patch_detail(arguments: object) -> str:
+    patch = (
+        arguments.get("input") or arguments.get("patch")
+        if isinstance(arguments, dict)
+        else arguments
+    )
+    if not isinstance(patch, str):
+        return ""
+    # Show only file headers, never the potentially large patch body.
+    prefixes = (
+        "*** Update File: ",
+        "*** Add File: ",
+        "*** Delete File: ",
+        "*** Move to: ",
+    )
+    return ", ".join(
+        full_console_path(line.split(": ", 1)[1])
+        for line in patch.splitlines()
+        if line.startswith(prefixes)
+    )
+
+
+_TOOL_DETAIL = {
+    "artifact_evidence_query": _artifact_query_detail,
+    "training_log_query": _training_log_detail,
+    "scientific_coding": lambda _: "bounded coding / PI source review required",
+    "scientific_api_reference": _api_reference_detail,
+    "powershell": _powershell_detail,
+    "rg": _search_detail,
+    "glob": _search_detail,
+}
+
+
+def tool_detail(name: str, arguments: object) -> str:
+    if name == "apply_patch":
+        detail = _patch_detail(arguments)
+    elif isinstance(arguments, dict):
+        detail = _TOOL_DETAIL.get(name, _generic_detail)(arguments)
+    else:
+        detail = ""
+    return " ".join(detail.split())
 
 
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
-    def __init__(self, label: str = "", columns: int | None = None) -> None:
-        # Which experiment and phase this session is, so one long console log
-        # stays attributable without reading backwards for the last banner.
-        self.label = label
-        self.provider = "github-copilot"
+    def __init__(self, columns: int | None = None) -> None:
+        self.usage = SessionUsage()
         self._mid_stream = False
         self._at_line_start = True
         self._message_width = max((columns or _console_width()) - 4, 20)
@@ -229,50 +359,10 @@ class Console:
         self._message_spacing = ""
         self._message_column = 0
         self._message_continues_word = False
-        self._turn = 0
-        self._turn_started_at: float | None = None
-        self._turn_model = ""
-        self._turn_tools = 0
-        self._turn_files = 0
-        self._turn_prompt_at_start = 0
-        self._turn_cache_read_at_start = 0
-        self._turn_output_at_start = 0
         self.changed_files: dict[str, str] = {}
-        self.prompt_tokens = 0
-        self.cache_read_tokens = 0
-        self.cache_write_tokens = 0
-        self.output_tokens = 0
-        self.reported_usage: set[str] = set()
-        self.nano_aiu = 0.0
-        self.nano_aiu_by_type: dict[str, float] = {}
         self.session_error: str | None = None
-        self.denials = 0
-        self.tool_calls = 0
-        self.tool_counts: dict[str, int] = {}
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
-        self.coding_duration_seconds = 0.0
-        self.runner_wait_seconds = 0.0
-
-    def tagged(self, text: str) -> str:
-        return f"[{self.label}] {text}" if self.label else text
-
-    def turn_start(self, model: str | None = None) -> None:
-        """Reset per-turn counters without narrating runtime turns."""
-        self._turn += 1
-        self._turn_started_at = time.monotonic()
-        self._turn_model = model or ""
-        self._turn_tools = 0
-        self._turn_files = 0
-        self._turn_prompt_at_start = self.prompt_tokens
-        self._turn_cache_read_at_start = self.cache_read_tokens
-        self._turn_output_at_start = self.output_tokens
-
-    def turn_end(self) -> None:
-        """Close per-turn accounting without narrating runtime turns."""
-        if self._turn_started_at is None:
-            return
-        self._turn_started_at = None
 
     def line(self, text: str) -> None:
         self._close_message()
@@ -382,156 +472,10 @@ class Console:
     def tool(
         self, name: str, arguments: object, tool_call_id: str | None = None
     ) -> None:
-        self.tool_calls += 1
-        self.tool_counts[name] = self.tool_counts.get(name, 0) + 1
-        self._turn_tools += 1
+        self.usage.count_tool(name)
         if tool_call_id:
             self.active_tools[tool_call_id] = (name, arguments)
-        detail = ""
-        if isinstance(arguments, dict):
-            if name == "artifact_evidence_query":
-                operation_id = arguments.get("operation_id")
-                action = arguments.get("action")
-                pointers: list[str] = []
-                if action == "discover":
-                    pointers.append(
-                        compact_json_pointer(str(arguments.get("prefix") or "/"))
-                    )
-                elif action == "batch":
-                    queries = arguments.get("queries")
-                    if isinstance(queries, list):
-                        rendered_queries = [
-                            compact_artifact_query_spec(query)
-                            for query in queries
-                            if isinstance(query, dict)
-                            and isinstance(query.get("path"), str)
-                            and query["path"].startswith("/")
-                        ]
-                        pointers.extend(rendered_queries[:3])
-                        if len(rendered_queries) > 3:
-                            pointers.append(f"+{len(rendered_queries) - 3} more")
-                elif isinstance(arguments.get("path"), str):
-                    pointers.append(compact_artifact_query_spec(arguments))
-                parts = [
-                    str(value)
-                    for value in (
-                        operation_id,
-                        (
-                            f"artifact {arguments.get('artifact_index', 0)}"
-                            if action not in {"operations", "metadata"}
-                            else None
-                        ),
-                        action,
-                    )
-                    if isinstance(value, (str, int)) and str(value)
-                ]
-                if pointers:
-                    parts.append(", ".join(pointers))
-                detail = " | ".join(parts)
-            elif name == "training_log_query":
-                parts = [
-                    str(arguments.get("operation_id") or ""),
-                    str(arguments.get("action") or "discover"),
-                ]
-                for key in (
-                    "attempts",
-                    "from_step",
-                    "to_step",
-                    "metrics",
-                    "all_metrics",
-                    "offset",
-                    "limit",
-                    "max_bytes",
-                ):
-                    if key in arguments:
-                        parts.append(f"{key}={arguments[key]}")
-                detail = " | ".join(part for part in parts if part)
-            elif name == "scientific_coding":
-                detail = "bounded coding / PI source review required"
-            elif name == "scientific_api_reference":
-                detail = " | ".join(
-                    str(value)
-                    for value in (
-                        arguments.get("library", "-"),
-                        arguments.get("symbol") or "library root",
-                        arguments.get("action", "definition"),
-                        arguments.get("contains"),
-                    )
-                    if value
-                )
-            elif name == "powershell":
-                description = arguments.get("description")
-                command = arguments.get("command")
-                detail = " | ".join(
-                    str(value)
-                    for value in (description, f"cwd {ROOT}", command)
-                    if isinstance(value, str) and value
-                )
-            elif name in {"rg", "glob"}:
-                pattern = arguments.get("pattern") or arguments.get("query")
-                paths = arguments.get("paths") or arguments.get("path")
-                rendered_paths = []
-                if isinstance(paths, str):
-                    rendered_paths = [full_console_path(paths)]
-                elif isinstance(paths, list):
-                    rendered_paths = [full_console_path(str(path)) for path in paths]
-                else:
-                    rendered_paths = [str(ROOT.resolve())]
-                parts = []
-                if pattern:
-                    parts.append(f"pattern {pattern}")
-                if rendered_paths:
-                    parts.append("paths " + ", ".join(rendered_paths))
-                detail = " | ".join(parts)
-            else:
-                raw = next(
-                    (
-                        arguments[key]
-                        for key in (
-                            "description",
-                            "path",
-                            "filePath",
-                            "file_path",
-                            "command",
-                            "commandLine",
-                            "query",
-                            "pattern",
-                            "shellId",
-                            "shell_id",
-                            "session_id",
-                        )
-                        if isinstance(arguments.get(key), (str, int))
-                        and arguments[key] != ""
-                    ),
-                    "",
-                )
-                detail = str(raw)
-                if isinstance(raw, str) and any(
-                    key in arguments and arguments.get(key) == raw
-                    for key in ("path", "filePath", "file_path")
-                ):
-                    detail = full_console_path(raw)
-        if name == "apply_patch":
-            patch = (
-                arguments.get("input") or arguments.get("patch")
-                if isinstance(arguments, dict)
-                else arguments
-            )
-            if isinstance(patch, str):
-                # Show only file headers, never the potentially large patch body.
-                prefixes = (
-                    "*** Update File: ",
-                    "*** Add File: ",
-                    "*** Delete File: ",
-                    "*** Move to: ",
-                )
-                targets = []
-                for line in patch.splitlines():
-                    if line.startswith(prefixes):
-                        targets.append(full_console_path(line.split(": ", 1)[1]))
-                if targets:
-                    detail = ", ".join(targets)
-        detail = " ".join(detail.split())
+        detail = tool_detail(name, arguments)
         self.line(f"  > {name}: {detail}" if detail else f"  > {name}")
 
     def tool_failed(
@@ -565,7 +509,6 @@ class Console:
         self.line(f"  x {operation} failed: {reason}")
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
-        self.denials += 1
         if tool_call_id:
             self.denied_calls.add(tool_call_id)
         self.line(f"  x {reason.splitlines()[0]}")
@@ -578,7 +521,6 @@ class Console:
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
-            self._turn_files += 1
             suffix = " | PI operation request updated" if operation_request else ""
             self.line(f"  {marker} {path}{suffix}")
 
@@ -586,48 +528,12 @@ class Console:
         self.session_error = message
         self.line(f"  ! session error: {message}")
 
-    def summary(
-        self,
-        session_id: str,
-        changed: list[str],
-        offloaded: tuple[int, int] = (0, 0),
-        elapsed_seconds: float = 0.0,
-    ) -> None:
+    def summary(self, changed: list[str]) -> None:
         """Expose unannounced changes; lifecycle summaries come from the Runner."""
-        del session_id, offloaded, elapsed_seconds
         for path in changed:
             path = full_console_path(path)
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
-
-    def work(self, offloaded: tuple[int, int]) -> str:
-        count, size = offloaded
-        offload = f", offloaded {count} ({size // 1024} KB)" if count else ""
-        return f"tools {self.tool_calls}{offload}"
-
-    def usage(self) -> str:
-        """Cost as billed: cached prompt tokens are a tenth the price of fresh ones,
-        so a single token total would hide most of what a session actually costs."""
-        prompt = f"prompt {thousands(self.prompt_tokens)}"
-        if self.prompt_tokens:
-            share = round(100 * self.cache_read_tokens / self.prompt_tokens)
-            prompt += f" ({share}% cached)"
-        if self.provider != "github-copilot":
-            return f"provider cost unavailable, {prompt}"
-        return f"{self.nano_aiu / 1e9:.2f} AIU{self.cost_split()}, {prompt}"
-
-    def cost_split(self) -> str:
-        """Admitting new context costs over ten times re-reading it, so the split
-        says whether to shrink what enters the session or what it replies."""
-        by_type = self.nano_aiu_by_type
-        new = by_type.get("input", 0.0) + by_type.get("cache_write", 0.0)
-        read = by_type.get("cache_read", 0.0)
-        output = by_type.get("output", 0.0)
-        if not (new or read or output):
-            return ""
-        return (
-            f" (new {new / 1e9:.2f} / read {read / 1e9:.2f} / out {output / 1e9:.2f})"
-        )
 
 
 class CodingConsole(Console):
@@ -641,73 +547,3 @@ class CodingConsole(Console):
 
     def message(self, text: str) -> None:
         pass
-
-
-def record_usage(
-    args,
-    console: Console,
-    elapsed: float,
-    exit_code: int,
-    *,
-    role: str = "pi",
-    session_id: str | None = None,
-    parent_session_id: str | None = None,
-    actual_models: list[str] | None = None,
-    actual_reasoning_efforts: list[str] | None = None,
-) -> None:
-    """Append aggregate usage, never conversation content or tool arguments."""
-    if not args.campaign_id:
-        return  # Standalone invocations are not attributed to an arbitrary campaign.
-    # Campaign IDs are path components, not filenames supplied by the model.
-    campaign_id = str(uuid.UUID(args.campaign_id))
-    directory = ROOT / "reports" / "session_usage"
-    directory.mkdir(parents=True, exist_ok=True)
-    row = {
-        "campaign_id": campaign_id,
-        "phase": args.phase,
-        "attempt": args.attempt,
-        "session_id": session_id or args.session_id,
-        "role": role,
-        "parent_session_id": parent_session_id,
-        "recorded_at": datetime.now(UTC).isoformat(),
-        "model": normalize_model(args.model),
-        "provider": provider_of(args.model),
-        "reasoning": getattr(args, "effective_reasoning", args.reasoning),
-        # Child time is reported in its own row, not again in the PI row.
-        "duration_seconds": round(
-            max(
-                0.0,
-                elapsed - console.coding_duration_seconds - console.runner_wait_seconds,
-            ),
-            3,
-        ),
-        "wall_duration_seconds": round(elapsed, 3),
-        "runner_wait_seconds": round(console.runner_wait_seconds, 3),
-        "exit_code": exit_code,
-        "input_tokens": console.prompt_tokens
-        if "input_tokens" in console.reported_usage
-        else None,
-        "cache_read_tokens": console.cache_read_tokens
-        if "cache_read_tokens" in console.reported_usage
-        else None,
-        "cache_write_tokens": console.cache_write_tokens
-        if "cache_write_tokens" in console.reported_usage
-        else None,
-        "output_tokens": console.output_tokens
-        if "output_tokens" in console.reported_usage
-        else None,
-        "aiu": console.nano_aiu / 1e9
-        if provider_of(args.model) == "github-copilot" and "aiu" in console.reported_usage
-        else None,
-        "tool_calls": console.tool_calls,
-        "tools_by_name": console.tool_counts,
-    }
-    external = getattr(args, "provider_model", None)
-    if external is not None:
-        row["provider_token_prices_per_million"] = external.cost
-    if actual_models is not None:
-        row["actual_models"] = actual_models
-    if actual_reasoning_efforts is not None:
-        row["actual_reasoning_efforts"] = actual_reasoning_efforts
-    with (directory / f"{campaign_id}.jsonl").open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(row, ensure_ascii=False) + "\n")
