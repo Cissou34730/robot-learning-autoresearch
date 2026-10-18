@@ -601,26 +601,64 @@ def _validate_episode(raw: Any, index: int) -> dict[str, Any]:
         raise EvidenceError(f"{location} no-reach outcome has a first reach")
     if outcome == "post_reach_failure" and first_reach_step is None:
         raise EvidenceError(f"{location} post-reach outcome has no first reach")
+
+    held_runs = []
+    run_start_step = None
+    for sample_index, sample in enumerate(samples):
+        if (
+            sample["held_steps"] == 1
+            and (
+                sample_index == 0
+                or samples[sample_index - 1]["held_steps"] == 0
+            )
+        ):
+            run_start_step = sample_index
+        if run_start_step is not None and (
+            sample["held_steps"] == 0 or sample_index == len(samples) - 1
+        ):
+            run_end_step = (
+                sample_index - 1 if sample["held_steps"] == 0 else sample_index
+            )
+            held_runs.append(
+                {
+                    "start_step": run_start_step,
+                    "end_step": run_end_step,
+                    "length": run_end_step - run_start_step + 1,
+                }
+            )
+            run_start_step = None
+    longest_held_run_length = max(
+        (sample["held_steps"] for sample in samples), default=0
+    )
+    longest_held_run = next(
+        (
+            run
+            for run in held_runs
+            if run["length"] == longest_held_run_length
+        ),
+        None,
+    )
+
     if success:
         if first_reach_step is None:
             raise EvidenceError(f"{location} success has no first reach")
-        expected_final_step = first_reach_step + REQUIRED_HOLD_STEPS - 1
-        if steps != expected_final_step:
+        if samples[-1]["held_steps"] != REQUIRED_HOLD_STEPS:
             raise EvidenceError(
-                f"{location} successful uninterrupted hold must end at step "
-                f"{expected_final_step}; trace ends at {steps}"
+                f"{location} final held-step count is not {REQUIRED_HOLD_STEPS}"
             )
-        successful_hold = samples[
-            first_reach_step : first_reach_step + REQUIRED_HOLD_STEPS
-        ]
+        terminal_hold_start_step = steps - REQUIRED_HOLD_STEPS + 1
+        successful_hold = samples[terminal_hold_start_step : steps + 1]
         if [sample["held_steps"] for sample in successful_hold] != list(
             range(1, REQUIRED_HOLD_STEPS + 1)
         ):
-            raise EvidenceError(f"{location} does not contain the uninterrupted hold")
-        if samples[-1]["held_steps"] != REQUIRED_HOLD_STEPS:
-            raise EvidenceError(f"{location} final held-step count is not 100")
+            raise EvidenceError(
+                f"{location} final {REQUIRED_HOLD_STEPS} samples do not contain "
+                "the uninterrupted successful hold"
+            )
     elif any(sample["held_steps"] >= REQUIRED_HOLD_STEPS for sample in samples):
         raise EvidenceError(f"{location} reached a complete hold but is labeled failed")
+    else:
+        terminal_hold_start_step = None
 
     return {
         "episode": index,
@@ -631,6 +669,11 @@ def _validate_episode(raw: Any, index: int) -> dict[str, Any]:
         "success": success,
         "first_reach_step": first_reach_step,
         "steps": steps,
+        "held_runs": held_runs,
+        "held_run_count": len(held_runs),
+        "longest_held_run_length": longest_held_run_length,
+        "longest_held_run": longest_held_run,
+        "terminal_successful_hold_start_step": terminal_hold_start_step,
         "terminated": terminated,
         "truncated": truncated,
         "trajectory": samples,
@@ -716,6 +759,57 @@ def _episode_features(row: dict[str, Any]) -> dict[str, Any]:
     peak_pre_reach_sample = peak_qdot_sample(pre_reach_samples)
     peak_post_reach_sample = peak_qdot_sample(post_reach_samples)
 
+    if row["outcome"] == "success":
+        hold_metrics_start_step = row["terminal_successful_hold_start_step"]
+        hold_metrics_samples = samples[hold_metrics_start_step : row["steps"] + 1]
+    elif row["outcome"] == "post_reach_failure":
+        longest_run = row["longest_held_run"]
+        hold_metrics_start_step = longest_run["start_step"]
+        hold_metrics_samples = samples[
+            longest_run["start_step"] : longest_run["end_step"] + 1
+        ]
+    else:
+        hold_metrics_start_step = None
+        hold_metrics_samples = []
+
+    def hold_mean_max(
+        values: list[float],
+    ) -> tuple[float | None, float | None]:
+        if not values:
+            return None, None
+        return sum(values) / len(values), max(values)
+
+    (
+        hold_run_mean_qdot_norm,
+        hold_run_max_qdot_norm,
+    ) = hold_mean_max(
+        [sample["qdot_norm_rad_s"] for sample in hold_metrics_samples]
+    )
+    (
+        hold_run_mean_q_error,
+        hold_run_max_q_error,
+    ) = hold_mean_max(
+        [sample["endpoint_error_norm_m"] for sample in hold_metrics_samples]
+    )
+    (
+        hold_run_mean_environment_distance,
+        hold_run_max_environment_distance,
+    ) = hold_mean_max(
+        [
+            sample["environment_reported_distance_m"]
+            for sample in hold_metrics_samples
+        ]
+    )
+    (
+        hold_run_mean_nominal_torque_norm,
+        hold_run_max_nominal_torque_norm,
+    ) = hold_mean_max(
+        [
+            _norm_at(sample, "nominal_command_times_gear_torque_nm")
+            for sample in hold_metrics_samples
+        ]
+    )
+
     def maximum_norm(rows: list[dict[str, Any]], field: str) -> float | None:
         values = [_norm_at(sample, field) for sample in rows]
         nonnull = [value for value in values if value is not None]
@@ -768,6 +862,33 @@ def _episode_features(row: dict[str, Any]) -> dict[str, Any]:
         "success": row["success"],
         "first_reach_step": first_reach,
         "steps": row["steps"],
+        "held_run_count": row["held_run_count"],
+        "longest_held_run_length": row["longest_held_run_length"],
+        "longest_held_run_start_step": (
+            None
+            if row["longest_held_run"] is None
+            else row["longest_held_run"]["start_step"]
+        ),
+        "terminal_successful_hold_start_step": (
+            row["terminal_successful_hold_start_step"]
+        ),
+        "hold_run_metrics_start_step": hold_metrics_start_step,
+        "hold_run_mean_qdot_norm_rad_s": hold_run_mean_qdot_norm,
+        "hold_run_max_qdot_norm_rad_s": hold_run_max_qdot_norm,
+        "hold_run_mean_q_derived_endpoint_error_m": hold_run_mean_q_error,
+        "hold_run_max_q_derived_endpoint_error_m": hold_run_max_q_error,
+        "hold_run_mean_environment_reported_distance_m": (
+            hold_run_mean_environment_distance
+        ),
+        "hold_run_max_environment_reported_distance_m": (
+            hold_run_max_environment_distance
+        ),
+        "hold_run_mean_nominal_actuator_torque_norm_nm": (
+            hold_run_mean_nominal_torque_norm
+        ),
+        "hold_run_max_nominal_actuator_torque_norm_nm": (
+            hold_run_max_nominal_torque_norm
+        ),
         "initial_endpoint_error_m": samples[0]["endpoint_error_norm_m"],
         "minimum_endpoint_error_m": minimum_sample["endpoint_error_norm_m"],
         "minimum_error_control_step": minimum_sample["control_step"],
@@ -947,6 +1068,19 @@ NUMERIC_FEATURES = (
     "target_angle_degrees",
     "first_reach_step",
     "steps",
+    "held_run_count",
+    "longest_held_run_length",
+    "longest_held_run_start_step",
+    "terminal_successful_hold_start_step",
+    "hold_run_metrics_start_step",
+    "hold_run_mean_qdot_norm_rad_s",
+    "hold_run_max_qdot_norm_rad_s",
+    "hold_run_mean_q_derived_endpoint_error_m",
+    "hold_run_max_q_derived_endpoint_error_m",
+    "hold_run_mean_environment_reported_distance_m",
+    "hold_run_max_environment_reported_distance_m",
+    "hold_run_mean_nominal_actuator_torque_norm_nm",
+    "hold_run_max_nominal_actuator_torque_norm_nm",
     "initial_endpoint_error_m",
     "minimum_endpoint_error_m",
     "minimum_error_control_step",
@@ -1307,6 +1441,25 @@ def build_analysis(artifact: Any) -> dict[str, Any]:
             "held_control_samples": (
                 "All control samples whose environment held-step counter is positive; "
                 "for interrupted failures this can include multiple hold attempts."
+            ),
+            "held_run_definition": (
+                "A held run begins at each transition into held_steps=1 after zero. "
+                "Its contiguous length equals the maximum held_steps counter in "
+                "that run. The longest-run start is the earliest run attaining "
+                "the maximum length; episodes with no held run have length 0 "
+                "and null start."
+            ),
+            "hold_run_metric_window": (
+                "For successes, hold-run means and maxima use the final 100 "
+                "samples, from steps-99 through steps; terminal successful hold "
+                "start is steps-99. For reached failures, they use the longest "
+                "held run, selecting the earliest run if tied. For no-reach "
+                "episodes, these means and maxima and their window start are null."
+            ),
+            "first_reach_vs_successful_hold": (
+                "first_reach_step remains the first positive held-step sample; "
+                "it is not relabeled as the start of the terminal successful hold "
+                "and may precede an interrupted earlier attempt."
             ),
             "time_series_samples": (
                 "Control-step means use reset through step 20 when present. "
