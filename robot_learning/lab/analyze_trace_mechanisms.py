@@ -304,9 +304,6 @@ def _validate_sample(
     qdot = _vector(
         _required(sample, "qdot_rad_s", location), 2, f"{location}/qdot_rad_s"
     )
-    for joint, position in zip(("shoulder", "elbow"), q, strict=True):
-        if position < -JOINT_LIMIT_RAD - 1e-8 or position > JOINT_LIMIT_RAD + 1e-8:
-            raise EvidenceError(f"{location}/q_rad {joint} exceeds its joint limits")
     if control_step == 0:
         for index, value in enumerate(q):
             _close(value, 0.0, f"{location}/q_rad/{index}")
@@ -403,10 +400,6 @@ def _validate_sample(
             JOINT_LIMIT_RAD - q[index],
             f"{location}/joint_limit_margins_rad/{joint}/to_upper_limit_rad",
         )
-        if to_lower < -1e-8 or to_upper < -1e-8:
-            raise EvidenceError(
-                f"{location}/joint_limit_margins_rad/{joint} is negative"
-            )
 
     held_steps = _integer(
         _required(sample, "held_steps", location),
@@ -1284,6 +1277,12 @@ def build_analysis(artifact: Any) -> dict[str, Any]:
             ),
             "nearest_branch_error": (
                 "Minimum Euclidean branch joint-error norm at that sample."
+            ),
+            "joint_limit_margins": (
+                "Margins are signed arithmetic differences from the declared "
+                "+/-170 degree limits. A negative value means the sampled q "
+                "crossed that declared limit in the research simulation; values "
+                "are not clamped or filtered."
             ),
             "qdot_vector_order": ["shoulder", "elbow"],
             "pre_reach_qdot": (
