@@ -1669,7 +1669,7 @@
   "counters": {
     "event": 8,
     "inquiry": 2,
-    "measurement": 5,
+    "measurement": 7,
     "session": 5,
     "training": 2
   },
@@ -4846,9 +4846,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-18T19:38:45Z",
+      "error": "robot_learning.lab.analyze_trace_mechanisms failed:\n\nusage: analyze_trace_mechanisms.py [-h] --trace TRACE --output OUTPUT\nanalyze_trace_mechanisms.py: error: episode_rows/54/trajectory/16/q_rad shoulder exceeds its joint limits\n\nAccepted invocation: module=robot_learning.lab.analyze_trace_mechanisms, args=[\"--trace\", \"campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M5-1-t1-110592-control-traces.json\", \"--output\", \"campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json\"], declared_artifact=campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json",
+      "id": "M6",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Validate M5's full 200-episode trajectory artifact and produce descriptive outcome-by-target-stratum features and control-step summaries for T1:checkpoint-110592, separating reset/first-reach acquisition from reached hold behavior and preserving both endpoint-distance channels.",
+        "measurements": [
+          {
+            "args": [
+              "--trace",
+              "{input:trace}",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json",
+            "inputs": {
+              "trace": {
+                "artifact_index": 0,
+                "operation_id": "M5"
+              }
+            },
+            "instrument": "python_module",
+            "label": "validated-stratified-control-trajectory-analysis",
+            "module": "robot_learning.lab.analyze_trace_mechanisms"
+          }
+        ],
+        "rationale": "M5 supplied the missing traces and matched the M1 seeds, targets, outcomes, first-reach steps, and episode lengths. The remaining decision is whether those q/qdot, branch errors, margins, torque commands and full reached traces distinguish angle-conditioned no-reach acquisition from post-reach stabilization; direct inspection of the large raw trace is inefficient and risks selective sampling. The analysis will validate all episodes and summarize 200 per-episode records by radius, angle, and sector-radius cells, with explicit sample counts and outcome-separated early and post-reach curves, rather than making inferential or causal claims. If no-reach cases in the difficult sector show systematic joint/branch/command/limit trajectory differences while reached outcomes share early approach behavior, acquisition becomes a supported priority; if similar acquisition precedes post-reach high velocity/error or torque patterns, stabilization becomes supported; both patterns would justify a two-part development direction. If no-reach failures show large q-versus-environment distance mismatch, the accessible outcome instrumentation itself limits interpretation. Path-specific dynamic/braking evidence could warrant compiled inertia/contact characterization; absence of such patterns leaves those quantities unestablished rather than proven irrelevant. Regardless, 21 no-reach plus 7 post-reach failures make acquisition alone insufficient for 196/200 on this panel. Research samples cannot resolve between-control-step excursion or protected official performance."
+      },
+      "result": {
+        "error": "robot_learning.lab.analyze_trace_mechanisms failed:\n\nusage: analyze_trace_mechanisms.py [-h] --trace TRACE --output OUTPUT\nanalyze_trace_mechanisms.py: error: episode_rows/54/trajectory/16/q_rad shoulder exceeds its joint limits\n\nAccepted invocation: module=robot_learning.lab.analyze_trace_mechanisms, args=[\"--trace\", \"campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M5-1-t1-110592-control-traces.json\", \"--output\", \"campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json\"], declared_artifact=campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json",
+        "status": "failed"
+      },
+      "session_id": "S5",
+      "status": "failed",
+      "superseded_by": "M7",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--trace",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M5-1-t1-110592-control-traces.json",
+            "--output",
+            "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json"
+          ],
+          "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json",
+          "input_artifacts": {
+            "trace": {
+              "artifact_index": 0,
+              "artifact_path": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/python-module-M5-1-t1-110592-control-traces.json",
+              "operation_id": "M5",
+              "recorded_artifact_fingerprint": "29e3c5719c45c16d60c3b902dfc5f64e01047bf3ecdf6de245e405eb8fb574d1"
+            }
+          },
+          "inputs": {
+            "trace": {
+              "artifact_index": 0,
+              "operation_id": "M5"
+            }
+          },
+          "instrument": "python_module",
+          "label": "validated-stratified-control-trajectory-analysis",
+          "module": "robot_learning.lab.analyze_trace_mechanisms"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "21d3e88028a8587eba56ec0c8cdb3ea541fad71e40bcb6140763b56725fbd45b",
+            "path": "robot_learning/lab/analyze_coverage_comparison.py"
+          },
+          {
+            "fingerprint": "c5556e3a797e63a194a711f93abe296593dd36e4ad9ff0c222a944e4afc62c6a",
+            "path": "robot_learning/lab/analyze_trace_mechanisms.py"
+          },
+          {
+            "fingerprint": "c988c05296bc77611058ed115ca7ba1a7c7724165c2d078a60c30e56ed637ded",
+            "path": "robot_learning/lab/trace_policy_episodes.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "aa0c493ec07c6cb9efe5f0b62561f37345139438",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "c5556e3a797e63a194a711f93abe296593dd36e4ad9ff0c222a944e4afc62c6a",
+            "path": "robot_learning/lab/analyze_trace_mechanisms.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_trace_mechanisms.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Validate M5's full 200-episode trajectory artifact and produce descriptive outcome-by-target-stratum features and control-step summaries for T1:checkpoint-110592, separating reset/first-reach acquisition from reached hold behavior and preserving both endpoint-distance channels.",
+        "measurements": [
+          {
+            "args": [
+              "--trace",
+              "{input:trace}",
+              "--output",
+              "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json"
+            ],
+            "artifact": "campaigns/evaluations/fb0baa2a-f1d5-47d6-98fa-ebb6e06775d0/t1-110592-trace-mechanism-analysis.json",
+            "inputs": {
+              "trace": {
+                "artifact_index": 0,
+                "operation_id": "M5"
+              }
+            },
+            "instrument": "python_module",
+            "label": "validated-stratified-control-trajectory-analysis",
+            "module": "robot_learning.lab.analyze_trace_mechanisms"
+          }
+        ],
+        "rationale": "M5 supplied the missing traces and matched the M1 seeds, targets, outcomes, first-reach steps, and episode lengths. The remaining decision is whether those q/qdot, branch errors, margins, torque commands and full reached traces distinguish angle-conditioned no-reach acquisition from post-reach stabilization; direct inspection of the large raw trace is inefficient and risks selective sampling. The analysis will validate all episodes and summarize 200 per-episode records by radius, angle, and sector-radius cells, with explicit sample counts and outcome-separated early and post-reach curves, rather than making inferential or causal claims. If no-reach cases in the difficult sector show systematic joint/branch/command/limit trajectory differences while reached outcomes share early approach behavior, acquisition becomes a supported priority; if similar acquisition precedes post-reach high velocity/error or torque patterns, stabilization becomes supported; both patterns would justify a two-part development direction. If no-reach failures show large q-versus-environment distance mismatch, the accessible outcome instrumentation itself limits interpretation. Path-specific dynamic/braking evidence could warrant compiled inertia/contact characterization; absence of such patterns leaves those quantities unestablished rather than proven irrelevant. Regardless, 21 no-reach plus 7 post-reach failures make acquisition alone insufficient for 196/200 on this panel. Research samples cannot resolve between-control-step excursion or protected official performance."
+      }
+    },
+    "request_fingerprint": "e7c470a32248194fc031fd89a967a06df57e5dd074fb20225bf77cefb1918459",
+    "session_id": "S5",
+    "supersedes": "M6"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Best-known remains T1:checkpoint-110592, assigned by E1 using M1. M4 shows T1:checkpoint-115712 is not stronger on the measured panels (179/200 task-reference; 172/200 research with a 2\u20132 paired comparison), and M1 showed terminal T1:checkpoint-120832 lower. T2:checkpoint-120832 remains a measured lower-performing comparison; T2:checkpoint-115712 and T2:checkpoint-110592 remain unmeasured, not presumed equivalent to the measured artifact. There is no working candidate or official certification. No model-role change is warranted by M4.",
     "completed_operations": [
