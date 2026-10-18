@@ -18,3 +18,4 @@
 | E8 | checkpoint | - | checkpointed |
 | M5 | measurement | I2 | completed |
 | M6 | measurement | I2 | failed |
+| M7 | measurement | I2 | failed |
