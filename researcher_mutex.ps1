@@ -30,3 +30,20 @@ function Get-WorktreeMutexName {
     $hex = [System.BitConverter]::ToString($digest).Replace('-', '').Substring(0, 16)
     return "Local\RobotLearningAutoresearch-$hex"
 }
+
+function Set-ResearchPaths {
+    param(
+        [Parameter(Mandatory)][string]$HarnessRoot,
+        [Parameter(Mandatory)][string]$CampaignRoot
+    )
+    $harness = (Resolve-Path -LiteralPath $HarnessRoot -ErrorAction Stop).ProviderPath
+    $campaign = (Resolve-Path -LiteralPath $CampaignRoot -ErrorAction Stop).ProviderPath
+    if (-not (Test-Path -LiteralPath (Join-Path $campaign ".git"))) {
+        throw "The campaign folder must be a Git repository: $campaign"
+    }
+    $env:ROBOT_LEARNING_CAMPAIGN_ROOT = $campaign
+    $entries = @($campaign, $harness)
+    if ($env:PYTHONPATH) { $entries += $env:PYTHONPATH }
+    $env:PYTHONPATH = $entries -join [System.IO.Path]::PathSeparator
+    Set-Location -LiteralPath $campaign
+}

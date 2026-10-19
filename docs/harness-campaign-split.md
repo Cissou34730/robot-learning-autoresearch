@@ -83,4 +83,7 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   campaign writes remain scoped and harness/shadow writes stay denied. Native
   view argument rewriting is supported by the installed SDK. Targeted checks:
   51 passed.
-- [ ] Stage 5
+- [x] Stage 5: launch/reset accept `-CampaignRoot`, select the harness uv
+  project, and share a per-campaign mutex. PI trust snapshots protect both Git
+  roots. PowerShell parsing and 14 targeted trust checks passed.
+- [ ] Stage 6

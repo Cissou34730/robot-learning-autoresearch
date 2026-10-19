@@ -1,6 +1,8 @@
 # Goal-centered robot-learning research launcher.
 
 param(
+    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns"),
+
     [ValidateNotNullOrEmpty()]
     [string]$Model,
 
@@ -37,6 +39,10 @@ if ($ListModels) {
     & uv @listingArgs
     exit $LASTEXITCODE
 }
+
+. "$PSScriptRoot\researcher_mutex.ps1"
+Set-ResearchPaths -HarnessRoot $PSScriptRoot -CampaignRoot $CampaignRoot
+$CampaignRoot = (Get-Location).Path
 
 $script:CampaignExitCode = 0
 $script:CampaignStopRequested = $false
@@ -188,7 +194,7 @@ function Invoke-CooperativeProcess {
     $redirectOutput = $CaptureOutput -or $StreamOutput
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $FilePath
-    $startInfo.WorkingDirectory = $PSScriptRoot
+    $startInfo.WorkingDirectory = $CampaignRoot
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardInput = $PSBoundParameters.ContainsKey("InputText")
     $startInfo.RedirectStandardOutput = $redirectOutput
@@ -305,7 +311,7 @@ function Enter-TrustedMutableInvocation {
     if (-not $script:PITrustSnapshot) {
         return
     }
-    Assert-PITrustSnapshot -Snapshot $script:PITrustSnapshot
+    Assert-PITrustSnapshot -Snapshot $script:PITrustSnapshot -Root $CampaignRoot
 }
 
 function Invoke-Runner {
@@ -320,7 +326,8 @@ function Invoke-Runner {
     $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
         Select-Object -First 1
     $runnerArguments = @(
-        "run", "python", "runner/run_experiment.py", "--timesteps", "$Timesteps"
+        "run", "--project", $PSScriptRoot, "python", "-m",
+        "runner.run_experiment", "--timesteps", "$Timesteps"
     )
     $runnerArguments += $Arguments
     $processOptions = @{}
@@ -331,7 +338,7 @@ function Invoke-Runner {
         -ArgumentList $runnerArguments -Operation "research runner" `
         -CaptureOutput:$CaptureOutput -StreamOutput:$StreamOutput @processOptions
     $script:PITrustSnapshot = New-PITrustSnapshot `
-        -Preliminary:$script:PITrustPreliminary
+        -Preliminary:$script:PITrustPreliminary -Root $CampaignRoot -HarnessRoot $PSScriptRoot
     return $exitCode
 }
 
@@ -354,12 +361,10 @@ function Test-StopAfterOperation {
     return $true
 }
 
-. "$PSScriptRoot\researcher_mutex.ps1"
-
 $createdNew = $false
 $loopMutex = [System.Threading.Mutex]::new(
     $true,
-    (Get-WorktreeMutexName -Worktree $PSScriptRoot),
+    (Get-WorktreeMutexName -Worktree $CampaignRoot),
     [ref]$createdNew
 )
 if (-not $createdNew) {
@@ -368,7 +373,7 @@ if (-not $createdNew) {
 }
 
 function Assert-ResearchRuntime {
-    uv run python -c "import runner.run_experiment"
+    uv run --project $PSScriptRoot python -c "import runner.run_experiment"
     if ($LASTEXITCODE -ne 0) {
         throw "The research runtime is internally inconsistent. No PI session or Runner operation was started."
     }
@@ -388,7 +393,8 @@ function Invoke-PISession {
 
     Enter-TrustedMutableInvocation
     $script:PITrustPreliminary = [bool]$Preliminary
-    $script:PITrustSnapshot = New-PITrustSnapshot -Preliminary:$Preliminary
+    $script:PITrustSnapshot = New-PITrustSnapshot -Preliminary:$Preliminary `
+        -Root $CampaignRoot -HarnessRoot $PSScriptRoot
 
     if ($Preliminary) {
         if ($Continue -and -not $script:PISessionId) {
@@ -448,7 +454,7 @@ function Invoke-PISession {
 
 function Update-ResearchBrief {
     Enter-TrustedMutableInvocation
-    uv run python runner/build_brief.py
+    uv run --project $PSScriptRoot python -m runner.build_brief
     if ($LASTEXITCODE -ne 0) {
         throw "Could not build the compact PI research brief."
     }
@@ -460,7 +466,7 @@ function Get-HumanGoalSummary {
     if ($State.human_goal.summary) {
         return [string]$State.human_goal.summary
     }
-    $scenario = Get-Content "contracts\scenario.md" -Raw
+    $scenario = Get-Content (Join-Path $PSScriptRoot "contracts\scenario.md") -Raw
     $match = [regex]::Match(
         $scenario,
         '(?ms)^## Success criterion\s+(?<body>.*?)(?=^## |\z)'
@@ -890,7 +896,7 @@ function New-ScientificSessionPrompt {
 function Test-OperationRequest {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run python runner/run_experiment.py --timesteps $Timesteps --check-operation 2>&1
+        uv run --project $PSScriptRoot python -m runner.run_experiment --timesteps $Timesteps --check-operation 2>&1
     )
     $exitCode = $LASTEXITCODE
     $script:OperationValidationFeedback = (
@@ -910,7 +916,7 @@ function Test-OperationRequest {
 function Test-ScientificModelDeliverable {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run python runner/run_experiment.py --check-scientific-model-deliverable 2>&1
+        uv run --project $PSScriptRoot python -m runner.run_experiment --check-scientific-model-deliverable 2>&1
     )
     if ($LASTEXITCODE -ne 0) {
         $script:ScientificModelValidationFeedback = (

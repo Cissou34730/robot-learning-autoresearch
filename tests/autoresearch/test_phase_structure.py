@@ -205,6 +205,30 @@ Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
 
 
 @powershell_only
+def test_launcher_trust_snapshot_protects_the_separate_harness(tmp_path):
+    campaign = _short_temp_repo(tmp_path)
+    harness = _short_temp_repo(tmp_path)
+    _trust_test_repository(campaign)
+    _trust_test_repository(harness)
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$snapshot = New-PITrustSnapshot -Root '{campaign}' -HarnessRoot '{harness}'
+Set-Content -LiteralPath '{campaign}\\robot_learning\\training\\algorithm.py' -Value 'allowed'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root '{campaign}'
+Set-Content -LiteralPath '{harness}\\run_research.ps1' -Value 'not allowed'
+try {{
+    Assert-PITrustSnapshot -Snapshot $snapshot -Root '{campaign}'
+    throw 'Harness change was not detected'
+}} catch {{
+    if ($_ -notmatch 'outside the AGENTS.md scientific') {{ throw }}
+}}
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+@powershell_only
 def test_launcher_trust_snapshot_excludes_git_probe_directory(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)

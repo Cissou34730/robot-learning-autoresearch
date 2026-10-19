@@ -1,5 +1,10 @@
 # Trusted launcher transport. Only this controller selects Runner arguments.
-$script:CopilotRepositoryRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$script:CopilotHarnessRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$script:CopilotRepositoryRoot = if ($env:ROBOT_LEARNING_CAMPAIGN_ROOT) {
+    $env:ROBOT_LEARNING_CAMPAIGN_ROOT
+} else {
+    $script:CopilotHarnessRoot
+}
 $script:RunnerPublicationFailureExitCode = 3
 
 function Get-CopilotOperationState {
@@ -104,7 +109,8 @@ function Start-PersistentCopilotRuntime {
     $startInfo.UseShellExecute = $false
     $startInfo.Environment["ROBOT_RESEARCH_STOP_REQUEST"] = $script:StopRequestPath
     foreach ($argument in @(
-        "run", "--group", "researcher", "python", "runner\copilot\copilot_adapter.py",
+        "run", "--project", $script:CopilotHarnessRoot, "--group", "researcher",
+        "python", "-m", "runner.copilot.copilot_adapter",
         "--controller-port", "$($listener.LocalEndpoint.Port)",
         "--controller-token", $token, "--model", $Model, "--reasoning", $Reasoning
     )) {

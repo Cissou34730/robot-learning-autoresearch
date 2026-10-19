@@ -14,6 +14,7 @@ Reset the current campaign, optionally restoring a scientific recipe first.
 #>
 [CmdletBinding()]
 param(
+    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns"),
     [Parameter(Mandatory)]
     [ValidateSet("Fresh", "Baseline")][string]$Mode,
     [string]$RecipeRef,
@@ -38,11 +39,13 @@ if ($Mode -eq "Baseline" -and (-not $BaselineRef -or $RecipeRef)) {
 # The launcher derives the same worktree-scoped name, so a loop running in this
 # checkout is still excluded while another checkout stays free to run its own.
 . "$PSScriptRoot\researcher_mutex.ps1"
+Set-ResearchPaths -HarnessRoot $PSScriptRoot -CampaignRoot $CampaignRoot
+$CampaignRoot = (Get-Location).Path
 
 $createdNew = $false
 $campaignMutex = [System.Threading.Mutex]::new(
     $true,
-    (Get-WorktreeMutexName -Worktree $PSScriptRoot),
+    (Get-WorktreeMutexName -Worktree $CampaignRoot),
     [ref]$createdNew
 )
 if (-not $createdNew) {
@@ -55,7 +58,7 @@ try {
     if ($RecipeRef) { $arguments += @("--recipe-ref", $RecipeRef) }
     if ($BaselineRef) { $arguments += @("--baseline-ref", $BaselineRef) }
     if ($Clean) { $arguments += "--clean" }
-    uv run python runner/reset_campaign.py @arguments
+    uv run --project $PSScriptRoot python -m runner.reset_campaign @arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Research reset failed. Review the reported error and starting commit before retrying."
     }

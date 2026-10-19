@@ -321,13 +321,18 @@ function Get-LauncherProtectedFiles {
 function New-PITrustSnapshot {
     param(
         [switch]$Preliminary,
-        [string]$Root = $PSScriptRoot
+        [string]$Root = $PSScriptRoot,
+        [string]$HarnessRoot
     )
 
     return [pscustomobject]@{
         Head = Get-LauncherHeadIdentity -Root $Root
         Files = Get-LauncherProtectedFiles -Root $Root -Preliminary:$Preliminary
         Preliminary = [bool]$Preliminary
+        HarnessRoot = $HarnessRoot
+        HarnessSnapshot = if ($HarnessRoot -and $HarnessRoot -ne $Root) {
+            New-PITrustSnapshot -Root $HarnessRoot -Preliminary:$Preliminary
+        } else { $null }
     }
 }
 
@@ -337,6 +342,9 @@ function Assert-PITrustSnapshot {
         [string]$Root = $PSScriptRoot
     )
 
+    if ($Snapshot.HarnessSnapshot) {
+        Assert-PITrustSnapshot -Snapshot $Snapshot.HarnessSnapshot -Root $Snapshot.HarnessRoot
+    }
     $violations = [System.Collections.Generic.List[string]]::new()
     $head = Get-LauncherHeadIdentity -Root $Root
     if ($head -ne $Snapshot.Head) {
