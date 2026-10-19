@@ -15,7 +15,7 @@ from benchmark.paired_evidence import (
     episode_outcomes,
     paired_comparison,
 )
-from runner import protocol
+from runner import paths, protocol
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTECTED_ACCOUNTING = "benchmark/paired_evidence.py"
@@ -47,12 +47,13 @@ def test_statistic_is_researcher_owned_and_the_module_is_not_protected():
     assert not hasattr(protected, "exact_mcnemar_pvalue")
 
 
-def test_evaluator_and_runner_import_the_protected_accounting():
+def test_evaluator_and_runner_import_the_protected_accounting(monkeypatch):
+    monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
     for relative in (
         "runner/execution.py",
         "robot_learning/scenario/evaluation.py",
     ):
-        source = (ROOT / relative).read_text(encoding="utf-8")
+        source = paths.locate(relative).read_text(encoding="utf-8")
         assert "robot_learning.training.comparison" not in source, relative
         assert "benchmark.paired_evidence" in source, relative
 

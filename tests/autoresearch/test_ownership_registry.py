@@ -10,16 +10,18 @@ from pathlib import Path
 
 import pytest
 
-from runner import protocol
+from runner import paths, protocol
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_every_declared_classification_exists_on_disk():
+def test_every_declared_classification_exists_on_disk(monkeypatch):
+    monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
     assert protocol.declared_paths_exist() == []
 
 
 def test_a_missing_declared_path_is_reported(monkeypatch):
+    monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
     monkeypatch.setattr(
         protocol,
         "PROTECTED_RUNNER_PATHS",
@@ -126,7 +128,7 @@ def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path)
     assert committed == []
 
 
-def test_every_documented_human_owned_path_is_enforced():
+def test_every_documented_human_owned_path_is_enforced(monkeypatch):
     """The AGENTS.md contract and the enforced classification must not drift.
 
     Issue #58: the documentation called the whole benchmark package human-owned
@@ -135,6 +137,7 @@ def test_every_documented_human_owned_path_is_enforced():
     typo or a moved path fails here, and every resolved path must be classified
     human-owned.
     """
+    monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
     text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     section = text.split("## Human-owned paths", 1)[1].split("\n## ", 1)[0]
     listing = section[section.index("- ") :].split("\n\n", 1)[0]
@@ -146,21 +149,24 @@ def test_every_documented_human_owned_path_is_enforced():
         assert not entry.startswith("/"), entry
         if any(wildcard in entry for wildcard in "*?["):
             matches = sorted(
-                path.relative_to(ROOT).as_posix() for path in ROOT.glob(entry)
+                paths.logical_path(path)
+                for path in paths.locate(Path(entry).parent).glob(Path(entry).name)
             )
             assert matches, f"documented glob matches nothing: {entry}"
             resolved.extend(matches)
         elif entry.endswith("/"):
-            directory = ROOT / entry.rstrip("/")
+            directory = paths.locate(entry.rstrip("/"))
             assert directory.is_dir(), f"documented directory is missing: {entry}"
             resolved.extend(
-                path.relative_to(ROOT).as_posix()
+                paths.logical_path(path)
                 for path in directory.rglob("*")
                 if path.is_file()
             )
         else:
             if entry not in protocol.CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS:
-                assert (ROOT / entry).is_file(), f"documented path is missing: {entry}"
+                assert paths.locate(entry).is_file(), (
+                    f"documented path is missing: {entry}"
+                )
             resolved.append(entry)
 
     assert resolved

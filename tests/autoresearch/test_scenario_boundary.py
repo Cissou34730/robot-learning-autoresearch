@@ -13,15 +13,22 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from robot_learning import scenario
 from robot_learning.scenario.evaluation import summarize_research_evaluations
 from robot_learning.training import research_config
 from robot_learning.training.research_config import load_experiment_config
+
+from runner import paths
 from runner import repository as runner_repository
 from runner.build_brief import render_research_brief
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture(autouse=True)
+def physical_source_roots(monkeypatch):
+    monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
+
 
 # Derived, never listed: a guard must follow the Runner when a responsibility
 # moves into a new module instead of silently guarding nothing.
@@ -170,7 +177,7 @@ def test_scenario_initializer_exposes_no_scientific_or_protected_api():
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
 def test_generic_core_has_no_scenario_specific_imports(relative_path):
-    for module in imported_modules(ROOT / relative_path):
+    for module in imported_modules(paths.locate(relative_path)):
         assert module not in FORBIDDEN_MODULES, (
             f"{relative_path} imports scenario-specific module {module}"
         )
@@ -182,7 +189,7 @@ def test_generic_core_has_no_scenario_specific_imports(relative_path):
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
 def test_generic_core_has_no_physics_engine_imports(relative_path):
-    for module in imported_modules(ROOT / relative_path):
+    for module in imported_modules(paths.locate(relative_path)):
         assert module != "mujoco" and not module.startswith("mujoco."), (
             f"{relative_path} depends on the scenario physics engine via {module}"
         )
@@ -194,7 +201,7 @@ def test_generic_core_may_only_use_the_scenario_package():
         for path in GENERIC_CORE_MODULES
         if any(
             module.startswith("robot_learning.scenario")
-            for module in imported_modules(ROOT / path)
+            for module in imported_modules(paths.locate(path))
         )
     ]
     assert set(users) == {
@@ -206,7 +213,7 @@ def test_generic_core_may_only_use_the_scenario_package():
     for relative_path in users:
         assert all(
             module in SCENARIO_OWNING_MODULES
-            for module in imported_modules(ROOT / relative_path)
+            for module in imported_modules(paths.locate(relative_path))
             if module.startswith("robot_learning.scenario")
         )
     # The compact-context builder needs no scenario code at all.
@@ -214,20 +221,20 @@ def test_generic_core_may_only_use_the_scenario_package():
 
 
 def test_the_repository_has_a_single_research_brief():
-    assert not (ROOT / "robot_learning" / "scenario" / "brief.py").exists()
-    assert (ROOT / "robot_learning" / "scenario" / "progress.py").exists()
+    assert not paths.locate("robot_learning/scenario/brief.py").exists()
+    assert paths.locate("robot_learning/scenario/progress.py").exists()
 
 
 def test_research_evaluation_panel_is_a_single_orchestration_setting():
     literal = re.compile(rf"\b{research_config.RESEARCH_EVALUATION_EPISODES}\b")
     for relative_path in RESEARCH_EVALUATION_PANEL_MODULES:
-        source = (ROOT / relative_path).read_text(encoding="utf-8")
+        source = paths.locate(relative_path).read_text(encoding="utf-8")
         assert not literal.search(source), (
             f"{relative_path} duplicates the standard evaluation panel size"
         )
 
-    assert "default=RESEARCH_EVALUATION_EPISODES" in (
-        ROOT / "robot_learning" / "evaluate.py"
+    assert "default=RESEARCH_EVALUATION_EPISODES" in paths.locate(
+        "robot_learning/evaluate.py"
     ).read_text(encoding="utf-8")
     assert "research_config.RESEARCH_EVALUATION_EPISODES" in (
         ROOT / "runner" / "execution.py"
@@ -245,8 +252,8 @@ def test_runner_reads_the_live_training_metric_only_through_the_boundary():
 
 
 def test_normalization_never_reaches_for_the_scenario():
-    normalization = ROOT / "robot_learning" / "training" / "normalization.py"
-    scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
+    normalization = paths.locate("robot_learning/training/normalization.py")
+    scenario_evaluation = paths.locate("robot_learning/scenario/evaluation.py")
 
     # The scenario depends on this helper, so any import back would cycle.
     assert "contracts.policy_runtime" in module_level_imports(scenario_evaluation)
@@ -273,7 +280,7 @@ def test_scenario_and_benchmark_import_in_any_order(module_name):
 
 @pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
 def test_generic_core_does_not_interpret_scenario_evaluation_fields(relative_path):
-    source = (ROOT / relative_path).read_text(encoding="utf-8")
+    source = paths.locate(relative_path).read_text(encoding="utf-8")
 
     for field in SCENARIO_EVALUATION_FIELDS:
         assert field not in source, f"{relative_path} interprets {field}"
@@ -281,9 +288,9 @@ def test_generic_core_does_not_interpret_scenario_evaluation_fields(relative_pat
 
 def test_scenario_owns_the_evaluation_summary():
     sources = runner_sources()
-    scenario_source = (
-        ROOT / "robot_learning" / "scenario" / "evaluation.py"
-    ).read_text(encoding="utf-8")
+    scenario_source = paths.locate("robot_learning/scenario/evaluation.py").read_text(
+        encoding="utf-8"
+    )
 
     assert "def summarize_research_evaluations" in scenario_source
     for relative, source in sources.items():
@@ -292,8 +299,8 @@ def test_scenario_owns_the_evaluation_summary():
 
 
 def test_task_success_threshold_is_not_generic_configuration():
-    config_source = (
-        ROOT / "robot_learning" / "training" / "research_config.py"
+    config_source = paths.locate(
+        "robot_learning/training/research_config.py"
     ).read_text(encoding="utf-8")
 
     assert "98" not in config_source
@@ -305,12 +312,13 @@ def test_task_success_threshold_is_not_generic_configuration():
 
 def test_ordinary_research_evaluation_ignores_the_final_threshold():
     import robot_learning.scenario.evaluation as scenario_evaluation
+
     from benchmark import final_contract
 
     assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
     assert not hasattr(scenario_evaluation, "FINAL_SUCCESS_PERCENT")
     for module in imported_modules(
-        ROOT / "robot_learning" / "scenario" / "evaluation.py"
+        paths.locate("robot_learning/scenario/evaluation.py")
     ):
         assert module == "benchmark.paired_evidence" or not module.startswith(
             "benchmark"
@@ -369,7 +377,7 @@ def test_runtime_configuration_carries_no_reward():
     assert "reward" not in config
 
     persisted = json.loads(
-        (ROOT / "robot_learning" / "training" / "current_params.json").read_text(
+        paths.locate("robot_learning/training/current_params.json").read_text(
             encoding="utf-8"
         )
     )
@@ -377,7 +385,7 @@ def test_runtime_configuration_carries_no_reward():
 
 
 def test_scenario_reward_is_code_not_configuration():
-    source = (ROOT / "robot_learning" / "training" / "reward.py").read_text(
+    source = paths.locate("robot_learning/training/reward.py").read_text(
         encoding="utf-8"
     )
 
@@ -387,7 +395,7 @@ def test_scenario_reward_is_code_not_configuration():
 
 
 def test_scenario_code_stays_algorithm_independent():
-    for path in (ROOT / "robot_learning" / "scenario").glob("*.py"):
+    for path in paths.locate("robot_learning/scenario").glob("*.py"):
         source = path.read_text(encoding="utf-8")
         for algorithm_name in KNOWN_ALGORITHM_NAMES:
             assert not mentions(source, algorithm_name), path.name

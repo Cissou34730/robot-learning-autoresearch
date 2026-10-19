@@ -361,10 +361,14 @@ def task_contract() -> dict:
     return {
         "schema_version": 1,
         "files": {
-            relative: repository.file_fingerprint(paths.locate(relative))
+            relative: task_file_fingerprint(paths.locate(relative).read_bytes())
             for relative in TASK_COMPATIBILITY_PATHS
         },
     }
+
+
+def task_file_fingerprint(content: bytes) -> str:
+    return hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
 
 
 def verify_recipe_source(commit: str) -> None:

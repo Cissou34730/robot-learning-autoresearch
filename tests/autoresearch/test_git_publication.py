@@ -28,6 +28,12 @@ def _remove_readonly(function, value, error):
     function(value)
 
 
+@pytest.fixture(autouse=True)
+def single_root_publication(monkeypatch):
+    # Split campaign repositories never push; these tests cover the push path.
+    monkeypatch.setattr(paths, "SPLIT", False)
+
+
 @pytest.fixture
 def git_repository(monkeypatch):
     # Windows Git cannot access pytest's mode-0o700 temporary directories.
