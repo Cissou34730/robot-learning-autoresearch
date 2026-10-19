@@ -175,6 +175,79 @@ def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
     assert search.target("contracts/scenario.md") == harness / "contracts/scenario.md"
 
 
+@pytest.mark.parametrize("preliminary", [False, True])
+@pytest.mark.parametrize(
+    "relative",
+    ["contracts/scenario.md", "contracts/robots/arm.xml", "AGENTS.md"],
+)
+def test_campaign_absolute_contract_reads_route_before_authorization(
+    split_roots, monkeypatch, preliminary, relative
+):
+    from runner.copilot import path_policy
+    from runner.copilot.tool_policy import scoped_tool_hook
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    contract = harness / relative
+    contract.parent.mkdir(parents=True, exist_ok=True)
+    contract.write_text("protected contract", encoding="utf-8")
+    hook = scoped_tool_hook(preliminary=preliminary)
+    decision = hook(
+        {
+            "toolName": "view",
+            "toolArgs": {"path": str(campaign / relative), "view_range": [1, 1]},
+        },
+        {},
+    )
+    assert decision == {"modifiedArgs": {"path": str(contract), "view_range": [1, 1]}}
+    assert (
+        Path(decision["modifiedArgs"]["path"]).read_text(encoding="utf-8")
+        == "protected contract"
+    )
+
+
+def test_campaign_absolute_search_paths_route_to_harness(split_roots, monkeypatch):
+    from runner.copilot import path_policy
+    from runner.copilot.copilot_scoped_search import GlobParams, ScopedSearch
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    contract = harness / "contracts/scenario.md"
+    contract.parent.mkdir()
+    contract.write_text("task", encoding="utf-8")
+    search = ScopedSearch(campaign, path_policy.file_read_denial, None, lambda _i: None)
+    assert search.target(str(campaign / "contracts/scenario.md")) == contract
+    result = search.glob(
+        GlobParams(pattern="**/*.md", paths=str(campaign / "contracts")), None
+    )
+    assert "scenario.md" in result
+
+
+def test_absolute_read_routing_keeps_shadow_and_reserved_paths_denied(
+    split_roots, monkeypatch
+):
+    from runner.copilot import path_policy
+    from runner.copilot.tool_policy import scoped_tool_hook
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    shadow = campaign / "contracts/scenario.md"
+    shadow.parent.mkdir()
+    shadow.write_text("shadow", encoding="utf-8")
+    hook = scoped_tool_hook(preliminary=True)
+    for target in (
+        shadow,
+        campaign / "runner/execution.py",
+        campaign / "tests/private.py",
+        campaign / "docs/private.md",
+        campaign / "contracts/../../outside.md",
+    ):
+        decision = hook({"toolName": "view", "toolArgs": {"path": str(target)}}, {})
+        assert decision["permissionDecision"] == "deny"
+    assert path_policy.file_edit_denial(str(campaign / "AGENTS.md"), preliminary=True)
+    assert path_policy.file_edit_denial(str(harness / "AGENTS.md"), preliminary=True)
+
+
 def test_recipe_task_identity_is_checked_against_the_current_harness(
     split_roots, monkeypatch
 ):

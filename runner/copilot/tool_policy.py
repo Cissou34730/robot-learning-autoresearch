@@ -16,6 +16,7 @@ from runner.copilot.path_policy import (
     _repository_relative_target,
     file_read_denial,
     physical_target,
+    read_target,
     scoped_edit_denial,
 )
 
@@ -153,9 +154,17 @@ def scoped_tool_hook(
         name = request.get("toolName")
         if read_alias and name == "read":
             name = "view"
+        arguments = request.get("toolArgs")
+        if paths.SPLIT and name == "view" and isinstance(arguments, dict):
+            target = arguments.get("path")
+            if isinstance(target, str):
+                try:
+                    arguments = {**arguments, "path": str(read_target(target))}
+                except ValueError:
+                    return deny(FILE_READ_DENIAL)
         reason = tool_denial(
             name,
-            request.get("toolArgs"),
+            arguments,
             coding_paths=coding_paths,
             read_paths=read_paths,
             preliminary=preliminary,
@@ -163,7 +172,6 @@ def scoped_tool_hook(
         )
         if reason:
             return deny(reason)
-        arguments = request.get("toolArgs")
         if paths.SPLIT and name == "view" and isinstance(arguments, dict):
             return {
                 "modifiedArgs": {

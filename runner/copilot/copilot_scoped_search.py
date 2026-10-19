@@ -160,15 +160,15 @@ class ScopedSearch:
         return roots
 
     def target(self, target: str) -> Path:
+        from runner.copilot.path_policy import read_target
+
         if not isinstance(target, str) or not target.strip():
             raise ValueError("Search paths must be nonempty strings.")
         raw = Path(target)
-        if not raw.is_absolute():
-            raw = (
-                repository_paths.locate(raw)
-                if self.harness_root and target not in {".", ""}
-                else self.root / raw
-            )
+        if self.harness_root:
+            raw = read_target(target)
+        elif not raw.is_absolute():
+            raw = self.root / raw
         # Reject alternate streams and device paths before canonicalization.
         if ":" in str(raw)[len(raw.anchor) :] or linked_path(self.owner(raw), raw):
             raise ValueError("Linked or non-file path aliases are unavailable.")

@@ -104,6 +104,25 @@ def physical_target(target: str) -> Path:
     return ROOT / path
 
 
+def read_target(target: str) -> Path:
+    """Resolve absent campaign-root aliases without accepting shadow files."""
+    from runner.copilot.copilot_scoped_search import linked_path
+
+    path = physical_target(target)
+    if paths.SPLIT and path.is_relative_to(ROOT):
+        relative = path.relative_to(ROOT)
+        if ".." in relative.parts:
+            raise ValueError("Read paths must not contain parent traversal.")
+        if (
+            relative != Path(".")
+            and not paths.is_campaign_owned(relative)
+            and not path.exists()
+            and not linked_path(ROOT, path)
+        ):
+            return paths.locate(relative)
+    return path
+
+
 def target_root(path: Path) -> Path:
     if paths.SPLIT and path.resolve().is_relative_to(paths.HARNESS_ROOT.resolve()):
         return paths.HARNESS_ROOT

@@ -50,7 +50,10 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
   harness project.
 - **PI agents:** the Copilot working directory is the campaign root. Harness
   files the PI may read (`AGENTS.md`, `contracts/`) are addressed through the
-  logical namespace; path policy evaluates logical paths.
+  logical namespace; path policy evaluates logical paths. Read/search requests
+  that expand those logical paths under the campaign root are routed to their
+  harness location before authorization, but existing shadow files are rejected.
+  Write authorization does not use these read aliases.
 - **Reset:** recipe and baseline references resolve in the campaign repository.
   Task compatibility compares a task fingerprint recorded by the campaign
   commit with the current harness task files.
@@ -101,3 +104,12 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   A real MuJoCo environment loaded the v3 science from the campaign repository
   and robot XML from the harness, reset and stepped successfully. No training
   or PI session was started.
+
+## Post-split corrections
+
+- Fixed preliminary contract reads using absolute campaign-root paths. The
+  original split routed relative paths only; the view hook now routes missing
+  absolute aliases before checking permissions, and scoped search uses the
+  same resolver. Split/Copilot checks: 45 passed. All eight failing contract and
+  AGENTS requests from the reported session were verified against the actual
+  harness files without starting or changing a campaign.
