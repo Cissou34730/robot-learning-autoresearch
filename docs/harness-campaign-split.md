@@ -25,7 +25,7 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
 | `campaigns/` (history, brief, checkpoints, logs, evaluations) | `contracts/`, `benchmark/` |
 | `pi_workspace/` | `tools/`, `tests/`, `docs/`, `typings/` |
 | `runner/state/` (Runner campaign state and markers) | `AGENTS.md`, `README.md`, `main.py` |
-| `models/` (disposable candidates, ignored) | launch, reset and session scripts |
+| `models/` (disposable candidates, ignored), `reports/`, `.copilot/` | launch, reset and session scripts |
 | | `pyproject.toml`, `uv.lock` |
 
 ## Design
@@ -89,4 +89,15 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 - [x] Stage 6: reset references resolve in campaign Git; versioned task-file
   fingerprints bind the recipe to the harness task. Protected runtime checks
   verify each repository against its own HEAD. Targeted checks: 70 passed.
-- [ ] Stage 7
+- [x] Stage 7: campaign-owned files removed from the harness; wheel packages
+  contain only harness packages. The independent local campaign has the v3
+  recipe tag and a Fresh-reset state, with no remotes. Full suite against
+  physically separated science: 500 passed, 44 failures identical to the saved
+  pre-refactor baseline, no new failures. A separate initializer smoke attempt
+  under the session folder was blocked by Windows/Git directory ownership.
+- [x] Stage 8: README, agent instructions and reset documentation describe
+  initialization, campaign selection, evolving the harness without merges, and
+  strictly local campaign commits. Documented ownership checks: 14 passed.
+  A real MuJoCo environment loaded the v3 science from the campaign repository
+  and robot XML from the harness, reset and stepped successfully. No training
+  or PI session was started.

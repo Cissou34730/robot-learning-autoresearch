@@ -2,6 +2,69 @@
 
 Read the [Robot-learning research process](docs/research-overview/robot-learning-overview-20261002.html).
 
+## Harness and campaign repositories
+
+The two repositories have different contents:
+
+| Repository | Contents | Publication |
+|---|---|---|
+| `robot-learning-harness` | Runner, contracts, benchmark, tools, tests, documentation and launch scripts | Branch `harness`, synced with GitHub `origin` |
+| `robot-learning-campaigns` | PI-owned `robot_learning/`, campaign state, models, logs and measurements | Independent local Git repository; campaign commits never push |
+
+Run commands from the harness folder. The launch and reset scripts default to
+the sibling `robot-learning-campaigns` folder. Use `-CampaignRoot <path>` to
+select another initialized campaign repository. No harness merge or copy is
+needed when the harness evolves: subsequent operations use the current harness
+with the selected campaign's scientific code.
+
+### Initialize a campaign repository once
+
+The existing local campaign repository is already initialized from baseline v3.
+To create another one, choose a destination that does not exist:
+
+```powershell
+uv run python -m tools.initialize_campaign `
+  --campaign-root C:\Users\cyril.beurier\code\another-campaign `
+  --source-repository C:\Users\cyril.beurier\code\robot-learning `
+  --recipe-ref baseline-distinct-episodes-v3
+```
+
+The source repository must contain the selected recipe reference. Initialization
+reads that repository without changing it, imports the scientific files into a
+new local repository, records the current task fingerprints and performs a
+Fresh recipe reset. It does not start training or an agent session. The new
+repository has no remotes. Keep its local baseline tag for future resets.
+
+### Reset to v3 or launch
+
+Stop any active campaign before resetting:
+
+```powershell
+.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3 -Force
+.\run_research.ps1 -Provider github-copilot
+```
+
+Baseline v3 is a scientific recipe, not a trained model. Its reset initializes
+empty campaign history and leaves scientific-model preparation pending. The
+harness stays unchanged. See [reset details](docs/reset-research.md).
+
+Campaign Git tracks source and compact state. Large measurements, disposable
+models and other ignored artifacts stay in the campaign folder but are not
+backed up by Git. No reset backups are kept.
+
+### Maintainer validation
+
+Select the campaign's scientific code when running tests from the harness:
+
+```powershell
+$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns'
+$env:PYTHONPATH = "$env:ROBOT_LEARNING_CAMPAIGN_ROOT;$PWD"
+uv run pytest tests\autoresearch\test_campaign_paths.py -q
+```
+
+The Python environment and dependency lock belong to the harness. Campaign PI
+agents cannot install dependencies or run maintainer tests.
+
 The Copilot harness integration uses Python SDK 1.0.19. Install the locked
 scientific stack and agent runtime with `uv sync --locked --group researcher`.
 Native coding subagents, permissions and custom evidence tools remain in that

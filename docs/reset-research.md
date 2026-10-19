@@ -1,8 +1,18 @@
-# Reset in the current branch
+# Reset the local campaign repository
 
 Stop the campaign before resetting. `reset_research.ps1` requires both an
 explicit `-Mode` and `-Force`; there is no default mode. It never creates a
 branch or worktree, starts training, or changes the research loop.
+
+Run the script from the harness repository. `-CampaignRoot <path>` selects an
+independent campaign repository; the default is the sibling
+`robot-learning-campaigns` folder. Resets change and commit files only in that
+campaign repository. They do not reset or copy the harness.
+
+References resolve in campaign Git. Initialize a new campaign repository once
+with `uv run python -m tools.initialize_campaign`; see [setup](../README.md).
+Imported recipes carry a versioned task contract so incompatible robot/task
+definitions are refused before cleanup.
 
 ## Fresh
 
@@ -16,6 +26,16 @@ training logs, stale requests and generated summaries. Initializes empty
 schema-6 research history with a new campaign identity, a pending scientific
 model, and no working or best-known candidate. This is not a restore from main
 or from historical scientific code.
+
+To restore the baseline v3 scientific recipe as well:
+
+```powershell
+.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3 -Force
+```
+
+This tag is a recipe, not a prepared trained model, so use Fresh rather than
+Baseline mode. It lives in the campaign repository after initialization. The
+scientific model starts pending and is prepared on the next authorized launch.
 
 ## Baseline
 
@@ -69,15 +89,17 @@ baseline are not recoverable after cleanup.
 
 ## Safety and Git
 
-Both modes refuse dirty tracked/untracked files, detached HEAD and a missing
-origin. Commit or resolve development edits first; `-Force` does not bypass
+Both modes refuse dirty tracked/untracked files and detached HEAD.
+An independent campaign repository does not need an origin remote.
+Commit or resolve development edits first; `-Force` does not bypass
 these checks. Existing file locks and linked cleanup targets are checked before
 deletion. This is not a concurrency lock: keep the campaign stopped.
 
-As with the previous reset script, a successful reset creates a commit and
-pushes it to origin. A push failure leaves the local commit intact and reports
-the failure; no force-push or history rewriting is performed. If the desired
-state already matches Git, no redundant commit is created.
+A successful reset creates local campaign commits and never pushes in split
+mode, even if a remote was added accidentally. Harness commits are published
+separately by the maintainer. Legacy single-folder mode retains its origin
+publication behavior. If the desired state already matches Git, no redundant
+commit is created.
 
 Raw measurements remain local and ignored during reset publication. Reset never
 force-adds `campaigns/evaluations/` to Git.

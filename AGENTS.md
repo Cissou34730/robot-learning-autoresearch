@@ -15,6 +15,29 @@ harness/campaign repository split, its decisions, stages and progress, and is
 the plan to resume. PI and Runner restrictions below still govern campaign
 agents.
 
+## Repository layout and maintainer authority
+
+Human-directed maintainer sessions may edit harness code, scripts, tests and
+documentation within the approved task, run targeted checks through `uv run`,
+and commit and push harness changes when requested. This does not grant
+campaign PI agents any additional permissions.
+
+The harness repository contains `runner/`, `contracts/`, `benchmark/`, tests,
+tools, documentation, launch scripts and the locked Python project.
+The separate local campaign repository contains `robot_learning/`, `campaigns/`,
+`pi_workspace/`, `runner/state/`, `models/`, reports and agent session data.
+Paths below are logical paths: `runner/paths.py` resolves them to the owning
+repository. Protected scientific package initializers remain protected even
+though they are physically stored with the campaign.
+
+The launch and reset scripts accept `-CampaignRoot` and default to the sibling
+`robot-learning-campaigns` folder. Direct maintainer Python commands select it
+with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
+Campaign Git operations run only in the campaign repository. In split mode
+they never push, even if a remote is added. Harness development is committed
+and pushed separately; updating it requires no merge into the campaign.
+See `README.md` for initialization and commands.
+
 ## Environment
 
 This repository uses a fixed Python stack built around MuJoCo, Gymnasium and
