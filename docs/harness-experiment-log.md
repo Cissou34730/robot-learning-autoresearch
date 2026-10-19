@@ -119,89 +119,156 @@ Current commands: [README](../README.md), [reset guide](reset-research.md),
 
 | Status | Meaning |
 |---|---|
-| **Open** | The defect or decision remains unresolved and may require a repair. |
-| **Implemented / unmeasured** | Code or wording changed; campaign effect is not established. |
-| **Implemented / observed** | The intended behavior appeared in campaign evidence, without causal proof. |
-| **Closed** | The original bounded defect no longer recurs under the stated evidence. |
-| **Retired** | The historical concern no longer defines a current repair; no fix is claimed. |
-| **Paused / proposal** | Not approved for implementation. |
-| **Withdrawn** | Explicitly not pursued; historical evidence remains valid. |
+| **Open** | The issue needs investigation or a repair. |
+| **Observed** | The change exists. Campaign evidence shows some intended behavior. The complete effect remains uncertain. |
+| **Needs recovery check** | The retry code exists. Recovery from a real service error of the same type remains unconfirmed. |
+| **Closed** | The recorded evidence supports the repair of the defined defect. |
+| **Retired** | The concern no longer requires a separate repair. This status does not claim a repair. |
+| **Paused** | The maintainer suspended the proposed change. |
+| **Proposal** | The maintainer did not approve the proposed change. |
+| **Withdrawn** | The maintainer rejected or withdrew the proposal. |
 
 ## Outstanding issue register
 
-**Reconciled 2026-10-19:** 21 closed, six open, four implemented/observed,
-one implemented with native recovery unexercised, one retired, two
-paused/proposed, and two withdrawn. All 37 IDs remain in the register.
+**Status review: 19 October 2026. Description review: 20 October 2026.**
 
-Close a bounded engineering defect when its recorded reproduction, regression
-checks or live use demonstrate the repair. An unrelated official assessment or
-scientific improvement is not an additional closure requirement. Keep behavioral
-questions open or observed when the evidence does not settle them. Closure does
-not certify every future implementation or repair a different failure.
+Six issues require work. Five changes need more evidence. Twenty-one issues
+are closed. Five entries are inactive. All 37 issue IDs remain.
 
-The live observation source is campaign
-`df7f6838-a5d1-4d18-9306-43ee4840cb3a`, through checkpoint E10:
-`campaigns/results.jsonl`, `campaigns/brief.md`,
-`reports/session_usage/df7f6838-a5d1-4d18-9306-43ee4840cb3a.jsonl`, and the
-corresponding native session events. S1-S5 checkpointed; I1 and I2 closed;
-no official assessment was recorded at that cutoff. This is a dated snapshot,
-not a live status feed. Prior implementation evidence remains in the ledger.
+The status decisions are unchanged. **Observed** replaces
+**Implemented / observed**. **Needs recovery check** replaces
+**Implemented / native recovery unexercised**. These shorter labels do not
+change the required evidence.
 
-**Active work:** OI-037 recovery, OI-021 scientific-model framing, OI-024
-fragmented measurements, OI-025 interpretation fidelity, OI-026 coding/review
-cost and clarification routing, and OI-006 training allocation. Diagnosis or
-design still precedes any separately approved runtime repair.
+### Terms
 
-| ID | Scope | Status | Evidence / disposition | Next action |
-|---|---|---|---|---|
-| OI-001 | Startup scientific-method coupling | **Closed** | Campaign `896c230a` connected the scientific model, startup control, physical measurements and I1 handoff. | None. Startup cost remains OI-006. |
-| OI-002 | Inquiry control and bounded closure | **Closed** | Campaign `1ae27a27` closed positive, negative and limited inquiries without indefinite continuation. | None. |
-| OI-003 | Evidence inspection and interpretation | **Closed** | `current_synthesis` now requires claim-to-artifact references and distinguishes uninspected from absent evidence. Campaign `ec7f3d3a` used nested diagnostic artifacts without repeating the M30 false-missing interpretation. | None. A future distinct interpretation defect requires a new issue. |
-| OI-004 | Checkpoint nomination and progression | **Closed** | Earlier campaigns demonstrated nonterminal selection. In `df7f6838`, M1 compared T1 checkpoints 105472 and 120832; M6 then tested late alternative 115712 on the same task-reference panel, scoring 171/200 against 192/200 for 120832. M7 selected T2 checkpoint 75776 rather than its terminal checkpoint. Nomination uses learning context and measured evidence, not checkpoint position. | None. Closure does not require evaluating every checkpoint. |
-| OI-005 | Counterevidence and assessment-decision calibration | **Implemented / observed** | The symmetric comparison replaces the earlier assessment-only burden. In `df7f6838`, goal review explicitly weighed terminal assessment of the 192/200 development candidate against one bounded new candidate, and I2 closed negatively at E9 rather than claiming success. This observes decision reasoning, not final assessment calibration: no official assessment had occurred by E10. | Retain observation through the next assessment/continuation decision. No automatic assessment, new readiness gate or scientific-exhaustion ending. |
-| OI-006 | Full startup-budget review | **Open** | The 120,000-step ceiling and its scientific/cost effect have not been reviewed. | Separate maintainer budget analysis from scientific repairs. |
-| OI-007 | Prompt-stack ordering R2 | **Paused** | Scientific context precedes operational options; putting the human goal before the PI persona in ordinary sessions is not approved. | No action unless reopened. |
-| OI-008 | Residual context delivery | **Implemented / observed** | The compact brief retains current work, training indexes and accessible full evidence. The stopped-state reproduction reduced 172,738 bytes to 24,989 (85.53%). Finalized S1-S4 in `df7f6838` had no compaction and reached about 193,000 input tokens, below the prior resumed session's roughly 254,000. The present campaign is shorter than the 15-inquiry case; this does not establish bounded long-run context or lower total cost. | Observe growth across a longer campaign. Keep complete history and selected evidence retrievable; do not infer causality from faster inference. |
-| OI-009 | Operation-submission handoff and checkpoint bookkeeping | **Closed** | The interface supplies session identity and exact operation lists, with expected/submitted rejection feedback. In `df7f6838`, S1-S5 successfully recorded E2, E4, E6, E8 and E10 without the historical wrong-list rejection. Accepted requests were consumed and ordinary work continued. | None for the bookkeeping defect. Fatal-conversation recovery remains OI-037. |
-| OI-010 | Protection of the old protocol log | **Retired** | No current reproducible defect or separate repair requirement was established. Current maintainer-file read/search controls are covered by OI-011/OI-023. Retiring the legacy concern does not claim that a new protection mechanism was implemented. | No work. Register any concrete new access defect on its own evidence. |
-| OI-011 | Console clarity and maintainer-file controls | **Closed** | Logical JSON Pointer rendering, query modifiers and phase-specific read controls are implemented. | None. New defects require a new issue. |
-| OI-012 | Independent frozen-policy publication | **Proposal** | Not approved or implemented. Campaign recovery is not authorized. | None. |
-| OI-013 | Remove the fifteen-inquiry cap | **Withdrawn** | The cap is accepted as an operational checkpoint pause; its value and resume mechanism remain unchanged. | None unless maintainer reopens it. |
-| OI-014 | Decision-relevant causal attribution | **Implemented / observed** | In `df7f6838`, the PI identifies T1's actual sampler-only intervention, distinguishes instrumentation from policy changes, and describes T2's changed observation and saved action map. E9 records the negative candidate result, retained counterexamples and lack of component-level causal isolation. This is better method-to-evidence alignment than the repeated-learning claims in `90563aac`, not proof against all future attribution errors. | Observe cumulative direction revision after the failed candidate. OI-024 and OI-025 remain separate open defects; no Runner novelty judgment is authorized. |
-| OI-015 | Intended method versus implemented experiment | **Closed** | Close the bounded provenance/scoped-restoration repair, not every possible intent mismatch. Exact selected source files and recorded parameters are required; unselected sources and laboratory tools are preserved. The recorded 134-assertion/registered-SDK checks and stopped-artifact reproductions verify the corrected boundary. `df7f6838` also distinguishes changed learning, instrumentation and saved runtime explicitly. Historical campaign evidence is unchanged. | None for implicit blanket rollback or provenance visibility. Deliberate integration of mixed-purpose files remains PI work; attribution and saved-execution questions remain OI-014/OI-036. |
-| OI-016 | Inquiry boundaries and revisable handoff | **Closed** | Campaign `ec7f3d3a` used bounded multi-operation inquiry work, positive closure, an updated E19 → E20 frontier handoff, and assessment progression without forcing a stale question. The two fixed-evidence replays provide supporting boundary evidence. | None. A future distinct handoff defect requires a new issue. |
-| OI-017 | Nested artifact evidence access | **Closed** | Operation-scoped, fingerprint-verified access retrieved nested evidence and changed conclusions in campaign `339736e0`. | None. |
-| OI-018 | JSON/training-log query reliability and context amplification | **Closed** | Registered SDK dispatch verifies top-level batch budgets, explicit nested-field rejection, nullable filters, paging and complete retrieval. In the inspected S1-S5 calls of `df7f6838`, 43 evidence calls completed with no nested `max_bytes` mistake; one wrong query/batch shape was explicitly rejected rather than silently accepted. Median call time was 0.28 seconds. Training-log discovery and selected records were used successfully. | None for the bounded interface defect. Arbitrary caller mistakes are not guaranteed absent; large-file behavior is recorded separately in OI-032/OI-034. |
-| OI-019 | Terminal brief contradiction | **Closed** | The current goal gap uses the official-assessment summary; the unchanged PI checkpoint is explicitly historical. The recorded `4a8bc5c7` reproduction verifies the corrected failed-assessment rendering, and five targeted cases cover passed/failed precedence, unassessed state and preserved checkpoint data. This directly demonstrates the rendering repair without another assessment. | None. Closure concerns factual rendering, not scientific adequacy or campaign success. |
-| OI-020 | Self-imposed acceptance gates and slice-label drift | **Withdrawn as an invalid generic issue.** | The `79395c88` RCA observation remains valid campaign history, but this issue improperly combined assessment-readiness concerns already owned by OI-005 with scenario-specific radius and panel terminology. No generic harness repair is authorized from that symptom. | Preserve the finding in the campaign RCA; do not add scenario vocabulary to generic guidance. |
-| OI-021 | Scenario-specific scientific-model prompt | **Open / high priority.** | The preliminary scientific-model objective in `run_research.ps1` explicitly names reaching, trajectory control, convergence, stabilization and multiple kinematic solutions. The wording is delivered only during the fresh-campaign scientific-model phase, but its generated model and decision-relevant synthesis are handed into startup and remain available throughout the campaign. All 57 recorded scientific-model sessions were exposed, so there is no clean campaign control. Policy scores and recorded measurements remain factual; independent mechanism discovery and robot-generic harness claims are contaminated. | Complete the impact RCA before changing the prompt. Then replace scenario-supplied capability categories with a robot- and task-derived requirement without weakening physical analysis. |
-| OI-022 | False operation rejection from process return contamination | **Closed** | The uncaptured stdin-write completion is discarded. Twelve exact-scalar Int32/varied-stdin checks and existing live-pipe checks reproduce and verify the bounded repair. Valid training and measurement submissions in `df7f6838` subsequently passed through the real transport without the historical false rejection. | None. Retry limits and operation validation are unchanged. |
-| OI-023 | Search access through readable parent directories | **Closed** | Trusted rg/glob prune reserved descendants before enumeration or content reads. Recorded checks cover repository roots, mixed scopes, phase rules, linked aliases and bounded previews; native permission checks preserve protected reads/writes. This directly verifies the parent-directory access repair, not a filesystem sandbox. | None for the descendant-access defect. Any newly demonstrated bypass requires its own evidence. |
-| OI-024 | Fragmented diagnostics and repeated measurements | **Open / repair not approved** | The historical `0d39d52c` pattern recurred in `df7f6838`: M3 evaluated 16 selected seeds, then M4 repeated them after adding missing exact endpoint-distance and held-counter fields. These outputs add diagnostics, not independent replication. Diagnostic-condition prompts did not prevent the incomplete first instrumentation request. | Design a duplicate-work safeguard at the existing submission boundary, with prior-result reuse and PI explanation of genuinely new evidence. Preserve justified replication and PI judgment. No blanket evaluation ban or automatic operation rewriting approved. |
-| OI-025 | Evidence fidelity in scientific synthesis | **Open / RCA deferred** | The historical `0d39d52c` synthesis conflated 192 hold interruptions with 193 internal excursions and overstated the first-reach denominator. Current `df7f6838` M5 and durable synthesis distinguish those fields, preserve seven never-reaches out of 160, and state timing/counterexample limits. This is an observed improvement, not a completed explanation or repair of interpretation fidelity. | Trace artifact fields, query replies and PI statements into durable synthesis. Preserve historical evidence; code review and executable checks do not certify interpretation. |
-| OI-026 | Coding-context, review and verification cost | **Open / comparison required** | Prior coding shares are not incremental-cost estimates because earlier inline work was counted as PI usage. In `df7f6838`, review caught concrete simulation-timing defects, but task-reference schema uncertainty still bounced through coder/reviewer before PI clarification. The four-field loop routes any failed validation to the coder; its no-progress guard eventually returns control to the PI. Retained reviewers and faster PI inference do not resolve that routing/cost question. | Compare equivalent work with attributable PI/coder/reviewer usage; assess clarification routing and proportionality. Keep independent review and PI authority. No runtime repair or reviewer removal is approved by this status update. |
-| OI-027 | Bounded-session error and outcome reporting | **Closed** | Recorded production-path cases verify retained SDK errors, explicit timeout/interruption reasons, and failed exits replacing stale success/active statuses while preserving existing fatal operation classifications. This is a reporting repair, not fatal-session recovery. | None for response reporting. OI-037 remains open; no automatic retry, repair or restart is authorized. |
-| OI-028 | Publication failure after replacement acceptance | **Closed** | A typed PublicationError crosses Runner via exit code 3 and maps to publication_fatal, including both replacement request forms. Recorded inert cases directly verify the formerly lost classification and error detail without reaccepting or repeating an operation. | None for classification. Close neither remote availability nor fatal-conversation recovery; accepted transactions remain preserved. |
-| OI-029 | SDK operation-envelope structure and repair feedback | **Closed** | Seven exclusive wrappers share Runner's operation-key authority. Registered SDK dispatch rejects both recorded malformed S23 shapes before channel submission and supplies actionable structure errors. Live `df7f6838` submissions use the accepted wrapper through completed operations and checkpoints. | None for envelope structure. Stateful body validation and scientific decisions remain unchanged. |
-| OI-030 | Native coding-correction scope reconstruction | **Closed** | Recorded actual-handler cases verify stored immutable scopes, handle-only corrections, changed-field rejection and stale/foreign caller denials. Live `df7f6838` reuses the same scoped coder/reviewer for repairs and PI clarification. Clarification efficiency is separate from scope reconstruction. | None for scope retention. Keep clarification routing under OI-026; no scope expansion or new repair authority. |
-| OI-031 | Artifact identity and compact operation/checkpoint lookup | **Closed** | Recorded checks verify bounded metadata/index lookup and fingerprint-bound named inputs, including pending/recovery guards. In `df7f6838`, PI sessions use operation/checkpoint metadata; M2 and M5 consume selected completed artifacts rather than guessing source filenames. Full artifacts remain separately retrievable. | None for the identity/lookup interface. The Runner still does not select scientific evidence or repair PI source. |
-| OI-032 | Selective access above the whole-artifact JSON ceiling | **Closed** | File-backed selection directly retrieves exact shallow/deep values from recorded 38.7, 46.3 and 77.8 MB artifacts. The recorded 482-assertion validation covers syntax, query parity, integrity, cleanup and references. This resolves the bounded reader ceiling independently of a new campaign's artifact sizes. | None for the ceiling defect. Original-byte retrieval, explicit budgets and complete syntax validation remain. |
-| OI-033 | Recoverable Copilot model-request failure | **Implemented / native recovery unexercised** | The bounded five-retry/five-second SDK hook has 49 recorded offline assertions, including reset, exhaustion and caller/closure guards. Those checks establish hook dispatch, not actual backend recovery from the original model_call/websocket failure. No matching recovery occurred in the inspected current sessions; the original request-body cause remains unknown. | Retain this specific runtime observation requirement. No session restart, coding replay, operation resubmission or reset is authorized. |
-| OI-034 | Large-JSON validation and query latency | **Closed** | The recorded replay of all eleven requests on the 183,598,807-byte M7 artifact falls from 394.499 seconds with validation caching alone to 46.498 seconds with bounded container-span reuse. All nine recorded outputs match; both previously interrupted batches finish. This directly measures the original reader bottleneck, not scientific effectiveness. | None for the repeated-scan defect. Fingerprint verification, cold validation, bounded eviction and explicit exhaustion remain required behavior, not unfinished repair work. |
-| OI-035 | Transient Git publication recovery | **Closed** | Close the implemented bounded retry policy, not GitHub's unknown server fault. Thirty-three scoped cases verify recognized transient failures, pinned commit/branch identity, three retries with 60-second waits, permanent-error rejection and exhausted PublicationError. Split campaigns never push, so the current local campaign is not a remote-recovery experiment. | None for the approved retry mechanism. Remote service health is not guaranteed; no scientific operation is repeated. |
-| OI-036 | Saved-controller execution contract | **Implemented / observed** | The shared handoff now distinguishes saved observation/action callbacks from research-environment additions. In `df7f6838`, the I2 request explicitly targets shared PolicyIO; T2 archives a changed observation/action map, and M7 evaluates the same checkpoint through both research and protected task-reference instruments. E9 records a negative candidate result rather than confusing execution with success. | Retain observation of behavior agreement, not only successful execution. This does not guarantee every future controller reaches the protected path or prove the method effective. |
-| OI-037 | Fatal conversation / active Runner session mismatch | **Open / observed after migration failure** | The training-log ownership rejection closed the backend conversation with `validation_fatal`, but durable S1 remained active with completed T1 and no pending operation or checkpoint. After the log repair, ownership validation passed; launcher restart resumed the same backend conversation, which refused further submissions and exited 2. No new path rejection occurred. | Design explicit maintainer-authorized recovery that reconciles backend context and durable session without replaying completed work. Folder-restoration and log-classification fixes do not solve this. A later Fresh reset starts another campaign; it is not evidence of recovery. |
+| Term | Meaning |
+|---|---|
+| PI | The principal investigator agent that chooses and interprets scientific work. |
+| Runner | The program that checks and executes PI-approved operations. Runner does not make scientific decisions. |
+| Operation | One approved action, such as a measurement or a training run. |
+| Inquiry | A bounded scientific question that can contain several operations. |
+| Candidate | A saved policy that the PI can evaluate. |
+| Recipe | The scientific source files and parameters that define a training method. |
+| Training checkpoint | A saved version of a policy during training. |
+| Policy runtime | The saved functions that convert observations into policy inputs and policy outputs into actions. |
+| Protected evaluation | An evaluation that uses human-owned task checks and the saved policy runtime. |
+| Official assessment | The final protected evaluation that records the campaign result. |
+| Artifact | A recorded output file from a completed operation. |
+| Fingerprint | A recorded value that identifies the exact contents of a file. |
+| File scope | The exact files that a coding agent can read or change. |
+
+The descriptions use short sentences and consistent technical terms.
+This review does not certify compliance with the official ASD-STE100 dictionary.
+
+### Open issues — 6
+
+These issues need investigation or design before a repair.
+This register does not authorize runtime changes or campaign operations.
+
+| ID | Issue | Status | Next action |
+|---|---|---|
+| OI-037 | A fatal conversation can reject new requests while Runner still records an active session. A restart resumes the unusable conversation. | **Open** | Design recovery that preserves completed operations. Require explicit maintainer approval before recovery. A fresh campaign does not demonstrate recovery. |
+| OI-021 | The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias later scientific choices. | **Open** | Complete the impact analysis before a prompt change. Then derive the required capabilities from the robot and task. Preserve the physical analysis. |
+| OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Design a check for duplicate work at the submission boundary. Permit reuse of prior results. Preserve justified replication and PI judgment. |
+| OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | Trace each disputed conclusion from the artifact through the query reply to the saved scientific record. Preserve the historical evidence. |
+| OI-026 | Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision. | **Open** | Compare equivalent work with separate costs for the PI, coder, and reviewer. Check when clarification must return to the PI. Keep independent review. |
+| OI-006 | The effect of the 120,000-step training allocation on cost and scientific progress remains unknown. This allocation is not the PI session deadline. | **Open** | Review the training allocation as a maintainer budget decision. Keep this review separate from scientific repairs. |
+
+### Changes that need more evidence — 5
+
+Four changes show intended behavior in campaign records.
+One retry mechanism still needs evidence of recovery from a real service error.
+Successful ordinary sessions do not demonstrate that recovery.
+
+| ID | Issue | Status | Remaining check |
+|---|---|---|
+| OI-005 | The PI can continue research without a balanced comparison with official assessment. | **Observed** | Check the reasons for further work and official assessment. Do not introduce an automatic assessment rule or a new readiness condition. |
+| OI-008 | Repeated context can increase cost and obscure current evidence. | **Observed** | Observe context growth across a longer campaign. Keep the complete history accessible. Do not infer a context repair from faster model responses. |
+| OI-014 | The PI can claim a new method or a cause that the tested code does not establish. | **Observed** | Compare method claims with actual code changes and measurements. Observe how negative results change the next scientific decision. Leave scientific judgment with the PI. |
+| OI-036 | A controller can work in research evaluation but omit required behavior in protected evaluation. | **Observed** | Check that the saved policy runtime contains the required behavior. Compare behavior across both evaluation paths. Successful execution alone does not establish agreement. |
+| OI-033 | A recoverable error from the language-model service can stop a conversation after the coder completes its work. | **Needs recovery check** | Observe recovery from a real service error of the same type. Check the retry limit and final error report. Do not repeat the coder's work or scientific operations. |
+
+### Closed issues — 21
+
+Recorded reproductions, regression checks, or actual use support these repairs.
+Closure concerns the defined defect, not scientific success or every future case.
+An unrelated official assessment is not a condition for closure.
+
+| ID | Original issue | Status | Repair and limit |
+|---|---|---|
+| OI-001 | The first PI action can ignore the initial scientific model. | **Closed** | Startup connects the physical model to the chosen scientific action. A training run is not a mandatory first action. |
+| OI-002 | An inquiry can continue without a clear end condition. | **Closed** | The PI can close an inquiry with a positive, negative, or limited result. |
+| OI-003 | The PI can treat unread evidence as absent evidence. | **Closed** | Scientific conclusions identify their evidence. The PI distinguishes unread evidence from absent evidence. Separate interpretation errors remain under OI-025. |
+| OI-004 | The PI can prefer the last training checkpoint without a comparison with relevant alternatives. | **Closed** | The PI selects candidates from training context and measured results. The PI does not need to evaluate every checkpoint. |
+| OI-009 | A request to save a session can list the wrong completed operations. | **Closed** | The interface supplies the session identity and exact operation list. Rejections show submitted and expected values. Fatal recovery remains under OI-037. |
+| OI-011 | Unclear console paths and file access rules can hide errors or expose protected files. | **Closed** | The console identifies evidence paths and query options. Phase-specific access rules protect maintainer files. |
+| OI-015 | A recipe restore can replace unrelated sources and remove scientific tools. The saved record can obscure the actual experiment. | **Closed** | A restore names exact source files and preserves unselected files and laboratory tools. Source records and parameters show the actual experiment. Scientific intent remains PI work. |
+| OI-016 | A new inquiry can repeat resolved work or inherit an outdated next question. | **Closed** | The PI preserves inquiry boundaries. Goal review can revise the next question from current evidence. |
+| OI-017 | The PI cannot inspect required values inside a saved artifact. | **Closed** | The evidence tool reads selected values from the recorded file. It checks the fingerprint before access. |
+| OI-018 | Unclear query arguments can cause repeated errors or return too much evidence. | **Closed** | The query interface defines budgets and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records. |
+| OI-019 | The current goal gap can contradict the final official result. | **Closed** | The brief uses the official result for the current gap. It labels the earlier PI record as historical. Closure does not imply campaign success. |
+| OI-022 | Extra process output can corrupt the exit code and cause a false rejection. | **Closed** | The process helper returns one exit code. It keeps unrelated output separate from that value. Retry limits and operation checks are unchanged. |
+| OI-023 | A search through a permitted folder can expose protected files below that folder. | **Closed** | Search tools exclude protected files before they inspect content or return paths. This repair does not create an operating-system sandbox. |
+| OI-027 | A failed session can report an old success state or omit the actual error. | **Closed** | The response retains errors and reports timeout or interruption explicitly. This repair reports the outcome. It does not recover the session. |
+| OI-028 | Publication can fail after Runner accepts a replacement request, without an explicit publication error. | **Closed** | Runner preserves the publication error across the process boundary. The controller reports a fatal publication failure without a repeat of the operation. |
+| OI-029 | A malformed operation request can reach the submission channel. | **Closed** | The shared schema checks the operation wrapper before dispatch. Invalid structures receive a specific error. Scientific decisions are unchanged. |
+| OI-030 | A correction request can lose or change the coder's original file scope. | **Closed** | The coding tool reuses the stored file scope for the same coder. It rejects changed scope and invalid task identifiers. Clarification cost remains under OI-026. |
+| OI-031 | The PI can select an incorrect file when it copies an artifact filename. Full records can obscure the required metadata. | **Closed** | Compact lookups identify recorded operations and artifacts. The interface checks artifact fingerprints before execution. Complete artifacts remain accessible. Runner does not select scientific evidence. |
+| OI-032 | A limit on complete JSON files can block access to a small required value. | **Closed** | The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit budgets. |
+| OI-034 | Repeated scans of a large JSON file can delay each query. | **Closed** | The reader reuses validation and scan locations. It limits cached records and still checks file fingerprints. Cold reads and explicit query limits remain intentional. |
+| OI-035 | A temporary remote Git error can stop publication of completed work. | **Closed** | The helper retries specified server errors with the same commit and branch. The retry count is limited. Campaign repositories never push. |
+
+### Inactive entries — 5
+
+These entries do not authorize implementation.
+The historical evidence remains valid.
+
+| ID | Subject | Status | Disposition |
+|---|---|---|
+| OI-007 | The prompt order determines when the PI sees its role and the human goal. | **Paused** | Scientific context already precedes operation choices. The maintainer did not approve a goal-first prompt for ordinary sessions. |
+| OI-010 | The old protocol log raised a separate access concern. | **Retired** | No current defect supports a separate repair. General file-access concerns belong to OI-011 and OI-023. This status does not claim a new repair. |
+| OI-012 | The proposal permits separate publication of a frozen policy. | **Proposal** | The maintainer did not approve or implement the proposal. This proposal does not authorize campaign recovery. |
+| OI-013 | The proposal removes the fifteen-inquiry limit. | **Withdrawn** | The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches that limit. The resume mechanism is unchanged. |
+| OI-020 | One proposed issue combined unrelated assessment concerns and task-specific terms. | **Withdrawn** | The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific observations remain in their campaign analysis. This entry does not authorize a generic repair. |
+
+### Evidence and review limits
+
+The [19 October evidence review](https://github.com/Cissou34730/robot-learning-autoresearch/blob/335877f/docs/harness-experiment-log.md#outstanding-issue-register)
+preserves the detailed closure reasons, campaign labels, measurements, and check results.
+The implementation ledger below preserves the earlier repair history.
+Issue descriptions do not require those internal labels.
+
+The latest observation source is campaign
+`df7f6838-a5d1-4d18-9306-43ee4840cb3a`, through the checkpoint after its fifth scientific session.
+The PI saved records for five scientific sessions. The PI closed two inquiries.
+No official assessment occurred before that cutoff. These are dated observations,
+not a live status feed.
+
+The source records are `campaigns/results.jsonl`, `campaigns/brief.md`,
+`reports/session_usage/df7f6838-a5d1-4d18-9306-43ee4840cb3a.jsonl`,
+and the associated native session events.
+All 57 recorded initial scientific-model sessions received the prompt under OI-021.
+There is no unaffected campaign control for that prompt.
+The recorded scores remain factual.
+Claims of independent discovery require this qualification.
+
+The retry mechanism under OI-033 permits five retries with five-second waits.
+Offline checks confirm the mechanism, not recovery from the original service failure.
+The cause of that original request failure remains unknown.
+The Git mechanism under OI-035 permits three retries with 60-second waits.
+It does not repair the remote service or repeat scientific work.
 
 ### Follow-up outside the numbered register
 
-- Request-progress visibility and remaining-budget/checkpoint guidance remain
-  diagnosed needs, not implemented inference-stall fixes. Current faster Luna
-  responses do not demonstrate recovery from another slow request.
-- Targeted SDK PI system-message customization and the named-sections context
-  tool remain planned in `copilot-sdk-consolidation-plan.md`. Provider migration
-  is already implemented; do not list the retired TypeScript adapter as current.
-- OI-007 and OI-012 remain paused/proposed; OI-013 and OI-020 remain withdrawn.
-  This reconciliation does not authorize those changes.
+- The console still needs visible progress for model requests.
+  The PI also needs clear guidance about the remaining budget and session checkpoints.
+  Faster responses do not demonstrate recovery from a stalled request.
+- The [SDK consolidation plan](copilot-sdk-consolidation-plan.md) retains two proposed tools.
+  One changes the PI system message.
+  The other reads named sections from context documents.
+  Provider migration is complete.
+- These entries do not authorize runtime changes or campaign operations.
 
 ## Capped campaign `90563aac`: regression follow-up backlog
 
@@ -342,6 +409,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-20 | Plain-language issue register | Rewrote all 37 descriptions without internal campaign labels. Separated open work, changes that need evidence, closed issues, and inactive entries. The HTML hides closed and inactive tables until the reader opens them. Shorter status labels preserve the prior decisions. The evidence review remains available in commit `335877f`. Only the two documents changed, with no runtime edits or campaign operations. |
 | 2026-10-19 | Evidence-backed OI status reconciliation | Closed 15 bounded repairs: OI-004/009/015/018/019/022/023/027/028/029/030/031/032/034/035. Retired obsolete OI-010 without claiming a repair. OI-005/008/014/036 are implemented/observed, while OI-033 still needs native error-recovery evidence. Six real open investigations remain: OI-006/021/024/025/026/037. The Markdown register and all 37 HTML rows agree. Existing reproductions/regression evidence can close mechanical defects without a new official assessment. Live evidence is bounded to `df7f6838` through E10; no scientific success, causal attribution, campaign recovery or runtime change is claimed. Only the tracker and current HTML overview change. |
 | 2026-10-19 | Standalone harness and local campaign repository split | Implemented with a live campaign observation and subsequent migration repairs, not a completed end-to-end scientific validation. See the current architecture section and `harness-campaign-split.md`. Absolute contract read aliases, training-log ownership, generated-file publication and caller-directory restoration are covered by targeted checks. Fatal-conversation recovery remains OI-037. |
 | 2026-10-19 | Current-documentation reconciliation | Updated the main HTML overview, operator guides, agent/instrument storage context, decision log and current tracker for the physical split. Historical campaign reports and RCAs retain their original evidence and dates. Removed obsolete current claims about reset backups, the TypeScript OpenCode adapter, reviewer max reasoning and dedicated console-interrupt exit codes. No runtime behavior, PI scientific direction or campaign files changed. |
@@ -454,8 +522,7 @@ Every future entry must answer these questions in this order:
 2. **Observed defect or decision:** one precise statement.
 3. **Evidence:** campaign, artifact, source path or implementation check.
 4. **Change:** what was altered, or explicitly that no change was made.
-5. **Disposition:** open, implemented/unmeasured, implemented/observed, closed,
-   paused, withdrawn or superseded.
+5. **Disposition:** one status from the vocabulary above.
 6. **Next action:** one owner and one bounded action, or `None`.
 7. **Campaign boundary:** explicitly state that no campaign was launched,
    resumed, reset or mutated unless the maintainer independently records
