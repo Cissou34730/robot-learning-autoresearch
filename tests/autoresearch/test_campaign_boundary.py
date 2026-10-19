@@ -124,3 +124,18 @@ def test_operation_history_preserves_campaign_attribution(monkeypatch, tmp_path)
 
 def test_runner_memory_includes_terminal_goal_marker():
     assert repository.is_runner_memory("runner/state/GOAL_REACHED")
+
+
+def test_training_logs_do_not_enter_scientific_operation_deltas(monkeypatch):
+    log = "campaigns/training_logs/campaign-one/t1-attempt-1.log"
+    reward = "robot_learning/training/reward.py"
+    monkeypatch.setattr(repository, "committed_change_paths", lambda _parent: [log])
+    monkeypatch.setattr(repository, "status_paths", lambda _scope: [log, reward])
+
+    delta = repository.scientific_delta("scientific-parent")
+
+    runner_protocol.validate_research_delta_ownership(delta)
+    assert delta == [reward]
+    assert repository.is_runner_memory(log)
+    assert repository.researcher_change_paths([log, reward]) == [reward]
+    assert not runner_protocol.is_researcher_owned(log)

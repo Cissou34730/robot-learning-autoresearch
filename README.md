@@ -53,6 +53,8 @@ harness stays unchanged. See [reset details](docs/reset-research.md).
 Campaign Git tracks source and compact state. Large measurements, disposable
 models and other ignored artifacts stay in the campaign folder but are not
 backed up by Git. No reset backups are kept.
+Runner training logs under `campaigns/training_logs/` also remain local and
+ignored; they are Runner-owned output, not scientific source changes.
 
 ### Maintainer validation
 

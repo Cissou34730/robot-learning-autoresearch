@@ -55,6 +55,28 @@ def git_repository(monkeypatch):
         shutil.rmtree(root, onerror=_remove_readonly)
 
 
+def test_initialized_campaign_keeps_training_logs_local(git_repository):
+    from tools.initialize_campaign import CAMPAIGN_GITIGNORE
+
+    root = git_repository
+    (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
+    reward = root / "robot_learning/training/reward.py"
+    reward.parent.mkdir(parents=True)
+    reward.write_text("VALUE = 1\n", encoding="utf-8")
+    repository.git("add", "--", ".")
+    repository.git("commit", "--quiet", "-m", "initial recipe")
+    log = root / "campaigns/training_logs/campaign-one/t1-attempt-1.log"
+    log.parent.mkdir(parents=True)
+    log.write_text("completed training\n", encoding="utf-8")
+    reward.write_text("VALUE = 2\n", encoding="utf-8")
+
+    relative = log.relative_to(root).as_posix()
+    assert repository.git("check-ignore", "--", relative).strip() == relative
+    assert repository.status_paths((".",)) == ["robot_learning/training/reward.py"]
+    assert repository.scientific_delta("HEAD") == ["robot_learning/training/reward.py"]
+    assert log.read_text(encoding="utf-8") == "completed training\n"
+
+
 def test_large_publication_commits_only_requested_paths(git_repository):
     root = git_repository
     for name in ("unrelated.txt", "literal-a.txt", "obsolete[ab].txt"):

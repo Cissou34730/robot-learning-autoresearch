@@ -47,6 +47,7 @@ RUNNER_MEMORY_PATHS = {
 }
 RUNNER_MEMORY_PREFIXES = (
     "campaigns/evaluations/",
+    "campaigns/training_logs/",
     "campaigns/checkpoints/candidates/",
     "campaigns/checkpoints/retained/",
 )

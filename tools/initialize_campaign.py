@@ -19,6 +19,14 @@ from runner.reset_campaign import (
     task_file_fingerprint,
 )
 
+CAMPAIGN_GITIGNORE = (
+    "__pycache__/\n*.py[cod]\n.venv/\n.copilot/\nreports/\nmodels/\n"
+    "campaigns/evaluations/\ncampaigns/training_logs/\ncampaigns/brief.md\n"
+    "runner/state/last_train_summary.md\nrunner/state/last_evaluation.json\n"
+    "runner/state/GOAL_REACHED\nrunner/state/RECOVERY_PENDING\n"
+    "runner/state/RESTART_PENDING\npi_workspace/operation_request.json\n"
+)
+
 
 def source_git(root: Path, *args: str) -> bytes:
     result = subprocess.run(
@@ -83,14 +91,7 @@ def initialize(root: Path, source: Path, reference: str) -> None:
     metadata = root / TASK_CONTRACT_PATH
     metadata.parent.mkdir(parents=True)
     metadata.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
-    (root / ".gitignore").write_text(
-        "__pycache__/\n*.py[cod]\n.venv/\n.copilot/\nreports/\nmodels/\n"
-        "campaigns/evaluations/\ncampaigns/brief.md\n"
-        "runner/state/last_train_summary.md\nrunner/state/last_evaluation.json\n"
-        "runner/state/GOAL_REACHED\nrunner/state/RECOVERY_PENDING\n"
-        "runner/state/RESTART_PENDING\npi_workspace/operation_request.json\n",
-        encoding="utf-8",
-    )
+    (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
     source_git(root, "init", "-b", "campaign")
     source_git(root, "add", "--", ".")
     source_git(

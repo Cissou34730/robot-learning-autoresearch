@@ -108,6 +108,13 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 
 ## Post-split corrections
 
+- Restored the campaign initializer's missing `campaigns/training_logs/` ignore
+  rule and explicitly classified that prefix as Runner memory. Without it,
+  the first completed training left an untracked log that the next operation
+  incorrectly rejected as a scientific edit. The existing campaign ignore
+  file was repaired in a local-only commit; no training, measurement or state
+  history was replayed. Regression checks: 56 passed. The actual S1 scientific
+  ownership gate accepts the campaign, with completed T1 and its log preserved.
 - The maintainer confirmed a live campaign runs successfully in the separated
   campaign repository.
 - With the campaign stopped, the harness was detached from the old worktree
