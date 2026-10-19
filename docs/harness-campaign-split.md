@@ -86,4 +86,7 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 - [x] Stage 5: launch/reset accept `-CampaignRoot`, select the harness uv
   project, and share a per-campaign mutex. PI trust snapshots protect both Git
   roots. PowerShell parsing and 14 targeted trust checks passed.
-- [ ] Stage 6
+- [x] Stage 6: reset references resolve in campaign Git; versioned task-file
+  fingerprints bind the recipe to the harness task. Protected runtime checks
+  verify each repository against its own HEAD. Targeted checks: 70 passed.
+- [ ] Stage 7

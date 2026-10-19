@@ -279,9 +279,17 @@ def stop_git_process(process: subprocess.Popen) -> None:
 
 
 def git(*args: str) -> str:
+    return _git_at(paths.ROOT, args)
+
+
+def harness_git(*args: str) -> str:
+    return _git_at(paths.HARNESS_ROOT, args)
+
+
+def _git_at(root: Path, args: tuple[str, ...]) -> str:
     process = subprocess.Popen(
         ["git", *args],
-        cwd=paths.ROOT,
+        cwd=root,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -299,8 +307,9 @@ def git(*args: str) -> str:
     return stdout
 
 
-def status_paths(scope: tuple[str, ...]) -> list[str]:
-    output = git(
+def status_paths(scope: tuple[str, ...], *, harness: bool = False) -> list[str]:
+    read_git = harness_git if harness else git
+    output = read_git(
         "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", *scope
     )
     fields = [field for field in output.split("\0") if field]
@@ -568,11 +577,12 @@ def commit_paths(message: str, scope: list[str]) -> bool:
 
 def require_path_at_commit(commit: str, relative: str) -> None:
     path = canonical_repo_path(relative)
+    read_git = harness_git if paths.SPLIT and not paths.is_campaign_owned(path) else git
     if not resolve_repo_path(path).is_file():
         raise ValueError(f"committed path is missing from the worktree: {path}")
-    worktree_blob = git("hash-object", "--", path).strip()
+    worktree_blob = read_git("hash-object", "--", path).strip()
     try:
-        committed_blob = git("rev-parse", f"{commit}:{path}").strip()
+        committed_blob = read_git("rev-parse", f"{commit}:{path}").strip()
     except RuntimeError as error:
         raise ValueError(f"commit {commit} does not contain {path}") from error
     if committed_blob != worktree_blob:
@@ -580,9 +590,12 @@ def require_path_at_commit(commit: str, relative: str) -> None:
 
 
 def tracked_paths(scope: str) -> list[str]:
+    read_git = (
+        harness_git if paths.SPLIT and not paths.is_campaign_owned(scope) else git
+    )
     return [
         line.strip()
-        for line in git("ls-files", "--", scope).splitlines()
+        for line in read_git("ls-files", "--", scope).splitlines()
         if line.strip()
     ]
 
@@ -590,8 +603,10 @@ def tracked_paths(scope: str) -> list[str]:
 def require_paths_at_head(relative_paths: list[str]) -> None:
     head = git("rev-parse", "HEAD").strip()
     require_resolvable_commit(head)
+    harness_head = harness_git("rev-parse", "HEAD").strip() if paths.SPLIT else head
     for relative in sorted(set(relative_paths)):
-        require_path_at_commit(head, relative)
+        commit = head if paths.is_campaign_owned(relative) else harness_head
+        require_path_at_commit(commit, relative)
 
 
 def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:

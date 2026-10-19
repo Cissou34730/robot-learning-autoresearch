@@ -173,3 +173,39 @@ def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
     assert "secret" not in result
     assert "shadow" not in result
     assert search.target("contracts/scenario.md") == harness / "contracts/scenario.md"
+
+
+def test_recipe_task_identity_is_checked_against_the_current_harness(
+    split_roots, monkeypatch
+):
+    for relative in reset_campaign.TASK_COMPATIBILITY_PATHS:
+        target = paths.locate(relative)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("task definition", encoding="utf-8")
+    recorded = reset_campaign.task_contract()
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: recorded)
+    reset_campaign.verify_task_compatibility("baseline")
+    paths.locate("contracts/task_spec.py").write_text(
+        "different task", encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="task differs"):
+        reset_campaign.verify_task_compatibility("baseline")
+
+
+def test_trusted_runtime_uses_each_repositories_own_head(split_roots, monkeypatch):
+    selected = []
+    monkeypatch.setattr(repository, "git", lambda *_args: "campaign-head")
+    monkeypatch.setattr(repository, "harness_git", lambda *_args: "harness-head")
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
+    monkeypatch.setattr(
+        repository,
+        "require_path_at_commit",
+        lambda commit, relative: selected.append((commit, relative)),
+    )
+    repository.require_paths_at_head(
+        ["contracts/task_spec.py", "robot_learning/__init__.py"]
+    )
+    assert selected == [
+        ("harness-head", "contracts/task_spec.py"),
+        ("campaign-head", "robot_learning/__init__.py"),
+    ]

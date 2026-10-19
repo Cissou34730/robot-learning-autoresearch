@@ -64,6 +64,7 @@ BASELINE_ARTIFACT_ROOTS = (
     "campaigns/checkpoints/retained",
 )
 BASELINE_EVALUATION_ROOT = "campaigns/evaluations"
+TASK_CONTRACT_PATH = "campaigns/task_contract.json"
 
 
 def git(*arguments: str, text: bool = True) -> str | bytes:
@@ -339,6 +340,13 @@ def plan_paths(plan: dict) -> list[str]:
 
 
 def verify_task_compatibility(commit: str) -> None:
+    if paths.SPLIT:
+        recorded = git_json(commit, TASK_CONTRACT_PATH)
+        if recorded != task_contract():
+            raise ValueError(
+                "the human-defined task differs from the requested source revision"
+            )
+        return
     changed = str(
         git("diff", "--name-only", commit, "HEAD", "--", *TASK_COMPATIBILITY_PATHS)
     ).strip()
@@ -347,6 +355,16 @@ def verify_task_compatibility(commit: str) -> None:
             "the human-defined task differs from the requested source revision: "
             + ", ".join(changed.splitlines())
         )
+
+
+def task_contract() -> dict:
+    return {
+        "schema_version": 1,
+        "files": {
+            relative: repository.file_fingerprint(paths.locate(relative))
+            for relative in TASK_COMPATIBILITY_PATHS
+        },
+    }
 
 
 def verify_recipe_source(commit: str) -> None:
