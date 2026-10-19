@@ -123,3 +123,53 @@ def test_child_python_loads_campaign_science_and_harness_packages(
     origins = json.loads(execution.run_module("robot_learning.probe"))
     assert origins[0] == str(package / "__init__.py")
     assert all(str(paths.HARNESS_ROOT) in origin for origin in origins[1:])
+
+
+def test_pi_contract_reads_route_to_harness_without_write_access(
+    split_roots, monkeypatch
+):
+    from runner.copilot import path_policy
+    from runner.copilot.tool_policy import scoped_tool_hook
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    contract = harness / "contracts" / "scenario.md"
+    contract.parent.mkdir()
+    contract.write_text("task", encoding="utf-8")
+    hook = scoped_tool_hook()
+    decision = hook(
+        {"toolName": "view", "toolArgs": {"path": "contracts/scenario.md"}}, {}
+    )
+    assert decision["modifiedArgs"]["path"] == str(contract)
+    assert path_policy.file_read_denial(str(contract)) is None
+    assert path_policy.file_edit_denial(str(contract))
+    assert path_policy.file_read_denial(str(campaign / "contracts/scenario.md"))
+    assert path_policy.file_read_denial(str(harness / "runner/execution.py"))
+    assert path_policy.file_edit_denial(str(harness / "robot_learning/train.py"))
+
+
+def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
+    split_roots, monkeypatch
+):
+    from runner.copilot import path_policy
+    from runner.copilot.copilot_scoped_search import GlobParams, ScopedSearch
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    for root, relative in (
+        (harness, "AGENTS.md"),
+        (harness, "contracts/scenario.md"),
+        (harness, "tests/secret.py"),
+        (campaign, "robot_learning/lab/probe.py"),
+        (campaign, "contracts/shadow.md"),
+    ):
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("content", encoding="utf-8")
+    search = ScopedSearch(campaign, path_policy.file_read_denial, None, lambda _i: None)
+    result = search.glob(GlobParams(pattern="**/*"), None).replace("\\", "/")
+    assert "contracts/scenario.md" in result
+    assert "robot_learning/lab/probe.py" in result
+    assert "secret" not in result
+    assert "shadow" not in result
+    assert search.target("contracts/scenario.md") == harness / "contracts/scenario.md"

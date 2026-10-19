@@ -84,13 +84,30 @@ RESERVED_MODULES = (
 def _repository_relative_target(target: str) -> str | None:
     if not isinstance(target, str) or not target.strip():
         return None
-    path = Path(target.strip())
-    if not path.is_absolute():
-        path = ROOT / path
     try:
+        path = physical_target(target)
+        if paths.SPLIT:
+            if path.resolve() in {ROOT.resolve(), paths.HARNESS_ROOT.resolve()}:
+                return "."
+            return paths.logical_path(path).casefold()
         return path.resolve().relative_to(ROOT.resolve()).as_posix().casefold()
     except ValueError:
         return None
+
+
+def physical_target(target: str) -> Path:
+    path = Path(target.strip())
+    if path.is_absolute():
+        return path
+    if paths.SPLIT:
+        return ROOT if target.strip() in {".", ""} else paths.locate(target.strip())
+    return ROOT / path
+
+
+def target_root(path: Path) -> Path:
+    if paths.SPLIT and path.resolve().is_relative_to(paths.HARNESS_ROOT.resolve()):
+        return paths.HARNESS_ROOT
+    return ROOT
 
 
 def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
@@ -126,10 +143,11 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
 
     if not isinstance(target, str):
         return FILE_EDIT_DENIAL
-    path = Path(target)
-    if not path.is_absolute():
-        path = ROOT / path
-    if linked_path(ROOT, path) or ":" in str(path)[len(path.anchor) :]:
+    try:
+        path = physical_target(target)
+    except ValueError:
+        return FILE_EDIT_DENIAL
+    if linked_path(target_root(path), path) or ":" in str(path)[len(path.anchor) :]:
         return FILE_EDIT_DENIAL
     if is_pi_writable_path(target, preliminary=preliminary):
         return None
@@ -156,12 +174,13 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
     from runner.copilot.copilot_scoped_search import linked_path
 
     relative = _repository_relative_target(target)
-    path = Path(target) if isinstance(target, str) else ROOT.parent
-    if not path.is_absolute():
-        path = ROOT / path
+    try:
+        path = physical_target(target) if isinstance(target, str) else ROOT.parent
+    except ValueError:
+        return FILE_READ_DENIAL
     if (
         relative is None
-        or linked_path(ROOT, path)
+        or linked_path(target_root(path), path)
         or ":" in str(path)[len(path.anchor) :]
         or relative.split("/", 1)[0] in {".git", ".venv", ".github"}
         or relative == ".copilot"
@@ -171,9 +190,8 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
         )
     ):
         return FILE_READ_DENIAL
-    if preliminary:
-        if relative is not None and relative.startswith("robot_learning/"):
-            return None
+    if preliminary and relative.startswith("robot_learning/"):
+        return None
     if is_pi_writable_path(target):
         return None
     if is_reserved_execution(target):
@@ -217,7 +235,7 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
         relative = _repository_relative_target(target)
         if relative is None:
             raise ValueError(rejection + "the path is outside the repository.")
-        if (ROOT / relative).is_dir():
+        if physical_target(target).is_dir():
             raise ValueError(
                 rejection + "directories are not file scopes; select exact files. "
                 "New writable files do not require an existing parent directory."

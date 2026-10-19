@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from runner import paths
 from runner.copilot.coding_contracts import (
     CODING_TOOLS,
     MAIN_PI_TOOLS,
@@ -12,9 +13,9 @@ from runner.copilot.path_policy import (
     CODING_SCOPE_DENIAL,
     FILE_READ_DENIAL,
     MAIN_WRITE_DENIAL,
-    ROOT,
     _repository_relative_target,
     file_read_denial,
+    physical_target,
     scoped_edit_denial,
 )
 
@@ -77,7 +78,7 @@ def _child_view_denial(arguments, read_paths) -> str | None:
         not isinstance(target, str)
         or _repository_relative_target(target) not in read_paths
         or file_read_denial(target)
-        or (ROOT / _repository_relative_target(target)).is_dir()
+        or physical_target(target).is_dir()
     ):
         return CODING_SCOPE_DENIAL
     return None
@@ -88,7 +89,7 @@ def _view_denial(arguments, preliminary) -> str | None:
     if not isinstance(target, str):
         return FILE_READ_DENIAL
     reason = file_read_denial(target, preliminary=preliminary)
-    if not reason and (ROOT / _repository_relative_target(target)).is_dir():
+    if not reason and physical_target(target).is_dir():
         return "Use scoped glob for directory enumeration, not view."
     return reason
 
@@ -160,6 +161,16 @@ def scoped_tool_hook(
             preliminary=preliminary,
             json_editors=json_editors,
         )
-        return deny(reason) if reason else None
+        if reason:
+            return deny(reason)
+        arguments = request.get("toolArgs")
+        if paths.SPLIT and name == "view" and isinstance(arguments, dict):
+            return {
+                "modifiedArgs": {
+                    **arguments,
+                    "path": str(physical_target(arguments["path"])),
+                }
+            }
+        return None
 
     return on_pre_tool_use

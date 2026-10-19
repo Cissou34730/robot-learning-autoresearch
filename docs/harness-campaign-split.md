@@ -79,4 +79,8 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 - [x] Stage 3: campaign imports and child-interpreter environment; a real child
   process resolves scientific code from the campaign and contracts/Runner from
   the harness. Targeted checks: 42 passed; four unchanged lifecycle failures.
-- [ ] Stage 4
+- [x] Stage 4: PI reads/searches map logical contract paths to the harness;
+  campaign writes remain scoped and harness/shadow writes stay denied. Native
+  view argument rewriting is supported by the installed SDK. Targeted checks:
+  51 passed.
+- [ ] Stage 5
