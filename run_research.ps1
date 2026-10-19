@@ -26,7 +26,8 @@ param(
     [int]$StopTimeoutSeconds = 180
 )
 
-Set-Location $PSScriptRoot
+Push-Location -LiteralPath $PSScriptRoot
+try {
 
 if ($ListModels) {
     $listingArgs = @(
@@ -1241,4 +1242,8 @@ finally {
 }
 if ($script:CampaignExitCode -ne 0) {
     exit $script:CampaignExitCode
+}
+}
+finally {
+    Pop-Location
 }

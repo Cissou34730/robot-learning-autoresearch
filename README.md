@@ -16,6 +16,8 @@ the sibling `robot-learning-campaigns` folder. Use `-CampaignRoot <path>` to
 select another initialized campaign repository. No harness merge or copy is
 needed when the harness evolves: subsequent operations use the current harness
 with the selected campaign's scientific code.
+The launcher works inside the campaign folder while running and restores the
+calling terminal's original folder when it exits, including on failure.
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 

@@ -120,6 +120,65 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
     assert pending["failure"] is None
 
 
+@pytest.mark.parametrize("mode", ["list", "exit130", "conflict", "missing"])
+def test_launcher_restores_the_callers_directory(tmp_path, mode):
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to run launcher")
+    launcher = Path(__file__).resolve().parents[2] / "run_research.ps1"
+    campaign = tmp_path / "campaign"
+    (campaign / ".git").mkdir(parents=True)
+    caller = tmp_path / "original folder"
+    caller.mkdir()
+    arguments = {
+        "list": "-ListModels",
+        "exit130": "-ListModels",
+        "conflict": (
+            f"-CampaignRoot '{campaign}' -Provider github-copilot "
+            "-Model opencode/test-model"
+        ),
+        "missing": f"-CampaignRoot '{tmp_path / 'missing'}'",
+    }[mode]
+    exercise = tmp_path / "exercise-launcher-location.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+Set-Location -LiteralPath '{caller}'
+$before = (Get-Location).Path
+function uv {{
+    $global:LASTEXITCODE = {130 if mode == "exit130" else 0}
+}}
+$caught = $false
+$exitCode = 0
+try {{
+    & '{launcher}' {arguments}
+    $exitCode = $LASTEXITCODE
+}}
+catch {{
+    $caught = $true
+}}
+if ((Get-Location).Path -ne $before) {{
+    throw "Launcher left the caller in $((Get-Location).Path), expected $before"
+}}
+if ($caught -ne ${str(mode in {"conflict", "missing"}).lower()}) {{
+    throw 'Unexpected launcher failure behavior'
+}}
+if (-not $caught -and $exitCode -ne {130 if mode == "exit130" else 0}) {{
+    throw "Unexpected exit code $exitCode"
+}}
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
 def test_launcher_stop_helper_executes_the_cooperative_exit_contract(tmp_path):
     powershell = shutil.which("pwsh") or shutil.which("powershell")
     if powershell is None:
