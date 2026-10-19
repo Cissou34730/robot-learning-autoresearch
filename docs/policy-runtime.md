@@ -34,13 +34,22 @@ are errors, never reasons to substitute the current implementation.
 
 ## Existing campaigns
 
+Run maintenance from the harness repository, using its environment. Scientific
+revisions resolve in the selected campaign repository, not in harness Git.
+Use absolute artifact/output paths so the terminal's current directory cannot
+select the wrong file. An old revision available only in the forensic
+repository must first be made available in a separate local migration source;
+it is not automatically imported into the new campaign history.
+
 Do not overwrite an active campaign. First select the exact historical science
 commit associated with each old artifact. The human-only migration tool exports
 a new copy using that code in a temporary checkout, without switching branches:
 
 ```powershell
-uv run python runner/migrate_policy_runtime.py `
-  --artifact campaigns/checkpoints/accepted --output ../migrated-champion `
+$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns'
+uv run python -m runner.migrate_policy_runtime `
+  --artifact C:\Users\cyril.beurier\code\robot-learning-campaigns\campaigns\checkpoints\retained\<selected-artifact> `
+  --output C:\Users\cyril.beurier\code\migrated-champion `
   --source-ref <scientific-commit> --identity-actions
 ```
 

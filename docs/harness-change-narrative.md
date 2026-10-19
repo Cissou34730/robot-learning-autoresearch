@@ -69,6 +69,35 @@ The following terms are not interchangeable:
 The history is organized by decision stream rather than date. Chronology is
 retained within each stream.
 
+### Repository separation and migration (19 October 2026)
+
+Campaign-generated commits had overwhelmed engineering history, while local
+reset backups accumulated about 12.5 GB in the shared Git administration
+directory. The maintainer chose independent ownership rather than two copies
+of the application: a standalone harness published on `origin/harness`, and
+local campaign Git holding PI science, state and artifacts. The old
+inquiry-centered-lifecycle worktree remains a forensic safeguard.
+
+The split preserves logical paths and scientific authority while mapping
+files, Python imports, Git commands, agent access and task fingerprints to the
+correct physical repository. Harness updates require no campaign merge.
+Reset backups were removed; ignored measurements and logs are not preserved
+by Git or a later reset.
+
+Live use exposed two migration defects: absolute contract paths were denied
+before remapping, and the initializer omitted the training-log ignore rule.
+Both received concrete reproductions and targeted repairs. Later shell fixes
+restore the caller's folder after launch and reset, including failure paths.
+The generated-file audit covers normal runtime outputs and durable publication,
+not every lifecycle or scientific behavior.
+
+Repairing the log classification did not recover the conversation that had
+already received `validation_fatal`. A restart resumed its instruction to stop
+despite an active durable Runner session. This is a separate, unresolved
+recovery mismatch, not another path rejection and not defective PI science.
+See [the split record](harness-campaign-split.md) and the
+[current tracker](harness-experiment-log.md).
+
 ### 1. Project framing and authority boundaries
 
 Explain the transition to the present three-role harness:

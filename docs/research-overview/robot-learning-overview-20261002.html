@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Robot AutoResearch overview: what the harness does, the current status, open issues, recent changes, and history.">
+  <meta name="description" content="Robot AutoResearch: independent harness and local campaign repositories, operation commands, lifecycle, known recovery limits, and historical results.">
   <title>Robot AutoResearch overview</title>
   <script>
     (() => {
@@ -198,9 +198,10 @@
       <p class="intro">Robot AutoResearch lets an AI Principal Investigator (PI) develop and test methods for a robot.</p>
       <p class="intro">The human defines the goal. The PI chooses the scientific work. Runner checks and executes accepted operations. It does not choose the science.</p>
       <p class="intro">The example is a two-joint arm that must reach a target and hold still. Training is one tool, not the whole process.</p>
-      <p class="snapshot">Last updated <time datetime="2026-10-14">14 October 2026</time>. This page does not update itself. The <a href="../harness-experiment-log.md">harness log</a> records current issue states. Campaign records establish measured results.</p>
+      <p class="snapshot">Last reviewed <time datetime="2026-10-19">19 October 2026</time>. This is a static architecture and status overview, not a live campaign monitor. The filename is retained for existing links. The <a href="../harness-experiment-log.md">harness tracker</a> records engineering status; local campaign records establish measured results.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status">1 Status</a>
+        <a href="#repositories">Repositories and commands</a>
         <a href="#roles">2 Roles</a>
         <a href="#task">3 Task</a>
         <a href="#lifecycle">4 Campaign lifecycle</a>
@@ -217,64 +218,97 @@
       <p class="section-label">1 / STATUS DASHBOARD</p>
       <h2 id="status-heading">Where the project stands</h2>
       <div class="note" style="margin-bottom: 16px">
-        <p><strong>Last completed campaign:</strong> <code>dc48cc2f</code> passed its official test at 196/200, or 98.0%.</p>
-        <p>It needed fewer source repairs, but a silent angle error survived the checks. <a href="robot-campaign-dc48cc2f-20261014.html">Read the result, code and cost report</a>.</p>
-        <p>The maintainer started a separate campaign, <code>d205479e</code>, on 14 October. This page does not assess its results.</p>
+        <p><strong>Current architecture:</strong> one standalone harness repository synced with GitHub, and one independent local campaign repository containing PI science, state and artifacts. Campaign commits never push.</p>
+        <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still refuses submissions even though Runner records an active session. This recovery mismatch is open as OI-037; folder and training-log repairs do not fix it.</p>
+        <p><strong>Historical evidence:</strong> <code>dc48cc2f</code> passed at 196/200 in its <a href="robot-campaign-dc48cc2f-20261014.html">14 October report</a>. That report is not the latest local campaign state and does not validate the repository split.</p>
       </div>
       <div class="grid two status-grid">
         <article class="card hot">
-          <span class="tag">Latest completed campaign</span>
-          <h3 style="margin-top: 12px">Campaign <code>dc48cc2f</code> passed</h3>
+          <span class="tag">Current storage</span>
+          <h3 style="margin-top: 12px">Separate code ownership and histories</h3>
           <ul>
-            <li>Official result: 196/200, or 98.0%. Four cases failed.</li>
-            <li>Selected model: <code>T3:checkpoint-90112</code>. Its fresh development result was 158/160.</li>
-            <li>Three training runs executed 362,496 steps. The campaign used two inquiries.</li>
-            <li>Nine measurements completed. Two attempted measurements failed.</li>
-            <li>Recorded AI usage: 45.506525 AIU, including PI work, coding and interrupted work.</li>
+            <li><code>robot-learning-harness</code> holds Runner, contracts, benchmark, tests, scripts and the Python project.</li>
+            <li><code>harness</code> is the GitHub default branch. Its history starts with a clean snapshot, followed by engineering commits.</li>
+            <li><code>robot-learning-campaigns</code> holds scientific source, state and artifacts in its own Git repository with no remotes.</li>
+            <li>The old inquiry-centered-lifecycle worktree remains a forensic safeguard.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The pass met the minimum exactly. It does not prove success on every future target. <a href="robot-campaign-dc48cc2f-20261014.html">Read the full report</a>.</p>
+          <p class="small muted" style="margin-top: 8px">The harness is no longer a linked worktree. Updating it does not require a merge into the campaign.</p>
         </article>
         <article class="card">
-          <span class="tag">Code quality and cost</span>
-          <h3 style="margin-top: 12px">Fewer repairs, but not error-free code</h3>
+          <span class="tag">Validation and its limits</span>
+          <h3 style="margin-top: 12px">Migration checks, not a scientific result</h3>
           <ul>
-            <li>Source repair calls fell from nine in <code>5ff87d6b</code> to one in <code>dc48cc2f</code>.</li>
-            <li>Recorded AI usage fell from 102.595910 to 45.506525 AIU.</li>
-            <li>The campaigns did different amounts of work. These totals do not isolate the effect of the shorter instructions.</li>
-            <li>The coder repaired a checker with wrong expected values. A different angle error remained undetected.</li>
-            <li>The angle error affected geometry diagnostics, not the official success count.</li>
+            <li>At physical separation: 500 tests passed and 44 pre-existing failures remained. The full suite is not green.</li>
+            <li>The later generated-file, publication, path and PI-access suite passed 78 targeted checks.</li>
+            <li>Launch/reset folder restoration passed 13 targeted checks.</li>
+            <li>A real MuJoCo smoke check loaded campaign science with harness robot files, reset and stepped.</li>
+            <li>Live use exposed migration defects; their repairs do not prove every lifecycle path works.</li>
           </ul>
-          <p class="small"><a href="robot-campaign-dc48cc2f-20261014.html#code">Read the code findings</a></p>
+          <p class="small"><a href="../harness-campaign-split.md">Read the implementation and correction record</a></p>
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">Current issue source: OI-001 to OI-033</h3>
+          <h3 style="margin-top: 12px">Current issue source: OI-001 to OI-037</h3>
           <ul>
             <li>The harness log records current status for each issue.</li>
             <li>A working implementation is not proof of a scientific improvement.</li>
-            <li>The latest work added independent code review and separate reviewer cost records.</li>
-            <li>The new review does not automatically close evidence, cost or scientific-method issues.</li>
+            <li>OI-037 records the fatal-conversation / active-session mismatch observed after the log migration failure.</li>
+            <li>No reset, automatic retry or new backend conversation is silently authorized by that issue.</li>
           </ul>
           <p class="small"><a href="../harness-experiment-log.md">Read the source register</a>. <a href="#issues">Read the current summary</a>.</p>
         </article>
         <article class="card">
-          <span class="tag">Changed last</span>
-          <h3 style="margin-top: 12px">Independent code review: 14 October</h3>
+          <span class="tag">Current agent runtime</span>
+          <h3 style="margin-top: 12px">One SDK, multiple inference providers</h3>
           <ul>
-            <li>Each coding assignment receives an independent GPT-6 Luna review with max reasoning. Corrections reuse that reviewer to check the repair and affected regressions.</li>
+            <li>Copilot SDK 1.0.19 handles sessions, tools, native coding and independent review. OpenCode Zen/Go are inference routes within that runtime.</li>
+            <li>The default PI is Copilot GPT-6 Luna with high reasoning. Copilot scientific-model preparation uses max reasoning.</li>
+            <li>Reviewers use high reasoning: the selected campaign model for Copilot campaigns, Copilot GPT-6 Luna for OpenCode campaigns. Corrections reuse the same reviewer.</li>
             <li>The reviewer can read selected files. It cannot edit code, execute checks or choose the scientific direction.</li>
             <li>The reviewer requests a complete batch of engineering repairs from the same coder. The PI receives the final package or a blocked requirement.</li>
-            <li>Findings separate demonstrated defects, verification gaps and unresolved questions. A missing assertion does not prove wrong measurement output.</li>
+            <li>The review returns validation, what is wrong, why and where. A missing assertion does not prove wrong measurement output.</li>
             <li>Unclear requirements and scientific choices return to the PI. Runner does not coordinate repairs. The reviewer does not execute checks.</li>
             <li>The runtime checks the actual reviewer model and reasoning level. It records reviewer usage separately.</li>
-            <li>Commit <code>4e2c84d</code> added the reviewer. A later correction-flow repair replaces repeated fresh reviews. Neither change resets or launches a campaign.</li>
-            <li>The three historical review trials cost 56.875771 AIU in total. This is separate from campaign costs.</li>
-            <li>Luna found the angle error but missed the wrong checker. The trials do not prove complete review coverage.</li>
+            <li>Coder, reviewer and PI usage remain separately accounted. OpenCode token/catalogue costs are not invented Copilot AIU.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px"><a href="robot-campaign-dc48cc2f-20261014.html#review">Read the review comparison</a>. Later campaign evidence must establish the effect of the new review.</p>
+          <p class="small muted" style="margin-top: 8px"><a href="../../README.md#select-inference-at-launch">Select a provider</a>. Historical <a href="robot-campaign-dc48cc2f-20261014.html#review">review trials</a> do not prove complete defect coverage.</p>
         </article>
       </div>
-      <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
+      <p class="small muted" style="margin-top: 12px">Historical prompt-stack review: R1, R5-1, R5-2, R6, R7, and R8 were implemented; R2 was partly implemented and paused; R3 and R4 were discarded. These dispositions are not a new scientific validation. See the tracker for current follow-up.</p>
+    </section>
+
+    <section class="section" aria-labelledby="repositories-heading" id="repositories">
+      <p class="section-label">OPERATING LAYOUT / 19 OCTOBER</p>
+      <h2 id="repositories-heading">Two repositories, one running campaign</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>Harness: develop and publish here</h3>
+          <p><code>C:\Users\cyril.beurier\code\robot-learning-harness</code></p>
+          <p>Contains <code>runner/</code> (not campaign state), <code>contracts/</code>, <code>benchmark/</code>, tools, tests, documentation, launch/reset scripts, <code>pyproject.toml</code> and <code>uv.lock</code>.</p>
+          <p>Commit and push engineering changes to <code>origin/harness</code>. The Python environment belongs here.</p>
+        </article>
+        <article class="card">
+          <h3>Campaign: science and evidence stay local</h3>
+          <p><code>C:\Users\cyril.beurier\code\robot-learning-campaigns</code></p>
+          <p>Contains <code>robot_learning/</code>, <code>campaigns/</code>, <code>pi_workspace/</code>, <code>runner/state/</code>, models, reports and session data.</p>
+          <p>It has independent Git storage and no remotes. Runner never pushes in split mode, even if a remote is added.</p>
+        </article>
+      </div>
+      <div class="card" style="margin-top: 16px">
+        <h3>Launch or reset from the harness folder</h3>
+        <p><code>.\run_research.ps1</code> launches or resumes the selected campaign. It does not reset it.</p>
+        <p><code>.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1</code></p>
+        <p>The second command deliberately resets before launch. Stop the campaign first. <code>-Clean</code> discards eligible uncommitted changes. The semicolon is not success-only: inspect any reset failure before authorizing launch.</p>
+        <p>Both scripts accept <code>-CampaignRoot &lt;path&gt;</code>, default to the sibling campaign folder, and restore the caller's folder on exit. During execution, the working directory is the campaign folder.</p>
+        <p><strong>Baseline v3 is a recipe, not a trained model.</strong> Its Fresh reset keeps the current harness, restores scientific files and starts empty history with scientific-model preparation pending. It does not restore an old harness commit.</p>
+        <p>The task fingerprints must match. A new campaign repository needs one-time initialization from a source repository containing the recipe tag; it is not created by an ordinary reset.</p>
+        <p><a href="../../README.md">Setup and provider commands</a> &middot; <a href="../reset-research.md">Reset guide</a> &middot; <a href="../harness-campaign-split.md">Split design</a> &middot; <a href="../external-campaign-stop.md">External stop contract</a></p>
+      </div>
+      <div class="note" style="margin-top: 16px">
+        <p><strong>Local does not mean backed up.</strong> Git stores scientific source, compact state and archived checkpoints. Raw measurements, training logs, disposable models, reports and SDK session data stay local but are ignored by Git.</p>
+        <p>No full reset backups or <code>-Recover</code> option remain. Fresh reset deletes the old campaign's ignored measurements and logs. Git alone cannot restore them. Keep separate copies if they matter.</p>
+        <p>The old <code>robot-learning-inquiry-centered-lifecycle</code> worktree is a safeguard. Historical reports below remain dated evidence, not live results for the selected campaign.</p>
+      </div>
     </section>
 
     <section class="section" aria-labelledby="roles-heading" id="roles">
@@ -308,9 +342,10 @@
         <table>
           <thead><tr><th scope="col">Area</th><th scope="col">Owner</th><th scope="col">Note</th></tr></thead>
           <tbody>
-            <tr><td><code>robot_learning\scenario\</code> (except protected files), <code>robot_learning\training\</code>, <code>train.py</code>, <code>evaluate.py</code>, <code>play.py</code>, <code>robot_learning\lab\</code></td><td>PI</td><td>This includes both environment files, <code>environment.py</code> and <code>training_environment.py</code>.</td></tr>
-            <tr><td><code>contracts\</code>, <code>campaigns\</code></td><td>Human</td><td>The PI can read them. The PI cannot write them.</td></tr>
-            <tr><td><code>benchmark\</code>, <code>runner\</code>, <code>tests\</code>, <code>docs\</code>, <code>tools\</code></td><td>Human</td><td>Protected. A protected path wins over a PI-owned folder.</td></tr>
+            <tr><td><code>robot_learning\scenario\</code> (except protected files), <code>robot_learning\training\</code>, <code>train.py</code>, <code>evaluate.py</code>, <code>play.py</code>, <code>robot_learning\lab\</code></td><td>PI science</td><td>Physically in the campaign repository. Scenario mechanics and training-only <code>training/environment.py</code> remain distinct.</td></tr>
+            <tr><td><code>contracts\</code></td><td>Human</td><td>In the harness; the PI can read but not write them.</td></tr>
+            <tr><td><code>campaigns\</code>, <code>runner\state\</code></td><td>Runner-written</td><td>In the campaign repository; the PI reads them but does not directly write them.</td></tr>
+            <tr><td><code>benchmark\</code>, <code>runner\</code> implementation, <code>tests\</code>, <code>docs\</code>, <code>tools\</code></td><td>Human</td><td>In the harness. Protected paths win over PI-owned prefixes; <code>runner/state/</code> is separate campaign state.</td></tr>
             <tr><td><code>pyproject.toml</code>, <code>uv.lock</code>, official robot files</td><td>Human</td><td>The PI cannot install packages or change the robot.</td></tr>
           </tbody>
         </table>
@@ -323,10 +358,10 @@
         <p>Runner executes the checks that the PI requests. Code review does not approve scientific conclusions.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
         <p>Ordinary Copilot main and coding sessions have no shell tools. The main PI calls <code>submit_operation</code> without file-write tools.</p>
-        <p>The preliminary phase keeps its scientific-model publication permission. Runner executes scientific checks, training and evaluation through <code>uv run</code>. OpenCode keeps its legacy file and command-policy interface.</p>
-        <p>Copilot SDK 1.0.19 supplies agent lifecycle, custom tools and native subagents. Runner and scientific functions remain separate. OpenCode is a legacy runtime option, not equivalent custom-tool integration.</p>
+        <p>The preliminary phase keeps its scientific-model publication permission and phase-specific tools. Runner executes scientific checks, training and evaluation using the harness environment.</p>
+        <p>Copilot SDK 1.0.19 supplies agent lifecycle, custom tools and native subagents for Copilot and OpenCode inference. OpenCode adds a scoped <code>read</code> alias; it is not a separate legacy TypeScript runtime.</p>
         <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and <code>training_log_query</code>. Large results identify continuation. Partial content never appears as complete evidence.</p>
-        <p class="small muted">Earlier checks covered transport, search and selected file access. The latest SDK check confirmed read-only Luna/max review. Scientific effect remains unmeasured.</p>
+        <p class="small muted">Read-only review uses high reasoning. Max reasoning applies to Copilot scientific-model preparation, not the reviewer. Engineering checks do not establish scientific effectiveness.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>
@@ -516,7 +551,8 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Current issues: OI-001 to OI-033</h2>
+      <h2 id="issues-heading">Issue history and current follow-up</h2>
+      <p>The table below preserves the earlier OI-001 to OI-033 summary. The <a href="../harness-experiment-log.md#outstanding-issue-register">live tracker</a> now extends through OI-037, including large-JSON latency (OI-034), historical Git publication retries (OI-035), saved-controller execution contracts (OI-036), and fatal-conversation recovery (OI-037). Campaign publication no longer pushes in split mode.</p>
       <p>The <a href="../harness-experiment-log.md">harness log</a> is the source for these states. Issue IDs are never reused.</p>
       <p>A completed code change is not proof of a campaign improvement. The table keeps those two facts separate.</p>
       <div class="card table-wrap wide">
@@ -587,7 +623,17 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
-        <h3 style="margin-top: 0">14 October</h3>
+        <h3 style="margin-top: 0">19 October: repository split and migration corrections</h3>
+        <ul>
+          <li><code>c085e98</code> starts the harness history with a single snapshot of the old code, without campaign ancestry. Later commits implement the split. The standalone harness is now GitHub's default branch.</li>
+          <li>PI-owned code and campaign state moved to a local repository initialized from a v3 Fresh recipe reset. Harness updates apply without merging into it.</li>
+          <li><code>2a35d7b</code> fixes absolute contract reads expanded under the campaign folder; protected writes and shadow paths stay denied.</li>
+          <li><code>1a794c3</code> restores the omitted training-log ignore rule and Runner ownership. <code>d8c812f</code> adds generated-file/publication audit coverage.</li>
+          <li><code>3ce7063</code> and <code>2c4bfde</code> restore the caller's folder after launch and reset, so reset-then-launch commands resolve correctly.</li>
+          <li>Full reset backups were removed. Ignored artifacts are local files, not Git backups.</li>
+          <li>OI-037 remains open: resuming a conversation after <code>validation_fatal</code> can leave it refusing submissions while Runner still records an active session. Reset is a new campaign, not recovery of that session.</li>
+        </ul>
+        <h3>14 October (historical)</h3>
         <ul>
           <li>Commit <code>4e2c84d</code> adds read-only GPT-6 Luna review after each completed coding delivery.</li>
           <li>Startup in <code>d205479e</code> reached the session deadline during its fifth review. No Runner check ran in that session.</li>
@@ -715,8 +761,9 @@
             <tr><td>Candidate-free capability visibility (R5-2)</td><td>The PI can see what it can do without a candidate.</td><td>Implemented.</td></tr>
             <tr><td>PI-selected evidence scope</td><td>One JSON tool and one training-log tool support selected fields, records, summaries and complete content. Repeated subsets and continuations are explicit.</td><td>Implementation checks only. No required scientific inspection pattern.</td></tr>
             <tr class="group-row"><td colspan="3">Runner and tool repairs</td></tr>
-            <tr><td>Native coder and independent code reviewer</td><td>Luna/max reviews the assignment and requests a complete engineering repair batch. The same coder repairs it. The same reviewer checks it. The PI receives the final package or blocking reason. Runner alone executes checks.</td><td>The initial implementation is in <code>4e2c84d</code>. Repairs now stay inside the coding handoff. Scientific choices remain with the PI. Separate reviewer costs. Campaign effect unmeasured.</td></tr>
-            <tr><td>Large Git publication and recovery</td><td>Repair publication and recovery of completed operations.</td><td>Implemented <code>b7727d1</code>.</td></tr>
+            <tr><td>Native coder and independent code reviewer</td><td>The selected Copilot campaign model reviews at high reasoning; OpenCode campaigns use Copilot Luna. The same coder repairs the reported defects and the same reviewer checks them. Runner alone executes checks.</td><td>Read-only review returns validation, what is wrong, why and where. Scientific choices remain with the PI. Costs remain separate; coverage is not guaranteed.</td></tr>
+            <tr><td>Independent campaign Git</td><td>Commit scientific source, compact evidence and checkpoints locally without polluting engineering history or depending on GitHub availability.</td><td>Implemented. Split-mode publication never pushes. The harness is published separately on <code>origin/harness</code>.</td></tr>
+            <tr><td>Fatal-session recovery</td><td>Reconcile a conversation told to stop with a durable scientific session that remains active.</td><td>Open as OI-037. The current launcher resumes the persisted conversation; no completed operation may be blindly replayed.</td></tr>
             <tr><td>Runner state ignored in protected checks</td><td>Only registered Runner state is ignored. Dirty protected sources are still rejected.</td><td>Implemented <code>48bffca</code>.</td></tr>
             <tr><td>Style findings do not fail an operation</td><td>Ruff findings no longer use up a scientific operation. Syntax and behavior failures still block.</td><td>Implemented <code>f953039</code>.</td></tr>
             <tr><td>Bounded Copilot shutdown</td><td>Session disconnect and client shutdown cannot hang.</td><td>Implemented <code>2e897c7</code>.</td></tr>
@@ -777,6 +824,7 @@
     <section class="section" aria-labelledby="reports-heading" id="reports">
       <p class="section-label">9 / CAMPAIGN REPORT INDEX</p>
       <h2 id="reports-heading">Campaigns, newest first</h2>
+      <p>Historical reports available in this repository, ordered by report date. They are not an inventory of newer local campaigns. Current campaign data remain in the selected local campaign repository; no new score is claimed by this documentation update.</p>
       <p>Stopped or replaced runs are not official failures. The runs are separate records. They are not a controlled comparison of harness changes.</p>
       <div class="card table-wrap wide">
         <table>
@@ -994,7 +1042,7 @@
     </section>
 
     <footer>
-      <p>Snapshot of 14 October 2026, not live status. Implementation status and scientific effect stay separate.</p>
+      <p>Architecture reviewed 19 October 2026; not live campaign status. Historical reports retain their own dates. Implementation status and scientific effect stay separate.</p>
       <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>

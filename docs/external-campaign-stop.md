@@ -1,5 +1,9 @@
 # External campaign stop contract
 
+Current launcher behavior, reviewed 19 October 2026. Older descriptions of a
+separate TypeScript OpenCode runtime and dedicated first/second Ctrl-C exit
+codes do not describe the current launcher.
+
 An external controller must combine the repository's cooperative stop request
 with a Windows Job Object. The request gives the active operation time to save
 state and close its remote session; the Job Object is the independent guarantee
@@ -25,7 +29,9 @@ For every launcher invocation, Hermes must:
    $stopRequest = Join-Path $controlDirectory "stop.request"
 
    # Hermes performs the suspended creation, Job Object assignment and resume.
+   # Run from robot-learning-harness, not the campaign folder.
    pwsh -NoProfile -File .\run_research.ps1 `
+       -CampaignRoot C:\Users\cyril.beurier\code\robot-learning-campaigns `
        -StopRequestPath $stopRequest `
        -StopTimeoutSeconds 180
    ```
@@ -33,6 +39,10 @@ For every launcher invocation, Hermes must:
 The request path is inherited only by the supervised Runner or PI-adapter
 process as `ROBOT_RESEARCH_STOP_REQUEST`. It is not a repository or campaign
 state file.
+The harness supplies the Python project and scripts; the selected campaign
+folder is the child's working directory. The mutex is per campaign, so two
+launchers cannot own the same campaign concurrently. The launcher restores
+its caller's folder on exit.
 
 ## Request
 
@@ -50,30 +60,12 @@ $stream = [System.IO.File]::Open(
 $stream.Dispose()
 ```
 
-Manual Ctrl-C in the launcher's console is supported:
-
-1. The first Ctrl-C raises the launcher stop state and starts the same
-   cooperative deadline as an external request. The inherited console event
-   still reaches the active child, while the launcher keeps supervising it
-   instead of aborting its PowerShell pipeline. If no child is being
-   supervised, the launcher stops the campaign at its next control point
-   instead of starting or continuing campaign work. The operator sees
-   `Console interrupt requested; waiting up to ... seconds for cooperative
-   shutdown.`, followed by the child's normal interruption and recovery output.
-   The launcher completes its `finally` cleanup and exits 130, or exits 124 if
-   the cooperative deadline expires.
-2. A second or later Ctrl-C is not handled by the native launcher handler, so
-   PowerShell cancels the pipeline immediately. The launcher stops waiting for
-   the active child, prints `Additional console interrupt requested; escalating
-   immediately.`, runs its `finally` cleanup, and exits 125. Exit 125 is the
-   stable operator-escalation code, distinct from cooperative interruption
-   (130) and cooperative-deadline expiry (124).
-
-Immediate escalation does not wait for runner persistence. `RECOVERY_PENDING`
-or `RESTART_PENDING` is therefore not guaranteed, nor are SDK abort/disconnect
-or child-process cleanup. The launcher's own OpenCode server stop and mutex
-release still run. The Windows Job Object is the only process-tree containment
-guarantee on this path, so its owner must close the job after exit 125.
+Use the explicit stop-request file for supervised cooperative stopping. Manual
+Ctrl-C uses PowerShell and child-process interrupt behavior; the current
+launcher has no separate first/second console-interrupt handler or dedicated
+exit-125 escalation contract. Do not infer that recovery markers were saved
+merely because an operator pressed Ctrl-C. A forced stop cannot guarantee
+Runner persistence or SDK cleanup.
 
 An external controller does not need to send a console control signal. The
 launcher polls child completion and both stop inputs every 100 ms. The active
@@ -84,12 +76,12 @@ child also polls the external request:
   partial state, writes `RECOVERY_PENDING` or `RESTART_PENDING` when applicable,
   and returns 130.
 - `runner/copilot/copilot_adapter.py` calls `session.abort()`, then always disconnects.
-- `researcher_opencode/src/adapter.ts` resolves its existing interrupt outcome,
-  calls `session.abort()`, and drains its runtime handles.
+- OpenCode Zen/Go use that same Copilot SDK adapter, not a separate
+  `researcher_opencode` process.
 
 After an interrupted PI session exits, the launcher checks the request before
-deliverable validation or retry. It then leaves the campaign loop, stops the
-OpenCode campaign server in `finally`, and releases the worktree mutex.
+deliverable validation or retry. It then leaves the campaign loop, shuts down
+its owned persistent Copilot runtime, and releases the campaign mutex.
 
 ## Wait and fallback
 
@@ -98,10 +90,8 @@ Hermes must wait for the launcher process, not merely the active child:
 - Exit `130`: the cooperative request was observed, the supervised child
   returned normally with exit 0 or 130, and launcher cleanup completed.
 - Exit `124`: the active child did not return before `StopTimeoutSeconds`.
-  The launcher did not kill it. Hermes must immediately close the Job Object.
-- Exit `125`: the operator pressed Ctrl-C again, cancelling the cooperative
-  wait. Launcher cleanup completed, but runner recovery markers are not
-  guaranteed. Hermes must immediately close the Job Object.
+  The cooperative process helper attempts to kill its owned process tree.
+  Hermes must still close the Job Object; recovery markers are not guaranteed.
 - Exit `0`: the campaign completed normally before the request took effect.
 - Any other exit: launcher or child failure. Hermes must close the Job Object
   before reporting the failure.
@@ -115,15 +105,16 @@ least `StopTimeoutSeconds + 5` seconds after creating the request. If the
 launcher has not exited by then, or exits with 124 or another failure, Hermes
 closes its Job Object handle and waits until the job is empty.
 
-Exit 130 guarantees that the launcher's `finally` block ran and no supervised
-runner or researcher remains. For an interrupted training operation it also
-means the runner reached its existing recovery-marker path. It does not promise
-that a recoverable checkpoint exists: an early interruption correctly produces
-`RESTART_PENDING`.
+The launcher's cooperative exit path runs its cleanup, but the external
+controller must still confirm the Job Object is empty. A successful Runner
+training interrupt follows its existing recovery-marker path. It does not
+promise that a recoverable checkpoint exists: an early interruption can produce
+`RESTART_PENDING`. Inspect durable pending/completed state before resuming;
+never blindly resubmit completed work.
 
 Closing the Job Object guarantees process-tree termination, but it is an
 unclean fallback. It cannot guarantee runner recovery markers, SDK
-abort/disconnect, OpenCode server cleanup, or any other `finally` block. Hermes
-must not start another campaign in the worktree until the old job is empty,
+abort/disconnect, persistent-runtime cleanup, or any other `finally` block. Hermes
+must not start another invocation for the campaign until the old job is empty,
 because a killed launcher releases its named mutex even if an uncontained
 descendant would otherwise still be running.

@@ -28,7 +28,40 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
   See
   [`harness-change-narrative.md`](harness-change-narrative.md).
 
-## Current baseline
+## Current architecture and operational status
+
+**Reviewed 2026-10-19.** This is an engineering status summary, not a new
+campaign-result report.
+
+- The standalone harness repository is `robot-learning-harness`, published on
+  GitHub's default branch `harness`. PI-owned science, state and artifacts live
+  in the independent, local-only `robot-learning-campaigns` repository.
+  The old inquiry-centered-lifecycle worktree remains a forensic safeguard.
+- Launch/reset use `-CampaignRoot` (default: sibling campaign folder), the
+  harness Python environment and a per-campaign mutex. Both restore the
+  caller's folder on exit. Baseline v3 is a local recipe tag used with
+  Fresh/RecipeRef. There are no full reset backups.
+- Migration repairs cover absolute contract read aliases (`2a35d7b`),
+  training-log classification/ignore rules (`1a794c3`), generated-file audit
+  coverage (`d8c812f`), and launcher/reset folder restoration (`3ce7063`,
+  `2c4bfde`). The generated-file/path/access suite passed 78 checks; the final
+  shell-location suite passed 13. These are targeted implementation results.
+- The full suite at physical separation had 500 passes and 44 failures
+  identical to the saved pre-refactor baseline. It is not a green full suite.
+  Historical green runs below describe their named revisions, not today's code.
+- OpenCode Zen/Go now route through Copilot SDK 1.0.19; the separate legacy
+  TypeScript adapter is not the current runtime. Native coder/reviewer use
+  Copilot; reviewers use high reasoning. Scientific-model preparation on
+  Copilot uses max reasoning.
+- A live separated campaign ran, then hit the migrated training-log rejection.
+  That ownership gate was repaired and checked against the preserved state.
+  Restarting its fatal conversation exposed a distinct recovery mismatch
+  (OI-037). Do not present the migration as proven through final assessment.
+
+Current commands: [README](../README.md), [reset guide](reset-research.md),
+[split design and correction record](harness-campaign-split.md).
+
+## Historical campaign baseline (12 October)
 
 **As of 2026-10-12**
 
@@ -133,6 +166,7 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-034 | Large-JSON validation and query latency | **Implemented / reader replay measured** | In `e0acf639` S9, reads of the 183,598,807-byte M7 artifact repeated complete validation and structural scans. Validation caching alone reduced the first two waves from about 398 recorded seconds to 189.790 seconds, but all eleven requests still took 394.499 seconds. A warm-count profile attributed 36.368 of 37.239 seconds to structural scans. Separately approved, bounded container-span reuse now completes all eleven requests in 46.498 seconds across 33.264-, 7.920- and 5.313-second waves. All nine recorded outputs match exactly. | Observe campaign effect only in a separately authorized run. Each request still verifies its fingerprint and owns its snapshot. Syntax validation, query budgets and explicit exhaustion remain. Cold validation and bounded-cache eviction still require work. No campaign restart is authorized. |
 | OI-035 | Transient Git publication recovery | **Approved retry implemented / campaign effect unmeasured** | E5 in `b9d3f752` completed locally, but GitHub rejected finalization with `Internal Server Error`. The exact commit later reached origin without a publication-code change; the server's internal cause remains unknown. The shared push helper now retries recognized server failures up to three times after the initial attempt, waiting 60 seconds before each retry. Every attempt uses the same commit and destination branch. | Observe recovery on a future actual server failure. Permanent and unknown errors still stop immediately. Exhaustion retains `PublicationError`, original Git detail and existing durable recovery behavior. No scientific operation, session or campaign is repeated by the retry. |
 | OI-036 | Saved-controller execution contract | **Implemented / campaign effect unmeasured** | T3 in `a5d7f35a` applied research-environment guidance absent from protected execution of the same saved artifact. The shared operation-contract excerpt now explains saved-runtime execution and the research-environment boundary. The existing reviewer prompt checks that required controller behavior reaches protected execution. | Observe a separately authorized coding handoff. This clarification adds no behavioral check or scientific gate and does not repair existing PI code or candidates. |
+| OI-037 | Fatal conversation / active Runner session mismatch | **Open / observed after migration failure** | The training-log ownership rejection closed the backend conversation with `validation_fatal`, but durable S1 remained active with completed T1 and no pending operation or checkpoint. After the log repair, ownership validation passed; launcher restart resumed the same backend conversation, which refused further submissions and exited 2. No new path rejection occurred. | Design explicit maintainer-authorized recovery that reconciles backend context and durable session without replaying completed work. Folder-restoration and log-classification fixes do not solve this. A later Fresh reset starts another campaign; it is not evidence of recovery. |
 
 ## Capped campaign `90563aac`: regression follow-up backlog
 
@@ -273,6 +307,8 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-19 | Standalone harness and local campaign repository split | Implemented with a live campaign observation and subsequent migration repairs, not a completed end-to-end scientific validation. See the current architecture section and `harness-campaign-split.md`. Absolute contract read aliases, training-log ownership, generated-file publication and caller-directory restoration are covered by targeted checks. Fatal-conversation recovery remains OI-037. |
+| 2026-10-19 | Current-documentation reconciliation | Updated the main HTML overview, operator guides, agent/instrument storage context, decision log and current tracker for the physical split. Historical campaign reports and RCAs retain their original evidence and dates. Removed obsolete current claims about reset backups, the TypeScript OpenCode adapter, reviewer max reasoning and dedicated console-interrupt exit codes. No runtime behavior, PI scientific direction or campaign files changed. |
 | 2026-10-09 | OI-002 bounded-closure clarification | Retained; campaign effect observed but not causally isolated. |
 | 2026-10-09 | OI-004 progression repair | Retained; evidence-backed selection observed. |
 | 2026-10-09 | OI-003 interpretation repair | Implemented; recurrence replay pending. |

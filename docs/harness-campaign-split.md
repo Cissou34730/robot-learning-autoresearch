@@ -108,6 +108,16 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 
 ## Post-split corrections
 
+- Both launch (`3ce7063`) and reset (`2c4bfde`) now restore the caller's
+  working directory in `finally`, including on failure. A relative
+  reset-then-launch sequence is covered without executing campaign work;
+  13 shell/stop-control checks passed.
+- A restart after the repaired training-log error resumed the original
+  conversation's `validation_fatal` result, while durable S1 still held
+  completed T1 and no pending operation/checkpoint. The ownership gate passed,
+  but the PI refused further submissions. This recovery mismatch is open as
+  OI-037 in the tracker. A later maintainer Fresh reset starts a new campaign;
+  it is not recovery or evidence that the mismatch is repaired.
 - Audited the generated-file migration after the T1 log failure: training and
   disposable model outputs; evaluation, reference, official, progress and
   sealed module artifacts; Runner requests and markers; briefs; usage records;

@@ -7,13 +7,12 @@ The PI lifecycle is described in `contracts/program.md`, the current task in
 `contracts/scenario.md`, and the available capability surface in
 `contracts/instruments.md`.
 
-## Maintainer work in progress
+## Maintainer reference
 
 A human-directed harness maintenance session (not a campaign PI session) must
 first read `docs/harness-campaign-split.md`. It records the approved
-harness/campaign repository split, its decisions, stages and progress, and is
-the plan to resume. PI and Runner restrictions below still govern campaign
-agents.
+harness/campaign repository split, completed stages and follow-up corrections.
+PI and Runner restrictions below still govern campaign agents.
 
 ## Repository layout and maintainer authority
 
@@ -287,7 +286,11 @@ Raw measurement files have the fixed local archive root
 `campaigns/evaluations/<campaign-id>/`. Runner publication excludes that root.
 Git publishes source, campaign state, compact results and artifact identities,
 not raw measurement contents. Existing query and integrity checks use the
-preserved local files. Reset backups include the ignored archive.
+preserved local files. Training logs also remain local and ignored, and are
+Runner-owned output rather than scientific edits. No reset backups are kept:
+Fresh reset deletes the old campaign's ignored measurements and logs. Prepared
+Baseline reset carries only the selected baseline's evaluation files across
+cleanup in a temporary directory.
 Git alone is not a complete backup or transfer of raw campaign measurements.
 
 The PI may use read-only Git only when the current scientific objective requires

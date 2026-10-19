@@ -15,8 +15,14 @@ or failure, so it can be followed by a relative launcher command:
 .\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1
 ```
 
+`-Clean` discards eligible uncommitted campaign changes before reset; it does
+not bypass ownership checks. Do not use it just to resume a stopped campaign.
+The semicolon separates commands; it is not a success-only condition. If reset
+fails, inspect that failure before authorizing launch.
+
 References resolve in campaign Git. Initialize a new campaign repository once
-with `uv run python -m tools.initialize_campaign`; see [setup](../README.md).
+with `tools.initialize_campaign` and its required destination/source arguments;
+see the [complete setup command](../README.md#initialize-a-campaign-repository-once).
 Imported recipes carry a versioned task contract so incompatible robot/task
 definitions are refused before cleanup.
 
@@ -99,7 +105,8 @@ Both modes refuse dirty tracked/untracked files and detached HEAD.
 An independent campaign repository does not need an origin remote.
 Commit or resolve development edits first; `-Force` does not bypass
 these checks. Existing file locks and linked cleanup targets are checked before
-deletion. This is not a concurrency lock: keep the campaign stopped.
+deletion. The script also holds the same per-campaign mutex as the launcher,
+but keep the campaign stopped before requesting reset.
 
 A successful reset creates local campaign commits and never pushes in split
 mode, even if a remote was added accidentally. Harness commits are published

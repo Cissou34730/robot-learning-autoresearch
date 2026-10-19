@@ -5,6 +5,22 @@ It does not tell the PI when or whether to use an instrument.
 `contracts/program.md` assigns scientific decisions to the PI.
 `AGENTS.md` defines ownership and command authority.
 
+## Paths and persistence
+
+Paths in requests and records are logical repository-relative paths, not
+instructions to combine every path with the current working directory.
+`robot_learning/`, `campaigns/`, `pi_workspace/`, `runner/state/`, `models/`,
+reports and session data live in the local campaign repository. Contracts,
+Runner implementation and protected evaluators live in the harness repository.
+The existing read/search policy maps permitted contract reads to the harness;
+this does not grant write access or access to reserved implementation files.
+
+Scientific code and durable operation records are committed in campaign Git.
+In the split layout, Runner never pushes those commits, even if a remote is
+added. Raw measurements and training logs remain local and ignored. Harness
+publication to GitHub is separate maintainer work. These storage choices do not
+change operation payloads, PI authority or evidence semantics.
+
 ## Operation request envelope
 
 In ordinary Copilot sessions, call `submit_operation` with a `request` containing

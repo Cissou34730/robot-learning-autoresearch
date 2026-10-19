@@ -2,6 +2,27 @@
 
 Read the [Robot-learning research process](docs/research-overview/robot-learning-overview-20261002.html).
 
+## Documentation map
+
+Current operating guidance, reviewed 19 October 2026:
+
+- [HTML overview](docs/research-overview/robot-learning-overview-20261002.html):
+  architecture, lifecycle, status and links to historical evidence. Its filename
+  is retained so existing links continue to work.
+- [Repository split](docs/harness-campaign-split.md): physical ownership,
+  implementation stages, validation and migration corrections.
+- [Reset guide](docs/reset-research.md), [external stop contract](docs/external-campaign-stop.md)
+  and [saved-policy runtime](docs/policy-runtime.md): operator procedures.
+- [Agent contract](AGENTS.md), [scientific program](contracts/program.md)
+  and [instruments](contracts/instruments.md): role boundaries and operation contracts.
+- [Change tracker](docs/harness-experiment-log.md): issue status and maintenance history.
+
+Dated RCAs, campaign HTML reports, implementation proposals and
+[old integration notes](docs/INTEGRATION_NOTES.md) describe the revisions and
+campaigns named in them, not the current repository layout or current campaign.
+[Protocol decisions](docs/protocol-decisions.md) retain superseded decisions
+as history; the latest dated entry identifies the current storage design.
+
 ## Harness and campaign repositories
 
 The two repositories have different contents:
@@ -16,8 +37,8 @@ the sibling `robot-learning-campaigns` folder. Use `-CampaignRoot <path>` to
 select another initialized campaign repository. No harness merge or copy is
 needed when the harness evolves: subsequent operations use the current harness
 with the selected campaign's scientific code.
-The launcher works inside the campaign folder while running and restores the
-calling terminal's original folder when it exits, including on failure.
+The launch and reset scripts work inside the campaign folder while running and
+restore the calling terminal's original folder on exit, including on failure.
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 
@@ -48,6 +69,18 @@ Stop any active campaign before resetting:
 .\run_research.ps1 -Provider github-copilot
 ```
 
+The reset script also restores the folder before the next command, so this
+sequence works from the harness folder:
+
+```powershell
+.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1
+```
+
+Use `-Clean` only when you intend to discard eligible uncommitted campaign
+changes. It is not needed merely to resume a stopped campaign.
+The semicolon is not a success-only condition: if reset fails, inspect the error
+before launching.
+
 Baseline v3 is a scientific recipe, not a trained model. Its reset initializes
 empty campaign history and leaves scientific-model preparation pending. The
 harness stays unchanged. See [reset details](docs/reset-research.md).
@@ -57,6 +90,20 @@ models and other ignored artifacts stay in the campaign folder but are not
 backed up by Git. No reset backups are kept.
 Runner training logs under `campaigns/training_logs/` also remain local and
 ignored; they are Runner-owned output, not scientific source changes.
+
+### Known restart limitation
+
+A launcher restart resumes the persisted backend conversation; it is not always
+a fresh context. After `validation_fatal`, that conversation may refuse further
+submissions even when the underlying file problem has been repaired and Runner
+still records an active session. This mismatch was observed after the migrated
+training-log failure and is not repaired by the directory-restoration changes.
+See the [issue tracker](docs/harness-experiment-log.md#outstanding-issue-register).
+
+Do not assume repeated restarts recover such a session, automatically replay
+operations, or reset a campaign merely to clear the error. Recovery needs a
+maintainer decision based on durable state. A reset deliberately starts a new
+campaign; it does not resume the old one.
 
 ### Maintainer validation
 

@@ -7,6 +7,30 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-10-19 - Independent harness and local campaign repositories
+
+- **Current layout:** the standalone `robot-learning-harness` repository holds
+  the Runner, contracts, benchmark, launchers, tests and dependency lock.
+  `harness` is the GitHub default branch. The independent
+  `robot-learning-campaigns` repository holds PI-owned science, state and
+  artifacts. It has no remotes; split-mode Runner publication never pushes.
+- **Selection:** launch/reset accept `-CampaignRoot`, defaulting to the sibling
+  campaign folder. Python uses `ROBOT_LEARNING_CAMPAIGN_ROOT` with the harness
+  environment. Logical file paths resolve to their owning repository.
+- **Reset:** v3 is a recipe tag in campaign Git, restored with Fresh and
+  `-RecipeRef baseline-distinct-episodes-v3`, not prepared-model Baseline mode.
+  No full reset backup or `-Recover` command remains. Baseline mode uses
+  temporary storage only for the selected baseline's ignored evidence.
+- **Corrections:** absolute contract read aliases resolve before authorization;
+  generated training logs remain ignored and explicitly Runner-owned.
+  Both launch and reset restore the caller's working directory in `finally`.
+- **Limits:** generated-file and path regressions have targeted coverage, not
+  proof of every live lifecycle. Fatal backend-conversation recovery remains
+  unresolved; restarting can resume the same context that was told to stop.
+- **History:** this entry supersedes older same-repository publication, push
+  and reset-backup descriptions below. Historical scientific results are not
+  transferred or revalidated by the repository split.
+
 ## 2026-09-26 - Inquiry lifecycle, causal map, persistent PI and campaign lab
 
 - **Inquiry identity:** Campaign inquiries have counters and durable identities
