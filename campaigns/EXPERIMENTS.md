@@ -2,8 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| T1 | training | - | completed |
-| M1 | measurement | - | completed |
-| M2 | measurement | - | completed |
-| E1 | model_role | - | assigned |
-| M3 | measurement | - | completed |
