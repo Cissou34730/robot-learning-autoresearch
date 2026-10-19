@@ -7,6 +7,14 @@ The PI lifecycle is described in `contracts/program.md`, the current task in
 `contracts/scenario.md`, and the available capability surface in
 `contracts/instruments.md`.
 
+## Maintainer work in progress
+
+A human-directed harness maintenance session (not a campaign PI session) must
+first read `docs/harness-campaign-split.md`. It records the approved
+harness/campaign repository split, its decisions, stages and progress, and is
+the plan to resume. PI and Runner restrictions below still govern campaign
+agents.
+
 ## Environment
 
 This repository uses a fixed Python stack built around MuJoCo, Gymnasium and
