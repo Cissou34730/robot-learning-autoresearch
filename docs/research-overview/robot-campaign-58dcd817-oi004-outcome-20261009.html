@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Campaign report for 58dcd817-4fed-42e6-854b-58f20408e6a1 and the final OI-004 outcome.">
+  <title>Campaign 58dcd817 · OI-004 outcome</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.62;
+    }
+    a { color: var(--cp-link); text-underline-offset: .18em; }
+    a:hover { color: var(--cp-accent-hover); }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; }
+    code, .mono { font-family: Consolas, "Courier New", Courier, monospace; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+    h1 { max-width: 19ch; margin-bottom: 12px; font-size: clamp(2.2rem, 6vw, 4rem); letter-spacing: -.035em; }
+    h2 { margin-bottom: 16px; font-size: clamp(1.45rem, 3vw, 2rem); }
+    h3 { margin-bottom: 8px; font-size: 1.08rem; }
+    p { margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol { padding-left: 22px; }
+    li + li { margin-top: 8px; }
+    .page { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+    .hero, .card {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
+    }
+    .hero { padding: clamp(24px, 5vw, 48px); border-top: 6px solid var(--cp-accent); }
+    .card { padding: clamp(20px, 4vw, 32px); }
+    .eyebrow {
+      margin-bottom: 6px; color: var(--cp-accent); font-size: .8rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .lede { max-width: 78ch; color: var(--cp-text-soft); font-size: 1.08rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .pill {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px;
+      border: 1px solid var(--cp-border); border-radius: .625rem;
+      background: var(--cp-surface-soft); color: var(--cp-text); font-size: .84rem; font-weight: 600;
+    }
+    .pill.closed { border-color: var(--cp-success); color: var(--cp-success); }
+    .pill.fail { border-color: var(--cp-danger); color: var(--cp-danger); }
+    nav {
+      position: sticky; top: 0; z-index: 5; margin: 16px 0; padding: 12px 16px;
+      background: var(--cp-panel-strong); border: 1px solid var(--cp-border); border-radius: .625rem;
+    }
+    nav ul { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 0; list-style: none; }
+    nav a { font-size: .9rem; font-weight: 600; }
+    section { margin-top: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .accent { background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+    .success { border-left: 6px solid var(--cp-success); }
+    .warning { border-left: 6px solid var(--cp-warning); }
+    .danger { border-left: 6px solid var(--cp-danger); }
+    .stat { display: grid; gap: 4px; margin: 16px 0; }
+    .stat strong { font-size: 2rem; line-height: 1; }
+    .stat span, .muted, .small { color: var(--cp-text-muted); }
+    .small { font-size: .86rem; }
+    .callout {
+      margin-top: 16px; padding: 16px 20px; background: var(--cp-accent-soft);
+      border: 1px solid var(--cp-accent); border-radius: .625rem;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { padding: 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
+    th {
+      background: var(--cp-surface-soft); color: var(--cp-text-muted);
+      font-size: .78rem; letter-spacing: .03em; text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .better { color: var(--cp-success); font-weight: 700; }
+    dl { display: grid; grid-template-columns: 190px 1fr; gap: 10px 20px; margin: 0; }
+    dt { font-weight: 700; }
+    dd { margin: 0; }
+    footer {
+      margin-top: 16px; padding: 20px 0; color: var(--cp-text-muted);
+      border-top: 1px solid var(--cp-border); font-size: .84rem;
+    }
+    @media (max-width: 800px) {
+      .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      nav { position: static; }
+      dl { grid-template-columns: 1fr; gap: 4px; }
+      dd { margin-bottom: 10px; }
+    }
+    @media print {
+      body { background: var(--cp-surface); font-size: 10.5pt; }
+      .page { width: 100%; padding: 0; }
+      nav { display: none; }
+      .hero, .card { box-shadow: none; break-inside: avoid; }
+      a { color: var(--cp-text); text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">Campaign report · 9 October 2026</p>
+      <h1>OI-004 is closed as effective</h1>
+      <p class="lede">
+        Campaign <code>58dcd817-4fed-42e6-854b-58f20408e6a1</code> exercised the intended
+        checkpoint-nomination, missing-evidence, and scientific-progression behavior. Its best
+        candidate improved development behavior clearly, but the official result was
+        <strong>195/200 (97.5%)</strong>: one success short of the 98% scientific goal.
+      </p>
+      <div class="meta" aria-label="Campaign outcome">
+        <span class="pill closed">OI-004 closed · effective</span>
+        <span class="pill fail">Official goal unmet</span>
+        <span class="pill">2 inquiries</span>
+        <span class="pill">2 training runs</span>
+        <span class="pill">M9: T2 153/160</span>
+      </div>
+    </header>
+
+    <nav aria-label="Report sections">
+      <ul>
+        <li><a href="#outcome">Outcome</a></li>
+        <li><a href="#sequence">Campaign sequence</a></li>
+        <li><a href="#comparison">Matched comparison</a></li>
+        <li><a href="#oi004">OI-004 assessment</a></li>
+        <li><a href="#boundaries">Issue boundaries</a></li>
+        <li><a href="#replication">Replication</a></li>
+        <li><a href="#sources">Sources</a></li>
+      </ul>
+    </nav>
+
+    <section id="outcome" class="grid" aria-labelledby="outcome-title">
+      <article class="card span-8 success">
+        <p class="eyebrow">Final outcome</p>
+        <h2 id="outcome-title">Process improvement and benchmark outcome are different findings</h2>
+        <p>
+          The best-known policy was <code>T2:checkpoint-110592</code>. It received an official
+          assessment of <strong>195 successes in 200 episodes</strong>, or <strong>97.5%</strong>.
+          The required threshold was 196/200, so the scientific goal was not met.
+        </p>
+        <p>
+          That benchmark failure does not negate the process improvement. OI-004 concerned how
+          the PI nominates checkpoints, handles unavailable evidence, and chooses the next
+          scientific direction. The campaign showed the intended behavior on all three points.
+        </p>
+        <div class="callout">
+          <strong>Supported conclusion:</strong> OI-004 brought clear value and is closed as
+          effective. It improved the research process; it did not guarantee that this particular
+          intervention would cross the task threshold.
+        </div>
+      </article>
+      <aside class="card span-4 accent" aria-label="Key campaign numbers">
+        <h2>Key numbers</h2>
+        <div class="stat"><strong>153/160</strong><span>T2 matched development success</span></div>
+        <div class="stat"><strong>150/160</strong><span>T1 matched development success</span></div>
+        <div class="stat"><strong>195/200</strong><span>T2 official assessment</span></div>
+        <p class="small">The official result was one successful episode below the 98% threshold.</p>
+      </aside>
+    </section>
+
+    <section id="sequence" class="card" aria-labelledby="sequence-title">
+      <p class="eyebrow">Campaign sequence</p>
+      <h2 id="sequence-title">The evidence changed the next operation</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Stage</th><th scope="col">Decision</th><th scope="col">Evidence and consequence</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>M6</td>
+              <td>Compare T1's strongest nominated non-terminal checkpoint with its terminal checkpoint.</td>
+              <td>The terminal checkpoint won: <code>checkpoint-120832</code> scored 150/160 versus 142/160 for <code>checkpoint-115712</code>. The campaign did not prefer a non-terminal artifact merely because the new guidance made it eligible.</td>
+            </tr>
+            <tr>
+              <td>I1 / M7</td>
+              <td>Classify the remaining T1 failures before choosing an intervention.</td>
+              <td>M7 found 7 no-entry failures, 1 late entry, and 2 early interrupted entries. This supported capture and convergence as the dominant limitation.</td>
+            </tr>
+            <tr>
+              <td>I2 / T2</td>
+              <td>Transfer-train one bounded capture-focused reward intervention.</td>
+              <td>The intervention followed the diagnosed failure mode. Training nominated non-terminal <code>checkpoint-110592</code> with training success .99 instead of terminal <code>checkpoint-120832</code> at .97.</td>
+            </tr>
+            <tr>
+              <td>M8</td>
+              <td>Run the matched T2-versus-T1 comparison.</td>
+              <td>The request failed because <code>--artifact</code> was missing. It was explicitly treated as <strong>no scientific result</strong>, not as evidence for or against T2.</td>
+            </tr>
+            <tr>
+              <td>M9</td>
+              <td>Correct the request and obtain the missing discriminating evidence before closure.</td>
+              <td>M9 completed the matched comparison. T2 improved success, entry speed, coverage, failure composition, and hold stability.</td>
+            </tr>
+            <tr>
+              <td>Official assessment</td>
+              <td>Assess the retained best-known T2 checkpoint.</td>
+              <td><code>T2:checkpoint-110592</code> scored 195/200 (97.5%). The campaign ended in an official failure because the goal was 196/200.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="comparison" class="grid" aria-labelledby="comparison-title">
+      <article class="card span-7">
+        <p class="eyebrow">Corrected M9 comparison</p>
+        <h2 id="comparison-title">T2 improved the diagnosed capture behavior</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Measure</th><th scope="col">T1 terminal</th><th scope="col">T2 checkpoint-110592</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Development success</td><td>150/160</td><td class="better">153/160</td></tr>
+              <tr><td>Mean first-entry time</td><td>13.90 steps</td><td class="better">12.42 steps</td></tr>
+              <tr><td>Entry coverage at 14&ndash;18 cm</td><td>36/39</td><td class="better">38/39</td></tr>
+              <tr><td>No-entry failures</td><td>7</td><td class="better">6</td></tr>
+              <tr><td>Late-entry failures</td><td>1</td><td class="better">0</td></tr>
+              <tr><td>Interrupted entries</td><td>2</td><td class="better">1</td></tr>
+              <tr><td>Hold interruptions</td><td>438</td><td class="better">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+      <aside class="card span-5 warning">
+        <h2>What the comparison means</h2>
+        <p>
+          The intervention was not merely a higher aggregate score. It moved the mechanism that
+          I1 identified: entry became earlier, difficult-radius entry coverage increased, all
+          three failure categories improved, and hold interruptions fell sharply.
+        </p>
+        <p>
+          This supports the scientific value of the capture-focused route. It does not prove that
+          reward shaping alone is sufficient for every residual failure or every future campaign.
+        </p>
+      </aside>
+    </section>
+
+    <section id="oi004" class="card accent" aria-labelledby="oi004-title">
+      <p class="eyebrow">OI-004 assessment</p>
+      <h2 id="oi004-title">All intended behaviors appeared in live campaign work</h2>
+      <dl>
+        <dt>Trajectory-based nomination</dt>
+        <dd>M6 tested a non-terminal T1 checkpoint against terminal and kept terminal when it won. T2 later nominated non-terminal <code>checkpoint-110592</code> when terminal training performance declined.</dd>
+        <dt>Training is nomination, not proof</dt>
+        <dd>The .99 versus .97 training trajectory selected the candidate for measurement. M9, not the training metric, established development performance.</dd>
+        <dt>Missing evidence stays unresolved</dt>
+        <dd>M8's missing <code>--artifact</code> made it an execution failure with no scientific result. The inquiry did not close until corrected M9 supplied the comparison.</dd>
+        <dt>Frontier-led progression</dt>
+        <dd>M7 classified failure modes; I2 tested one capture-focused intervention; M9 measured the mechanism and aggregate outcome on a matched panel.</dd>
+      </dl>
+      <div class="callout">
+        <strong>Closure:</strong> fixed-context checks established that the wording expressed the
+        intended rules. Campaign <code>58dcd817</code> then showed those rules operating in live
+        scientific work. OI-004 is therefore closed as effective.
+      </div>
+    </section>
+
+    <section id="boundaries" class="grid" aria-labelledby="boundaries-title">
+      <article class="card span-6">
+        <p class="eyebrow">Preserved boundaries</p>
+        <h2 id="boundaries-title">What OI-004 does not absorb</h2>
+        <ul>
+          <li><strong>OI-003</strong> remains the issue for detailed measurement inspection and interpretation, including whether available mechanism evidence is read and reconciled with aggregate results.</li>
+          <li><strong>OI-015</strong> remains the issue for effective-experiment realization: whether the intended intervention actually became a distinct runtime experiment.</li>
+          <li>OI-004 does not require every checkpoint to be evaluated, impose a fixed checkpoint rank, or authorize the Runner to judge scientific value.</li>
+        </ul>
+      </article>
+      <article class="card span-6">
+        <p class="eyebrow">Scientific limit</p>
+        <h2>The behavior improved; the goal was still missed</h2>
+        <p>
+          T2 was the best-known candidate and delivered a clear development improvement over T1.
+          Its official 195/200 result nevertheless failed the 196/200 threshold.
+        </p>
+        <p>
+          Closing OI-004 does not relabel that assessment as a pass. Conversely, the one-episode
+          miss does not erase the observed improvement in checkpoint choice, evidence handling,
+          progression, or robot behavior.
+        </p>
+      </article>
+    </section>
+
+    <section id="replication" class="card" aria-labelledby="replication-title">
+      <p class="eyebrow">Confidence and monitoring</p>
+      <h2 id="replication-title">An identical second campaign is not required</h2>
+      <p>
+        The claim is about intended harness behavior, not a population estimate of policy return.
+        Fixed-context checks showed that the repaired instructions select non-terminal artifacts
+        when warranted, preserve missing evidence as unresolved, and tie the next operation to
+        the decision frontier. This live campaign exercised the same behaviors under real
+        campaign conditions.
+      </p>
+      <p>
+        Repeating an identical campaign would add information about stochastic repeatability, but
+        it is not required to close OI-004. Future campaigns should monitor for recurrence:
+        automatic terminal-checkpoint preference, conclusions drawn from failed operations, or
+        progression that ignores the current evidence frontier.
+      </p>
+    </section>
+
+    <section id="sources" class="card" aria-labelledby="sources-title">
+      <p class="eyebrow">Evidence</p>
+      <h2 id="sources-title">Source records</h2>
+      <ul>
+        <li><code>campaigns\results.jsonl</code>: authoritative operation history, including the failed M8 and completed M9.</li>
+        <li><code>campaigns\evaluations\58dcd817-4fed-42e6-854b-58f20408e6a1\</code>: M6 and M9 development evaluations and branch-trace artifacts.</li>
+        <li><code>campaigns\checkpoints\candidates\58dcd817-4fed-42e6-854b-58f20408e6a1\</code>: T1 and T2 checkpoint inventories.</li>
+        <li><code>campaigns\checkpoints\retained\58dcd817-4fed-42e6-854b-58f20408e6a1\</code>: retained best-known T2 artifact.</li>
+      </ul>
+      <p class="small">
+        Failed operations are execution history, not scientific evidence. Development measurements
+        and the official assessment are distinct panels and are reported separately.
+      </p>
+    </section>
+
+    <footer>
+      <p>Campaign <code>58dcd817-4fed-42e6-854b-58f20408e6a1</code> · report dated 2026-10-09.</p>
+      <p>This self-contained report does not change campaign state or rerun any operation.</p>
+      <p><a href="robot-learning-overview-20261002.html#reports">Back to the project overview</a></p>
+    </footer>
+  </main>
+</body>
+</html>

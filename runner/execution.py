@@ -1,0 +1,949 @@
+"""Execution mechanics for the Runner.
+
+Subprocesses, training, research evaluations, timeouts, interruption handling
+and the candidate artifacts they produce. The training and physics stack is
+imported inside the execution paths that need it, so validation-only commands
+never pay for it.
+"""
+
+import json
+import os
+import platform
+import re
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+from runner import console, paths, repository
+
+TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
+TRAIN_STALL_SECONDS = 30 * 60
+# Candidates are ordinary cadence artifacts; none may mark the end of training.
+CANDIDATE_NAME_PATTERN = re.compile(r"checkpoint-\d+")
+STATUS_INTERVAL_SECONDS = 15
+INTERRUPT_GRACE_SECONDS = 30
+EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
+EVALUATION_STALL_SECONDS = 30 * 60
+# One width for the measured artifact, so every line of an evaluation reports
+# its counts where the previous line reported them.
+EVALUATION_LABEL_WIDTH = 22
+
+
+def evaluation_label(name: str) -> str:
+    """The artifact, padded to one column; a long name keeps its identifying tail."""
+    text = " ".join(str(name).split())
+    if len(text) > EVALUATION_LABEL_WIDTH:
+        text = "…" + text[-(EVALUATION_LABEL_WIDTH - 1) :]
+    return f"{text:<{EVALUATION_LABEL_WIDTH}}"
+
+
+# --- process mechanics -----------------------------------------------------
+
+
+def running_on_windows() -> bool:
+    return platform.system() == "Windows"
+
+
+def process_group_options() -> dict:
+    if running_on_windows():
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
+    if process.poll() is not None:
+        return
+    if running_on_windows():
+        if graceful:
+            try:
+                process.send_signal(signal.CTRL_BREAK_EVENT)
+                process.wait(timeout=INTERRUPT_GRACE_SECONDS)
+                return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+        subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+        )
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+        return
+    if graceful:
+        kill_process_group = getattr(os, "killpg", None)
+        if kill_process_group is not None:
+            try:
+                kill_process_group(process.pid, signal.SIGINT)
+                process.wait(timeout=INTERRUPT_GRACE_SECONDS)
+                return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+
+
+def run_module(module: str, *args: str, timeout: int | None = None) -> str:
+    result = subprocess.run(
+        [sys.executable, "-m", module, *args],
+        cwd=paths.ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"{module} failed:\n{result.stdout}\n{result.stderr}")
+    return result.stdout
+
+
+def run_command(*command: str, timeout: int | None = None) -> str:
+    result = subprocess.run(
+        list(command),
+        cwd=paths.ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"{' '.join(command)} failed:\n{result.stdout}\n{result.stderr}"
+        )
+    return result.stdout
+
+
+# --- research-surface checks -----------------------------------------------
+
+
+def validate_changed_sources(changed_paths: list[str]) -> None:
+    for path in changed_paths:
+        absolute = paths.ROOT / path
+        if not absolute.is_file():
+            continue
+        if path.endswith(".py"):
+            try:
+                compile(absolute.read_text(encoding="utf-8"), path, "exec")
+            except SyntaxError as error:
+                message = f"{path} has invalid Python syntax: {error}"
+                raise RuntimeError(message) from error
+        elif path.endswith(".json"):
+            try:
+                json.loads(absolute.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as error:
+                raise RuntimeError(f"{path} is not valid JSON: {error}") from error
+
+
+def validate_dependency_metadata() -> None:
+    """Check the lockfile against the project metadata without rewriting it."""
+    run_command("uv", "lock", "--check")
+
+
+def effective_config(config: dict) -> dict:
+    """The trainer's own view of a configuration, resolved through the trainer."""
+    from robot_learning.train import effective_training_config
+
+    return effective_training_config(config)
+
+
+def validate_active_configuration() -> dict:
+    """Resolve the active configuration through the trainer's own view of it."""
+    from robot_learning.training import research_config
+
+    config = research_config.load_experiment_config()
+    research_config.validate_param_overrides(config)
+    try:
+        return effective_config(config)
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError(
+            f"the active training configuration is invalid: {error}"
+        ) from error
+
+
+def run_validation_suites(selected_tests: tuple[str, ...]) -> None:
+    selected_tests = tuple(
+        path for path in selected_tests if (paths.ROOT / path).exists()
+    )
+    if not selected_tests:
+        return
+    run_module(
+        "pytest",
+        "-q",
+        *selected_tests,
+        "--basetemp",
+        str(paths.ROOT / ".pytest-run-temp"),
+    )
+
+
+# --- training --------------------------------------------------------------
+
+
+def read_training_log(log_path: Path, after_offset: int = 0) -> str:
+    if not log_path.exists():
+        return ""
+    with log_path.open(encoding="utf-8", errors="replace") as handle:
+        handle.seek(after_offset)
+        return handle.read()
+
+
+def latest_step_count(text: str) -> int | None:
+    matches = re.findall(r"\|\s+total_timesteps\s+\|\s+(\d+)\s+\|", text)
+    return int(matches[-1]) if matches else None
+
+
+def latest_training_steps(log_path: Path, *, after_offset: int = 0) -> int | None:
+    return latest_step_count(read_training_log(log_path, after_offset))
+
+
+def training_log_attempts(
+    experiment: int, *, campaign_id: str | None = None
+) -> list[int]:
+    directory = (
+        paths.TRAINING_LOG_DIR / campaign_id if campaign_id else paths.TRAINING_LOG_DIR
+    )
+    pattern = re.compile(rf"^experiment-{experiment}-attempt-(\d+)\.log$")
+    attempts = [
+        int(match.group(1))
+        for log_path in directory.glob(f"experiment-{experiment}-attempt-*.log")
+        if (match := pattern.match(log_path.name)) is not None
+    ]
+    return sorted(attempts)
+
+
+def training_log_path(
+    experiment: int, attempt: int, *, campaign_id: str | None = None
+) -> Path:
+    return paths.training_log_path(experiment, attempt, campaign_id=campaign_id)
+
+
+def training_attempt(
+    experiment: int, *, recoverable_continuation: bool, campaign_id: str | None = None
+) -> int:
+    attempts = training_log_attempts(experiment, campaign_id=campaign_id)
+    if recoverable_continuation:
+        if not attempts:
+            raise RuntimeError(
+                "no training log exists for recoverable training operation "
+                f"{experiment}"
+            )
+        return attempts[-1]
+    return attempts[-1] + 1 if attempts else 1
+
+
+def training_records(
+    experiment: int, attempt: int, *, campaign_id: str | None = None
+) -> list[dict[str, float]]:
+    from robot_learning.training.progress import parse_training_records
+
+    return parse_training_records(
+        read_training_log(
+            training_log_path(experiment, attempt, campaign_id=campaign_id)
+        )
+    )
+
+
+def training_budget(
+    standard_timesteps: int,
+    _initialization: str,
+    _baseline: bool,
+    _accepted_training_steps: int,
+) -> int:
+    del _initialization, _baseline, _accepted_training_steps
+    return standard_timesteps
+
+
+def announce_training_checkpoints(
+    output_dir: Path,
+    operation_id: str,
+    announced: set[str],
+) -> None:
+    """Print saved candidate metrics together, after the live heartbeat."""
+    pool_dir = output_dir / "candidate_pool"
+    candidates: list[tuple[int, Path]] = []
+    for path in pool_dir.glob("checkpoint-*"):
+        match = CANDIDATE_NAME_PATTERN.fullmatch(path.name)
+        if match is not None:
+            candidates.append((int(path.name.removeprefix("checkpoint-")), path))
+    rows: list[tuple[str, str]] = []
+    for _, path in sorted(candidates):
+        if path.name in announced:
+            continue
+        metrics_path = path / "training_metrics.json"
+        try:
+            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            continue
+        summary = console.training_progress_suffix(metrics).removeprefix(" | ")
+        rows.append((f"{operation_id}:{path.name}", summary or "metrics unavailable"))
+        announced.add(path.name)
+    if not rows:
+        return
+    candidate_width = max(len(candidate) for candidate, _ in rows)
+    console.boundary(
+        "training",
+        "TRAINING RESULTS",
+        operation_id,
+        "\n".join(
+            f"{candidate:<{candidate_width}} | {summary}" for candidate, summary in rows
+        ),
+    )
+
+
+def train_candidate(
+    output_dir: Path,
+    timesteps: int,
+    seed: int,
+    resume: Path | None,
+    training_log: Path,
+    operation_id: str,
+    label: str = "candidate training",
+    continue_timesteps: bool = False,
+    target_timesteps: int | None = None,
+) -> float:
+    from robot_learning.training.progress import latest_training_record
+
+    command = [
+        sys.executable,
+        "-m",
+        "robot_learning.train",
+        "--timesteps",
+        str(timesteps),
+        "--seed",
+        str(seed),
+        "--output-dir",
+        str(output_dir),
+    ]
+    if resume is not None:
+        command.extend(["--resume", str(resume)])
+    if continue_timesteps:
+        command.append("--continue-timesteps")
+    if target_timesteps is not None:
+        command.extend(["--target-timesteps", str(target_timesteps)])
+    train_log = training_log
+    started = time.monotonic()
+    train_log.parent.mkdir(parents=True, exist_ok=True)
+    with train_log.open(
+        "a" if continue_timesteps else "w", encoding="utf-8"
+    ) as log_file:
+        log_file.write(f"\n=== {label} ===\n")
+        log_file.flush()
+        progress_offset = log_file.tell()
+        process = subprocess.Popen(
+            command,
+            cwd=paths.ROOT,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            text=True,
+            **process_group_options(),
+        )
+        last_steps: int | None = None
+        last_progress_at = started
+        announced_checkpoints: set[str] = set()
+        try:
+            while process.poll() is None:
+                try:
+                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                except subprocess.TimeoutExpired:
+                    pass
+                elapsed = time.monotonic() - started
+                log_text = read_training_log(train_log, progress_offset)
+                record = latest_training_record(log_text)
+                steps = latest_step_count(log_text)
+                if steps is None:
+                    console.progress(
+                        f"TRAIN {operation_id} | starting | "
+                        f"{console.format_duration(elapsed)} elapsed"
+                    )
+                else:
+                    if steps != last_steps:
+                        last_steps = steps
+                        last_progress_at = time.monotonic()
+                    progress_target = target_timesteps or timesteps
+                    completed_this_run = (
+                        steps
+                        if not continue_timesteps
+                        else max(steps - (progress_target - timesteps), 0)
+                    )
+                    eta = (
+                        elapsed * max(progress_target - steps, 0) / completed_this_run
+                        if completed_this_run
+                        else 0
+                    )
+                    fps = (
+                        float(record["fps"])
+                        if record and record.get("fps") is not None
+                        else completed_this_run / elapsed
+                        if elapsed
+                        else 0.0
+                    )
+                    console.progress(
+                        console.training_heartbeat(
+                            operation_id,
+                            steps,
+                            progress_target,
+                            elapsed,
+                            eta,
+                            fps,
+                            record,
+                        )
+                    )
+                stalled_for = time.monotonic() - last_progress_at
+                if stalled_for > TRAIN_STALL_SECONDS:
+                    announce_training_checkpoints(
+                        output_dir,
+                        operation_id,
+                        announced_checkpoints,
+                    )
+                    console.boundary(
+                        "error",
+                        "TRAINING FAILED",
+                        operation_id,
+                        "no progress for 30 minutes; stopping",
+                    )
+                    stop_process(process, graceful=False)
+                    raise TimeoutError("training made no progress for 30 minutes")
+                if elapsed > TRAIN_TIMEOUT_SECONDS:
+                    announce_training_checkpoints(
+                        output_dir,
+                        operation_id,
+                        announced_checkpoints,
+                    )
+                    console.boundary(
+                        "error",
+                        "TRAINING FAILED",
+                        operation_id,
+                        "12 hour safety limit reached; stopping",
+                    )
+                    stop_process(process, graceful=False)
+                    raise TimeoutError("training exceeded the 12 hour safety limit")
+        except KeyboardInterrupt:
+            announce_training_checkpoints(
+                output_dir,
+                operation_id,
+                announced_checkpoints,
+            )
+            console.boundary(
+                "warning",
+                "TRAINING STOPPING",
+                operation_id,
+                "waiting for the process to close",
+            )
+            stop_process(process, graceful=True)
+            raise
+    announce_training_checkpoints(
+        output_dir,
+        operation_id,
+        announced_checkpoints,
+    )
+    if process.returncode != 0:
+        log = train_log.read_text(encoding="utf-8")
+        raise RuntimeError(f"training failed:\n{log}")
+    for filename in repository.INFERENCE_ARTIFACT_FILES:
+        if not (output_dir / filename).exists():
+            raise RuntimeError(f"training output is incomplete: {filename}")
+    return time.monotonic() - started
+
+
+# --- candidate artifacts ---------------------------------------------------
+
+
+def remove_candidate_dir(path: Path) -> None:
+    if not path.exists():
+        return
+    resolved = path.resolve()
+    root = paths.CANDIDATE_ROOT.resolve()
+    # A campaign-scoped candidate lives one level deeper: CANDIDATE_ROOT/<campaign_id>/experiment-N.
+    if resolved.parent != root and resolved.parent.parent != root:
+        raise RuntimeError(f"refusing to remove non-candidate directory: {resolved}")
+    for attempt in range(20):
+        try:
+            shutil.rmtree(resolved)
+            return
+        except FileNotFoundError:
+            return
+        except OSError:
+            if attempt == 19:
+                raise
+            time.sleep(0.25)
+
+
+def candidate_directories(candidate_dir: Path) -> list[dict]:
+    manifest_path = candidate_dir / "candidate_manifest.json"
+    if not manifest_path.exists():
+        metadata = json.loads(
+            (candidate_dir / "artifact.json").read_text(encoding="utf-8")
+        )
+        candidates = [
+            {
+                "name": candidate_dir.name,
+                "timesteps": metadata["timesteps"],
+                "path": candidate_dir,
+                "training_success": metadata.get("training_success"),
+                "ep_rew_mean": metadata.get("ep_rew_mean"),
+            }
+        ]
+    else:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        candidates = [
+            {**item, "path": candidate_dir / item["path"]}
+            for item in manifest["candidates"]
+        ]
+    if not candidates:
+        raise RuntimeError("training must produce at least one candidate")
+    for candidate in candidates:
+        if not CANDIDATE_NAME_PATTERN.fullmatch(str(candidate.get("name", ""))):
+            raise RuntimeError(
+                "candidate names must be checkpoint-<steps> so that no artifact "
+                f"marks the end of training: {candidate.get('name')!r}"
+            )
+        for filename in repository.INFERENCE_ARTIFACT_FILES:
+            if not (candidate["path"] / filename).exists():
+                raise RuntimeError(
+                    f"candidate is incomplete: {candidate['path'] / filename}"
+                )
+    return candidates
+
+
+def copy_candidate_outputs(source: Path, destination: Path) -> None:
+    repository.copy_artifact(source, destination)
+    manifest_path = source / "candidate_manifest.json"
+    if not manifest_path.exists():
+        return
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    shutil.copyfile(manifest_path, destination / "candidate_manifest.json")
+    for candidate in manifest["candidates"]:
+        relative = Path(candidate["path"])
+        shutil.copytree(source / relative, destination / relative)
+
+
+def validate_reusable_candidate(
+    source: Path,
+    *,
+    timesteps: int,
+    seed: int,
+    resume: Path | None,
+    config: dict,
+) -> None:
+    for filename in repository.INFERENCE_ARTIFACT_FILES:
+        if not (source / filename).exists():
+            raise ValueError(f"reusable candidate is incomplete: {filename}")
+    artifact = json.loads((source / "artifact.json").read_text(encoding="utf-8"))
+    expected_effective_config = effective_config(config)
+    expected_resume = resume.resolve() if resume is not None else None
+    actual_resume = (
+        Path(artifact["resumed_from"]).resolve()
+        if artifact.get("resumed_from") is not None
+        else None
+    )
+    checks = {
+        "seed": artifact.get("seed") == seed,
+        "requested timesteps": int(
+            artifact.get("requested_timesteps", artifact.get("timesteps", -1))
+        )
+        == timesteps,
+        "effective configuration": artifact.get("effective_config")
+        == expected_effective_config,
+        "resume checkpoint": (
+            not bool(artifact.get("completed", True))
+            or actual_resume == expected_resume
+        ),
+    }
+    mismatches = [name for name, matches in checks.items() if not matches]
+    if mismatches:
+        raise ValueError(
+            "reusable candidate does not match this training operation: "
+            + ", ".join(mismatches)
+        )
+
+
+# --- measurement -----------------------------------------------------------
+
+
+def evaluate_artifact(
+    artifact_dir: Path,
+    seed: int | None = None,
+    operation_id: str = "M?",
+    label: str = "official evaluation",
+    episodes: int | None = None,
+    output_path: Path | None = None,
+    official_benchmark: bool = False,
+    task_reference: bool = False,
+) -> dict:
+    if task_reference and (seed is None or episodes is None):
+        from runner import assessment
+
+        contract = assessment.task_reference_contract()
+        seed = int(contract["seed"]) if seed is None else seed
+        episodes = int(contract["episodes"]) if episodes is None else episodes
+    elif seed is None or episodes is None:
+        from robot_learning.training import research_config
+
+        seed = research_config.RESEARCH_EVALUATION_SEED if seed is None else seed
+        episodes = (
+            research_config.RESEARCH_EVALUATION_EPISODES
+            if episodes is None
+            else episodes
+        )
+    output_path = output_path or paths.RUNNER_STATE_DIR / "last_evaluation.json"
+    output_path.unlink(missing_ok=True)
+    progress_path = output_path.with_suffix(output_path.suffix + ".progress")
+    stale_temporary_progress = progress_path.with_suffix(progress_path.suffix + ".tmp")
+    progress_path.unlink(missing_ok=True)
+    stale_temporary_progress.unlink(missing_ok=True)
+    module = "runner.assessment" if task_reference else "robot_learning.evaluate"
+    command = [
+        sys.executable,
+        "-m",
+        module,
+        "--model",
+        str(artifact_dir / "model.zip"),
+        "--episodes",
+        str(episodes),
+        "--seed",
+        str(seed),
+        "--output-json",
+        str(output_path),
+        "--progress-json",
+        str(progress_path),
+    ]
+    if official_benchmark:
+        command.append("--official-benchmark")
+    if task_reference:
+        command.append("--task-reference")
+    progress_label = evaluation_label(artifact_dir.name)
+    started = time.monotonic()
+    console.boundary(
+        "measurement",
+        "PANEL",
+        f"{operation_id} {progress_label}",
+        f"{episodes} episodes | seed {seed} | {label}",
+    )
+    last_progress_at = started
+    completed_episodes = 0
+    # The evaluator can emit large episode-level diagnostics. File-backed streams
+    # avoid filling a Windows pipe while this process waits and prints heartbeats.
+    with (
+        tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stdout_file,
+        tempfile.TemporaryFile(mode="w+", encoding="utf-8") as stderr_file,
+    ):
+        process = subprocess.Popen(
+            command,
+            cwd=paths.ROOT,
+            stdout=stdout_file,
+            stderr=stderr_file,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            **process_group_options(),
+        )
+        try:
+            while True:
+                try:
+                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                    break
+                except subprocess.TimeoutExpired:
+                    try:
+                        progress = json.loads(progress_path.read_text(encoding="utf-8"))
+                        current_completed = int(progress["completed"])
+                    except (
+                        FileNotFoundError,
+                        json.JSONDecodeError,
+                        KeyError,
+                        ValueError,
+                    ):
+                        current_completed = completed_episodes
+                    if current_completed > completed_episodes:
+                        completed_episodes = current_completed
+                        last_progress_at = time.monotonic()
+                    console.progress(
+                        f"MEASURE {operation_id} | {progress_label} | "
+                        f"{completed_episodes}/{episodes} | "
+                        f"{100 * completed_episodes // episodes}% | "
+                        f"{console.format_duration(time.monotonic() - started)}"
+                    )
+                    if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
+                        stop_process(process, graceful=False)
+                        raise TimeoutError(
+                            f"{label} made no episode progress for "
+                            f"{console.format_duration(EVALUATION_STALL_SECONDS)} "
+                            f"({completed_episodes}/{episodes} complete)"
+                        )
+                    if time.monotonic() - started > EVALUATION_TIMEOUT_SECONDS:
+                        stop_process(process, graceful=False)
+                        raise TimeoutError(
+                            f"{label} exceeded the "
+                            f"{console.format_duration(EVALUATION_TIMEOUT_SECONDS)} total limit "
+                            f"({completed_episodes}/{episodes} complete)"
+                        )
+        except KeyboardInterrupt:
+            console.boundary(
+                "warning",
+                "MEASUREMENT STOPPING",
+                operation_id,
+                label,
+            )
+            stop_process(process, graceful=True)
+            raise
+        stdout_file.seek(0)
+        stderr_file.seek(0)
+        stdout = stdout_file.read()
+        stderr = stderr_file.read()
+    progress_path.unlink(missing_ok=True)
+    stale_temporary_progress.unlink(missing_ok=True)
+    if process.returncode != 0:
+        raise RuntimeError(f"{label} failed:\n{stdout}\n{stderr}")
+    metrics = json.loads(output_path.read_text(encoding="utf-8"))
+    console.boundary(
+        "measurement",
+        "PANEL COMPLETE",
+        f"{operation_id} {progress_label}",
+        f"{int(metrics['episodes'])}/{episodes} | "
+        f"{console.format_duration(time.monotonic() - started)} | "
+        f"success {metrics['success_percent']:.1f}%",
+    )
+    return metrics
+
+
+def requested_paired_comparisons(
+    request: dict,
+    evaluations_by_candidate: dict[str, list[dict]],
+    *,
+    evidence_plan: list[dict] | None = None,
+) -> list[dict]:
+    from benchmark.paired_evidence import paired_comparison
+
+    comparisons = request.get("paired_comparisons", [])
+    if not isinstance(comparisons, list):
+        raise TypeError("paired_comparisons must be a list")
+    results: list[dict] = []
+    for index, comparison in enumerate(comparisons):
+        if not isinstance(comparison, dict):
+            raise TypeError("each paired comparison must be an object")
+        candidate_name = str(comparison.get("candidate", "")).strip()
+        reference_name = str(comparison.get("reference", "")).strip()
+        provenance: dict = {}
+        if evidence_plan is not None:
+            if index >= len(evidence_plan):
+                raise ValueError("accepted paired comparison has no frozen evidence")
+            frozen = evidence_plan[index]
+            if (candidate_name, reference_name) != (
+                frozen.get("candidate"),
+                frozen.get("reference"),
+            ):
+                raise ValueError("accepted paired comparison identity changed")
+            candidate_evaluations: list[dict] = []
+            reference_evaluations: list[dict] = []
+            used_panels: list[dict] = []
+            source_artifacts: list[str] = []
+            for panel in frozen.get("panels", []):
+                candidate_evaluation = _load_frozen_panel(
+                    panel["candidate_artifacts"],
+                    panel.get("candidate_artifact_fingerprints", {}),
+                    panel,
+                    candidate_name,
+                    "candidate",
+                )
+                reference_evaluation = _load_frozen_panel(
+                    panel["reference_artifacts"],
+                    panel.get("reference_artifact_fingerprints", {}),
+                    panel,
+                    reference_name,
+                    "reference",
+                )
+                candidate_identities = {
+                    (int(item["episode"]), int(item["episode_seed"]))
+                    for item in candidate_evaluation["episode_results"]
+                }
+                reference_identities = {
+                    (int(item["episode"]), int(item["episode_seed"]))
+                    for item in reference_evaluation["episode_results"]
+                }
+                shared_episode_seeds = sorted(
+                    {identity[1] for identity in candidate_identities}
+                    & {identity[1] for identity in reference_identities}
+                )
+                if not shared_episode_seeds:
+                    raise ValueError(
+                        "paired comparison evidence has no shared episodes"
+                    )
+                frozen_shared = panel.get("shared_episode_seeds")
+                if frozen_shared is not None and shared_episode_seeds != list(
+                    frozen_shared
+                ):
+                    raise ValueError(
+                        "paired comparison shared episode identities changed after acceptance"
+                    )
+                shared_seeds = set(shared_episode_seeds)
+                candidate_evaluations.append(
+                    {
+                        **candidate_evaluation,
+                        "episodes": len(shared_episode_seeds),
+                        "episode_results": [
+                            item
+                            for item in candidate_evaluation["episode_results"]
+                            if int(item["episode_seed"]) in shared_seeds
+                        ],
+                    }
+                )
+                reference_evaluations.append(
+                    {
+                        **reference_evaluation,
+                        "episodes": len(shared_episode_seeds),
+                        "episode_results": [
+                            item
+                            for item in reference_evaluation["episode_results"]
+                            if int(item["episode_seed"]) in shared_seeds
+                        ],
+                    }
+                )
+                panel_sources = [
+                    *panel["candidate_artifacts"],
+                    *panel["reference_artifacts"],
+                ]
+                source_artifacts.extend(panel_sources)
+                used_panels.append(
+                    {
+                        "episodes": len(shared_episode_seeds),
+                        "seed": panel["seed"],
+                        "candidate_episodes": len(candidate_identities),
+                        "reference_episodes": len(reference_identities),
+                        "candidate_seed": panel.get("candidate_seed", panel["seed"]),
+                        "reference_seed": panel.get("reference_seed", panel["seed"]),
+                        "shared_episode_seeds": shared_episode_seeds,
+                        "evaluation_semantics": panel.get("evaluation_semantics"),
+                        "source_artifacts": panel_sources,
+                    }
+                )
+            provenance = {
+                "candidate_model_fingerprint": frozen["candidate_model_fingerprint"],
+                "reference_model_fingerprint": frozen["reference_model_fingerprint"],
+                "panels": used_panels,
+                "source_artifacts": list(dict.fromkeys(source_artifacts)),
+            }
+        else:
+            if candidate_name not in evaluations_by_candidate:
+                raise ValueError(
+                    f"unknown paired comparison candidate {candidate_name!r}"
+                )
+            if reference_name not in evaluations_by_candidate:
+                raise ValueError(
+                    f"unknown paired comparison reference {reference_name!r}"
+                )
+            candidate_evaluations = evaluations_by_candidate[candidate_name]
+            reference_evaluations = evaluations_by_candidate[reference_name]
+        try:
+            result = paired_comparison(
+                candidate_evaluations,
+                reference_evaluations,
+            )
+        except ValueError as error:
+            raise ValueError(
+                f"paired comparison {candidate_name!r} vs {reference_name!r}: {error}"
+            ) from error
+        results.append(
+            {
+                "candidate": candidate_name,
+                "reference": reference_name,
+                **result,
+                **provenance,
+            }
+        )
+    return results
+
+
+def _load_frozen_panel(
+    paths: list[str],
+    fingerprints: dict[str, str],
+    panel: dict,
+    model_name: str,
+    role: str,
+) -> dict:
+    """Load one deterministic panel and reject conflicting duplicate artifacts."""
+    expected: dict[tuple[int, int], bool] | None = None
+    selected: dict | None = None
+    for path in paths:
+        artifact = repository.resolve_repo_path(path)
+        if not artifact.is_file():
+            raise ValueError(
+                f"paired comparison evidence artifact does not exist for "
+                f"{model_name!r}: {path}"
+            )
+        expected_fingerprint = fingerprints.get(path)
+        if expected_fingerprint is None:
+            raise ValueError(
+                f"paired comparison evidence has no frozen content identity for "
+                f"{model_name!r}: {path}"
+            )
+        if repository.file_fingerprint(artifact) != expected_fingerprint:
+            raise ValueError(
+                f"paired comparison evidence content changed after acceptance for "
+                f"{model_name!r}: {path}"
+            )
+        measurement = json.loads(artifact.read_text(encoding="utf-8"))
+        expected_episodes = int(panel.get(f"{role}_episodes", panel["episodes"]))
+        expected_seed = int(panel.get(f"{role}_seed", panel["seed"]))
+        if (
+            int(measurement.get("episodes", -1)) != expected_episodes
+            or int(measurement.get("seed", -1)) != expected_seed
+        ):
+            raise ValueError(
+                f"paired comparison evidence panel metadata changed for "
+                f"{model_name!r}: {path}"
+            )
+        episode_results = measurement.get("episode_results")
+        if not isinstance(episode_results, list) or not episode_results:
+            raise ValueError(
+                f"paired comparison evidence lacks detailed episode outcomes for "
+                f"{model_name!r}: {path}"
+            )
+        try:
+            identified_outcomes = [
+                (
+                    (int(item["episode"]), int(item["episode_seed"])),
+                    bool(item["success"]),
+                )
+                for item in episode_results
+                if isinstance(item, dict)
+            ]
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                f"paired comparison evidence has invalid episode identities for "
+                f"{model_name!r}: {path}"
+            ) from error
+        outcomes = dict(identified_outcomes)
+        if len(outcomes) != len(identified_outcomes):
+            raise ValueError(
+                f"paired comparison evidence repeats an episode identity for "
+                f"{model_name!r}: {path}"
+            )
+        if len(outcomes) != expected_episodes:
+            raise ValueError(
+                f"paired comparison evidence has incomplete episode identities for "
+                f"{model_name!r}: {path}"
+            )
+        if expected is not None and outcomes != expected:
+            raise ValueError(
+                f"conflicting deterministic measurements for {model_name!r} panel "
+                f"seed {expected_seed}: {paths}"
+            )
+        expected = outcomes
+        selected = measurement
+    if selected is None:
+        raise ValueError(
+            f"paired comparison has no evidence artifacts for {model_name!r}"
+        )
+    return {**selected, "evaluation_semantics": panel.get("evaluation_semantics", "")}

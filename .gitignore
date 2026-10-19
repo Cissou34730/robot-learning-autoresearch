@@ -1,0 +1,60 @@
+# Python bytecode and packaging output
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+wheels/
+*.egg-info
+*.egg
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Training results (timestamped runs, never silently overwritten)
+models/
+
+# Validated curriculum checkpoints live under campaigns/checkpoints and are
+# intentionally versioned. Only disposable training candidates stay in models/.
+campaigns/checkpoints/challengers/
+
+# Test, lint, type-check, and coverage output
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest-run-*/
+.pytest-*-temp/
+.pytest-*/
+
+# Oversized researcher tool output, offloaded out of the model context
+.copilot/
+
+# Human reports and campaign-scoped session accounting, never Researcher context
+reports/
+
+# Raw measurement artifacts stay in the local campaign archive, not Git.
+campaigns/evaluations/
+
+# Transient runner controls and generated summaries
+campaigns/training_logs/
+runner/state/last_train_summary.md
+runner/state/last_evaluation.json
+runner/state/GOAL_REACHED
+runner/state/RECOVERY_PENDING
+runner/state/RESTART_PENDING
+campaigns/brief.md
+runner/state/proposal.json
+runner/state/evaluation_request.json

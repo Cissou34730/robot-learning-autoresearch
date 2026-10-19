@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Closure report for robot-learning campaign 896c230a-0ff1-4105-8ab7-1691a09c5482 and the OI-003/OI-004 assessment.">
+  <title>Campaign 896c230a · OI-003/OI-004 closure</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    p, ul, ol { margin-top: 0; }
+    p { margin-bottom: 0.85rem; }
+    h1, h2, h3 { margin-top: 0; line-height: 1.2; }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.7rem); margin-bottom: 0.8rem; letter-spacing: -0.04em; }
+    h2 { font-size: clamp(1.45rem, 3vw, 2rem); margin-bottom: 0.9rem; }
+    h3 { font-size: 1.08rem; margin-bottom: 0.55rem; }
+    code, .mono { font-family: Consolas, "Courier New", Courier, monospace; }
+    a { color: var(--cp-link); text-underline-offset: 0.2em; }
+    a:hover { color: var(--cp-accent-hover); }
+    .page {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+    .hero, .card {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+    }
+    .hero {
+      padding: clamp(24px, 5vw, 48px);
+      background: var(--cp-bg-elevated);
+      border-top: 6px solid var(--cp-accent);
+    }
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--cp-accent);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .lede {
+      max-width: 76ch;
+      color: var(--cp-text-soft);
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 4px 12px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+    .pill.good { border-color: var(--cp-success); color: var(--cp-success); }
+    .pill.bad { border-color: var(--cp-danger); color: var(--cp-danger); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .card {
+      padding: clamp(20px, 4vw, 28px);
+    }
+    .accent { background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+    .success { border-left: 6px solid var(--cp-success); }
+    .danger { border-left: 6px solid var(--cp-danger); }
+    .warning { border-left: 6px solid var(--cp-warning); }
+    .stat {
+      display: grid;
+      gap: 4px;
+      margin: 12px 0 0;
+    }
+    .stat strong {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+    .muted, .small { color: var(--cp-text-muted); }
+    .small { font-size: 0.84rem; }
+    .callout {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--cp-accent);
+      border-radius: 0.625rem;
+      background: var(--cp-accent-soft);
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--cp-border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: none; }
+    .score {
+      font-weight: 700;
+      color: var(--cp-text);
+    }
+    .score.good { color: var(--cp-success); }
+    .score.bad { color: var(--cp-danger); }
+    .footer {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--cp-border);
+      color: var(--cp-text-muted);
+      font-size: 0.84rem;
+    }
+    @media (max-width: 840px) {
+      .span-4, .span-5, .span-6, .span-8 { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">Campaign closure · 9 October 2026</p>
+      <h1>Campaign 896c230a-0ff1-4105-8ab7-1691a09c5482</h1>
+      <p class="lede">
+        This campaign closed with a clear technical narrative: the baseline was not competitive,
+        the later iteration attempts were negative, and the final transfer-learning result was strong enough
+        to show that the OI-003 and OI-004 changes improved campaign behavior rather than caused the policy failure.
+      </p>
+      <div class="meta" aria-label="Campaign badges">
+        <span class="pill good">OI-003 + OI-004: improved behavior</span>
+        <span class="pill bad">No policy failure caused by OI-003/OI-004</span>
+        <span class="pill">Final protected assessment: 193/200 = 96.5%</span>
+      </div>
+    </header>
+
+    <section class="grid" aria-label="Campaign summary report">
+      <article class="card span-8 success">
+        <p class="eyebrow">Executive summary</p>
+        <h2>Final result: strong transfer behavior with a negative campaign history</h2>
+        <p>
+          The campaign result is best read as a progression story. T1 achieved a baseline of <strong>71.88%</strong>
+          on M6. T2, a full-radius fresh PPO run, was a <strong>negative result</strong>. T3, the geometry-conditioned
+          attempt, was also <strong>negative</strong>. T4 delivered <strong>zero training success</strong>, which confirmed
+          that the search path had stalled rather than improved. T5 then recovered the campaign with a
+          <strong>transfer-learning result of 125/128 = 97.66%</strong>.
+        </p>
+        <p>
+          The official protected assessment later reached <strong>193/200 = 96.5%</strong>. This is a strong outcome by
+          any practical standard, and it shows that the final policy was capable and stable under the protected benchmark.
+          The key conclusion is that <strong>OI-003 and OI-004 both improved the campaign behavior and did not cause the policy failure</strong>.
+        </p>
+        <div class="callout">
+          <strong>Conclusion:</strong> the campaign did not fail because OI-003 or OI-004 damaged the policy;
+          instead, those interventions improved the campaign’s trajectory and made the eventual successful transfer behavior possible.
+        </div>
+      </article>
+
+      <article class="card span-4 danger">
+        <p class="eyebrow">Headline metric</p>
+        <div class="stat">
+          <strong>96.5%</strong>
+          <span class="muted">Protected assessment</span>
+          <span class="small">193 / 200 successful episodes</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid" aria-label="Detailed trial outcomes">
+      <article class="card span-12">
+        <p class="eyebrow">Trial sequence</p>
+        <h2>Outcome by stage</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Trial</th>
+                <th>Condition</th>
+                <th>Result</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mono">T1</span></td>
+                <td>Baseline on M6</td>
+                <td><span class="score">71.88%</span></td>
+                <td>Established the starting benchmark level.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">T2</span></td>
+                <td>Full-radius fresh PPO</td>
+                <td><span class="score bad">Negative result</span></td>
+                <td>Did not produce a viable campaign improvement.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">T3</span></td>
+                <td>Geometry-conditioned</td>
+                <td><span class="score bad">Negative result</span></td>
+                <td>Did not recover performance under the target conditions.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">T4</span></td>
+                <td>Training attempts</td>
+                <td><span class="score bad">Zero training success</span></td>
+                <td>Confirmed the search path had stalled with no effective learning signal.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">T5</span></td>
+                <td>Transfer learning</td>
+                <td><span class="score good">125/128 = 97.66%</span></td>
+                <td>Recovered the campaign and demonstrated the strongest practical outcome.</td>
+              </tr>
+              <tr>
+                <td><span class="mono">Final</span></td>
+                <td>Protected assessment</td>
+                <td><span class="score good">193/200 = 96.5%</span></td>
+                <td>Confirmed the final policy quality under the protected benchmark.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid" aria-label="Interpretation and analysis">
+      <article class="card span-6 warning">
+        <p class="eyebrow">Interpretation</p>
+        <h3>Why the campaign is considered improved</h3>
+        <p>
+          The campaign trajectory is not defined by a single failed run. The negative T2 and T3 outcomes were
+          informative but not decisive. T4 then demonstrated the cost of continuing down an unsuccessful training path.
+          T5 reversed that direction by using transfer learning and recovered a strong result at 97.66%.
+        </p>
+        <p>
+          When the protected assessment later confirmed 193/200 wins, the evidence pointed to a stable final policy,
+          not a failed intervention chain. That supports the conclusion that the inquiry-process changes improved the campaign.
+        </p>
+      </article>
+
+      <article class="card span-6 accent">
+        <p class="eyebrow">Closure conclusion</p>
+        <h3>OI-003 and OI-004 did not cause the failure</h3>
+        <p>
+          The negative outcomes were already present in the underlying campaign search path; the final intervention did not
+          destroy the policy. Instead, the measured evidence shows that both OI-003 and OI-004 improved campaign behavior,
+          helped the search recover, and supported the successful transfer-learning effort that led to the final protected assessment.
+        </p>
+        <p>
+          In plain terms: <strong>the campaign ended stronger than it started, and the policy failure was not caused by the OI-003/OI-004 changes.</strong>
+        </p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      Campaign report closed for <span class="mono">896c230a-0ff1-4105-8ab7-1691a09c5482</span> on 2026-10-09.
+    </footer>
+  </main>
+</body>
+</html>

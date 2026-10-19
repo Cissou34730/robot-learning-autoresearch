@@ -1,0 +1,429 @@
+"""Architecture guards for the static scenario boundary.
+
+The generic AutoResearch core must depend on `robot_learning.scenario` and
+nothing else that is specific to the current research problem. These guards are
+human-owned and stay independent of whichever learning method is active.
+"""
+
+import ast
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from robot_learning import scenario
+from robot_learning.scenario.evaluation import summarize_research_evaluations
+from robot_learning.training import research_config
+from robot_learning.training.research_config import load_experiment_config
+from runner import repository as runner_repository
+from runner.build_brief import render_research_brief
+
+ROOT = Path(__file__).resolve().parents[2]
+
+# Derived, never listed: a guard must follow the Runner when a responsibility
+# moves into a new module instead of silently guarding nothing.
+RUNNER_MODULES = (
+    *sorted(
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "runner").glob("*.py")
+        if path.name != "__init__.py"
+    ),
+)
+
+
+def runner_sources() -> dict[str, str]:
+    return {
+        relative: (ROOT / relative).read_text(encoding="utf-8")
+        for relative in RUNNER_MODULES
+    }
+
+
+SCENARIO_EVALUATION_FIELDS = (
+    "failed_episode_progress",
+    "failure_diagnostics",
+    "longest_consecutive_steps",
+    "best_window_inside_steps",
+    "best_window_excess_cm",
+    "distance_trace_cm",
+    "target_radius_cm",
+    "target_angle_degrees",
+    "required_steps",
+    "reward_components",
+    "held_steps",
+    # Current reward component names; none of them is a generic contract.
+    "closeness",
+    "hold_progress",
+    "outside_band",
+    "hold_complete",
+    "action_cost",
+)
+
+# Every place a standard research evaluation panel could be re-declared.
+RESEARCH_EVALUATION_PANEL_MODULES = (
+    "robot_learning/evaluate.py",
+    "robot_learning/scenario/evaluation.py",
+    "runner/build_brief.py",
+    *RUNNER_MODULES,
+)
+
+GENERIC_CORE_MODULES = (
+    "robot_learning/train.py",
+    "robot_learning/evaluate.py",
+    "robot_learning/play.py",
+    "robot_learning/training/algorithms.py",
+    "robot_learning/training/candidate_checkpoint_callback.py",
+    "robot_learning/training/normalization.py",
+    "robot_learning/training/progress.py",
+    "robot_learning/training/research_config.py",
+    "runner/build_brief.py",
+    *RUNNER_MODULES,
+)
+
+FORBIDDEN_MODULES = frozenset(
+    {
+        "robot_learning.environments.reach_env",
+        "robot_learning.rewards.reach_reward",
+        "robot_learning.training.observations",
+        "contracts.robots.two_joint_arm",
+        "benchmark",
+        "benchmark.final_benchmark",
+        "benchmark.final_contract",
+        "benchmark.metrics",
+        "benchmark.reference_contract",
+        "benchmark.reference_evaluation",
+        "contracts.task_spec",
+    }
+)
+SCENARIO_OWNING_MODULES = frozenset(
+    {
+        "robot_learning.scenario.environment",
+        "robot_learning.training.environment",
+        "robot_learning.scenario.evaluation",
+        "benchmark.adapters.final_benchmark",
+        "robot_learning.scenario.progress",
+        "benchmark.adapters.task_reference",
+        "robot_learning.scenario.viewer",
+    }
+)
+
+# Only used to assert that generic surfaces name *no* learning algorithm.
+KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
+
+# The scenario package and the protected benchmark import each other through the
+# shared observation contract; each must be a valid first import.
+IMPORT_CYCLE_ENTRY_POINTS = (
+    "benchmark.final_benchmark",
+    "benchmark.reference_evaluation",
+    "robot_learning.scenario",
+    "benchmark.adapters.final_benchmark",
+    "robot_learning.scenario.observations",
+)
+
+
+def mentions(text: str, word: str) -> bool:
+    return re.search(rf"\b{word}\b", text, flags=re.IGNORECASE) is not None
+
+
+def imported_modules(path: Path) -> list[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    modules: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            modules.append(node.module)
+    return modules
+
+
+def module_level_imports(path: Path) -> list[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    modules: list[str] = []
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            modules.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            modules.append(node.module)
+    return modules
+
+
+def test_scenario_initializer_exposes_no_scientific_or_protected_api():
+    assert not hasattr(scenario, "__all__")
+    assert not any(
+        name
+        in {
+            "evaluate_final_model",
+            "evaluate_research_model",
+            "evaluate_task_reference_model",
+            "make_training_env",
+            "make_training_viewer_callback",
+            "render_training_progress_metric",
+            "summarize_research_evaluations",
+            "task_reference_panel",
+            "watch_scenario_policy",
+        }
+        for name in vars(scenario)
+    )
+
+
+@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+def test_generic_core_has_no_scenario_specific_imports(relative_path):
+    for module in imported_modules(ROOT / relative_path):
+        assert module not in FORBIDDEN_MODULES, (
+            f"{relative_path} imports scenario-specific module {module}"
+        )
+        if module.startswith("robot_learning.scenario"):
+            assert module in SCENARIO_OWNING_MODULES, (
+                f"{relative_path} uses an unknown scenario import {module}"
+            )
+
+
+@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+def test_generic_core_has_no_physics_engine_imports(relative_path):
+    for module in imported_modules(ROOT / relative_path):
+        assert module != "mujoco" and not module.startswith("mujoco."), (
+            f"{relative_path} depends on the scenario physics engine via {module}"
+        )
+
+
+def test_generic_core_may_only_use_the_scenario_package():
+    users = [
+        path
+        for path in GENERIC_CORE_MODULES
+        if any(
+            module.startswith("robot_learning.scenario")
+            for module in imported_modules(ROOT / path)
+        )
+    ]
+    assert set(users) == {
+        "robot_learning/train.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/play.py",
+        "runner/console.py",
+    }
+    for relative_path in users:
+        assert all(
+            module in SCENARIO_OWNING_MODULES
+            for module in imported_modules(ROOT / relative_path)
+            if module.startswith("robot_learning.scenario")
+        )
+    # The compact-context builder needs no scenario code at all.
+    assert "runner/build_brief.py" not in users
+
+
+def test_the_repository_has_a_single_research_brief():
+    assert not (ROOT / "robot_learning" / "scenario" / "brief.py").exists()
+    assert (ROOT / "robot_learning" / "scenario" / "progress.py").exists()
+
+
+def test_research_evaluation_panel_is_a_single_orchestration_setting():
+    literal = re.compile(rf"\b{research_config.RESEARCH_EVALUATION_EPISODES}\b")
+    for relative_path in RESEARCH_EVALUATION_PANEL_MODULES:
+        source = (ROOT / relative_path).read_text(encoding="utf-8")
+        assert not literal.search(source), (
+            f"{relative_path} duplicates the standard evaluation panel size"
+        )
+
+    assert "default=RESEARCH_EVALUATION_EPISODES" in (
+        ROOT / "robot_learning" / "evaluate.py"
+    ).read_text(encoding="utf-8")
+    assert "research_config.RESEARCH_EVALUATION_EPISODES" in (
+        ROOT / "runner" / "execution.py"
+    ).read_text(encoding="utf-8")
+
+
+def test_runner_reads_the_live_training_metric_only_through_the_boundary():
+    sources = runner_sources()
+
+    assert any(
+        "render_training_progress_metric" in source for source in sources.values()
+    )
+    for relative, source in sources.items():
+        assert "success_rate" not in source, relative
+
+
+def test_normalization_never_reaches_for_the_scenario():
+    normalization = ROOT / "robot_learning" / "training" / "normalization.py"
+    scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
+
+    # The scenario depends on this helper, so any import back would cycle.
+    assert "contracts.policy_runtime" in module_level_imports(scenario_evaluation)
+    assert "robot_learning.scenario" not in imported_modules(normalization)
+    # Rebuilding policy preprocessing must not construct the training environment.
+    assert "make_training_env" not in normalization.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("module_name", IMPORT_CYCLE_ENTRY_POINTS)
+def test_scenario_and_benchmark_import_in_any_order(module_name):
+    """A fresh interpreter, so no suite may depend on pytest collection order."""
+    completed = subprocess.run(
+        [sys.executable, "-c", f"import {module_name}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr[-2000:]
+
+
+@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+def test_generic_core_does_not_interpret_scenario_evaluation_fields(relative_path):
+    source = (ROOT / relative_path).read_text(encoding="utf-8")
+
+    for field in SCENARIO_EVALUATION_FIELDS:
+        assert field not in source, f"{relative_path} interprets {field}"
+
+
+def test_scenario_owns_the_evaluation_summary():
+    sources = runner_sources()
+    scenario_source = (
+        ROOT / "robot_learning" / "scenario" / "evaluation.py"
+    ).read_text(encoding="utf-8")
+
+    assert "def summarize_research_evaluations" in scenario_source
+    for relative, source in sources.items():
+        assert "summarize_research_evaluations" not in source, relative
+        assert "def summarize_evaluations" not in source, relative
+
+
+def test_task_success_threshold_is_not_generic_configuration():
+    config_source = (
+        ROOT / "robot_learning" / "training" / "research_config.py"
+    ).read_text(encoding="utf-8")
+
+    assert "98" not in config_source
+    assert "SUCCESS_TARGET" not in config_source
+    for relative, source in runner_sources().items():
+        assert "98" not in source, relative
+    assert not hasattr(research_config, "RESEARCH_SUCCESS_TARGET_PERCENT")
+
+
+def test_ordinary_research_evaluation_ignores_the_final_threshold():
+    import robot_learning.scenario.evaluation as scenario_evaluation
+    from benchmark import final_contract
+
+    assert final_contract.FINAL_SUCCESS_PERCENT == 98.0
+    assert not hasattr(scenario_evaluation, "FINAL_SUCCESS_PERCENT")
+    for module in imported_modules(
+        ROOT / "robot_learning" / "scenario" / "evaluation.py"
+    ):
+        assert module == "benchmark.paired_evidence" or not module.startswith(
+            "benchmark"
+        ), module
+
+    summary = summarize_research_evaluations(
+        [
+            {
+                "episodes": episodes,
+                "seed": seed,
+                "success_percent": 100 * successes / episodes,
+                "episode_results": [
+                    {
+                        "episode": episode,
+                        "episode_seed": seed + episode,
+                        "success": episode < successes,
+                    }
+                    for episode in range(episodes)
+                ],
+            }
+            for seed, episodes, successes in [(1, 100, 98), (1000, 1000, 979)]
+        ]
+    )
+
+    assert "seeds_passing_98_percent" not in summary
+    assert summary["worst_seed_success_percent"] == 97.9
+
+
+def test_compact_context_leads_with_protected_human_goal(monkeypatch, tmp_path):
+    (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
+    (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
+    state = runner_repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        human_goal={
+            "source": "contracts/scenario.md",
+            "summary": "The campaign objective is a learned policy with at least 98% official success.",
+        },
+        last_verdict="candidate selected",
+    )
+    (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr("runner.build_brief.RESEARCH_DIR", tmp_path)
+
+    brief = render_research_brief()
+
+    assert "## Human goal" in brief
+    assert "campaign objective is a learned policy" in brief
+    assert "## Best evidence relative to the goal" in brief
+    assert "## Current goal gap" in brief
+    assert "seeds passing" not in brief.lower()
+    assert "failed episodes" not in brief.lower()
+
+
+def test_runtime_configuration_carries_no_reward():
+    config = load_experiment_config()
+    assert "reward" not in config
+
+    persisted = json.loads(
+        (ROOT / "robot_learning" / "training" / "current_params.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert persisted == config
+
+
+def test_scenario_reward_is_code_not_configuration():
+    source = (ROOT / "robot_learning" / "training" / "reward.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "current_params" not in source
+    assert "load_experiment_config" not in source
+    assert "research_config" not in source
+
+
+def test_scenario_code_stays_algorithm_independent():
+    for path in (ROOT / "robot_learning" / "scenario").glob("*.py"):
+        source = path.read_text(encoding="utf-8")
+        for algorithm_name in KNOWN_ALGORITHM_NAMES:
+            assert not mentions(source, algorithm_name), path.name
+
+
+def test_every_runner_module_is_human_owned():
+    """Splitting the enforcement mechanism must never hand a piece of it away."""
+    from runner import protocol as runner_protocol
+
+    for relative in RUNNER_MODULES:
+        assert runner_protocol.is_protected_source(relative), relative
+        assert not runner_protocol.is_researcher_owned(relative), relative
+
+
+def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):
+    from runner import protocol as runner_protocol
+
+    monkeypatch.setattr(
+        "runner.repository.require_resolvable_commit", lambda _commit: None
+    )
+    monkeypatch.setattr(
+        "runner.repository.scientific_delta",
+        lambda _commit: [
+            "robot_learning/training/reward.py",
+            "robot_learning/scenario/observations.py",
+        ],
+    )
+    monkeypatch.setattr(
+        "runner.repository.tracked_at_commit",
+        lambda _commit, _path: True,
+    )
+
+    plan = runner_protocol.plan_recipe_paths("abc123")
+
+    assert plan["restore"] == [
+        "robot_learning/training/reward.py",
+        "robot_learning/scenario/observations.py",
+    ]
+    assert plan["remove_created"] == []

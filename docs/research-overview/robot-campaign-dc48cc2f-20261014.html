@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Campaign dc48cc2f passed its official test. This report explains the result, code errors, recorded costs and later code review.">
+  <title>Campaign dc48cc2f: result, code and cost</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1120px; margin: auto; padding: 32px 24px 64px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
+    h2 { font-size: 1.55rem; line-height: 1.3; margin-bottom: 12px; }
+    h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    p + p { margin-top: 8px; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font: .88em Consolas, "Courier New", Courier, monospace; overflow-wrap: anywhere; }
+    button { font: inherit; padding: 8px 12px; background: var(--cp-surface); color: var(--cp-text); border: 1px solid var(--cp-border); border-radius: .625rem; cursor: pointer; }
+    button:hover { border-color: var(--cp-accent); }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .eyebrow { color: var(--cp-accent); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .intro { font-size: 1.12rem; max-width: 850px; margin-top: 16px; }
+    .muted, .small { color: var(--cp-text-muted); }
+    .small { font-size: .86rem; }
+    .snapshot { margin-top: 12px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 24px 0; padding: 12px 16px; background: var(--cp-bg-elevated); border: 1px solid var(--cp-border); border-radius: .625rem; }
+    section { margin-top: 36px; }
+    .grid { display: grid; gap: 16px; }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { padding: 20px; background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 16px; box-shadow: 0 1px 2px var(--cp-border); min-width: 0; }
+    .metric { font-size: clamp(1.5rem, 3.5vw, 2.2rem); line-height: 1.2; font-weight: 700; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+    .ok { color: var(--cp-success); }
+    .bad { color: var(--cp-danger); }
+    .note { padding: 16px 20px; background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; margin-top: 16px; }
+    .table-wrap { overflow-x: auto; margin-top: 16px; }
+    table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--cp-border); text-align: left; vertical-align: top; }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); }
+    tbody tr:last-child td { border-bottom: 0; }
+    .bar-row { margin: 16px 0; }
+    .bar-label { display: flex; justify-content: space-between; gap: 16px; font-size: .92rem; }
+    .bar { height: 12px; margin-top: 8px; background: var(--cp-surface-soft); border-radius: .625rem; overflow: hidden; }
+    .bar span { display: block; height: 100%; background: var(--cp-accent); border-radius: .625rem; }
+    .bar.reference span { background: var(--cp-text-muted); }
+    .steps { padding-left: 24px; }
+    li + li { margin-top: 8px; }
+    details { margin-top: 16px; border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); }
+    summary { padding: 12px 16px; cursor: pointer; font-weight: 600; }
+    .details-body { padding: 0 16px 16px; }
+    dl { display: grid; grid-template-columns: 140px 1fr; gap: 12px 16px; }
+    dt { font-weight: 600; }
+    dd { margin: 0; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--cp-border); }
+    @media (max-width: 800px) { .four, .two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px) { main { padding: 24px 16px 48px; } .four, .two { grid-template-columns: 1fr; } dl { grid-template-columns: 1fr; gap: 4px; } }
+    @media print { button, nav { display: none; } main { max-width: none; padding: 0; } .card { box-shadow: none; } .table-wrap { overflow: visible; } tr, .card { break-inside: avoid; } details .details-body { display: block; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="top"><a href="robot-learning-overview-20261002.html">Project overview</a><button id="theme-toggle" type="button">Change theme</button></div>
+      <p class="eyebrow">Campaign dc48cc2f / final report</p>
+      <h1>The policy passed.<br>One silent code error remained.</h1>
+      <p class="intro">The final policy passed 196 of 200 official test cases. The code needed fewer source repairs than the previous campaign.</p>
+      <p class="intro">But fewer repairs did not mean correct code. A wrong angle calculation survived the coder's checks and PI review.</p>
+      <p class="snapshot small">Report date: <time datetime="2026-10-14">14 October 2026</time>. Campaign: <code>dc48cc2f-7672-4843-9be3-94851fc35aed</code>.</p>
+      <p class="small">Campaign time: 13 October, 18:01 to 23:04 CEST. This report does not assess the new campaign <code>d205479e</code>.</p>
+      <nav aria-label="Report sections"><a href="#result">Result</a><a href="#science">Policy progress</a><a href="#code">Code quality</a><a href="#cost">Cost</a><a href="#review">Later code review</a><a href="#limits">Limits</a><a href="#sources">Sources</a></nav>
+    </header>
+
+    <section id="result" aria-labelledby="result-title">
+      <h2 id="result-title">1. Official result</h2>
+      <div class="grid four">
+        <div class="card"><p class="metric ok">196 / 200</p><p>Official successes.</p><p class="small">Four cases failed.</p></div>
+        <div class="card"><p class="metric">98.0%</p><p>Exactly the required minimum.</p><p class="small">This is a pass, not a safety margin.</p></div>
+        <div class="card"><p class="metric">3 runs</p><p>362,496 executed training steps.</p><p class="small">The campaign used two inquiries.</p></div>
+        <div class="card"><p class="metric">45.506525</p><p>Recorded AI usage, in AIU.</p><p class="small">This excludes later reviewer trials.</p></div>
+      </div>
+      <div class="note">
+        <p><strong>Selected model:</strong> <code>T3:checkpoint-90112</code>.</p>
+        <p>The two-joint arm must reach targets 6 to 20 cm from its base, over all angles.</p>
+        <p>It must stay within 1 cm of each target for two continuous seconds. At the official timing, this means 100 steps.</p>
+        <p>The official test uses 200 fixed cases. The policy needs at least 196 successes. Development results do not add to this count.</p>
+      </div>
+    </section>
+
+    <section id="science" aria-labelledby="science-title">
+      <h2 id="science-title">2. How the policy progressed</h2>
+      <ol class="steps">
+        <li><strong>T1 was the reference.</strong> It learned on the outer target range. Its full-range development score was 115 of 160 cases.</li>
+        <li><strong>T2 learned on the full range.</strong> It improved the inner range. It lost some performance in the outer range.</li>
+        <li><strong>T3 continued from T2.</strong> The PI changed the reward to support the hold. The measured model recovered outer-range performance.</li>
+      </ol>
+      <div class="grid two" style="margin-top:16px">
+        <article class="card">
+          <h3>First matched test: M4</h3>
+          <p>Both models faced the same 160 cases.</p>
+          <div class="bar-row"><div class="bar-label"><span>T1 reference</span><strong>115/160 &middot; 71.875%</strong></div><div class="bar reference"><span style="width:71.875%"></span></div></div>
+          <div class="bar-row"><div class="bar-label"><span>T2</span><strong>154/160 &middot; 96.25%</strong></div><div class="bar"><span style="width:96.25%"></span></div></div>
+          <p class="small">T2 won 44 cases that T1 failed. T1 won five cases that T2 failed.</p>
+        </article>
+        <article class="card">
+          <h3>Fresh matched test: M10</h3>
+          <p>This test used a different set of 160 cases.</p>
+          <div class="bar-row"><div class="bar-label"><span>T2 reference</span><strong>153/160 &middot; 95.625%</strong></div><div class="bar reference"><span style="width:95.625%"></span></div></div>
+          <div class="bar-row"><div class="bar-label"><span>T3, step 90,112</span><strong>158/160 &middot; 98.75%</strong></div><div class="bar"><span style="width:98.75%"></span></div></div>
+          <p class="small">T3 won five cases that T2 failed. T2 won no cases that this T3 model failed.</p>
+        </article>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <caption>What the range results show</caption>
+          <thead><tr><th scope="col">Test</th><th scope="col">Target range</th><th scope="col">Reference</th><th scope="col">Candidate</th><th scope="col">Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>M4</td><td>6 to less than 14 cm</td><td>T1: 46/90</td><td>T2: 90/90</td><td>The inner range improved.</td></tr>
+            <tr><td>M4</td><td>14 to 20 cm</td><td>T1: 69/70</td><td>T2: 64/70</td><td>The outer range became worse.</td></tr>
+            <tr><td>M10, analyzed in M11</td><td>6 to less than 10 cm</td><td>T2: 52/53</td><td>T3: 52/53</td><td>The measured result stayed the same.</td></tr>
+            <tr><td>M10, analyzed in M11</td><td>10 to less than 14 cm</td><td>T2: 34/34</td><td>T3: 34/34</td><td>The measured result stayed the same.</td></tr>
+            <tr><td>M10, analyzed in M11</td><td>14 to less than 17 cm</td><td colspan="2">T3: 41/41</td><td>The final model completed every case in this group.</td></tr>
+            <tr><td>M10, analyzed in M11</td><td>17 to 20 cm</td><td colspan="2">T3: 31/32</td><td>One case failed in this group.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:12px">M11 analyzed M10's files. It was not another independent policy test.</p>
+      <div class="note">
+        <p>T3's two development failures differed. One case never entered the target area. One case entered but did not complete the hold.</p>
+        <p>Recorded hold interruptions fell from nine for T2 to one for the selected T3 model on this panel.</p>
+        <p>The final T3 checkpoint also scored 158/160. The PI selected the earlier measured checkpoint, not the last checkpoint by default.</p>
+        <p><strong>Cause remains uncertain.</strong> These tests compare complete models. They do not isolate the effect of the reward, exposure range or transfer method.</p>
+      </div>
+    </section>
+
+    <section id="code" aria-labelledby="code-title">
+      <h2 id="code-title">3. Fewer repairs did not prove correct code</h2>
+      <p>The campaign made seven coding calls. They covered five distinct completed assignments, one interrupted attempt and one source repair.</p>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th scope="col">Assignment</th><th scope="col">What happened</th></tr></thead>
+          <tbody>
+            <tr><td>Full-range training</td><td>The source and proposed check worked without a recorded correction.</td></tr>
+            <tr><td>Research diagnostics</td><td>The PI corrected check arguments. A silent angle error remained in the source.</td></tr>
+            <tr><td>Comparison analysis</td><td>The checker expected a wrong answer. The coder repaired it. The PI also corrected check arguments.</td></tr>
+            <tr><td>Hold diagnostics</td><td>The first attempt did not return normally. A new attempt completed. A wrong check invocation failed before corrected arguments worked.</td></tr>
+            <tr><td>Hold reward</td><td>The source worked after the PI corrected the proposed check arguments.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid two" style="margin-top:16px">
+        <article class="card">
+          <h3>The checker expected the wrong answer</h3>
+          <p>The coder wrote a small script to check the comparison analysis.</p>
+          <p>Its artificial targets were at 6, 10, 14, 17 and 20 cm.</p>
+          <p>The group from 6 cm to less than 10 cm contained one failed case.</p>
+          <p>The correct result was one case and zero successes. The checker expected two cases and one success.</p>
+          <p>Correct analysis code therefore failed the check. The campaign repaired this checker.</p>
+        </article>
+        <article class="card">
+          <h3>The angle error did not cause an exception</h3>
+          <p>The code calculated joint angles for each target.</p>
+          <p>Some calculated angles fell outside the joint limits. An equivalent angle for the same pose fell inside the limits.</p>
+          <p>The code did not choose that valid angle before it calculated the limit margin.</p>
+          <p>It could report a valid target pose as outside the joint limits.</p>
+          <p>The checks missed this error. It remained in the campaign's final diagnostic source.</p>
+        </article>
+      </div>
+      <div class="note">
+        <p><strong>The official pass remains valid.</strong> The wrong target-angle margin was a diagnostic value. It did not determine official success.</p>
+        <p>But it weakened explanations about which target poses the joint limits blocked.</p>
+        <p>The error concerns calculated target angles. It does not justify changes to measured joint positions.</p>
+      </div>
+      <details>
+        <summary>Other recorded code problems</summary>
+        <div class="details-body">
+          <p>Five of six completed coder reports included a module name or a complete invocation inside the check arguments.</p>
+          <p>Runner already selects the module. The arguments must contain only separate flags and values.</p>
+          <p>The PI corrected several proposals before execution. One proposal reached Runner unchanged and stopped M7.</p>
+          <p>Two of eleven attempted measurements failed. Nine completed. Failed operations record execution history, not scientific evidence.</p>
+          <p>The interrupted coding attempt recorded a wait of about four hours. The runtime warned that a response did not arrive within 1,800 seconds.</p>
+          <p>This does not show four hours of active model work. The cause of the long wait remains unknown.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="cost" aria-labelledby="cost-title">
+      <h2 id="cost-title">4. Recorded cost</h2>
+      <p>AIU is the runtime's unit of AI usage. It is not a dollar price. Training compute has no recorded price here.</p>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th scope="col">Role</th><th scope="col">Usage records</th><th scope="col">AIU</th><th scope="col">Input tokens</th><th scope="col">Output tokens</th></tr></thead>
+          <tbody>
+            <tr><td>Principal Investigator</td><td>8</td><td>34.164290</td><td>6,431,609</td><td>68,215</td></tr>
+            <tr><td>Coder</td><td>7</td><td>11.342235</td><td>851,873</td><td>54,354</td></tr>
+            <tr><td><strong>Total</strong></td><td><strong>15</strong></td><td><strong>45.506525</strong></td><td><strong>7,283,482</strong></td><td><strong>122,569</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:12px">Input totals include repeated context and cached input. These totals are not all new text.</p>
+      <p class="small">The source repair used 0.797306 AIU. The interrupted attempt used 0.609162 AIU. Both amounts are already inside the total.</p>
+      <div class="card table-wrap">
+        <table>
+          <caption>Comparison with the previous completed campaign</caption>
+          <thead><tr><th scope="col">Recorded fact</th><th scope="col">Previous: 5ff87d6b</th><th scope="col">This campaign: dc48cc2f</th></tr></thead>
+          <tbody>
+            <tr><td>Official result</td><td>195/200 &middot; 97.5% &middot; fail</td><td>196/200 &middot; 98.0% &middot; pass</td></tr>
+            <tr><td>Inquiries</td><td>4</td><td>2</td></tr>
+            <tr><td>Training runs</td><td>4</td><td>3</td></tr>
+            <tr><td>Coding calls</td><td>17</td><td>7</td></tr>
+            <tr><td>Source repair calls</td><td>9</td><td>1</td></tr>
+            <tr><td>Total AIU</td><td>102.595910</td><td>45.506525</td></tr>
+            <tr><td>Source repair AIU</td><td>7.398846</td><td>0.797306</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <p>The total recorded AI usage fell by 57.089385 AIU, or about 55.6%.</p>
+        <p>The campaigns did different amounts of work. This comparison does not prove that shorter coder instructions caused the cost reduction.</p>
+        <p>Fewer source repairs also do not prove fewer silent logic errors.</p>
+      </div>
+    </section>
+
+    <section id="review" aria-labelledby="review-title">
+      <h2 id="review-title">5. Independent review came after this campaign</h2>
+      <p>Three models reviewed the same three original deliveries. They received the same instructions, with no hints about the known errors.</p>
+      <p>These trials were separate from the campaign. Their costs are not inside 45.506525 AIU.</p>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th scope="col">Reviewer</th><th scope="col">Reasoning level</th><th scope="col">Angle error</th><th scope="col">Wrong checker</th><th scope="col">Reviewer-only AIU</th></tr></thead>
+          <tbody>
+            <tr><td>Sonnet 5.5</td><td>High</td><td class="ok">Found</td><td class="ok">Found</td><td>46.234810</td></tr>
+            <tr><td>Haiku 5.5</td><td>High</td><td class="bad">Missed</td><td class="ok">Found</td><td>5.494677</td></tr>
+            <tr><td>GPT-6 Luna</td><td>Max</td><td class="ok">Found</td><td class="bad">Missed</td><td>5.146284</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:12px">The three reviewers used 56.875771 AIU in total. This excludes preparation and the maintainer assistant's analysis.</p>
+      <div class="grid two" style="margin-top:16px">
+        <article class="card">
+          <h3>What the trials establish</h3>
+          <p>Independent review found the silent angle error that the coder and PI missed.</p>
+          <p>Sonnet found both known code errors. Luna cost less and found the silent angle error.</p>
+          <p>Haiku also reported a wrong argument problem in a delivery whose arguments were correct.</p>
+          <p>Luna found two further gaps in checks for mismatched or impossible input records.</p>
+          <p>The trials do not establish that those input cases occurred in the campaign.</p>
+        </article>
+        <article class="card">
+          <h3>What is now implemented</h3>
+          <p>The maintainer selected GPT-6 Luna with max reasoning.</p>
+          <p>Each completed coding delivery now receives a fresh read-only review.</p>
+          <p>The reviewer receives the original request, actual changes and proposed checks.</p>
+          <p>The PI decides corrections through the original coder. The reviewer does not edit code or approve science.</p>
+          <p>Reviewer usage has a separate record. Commit <code>4e2c84d</code> contains this change.</p>
+        </article>
+      </div>
+      <p class="small" style="margin-top:12px">A later SDK check read two files with verified Luna/max and used 0.087176 AIU. This small check does not predict campaign review costs.</p>
+      <p class="small">The new reviewer was not part of this campaign. Its effect on later campaign code remains to be measured.</p>
+    </section>
+
+    <section id="limits" aria-labelledby="limits-title">
+      <h2 id="limits-title">6. What remains uncertain</h2>
+      <ul>
+        <li>The policy passed exactly at the required score. The 200 cases do not prove success on every future target.</li>
+        <li>The final development panel still had one no-entry failure and one failed hold.</li>
+        <li>The tested transfer used one training seed. This report does not establish repeatability across seeds.</li>
+        <li>Large actions during the hold remained a recorded concern. The final score does not explain that behavior.</li>
+        <li>The comparisons support complete-model performance. They do not isolate why the changes worked.</li>
+        <li>The target-angle error weakens part of the geometry analysis. A policy pass does not remove that code defect.</li>
+      </ul>
+      <details>
+        <summary>Terms in this report</summary>
+        <div class="details-body">
+          <dl>
+            <dt>Policy</dt><dd>The learned controller that selects the robot's actions.</dd>
+            <dt>Checkpoint</dt><dd>A saved policy from one point during training.</dd>
+            <dt>Episode or case</dt><dd>One attempt to reach a target and complete the hold.</dd>
+            <dt>Matched test</dt><dd>A test in which two policies face the same cases.</dd>
+            <dt>Inquiry</dt><dd>A recorded scientific question with a result at closure.</dd>
+            <dt>Code check</dt><dd>A script that compares code outputs with expected results.</dd>
+            <dt>Limit margin</dt><dd>The distance between a joint angle and the nearest joint limit.</dd>
+            <dt>Silent error</dt><dd>Code that runs but calculates or reports a wrong value.</dd>
+          </dl>
+        </div>
+      </details>
+    </section>
+
+    <section id="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">7. Sources and boundaries</h2>
+      <p>Campaign records at commit <code>4e2c84d</code> preserve this completed campaign before the later reset.</p>
+      <ul>
+        <li><a href="https://github.com/Cissou34730/robot-learning-autoresearch/blob/4e2c84d4989d35640c54aeb97cbbcd91c303c3e8/runner/state/research_state.json">Frozen campaign state</a>: selected model, official pass and final decision.</li>
+        <li><a href="https://github.com/Cissou34730/robot-learning-autoresearch/blob/4e2c84d4989d35640c54aeb97cbbcd91c303c3e8/campaigns/results.jsonl">Completed operation records</a>: M4, M10, M11, training records and E13.</li>
+        <li><a href="../../reports/session_usage/dc48cc2f-7672-4843-9be3-94851fc35aed.jsonl">Local campaign usage records</a>: exact PI and coder costs.</li>
+        <li><a href="https://github.com/Cissou34730/robot-learning-autoresearch/blob/4e2c84d4989d35640c54aeb97cbbcd91c303c3e8/robot_learning/scenario/evaluation.py">Final campaign diagnostic source</a>: target-angle calculation.</li>
+        <li><a href="../harness-experiment-log.md">Harness change log</a>: instruction changes, later review trials and approved reviewer implementation.</li>
+        <li><a href="../../contracts/scenario.md">Human task contract</a>: target range, hold duration and official score.</li>
+      </ul>
+      <p class="small">Raw measurement files stay local. Git records their paths and checksums, not their full contents. A reset backup preserves the local files.</p>
+      <p class="small">This report separates measured results, code findings and later implementation checks. It does not execute a campaign operation.</p>
+    </section>
+    <footer><a href="robot-learning-overview-20261002.html">Return to the project overview</a><p class="small">Prepared on 14 October 2026. The new campaign has separate evidence and costs.</p></footer>
+  </main>
+  <script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+      const theme = document.documentElement.getAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
+    });
+  </script>
+</body>
+</html>

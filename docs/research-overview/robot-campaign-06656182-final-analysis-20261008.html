@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Final analysis of robot-learning campaign 06656182-d7f0-4011-898d-2b870e8a2a54.">
+  <title>Campaign 06656182 final analysis</title>
+  <script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: var(--cp-link);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover {
+      color: var(--cp-accent-hover);
+    }
+
+    :focus-visible {
+      outline: 0.2rem solid var(--cp-accent);
+      outline-offset: 0.2rem;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      z-index: 20;
+      padding: 0.5rem 0.75rem;
+      background: var(--cp-accent);
+      color: var(--cp-accent-fg);
+      border-radius: 0.625rem;
+      transform: translateY(-180%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .page {
+      width: min(76rem, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 4rem;
+    }
+
+    .hero {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      background: var(--cp-bg-elevated);
+      border: 1px solid var(--cp-border);
+      border-top: 0.375rem solid var(--cp-accent);
+      border-radius: 1rem;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--cp-accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 19ch;
+      margin: 0.5rem 0 0.75rem;
+      font-size: clamp(2rem, 6vw, 4rem);
+      letter-spacing: -0.035em;
+    }
+
+    h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+    }
+
+    h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0 0 0.75rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    code,
+    .mono {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .lede {
+      max-width: 70ch;
+      color: var(--cp-text-soft);
+      font-size: 1.08rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .pill.pass {
+      background: var(--cp-accent-soft);
+      color: var(--cp-accent);
+      border-color: var(--cp-accent);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      background: var(--cp-panel-strong);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    section {
+      scroll-margin-top: 5rem;
+      margin-top: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      grid-column: span 12;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 1rem;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
+    }
+
+    .card.accent {
+      background: var(--cp-accent-soft);
+      border-color: var(--cp-accent);
+    }
+
+    .card.warning {
+      border-left: 0.4rem solid var(--cp-warning);
+    }
+
+    .card.success {
+      border-left: 0.4rem solid var(--cp-success);
+    }
+
+    .span-4 {
+      grid-column: span 4;
+    }
+
+    .span-8 {
+      grid-column: span 8;
+    }
+
+    .stat {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--cp-accent);
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--cp-text-muted);
+      font-size: 0.86rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th,
+    td {
+      padding: 0.75rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--cp-border);
+    }
+
+    th {
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .callout {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--cp-accent-soft);
+      border: 1px solid var(--cp-accent);
+      border-radius: 0.625rem;
+    }
+
+    .muted {
+      color: var(--cp-text-muted);
+    }
+
+    .small {
+      font-size: 0.86rem;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.35rem;
+    }
+
+    li + li {
+      margin-top: 0.5rem;
+    }
+
+    dt {
+      margin-top: 0.75rem;
+      font-weight: 700;
+    }
+
+    dd {
+      margin: 0.15rem 0 0;
+    }
+
+    footer {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      color: var(--cp-text-muted);
+      border-top: 1px solid var(--cp-border);
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 800px) {
+      .span-4,
+      .span-8 {
+        grid-column: span 12;
+      }
+
+      nav {
+        position: static;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 1rem, 76rem);
+        padding-top: 0.5rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--cp-surface);
+        font-size: 10.5pt;
+      }
+
+      .page {
+        width: 100%;
+        padding: 0;
+      }
+
+      nav,
+      .skip-link {
+        display: none;
+      }
+
+      .hero,
+      .card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      a {
+        color: var(--cp-text);
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to report</a>
+  <main class="page" id="main">
+    <header class="hero">
+      <p class="eyebrow">Final campaign analysis · 8 October 2026</p>
+      <h1>The campaign reached the goal, exactly at the threshold</h1>
+      <p class="lede">
+        Campaign <code>06656182-d7f0-4011-898d-2b870e8a2a54</code> passed the official assessment.
+        The assessed checkpoint scored 98.0% on 200 episodes.
+        The goal was at least 196 successes in 200 episodes, which is 98%.
+      </p>
+      <div class="meta" aria-label="Campaign summary">
+        <span class="pill pass">Official result: passed</span>
+        <span class="pill">T5:checkpoint-120832</span>
+        <span class="pill">98.0%</span>
+        <span class="pill">6 training runs</span>
+        <span class="pill">About 85 minutes</span>
+      </div>
+    </header>
+
+    <nav aria-label="Report sections">
+      <ul>
+        <li><a href="#result">Result</a></li>
+        <li><a href="#happened">What happened</a></li>
+        <li><a href="#tests">Interventions</a></li>
+        <li><a href="#reading">Reviewer's reading</a></li>
+        <li><a href="#cost">Cost</a></li>
+        <li><a href="#limits">What this campaign does not show</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+    </nav>
+
+    <section id="result" class="grid" aria-labelledby="result-title">
+      <article class="card span-8 success">
+        <p class="eyebrow">Result</p>
+        <h2 id="result-title">The campaign passed. The margin was zero.</h2>
+        <p>
+          The goal is to reach the target and hold the tool inside 1 cm for 2 seconds.
+          The contract for this task is in <code>contracts/scenario.md</code>.
+        </p>
+        <p>
+          The campaign started on 7 October 2026 at 19:45 UTC.
+          The official assessment passed at 21:10 UTC.
+          The run lasted about 85 minutes.
+        </p>
+        <p>
+          The campaign used 23 operations.
+          These were 6 training runs, 9 measurements, 5 inquiries, checkpoints, one model-role assignment (E22), and one campaign conclusion (E23).
+          Each training run had a ceiling of 120,000 steps and used about 120,832 steps.
+        </p>
+        <p>
+          The PI used 5 of 15 allowed inquiries.
+          It closed each inquiry question before it opened the next one.
+        </p>
+      </article>
+      <aside class="card span-4 accent" aria-label="Official assessment details">
+        <h2>Official endpoint</h2>
+        <div class="stat">
+          <strong>98.0%</strong>
+          <span>The protected 200-episode official assessment. The goal is at least 196 of 200.</span>
+        </div>
+        <div class="stat">
+          <strong>5 of 15</strong>
+          <span>Inquiries used. Ten inquiries stayed unused.</span>
+        </div>
+        <p class="small muted">
+          The prompt version was the R8 instruction stack.
+          The PI-authority sentence was absent in this run. The maintainer restored it later.
+        </p>
+      </aside>
+    </section>
+
+    <section id="happened" class="card" aria-labelledby="happened-title">
+      <p class="eyebrow">Timeline</p>
+      <h2 id="happened-title">What happened</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Operation</th>
+              <th scope="col">What it tested</th>
+              <th scope="col">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>T1, M1</td>
+              <td>A fresh baseline policy. Training used targets 14 to 20 cm from the base. M1 used a held-out 100-episode panel.</td>
+              <td>73%. All 48 targets at 14 cm or more succeeded. Failures were below 14 cm. In 22 cases the tool never reached tolerance. In 5 cases it reached tolerance and did not hold.</td>
+            </tr>
+            <tr>
+              <td>I1, T2, M2</td>
+              <td>Does full coverage of the 6 to 20 cm range fix the failures? T2 trained from scratch on the full range.</td>
+              <td>T2 scored 35%. T1 scored 73% on the same panel. Coverage alone did not help.</td>
+            </tr>
+            <tr>
+              <td>M3</td>
+              <td>A trace of how T1 fails.</td>
+              <td>Failures were non-entries near the base and interrupted holds. Strong actions also occurred in successes. Strong actions alone do not explain the failures.</td>
+            </tr>
+            <tr>
+              <td>I2, T3, M4, M5</td>
+              <td>Does one bounded reward term for velocity-aware settling help? T3 started from T1.</td>
+              <td>T3 scored 94%. T1 scored 71% on matched seeds. On a fresh panel T3 scored 94% and T1 scored 76%.</td>
+            </tr>
+            <tr>
+              <td>I3, T4, M6</td>
+              <td>Does a doubled velocity penalty help?</td>
+              <td>T4 scored 85%. T3 scored 95%. The larger penalty hurt. The PI rejected T4.</td>
+            </tr>
+            <tr>
+              <td>M7</td>
+              <td>A sweep of actuator response across radii and both branches.</td>
+              <td>The response was strong and reached its limit. Actuator authority is not the limit.</td>
+            </tr>
+            <tr>
+              <td>I4, T5, M8</td>
+              <td>The T3 recipe with the original 0.25 coefficient. The near-target velocity gate grew from 2 cm to 3 cm. This should make the policy brake earlier.</td>
+              <td>T5 scored 95%. T3 scored 93%.</td>
+            </tr>
+            <tr>
+              <td>I5, T6, M9</td>
+              <td>Does Cartesian end-effector speed work better than joint speed as the velocity signal?</td>
+              <td>T6 scored 90%. T5 scored 98% on the same panel. The PI rejected T6.</td>
+            </tr>
+            <tr>
+              <td>E22, E23</td>
+              <td>The PI assigned T5 as best-known. The PI then requested the official assessment.</td>
+              <td>The official assessment passed with 98.0%.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        The scores in this table come from development panels, except the final row.
+        Different panels have different seeds. Compare scores only inside one row.
+      </p>
+    </section>
+
+    <section id="tests" class="card" aria-labelledby="tests-title">
+      <p class="eyebrow">Interventions</p>
+      <h2 id="tests-title">Two interventions helped. Three did not.</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Inquiry</th>
+              <th scope="col">Change</th>
+              <th scope="col">Candidate</th>
+              <th scope="col">Reference</th>
+              <th scope="col">Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>I1</td>
+              <td>Full 6 to 20 cm range, trained from scratch</td>
+              <td>T2: 35%</td>
+              <td>T1: 73%</td>
+              <td>Rejected</td>
+            </tr>
+            <tr>
+              <td>I2</td>
+              <td>One bounded velocity-aware settling reward term</td>
+              <td>T3: 94%</td>
+              <td>T1: 71%</td>
+              <td>Large gain. The PI kept T3.</td>
+            </tr>
+            <tr>
+              <td>I3</td>
+              <td>Doubled velocity penalty</td>
+              <td>T4: 85%</td>
+              <td>T3: 95%</td>
+              <td>Rejected</td>
+            </tr>
+            <tr>
+              <td>I4</td>
+              <td>Original 0.25 coefficient. Velocity gate widened from 2 cm to 3 cm.</td>
+              <td>T5: 95%</td>
+              <td>T3: 93%</td>
+              <td>Small gain. The PI kept T5.</td>
+            </tr>
+            <tr>
+              <td>I5</td>
+              <td>Cartesian end-effector speed instead of joint speed</td>
+              <td>T6: 90%</td>
+              <td>T5: 98%</td>
+              <td>Rejected</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>Plain summary:</strong>
+        The biggest gain came from one small reward change in I2.
+        The later changes moved the result by a few points or made it worse.
+      </div>
+    </section>
+
+    <section id="reading" class="card warning" aria-labelledby="reading-title">
+      <p class="eyebrow">Reviewer's reading</p>
+      <h2 id="reading-title">What the record may mean</h2>
+      <p class="muted">
+        This section is the reviewer's reading of the record.
+        It is not proof.
+      </p>
+      <ol>
+        <li>Each inquiry changed one thing. Each inquiry compared the change with a reference on the same seeds. This makes the comparisons easy to read.</li>
+        <li>Three of five interventions (T2, T4, T6) were negative. The PI rejected them cleanly. The PI did not read more into them than the numbers allowed.</li>
+        <li>Panel noise is real. T1 scored 71% to 76% on different panels. T5 scored 95% on one panel and 98% on another. A 98% official result with zero margin is a pass. It is not strong proof of a margin.</li>
+        <li>The I3 and I4 inquiry questions have identical text. This may point to the inquiry-control issue OI-002. The record does not settle this.</li>
+        <li>The startup trained first (T1) and measured at once. The handoff was sound. This agrees with the OI-001 retrospective, which found 4 of 5 startups sound.</li>
+        <li>Ten of 15 allowed inquiries stayed unused. Each inquiry question was bounded, tested against a matched reference, and closed explicitly.</li>
+      </ol>
+    </section>
+
+    <section id="cost" class="card" aria-labelledby="cost-title">
+      <p class="eyebrow">Cost</p>
+      <h2 id="cost-title">The repository does not record wall time or token cost</h2>
+      <p>
+        This report gives no cost numbers for tokens or money.
+        The repository did not measure them.
+      </p>
+      <p>
+        One difference is visible.
+        T6 took about 25 minutes.
+        The other training runs took about 5 minutes each.
+      </p>
+    </section>
+
+    <section id="limits" class="card" aria-labelledby="limits-title">
+      <p class="eyebrow">Limits</p>
+      <h2 id="limits-title">What this campaign does not show</h2>
+      <ul>
+        <li>It shows one official run. No repeat run exists.</li>
+        <li>It has no counterfactual. It does not show what another PI, prompt, or seed would have done.</li>
+        <li>It passed at the threshold. A second official run could score below 98%.</li>
+        <li>It does not show that the R8 prompt caused the pass.</li>
+        <li>It does not measure how much of the result came from the T3 reward change and how much came from T5.</li>
+      </ul>
+    </section>
+
+    <section id="glossary" class="card" aria-labelledby="glossary-title">
+      <p class="eyebrow">Glossary</p>
+      <h2 id="glossary-title">Terms in this report</h2>
+      <dl>
+        <dt>Inquiry</dt>
+        <dd>A temporary question that can change the route to the goal. One inquiry can contain several training runs and measurements.</dd>
+        <dt>Checkpoint</dt>
+        <dd>This report uses the word for saved model weights from a training run, such as T5:checkpoint-120832. The <code>checkpoint</code> operation is different. It saves a session record.</dd>
+        <dt>Best-known</dt>
+        <dd>The model role for the strongest candidate that completed evidence supports. The PI must assign it before an official assessment.</dd>
+        <dt>Matched panel</dt>
+        <dd>A set of test episodes with fixed seeds. Two candidates run the same episodes. The scores are then comparable.</dd>
+        <dt>Official assessment</dt>
+        <dd>The protected 200-episode test. It ends the campaign with a pass or a fail.</dd>
+      </dl>
+    </section>
+
+    <footer>
+      <p>
+        Evidence sources: <code>campaigns/results.jsonl</code> and
+        <code>runner/state/research_state.json</code>.
+      </p>
+      <p>
+        This report uses Simplified Technical English rules in Strict mode.
+        It does not claim certified ASD-STE100 compliance.
+      </p>
+      <p><a href="robot-learning-overview-20261002.html#campaigns-heading">Back to the overview</a></p>
+    </footer>
+  </main>
+</body>
+</html>
