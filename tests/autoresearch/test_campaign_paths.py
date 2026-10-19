@@ -2,7 +2,7 @@
 
 import pytest
 
-from runner import paths
+from runner import paths, repository, reset_campaign
 
 
 @pytest.fixture
@@ -62,3 +62,40 @@ def test_single_folder_mode_keeps_the_existing_layout(monkeypatch, tmp_path):
         paths.logical_path(tmp_path / "robot_learning/train.py")
         == "robot_learning/train.py"
     )
+
+
+def test_repository_paths_use_logical_ownership(split_roots):
+    harness, campaign = split_roots
+    assert (
+        repository.resolve_repo_path("contracts/task_spec.py")
+        == harness / "contracts/task_spec.py"
+    )
+    assert (
+        repository.resolve_repo_path("robot_learning/train.py")
+        == campaign / "robot_learning/train.py"
+    )
+    assert (
+        repository.repo_relative_path(harness / "contracts/task_spec.py")
+        == "contracts/task_spec.py"
+    )
+
+
+def test_split_campaign_publication_never_pushes(split_roots, monkeypatch):
+    monkeypatch.setattr(
+        repository,
+        "git",
+        lambda *_args: pytest.fail("No network Git operation is allowed"),
+    )
+    repository.push_head()
+
+
+def test_split_reset_does_not_require_a_remote(split_roots, monkeypatch):
+    calls = []
+
+    def git(*args):
+        calls.append(args)
+        return ""
+
+    monkeypatch.setattr(reset_campaign, "git", git)
+    reset_campaign.ensure_clean_repository()
+    assert not any("remote" in call for call in calls)

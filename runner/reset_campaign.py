@@ -234,7 +234,8 @@ def ensure_clean_repository(
     *, clean: bool = False, recipe_ref: str | None = None
 ) -> None:
     git("symbolic-ref", "--quiet", "--short", "HEAD")
-    git("remote", "get-url", "origin")
+    if not paths.SPLIT:
+        git("remote", "get-url", "origin")
     if clean:
         clean_campaign_changes(recipe_ref=recipe_ref)
     if str(git("status", "--porcelain", "--untracked-files=all")).strip():

@@ -230,11 +230,7 @@ PENDING_PROGRESS = {
 
 
 def repo_relative_path(path: Path) -> str:
-    root = paths.ROOT.resolve()
-    try:
-        return path.resolve().relative_to(root).as_posix()
-    except ValueError as error:
-        raise ValueError(f"path is outside the repository: {path}") from error
+    return paths.logical_path(path)
 
 
 def resolve_repo_path(value: str) -> Path:
@@ -242,10 +238,8 @@ def resolve_repo_path(value: str) -> Path:
     relative = Path(normalized)
     if not normalized or relative.is_absolute() or PureWindowsPath(normalized).drive:
         raise ValueError(f"repository path must be relative: {value}")
-    root = paths.ROOT.resolve()
-    resolved = (root / relative).resolve()
-    if resolved != root and root not in resolved.parents:
-        raise ValueError(f"path is outside the repository: {value}")
+    resolved = paths.locate(relative).resolve()
+    paths.logical_path(resolved)
     return resolved
 
 
@@ -515,6 +509,9 @@ def _retryable_push_error(error: RuntimeError) -> bool:
 
 
 def push_head() -> None:
+    # Split campaign repositories are local, even if a remote is added later.
+    if paths.SPLIT:
+        return
     try:
         commit = git("rev-parse", "HEAD").strip()
         destination = git("symbolic-ref", "--quiet", "HEAD").strip()

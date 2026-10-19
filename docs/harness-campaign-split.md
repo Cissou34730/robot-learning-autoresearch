@@ -42,8 +42,8 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
   Without it, the campaign root equals the harness root (single-folder mode,
   used by existing tests).
 - **Git:** campaign commits, deltas, recipe restoration and baseline lookup run
-  in the campaign repository. Publication pushes only when the campaign
-  repository has an `origin` remote; the local campaign repository has none.
+  in the campaign repository. Split-mode publication never pushes, even if a
+  remote is accidentally added. The local campaign repository has no remotes.
 - **Python:** the campaign root is placed first on `sys.path` and `PYTHONPATH`
   so `robot_learning` resolves from the campaign repository while `contracts`,
   `benchmark` and `runner` resolve from the harness. `uv` always runs with the
@@ -75,4 +75,5 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 - [x] Harness snapshot `c085e98` pushed to `origin/harness`.
 - [x] Stage 1: separate roots and logical path mapping. Targeted validation:
   55 passed; three baseline-reset failures match the saved pre-refactor baseline.
-- [ ] Stage 2
+- [x] Stage 2: campaign Git working directory and local-only publication.
+- [ ] Stage 3
