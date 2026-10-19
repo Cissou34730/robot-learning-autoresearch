@@ -251,8 +251,6 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
         "restore": list(recipe),
         "remove_created": ["robot_learning/scenario/later_extension.py"],
     }
-    backup = root / ".git" / "research-reset-backups" / "operation"
-    backup.mkdir(parents=True)
     publications: list[tuple[str, tuple[str, ...]]] = []
 
     monkeypatch.setattr(
@@ -266,26 +264,11 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     )
     monkeypatch.setattr(reset_campaign, "scientific_plan", lambda commit: plan)
     monkeypatch.setattr(reset_campaign, "verify_recipe_source", lambda commit: None)
-    monkeypatch.setattr(
-        reset_campaign,
-        "new_operation",
-        lambda mode, commit, targets: {
-            "mode": mode,
-            "source_commit": commit,
-            "targets": targets,
-        },
-    )
-    monkeypatch.setattr(
-        reset_campaign, "create_backup", lambda targets, operation: backup
-    )
-    monkeypatch.setattr(reset_campaign, "update_operation", lambda *_args: None)
     monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
     monkeypatch.setattr(
         reset_campaign,
         "publish_reset_changes",
-        lambda _backup, _operation, _message, scope, purpose: publications.append(
-            (purpose, tuple(scope))
-        ),
+        lambda _message, scope, purpose: publications.append((purpose, tuple(scope))),
     )
     monkeypatch.setattr(reset_campaign, "git", lambda *_args, **_kwargs: "new-head\n")
 
@@ -299,15 +282,12 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
 
     monkeypatch.setattr(repository, "restore_paths", restore_paths)
 
-    campaign_id, resolved_source, returned_backup = reset_campaign.reset_fresh(
-        "strong-baseline"
-    )
+    campaign_id, resolved_source = reset_campaign.reset_fresh("strong-baseline")
 
     state = json.loads(
         (root / "runner/state/research_state.json").read_text(encoding="utf-8")
     )
     assert resolved_source == source
-    assert returned_backup == backup
     assert campaign_id == state["campaign"]["id"]
     assert state["schema_version"] == 6
     assert set(state) == repository.STATE_FIELDS
@@ -540,12 +520,52 @@ def test_invalid_baseline_target_is_rejected_before_backup(monkeypatch):
     )
     monkeypatch.setattr(
         reset_campaign,
-        "create_backup",
-        lambda *_args: pytest.fail("backup must not be created"),
+        "remove_path",
+        lambda *_args: pytest.fail("cleanup must not start"),
     )
 
     with pytest.raises(ValueError, match="outside the permitted scope"):
         reset_campaign.reset_baseline("source")
+
+
+def test_baseline_reset_restores_its_local_evaluation_without_a_backup(
+    monkeypatch, tmp_path
+):
+    _bind_paths(monkeypatch, tmp_path)
+    candidate = _candidate("f" * 64)
+    state = _prepared_source_state(candidate)
+    preserved = tmp_path / "campaigns/evaluations/source/panel.json"
+    stale = tmp_path / "campaigns/evaluations/other/stale.json"
+    for target, content in ((preserved, '{"panel": 1}\n'), (stale, "{}\n")):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
+    monkeypatch.setattr(
+        reset_campaign,
+        "verify_baseline_source",
+        lambda _commit: (
+            state,
+            candidate,
+            [],
+            {"parent": "source", "restore": [], "remove_created": []},
+        ),
+    )
+    monkeypatch.setattr(repository, "apply_recipe_restore", lambda _plan: None)
+    monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
+    monkeypatch.setattr(reset_campaign, "apply_restore", lambda *_args: None)
+    monkeypatch.setattr(reset_campaign, "publish_reset_changes", lambda *_args: None)
+    monkeypatch.setattr(reset_campaign, "git", lambda *_args, **_kwargs: "head\n")
+    monkeypatch.setattr(repository, "validate_research_state", lambda *_a, **_k: None)
+
+    campaign_id, source = reset_campaign.reset_baseline("source")
+
+    assert source == "source"
+    assert preserved.read_text(encoding="utf-8") == '{"panel": 1}\n'
+    assert not stale.exists()
+    written = json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+    assert written["campaign"]["id"] == campaign_id
+    assert written["model_roles"]["working"] == candidate["id"]
+    assert not list(tmp_path.rglob("research-reset-backups"))
 
 
 def test_baseline_cli_validates_source_before_cleaning(monkeypatch):
@@ -554,7 +574,6 @@ def test_baseline_cli_validates_source_before_cleaning(monkeypatch):
         "parse_args",
         lambda: reset_campaign.argparse.Namespace(
             mode="baseline",
-            recover=None,
             clean=True,
             recipe_ref=None,
             baseline_ref="source",
