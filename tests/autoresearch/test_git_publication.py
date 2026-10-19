@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pytest
 
-from runner import paths, repository
+from runner import paths, protocol, repository
 
 
 def _remove_readonly(function, value, error):
@@ -55,7 +55,9 @@ def git_repository(monkeypatch):
         shutil.rmtree(root, onerror=_remove_readonly)
 
 
-def test_initialized_campaign_keeps_training_logs_local(git_repository):
+def test_initialized_campaign_keeps_generated_outputs_out_of_scientific_delta(
+    git_repository, monkeypatch
+):
     from tools.initialize_campaign import CAMPAIGN_GITIGNORE
 
     root = git_repository
@@ -65,16 +67,102 @@ def test_initialized_campaign_keeps_training_logs_local(git_repository):
     reward.write_text("VALUE = 1\n", encoding="utf-8")
     repository.git("add", "--", ".")
     repository.git("commit", "--quiet", "-m", "initial recipe")
-    log = root / "campaigns/training_logs/campaign-one/t1-attempt-1.log"
-    log.parent.mkdir(parents=True)
-    log.write_text("completed training\n", encoding="utf-8")
+    monkeypatch.setattr(paths, "SPLIT", True)
+    ignored_outputs = [
+        "campaigns/training_logs/campaign-one/t1-attempt-1.log",
+        "campaigns/evaluations/campaign-one/research.json",
+        "campaigns/evaluations/campaign-one/reference.json",
+        "campaigns/evaluations/campaign-one/official.json",
+        "campaigns/evaluations/campaign-one/research.json.progress",
+        "campaigns/evaluations/campaign-one/research.json.progress.tmp",
+        "campaigns/evaluations/campaign-one/module.json",
+        "campaigns/evaluations/campaign-one/.module.json.pending",
+        "campaigns/brief.md",
+        "models/candidates/campaign-one/t1/model.zip",
+        "models/candidates/campaign-one/t1/candidate_manifest.json",
+        "models/candidates/campaign-one/t1/checkpoint-10/training_metrics.json",
+        "runner/state/last_train_summary.md",
+        "runner/state/last_evaluation.json",
+        "runner/state/GOAL_REACHED",
+        "runner/state/RECOVERY_PENDING",
+        "runner/state/RESTART_PENDING",
+        "pi_workspace/operation_request.json",
+        "reports/session_usage/campaign-one.jsonl",
+        ".copilot/opencode/catalogue.json",
+        ".copilot/opencode/session.json",
+        ".copilot/controller-stops/request.stop",
+        ".copilot/large-output/review.json",
+        "robot_learning/training/__pycache__/reward.pyc",
+    ]
+    for relative in ignored_outputs:
+        output = root / relative
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text("generated output\n", encoding="utf-8")
     reward.write_text("VALUE = 2\n", encoding="utf-8")
 
-    relative = log.relative_to(root).as_posix()
-    assert repository.git("check-ignore", "--", relative).strip() == relative
+    ignored = repository.git("check-ignore", "--", *ignored_outputs).splitlines()
+    assert set(ignored) == set(ignored_outputs)
+    assert all(
+        paths.locate(relative) == root / relative for relative in ignored_outputs
+    )
     assert repository.status_paths((".",)) == ["robot_learning/training/reward.py"]
-    assert repository.scientific_delta("HEAD") == ["robot_learning/training/reward.py"]
-    assert log.read_text(encoding="utf-8") == "completed training\n"
+    delta = repository.scientific_delta("HEAD")
+    protocol.validate_research_delta_ownership(delta)
+    assert delta == ["robot_learning/training/reward.py"]
+    assert all(
+        (root / relative).read_text(encoding="utf-8") == "generated output\n"
+        for relative in ignored_outputs
+    )
+
+
+def test_campaign_memory_publication_excludes_science_and_local_artifacts(
+    git_repository, monkeypatch
+):
+    from tools.initialize_campaign import CAMPAIGN_GITIGNORE
+
+    root = git_repository
+    (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
+    repository.git("add", "--", ".")
+    repository.git("commit", "--quiet", "-m", "initial campaign")
+    parent = repository.git("rev-parse", "HEAD").strip()
+    monkeypatch.setattr(paths, "SPLIT", True)
+    memory = [
+        "runner/state/research_state.json",
+        "campaigns/results.jsonl",
+        "campaigns/EXPERIMENTS.md",
+        "pi_workspace/scientific_model.md",
+        "campaigns/checkpoints/candidates/campaign-one/t1/checkpoint-10/model.zip",
+        "campaigns/checkpoints/candidates/campaign-one/t1/checkpoint-10/artifact.json",
+        "campaigns/checkpoints/candidates/campaign-one/t1/checkpoint-10/policy_runtime.pkl",
+        "campaigns/checkpoints/retained/campaign-one/best/model.zip",
+    ]
+    science = [
+        "robot_learning/training/reward.py",
+        "robot_learning/lab/diagnostic.py",
+    ]
+    local_artifacts = [
+        "campaigns/evaluations/campaign-one/panel.json",
+        "campaigns/training_logs/campaign-one/t1-attempt-1.log",
+    ]
+    for relative in memory + science + local_artifacts:
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("output\n", encoding="utf-8")
+
+    delta = repository.scientific_delta(parent)
+    protocol.validate_research_delta_ownership(delta)
+    assert delta == ["robot_learning/training/reward.py"]
+    assert set(repository.changed_runner_memory()) == set(memory)
+    assert repository.commit_runner_memory("complete operation")
+    committed = repository.committed_change_paths(parent)
+    assert set(committed) == set(memory)
+    assert set(repository.status_paths((".",))) == set(science)
+    assert all((root / relative).is_file() for relative in local_artifacts)
+
+    unexpected = "campaigns/unclassified.py"
+    (root / unexpected).write_text("not Runner output\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="human-owned or unclassified"):
+        protocol.validate_research_delta_ownership(repository.scientific_delta(parent))
 
 
 def test_large_publication_commits_only_requested_paths(git_repository):

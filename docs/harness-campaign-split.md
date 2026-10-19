@@ -108,6 +108,17 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 
 ## Post-split corrections
 
+- Audited the generated-file migration after the T1 log failure: training and
+  disposable model outputs; evaluation, reference, official, progress and
+  sealed module artifacts; Runner requests and markers; briefs; usage records;
+  SDK session/output files; durable state and candidate/retained checkpoints.
+  Real-Git regression coverage creates 24 ignored output paths, verifies their
+  physical campaign ownership, checks that only scientific edits enter the
+  scientific delta, and checks that memory publication commits only the eight
+  selected durable state/checkpoint paths. Unexpected campaign edits remain
+  rejected. Combined publication, campaign-boundary, split-path and Copilot
+  checks: 78 passed. No additional normal-output leak was found; this is not a
+  claim that every live lifecycle path has been exercised.
 - Restored the campaign initializer's missing `campaigns/training_logs/` ignore
   rule and explicitly classified that prefix as Runner memory. Without it,
   the first completed training left an untracked log that the next operation
