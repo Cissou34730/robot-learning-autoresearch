@@ -179,6 +179,70 @@ if (-not $caught -and $exitCode -ne {130 if mode == "exit130" else 0}) {{
     assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
+@pytest.mark.parametrize("reset_exit_code", [0, 1, 130])
+def test_reset_restores_harness_directory_for_chained_launch(tmp_path, reset_exit_code):
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to run reset and launcher")
+    harness = Path(__file__).resolve().parents[2]
+    campaign = tmp_path / "campaign"
+    (campaign / ".git").mkdir(parents=True)
+    exercise = tmp_path / "exercise-reset-location.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+Set-Location -LiteralPath '{harness}'
+$global:ResetCalled = $false
+$global:LaunchCalled = $false
+function uv {{
+    if ($args -contains 'runner.reset_campaign') {{
+        if ((Get-Location).Path -ne '{campaign}') {{
+            throw 'Reset must still execute in the campaign directory'
+        }}
+        if ($args -notcontains '--clean' -or
+            $args -notcontains 'baseline-distinct-episodes-v3') {{
+            throw 'Reset arguments were not preserved'
+        }}
+        $global:ResetCalled = $true
+        $global:LASTEXITCODE = {reset_exit_code}
+    }}
+    else {{
+        $global:LaunchCalled = $true
+        $global:LASTEXITCODE = 0
+    }}
+}}
+$caught = $false
+try {{
+    .\\reset_research.ps1 -CampaignRoot '{campaign}' -Mode Fresh -Clean `
+        -RecipeRef baseline-distinct-episodes-v3 -Force
+}}
+catch {{
+    if ($_.Exception.Message -notlike 'Research reset failed.*') {{ throw }}
+    $caught = $true
+}}
+if ($caught -ne ${str(reset_exit_code != 0).lower()}) {{
+    throw 'Reset exit status was not preserved'
+}}
+.\\run_research.ps1 -ListModels
+if (-not $global:ResetCalled -or -not $global:LaunchCalled) {{
+    throw 'The reset-then-launch sequence did not complete'
+}}
+if ((Get-Location).Path -ne '{harness}') {{
+    throw 'The reset-then-launch sequence changed the caller directory'
+}}
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
 def test_launcher_stop_helper_executes_the_cooperative_exit_contract(tmp_path):
     powershell = shutil.which("pwsh") or shutil.which("powershell")
     if powershell is None:

@@ -8,6 +8,12 @@ Run the script from the harness repository. `-CampaignRoot <path>` selects an
 independent campaign repository; the default is the sibling
 `robot-learning-campaigns` folder. Resets change and commit files only in that
 campaign repository. They do not reset or copy the harness.
+The reset script restores the calling terminal's original folder on success
+or failure, so it can be followed by a relative launcher command:
+
+```powershell
+.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1
+```
 
 References resolve in campaign Git. Initialize a new campaign repository once
 with `uv run python -m tools.initialize_campaign`; see [setup](../README.md).

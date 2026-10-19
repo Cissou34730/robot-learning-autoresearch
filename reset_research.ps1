@@ -24,7 +24,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-Set-Location $PSScriptRoot
+Push-Location -LiteralPath $PSScriptRoot
+try {
 
 if (-not $Force) {
     throw "Stop the campaign first and pass -Force to confirm the reset."
@@ -66,4 +67,8 @@ try {
 finally {
     $campaignMutex.ReleaseMutex()
     $campaignMutex.Dispose()
+}
+}
+finally {
+    Pop-Location
 }
