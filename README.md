@@ -8,7 +8,7 @@ The two repositories have different contents:
 
 | Repository | Contents | Publication |
 |---|---|---|
-| `robot-learning-harness` | Runner, contracts, benchmark, tools, tests, documentation and launch scripts | Branch `harness`, synced with GitHub `origin` |
+| `robot-learning-harness` | Runner, contracts, benchmark, tools, tests, documentation and launch scripts | Standalone repository; `harness` is the GitHub default branch |
 | `robot-learning-campaigns` | PI-owned `robot_learning/`, campaign state, models, logs and measurements | Independent local Git repository; campaign commits never push |
 
 Run commands from the harness folder. The launch and reset scripts default to
@@ -16,6 +16,8 @@ the sibling `robot-learning-campaigns` folder. Use `-CampaignRoot <path>` to
 select another initialized campaign repository. No harness merge or copy is
 needed when the harness evolves: subsequent operations use the current harness
 with the selected campaign's scientific code.
+The harness has its own Git storage and no longer depends on the old reference
+repository or its worktrees. Existing historical branches remain on GitHub.
 
 ### Initialize a campaign repository once
 

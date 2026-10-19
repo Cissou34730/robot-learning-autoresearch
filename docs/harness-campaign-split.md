@@ -9,7 +9,8 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
 - **Harness repository:** `C:\Users\cyril.beurier\code\robot-learning-harness`,
   branch `harness`, started as one root commit snapshot of `b01fb9a`. It holds
   the harness only and is pushed to GitHub `origin` after every validated
-  harness change.
+  harness change. It is now a standalone repository with its own `.git`
+  directory, and `harness` is the GitHub default branch.
 - **Campaign repository:** `C:\Users\cyril.beurier\code\robot-learning-campaigns`,
   a separate local Git repository with no GitHub remote. Campaign commits are
   never pushed anywhere.
@@ -107,6 +108,13 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 
 ## Post-split corrections
 
+- The maintainer confirmed a live campaign runs successfully in the separated
+  campaign repository.
+- With the campaign stopped, the harness was detached from the old worktree
+  storage without changing its code, environment or untracked files. Its own
+  Git storage contains only the new harness history. GitHub now defaults to
+  `harness`; old branches and the safeguard were retained without history
+  rewriting. The campaign repository still has no remotes.
 - Fixed preliminary contract reads using absolute campaign-root paths. The
   original split routed relative paths only; the view hook now routes missing
   absolute aliases before checking permissions, and scoped search uses the
