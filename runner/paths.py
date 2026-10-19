@@ -74,6 +74,19 @@ def logical_path(path: Path) -> str:
     raise ValueError(f"path is outside its owning repository: {path}")
 
 
+def python_environment(campaign_root: Path | None = None) -> dict[str, str]:
+    """Expose campaign science and harness packages to child interpreters."""
+    environment = os.environ.copy()
+    if SPLIT or campaign_root is not None:
+        root = campaign_root or ROOT
+        environment[CAMPAIGN_ROOT_ENV] = str(root)
+        entries = [str(root), str(HARNESS_ROOT)]
+        if environment.get("PYTHONPATH"):
+            entries.append(environment["PYTHONPATH"])
+        environment["PYTHONPATH"] = os.pathsep.join(entries)
+    return environment
+
+
 CAMPAIGNS_DIR = ROOT / "campaigns"
 PI_WORKSPACE_DIR = ROOT / "pi_workspace"
 RUNNER_STATE_DIR = ROOT / "runner" / "state"

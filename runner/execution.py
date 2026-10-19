@@ -99,6 +99,7 @@ def run_module(
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
         cwd=cwd or paths.ROOT,
+        env=paths.python_environment(),
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -117,6 +118,7 @@ def run_command(
     result = subprocess.run(
         list(command),
         cwd=cwd or paths.ROOT,
+        env=paths.python_environment(),
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -352,6 +354,7 @@ def train_candidate(
         process = subprocess.Popen(
             command,
             cwd=paths.ROOT,
+            env=paths.python_environment(),
             stdout=log_file,
             stderr=subprocess.STDOUT,
             text=True,
@@ -650,6 +653,7 @@ def evaluate_artifact(
         process = subprocess.Popen(
             command,
             cwd=paths.ROOT,
+            env=paths.python_environment(),
             stdout=stdout_file,
             stderr=stderr_file,
             text=True,

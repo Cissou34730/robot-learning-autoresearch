@@ -76,4 +76,7 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 - [x] Stage 1: separate roots and logical path mapping. Targeted validation:
   55 passed; three baseline-reset failures match the saved pre-refactor baseline.
 - [x] Stage 2: campaign Git working directory and local-only publication.
-- [ ] Stage 3
+- [x] Stage 3: campaign imports and child-interpreter environment; a real child
+  process resolves scientific code from the campaign and contracts/Runner from
+  the harness. Targeted checks: 42 passed; four unchanged lifecycle failures.
+- [ ] Stage 4

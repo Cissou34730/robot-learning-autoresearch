@@ -49,6 +49,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                 if not (checkout / name).resolve().is_relative_to(checkout):
                     raise ValueError("Unsafe archive member")
             contents.extractall(checkout)
+        (checkout / "contracts").mkdir(exist_ok=True)
         shutil.copyfile(
             paths.locate("contracts/policy_runtime.py"),
             checkout / "contracts/policy_runtime.py",
@@ -93,6 +94,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                 ),
             ],
             cwd=checkout,
+            env=paths.python_environment(checkout),
             check=True,
         )
         shutil.copytree(staging, destination)

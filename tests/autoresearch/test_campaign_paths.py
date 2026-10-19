@@ -1,5 +1,8 @@
 """Physical repository separation preserves logical paths and ownership."""
 
+import json
+from pathlib import Path
+
 import pytest
 
 from runner import paths, repository, reset_campaign
@@ -99,3 +102,24 @@ def test_split_reset_does_not_require_a_remote(split_roots, monkeypatch):
     monkeypatch.setattr(reset_campaign, "git", git)
     reset_campaign.ensure_clean_repository()
     assert not any("remote" in call for call in calls)
+
+
+def test_child_python_loads_campaign_science_and_harness_packages(
+    split_roots, monkeypatch
+):
+    from runner import execution
+
+    _, campaign = split_roots
+    # Use the actual harness for the runner and contracts packages.
+    monkeypatch.setattr(paths, "HARNESS_ROOT", Path(__file__).resolve().parents[2])
+    package = campaign / "robot_learning"
+    package.mkdir()
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (package / "probe.py").write_text(
+        "import json, robot_learning, runner, contracts\n"
+        "print(json.dumps([robot_learning.__file__, runner.__file__, contracts.__file__]))\n",
+        encoding="utf-8",
+    )
+    origins = json.loads(execution.run_module("robot_learning.probe"))
+    assert origins[0] == str(package / "__init__.py")
+    assert all(str(paths.HARNESS_ROOT) in origin for origin in origins[1:])

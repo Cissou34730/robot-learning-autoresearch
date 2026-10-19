@@ -586,6 +586,7 @@ def validate_restored_recipe() -> None:
             "import robot_learning.train; import robot_learning.scenario.environment",
         ],
         cwd=paths.ROOT,
+        env=paths.python_environment(),
         check=False,
         capture_output=True,
         text=True,
