@@ -248,12 +248,12 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">Current issue source: OI-001 to OI-037</h3>
+          <h3 style="margin-top: 12px">21 closed issues; six open investigations</h3>
           <ul>
-            <li>The harness log records current status for each issue.</li>
-            <li>A working implementation is not proof of a scientific improvement.</li>
-            <li>OI-037 records the fatal-conversation / active-session mismatch observed after the log migration failure.</li>
-            <li>No reset, automatic retry or new backend conversation is silently authorized by that issue.</li>
+            <li>The 19 October reconciliation closes 15 bounded fixes and retires obsolete OI-010. All 37 issue IDs remain visible.</li>
+            <li>Four behavioral changes are observed; one native error-recovery mechanism still needs real recovery evidence.</li>
+            <li>Open work is OI-006, OI-021, OI-024, OI-025, OI-026 and OI-037.</li>
+            <li>Engineering closure does not claim scientific success or authorize campaign recovery.</li>
           </ul>
           <p class="small"><a href="../harness-experiment-log.md">Read the source register</a>. <a href="#issues">Read the current summary</a>.</p>
         </article>
@@ -494,7 +494,7 @@
           <h3>Rules for the inquiry cap</h3>
           <p>The cap is 15 inquiries. It is a temporary execution limit.</p>
           <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
-          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is closed because the maintainer withdrew the removal proposal. The cap remains an accepted execution limit.</p>
+          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is withdrawn: the maintainer did not adopt the removal proposal. The cap remains an accepted execution limit.</p>
         </div>
       </div>
       <details style="margin-top: 16px">
@@ -551,10 +551,20 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Issue history and current follow-up</h2>
-      <p>The table below preserves the earlier OI-001 to OI-033 summary. The <a href="../harness-experiment-log.md#outstanding-issue-register">live tracker</a> now extends through OI-037, including large-JSON latency (OI-034), historical Git publication retries (OI-035), saved-controller execution contracts (OI-036), and fatal-conversation recovery (OI-037). Campaign publication no longer pushes in split mode.</p>
-      <p>The <a href="../harness-experiment-log.md">harness log</a> is the source for these states. Issue IDs are never reused.</p>
-      <p>A completed code change is not proof of a campaign improvement. The table keeps those two facts separate.</p>
+      <h2 id="issues-heading">Current issue register and remaining backlog</h2>
+      <p><strong>Reconciled 19 October 2026.</strong> This table covers all 37 IDs and matches the <a href="../harness-experiment-log.md#outstanding-issue-register">Markdown register</a>. Fifteen bounded repairs are newly closed; the obsolete protocol-log concern is retired, not described as repaired.</p>
+      <p>Recorded reproductions, regression checks or live use can close an engineering defect without another official assessment. Behavioral improvements remain observed where their broader effect is unsettled. Scientific success and causal attribution are separate claims.</p>
+      <div class="grid four" style="margin-bottom: 16px">
+        <article class="card metric-card"><p class="metric">21</p><p class="metric-label">Closed bounded defects</p></article>
+        <article class="card metric-card"><p class="metric">6</p><p class="metric-label">Open investigations</p></article>
+        <article class="card metric-card"><p class="metric">4</p><p class="metric-label">Implemented / observed</p></article>
+        <article class="card metric-card"><p class="metric">1</p><p class="metric-label">Native recovery unexercised</p></article>
+      </div>
+      <p class="small muted">The other five entries are one retired concern, two paused/proposed items and two withdrawn proposals. Counts include every ID once.</p>
+      <div class="note" style="margin-bottom: 16px">
+        <p><strong>Active priority:</strong> fatal-session recovery (OI-037), scientific-model framing (OI-021), fragmented measurements (OI-024), interpretation fidelity (OI-025), coding/review cost and clarification routing (OI-026), then the training allocation (OI-006). Diagnosis or design still precedes separately approved runtime changes.</p>
+        <p><strong>Observation cutoff:</strong> campaign <code>df7f6838</code> through E10. S1-S5 checkpointed, I1 and I2 closed, and no official assessment was recorded at that cutoff. These are dated observations, not a live monitor or evidence that fatal-session recovery works.</p>
+      </div>
       <div class="card table-wrap wide">
         <table>
           <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
@@ -562,39 +572,44 @@
             <tr><td>OI-001</td><td>The first action must connect to the scientific model.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-002</td><td>Inquiries need clear closing conditions.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-003</td><td>Conclusions must identify their supporting evidence.</td><td><span class="tag">Closed</span></td></tr>
-            <tr><td>OI-004</td><td>Select checkpoints from evidence, not their position in a run. The original defect is closed. A later instruction change remains unmeasured.</td><td><span class="tag">Original defect closed</span></td></tr>
-            <tr><td>OI-005</td><td>Compare the value of another inquiry with the value of the official test.</td><td><span class="tag">Change implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-006</td><td>Check whether the full startup budget is necessary.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-004</td><td>Evidence-based nomination is observed: M6 tests T1's late alternative and M7 selects a nonterminal T2 checkpoint. Not every checkpoint must be measured.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-005</td><td>Goal review weighs assessment against bounded work; I2 closes negatively. Final assessment/continuation calibration remains unsettled.</td><td><span class="tag">Implemented / observed</span></td></tr>
+            <tr><td>OI-006</td><td>Review the scientific and cost consequences of the 120,000-step training allocation, not the PI session deadline.</td><td><span class="tag">Open</span></td></tr>
             <tr><td>OI-007</td><td>Review the order of the role and goal in prompts.</td><td><span class="tag">Paused</span></td></tr>
-            <tr><td>OI-008</td><td>Reduce repeated context without hiding useful evidence.</td><td><span class="tag">Further change implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-009</td><td>Expose exact session and operation identities in submissions.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-010</td><td>Check protection of the old protocol log. The original concern is likely obsolete.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-008</td><td>Compact context is in use, with no compaction in finalized S1-S4. Longer-campaign growth and total cost still need observation.</td><td><span class="tag">Implemented / observed</span></td></tr>
+            <tr><td>OI-009</td><td>Exact session/operation bookkeeping works through five live checkpoints, E2 to E10. Fatal recovery is a different issue.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-010</td><td>Retire the obsolete protocol-log concern without claiming a new repair. Current maintainer-file controls belong to OI-011/OI-023.</td><td><span class="tag">Retired</span></td></tr>
             <tr><td>OI-011</td><td>Keep console paths clear and protect maintainer files.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-012</td><td>Permit separate publication of a frozen policy.</td><td><span class="tag">Proposal only</span></td></tr>
             <tr><td>OI-013</td><td>Remove the inquiry cap. The maintainer withdrew this proposal.</td><td><span class="tag">Withdrawn</span></td></tr>
-            <tr><td>OI-014</td><td>Separate measured model gains from claims about their cause.</td><td><span class="tag">Further change implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-015</td><td>Check the actual implementation of a method. Restore only exact selected source files.</td><td><span class="tag">Restore repair implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-014</td><td>The PI distinguishes sampler, instrumentation and saved-runtime changes and preserves causal limits. Direction revision after the failed candidate still needs observation.</td><td><span class="tag">Implemented / observed</span></td></tr>
+            <tr><td>OI-015</td><td>Recorded checks demonstrate exact-file restoration and provenance visibility. Closure does not guarantee every intended method is correctly implemented.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-016</td><td>Keep inquiry boundaries clear. Treat the next proposed question as revisable.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-017</td><td>Permit access to nested values in saved evidence.</td><td><span class="tag">Closed</span></td></tr>
-            <tr><td>OI-018</td><td>Make evidence and log queries clear, bounded and complete when requested.</td><td><span class="tag">Change implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-019</td><td>Prevent final results from appearing beside stale decision text.</td><td><span class="tag">Open, low priority</span></td></tr>
+            <tr><td>OI-018</td><td>Registered SDK checks and 43 inspected live evidence calls support the query-interface repair. One wrong query shape was explicitly rejected; no nested-budget mistake recurred.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-019</td><td>Recorded terminal rendering and passed/failed precedence cases demonstrate the corrected current goal gap while preserving the historical checkpoint.</td><td><span class="tag">Closed</span></td></tr>
             <tr><td>OI-020</td><td>A proposed general issue was not valid beyond its specific campaign.</td><td><span class="tag">Withdrawn</span></td></tr>
             <tr><td>OI-021</td><td>Remove task-specific assumptions from the initial scientific-model prompt after an impact review.</td><td><span class="tag">Open, high priority</span></td></tr>
-            <tr><td>OI-022</td><td>Return exact process exit codes without extra output values.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-023</td><td>Apply read restrictions before searches inspect files or return paths.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-024</td><td>Reduce fragmented diagnostics and repeated measurements.</td><td><span class="tag">Open, repair not approved</span></td></tr>
-            <tr><td>OI-025</td><td>Keep scientific summaries faithful to the recorded data.</td><td><span class="tag">Open, cause review deferred</span></td></tr>
-            <tr><td>OI-026</td><td>Compare the cost of coding context, review and checks.</td><td><span class="tag">Open, comparison required</span></td></tr>
-            <tr><td>OI-027</td><td>Report session errors and final status accurately.</td><td><span class="tag">Repair implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-028</td><td>Report publication failures after operation acceptance.</td><td><span class="tag">Repair implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-029</td><td>Use one typed operation envelope. Return clear structure errors.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-030</td><td>Keep the exact stored file scope for same-child corrections.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-031</td><td>Use exact saved artifact identities and compact record lookups.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-032</td><td>Permit selected reads from large JSON files without loading every value.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
-            <tr><td>OI-033</td><td>Retry the specified recoverable parent model error within the approved limit.</td><td><span class="tag">Implemented, effect unmeasured</span></td></tr>
+            <tr><td>OI-022</td><td>Exact-scalar process checks and real subsequent submissions demonstrate removal of stdin-write return contamination.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-023</td><td>Recorded root/mixed-scope/alias checks demonstrate pruning before search traversal and content reads. This is not a filesystem sandbox.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-024</td><td>The fragmented-instrumentation pattern recurred: M4 repeated M3's 16 seeds after adding missing endpoint-check fields. Preserve justified replication, but address avoidable reruns.</td><td><span class="tag">Open / repair not approved</span></td></tr>
+            <tr><td>OI-025</td><td>Current synthesis distinguishes 192 interruptions from 193 excursions, but the historical artifact-to-claim error still needs its RCA.</td><td><span class="tag">Open / RCA deferred</span></td></tr>
+            <tr><td>OI-026</td><td>Compare equivalent coding/review work and clarify why schema uncertainty still returns through coding before the PI. Faster inference is not a routing repair.</td><td><span class="tag">Open / comparison required</span></td></tr>
+            <tr><td>OI-027</td><td>Recorded cases demonstrate explicit SDK errors, failed exits and timeout/interruption outcomes. This closes reporting, not recovery.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-028</td><td>Recorded replacement-acceptance cases preserve PublicationError through exit code 3 and publication_fatal without replay.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-029</td><td>Registered dispatch rejects recorded malformed envelopes before submission; live operations and checkpoints use the accepted wrapper.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-030</td><td>Actual-handler checks and live same-child corrections demonstrate immutable scope retention. Clarification efficiency remains OI-026.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-031</td><td>Fingerprint-bound inputs and compact metadata lookups pass recorded checks and are used by live PI sessions and analyses.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-032</td><td>Recorded 38.7-77.8 MB artifacts return exact selected values; 482 assertions cover the bounded reader, integrity and cleanup.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-033</td><td>The retry hook is checked, but recovery from the matching real backend error has not been exercised. The original request-body cause remains unknown.</td><td><span class="tag">Implemented / native recovery unexercised</span></td></tr>
+            <tr><td>OI-034</td><td>The original eleven-request large-artifact replay drops from 394.499s to 46.498s with matching recorded outputs. Cold validation and bounded eviction remain intentional.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-035</td><td>Thirty-three scoped cases demonstrate the approved bounded Git retry policy, not a repair of GitHub's server. Split campaigns do not push.</td><td><span class="tag">Closed</span></td></tr>
+            <tr><td>OI-036</td><td>I2 targets shared saved PolicyIO and M7 executes the same T2 candidate in research and protected task-reference paths. Behavior agreement still needs observation.</td><td><span class="tag">Implemented / observed</span></td></tr>
+            <tr><td>OI-037</td><td>Reconcile a fatal backend conversation with Runner's still-active durable session without replaying completed work. A Fresh reset is not recovery.</td><td><span class="tag">Open / observed after migration failure</span></td></tr>
           </tbody>
         </table>
       </div>
+      <p class="small muted" style="margin-top: 16px"><strong>Outside the numbered register:</strong> request-progress visibility and remaining-budget/checkpoint guidance remain diagnosed needs. Targeted PI system-message customization and the named-sections context tool remain planned in the <a href="../copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Provider migration is already implemented. None of these entries authorizes a runtime change or campaign operation.</p>
       <details style="margin-top: 16px">
         <summary>Prompt-stack review R1 to R8</summary>
         <div class="details-body">
@@ -623,7 +638,14 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
-        <h3 style="margin-top: 0">19 October: repository split and migration corrections</h3>
+        <h3 style="margin-top: 0">19 October: evidence-backed issue closure</h3>
+        <ul>
+          <li>Close OI-004/009/015/018/019/022/023/027/028/029/030/031/032/034/035 on their bounded reproduction, regression or live-use evidence; retire obsolete OI-010 without claiming a repair.</li>
+          <li>Record OI-005/008/014/036 as implemented/observed and retain OI-033's native-recovery observation requirement. Keep six actual investigations open.</li>
+          <li>Live evidence is bounded to <code>df7f6838</code> through E10. Preserve prior campaign records and all 37 IDs; do not equate engineering closure with scientific effectiveness.</li>
+          <li>Only the tracker and this overview change. No runtime, PI source, campaign state or operation changes.</li>
+        </ul>
+        <h3>19 October: repository split and migration corrections</h3>
         <ul>
           <li><code>c085e98</code> starts the harness history with a single snapshot of the old code, without campaign ancestry. Later commits implement the split. The standalone harness is now GitHub's default branch.</li>
           <li>PI-owned code and campaign state moved to a local repository initialized from a v3 Fresh recipe reset. Harness updates apply without merging into it.</li>
@@ -664,7 +686,7 @@
         <h3>10 October</h3>
         <ul>
           <li>OI-011 is closed as effective. Artifact evidence calls display short JSON Pointers, not filesystem paths. The original console and read controls are complete. A separate future defect in maintainer-file controls needs a new issue.</li>
-          <li>OI-013 is closed because the maintainer withdrew the removal proposal. The fifteen-inquiry pause remains an accepted execution limit after a saved checkpoint.</li>
+          <li>OI-013 is withdrawn, not an implemented cap-removal repair. The fifteen-inquiry pause remains an accepted execution limit after a saved checkpoint.</li>
           <li>OI-017 is closed effective after campaign <code>339736e0</code> showed that the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
           <li>OI-018 groups related evidence queries into one bounded request. Each query has its own traversal budget. Queries share result and output-byte budgets. Fair result allocation prevents one query from consuming the whole result budget. The reply identifies incomplete content and exhausted budgets.</li>
         </ul>
