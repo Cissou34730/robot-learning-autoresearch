@@ -4,11 +4,76 @@ Every Runner module reads these as attributes of this module rather than
 importing the values, so redirecting the Runner at a sandbox is a single
 rebinding here instead of one per module. The derived paths are independent
 constants: rebinding `ROOT` alone does not recompute them.
+
+`ROOT` is the campaign root: the repository holding PI-owned code and campaign
+evidence, where the Runner commits. `HARNESS_ROOT` holds the harness itself.
+`ROBOT_LEARNING_CAMPAIGN_ROOT` selects a separate campaign root; without it both
+are the same folder. Repository-relative paths form one logical namespace that
+`locate` maps to the owning root.
 """
 
-from pathlib import Path
+import os
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
-ROOT = Path(__file__).resolve().parent.parent
+CAMPAIGN_ROOT_ENV = "ROBOT_LEARNING_CAMPAIGN_ROOT"
+HARNESS_ROOT = Path(__file__).resolve().parent.parent
+ROOT = (
+    Path(os.environ[CAMPAIGN_ROOT_ENV]).resolve()
+    if os.environ.get(CAMPAIGN_ROOT_ENV)
+    else HARNESS_ROOT
+)
+SPLIT = ROOT != HARNESS_ROOT
+CAMPAIGN_OWNED_PREFIXES = (
+    "robot_learning",
+    "campaigns",
+    "pi_workspace",
+    "runner/state",
+    "models",
+    "reports",
+    ".copilot",
+)
+
+
+def is_campaign_owned(relative: str | Path) -> bool:
+    normalized = PurePosixPath(str(relative).replace("\\", "/")).as_posix()
+    return any(
+        normalized == prefix or normalized.startswith(f"{prefix}/")
+        for prefix in CAMPAIGN_OWNED_PREFIXES
+    )
+
+
+def locate(relative: str | Path) -> Path:
+    """Physical location of a repository-relative logical path."""
+    normalized = str(relative).replace("\\", "/")
+    logical = PurePosixPath(normalized)
+    if (
+        not normalized
+        or logical.is_absolute()
+        or PureWindowsPath(normalized).drive
+        or ".." in logical.parts
+        or ":" in normalized
+    ):
+        raise ValueError(f"repository path must be relative: {relative}")
+    relative = Path(*logical.parts)
+    if SPLIT and not is_campaign_owned(relative):
+        return HARNESS_ROOT / relative
+    return ROOT / relative
+
+
+def logical_path(path: Path) -> str:
+    """Logical name of a physical file, rejecting files in the wrong root."""
+    resolved = path.resolve()
+    roots = (ROOT, HARNESS_ROOT) if SPLIT else (ROOT,)
+    for root in roots:
+        try:
+            relative = resolved.relative_to(root.resolve()).as_posix()
+        except ValueError:
+            continue
+        if locate(relative).resolve() == resolved:
+            return relative
+    raise ValueError(f"path is outside its owning repository: {path}")
+
+
 CAMPAIGNS_DIR = ROOT / "campaigns"
 PI_WORKSPACE_DIR = ROOT / "pi_workspace"
 RUNNER_STATE_DIR = ROOT / "runner" / "state"

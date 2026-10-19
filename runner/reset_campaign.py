@@ -572,12 +572,14 @@ def apply_restore(commit: str, relative_paths: list[str]) -> None:
 
 
 def validate_restored_recipe() -> None:
-    if not (paths.ROOT / "pyproject.toml").is_file():
+    if not paths.locate("pyproject.toml").is_file():
         return
     result = subprocess.run(
         [
             "uv",
             "run",
+            "--project",
+            str(paths.locate("pyproject.toml").parent),
             "python",
             "-c",
             "import robot_learning.train; import robot_learning.scenario.environment",

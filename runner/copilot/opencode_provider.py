@@ -21,7 +21,9 @@ from copilot.session import (
     ModelSupportsOverride,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
+from runner import paths
+
+ROOT = paths.ROOT
 STATE_DIRECTORY = ROOT / ".copilot" / "opencode"
 CATALOG_URL = "https://models.opencode.ai/api.json"
 CATALOG_REFRESH_SECONDS = 24 * 60 * 60

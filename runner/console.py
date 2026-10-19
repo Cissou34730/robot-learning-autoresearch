@@ -13,6 +13,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from runner import paths
+
 _RESET = "\033[0m"
 _DIM = "\033[90m"
 _CYAN = "\033[1;96m"
@@ -21,7 +23,7 @@ _YELLOW = "\033[1;93m"
 _RED = "\033[1;91m"
 _WHITE = "\033[1;97m"
 _MAGENTA = "\033[1;95m"
-_ROOT = Path(__file__).resolve().parents[1]
+_ROOT = paths.ROOT
 _UUID = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
@@ -375,7 +377,8 @@ def _usage_rows(campaign_id: str, session_id: str | None = None) -> list[dict]:
         except json.JSONDecodeError:
             continue
         if (
-            session_id is None or row.get("session_id") == session_id
+            session_id is None
+            or row.get("session_id") == session_id
             or row.get("parent_session_id") == session_id
         ):
             rows.append(row)

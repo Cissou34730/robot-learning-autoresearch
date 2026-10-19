@@ -206,11 +206,15 @@ def declared_paths_exist(root: Path | None = None) -> list[str]:
         *MODEL_CONTAINED_RUNTIME_PATHS,
         *EVALUATION_RUNTIME_PATHS,
     }
-    missing = [relative for relative in declared if not (base / relative).is_file()]
+    missing = [
+        relative
+        for relative in declared
+        if not (base / relative if root else paths.locate(relative)).is_file()
+    ]
     missing.extend(
         prefix
         for prefix in PROTECTED_BENCHMARK_PREFIXES
-        if not (base / prefix).is_dir()
+        if not (base / prefix if root else paths.locate(prefix)).is_dir()
     )
     return sorted(missing)
 
@@ -1431,7 +1435,7 @@ def evaluation_semantics_paths() -> list[str]:
     included = [
         relative
         for relative in EVALUATION_RUNTIME_PATHS
-        if (paths.ROOT / relative).is_file()
+        if paths.locate(relative).is_file()
     ]
     root = paths.ROOT / EVALUATION_SEMANTICS_ROOT
     if not root.is_dir():
@@ -1455,7 +1459,7 @@ def evaluation_semantics_fingerprint() -> str:
     digest = hashlib.sha256()
     for relative in evaluation_semantics_paths():
         digest.update(relative.encode("utf-8"))
-        digest.update((paths.ROOT / relative).read_bytes())
+        digest.update(paths.locate(relative).read_bytes())
     return digest.hexdigest()[:12]
 
 

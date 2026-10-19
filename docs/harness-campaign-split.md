@@ -73,4 +73,6 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
 ## Progress
 
 - [x] Harness snapshot `c085e98` pushed to `origin/harness`.
-- [ ] Stage 1
+- [x] Stage 1: separate roots and logical path mapping. Targeted validation:
+  55 passed; three baseline-reset failures match the saved pre-refactor baseline.
+- [ ] Stage 2

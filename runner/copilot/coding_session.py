@@ -8,6 +8,7 @@ import json
 import time
 import uuid
 
+from runner import paths
 from runner.copilot.coding_contracts import (
     CODER_START_CONTEXT,
     CODING_INSTRUCTIONS,
@@ -394,7 +395,7 @@ class ScientificCoding:
             context = self.original_requests[params.session_handle]["task_context"]
             await self._require_idle_children(params.session_handle)
         else:
-            context = load_task_context(ROOT)
+            context = load_task_context(paths.HARNESS_ROOT if paths.SPLIT else ROOT)
         return binding, context, coding_snapshot(frozenset(binding["allowed_paths"]))
 
     async def _require_idle_children(self, coder_handle: str) -> None:

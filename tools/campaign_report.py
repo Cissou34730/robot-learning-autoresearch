@@ -7,9 +7,10 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from runner import paths
 from runner import repository as runner_repository
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = paths.ROOT
 NA = "unavailable"
 
 

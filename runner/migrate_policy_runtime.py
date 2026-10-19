@@ -13,7 +13,9 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from runner import paths
+
+ROOT = paths.ROOT
 
 
 def migrate(source: Path, destination: Path, revision: str, *, identity_actions=False):
@@ -48,7 +50,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                     raise ValueError("Unsafe archive member")
             contents.extractall(checkout)
         shutil.copyfile(
-            ROOT / "contracts/policy_runtime.py",
+            paths.locate("contracts/policy_runtime.py"),
             checkout / "contracts/policy_runtime.py",
         )
         interface = checkout / "robot_learning/scenario/policy_io.py"

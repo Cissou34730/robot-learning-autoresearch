@@ -5,7 +5,9 @@ from __future__ import annotations
 import fnmatch
 from pathlib import Path, PureWindowsPath
 
-ROOT = Path(__file__).resolve().parents[2]
+from runner import paths
+
+ROOT = paths.ROOT
 
 
 MAIN_WRITE_DENIAL = (

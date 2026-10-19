@@ -10,7 +10,6 @@ from runner import paths
 from runner import protocol as runner_protocol
 from runner import repository as runner_repository
 
-ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DIR = paths.CAMPAIGNS_DIR
 BRIEF_PATH = paths.CAMPAIGNS_DIR / "brief.md"
 
@@ -32,7 +31,7 @@ def _human_goal(state: dict) -> str:
     summary = state["human_goal"].get("summary")
     if isinstance(summary, str) and summary.strip():
         return summary.strip()
-    scenario_path = ROOT / "contracts" / "scenario.md"
+    scenario_path = paths.HARNESS_ROOT / "contracts" / "scenario.md"
     if scenario_path.is_file():
         success = _markdown_section(
             scenario_path.read_text(encoding="utf-8"), "Success criterion"
@@ -44,7 +43,7 @@ def _human_goal(state: dict) -> str:
 
 def _scientific_model_lines(state: dict) -> list[str]:
     model_path = state["scientific_model"]["path"]
-    model_file = ROOT / model_path
+    model_file = paths.locate(model_path)
     lines = [
         f"- Source: [`{model_path}`](../{model_path}).",
         "- Lifecycle contract: [`contracts/program.md`](../contracts/program.md).",
@@ -62,8 +61,7 @@ def _scientific_model_lines(state: dict) -> list[str]:
         lines.append(f"- **Decision-relevant synthesis:** {selected}")
     else:
         lines.append(
-            "- This historical model predates the required "
-            "decision-relevant synthesis."
+            "- This historical model predates the required decision-relevant synthesis."
         )
     return lines
 
@@ -465,7 +463,9 @@ def _event_lines(state: dict) -> list[str]:
         if event["id"] in references and event["kind"] != "training"
     ]
     if not events:
-        return ["- No non-training operations referenced by current work or the latest checkpoint."]
+        return [
+            "- No non-training operations referenced by current work or the latest checkpoint."
+        ]
     lines = []
     for event in events:
         inquiry = f" in `{event['inquiry_id']}`" if event["inquiry_id"] else ""
@@ -494,9 +494,7 @@ def _execution_history_lines(state: dict) -> list[str]:
             if event.get("superseded_by")
             else "; not yet superseded"
         )
-        lines.append(
-            f"- `{event['id']}` `{event['kind']}` failed{retry}."
-        )
+        lines.append(f"- `{event['id']}` `{event['kind']}` failed{retry}.")
         if not event.get("superseded_by"):
             lines.append(f"  - Unresolved error: {_compact(event.get('error'))}.")
     pending = state["pending_operation"]

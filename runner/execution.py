@@ -93,10 +93,12 @@ def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
         process.wait()
 
 
-def run_module(module: str, *args: str, timeout: int | None = None) -> str:
+def run_module(
+    module: str, *args: str, timeout: int | None = None, cwd: Path | None = None
+) -> str:
     result = subprocess.run(
         [sys.executable, "-m", module, *args],
-        cwd=paths.ROOT,
+        cwd=cwd or paths.ROOT,
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -109,10 +111,12 @@ def run_module(module: str, *args: str, timeout: int | None = None) -> str:
     return result.stdout
 
 
-def run_command(*command: str, timeout: int | None = None) -> str:
+def run_command(
+    *command: str, timeout: int | None = None, cwd: Path | None = None
+) -> str:
     result = subprocess.run(
         list(command),
-        cwd=paths.ROOT,
+        cwd=cwd or paths.ROOT,
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -150,7 +154,9 @@ def validate_changed_sources(changed_paths: list[str]) -> None:
 
 def validate_dependency_metadata() -> None:
     """Check the lockfile against the project metadata without rewriting it."""
-    run_command("uv", "lock", "--check")
+    run_command(
+        "uv", "lock", "--check", cwd=paths.HARNESS_ROOT if paths.SPLIT else None
+    )
 
 
 def effective_config(config: dict) -> dict:
@@ -176,7 +182,7 @@ def validate_active_configuration() -> dict:
 
 def run_validation_suites(selected_tests: tuple[str, ...]) -> None:
     selected_tests = tuple(
-        path for path in selected_tests if (paths.ROOT / path).exists()
+        path for path in selected_tests if paths.locate(path).exists()
     )
     if not selected_tests:
         return
@@ -185,7 +191,8 @@ def run_validation_suites(selected_tests: tuple[str, ...]) -> None:
         "-q",
         *selected_tests,
         "--basetemp",
-        str(paths.ROOT / ".pytest-run-temp"),
+        str(paths.locate(".pytest-run-temp")),
+        cwd=paths.HARNESS_ROOT if paths.SPLIT else None,
     )
 
 
