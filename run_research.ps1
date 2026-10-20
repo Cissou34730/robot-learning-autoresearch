@@ -606,7 +606,7 @@ function Get-CampaignResourceSummary {
     return (
         "inquiries $([int]$State.counters.inquiry) | " +
         "sessions $([int]$State.counters.session) | measurements $measurements | " +
-        "training $training | candidates $($State.candidates.PSObject.Properties.Count)"
+        "training $training | candidates $(@($State.candidates.PSObject.Properties).Count)"
     )
 }
 
