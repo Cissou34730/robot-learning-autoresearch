@@ -204,9 +204,9 @@ def load_task_context(root: Path) -> dict[str, str]:
             authority, "## Installed scientific stack", "## PI sessions"
         ),
         "scenario": (root / "contracts" / "scenario.md").read_text(encoding="utf-8"),
-        "operation_envelope": _excerpt(
+        "saved_controller": _excerpt(
             instruments,
-            "## Operation request envelope",
+            "## Saved controller execution",
             "## Scientific coding interface",
         ),
         "python_module": _excerpt(

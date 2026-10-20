@@ -1,93 +1,72 @@
 # Scientific instruments
 
-This document defines exact request formats, acceptance rules, and outputs.
-It does not tell the PI when or whether to use an instrument.
-`contracts/program.md` assigns scientific decisions to the PI.
+This document defines request formats, acceptance rules and outputs.
+`contracts/program.md` defines the research lifecycle and the PI's decisions.
 `contracts/authority.md` defines ownership and role permissions.
 
-## Paths and persistence
+## Paths and evidence storage
 
-Paths in requests and records are logical repository-relative paths, not
-instructions to combine every path with the current working directory.
-`robot_learning/`, `campaigns/`, `pi_workspace/`, `runner/state/`, `models/`,
-reports and session data live in the local campaign repository. Contracts,
-Runner implementation and protected evaluators live in the harness repository.
-The existing read/search policy maps permitted contract reads to the harness;
-this does not grant write access or access to reserved implementation files.
+Paths in requests and records are logical repository-relative paths. The read
+tools resolve each logical path to its storage location. Read access does not
+grant write access.
 
-Scientific code and durable operation records are committed in campaign Git.
-In the split layout, Runner never pushes those commits, even if a remote is
-added. Raw measurements and training logs remain local and ignored. Harness
-publication to GitHub is separate maintainer work. These storage choices do not
-change operation payloads, PI authority or evidence semantics.
+Scientific code and operation records are versioned with the campaign. Raw
+measurement artifacts and training logs stay in the local campaign folder.
+Operation records keep their paths and fingerprints, and the evidence tools
+read and verify them.
 
 ## Operation request envelope
 
-In ordinary Copilot sessions, call `submit_operation` with a `request` containing
-one JSON operation object. The payload formats below are unchanged. The trusted
-launcher binds the call to the active campaign and bounded session, validates
-with Runner's existing schema-6 acceptance checks, and executes through Runner.
-No model-supplied Runner arguments or exchange paths are accepted.
-The object must contain exactly one top-level operation kind:
+Call `submit_operation` with a `request` containing one JSON operation object.
+The call is bound to the active campaign and session. Runner validates the
+request and executes it. The object must contain exactly one top-level
+operation kind:
 
 ```text
 inquiry | measurement | training | checkpoint | model_role |
 restore_recipe | campaign_conclusion
 ```
 
-The SDK schema exposes the exclusive wrappers and their complete body structures.
-Shared structural validation checks the request before dispatch.
-Runner uses the same structural validation, then validates
-the operation body against the active state. A flat operation record with
-`kind` and body fields is not a submission envelope. Errors identify
-missing wrappers, extra top-level fields, or a non-object body.
+The tool schema shows the exclusive wrappers and their body structures. Runner
+checks the structure, then validates the operation body against the active
+state. A flat operation record with `kind` and body fields is not a submission
+envelope. Errors identify missing wrappers, extra top-level fields or a
+non-object body.
 
 Measurement identities use `M#`. Training identities use `T#`.
 Other event identities use `E#`.
 Evidence references must identify completed operations.
 
-`submit_operation` returns a compact factual result or the exact rejection/error,
-operation identity when completed, and changed state: session identity and kind,
-actual completed-operation list, roles, pending/terminal status,
-currently permitted operation kinds, and required checkpoint transition.
-Request and evidence checks still apply to these kinds.
-Full artifact inventories and logs are not
-attached to each completion. Detailed artifacts stay available through
-`artifact_evidence_query`; preserved training logs through `training_log_query`.
-Ordinary results continue in this same conversation,
-without a new runtime or replayed phase prompt. Inquiry open/reframe/close makes
-checkpoint the sole next operation. A completed checkpoint or terminal commitment
-ends this context; the launcher creates the next bounded context when permitted.
-The SDK process/client remains alive across those contexts.
+`submit_operation` returns a compact factual result or the exact rejection or
+error, the operation identity when completed, and the changed state: session
+identity and kind, completed-operation list, model roles, pending or terminal
+status, currently permitted operation kinds and any required checkpoint.
+Complete artifact inventories and logs are not attached; read them through
+`artifact_evidence_query` and `training_log_query`. Ordinary results continue
+in the same conversation. Opening, reframing or closing an inquiry makes the
+checkpoint the only next operation. A completed checkpoint or terminal
+commitment ends the session; the next session starts from durable state.
 
-Correct a rejected request in this conversation. Two rejected submissions stop
-the bounded session, preserving the existing one-retry limit.
-`implementation_error` means an accepted operation failed. It does not diagnose
-a source defect. Inspect the actual error and accepted invocation before
-deciding whether to correct the request or repair source.
-Use `artifact_evidence_query` with `action=metadata`, the pending `operation_id`,
-and `path=/pending` to retrieve its exact request and resolved measurements.
-Changed arguments require a replacement envelope.
-Use `scientific_coding` only when source repair is needed.
-`{"request": null}` reaccepts the same request after source repair.
-It cannot correct request arguments.
-An execution failure is history, not scientific evidence. `validation_fatal`,
-`controller_fatal`, publication failures, interruption, terminality and
-recovery-required results prohibit further submission and evidence queries
-in that context. The controller recovers existing accepted/completed
-transactions after channel loss; it does not blindly replay a tool call or
-fabricate checkpoint content. Main SDK resumes explicitly disable automatic
-unfinished-work continuation; the existing resume prompt includes current
-durable Runner metadata. Validation capture is silent. Execution stdout/stderr
-stream live, without a second log dump; only bounded tails are retained for
-useful error feedback. Runner waiting uses no model polls and is excluded
-from PI active duration; coding usage remains separate.
-Stop requests remain cooperative. If the launcher deadline expires, it stops
-only its owned process tree and preserves the existing transaction for recovery.
+Correct a rejected request in the same conversation. A second rejected
+submission ends the session.
 
-Copilot main PI sessions never author the exchange file.
+`implementation_error` means that an accepted operation failed during
+execution. It does not diagnose a source defect. Inspect the actual error and
+the accepted invocation, then decide whether to correct the request or change
+the source. `artifact_evidence_query` with `action=metadata`, the pending
+`operation_id` and `path=/pending` returns the exact request and its resolved
+measurements.
 
-### Saved controller execution
+- To change arguments, submit a replacement envelope.
+- To change source, use `scientific_coding`, then submit `{"request": null}`
+  to reaccept the same pending request. `null` cannot change arguments.
+
+An execution failure is history, not scientific evidence. After
+`validation_fatal`, `controller_fatal`, a publication failure, an interruption,
+a terminal result or a recovery-required result, the session accepts no further
+submissions or evidence queries.
+
+## Saved controller execution
 
 Saved candidates include policy weights, normalization state when used, and the
 executable runtime defined in `contracts/policy_runtime.py`.
@@ -108,15 +87,12 @@ environments.
 
 ## Scientific coding interface
 
-Ordinary Copilot main PI sessions expose `scientific_coding` and
-`submit_operation` alongside source readers, `artifact_evidence_query` and
-`training_log_query`. They have no `apply_patch`, other file-write tools or
-shell tools. `scientific_api_reference` reads installed library definitions
-for PI and authorized coding/review children. The preliminary scientific-model
-session retains its existing publication interface and does not expose coding.
+`scientific_coding` delegates a bounded change to PI-owned source: a new
+method, a measurement or analysis tool, or a repair. The coder and the
+reviewer roles are defined in `contracts/authority.md`.
 
-The default Copilot PI deadline is 30 minutes of active session time.
-Coding and review count toward that deadline. Runner execution waits are excluded.
+The PI session deadline is 30 minutes of active session time by default.
+Coding and review count toward it. Waiting for Runner execution does not.
 
 `scientific_coding` accepts:
 
@@ -128,59 +104,32 @@ Coding and review count toward that deadline. Runner execution waits are exclude
 - `session_handle`: optional returned native child identity for same-change
   corrections within this bounded context.
 
-New calls require `intent` and `allowed_paths`.
-Corrections may supply only `intent` and `session_handle`, with optional
-`source_context`. Omit scope fields to reuse the stored binding. Explicitly
-resubmitted fields must resolve to the same binding; changed fields reject
-with their names. A new scope requires a new PI-directed call without a handle.
+New calls require `intent` and `allowed_paths`. A correction supplies
+`session_handle` and `intent`, with optional `source_context`. Omitted scope
+fields reuse the stored binding; resubmitted scope fields must match it, and a
+changed field is rejected with its name. A new scope requires a new call
+without a handle. A handle is valid only within the current session.
 
-Protected writes, directories, wildcard scopes, operation requests and arbitrary
-filesystem paths are refused. New writable files are permitted even when their
-parent directory does not exist. The frozen scientific model remains read-only,
-and only explicitly selected files enter the coding read binding.
-Coder and reviewer also receive fixed environment, scenario and operation-contract
-text. This text does not expand file permissions or include the campaign conversation.
-Rejections
-identify the offending path and reason; a rejected read binding does not imply
-new-file creation is unavailable. A continued child must keep the same writable,
-readable scope. The SDK dispatches the registered native
-coding subagent with the supplied objective and source context, rather than
-creating a separate SDK session or passing the PI's campaign conversation.
-Corrections are sent to that same native child.
-Native handles are context-local, not resumable authority across a runtime
-restart or a fresh scientific context. The handler resolves and validates the
-SDK's model/tool configuration before dispatch; unavailable capabilities are
-reported rather than falling back to manual coding sessions.
+Writes are limited to PI-owned files. Protected paths, directories, wildcard
+scopes, operation requests and paths outside the repository are refused; the
+rejection names the path and the reason. A new writable file does not require
+an existing parent directory. Reads are limited to the selected files; the
+frozen scientific model is read-only. A rejected read binding does not mean
+that new-file creation is unavailable.
 
-The default/main agent excludes file-write tools. The registered coder has
-scoped `view`, `apply_patch` and `scientific_api_reference`. It cannot execute
-code, delegate further or submit campaign operations. Hooks and permission
-callbacks bind its calls to the authorized native child and file scope.
-Main PI writes remain denied.
-Permission callbacks use the native permission event's identity and current
-file binding, not the arrival of a tool-start event. Unknown or stale identities
-fail closed with a harness authorization error.
-Native start instructions include the installed scientific API versions and
-dependency restrictions.
-Completion handling challenges an incomplete engineering handoff, not
-scientific adequacy or research direction.
-The stop hook applies to corrections as well as the initial invocation.
-The handler waits for the stop handoff and native task idle state before
-unlocking operation submission.
+The coder and the reviewer receive the scenario and fixed excerpts of the
+authority and instrument contracts. They do not receive the PI conversation:
+state the relevant requirements in `intent` and `source_context`. The coder
+reports missing or unclear requirements in its summary and unchecked scope.
 
-After the first completed handoff for an assignment, the handler starts an
-independent native `scientific-reviewer` with high reasoning.
-It receives the original request, supplied task context, actual changed files and diff.
-The review prioritizes coding defects and checks equations, units, physical
-assumptions, timing and measurement meaning in changed code.
-It checks whether the protocol and reported quantities can answer the PI's
-stated question and flags concrete confounds or missing conditions for the PI.
-An untested scientific hypothesis is not itself a defect.
-Corrections reuse that native reviewer. They provide the correction
-intent and context, incremental changes and previous completed
-review, without repeating the original request. The result identifies the review
-`mode` as `initial` or `correction` and its `coding_session_handle`.
-Correction reviews cover only the reported problems and errors introduced by the repair.
+### Review
+
+After the coder's first handoff, an independent reviewer with high reasoning
+receives the original request, the task context, the changed files and the
+diff. The review checks coding defects and the equations, units, physical
+assumptions, timing and measurement meaning of the changed code. It checks
+whether the protocol and the reported quantities can answer the PI's stated
+question. An untested scientific hypothesis is not a defect.
 
 The reviewer returns exactly four fields:
 
@@ -194,71 +143,47 @@ The reviewer returns exactly four fields:
 ```
 
 The three explanation fields contain plain text, not nested finding records.
-When `validation` is false, all three must explain the failed review.
-The native coding handler sends that four-field report unchanged to the same coder.
-It then sends the incremental repair and one previous review to the same reviewer.
-Unchanged contracts and duplicate repair instructions are not resent for automatic corrections.
-The handler does not return to the main PI between these engineering steps.
-When `validation` is true, the handler returns the completed package.
-A repair with no source changes and another failed review returns `needs_pi`.
-The result includes an explicit reason and current source changes.
-The whole PI session deadline still includes all coding and review.
+`validation` is false only for defects that the coder can repair within the
+request; all three fields then explain the defect. A failed review goes
+unchanged to the same coder, and the same reviewer checks the repair. A
+correction review covers only the reported problems and errors introduced by
+the repair. This repair loop does not return to the PI. A repair with no source
+change followed by another failed review returns `needs_pi` with the reason and
+the current changes. When `validation` is true, the explanation fields can
+carry concerns, confounds or scientific choices for the PI.
 
-A missing or non-idle stored reviewer rejects correction dispatch.
-The handler does not create a replacement reviewer for that assignment.
-Its exact read scope matches the coding binding.
-Its tools are `view` and `scientific_api_reference`; writes, execution,
-delegation and operation submission are denied.
-The handler keeps operation submission locked until the coding handoff settles.
-It verifies the reported reviewer model and reasoning, and reports unavailable or failed
-review explicitly rather than treating it as a completed review.
+### Coding result
 
-The result returns the child handle, actual per-invocation changed-file manifest
-and diff, coder summary and unchecked scope.
-The manifest and diff include all repairs within that invocation.
-`repair_history` records each forwarded review, coder status and follow-up review status.
-Completed repairs also record the coder's summary and the next four-field review.
-The handoff requires no verification module, argument template or execution proposal.
-It performs no argument substitution and executes no code.
-Measurement or analysis code is authored only when the PI explicitly requests it.
-Large review output is offloaded with a file pointer. Errors and
-timeouts return partial changes when available; cancellation preserves review output.
-The `review` entry contains the four-field report and harness metadata:
-status, reviewer handle, actual models/reasoning and per-invocation usage.
-File permissions remain enforced by the existing binding, not by parsing `where`.
-Scientific decisions remain with the PI. Review does not choose scientific
-strategy or approve campaign conclusions.
-The main PI reviews actual changed source and reported limitations before scientific reliance.
-Scientific measurements remain separate PI-authorized operations executed by Runner.
-No coding result certifies scientific validity. Native task lifecycle is
-owned by Copilot SDK 1.0.19; operation acceptance and scientific execution
-remain owned by the existing trusted controller and Runner.
-Usage and changes are reported per invocation. SDK native-task lifetime totals
-are labeled separately and must not be added again on each correction.
-Reviewer usage has the separate `scientific_reviewer` role, configured model
-and reasoning, and reported actual models. PI time excludes both delegated
-coding and review time.
+The result contains:
+
+- the session handle;
+- the changed-file manifest and diff for the invocation, including repairs;
+- the coder summary and unchecked scope;
+- `review`: the four-field report, its `mode` (`initial` or `correction`),
+  status, reviewer handle, models, reasoning and usage;
+- `repair_history`: each forwarded review, the coder status and summary, and
+  the follow-up review.
+
+Large review output is stored in a file and returned as a path. Errors and
+timeouts return partial changes when available. An unavailable or failed
+review is reported as such, not as a completed review.
+
+Review checks engineering and does not certify scientific validity. Inspect
+the actual changes and the reported limitations before relying on them. The
+coder executes nothing; measurements and analyses are separate operations.
 
 ## Source readers
 
-Copilot `view` reads exact permitted files. Directory enumeration uses `glob`.
-The trusted `rg` and `glob` interfaces apply the same phase-aware read policy
-to descendants before reading content or returning paths. A readable parent
-does not authorize reserved descendants. Linked paths and outside-repository
-aliases are unavailable. Explicitly reserved search roots are rejected;
-reserved descendants of readable roots are pruned.
+`view` reads one exact permitted file. `glob` lists files by pattern. `rg`
+searches content and returns matching lines, matching files or counts, with
+pattern, glob, type, context and result-limit selectors. Both search tools
+accept default, subdirectory or multiple `paths`. Searches skip reserved files
+below a readable directory, and reject a reserved search root. Linked paths and
+paths outside the repository are unavailable.
 
-Both search interfaces accept default, subdirectory or multiple `paths`.
-`glob` selects file paths by pattern. `rg` accepts content, matching-file or
-count output, with pattern, glob, type, context and result-limit selectors.
-Results report output or traversal limits explicitly. A truncated result does
-not establish that unreturned matches are absent. Exact-file reads remain
-available for content that exceeds search-preview limits.
-
-The preliminary analyst retains exact permitted shell file reads, but shell
-traversal and wildcard readers are denied. Coding children have only the
-exact-file `view` and `apply_patch` binding described above, not repository search
-tools. Their installed-library access uses the separate API reader below.
+Results report output or traversal limits. A truncated result does not
+establish that unreturned matches are absent. Use an exact-file read for
+content beyond search-preview limits.
 
 ## Installed scientific API reference
 
@@ -295,13 +220,12 @@ explicit. A missing symbol returns `symbol_not_found`, not a guessed substitute.
 Rejected lookups return a failed tool result with the library, symbol and reason.
 Definition availability does not establish execution compatibility.
 
-The active PI or its authorized native coding/review child can use this reader.
-Coding and Runner locks still apply. It does not widen repository file scopes
-or give either actor execution permissions.
+The PI, the coder and the reviewer can use this reader. It does not widen file
+scopes or grant execution.
 
 ## JSON evidence interface
 
-`artifact_evidence_query` is the single JSON evidence tool. It resolves a
+`artifact_evidence_query` reads JSON evidence. It resolves a
 recorded artifact from a completed measurement operation in the active
 campaign and verifies its recorded fingerprint. The PI supplies operation
 identity, not an arbitrary filesystem path.
@@ -326,7 +250,7 @@ For that operation, `/pending/request` returns the exact wrapped accepted reques
 `/pending` also includes progress, failure, request fingerprint and completed-measurement count.
 These fields remain available after an execution failure or context replacement.
 They do not authorize artifact-content access to incomplete measurements.
-Both actions support the existing query filters, selection, aggregates, and pages.
+Both actions support the query filters, selection, aggregates and pages.
 They report `artifact_contents_inspected` as false. Recorded metadata is not
 an inspection of measurement contents.
 
@@ -347,20 +271,9 @@ after filtering and projection, or distinct values for `value_counts`.
 remaining selection. Oversized individual objects remain available through
 `read` even when they cannot fit in a query page.
 
-Large JSON artifacts use a temporary, fingerprint-verified file-backed view.
-The tool validates the complete JSON syntax before it selects evidence.
-
-Each request verifies the source fingerprint. The reader process keeps bounded
-byte-span metadata for validated content. Successful validation uses the
-fingerprint and runtime validation limits as its key. Container end offsets
-use the fingerprint and start offset as their key. Concurrent requests share
-validation and container scans. Neither cache retains snapshots or decoded trees.
-
-It does not load the complete JSON tree. Query and output limits remain.
-Decoded individual scalars and field indexes have explicit memory limits.
-An exhausted limit is reported, not silently truncated input.
-The temporary snapshot is removed after the request. Original-byte paging
-continues to use the recorded source bytes, not the normalized snapshot.
+The tool validates the complete JSON syntax of an artifact before it selects
+evidence. Query output and decoded values have explicit limits; an exhausted
+limit is reported, not silently truncated.
 
 Filtering uses a typed object with required `path` and `equals` fields.
 `path` is relative to each selected row; `equals` can be null.
@@ -388,9 +301,9 @@ does not require parsing the entire artifact within the query limits.
 
 ## Training-log interface
 
-`training_log_query` exposes the existing training-record parser as a
-read-only custom tool. It resolves preserved logs using the active campaign
-and training operation identity, not a filesystem path or command.
+`training_log_query` reads preserved training logs. It resolves them from the
+active campaign and the training operation identity, not from a filesystem
+path or command.
 
 `discover` returns attempt identities, timestep coverage and available metric
 names without metric record values. Omitting `action` selects this metadata mode.
@@ -420,11 +333,11 @@ Preserved failure logs describe execution history, not scientific evidence.
 Neither parsed metrics nor raw-log retrieval certifies development
 performance or chooses a candidate. The PI interprets the returned data.
 
-## Instrument capabilities
+## Operations by session
 
-The available interfaces have these capabilities:
+The operation kinds have these purposes:
 
-- Inquiry operations record inquiry boundaries.
+- Inquiry operations open, reframe and close inquiries.
 - Measurement operations record scientific measurements.
 - `research_evaluation` and `task_reference` measure a learned candidate.
 - `python_module` runs a PI-owned experiment or analysis. It does not require a learned candidate.
@@ -434,8 +347,7 @@ The available interfaces have these capabilities:
 - Recipe restoration restores recorded PI-owned scientific work.
 - Campaign conclusion requests the protected official assessment.
 
-This list does not define a required sequence. It does not give preference to
-an operation.
+This list does not define a sequence or a preference.
 
 The current scientific session controls which operations the Runner accepts:
 
@@ -661,13 +573,8 @@ The inventory has a bounded metadata size.
 `truncated` identifies omitted sections or field names.
 `fields_omitted` and `field_count` identify an array whose field list did not fit.
 An untruncated inventory still describes structure, not the full evidence.
-The full artifact remains unchanged at its recorded path.
-Raw measurement files remain in the fixed local archive
-`campaigns/evaluations/<current-campaign-id>/`, which Git ignores.
-Runner publishes compact operation facts, artifact paths and fingerprints,
-not raw artifact contents. The evidence reader still verifies and reads those
-local files. A Git checkout alone does not contain the full measurement data.
-Publication failures retain Git's specific error and stop without re-execution.
+The full artifact remains unchanged at its recorded path in the local archive
+`campaigns/evaluations/<current-campaign-id>/`.
 
 This metadata applies to all measurement instruments.
 It does not require a scenario-specific section or field.
@@ -695,14 +602,10 @@ The seed must be non-negative.
 The `description` and `rationale` strings must be non-empty.
 The `steps` value must be a positive integer.
 
-During startup, the PI can request any positive value up to the maintainer's
-current allocation. The phase prompt shows this allocation.
-During an inquiry, `steps` must equal the allocation.
-The maintainer configures the allocation with launcher `-Timesteps` or Runner
-`--timesteps`.
-The PI must not raise the allocation.
-The Runner rejects requests outside the session allocation contract during
-validation, acceptance, and training dispatch.
+The session context states the training allocation. During startup, `steps`
+can be any positive value up to the allocation. During an inquiry, `steps` must
+equal the allocation. The PI cannot change the allocation. Runner rejects
+other values during validation, acceptance and training dispatch.
 
 For transfer training, `parent` is required and must be non-empty.
 For fresh training, omit `parent`.
@@ -752,9 +655,6 @@ adequacy. The complete-artifact integrity fingerprint remains unchanged.
 
 The learning algorithm can round actual completed steps up to its rollout
 boundary. This does not authorize a different allocation.
-Before dispatch, an accepted training request must still satisfy the current
-session allocation contract.
-A completed result can finish publication without a new training allocation.
 
 ## Scientific session record
 
@@ -787,11 +687,13 @@ A policy checkpoint is a separate training artifact.
 
 Every field is required.
 All string fields must be non-empty.
-After startup or inquiry closure, `next_question` states the proposed question
-for the next goal review. Goal review may revise or decline that proposal
-before opening an inquiry. The goal-review checkpoint repeats the exact
-question of the inquiry opened in that session. If the same inquiry continues,
-the checkpoint repeats its current active question.
+`next_question` depends on the session kind:
+
+- startup, or an inquiry session that closed its inquiry: the proposed question
+  for the next goal review;
+- goal review: the exact question of the inquiry opened in that session;
+- an inquiry session whose inquiry stays active: the exact active question.
+
 `completed_operations` must exactly match the active session's completed
 operation identities.
 Opening, reframing or closing an inquiry does not end the active scientific session.
@@ -851,9 +753,8 @@ It removes a selected file when absent from that recipe.
 Unselected source files remain unchanged; campaign laboratory tools cannot
 be selected. Directory and wildcard scopes are refused.
 The Runner does not infer which code implements learning versus measurement.
-When one source file contains both, restoring the whole file also restores both;
-the PI uses scoped scientific coding to carry forward the intended measurement
-capability before relying on it. There is no automatic whole-recipe rollback.
+When one source file contains both, restoring the whole file also restores both.
+There is no automatic whole-recipe rollback.
 It verifies the result.
 It does not assign a model role.
 
@@ -882,7 +783,7 @@ substantive `Established facts`, `Physical consequences`, `Unknowns`, and
 `Decision-relevant synthesis` registers.
 Each register is a level-two heading (`##`) with its content under it. Topics
 inside a register use level-three headings (`###`).
-An analyst persona, not the PI, writes the model. The model states physical
+The preliminary analyst writes the model. The model states physical
 consequences and the evidence that discriminates between them. It selects no
 intervention.
 The synthesis is the final register. It selects the consequences and unknowns
@@ -893,5 +794,5 @@ also reads the whole model at startup and selects the initial direction.
 After acceptance, the model remains fixed for the campaign.
 Later checkpoints preserve or revise its consequential conclusions.
 The Runner checks only that the file exists and that each required register
-section is present and non-empty. It does not check scientific adequacy.
-The PI alone is responsible for whether the model is scientifically sound.
+section is present and non-empty. It does not check scientific adequacy; the
+PI judges the model's soundness when using it.
