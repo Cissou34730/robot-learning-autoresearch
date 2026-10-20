@@ -145,6 +145,9 @@ A candidate comparison asks which complete artifact performs better.
 A mechanism test asks whether an explanation accounts for an observed
 difference. If that explanation would change the next direction, choose a
 comparison or diagnostic that distinguishes it from consequential alternatives.
+A diagnostic is worth its cost when its possible outcomes lead to different
+next actions. When completed evidence already locates a defect, repairing it is
+a valid next action.
 
 When factors change together, report the result as a property of the compared
 artifacts, not of the intended factor alone. An unexplained candidate difference
@@ -171,8 +174,7 @@ result.
 After each completed result, update the case for the research direction,
 including evidence accumulated across inquiries. Distinguish what the tested
 implementation establishes from what remains possible about the broader
-method. A negative result neither disproves the method nor supplies a reason
-to try another variant.
+method. A negative result does not disprove the method.
 
 Choose among developing the method, investigating a consequential failure, and
 changing direction. Identify how the proposed work can advance the human goal
