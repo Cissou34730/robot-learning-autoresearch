@@ -759,9 +759,10 @@ function New-ScientificSessionPrompt {
             else {
                 "State the unresolved scientific distinction before selecting an operation."
             }
-            "Training facts and proxies can nominate checkpoints for development measurement. Interpret them in the context of the exposure and runtime that produced them. They do not establish development performance, the terminal checkpoint has no privileged status, and evaluating every checkpoint is not required."
+            "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
+            "Interpret training proxies in the context of the exposure and runtime that produced them. Select checkpoints relevant to the decision when that context changes. Proxy rank alone does not determine which artifacts deserve measurement."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal."
-            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the tested implementation exercised. A negative result neither disproves the method nor supplies a reason to try another variant. Compare a proposed method with the implementation already tested, using source changes, recorded runtime and saved-component comparisons when available; a new description does not establish a new method."
+            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the tested implementation exercised. A negative result neither disproves the method nor supplies a reason to try another variant. Compare a proposed method with the implementation already tested, using source changes, recorded runtime and saved-component comparisons when available; a new description does not establish a new method. Repeated work can be useful. State what additional evidence it supplies."
             "Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives; choose it when that explanation would change the next direction. Keep an unexplained candidate difference at artifact level, and treat planned discriminating evidence that failed or remains unavailable as unresolved."
             if ($session.kind -ne "goal_review") {
                 "Unresolved causes need not block inquiry closure. Preserve their consequences for the next decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
@@ -1138,7 +1139,7 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty that bears on this choice. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry."
+                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry."
             }
             else {
                 (
