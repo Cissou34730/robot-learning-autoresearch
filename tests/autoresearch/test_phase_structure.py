@@ -221,7 +221,7 @@ try {{
     Assert-PITrustSnapshot -Snapshot $snapshot -Root '{campaign}'
     throw 'Harness change was not detected'
 }} catch {{
-    if ($_ -notmatch 'outside the AGENTS.md scientific') {{ throw }}
+    if ($_ -notmatch 'outside the PI-owned paths') {{ throw }}
 }}
 """,
     )

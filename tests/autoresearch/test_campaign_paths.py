@@ -171,6 +171,7 @@ def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
     assert "contracts/scenario.md" in result
     assert "robot_learning/lab/probe.py" in result
     assert "secret" not in result
+    assert "AGENTS" not in result
     assert "shadow" not in result
     assert search.target("contracts/scenario.md") == harness / "contracts/scenario.md"
 
@@ -178,7 +179,7 @@ def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
 @pytest.mark.parametrize("preliminary", [False, True])
 @pytest.mark.parametrize(
     "relative",
-    ["contracts/scenario.md", "contracts/robots/arm.xml", "AGENTS.md"],
+    ["contracts/scenario.md", "contracts/robots/arm.xml", "contracts/authority.md"],
 )
 def test_campaign_absolute_contract_reads_route_before_authorization(
     split_roots, monkeypatch, preliminary, relative
@@ -240,6 +241,8 @@ def test_absolute_read_routing_keeps_shadow_and_reserved_paths_denied(
         campaign / "runner/execution.py",
         campaign / "tests/private.py",
         campaign / "docs/private.md",
+        campaign / "AGENTS.md",
+        campaign / "README.md",
         campaign / "contracts/../../outside.md",
     ):
         decision = hook({"toolName": "view", "toolArgs": {"path": str(target)}}, {})

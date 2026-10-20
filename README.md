@@ -13,8 +13,11 @@ Current operating guidance, reviewed 19 October 2026:
   implementation stages, validation and migration corrections.
 - [Reset guide](docs/reset-research.md), [external stop contract](docs/external-campaign-stop.md)
   and [saved-policy runtime](docs/policy-runtime.md): operator procedures.
-- [Agent contract](AGENTS.md), [scientific program](contracts/program.md)
-  and [instruments](contracts/instruments.md): role boundaries and operation contracts.
+- [Maintainer instructions](AGENTS.md) and [runtime mechanics](docs/runtime-mechanics.md):
+  maintainer conventions and agent-runtime internals, reserved from campaign agents.
+- [Authority](contracts/authority.md), [scientific program](contracts/program.md)
+  and [instruments](contracts/instruments.md): PI-facing role boundaries,
+  lifecycle and operation contracts.
 - [Change tracker](docs/harness-experiment-log.md): issue status and maintenance history.
 
 Dated RCAs, campaign HTML reports, implementation proposals and
@@ -178,7 +181,8 @@ Copilot scientific-model preparation retains `max` reasoning.
 OpenCode token usage and catalogue prices remain separate from Copilot AIU.
 Unknown external charges remain unavailable, not zero.
 
-See [AGENTS.md](AGENTS.md) for ownership and execution boundaries,
+See [contracts/authority.md](contracts/authority.md) for ownership and execution
+boundaries,
 [scientific instruments](contracts/instruments.md) for tool contracts, and
 the [harness tracker](docs/harness-experiment-log.md) for implementation status.
 Campaign launches, resets and scientific execution require explicit maintainer

@@ -29,6 +29,7 @@ PROTECTED_RUNTIME_PREFIXES = ("runner/", "tools/")
 PROTECTED_MEASUREMENT_PATHS = {"benchmark/paired_evidence.py"}
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
+    "contracts/authority.md",
     "contracts/instruments.md",
     "contracts/program.md",
     "contracts/scenario.md",

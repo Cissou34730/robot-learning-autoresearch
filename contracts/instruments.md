@@ -3,7 +3,7 @@
 This document defines exact request formats, acceptance rules, and outputs.
 It does not tell the PI when or whether to use an instrument.
 `contracts/program.md` assigns scientific decisions to the PI.
-`AGENTS.md` defines ownership and command authority.
+`contracts/authority.md` defines ownership and role permissions.
 
 ## Paths and persistence
 
@@ -122,8 +122,8 @@ Coding and review count toward that deadline. Runner execution waits are exclude
 
 - `intent`: the precise expected output of the bounded change;
 - `allowed_paths`: exact repository-relative writable scientific files;
-- `read_paths`: optional additional relevant scientific sources, contracts,
-  `AGENTS.md` or the frozen `pi_workspace/scientific_model.md`;
+- `read_paths`: optional additional relevant scientific sources, contracts or
+  the frozen `pi_workspace/scientific_model.md`;
 - `source_context`: optional PI-selected requirements, caller context and errors;
 - `session_handle`: optional returned native child identity for same-change
   corrections within this bounded context.

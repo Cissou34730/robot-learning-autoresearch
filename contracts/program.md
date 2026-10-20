@@ -349,9 +349,9 @@ deeper inspection:
 - `contracts/scenario.md` defines the human goal and protected assessment;
 - `pi_workspace/scientific_model.md` is the campaign-start physical reference;
 - `contracts/instruments.md` defines mechanical operation contracts;
+- `contracts/authority.md` defines file ownership and role permissions;
 - the scientific session record and referenced artifacts preserve current
-  evidence;
-- `AGENTS.md` defines ownership, commands, and operational boundaries.
+  evidence.
 
 Detailed sources remain available on demand; every session need not reread
 every document.

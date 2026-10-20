@@ -129,7 +129,7 @@ def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path)
 
 
 def test_every_documented_human_owned_path_is_enforced(monkeypatch):
-    """The AGENTS.md contract and the enforced classification must not drift.
+    """The authority contract and the enforced classification must not drift.
 
     Issue #58: the documentation called the whole benchmark package human-owned
     while enforcement listed files by hand and omitted two. Each documented
@@ -138,7 +138,7 @@ def test_every_documented_human_owned_path_is_enforced(monkeypatch):
     human-owned.
     """
     monkeypatch.setattr(paths, "SPLIT", paths.ROOT != paths.HARNESS_ROOT)
-    text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    text = (ROOT / "contracts" / "authority.md").read_text(encoding="utf-8")
     section = text.split("## Human-owned paths", 1)[1].split("\n## ", 1)[0]
     listing = section[section.index("- ") :].split("\n\n", 1)[0]
     documented = re.findall(r"`([^`]+)`", listing)

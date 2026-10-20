@@ -197,10 +197,12 @@ def _excerpt(text: str, start: str, end: str) -> str:
 
 def load_task_context(root: Path) -> dict[str, str]:
     """Fixed contract text given to every coder and reviewer."""
-    authority = (root / "AGENTS.md").read_text(encoding="utf-8")
+    authority = (root / "contracts" / "authority.md").read_text(encoding="utf-8")
     instruments = (root / "contracts" / "instruments.md").read_text(encoding="utf-8")
     return {
-        "authority": _excerpt(authority, "## Environment", "## Layout"),
+        "authority": _excerpt(
+            authority, "## Installed scientific stack", "## PI sessions"
+        ),
         "scenario": (root / "contracts" / "scenario.md").read_text(encoding="utf-8"),
         "operation_envelope": _excerpt(
             instruments,

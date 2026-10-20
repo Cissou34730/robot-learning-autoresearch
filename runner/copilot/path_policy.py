@@ -26,7 +26,7 @@ CODING_PERMISSION_DENIAL = (
 
 
 FILE_EDIT_DENIAL = (
-    "This path is outside the editable scientific surface defined in AGENTS.md."
+    "This path is outside the PI-owned paths defined in contracts/authority.md."
 )
 
 
@@ -63,6 +63,8 @@ RESERVED_SCRIPT_PATHS = (
     "tools/campaign_report.py",
     "docs",
     "docs/*",
+    "agents.md",
+    "readme.md",
     "tests",
     "tests/*",
 )
@@ -274,11 +276,11 @@ def coding_file_scope(paths: list[str], *, writable: bool) -> frozenset[str]:
                 raise ValueError(rejection + reason)
             if not (
                 relative.startswith(("robot_learning/", "contracts/"))
-                or relative in {"agents.md", "pi_workspace/scientific_model.md"}
+                or relative == "pi_workspace/scientific_model.md"
             ):
                 raise ValueError(
-                    rejection + "read_paths permits scientific sources, contracts, "
-                    "AGENTS.md and the frozen scientific model only; select other "
+                    rejection + "read_paths permits scientific sources, contracts "
+                    "and the frozen scientific model only; select other "
                     "relevant context through source_context."
                 )
         result.add(relative)

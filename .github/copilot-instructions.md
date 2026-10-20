@@ -23,4 +23,4 @@ Any expansion of scope requires explicit approval before work starts. Once
 the requested change is complete, commit and push when required, then stop.
 
 These engineering rules do not narrow the PI's scientific authority within
-the owned surface defined by AGENTS.md.
+the PI-owned paths defined by `contracts/authority.md`.

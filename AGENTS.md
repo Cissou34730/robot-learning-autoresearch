@@ -1,264 +1,75 @@
 # AGENTS.md
 
-Repository operational contract for the PI environment, command authority,
-file ownership, validation, and evidence use.
+Instructions for human-directed maintainer sessions on this harness.
 
-The PI lifecycle is described in `contracts/program.md`, the current task in
-`contracts/scenario.md`, and the available capability surface in
-`contracts/instruments.md`.
+Campaign agents (PI, preliminary analyst, coder and reviewer) cannot read this
+file. Their permissions are defined in `contracts/authority.md`, their
+lifecycle in `contracts/program.md`, their task in `contracts/scenario.md` and
+their operation formats in `contracts/instruments.md`.
 
-## Maintainer reference
+## Before starting
 
-A human-directed harness maintenance session (not a campaign PI session) must
-first read `docs/harness-campaign-split.md`. It records the approved
+Read `docs/harness-campaign-split.md` first. It records the approved
 harness/campaign repository split, completed stages and follow-up corrections.
-PI and Runner restrictions below still govern campaign agents.
 
-## Repository layout and maintainer authority
+## Audience separation
 
-Human-directed maintainer sessions may edit harness code, scripts, tests and
-documentation within the approved task, run targeted checks through `uv run`,
-and commit and push harness changes when requested. This does not grant
-campaign PI agents any additional permissions.
+Keep three audiences separate:
 
-The harness repository contains `runner/`, `contracts/`, `benchmark/`, tests,
-tools, documentation, launch scripts and the locked Python project.
-The separate local campaign repository contains `robot_learning/`, `campaigns/`,
-`pi_workspace/`, `runner/state/`, `models/`, reports and agent session data.
-Paths below are logical paths: `runner/paths.py` resolves them to the owning
-repository. Protected scientific package initializers remain protected even
-though they are physically stored with the campaign.
+- Maintainer: `AGENTS.md`, `README.md`, `docs/` and `.github/`. These are
+  reserved from every campaign agent.
+- Runner: `runner/`, `benchmark/`, `tools/` and the launch scripts. These are
+  reserved from campaign reads.
+- Campaign agents: `contracts/`, `campaigns/brief.md`, session prompts in the
+  launch scripts and tool descriptions in `runner/copilot/`. The coder and
+  reviewer receive fixed excerpts from `contracts/authority.md` and
+  `contracts/instruments.md` (see `load_task_context`).
+
+Text that campaign agents receive states the current rules only. Keep
+maintainer reasoning, change history, incident references and launcher
+guardrails out of it. The unattended inquiry cap (`-MaxInquiries`) is a
+maintainer guardrail: never expose it, its value or its remaining count to
+campaign agents.
+
+When `contracts/authority.md` changes its section headings, update the
+excerpt boundaries in `runner/copilot/coding_contracts.py`.
+`tests/autoresearch/test_ownership_registry.py` checks its human-owned list
+against enforcement.
+
+## Maintainer authority
+
+Maintainer sessions may edit harness code, scripts, tests and documentation
+within the approved task, run targeted checks through `uv run`, and commit and
+push harness changes when requested. This grants campaign agents no additional
+permission.
+
+## Repositories
+
+The harness repository contains `runner/`, `contracts/`, `benchmark/`,
+`tests/`, `tools/`, `docs/`, launch scripts and the locked Python project.
+The separate local campaign repository contains `robot_learning/`,
+`campaigns/`, `pi_workspace/`, `runner/state/`, `models/`, reports and agent
+session data. Contract paths are logical paths: `runner/paths.py` resolves them
+to the owning repository. Protected scientific package initializers stay
+protected although they are stored with the campaign.
 
 The launch and reset scripts accept `-CampaignRoot` and default to the sibling
 `robot-learning-campaigns` folder. Direct maintainer Python commands select it
 with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
-Campaign Git operations run only in the campaign repository. In split mode
-they never push, even if a remote is added. Harness development is committed
-and pushed separately; updating it requires no merge into the campaign.
-See `README.md` for initialization and commands.
+Campaign Git operations run only in the campaign repository and never push.
+Harness development is committed and pushed separately and requires no merge
+into the campaign. See `README.md` for initialization, launch limits and
+commands.
 
 ## Environment
 
-This repository uses a fixed Python stack built around MuJoCo, Gymnasium and
-Stable-Baselines3. Dependencies are human-owned: the PI may use the
-installed stack but may not install packages or modify `pyproject.toml` or
-`uv.lock`.
-
-The locked runtime APIs are native `mujoco==3.12.0` (not legacy `mujoco-py`),
-`gymnasium==1.3.0` and `stable-baselines3==2.9.0`. PI-owned integrations
-must target those packages and versions.
-`scientific_api_reference` supplies bounded, read-only definitions from those
-installed libraries to the PI and authorized coding child. It does not expose
-arbitrary paths, private attributes or API execution.
-
-The Copilot agent runtime uses `github-copilot-sdk==1.0.19`. Its native
-subagents, hooks and custom tools remain the agent runtime.
-The scientific stack and Runner operations remain
-separate from the SDK. Dependencies remain human-owned.
-
-JSON evidence is read through `artifact_evidence_query`; preserved training
-logs are read through `training_log_query`. Both tools support scoped requests
-and complete retrieval. The PI chooses the requested content and may inspect
-successive subsets. Large results report their continuation explicitly rather
-than silently truncating. No general Python-query execution tool is exposed.
-
-`view` reads exact readable files, not directory listings. Directory discovery
-uses `glob` with `pattern` and `paths`, not `path`. Measurement JSON, including
-large artifacts, uses `artifact_evidence_query`, not `view`. Its complete
-byte-paged reads remain available. Training trajectories use `training_log_query`.
-Tool schemas define the accepted fields and limits.
-
-Training-log discovery returns metadata, not the full trajectory. Records
-require selected metric names or an explicit all-metrics request. JSON and log
-pages are small by default; complete retrieval remains available through
-explicit pages. Completion replies do not attach complete artifact inventories.
-The brief indexes current evidence and training operations. Full history,
-checkpoint metadata and artifact structure remain available through their sources.
-Batch evidence queries share one top-level `max_bytes` limit.
-Query items reject that field. The console identifies each artifact index.
-Recipe restoration requires exact selected source paths and preserves all
-unselected files; campaign laboratory tools are never restored as a recipe.
-
-All project Python execution goes through `uv run`. The PI must not execute
-tests or repository validation commands directly; request Runner validation
-through the contracts in `contracts/instruments.md`. Never invoke system
+The locked stack is native `mujoco==3.12.0`, `gymnasium==1.3.0`,
+`stable-baselines3==2.9.0` and `github-copilot-sdk==1.0.19`. Dependencies are
+human-owned. Run all project Python through `uv run`. Never invoke system
 `python`, `python3`, `pytest` or `ruff`, or the interpreter inside `.venv`.
 
-## Command authority
-
-Runner executes PI-authorized operations and returns factual results. It must
-not initiate or coordinate PI coding, diagnosis, debugging, repair decisions,
-or scientific interpretation. This authority boundary is immutable.
-
-The ordinary Copilot main PI session may inspect files and call
-`submit_operation`; it has no file-write tools. The trusted launcher validates
-and executes the structured request through Runner and returns factual results
-and current state to the same conversation. Scientific source edits use the
-`scientific_coding` tool, which dispatches a native Copilot coding subagent.
-The main agent's tool set excludes file writes; only the registered coder
-receives scoped reads and native SDK editors.
-Its readable and writable files are
-bound mechanically to the explicit request. Copilot main and coding agents
-have no shell tools. Native start instructions remind the coder of the locked
-scientific API versions above; it cannot install or change dependencies.
-Both roles can inspect installed APIs through `scientific_api_reference`.
-
-Each new coding assignment receives an independent native review with high
-reasoning.
-The reviewer receives the original request, supplied contract
-context and actual changes. Corrections reuse that reviewer to check only the
-reported problems and errors introduced by the repair. Its reads remain exactly
-scoped, with no write or execution authority. The reviewer returns four fields:
-`validation`, `what_is_wrong`, `why` and `where`.
-The review prioritizes coding defects and checks the scientific consistency of
-changed code. An untested scientific hypothesis is not itself a defect.
-
-When validation fails, the native coding handoff sends the review unchanged
-to the same coder within the original PI intent and file scope. It returns the
-repair to the same reviewer. The PI receives the final package or a blocked
-requirement. Scientific choices, unclear requirements and unresolved repairs
-remain with the PI. The reviewer does not choose scientific intent or approve
-campaign conclusions.
-Runner does not initiate or coordinate these repairs.
-
-Reviewer usage is recorded separately from coder and PI usage.
-Coder and reviewer receive fixed environment, scenario and operation-contract
-text with the PI's selected requirements, source context and exact file binding.
-The coding handoff does not require a verification module or executable proposal.
-It does not execute code or convert argument templates.
-The PI reviews the source and reported limitations.
-Ordinary scientific measurements remain separate PI-authorized operations.
-Analysis code is authored in the PI laboratory and executed by Runner.
-The preliminary analyst retains its existing tools and scientific-model
-publication permission; coding delegation is not exposed in that phase.
-Read-only Git remains permitted when the bounded objective requires code
-provenance or a delta, not as routine discovery. No PI session may inspect,
-modify, or directly execute the human-owned test suite; install dependencies;
-execute training or protected evaluation directly; open the viewer; or use
-mutating Git commands. Runner validation and heavy scientific operations are
-requested through the contracts in `contracts/instruments.md`.
-
-## Layout
-
-- `contracts/` - human-owned task, robot, and runtime contracts that are
-  PI-readable but not PI-writable.
-- `benchmark/` - human-owned final and task-reference contracts
-  and evaluators, hidden from the PI.
-- `runner/` - human-owned lifecycle runner, protocol enforcement and state,
-  hidden from the PI.
-- `pi_workspace/` - bounded PI/Runner exchange files.
-- `campaigns/` - Runner-written, PI-readable campaign evidence.
-- `robot_learning/scenario/` - current scenario implementation and scientific
-  measurement code. The protected `scenario/__init__.py` is a minimal package
-  initializer, not a scientific extension point; PI-owned scenario modules
-  import each other directly.
-- `robot_learning/training/` - learning-method implementation and artifact
-  support.
-- `robot_learning/train.py`, `evaluate.py`, `play.py` - generic application
-  entry points.
-- `robot_learning/training/current_params.json` - active runtime configuration overrides.
-- `campaigns/results.jsonl` - authoritative completed-operation history.
-- `campaigns/EXPERIMENTS.md` - generated human-readable history.
-- `campaigns/brief.md` - generated current PI context.
-- `pi_workspace/scientific_model.md` - campaign-start PI model of the robot
-  and task, frozen after the preliminary phase.
-- `robot_learning/lab/` - campaign-scoped PI laboratory tools and analyses,
-  separate from policy and training recipes.
-- `campaigns/evaluations/` - durable local detailed measurements, ignored by Git.
-  Operation metadata and artifact paths/fingerprints remain versioned.
-- `campaigns/checkpoints/candidates/` and `campaigns/checkpoints/retained/` -
-  archived training candidates and durable explicitly assigned model roles.
-- `models/candidates/` - disposable training candidates.
-- `tests/` - human-owned validation, outside the PI-owned scientific surface.
-
-## Human-owned paths
-
-The PI must not modify these paths during a scientific session:
-
-- `docs/` - maintainer documents and campaign reports;
-- `contracts/` - human-owned contracts readable by the PI;
-- `campaigns/` - Runner-written evidence readable by the PI;
-- `runner/` - lifecycle runner and protocol enforcement;
-- `benchmark/` - final and task-reference evaluation implementation;
-- `tools/` - maintainer utilities;
-- `AGENTS.md`, `contracts/program.md`, `contracts/scenario.md`,
-  `contracts/instruments.md`, `pi_workspace/scientific_model.md` (after its
-  campaign-start PI session);
-- `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
-  `runner/copilot/copilot_adapter.py`;
-- `tools/campaign_report.py`;
-- `runner/run_experiment.py`, `runner/reset_campaign.py`, `runner/*.py`,
-  `runner/build_brief.py`, `runner/query_training_log.py`;
-- `pyproject.toml`, `uv.lock`;
-- `contracts/policy_runtime.py`, `runner/migrate_policy_runtime.py`;
-- `contracts/robots/two_joint_arm.py` and
-  `contracts/robots/two_joint_arm.xml`;
-- `robot_learning/__init__.py`, `contracts/robots/__init__.py` and
-  `robot_learning/scenario/__init__.py` (minimal protected package initializer);
-- `tests/` - every test path; the PI does not create, modify or maintain
-  test files.
-
-A protected path takes precedence over any PI-owned prefix.
-
-The preliminary phase can inspect scientific sources under `robot_learning/`
-to construct the physical model.
-Later phases reject read/view requests and explicit shell-reader targets
-matched by the shared reserved-script policy. Searches must apply that policy
-to descendants before reading their contents or returning their paths; a
-readable repository root does not authorize all files below it. Copilot
-directory enumeration uses scoped `glob`, not directory `view`. Preliminary
-shell traversal and wildcard readers are denied; exact permitted file reads
-remain available. Maintainer documents under `docs/`, `tests/`, and harness
-scripts remain reserved in every phase.
-`AGENTS.md`, `contracts/`, and `campaigns/` remain readable.
-PI-owned scientific files remain readable, including entry points whose
-direct execution is restricted. Read access does not change write authority.
-Direct-execution restrictions remain unchanged. This is a tool-level restriction,
-not an operating-system filesystem sandbox.
-
-## PI-owned paths
-
-- `robot_learning/scenario/`, except the protected files above;
-- `robot_learning/training/`;
-- `robot_learning/train.py`, `robot_learning/evaluate.py`,
-  `robot_learning/play.py`;
-- `robot_learning/training/current_params.json`;
-- `robot_learning/lab/`;
-- the preliminary deliverable `pi_workspace/scientific_model.md` (only while its
-  preliminary session is active);
-- `pi_workspace/operation_request.json` is internal Copilot controller/Runner
-  exchange, not a main PI writable path.
-
-Within this surface, the PI has unrestricted scientific authority. Retain,
-rewrite, combine, replace, or remove PI-owned implementations and tools
-according to the scientific question and the evidence. Existing structure has
-no authority over that choice, and no option has standing merely because it
-preserves prior work.
-This is scientific ownership, not direct main-session write permission.
-The coding child cannot write operation requests or campaign/state files.
-Its native handle supports same-change corrections within the current bounded
-context without expanding file scope. A correction may supply intent and handle
-alone; the handler retains and revalidates the immutable stored file scope.
-A handle from another context is not an
-authorization to attach a coder. Lifecycle hooks and actual change reports
-support main-PI review; they do not certify scientific validity or add a
-scientific decision-maker.
-The Copilot runtime remains alive across operations and bounded contexts.
-Ordinary results continue in the same context; checkpoints end it, and the
-launcher starts a fresh context from durable state. An interrupted or lost
-response must be recovered from existing pending/completed Runner state, not
-blindly resubmitted. Publication failures stop for repair; they do not authorize
-reacceptance or re-execution.
-
-Tests are not part of the PI-owned surface. The PI does not
-inspect, create, modify, maintain, or directly execute test files. Any path
-under `tests/` in its delta is rejected as a path it does not own: it must drop
-those paths from the operation rather than edit or restore them. The Runner
-retains responsibility for validation.
-
-Durable campaign analysis and diagnostic tooling belongs under `robot_learning/lab/`.
-It is separate from policy and training recipes. Scientific runtime changes
-remain in the scenario and training surface.
+Agent-runtime internals (tool binding, coding handoff, read policy, recovery)
+are described in `docs/runtime-mechanics.md`.
 
 ## Validation
 
@@ -277,23 +88,32 @@ enumeration counts.
 
 ## Persistence and Git
 
-The campaign artifacts, especially `campaigns/brief.md`, the durable scientific
-session record, completed operation records, and their artifacts, are the
-authoritative sources of scientific evidence. Failed operations are execution
-history, not evidence.
+Campaign artifacts are the authoritative scientific evidence:
+`campaigns/brief.md`, the scientific session records, completed operation
+records and their artifacts. Failed operations are execution history, not
+evidence.
 
-Raw measurement files have the fixed local archive root
-`campaigns/evaluations/<campaign-id>/`. Runner publication excludes that root.
-Git publishes source, campaign state, compact results and artifact identities,
-not raw measurement contents. Existing query and integrity checks use the
-preserved local files. Training logs also remain local and ignored, and are
-Runner-owned output rather than scientific edits. No reset backups are kept:
-Fresh reset deletes the old campaign's ignored measurements and logs. Prepared
-Baseline reset carries only the selected baseline's evaluation files across
-cleanup in a temporary directory.
-Git alone is not a complete backup or transfer of raw campaign measurements.
+Raw measurements have the fixed local archive root
+`campaigns/evaluations/<campaign-id>/`, which Runner publication excludes. Git
+publishes source, campaign state, compact results and artifact identities, not
+raw measurement contents. Training logs also stay local and ignored. No reset
+backups are kept: a Fresh reset deletes the old campaign's ignored
+measurements and logs. A Prepared Baseline reset carries only the selected
+baseline's evaluation files across cleanup in a temporary directory. Git alone
+is not a complete backup or transfer of raw campaign measurements.
 
-The PI may use read-only Git only when the current scientific objective requires
-understanding code provenance or a code delta. Git history is not scientific
-evidence and is not a routine workspace-discovery mechanism. Recipe restoration
-uses the instrument contract rather than direct Git mutation.
+## Layout
+
+- `contracts/` - human-owned contracts that campaign agents read.
+- `benchmark/` - final and task-reference contracts and evaluators, hidden
+  from campaign agents.
+- `runner/` - lifecycle runner, protocol enforcement and Copilot integration,
+  hidden from campaign agents.
+- `tests/` - maintainer validation, hidden from campaign agents.
+- `tools/` - maintainer utilities.
+- `docs/` - maintainer documents and campaign reports.
+- Campaign repository: `robot_learning/` (PI-owned scientific code, protected
+  package initializers and `robot_learning/lab/`), `campaigns/` (Runner-written
+  evidence, `results.jsonl`, `EXPERIMENTS.md`, `brief.md`, `evaluations/`,
+  `checkpoints/`), `pi_workspace/` (scientific model and Runner exchange),
+  `runner/state/` and `models/candidates/`.

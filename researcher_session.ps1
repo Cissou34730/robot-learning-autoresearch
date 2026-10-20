@@ -369,9 +369,9 @@ function Assert-PITrustSnapshot {
     if ($violations.Count -gt 0) {
         $paths = @($violations | Sort-Object -Unique)
         throw (
-            "PI work changed repository content outside the AGENTS.md scientific " +
-            "surface: $($paths -join ', '). Refusing to load mutable Runner or " +
-            "adapter code."
+            "PI work changed repository content outside the PI-owned paths " +
+            "in contracts/authority.md: $($paths -join ', '). Refusing to load " +
+            "mutable Runner or adapter code."
         )
     }
 }
