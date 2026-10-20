@@ -91,6 +91,18 @@ backed up by Git. No reset backups are kept.
 Runner training logs under `campaigns/training_logs/` also remain local and
 ignored; they are Runner-owned output, not scientific source changes.
 
+### Campaign limits
+
+`-MaxInquiries` (default 15) limits the inquiries opened in one unattended
+run. It is a maintainer guardrail: neither the limit nor its value is shown to
+the PI. After the final permitted inquiry closes and its session record is
+saved, the launcher pauses before the next goal review. It records no campaign
+conclusion and requests no official assessment. Launch again with a higher
+`-MaxInquiries` to continue the same campaign; the value can only increase.
+
+`-Timesteps` (default 120,000) sets the training allocation per run. The PI
+sees the allocation in its session context and cannot change it.
+
 ### Known restart limitation
 
 A launcher restart resumes the persisted backend conversation; it is not always

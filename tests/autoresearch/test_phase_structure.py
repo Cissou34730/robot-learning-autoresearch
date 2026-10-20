@@ -971,7 +971,7 @@ def test_goal_review_measurement_returns_to_same_session_before_inquiry(
         runner_protocol.validate_operation_request(request, measured) == "measurement"
     )
     if at_cap:
-        with pytest.raises(ValueError, match="MaxInquiries"):
+        with pytest.raises(ValueError, match="inquiry open is not available"):
             runner_protocol.validate_operation_request(
                 _open_inquiry_request(), measured
             )
@@ -1069,7 +1069,7 @@ def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(
     }
     with pytest.raises(ValueError, match="best-known"):
         runner_protocol.validate_operation_request(assessment, state)
-    with pytest.raises(ValueError, match="cap"):
+    with pytest.raises(ValueError, match="inquiry open is not available"):
         runner_protocol.validate_operation_request(_open_inquiry_request(), state)
 
     training_count = state["counters"]["training"]

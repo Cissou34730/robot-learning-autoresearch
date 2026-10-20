@@ -1837,7 +1837,7 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
             "rationale": "It could change the route.",
         }
     }
-    with pytest.raises(ValueError, match="MaxInquiries"):
+    with pytest.raises(ValueError, match="inquiry open is not available"):
         protocol.validate_operation_request(opening, state)
 
 

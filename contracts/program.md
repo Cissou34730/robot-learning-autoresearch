@@ -132,13 +132,6 @@ Once an inquiry is opened, only the goal-review checkpoint may follow in that
 session. Model roles may be assigned before the campaign-level decision,
 without making the inquiry count a scientific decision signal.
 
-The inquiry cap is a temporary unattended-execution limit. After the final
-permitted inquiry closes and its session checkpoints, the launcher pauses
-without recording a campaign conclusion or forcing official assessment.
-An active inquiry and its checkpoint finish normally. The maintainer may
-explicitly raise `-MaxInquiries` at that paused boundary to resume the same
-campaign. The cap does not change scientific instrument permissions.
-
 ## Inquiry work
 
 An inquiry is a temporary question or obstacle whose resolution can change the

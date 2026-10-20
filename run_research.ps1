@@ -605,7 +605,7 @@ function Get-CampaignResourceSummary {
     $measurements = @($completed | Where-Object { $_.kind -eq "measurement" }).Count
     $training = @($completed | Where-Object { $_.kind -eq "training" }).Count
     return (
-        "inquiries $([int]$State.counters.inquiry)/$([int]$State.campaign.max_inquiries) | " +
+        "inquiries $([int]$State.counters.inquiry) | " +
         "sessions $([int]$State.counters.session) | measurements $measurements | " +
         "training $training | candidates $($State.candidates.PSObject.Properties.Count)"
     )
@@ -756,7 +756,7 @@ function New-ScientificSessionPrompt {
         @(
             if ($session.kind -eq "goal_review") {
                 "Compare the strongest candidate's prospects with the expected contribution of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
-                "A development score below the goal does not prohibit assessment. An untested variant or unresolved cause does not justify another inquiry by itself."
+                "An untested variant or unresolved cause does not justify another inquiry by itself."
             }
             else {
                 "State the unresolved scientific distinction before selecting an operation."
@@ -1069,7 +1069,8 @@ try {
     }
     Write-Status (
         "$campaignAction | goal-centered research | " +
-        (Get-CampaignResourceSummary -State $launchState)
+        (Get-CampaignResourceSummary -State $launchState) +
+        " | inquiry cap $([int]$launchState.campaign.max_inquiries)"
     ) -Color White -Label campaign
 
     :CampaignLoop while ($true) {

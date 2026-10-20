@@ -678,7 +678,7 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
         if session["kind"] != "goal_review":
             raise ValueError("only a goal-review session may open an inquiry")
         if int(state["counters"]["inquiry"]) >= int(state["campaign"]["max_inquiries"]):
-            raise ValueError("the unattended MaxInquiries creation cap is reached")
+            raise ValueError("inquiry open is not available in this session")
         for field in expected - {"action"}:
             _nonempty(request, field, f"inquiry {field}")
         checkpoint = state.get("pi_checkpoint")
