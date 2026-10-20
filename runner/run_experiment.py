@@ -29,6 +29,7 @@ ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
 TIMESTEPS = 120_000
 PUBLICATION_FAILURE_EXIT_CODE = 3
+REPEATS_FIELD = "repeats_earlier_measurements"
 
 
 class FrozenOperationMismatch(ValueError):
@@ -263,19 +264,30 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
         has_task_reference = any(
             spec["instrument"] == "task_reference" for spec in planned
         )
+        semantics = (
+            protocol.evaluation_semantics_fingerprint()
+            if has_research_evaluation
+            else None
+        )
+        task_reference_contract = (
+            _task_reference_contract() if has_task_reference else None
+        )
+        for spec in planned:
+            repeats = _earlier_measurements_of_same_episodes(
+                state,
+                spec,
+                semantics=semantics,
+                task_reference_contract=task_reference_contract,
+            )
+            if repeats:
+                spec[REPEATS_FIELD] = repeats
         return {
             "measurements": planned,
             "paired_comparisons": protocol.planned_paired_comparisons(
                 measurement, state, planned
             ),
-            "evaluation_semantics": (
-                protocol.evaluation_semantics_fingerprint()
-                if has_research_evaluation
-                else None
-            ),
-            "task_reference_contract": (
-                _task_reference_contract() if has_task_reference else None
-            ),
+            "evaluation_semantics": semantics,
+            "task_reference_contract": task_reference_contract,
             "module_provenance": module_provenance,
             "partial_results": [],
             "result": None,
@@ -795,6 +807,64 @@ def _execute_campaign_conclusion(state: dict, pending: dict) -> int:
     return 0
 
 
+def _episode_seeds(seed: int, episodes: int) -> set[int]:
+    return set(range(seed, seed + episodes))
+
+
+def _earlier_measurements_of_same_episodes(
+    state: dict,
+    spec: dict,
+    *,
+    semantics: str | None,
+    task_reference_contract: dict | None,
+) -> list[dict]:
+    instrument = spec["instrument"]
+    if instrument not in {"research_evaluation", "task_reference"}:
+        return []
+    if instrument == "research_evaluation":
+        planned_seeds = _episode_seeds(int(spec["seed"]), int(spec["episodes"]))
+    elif not isinstance(task_reference_contract, dict):
+        return []
+    repeats: list[dict] = []
+    for event in state.get("operation_events", []):
+        if event.get("kind") != "measurement" or event.get("status") != "completed":
+            continue
+        result = event.get("result")
+        measurements = result.get("measurements") if isinstance(result, dict) else None
+        for item in measurements if isinstance(measurements, list) else []:
+            metrics = item.get("metrics") if isinstance(item, dict) else None
+            if (
+                not isinstance(metrics, dict)
+                or item.get("instrument") != instrument
+                or metrics.get("model_fingerprint") != spec["model_fingerprint"]
+            ):
+                continue
+            if instrument == "research_evaluation":
+                if metrics.get("evaluation_semantics") != semantics:
+                    continue
+                shared = len(
+                    planned_seeds
+                    & _episode_seeds(int(metrics["seed"]), int(metrics["episodes"]))
+                )
+            elif (
+                metrics.get("panel") == task_reference_contract["panel"]
+                and metrics.get("panel_version")
+                == task_reference_contract["panel_version"]
+            ):
+                shared = int(task_reference_contract["episodes"])
+            else:
+                continue
+            if shared:
+                repeats.append(
+                    {
+                        "operation_id": event["id"],
+                        "label": item.get("label"),
+                        "shared_episodes": shared,
+                    }
+                )
+    return repeats
+
+
 def _measurement_result(
     spec: dict,
     metrics: dict,
@@ -811,6 +881,8 @@ def _measurement_result(
     record["model_fingerprint"] = spec["model_fingerprint"]
     if semantics is not None:
         record["evaluation_semantics"] = semantics
+    if spec.get(REPEATS_FIELD):
+        record[REPEATS_FIELD] = copy.deepcopy(spec[REPEATS_FIELD])
     return {
         "instrument": spec["instrument"],
         "candidate": spec["candidate"],

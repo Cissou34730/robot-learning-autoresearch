@@ -155,9 +155,8 @@ dynamics, test an explanation or reveal that the question itself should change.
 
 Training dynamics and saved checkpoints can nominate candidate artifacts for
 development measurement. They do not establish development performance, and
-the terminal checkpoint has no privileged status. Select the artifact or
-comparison that best addresses the recorded decision frontier; this does not
-require evaluating every checkpoint.
+the terminal checkpoint has no privileged status. Select the artifacts or
+comparisons that best address the recorded decision frontier.
 
 Interpret training proxies in the context of the exposure and runtime that
 produced them. When these change during training, use that context to select

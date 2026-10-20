@@ -453,6 +453,8 @@ Set `instrument` to `task_reference`.
 The `candidate` field is required and must be non-empty.
 The `label` field is optional.
 This instrument uses its protected fixed panel.
+Its episodes are deterministic: measuring the same saved artifact again
+reproduces the recorded result and supplies no additional sample.
 Its controller execution follows the saved-runtime contract under
 [Saved controller execution](#saved-controller-execution), not the PI-owned
 research environment.
@@ -531,6 +533,14 @@ use the same episode seeds.
 The result keeps the accepted candidate artifacts, evaluator semantics, module
 sources, PI-owned scientific changes, and effective parameters.
 It also keeps reused-panel identities and paired-comparison integrity facts.
+
+Under the same evaluation semantics or task-reference panel, an episode seed
+identifies a deterministic episode for a saved artifact. When a
+`research_evaluation` or `task_reference` measurement shares episodes with an
+earlier completed measurement of the same saved artifact and instrument, its
+result lists `repeats_earlier_measurements` with the earlier operation ID,
+label and number of shared episodes. Shared episodes reproduce recorded
+outcomes; they are not independent confirmation.
 
 ### Artifact contents metadata
 

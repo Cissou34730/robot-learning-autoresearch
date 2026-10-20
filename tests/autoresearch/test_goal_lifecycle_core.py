@@ -1749,6 +1749,59 @@ def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):
         run_experiment.execute_pending_operation()
 
 
+def test_measurement_reports_earlier_measurement_of_same_episodes():
+    def event(identifier: str, instrument: str, metrics: dict) -> dict:
+        return {
+            "id": identifier,
+            "kind": "measurement",
+            "status": "completed",
+            "result": {
+                "measurements": [
+                    {
+                        "instrument": instrument,
+                        "label": identifier,
+                        "metrics": {"model_fingerprint": "model", **metrics},
+                    }
+                ]
+            },
+        }
+
+    contract = {"panel": "reference", "panel_version": 1, "episodes": 200, "seed": 5}
+    state = {
+        "operation_events": [
+            event("M1", "task_reference", {"panel": "reference", "panel_version": 1}),
+            event(
+                "M2",
+                "research_evaluation",
+                {"evaluation_semantics": "s", "seed": 100, "episodes": 50},
+            ),
+            event(
+                "M3",
+                "research_evaluation",
+                {"evaluation_semantics": "other", "seed": 100, "episodes": 50},
+            ),
+        ]
+    }
+
+    def repeats(spec: dict) -> list[dict]:
+        return run_experiment._earlier_measurements_of_same_episodes(
+            state,
+            {"model_fingerprint": "model", **spec},
+            semantics="s",
+            task_reference_contract=contract,
+        )
+
+    assert repeats({"instrument": "task_reference"}) == [
+        {"operation_id": "M1", "label": "M1", "shared_episodes": 200}
+    ]
+    assert repeats(
+        {"instrument": "research_evaluation", "seed": 140, "episodes": 50}
+    ) == [{"operation_id": "M2", "label": "M2", "shared_episodes": 10}]
+    assert repeats(
+        {"instrument": "research_evaluation", "seed": 150, "episodes": 50}
+    ) == []
+
+
 def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path):
     research = tmp_path / "campaigns"
     research.mkdir()
