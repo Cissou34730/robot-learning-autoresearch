@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Campaign 1c940d68 failed its official test. This report explains the result, the evidence and possible harness changes.">
+    <title>Campaign 1c940d68 (20 October 2026): what happened and what to change</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 72px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        main {
+            max-width: 1120px;
+            margin: auto;
+            padding: 32px 24px 64px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: -.025em;
+        }
+
+        h2 {
+            font-size: 1.55rem;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        p+p {
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--cp-link);
+            text-underline-offset: 3px;
+        }
+
+        code {
+            font: .88em Consolas, "Courier New", Courier, monospace;
+            overflow-wrap: anywhere;
+        }
+
+        button {
+            font: inherit;
+            padding: 8px 12px;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            border-color: var(--cp-accent);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--cp-accent);
+            outline-offset: 4px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .eyebrow {
+            color: var(--cp-accent);
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            font-size: 1.12rem;
+            max-width: 850px;
+            margin-top: 16px;
+        }
+
+        .muted,
+        .small {
+            color: var(--cp-text-muted);
+        }
+
+        .small {
+            font-size: .86rem;
+        }
+
+        .snapshot {
+            margin-top: 12px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin: 24px 0;
+            padding: 12px 16px;
+            background: var(--cp-bg-elevated);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+        }
+
+        section {
+            margin-top: 36px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .four {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .card {
+            padding: 20px;
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px var(--cp-border);
+            min-width: 0;
+        }
+
+        .metric {
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            line-height: 1.2;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ok {
+            color: var(--cp-success);
+        }
+
+        .bad {
+            color: var(--cp-danger);
+        }
+
+        .note {
+            padding: 16px 20px;
+            background: var(--cp-accent-soft);
+            border-left: 4px solid var(--cp-accent);
+            border-radius: .625rem;
+            margin-top: 16px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: .92rem;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--cp-border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--cp-surface-soft);
+            color: var(--cp-text-muted);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .steps {
+            padding-left: 24px;
+        }
+
+        li+li {
+            margin-top: 8px;
+        }
+
+        details {
+            margin-top: 16px;
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            background: var(--cp-surface);
+        }
+
+        summary {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .details-body {
+            padding: 0 16px 16px;
+        }
+
+        dl {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 12px 16px;
+        }
+
+        dt {
+            font-weight: 600;
+        }
+
+        dd {
+            margin: 0;
+        }
+
+        .diagram {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+        }
+
+        .diagram svg {
+            display: block;
+            width: min(100%, 520px);
+            height: auto;
+            margin: auto;
+        }
+
+        .diagram figcaption {
+            margin-top: 12px;
+        }
+
+        .svg-label {
+            fill: var(--cp-text);
+            font: 14px "Segoe UI", Aptos, Calibri, sans-serif;
+        }
+
+        .svg-small {
+            fill: var(--cp-text-muted);
+            font: 12px "Segoe UI", Aptos, Calibri, sans-serif;
+        }
+
+        footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--cp-border);
+        }
+
+        @media (max-width: 800px) {
+
+            .four,
+            .two {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 520px) {
+            main {
+                padding: 24px 16px 48px;
+            }
+
+            .four,
+            .two {
+                grid-template-columns: 1fr;
+            }
+
+            dl {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+        }
+
+        @media print {
+
+            button,
+            nav {
+                display: none;
+            }
+
+            main {
+                max-width: none;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+
+            .table-wrap {
+                overflow: visible;
+            }
+
+            tr,
+            .card {
+                break-inside: avoid;
+            }
+
+            details .details-body {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="top"><span></span><button id="theme-toggle" type="button">Change theme</button></div>
+            <p class="eyebrow">Campaign 1c940d68 / final report</p>
+            <h1>Campaign 1c940d68 (20 October 2026): what happened and what to change</h1>
+            <p class="intro">The final policy passed 189 of 200 official cases. The goal was 196. The campaign ended in
+                about 47 minutes.</p>
+            <p class="intro">The main missed opportunity was scientific. The failures pointed to a joint-limit problem,
+                but the PI changed the training target mix instead of testing that cause.</p>
+            <p class="snapshot small">Campaign: <code>1c940d68</code>. Local time: UTC+2. Fresh reset: 11:20. Official
+                assessment: 12:07.</p>
+            <nav aria-label="Report sections"><a href="#summary">Summary</a><a href="#task">Task</a><a
+                    href="#timeline">Timeline</a><a href="#results">Results</a><a href="#went-well">What went well</a><a
+                    href="#tool-errors">PI errors</a><a href="#science">Scientific errors</a><a href="#changes">Harness
+                    changes</a><a href="#proposals">Proposals</a><a href="#limits">Limits</a></nav>
+        </header>
+
+        <section id="summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">1. Summary</h2>
+            <div class="grid four">
+                <article class="card">
+                    <p class="metric bad">189 / 200</p>
+                    <p>Official successes.</p>
+                    <p class="small">The test failed.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">94.5%</p>
+                    <p>Official success rate.</p>
+                    <p class="small">The goal was 98%.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">3 runs</p>
+                    <p>Each requested 120,000 steps.</p>
+                    <p class="small">The records report 120,832 completed steps.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">2 inquiries</p>
+                    <p>Two bounded research questions.</p>
+                    <p class="small">There were 15 allowed inquiries.</p>
+                </article>
+            </div>
+            <div class="note">
+                <p><strong>Outcome:</strong> T2 checkpoint 95,232 scored 189/200 on the official test. It missed the
+                    required 196 successes by seven cases.</p>
+                <p>The development panel gave T2 and T3 the same score: 194/200. It also gave both the same six failed
+                    episodes. This was one fixed practice panel, not a second official test.</p>
+                <p>The evidence supports a likely geometric cause. It does not confirm the cause because the campaign
+                    did not record the joint angles at failure.</p>
+            </div>
+        </section>
+
+        <section id="task" aria-labelledby="task-title">
+            <h2 id="task-title">2. The task</h2>
+            <div class="card">
+                <p>A two-joint planar arm in MuJoCo had an upper arm of 0.12 m and a forearm of 0.10 m. Each joint could
+                    turn from -170 to +170 degrees. Targets appeared 0.06 to 0.20 m from the base at any bearing. The
+                    hand had to stay within 1 cm of a target for 100 uninterrupted steps during a 500-step episode. The
+                    goal was at least 196 successes in the official 200-episode assessment. That assessment was
+                    terminal: it ended the campaign.</p>
+                <p style="margin-top:12px">The PI was the AI principal investigator. The PI made scientific decisions.
+                    Runner was the harness software. It ran operations and recorded facts. Coder and reviewer were AI
+                    agents that changed and checked code for the PI. An inquiry was a bounded research question opened
+                    by the PI.</p>
+            </div>
+        </section>
+
+        <section id="timeline" aria-labelledby="timeline-title">
+            <h2 id="timeline-title">3. Timeline</h2>
+            <p>A task-reference panel is a fixed set of 200 practice episodes. It is not the official test. A checkpoint
+                is a saved policy from one point in training. PPO is a method for training a policy from trial outcomes.
+            </p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Operation</th>
+                            <th scope="col">What happened</th>
+                            <th scope="col">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>11:20</td>
+                            <td>Fresh reset</td>
+                            <td>The campaign started.</td>
+                            <td>Campaign 1c940d68.</td>
+                        </tr>
+                        <tr>
+                            <td>11:29</td>
+                            <td>Analyst</td>
+                            <td>The preliminary analyst wrote the scientific model.</td>
+                            <td>The model named joint-limit margins by bearing as useful evidence.</td>
+                        </tr>
+                        <tr>
+                            <td>11:31-11:33</td>
+                            <td>T1, startup S1</td>
+                            <td>Fresh PPO training, seed 17. Targets covered the full 0.06-0.20 m radius range. The
+                                earlier recipe used only 0.14-0.20 m.</td>
+                            <td>Last training proxy: 0.92.</td>
+                        </tr>
+                        <tr>
+                            <td>11:35</td>
+                            <td>M1</td>
+                            <td>T1 checkpoint 120,832 was measured on the task-reference panel.</td>
+                            <td>190/200. All 10 failures timed out. Their bearings were 125-164 degrees.</td>
+                        </tr>
+                        <tr>
+                            <td>After M1</td>
+                            <td>E1 and E2</td>
+                            <td>T1 became best-known. The session checkpoint was saved.</td>
+                            <td>No official result.</td>
+                        </tr>
+                        <tr>
+                            <td>11:38</td>
+                            <td>E3, goal review S2</td>
+                            <td>The PI opened inquiry I1: which cause explained the failures, and what could improve
+                                success toward 98%?</td>
+                            <td>I1 began.</td>
+                        </tr>
+                        <tr>
+                            <td>11:40</td>
+                            <td>M2, inquiry S3</td>
+                            <td>T1 was measured with the PI-owned research evaluation. It used different evaluation code
+                                and seed 91,000.</td>
+                            <td>195/200. Four failures never entered tolerance. One entered, then broke the hold after 3
+                                steps. All five bearings were 127-164 degrees.</td>
+                        </tr>
+                        <tr>
+                            <td>11:43-11:47</td>
+                            <td>T2, inquiry S3</td>
+                            <td>T2 continued from T1 with seed 23. Half of training targets covered the full circle.
+                                Half focused on 120-170 degrees.</td>
+                            <td>New training run.</td>
+                        </tr>
+                        <tr>
+                            <td>11:49</td>
+                            <td>M3</td>
+                            <td>T2 checkpoint 95,232 was chosen by its highest training proxy, 0.91. T1 was measured
+                                again on the same panel.</td>
+                            <td>T2: 194/200 versus T1: 190/200. T2 fixed five T1 failures and added one new failure. Six
+                                remained.</td>
+                        </tr>
+                        <tr>
+                            <td>After M3</td>
+                            <td>E5 and E6</td>
+                            <td>T2 became best-known. I1 closed as a limited result.</td>
+                            <td>No distinct cause was confirmed.</td>
+                        </tr>
+                        <tr>
+                            <td>11:54</td>
+                            <td>E8, goal review S4</td>
+                            <td>The PI opened inquiry I2: would more training focus on 125-150 degrees fix the remaining
+                                failures?</td>
+                            <td>I2 began.</td>
+                        </tr>
+                        <tr>
+                            <td>11:56-12:01</td>
+                            <td>T3, inquiry S5</td>
+                            <td>T3 continued from T2 with seed 31. Three quarters of training targets were at 125-150
+                                degrees. One quarter covered the full circle.</td>
+                            <td>New training run.</td>
+                        </tr>
+                        <tr>
+                            <td>12:03</td>
+                            <td>M4</td>
+                            <td>T3 checkpoint 75,776 had the highest T3 proxy, 0.80. T2 was measured again on the same
+                                fixed panel.</td>
+                            <td>Both scored 194/200. Both failed episodes 41, 92, 120, 124, 142 and 172.</td>
+                        </tr>
+                        <tr>
+                            <td>After M4</td>
+                            <td>E10</td>
+                            <td>I2 closed as a null result.</td>
+                            <td>The extra focus changed none of the six failures.</td>
+                        </tr>
+                        <tr>
+                            <td>12:07</td>
+                            <td>E12, goal review S6</td>
+                            <td>The PI requested the official test of T2 checkpoint 95,232.</td>
+                            <td>The reason was that no distinct evidence-supported action was known. The official result
+                                could fail.</td>
+                        </tr>
+                        <tr>
+                            <td>12:07</td>
+                            <td>Official assessment</td>
+                            <td>The terminal test ended the campaign.</td>
+                            <td>FAILED: 189/200, or 94.5%.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="small" style="margin-top:12px">The campaign had 7 AI sessions: 1 analyst, 1 startup, 3 goal
+                reviews and 2 inquiry sessions. It had 4 measurements and 3 training runs.</p>
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+            <h2 id="results-title">4. Results</h2>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Measurement</th>
+                            <th scope="col">Model and evaluation</th>
+                            <th scope="col">Successes</th>
+                            <th scope="col">Failures</th>
+                            <th scope="col">What it shows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>M1</td>
+                            <td>T1 checkpoint 120,832, task-reference panel</td>
+                            <td>190/200 (95%)</td>
+                            <td>10</td>
+                            <td>Every failure timed out at 500 steps. Bearings: 125-164 degrees.</td>
+                        </tr>
+                        <tr>
+                            <td>M2</td>
+                            <td>T1, PI-owned research evaluation; different code, seed 91,000</td>
+                            <td>195/200 (97.5%)</td>
+                            <td>5</td>
+                            <td>Four cases never entered tolerance. One broke the hold after 3 steps.</td>
+                        </tr>
+                        <tr>
+                            <td>M3</td>
+                            <td>T2 checkpoint 95,232, task-reference panel</td>
+                            <td>194/200 (97%)</td>
+                            <td>6</td>
+                            <td>Five T1 failures were fixed. One new failure appeared.</td>
+                        </tr>
+                        <tr>
+                            <td>M4</td>
+                            <td>T3 checkpoint 75,776, task-reference panel</td>
+                            <td>194/200 (97%)</td>
+                            <td>6</td>
+                            <td>The same six episode IDs failed as for T2 on this panel.</td>
+                        </tr>
+                        <tr>
+                            <td>M4 repeat</td>
+                            <td>T2 checkpoint 95,232, same task-reference panel</td>
+                            <td>194/200 (97%)</td>
+                            <td>6</td>
+                            <td>This repeated the M3 result. It was not a new sample.</td>
+                        </tr>
+                        <tr>
+                            <td>Official</td>
+                            <td>T2 checkpoint 95,232, terminal 200-episode assessment</td>
+                            <td>189/200 (94.5%)</td>
+                            <td>11</td>
+                            <td>Failed the goal of 196/200.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>Training proxy:</strong> a score recorded during training. The PI used the highest proxy to
+                    choose T2 and T3 checkpoints. A proxy score does not establish how a checkpoint will score on an
+                    evaluation.</p>
+                <p>Each run saved 24 checkpoints. The PI measured only one checkpoint per run. A previous campaign
+                    showed the risk: a high-proxy checkpoint scored 85.5%, while another scored 96%.</p>
+            </div>
+        </section>
+
+        <section id="went-well" aria-labelledby="went-well-title">
+            <h2 id="went-well-title">5. What went well</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>Clean operations</h3>
+                    <p>Runner made 209 tool calls. Four failed, or 1.9%. All four failures were minor: two
+                        directory-listing denials, one shell-reader denial and one missing path.</p>
+                    <p>No operation submission was rejected. All three coding delegations passed review on the first
+                        try. They needed no repair round.</p>
+                </article>
+                <article class="card">
+                    <h3>Sound evidence practice</h3>
+                    <p>The PI did not try to read reserved harness or maintainer files. PI text had no cap or cost
+                        reasoning.</p>
+                    <p>The PI kept recipe evaluation separate from protected evidence. The PI used paired episode
+                        comparisons and recorded null results honestly.</p>
+                    <p>The whole campaign took about 47 minutes from reset to assessment.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="tool-errors" aria-labelledby="tool-errors-title">
+            <h2 id="tool-errors-title">6. PI errors at tool level</h2>
+            <div class="card">
+                <p>There were only four minor tool denials or failures. They were two directory-listing denials, one
+                    shell-reader denial and one missing path. There were no operation errors and no rejected operation
+                    submissions.</p>
+                <p>The main errors were scientific choices, not tool use.</p>
+            </div>
+        </section>
+
+        <section id="science" aria-labelledby="science-title">
+            <h2 id="science-title">7. Scientific errors</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>The likely physical cause was not tested</h3>
+                    <p>The two-link arm has two possible elbow postures for many targets. The shoulder limit can make
+                        one posture impossible for some target directions.</p>
+                    <p>On the task-reference panel, 65 of 200 targets were in the measured geometric zone: 31 on the
+                        positive-bearing side and 34 on the negative-bearing side. Every failure was among the 31
+                        positive-side targets. The other 169 episodes had no failures. No failure occurred on the
+                        negative side of the zone.</p>
+                    <p>T1 failed 10 of 10 times in this zone. T2 failed 6 of 6 times. T3 failed 6 of 6 times. T2 and T3
+                        had the same six failed episodes. Their final hand distances were 1.1-2.5 cm from the target.
+                    </p>
+                </article>
+                <article class="card">
+                    <h3>Hypothesis, not confirmed cause</h3>
+                    <p><strong>Hypothesis:</strong> the policy always bends the elbow in the same direction. On the
+                        positive side, this posture may push the shoulder past its +170 degree limit. The hand then
+                        stops 1-2.5 cm short. The mirrored side may work because the same elbow posture is allowed
+                        there.</p>
+                    <p>The pattern was strong. A Fisher-type test gave p below 0.00001. But the campaign has no
+                        joint-angle recordings to confirm the posture or the shoulder limit at failure.</p>
+                    <p>The PI's scientific model already said that shoulder limits may block one elbow posture for some
+                        directions. It named joint-limit margins by bearing as useful evidence. The PI did not calculate
+                        them.</p>
+                </article>
+            </div>
+            <figure class="diagram card">
+                <svg viewBox="0 0 420 260" role="img" aria-labelledby="arm-title arm-desc">
+                    <title id="arm-title">Two-link arm and positive-side failure zone</title>
+                    <desc id="arm-desc">A schematic two-link arm reaches toward a target in a shaded positive-bearing
+                        zone. A second elbow posture is shown as a dashed line. The diagram is not to scale.</desc>
+                    <path d="M180 170 L124 111 A84 84 0 0 1 113 159 L180 170 Z" fill="var(--cp-accent-soft)"
+                        stroke="var(--cp-accent)" stroke-width="1.5"></path>
+                    <path d="M180 170 L124 111" fill="none" stroke="var(--cp-border-strong)" stroke-dasharray="4 4">
+                    </path>
+                    <path d="M180 170 L153 126 L124 111" fill="none" stroke="var(--cp-accent)" stroke-width="7"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M180 170 L145 171 L124 111" fill="none" stroke="var(--cp-text-muted)" stroke-width="3"
+                        stroke-dasharray="6 5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <circle cx="180" cy="170" r="6" fill="var(--cp-text)"></circle>
+                    <circle cx="153" cy="126" r="5" fill="var(--cp-accent)"></circle>
+                    <circle cx="145" cy="171" r="4" fill="var(--cp-text-muted)"></circle>
+                    <circle cx="124" cy="111" r="6" fill="var(--cp-danger)"></circle>
+                    <path d="M180 170 L220 170" fill="none" stroke="var(--cp-border-strong)" stroke-width="1"></path>
+                    <text x="187" y="187" class="svg-small">base</text>
+                    <text x="149" y="117" class="svg-small">elbow</text>
+                    <text x="74" y="98" class="svg-small">target</text>
+                    <text x="57" y="133" class="svg-label">Positive-side</text>
+                    <text x="57" y="151" class="svg-label">failure zone</text>
+                    <text x="187" y="155" class="svg-small">0°</text>
+                    <text x="92" y="181" class="svg-small">negative side</text>
+                    <line x1="260" y1="91" x2="285" y2="91" stroke="var(--cp-accent)" stroke-width="7"
+                        stroke-linecap="round"></line>
+                    <text x="293" y="96" class="svg-small">one elbow posture</text>
+                    <line x1="260" y1="117" x2="285" y2="117" stroke="var(--cp-text-muted)" stroke-width="3"
+                        stroke-dasharray="6 5"></line>
+                    <text x="293" y="122" class="svg-small">alternate posture</text>
+                    <text x="260" y="159" class="svg-label">Schematic, not to scale</text>
+                </svg>
+                <figcaption class="small">The shaded sector marks the positive-bearing side. Both lines show possible
+                    elbow postures to the same target. The dashed posture is illustrative. No joint angles were recorded
+                    in this campaign.</figcaption>
+            </figure>
+            <div class="grid two" style="margin-top:16px">
+                <article class="card">
+                    <h3>A repeat was treated as confirmation</h3>
+                    <p>M4 measured T2 on the same fixed panel as M3. The panel is deterministic. It returned the same
+                        194/200 score and same six failed episodes.</p>
+                    <p>The final decision cited 194/200 on both M3 and M4 as if they were two results. The second result
+                        added no new evidence.</p>
+                </article>
+                <article class="card">
+                    <h3>One checkpoint per run was measured</h3>
+                    <p>Each run saved 24 checkpoints. The PI measured one checkpoint from each run. The PI chose
+                        checkpoints by the training proxy, not by a comparison across checkpoints.</p>
+                    <p>A previous campaign had a high-proxy checkpoint at 85.5% and another checkpoint at 96%. This
+                        shows why proxy rank alone is weak evidence.</p>
+                </article>
+                <article class="card">
+                    <h3>One panel was reused for selection</h3>
+                    <p>The PI chose T2 because it scored best on the same 200-episode practice panel. Its official score
+                        was 189/200.</p>
+                    <p>If true success is near 97%, a new 200-episode test has about a 28% chance to reach 196
+                        successes. The 95% interval for 194/200 is about 93.6-98.9%.</p>
+                </article>
+                <article class="card">
+                    <h3>The official test came too early</h3>
+                    <p>The PI requested the terminal assessment at 194/200 on the practice panel. Thirteen of 15
+                        inquiries were unused. The model's own joint-limit check was not tested.</p>
+                    <p>The reason given was that no evidence-supported action was known. That reason was not correct.
+                        The model had already named a discriminating check.</p>
+                </article>
+            </div>
+            <div class="note">
+                <p>T2 and T3 changed the training bearing mix. T3 did not change any of the six failures. This result
+                    should have led to a test of the suspected joint-limit cause, not another claim that extra focus had
+                    helped.</p>
+            </div>
+        </section>
+
+        <section id="changes" aria-labelledby="changes-title">
+            <h2 id="changes-title">8. Did the recent harness changes help?</h2>
+            <p>Campaign A ran before the changes. Campaign C used some changes and stopped early. Campaign D is this
+                campaign, with all changes active.</p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Measure</th>
+                            <th scope="col">Campaign A<br><span class="small">df7f6838, 19-20 Oct</span></th>
+                            <th scope="col">Campaign C<br><span class="small">5f98f2b5, 20 Oct morning</span></th>
+                            <th scope="col">Campaign D<br><span class="small">1c940d68, this report</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Changes active</td>
+                            <td>Before recent changes. PI could see the limit of 15 inquiries.</td>
+                            <td>Partial changes.</td>
+                            <td>All changes.</td>
+                        </tr>
+                        <tr>
+                            <td>Sessions and time</td>
+                            <td>11 sessions; about 187 minutes of session time.</td>
+                            <td>4 sessions; about 45 minutes.</td>
+                            <td>7 sessions; about 45 minutes in the comparison record, or 47 minutes from reset to
+                                assessment.</td>
+                        </tr>
+                        <tr>
+                            <td>Tool calls and failures</td>
+                            <td>559 calls; 14 failed (2.5%).</td>
+                            <td>161 calls; 9 failed (5.6%).</td>
+                            <td>209 calls; 4 failed (1.9%).</td>
+                        </tr>
+                        <tr>
+                            <td>Operation submissions</td>
+                            <td>1 rejected. Maintainer files changed during the run.</td>
+                            <td>2 rejected because of format.</td>
+                            <td>0 rejected.</td>
+                        </tr>
+                        <tr>
+                            <td>Reserved-path reads</td>
+                            <td>Not reported here.</td>
+                            <td>3 attempts to read harness paths.</td>
+                            <td>0 attempts.</td>
+                        </tr>
+                        <tr>
+                            <td>Inquiries</td>
+                            <td>4</td>
+                            <td>1, then the maintainer stopped the campaign.</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>Training runs and measurements</td>
+                            <td>3 runs; 10 measurements.</td>
+                            <td>Not reported here.</td>
+                            <td>3 runs; 4 measurements.</td>
+                        </tr>
+                        <tr>
+                            <td>Best practice-panel result</td>
+                            <td>195/200</td>
+                            <td>Not reported here.</td>
+                            <td>194/200</td>
+                        </tr>
+                        <tr>
+                            <td>Official result</td>
+                            <td>97.5% (195/200), failed.</td>
+                            <td>No official result reported.</td>
+                            <td>94.5% (189/200), failed.</td>
+                        </tr>
+                        <tr>
+                            <td>PI text</td>
+                            <td>Final reason still cited cost and delay.</td>
+                            <td>Not reported here.</td>
+                            <td>No cap or cost language.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>Mechanics improved.</strong> Campaign D had fewer tool failures, no rejected submissions, no
+                    reserved-path reads, and no cap or cost language.</p>
+                <p><strong>Scientific decisions did not improve.</strong> Campaign D used fewer measurements and
+                    inquiries than A. It requested an official test with a weaker practice-panel result.</p>
+                <p>One campaign cannot prove the cause. One possible contributor is that the shortened inquiry prompt
+                    removed the warning that proxy rank alone does not show which saved models need measurement. It kept
+                    the sentence that measuring every checkpoint is not required. The goal-review prompt also changed
+                    from measuring to resolve uncertainty or develop the method to measuring only when a result bears on
+                    the current choice.</p>
+                <p>Campaign A also stopped after 4 of 15 allowed inquiries. This does not prove that a hidden inquiry
+                    limit caused early stopping.</p>
+            </div>
+        </section>
+
+        <section id="proposals" aria-labelledby="proposals-title">
+            <h2 id="proposals-title">9. Proposed harness improvements</h2>
+            <p>These proposals improve the process. They do not tell the PI what scientific answer to choose.</p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Proposal</th>
+                            <th scope="col">Problem it addresses</th>
+                            <th scope="col">Risk</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>P1. Balance the inquiry prompt.</strong> Remove the sentence that says measuring
+                                every checkpoint is not required, or restore the warning that proxy rank alone does not
+                                show which saved models deserve measurement. Keep the proxy caution beside the
+                                checkpoint sentence in the program contract.</td>
+                            <td>Only one checkpoint per run was measured, and the PI relied on the training proxy.</td>
+                            <td>Low.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>P2. Restore “or develop the method”</strong> in the goal-review prompt's
+                                measurement sentence.</td>
+                            <td>The goal reviews asked for measurements only when they resolved uncertainty about the
+                                current choice. This may have reduced useful measurements.</td>
+                            <td>Low.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>P3. Report deterministic repeats.</strong> If Runner sees the same
+                                saved-artifact fingerprint on the fixed practice panel, return the earlier result and
+                                say that this is a repeat, not a new sample.</td>
+                            <td>M4 repeated T2 on the same panel and was treated as separate confirmation.</td>
+                            <td>Low. This is a mechanical fact.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>P4. Add uncertainty facts to success results.</strong> Report a 95% interval and
+                                the official threshold of 196/200.</td>
+                            <td>The PI selected a model from a reused panel and treated 194/200 as strong support for
+                                the official goal.</td>
+                            <td>Low. This adds facts, not advice.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>P5. Improve the pre-assessment review.</strong> When the practice score is below
+                                the goal, state which discriminating evidence named in the scientific model remains
+                                unexamined.</td>
+                            <td>The PI requested the official test before testing the listed joint-limit check.</td>
+                            <td>Medium. It adds process text. Earlier reviews warned against forcing a measurement
+                                before assessment. Maintainer approval is needed.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>Not proposed:</strong> tell the PI about joint limits or elbow branches. That is scientific
+                    work for the PI.</p>
+            </div>
+        </section>
+
+        <section id="limits" aria-labelledby="limits-title">
+            <h2 id="limits-title">10. Limits of this analysis</h2>
+            <ul class="steps">
+                <li>This report covers one campaign. It cannot prove that the harness changes caused the differences.
+                </li>
+                <li>The geometric pattern is strong, with a Fisher-type p below 0.00001. The campaign has no joint-angle
+                    recordings. The elbow-posture explanation remains a hypothesis.</li>
+                <li>The comparison campaigns used different random seeds and different PI choices.</li>
+                <li>The task-reference panel was fixed and reused. A repeated score on that panel is not an independent
+                    sample.</li>
+                <li>Campaign C stopped early. Its missing results cannot be compared with completed campaigns.</li>
+            </ul>
+            <details>
+                <summary>Terms in this report</summary>
+                <div class="details-body">
+                    <dl>
+                        <dt>Assessment</dt>
+                        <dd>The official 200-episode test. It ends the campaign.</dd>
+                        <dt>Checkpoint</dt>
+                        <dd>A saved policy from one point during training.</dd>
+                        <dt>Episode</dt>
+                        <dd>One attempt to reach a target and hold the hand near it.</dd>
+                        <dt>Inquiry</dt>
+                        <dd>A bounded research question opened by the PI.</dd>
+                        <dt>Policy</dt>
+                        <dd>The learned controller that selects the arm's actions.</dd>
+                        <dt>Task-reference panel</dt>
+                        <dd>A fixed set of 200 practice episodes. It is not the official test.</dd>
+                        <dt>Training proxy</dt>
+                        <dd>A score measured during training. It may not rank checkpoints by evaluation success.</dd>
+                        <dt>Joint-limit margin</dt>
+                        <dd>The distance between a joint angle and its allowed limit.</dd>
+                    </dl>
+                </div>
+            </details>
+        </section>
+        <footer>
+            <p class="small">This report uses the campaign facts listed in the report. It does not claim that the
+                proposed changes have been implemented or tested.</p>
+        </footer>
+    </main>
+    <script>
+        document.getElementById("theme-toggle").addEventListener("click", () => {
+            const theme = document.documentElement.getAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
+        });
+    </script>
+</body>
+
+</html>
