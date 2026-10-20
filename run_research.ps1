@@ -104,7 +104,6 @@ $modelAnalystPersona = @(
 $scientificModelUseGuidance = @(
     "Use pi_workspace/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
-    "For every physical consequence that could matter to the campaign, state which scientific decision it could change and what observation or evidence would revise it. Do not preserve a consequence as background description without connecting it to a decision."
 ) -join " "
 $startupPhaseObjective = @'
 Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
@@ -720,18 +719,17 @@ function New-ScientificSessionPrompt {
     $session = $State.scientific_session
     $handoffContext = if ($session.kind -eq "goal_review" -and $checkpoint) {
         @(
-            "Restored scientific handoff from the same PI's previous session. This is current scientific state, not another PI's opinion."
-            "Previous session synthesis, verbatim:`n$([string]$checkpoint.current_synthesis)"
+            "Restored scientific handoff from the same PI's previous session. This is current scientific state, not another PI's opinion. The current scientific understanding below is that session's synthesis, verbatim."
             "Proposed question for this goal review, verbatim:`n$([string]$checkpoint.next_question)"
             "Continue from the completed evidence, but treat inherited interpretations, research constraints, priorities and proposed next actions as revisable scientific judgments. Correct an unsupported interpretation or a question already settled by available evidence, and record the correction and its basis."
         )
     }
     elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
         @(
-            "Restored scientific handoff from the goal review that opened the active inquiry."
-            "Goal-review synthesis, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
-            "Active inquiry question, verbatim:`n$([string]$State.active_inquiry.question)"
-            "Continue the bounded work from completed evidence. Training, measurement and implementation remain peer options; the question does not require a particular first instrument."
+            if ([string]$State.active_inquiry.handoff_conclusion -ne $synthesis) {
+                "Synthesis from the goal review that opened the active inquiry, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
+            }
+            "Continue the bounded work from completed evidence."
         )
     }
     else {
@@ -761,14 +759,13 @@ function New-ScientificSessionPrompt {
             else {
                 "State the unresolved scientific distinction before selecting an operation."
             }
-            "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
-            "Interpret training proxies in the context of the exposure and runtime that produced them. Select checkpoints relevant to the decision when that context changes. Proxy rank alone does not determine which artifacts deserve measurement."
-            "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
-            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the implementation tested. A negative result neither disproves the method nor supplies a reason to try another variant."
-            "Compare the proposed method with the implementation already tested. Use source changes, recorded runtime and saved-component comparisons when available. A new description does not establish a new method. Repeated work can be useful. State what additional evidence it supplies."
-            "Distinguish candidate selection from mechanism testing. Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives. Choose discriminating evidence when that explanation would change the next direction."
-            "Keep an unexplained candidate difference at artifact-comparison level, not as an established cause. Unresolved causes need not block inquiry closure. Preserve their consequences for the next research or commitment decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
-            "Treat planned discriminating evidence that failed or remains unavailable as unresolved."
+            "Training facts and proxies can nominate checkpoints for development measurement. Interpret them in the context of the exposure and runtime that produced them. They do not establish development performance, the terminal checkpoint has no privileged status, and evaluating every checkpoint is not required."
+            "Choose the artifact and operation whose result would most improve the next decision toward the human goal."
+            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the tested implementation exercised. A negative result neither disproves the method nor supplies a reason to try another variant. Compare a proposed method with the implementation already tested, using source changes, recorded runtime and saved-component comparisons when available; a new description does not establish a new method."
+            "Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives; choose it when that explanation would change the next direction. Keep an unexplained candidate difference at artifact level, and treat planned discriminating evidence that failed or remains unavailable as unresolved."
+            if ($session.kind -ne "goal_review") {
+                "Unresolved causes need not block inquiry closure. Preserve their consequences for the next decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
+            }
             if ($session.kind -eq "goal_review") {
                 "For a measurement, explain how its possible outcomes would affect the campaign-level choice."
                 "Record the chosen assessment or inquiry and its evidence-based reason."
@@ -776,17 +773,12 @@ function New-ScientificSessionPrompt {
             }
             else {
                 "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction."
+                "Checkpoint when the session's deliverable is complete or useful intermediate work is ready to preserve. Record supported findings, limitations and remaining work even if no research direction is settled."
                 if ($session.kind -eq "inquiry") {
-                    "Choose a session-sized deliverable within the active inquiry, distinct from answering the whole inquiry."
-                    "Checkpoint when that deliverable is complete or useful intermediate work is ready to preserve."
-                    "Record supported findings, limitations and remaining work even if no research direction is settled."
                     "The inquiry may remain active across sessions. Its closure condition and unresolved mechanisms do not require further work before checkpointing."
                 }
-                else {
-                    "Checkpoint when the line of work reaches a stable decision."
-                }
             }
-            "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis, decision_frontier and next_question. Apply those meanings to the current state shown above."
+            "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis and decision_frontier. contracts/instruments.md defines next_question for each session kind."
             if ($session.kind -eq "goal_review") {
                 "In goal review, next_question must exactly match the question of the inquiry opened in this session."
             }
@@ -849,13 +841,13 @@ function New-ScientificSessionPrompt {
         ""
     }
     elseif ($session.kind -eq "startup") {
-        "Training ceiling: $Timesteps requested steps per run."
+        "Training allocation: up to $Timesteps requested steps per run."
     }
     else {
-        "Maintainer training allocation: $Timesteps steps per run."
+        "Training allocation: $Timesteps steps per run."
     }
     $sourceGuidance = if ($session.kind -eq "startup") {
-        "Begin with pi_workspace/scientific_model.md, campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md and other evidence as needed."
+        "Begin with pi_workspace/scientific_model.md and campaigns/brief.md. Consult contracts/scenario.md and other evidence as needed."
     }
     else {
         "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
@@ -866,7 +858,7 @@ function New-ScientificSessionPrompt {
     else {
         "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
     }
-    $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Do not write the internal exchange file. Continue within this context until checkpoint or terminal commitment ends it."
+    $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Continue within this context until checkpoint or terminal commitment ends it."
 
     $sections = @(
         $piPersona
@@ -938,6 +930,7 @@ function Invoke-ScientificModelPhase {
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task."
+        "Code under robot_learning/ is the current recipe. Its rewards, training environments and observation construction are design choices, not properties of the robot; label any statement drawn from them as such."
         "The document has four registers, with these headings: Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
@@ -1145,7 +1138,7 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry."
+                "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty that bears on this choice. Compare the two outcomes as contracts/program.md 'Goal review' defines and choose one: request the official assessment, whose pass or fail result ends this campaign, or open one bounded goal-linked inquiry."
             }
             else {
                 (

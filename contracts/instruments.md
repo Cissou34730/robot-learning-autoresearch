@@ -347,7 +347,9 @@ The operation kinds have these purposes:
 - Recipe restoration restores recorded PI-owned scientific work.
 - Campaign conclusion requests the protected official assessment.
 
-This list does not define a sequence or a preference.
+This list does not define a sequence or a preference. `scientific_coding` and
+the evidence readers are tools, not operations; they are available in every PI
+session.
 
 The current scientific session controls which operations the Runner accepts:
 
