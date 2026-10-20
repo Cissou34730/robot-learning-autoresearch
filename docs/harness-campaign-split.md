@@ -50,7 +50,7 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
   `benchmark` and `runner` resolve from the harness. `uv` always runs with the
   harness project.
 - **PI agents:** the Copilot working directory is the campaign root. Harness
-  files the PI may read (`AGENTS.md`, `contracts/`) are addressed through the
+  files the PI may read (`contracts/`) are addressed through the
   logical namespace; path policy evaluates logical paths. Read/search requests
   that expand those logical paths under the campaign root are routed to their
   harness location before authorization, but existing shadow files are rejected.

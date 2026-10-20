@@ -493,6 +493,7 @@
         <div class="note">
           <h3>Rules for the inquiry cap</h3>
           <p>The cap is 15 inquiries. It is a temporary execution limit.</p>
+          <p>The PI sees only the number of opened inquiries, not the cap. The launcher console shows the cap to the maintainer.</p>
           <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
           <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is withdrawn: the maintainer did not adopt the removal proposal. The cap remains an accepted execution limit.</p>
         </div>
@@ -721,6 +722,12 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">20 October: separate audiences and hide the inquiry cap</h3>
+        <p>The PI sees the number of opened inquiries, not the cap. Campaign permissions moved to <code>contracts/authority.md</code>; <code>AGENTS.md</code> and <code>README.md</code> are maintainer-only.</p>
+        <p>Each lifecycle rule has one home, and prompts no longer repeat contract text. Runtime internals moved to <code>docs/runtime-mechanics.md</code>. The reviewer fails only defects the coder can repair. The resource summary prints one candidate count.</p>
+        <p>The next campaign received no cap text. The scientific effect is unmeasured.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">20 October: remove cost guidance from PI decisions</h3>
         <p>The goal-review prompt no longer asks the PI to compare costs. The program contract no longer repeats its comparison and eligibility reminders.</p>
@@ -1147,7 +1154,9 @@
             <li><a href="../../contracts/scenario.md"><code>contracts\scenario.md</code></a>: the fixed goal and success rule.</li>
             <li><a href="../../contracts/program.md"><code>contracts\program.md</code></a>: phases, sessions, evidence, and PI decisions.</li>
             <li><a href="../../contracts/instruments.md"><code>contracts\instruments.md</code></a>: operation shapes and phase permissions.</li>
-            <li><a href="../../AGENTS.md"><code>AGENTS.md</code></a>: ownership and commands.</li>
+            <li><a href="../../contracts/authority.md"><code>contracts\authority.md</code></a>: campaign roles, path ownership, and PI session limits.</li>
+            <li><a href="../../AGENTS.md"><code>AGENTS.md</code></a>: maintainer rules and commands. Campaign agents cannot read it.</li>
+            <li><a href="../runtime-mechanics.md"><code>docs\runtime-mechanics.md</code></a>: tool binding, coding handoff, read policy, and recovery.</li>
             <li><a href="../../run_research.ps1"><code>run_research.ps1</code></a> and <a href="../../runner/copilot/copilot_adapter.py"><code>runner\copilot\copilot_adapter.py</code></a>: prompt delivery, launcher flow, and permission controls.</li>
             <li><a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a>: history, decisions, observations, and the issue register.</li>
             <li><a href="../inquiry-centered-lifecycle-redesign.md"><code>docs\inquiry-centered-lifecycle-redesign.md</code></a>: old design context. Its scientific-exhaustion option is superseded.</li>
@@ -1159,7 +1168,7 @@
     </section>
 
     <footer>
-      <p>Architecture reviewed 19 October 2026; not live campaign status. Historical reports retain their own dates. Implementation status and scientific effect stay separate.</p>
+      <p>Architecture reviewed 20 October 2026; not live campaign status. Historical reports retain their own dates. Implementation status and scientific effect stay separate.</p>
       <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>

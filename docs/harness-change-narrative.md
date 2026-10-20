@@ -664,6 +664,28 @@ Eight existing reader checks pass.
 One training-log lookup check fails because its temporary path lies outside the repository roots.
 The fixture and path logic remain unchanged.
 
+#### 20 October: separate audiences and hide the inquiry cap
+
+The maintainer kept the 15-inquiry cap as an unattended guardrail and required
+that the PI never learn it. The PI now receives the number of opened inquiries
+only. A blocked opening returns a neutral message, and the launcher console
+shows the cap to the maintainer.
+
+Campaign permissions moved from `AGENTS.md` to `contracts/authority.md`.
+`AGENTS.md` and `README.md` are maintainer text and campaign agents cannot
+read them. Runtime internals moved from `contracts/instruments.md` to
+`docs/runtime-mechanics.md`. `contracts/program.md` and the session prompts
+lost duplicated rules; each rule now has one home. The reviewer fails a review
+only for defects the coder can repair and reports scientific concerns with a
+passed review. The coder reports missing requirements in its result.
+
+The resource summary sent to the PI printed one `1` per candidate checkpoint
+instead of a count; it now prints one number.
+
+The first campaign after these changes received no cap text in any PI session.
+Its first inquiry question was broad, with a bounded closure condition. One
+campaign does not show whether the hidden cap changes inquiry scope.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query

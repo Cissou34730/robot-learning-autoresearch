@@ -7,6 +7,25 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-10-20 - Three audiences and a hidden inquiry cap
+
+- **Audiences:** maintainer text (`AGENTS.md`, `README.md`, `docs/`,
+  `.github/`), Runner code and campaign-agent text stay separate. Campaign
+  agents cannot read `AGENTS.md` or `README.md`.
+- **Authority:** `contracts/authority.md` now owns the installed stack, coding
+  roles, PI-owned and human-owned paths, PI session limits, read access and the
+  preliminary session. The coder and reviewer receive its fixed excerpt. This
+  supersedes the 2026-09-02 statement that `AGENTS.md` owns path ownership.
+- **Inquiry cap:** `-MaxInquiries` stays a maintainer guardrail. The PI sees
+  the number of opened inquiries, not the cap or the remaining count. A blocked
+  opening returns a neutral message. The launcher console shows the cap.
+- **One home per rule:** `contracts/program.md` holds lifecycle meaning,
+  `contracts/instruments.md` holds operation formats and `next_question` per
+  session kind, and session prompts carry current state without repeating them.
+  Runtime internals moved to `docs/runtime-mechanics.md`.
+- **Unchanged:** wire names (`checkpoint`, `next_question`), schema 6,
+  operation permissions, the training allocation and terminal assessment.
+
 ## 2026-10-19 - Independent harness and local campaign repositories
 
 - **Current layout:** the standalone `robot-learning-harness` repository holds
