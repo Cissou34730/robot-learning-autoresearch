@@ -246,7 +246,7 @@ class JsonScalar:
     def decoded(self) -> Any:
         if self.end - self.start > SCALAR_BYTES:
             raise ValueError(
-                "Selected JSON scalar exceeds the decode budget. Use action=read for its original bytes."
+                "The selected JSON scalar exceeds the decoding limit. Use action=read for its original bytes."
             )
         return json.loads(self.document.buffer[self.start : self.end])
 
@@ -292,7 +292,7 @@ class JsonObject(JsonScalar, Mapping):
         index = self.cached_index()
         if index is None:
             raise TraversalBudgetExceededError(
-                "JSON object field enumeration exceeded the bounded view budget. Narrow the path."
+                "The JSON object exceeds the field limit for this view. Use a narrower path."
             )
         return index
 
@@ -369,13 +369,13 @@ def bounded_value(value: Any, byte_limit: int) -> Any:
         nonlocal remaining
         remaining -= len(text.encode("utf-8"))
         if remaining < 0:
-            raise OutputBudgetExceeded("selected value exceeds the output byte budget")
+            raise OutputBudgetExceeded("The selected value exceeds the output byte limit.")
 
     def convert(item: Any) -> Any:
         if isinstance(item, (dict, JsonObject)):
             if isinstance(item, JsonObject) and item.cached_index() is None:
                 raise OutputBudgetExceeded(
-                    "selected object exceeds the output byte budget"
+                    "The selected object exceeds the output byte limit."
                 )
             charge("{}")
             output = {}
@@ -396,7 +396,7 @@ def bounded_value(value: Any, byte_limit: int) -> Any:
             and item.document.buffer[item.start] == 34
             and item.end - item.start > max(remaining, 0) * 6
         ):
-            raise OutputBudgetExceeded("selected string exceeds the output byte budget")
+            raise OutputBudgetExceeded("The selected string exceeds the output byte limit.")
         item = scalar_value(item)
         charge(json.dumps(item, separators=(",", ":")))
         return item

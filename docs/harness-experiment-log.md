@@ -206,7 +206,7 @@ An unrelated official assessment is not a condition for closure.
 | OI-015 | A recipe restore can replace unrelated sources and remove scientific tools. The saved record can obscure the actual experiment. | **Closed** | A restore names exact source files and preserves unselected files and laboratory tools. Source records and parameters show the actual experiment. Scientific intent remains PI work. |
 | OI-016 | A new inquiry can repeat resolved work or inherit an outdated next question. | **Closed** | The PI preserves inquiry boundaries. Goal review can revise the next question from current evidence. |
 | OI-017 | The PI cannot inspect required values inside a saved artifact. | **Closed** | The evidence tool reads selected values from the recorded file. It checks the fingerprint before access. |
-| OI-018 | Unclear query arguments can cause repeated errors or return too much evidence. | **Closed** | The query interface defines budgets and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records. |
+| OI-018 | Unclear query arguments can cause repeated errors or return too much evidence. | **Closed** | The query interface defines limits and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records. |
 | OI-019 | The current goal gap can contradict the final official result. | **Closed** | The brief uses the official result for the current gap. It labels the earlier PI record as historical. Closure does not imply campaign success. |
 | OI-022 | Extra process output can corrupt the exit code and cause a false rejection. | **Closed** | The process helper returns one exit code. It keeps unrelated output separate from that value. Retry limits and operation checks are unchanged. |
 | OI-023 | A search through a permitted folder can expose protected files below that folder. | **Closed** | Search tools exclude protected files before they inspect content or return paths. This repair does not create an operating-system sandbox. |
@@ -215,7 +215,7 @@ An unrelated official assessment is not a condition for closure.
 | OI-029 | A malformed operation request can reach the submission channel. | **Closed** | The shared schema checks the operation wrapper before dispatch. Invalid structures receive a specific error. Scientific decisions are unchanged. |
 | OI-030 | A correction request can lose or change the coder's original file scope. | **Closed** | The coding tool reuses the stored file scope for the same coder. It rejects changed scope and invalid task identifiers. Clarification cost remains under OI-026. |
 | OI-031 | The PI can select an incorrect file when it copies an artifact filename. Full records can obscure the required metadata. | **Closed** | Compact lookups identify recorded operations and artifacts. The interface checks artifact fingerprints before execution. Complete artifacts remain accessible. Runner does not select scientific evidence. |
-| OI-032 | A limit on complete JSON files can block access to a small required value. | **Closed** | The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit budgets. |
+| OI-032 | A limit on complete JSON files can block access to a small required value. | **Closed** | The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit limits. |
 | OI-034 | Repeated scans of a large JSON file can delay each query. | **Closed** | The reader reuses validation and scan locations. It limits cached records and still checks file fingerprints. Cold reads and explicit query limits remain intentional. |
 | OI-035 | A temporary remote Git error can stop publication of completed work. | **Closed** | The helper retries specified server errors with the same commit and branch. The retry count is limited. Campaign repositories never push. |
 
@@ -262,7 +262,7 @@ It does not repair the remote service or repeat scientific work.
 ### Follow-up outside the numbered register
 
 - The console still needs visible progress for model requests.
-  The PI also needs clear guidance about the remaining budget and session checkpoints.
+  The PI also needs clear guidance about session checkpoints.
   Faster responses do not demonstrate recovery from a stalled request.
 - The [SDK consolidation plan](copilot-sdk-consolidation-plan.md) retains two proposed tools.
   One changes the PI system message.
@@ -409,6 +409,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-20 | Remove PI cost guidance and duplicate reminders | Removed cost considerations from the goal-review prompt. Removed its duplicate comparison and eligibility reminders from the program contract. PI-facing descriptions and messages use limits instead of budget terminology. Execution limits, machine identifiers, and maintainer usage records are unchanged. No campaign operation occurred. OI-005 decision quality remains unconfirmed. |
 | 2026-10-20 | Plain-language issue register | Rewrote all 37 descriptions without internal campaign labels. Separated open work, changes that need evidence, closed issues, and inactive entries. The HTML hides closed and inactive tables until the reader opens them. Shorter status labels preserve the prior decisions. The evidence review remains available in commit `335877f`. Only the two documents changed, with no runtime edits or campaign operations. |
 | 2026-10-19 | Evidence-backed OI status reconciliation | Closed 15 bounded repairs: OI-004/009/015/018/019/022/023/027/028/029/030/031/032/034/035. Retired obsolete OI-010 without claiming a repair. OI-005/008/014/036 are implemented/observed, while OI-033 still needs native error-recovery evidence. Six real open investigations remain: OI-006/021/024/025/026/037. The Markdown register and all 37 HTML rows agree. Existing reproductions/regression evidence can close mechanical defects without a new official assessment. Live evidence is bounded to `df7f6838` through E10; no scientific success, causal attribution, campaign recovery or runtime change is claimed. Only the tracker and current HTML overview change. |
 | 2026-10-19 | Standalone harness and local campaign repository split | Implemented with a live campaign observation and subsequent migration repairs, not a completed end-to-end scientific validation. See the current architecture section and `harness-campaign-split.md`. Absolute contract read aliases, training-log ownership, generated-file publication and caller-directory restoration are covered by targeted checks. Fatal-conversation recovery remains OI-037. |

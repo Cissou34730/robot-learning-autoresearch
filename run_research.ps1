@@ -755,7 +755,7 @@ function New-ScientificSessionPrompt {
     else {
         @(
             if ($session.kind -eq "goal_review") {
-                "Compare the strongest candidate's prospects with the expected contribution and cost of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
+                "Compare the strongest candidate's prospects with the expected contribution of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
                 "A development score below the goal does not prohibit assessment. An untested variant or unresolved cause does not justify another inquiry by itself."
             }
             else {
@@ -819,7 +819,7 @@ function New-ScientificSessionPrompt {
     }
     else {
         @(
-            "Currently permitted operation kinds: $($availability.allowed_operations -join ', '). Request, evidence and resource checks still apply."
+            "Currently permitted operation kinds: $($availability.allowed_operations -join ', '). Request and evidence checks still apply."
         )
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {

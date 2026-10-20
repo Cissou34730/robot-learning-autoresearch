@@ -645,6 +645,25 @@ scientific necessity. This is not the unimplemented OI-024 submission safeguard.
 Both adjustments remain implemented/unmeasured, with unchanged terminality
 and inquiry-cap rules.
 
+#### 20 October: remove cost guidance from PI decisions
+
+The maintainer rejected cost considerations in PI instructions and prompts.
+The goal-review prompt now compares scientific prospects and contributions without cost guidance.
+The program contract no longer repeats that comparison or its adjacent eligibility reminders.
+It retains operation permissions, PI authority, and terminal-assessment semantics.
+
+PI-facing tool descriptions and messages use limits instead of budget terminology.
+The execution limits and machine identifiers are unchanged.
+Maintainer usage accounting remains separate from scientific decisions.
+No campaign operation occurred.
+This cleanup does not demonstrate better assessment decisions.
+
+Six assembled prompt variants contain no cost or budget prose.
+Tool schemas and execution logic checks also pass.
+Eight existing reader checks pass.
+One training-log lookup check fails because its temporary path lies outside the repository roots.
+The fixture and path logic remain unchanged.
+
 ### 6. Context delivery, cost and evidence tooling
 
 Cover brief growth, prompt replay, SDK output, session cost, artifact-query

@@ -74,7 +74,7 @@ pages are small by default; complete retrieval remains available through
 explicit pages. Completion replies do not attach complete artifact inventories.
 The brief indexes current evidence and training operations. Full history,
 checkpoint metadata and artifact structure remain available through their sources.
-Batch evidence queries share one top-level `max_bytes` budget.
+Batch evidence queries share one top-level `max_bytes` limit.
 Query items reject that field. The console identifies each artifact index.
 Recipe restoration requires exact selected source paths and preserves all
 unselected files; campaign laboratory tools are never restored as a recipe.

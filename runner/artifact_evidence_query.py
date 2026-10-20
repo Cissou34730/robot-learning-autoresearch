@@ -223,8 +223,8 @@ class ArtifactEvidenceQueryParams(BaseModel):
         ge=1,
         le=MAX_READ_BYTES,
         description=(
-            "Top-level selected-value byte budget for query and batch. "
-            "All batch items share this budget. "
+            "Byte limit for selected values in query and batch. "
+            "All batch items share this limit. "
             "Query items do not accept max_bytes. For read, it limits original bytes. "
             "Increase explicitly for broader retrieval; follow reported continuation."
         ),
@@ -653,7 +653,7 @@ def _read_artifact(path: Any, provenance: dict[str, Any], args: dict) -> dict:
 def utf8_page(
     chunk: bytes, more_bytes: bool, byte_limit: int = MAX_MATCH_OUTPUT_BYTES
 ) -> tuple[str, bytes]:
-    """Return complete UTF-8 characters within a serialized-content byte budget."""
+    """Return complete UTF-8 characters within a serialized-content byte limit."""
     try:
         content = chunk.decode("utf-8")
     except UnicodeDecodeError as error:

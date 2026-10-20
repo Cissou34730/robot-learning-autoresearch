@@ -100,12 +100,6 @@ campaign-level decisions:
 - request the official assessment for the explicit best-known model; or
 - open one bounded inquiry connected directly to the current goal gap.
 
-Compare the strongest candidate's prospects with the expected contribution and
-cost of further bounded work. Use completed evidence and its limits for both
-choices. Explain why the chosen action is preferable now.
-
-A development score below the goal does not prohibit assessment. An untested
-variant or unresolved cause does not justify another inquiry by itself.
 The PI decides. Neither choice requires complete mechanism resolution.
 
 Official assessment is a terminal commitment: its pass or fail result ends
@@ -209,8 +203,8 @@ method. A negative result neither disproves the method nor supplies a reason
 to try another variant.
 
 Choose among developing the method, investigating a consequential failure, and
-changing direction. Identify what the proposed work can credibly change and why
-its expected contribution remains worthwhile in light of prior results.
+changing direction. Identify how the proposed work can advance the human goal
+in light of prior results.
 Compare the proposed method with the implementation already tested.
 Use source changes, recorded runtime and saved-component comparisons when
 available. A new description does not establish a new method.

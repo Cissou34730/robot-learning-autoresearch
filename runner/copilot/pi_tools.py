@@ -32,7 +32,7 @@ ARTIFACT_EVIDENCE_DESCRIPTION = (
     "to rows when selecting/filtering/aggregating. Missing filter fields are "
     "reported separately from zero matches. Page limits are small by default; "
     "increase limit explicitly for more rows. Set max_bytes on the request. "
-    "All batch items share that selected-value budget. Query items reject max_bytes. "
+    "All batch items share that byte limit for selected values. Query items reject max_bytes. "
     "Omit select for complete rows; a supplied pointer cannot be empty. Filtering occurs "
     "before data enters PI context. Full reads use byte offset/max_bytes, "
     "UTF-8 content or explicit base64, and fingerprint-bound continuation. "
@@ -225,7 +225,7 @@ def _read_lines(path: Path, params: ReadParams) -> str:
                 continue
             size += len(line.encode("utf-8"))
             if size > MAX_OUTPUT_BYTES and not params.forceReadLargeFiles:
-                raise ValueError("Read exceeds the page budget; narrow view_range.")
+                raise ValueError("Read exceeds the page limit. Use a narrower view_range.")
             lines.append(line)
     return "".join(lines)
 

@@ -99,7 +99,7 @@ class TrainingLogQueryParams(BaseModel):
         default=DEFAULT_PAGE_BYTES,
         ge=1,
         le=MAX_READ_BYTES,
-        description="Page budget for selected record values or original raw bytes.",
+        description="Byte limit per page for selected record values or original raw bytes.",
     )
     encoding: Literal["utf-8", "base64"] = Field(
         default="utf-8",

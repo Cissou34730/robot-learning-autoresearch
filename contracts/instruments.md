@@ -48,9 +48,9 @@ Evidence references must identify completed operations.
 
 `submit_operation` returns a compact factual result or the exact rejection/error,
 operation identity when completed, and changed state: session identity and kind,
-actual completed-operation list, roles, resource counts, pending/terminal status,
+actual completed-operation list, roles, pending/terminal status,
 currently permitted operation kinds, and required checkpoint transition.
-Request, evidence and resource checks still apply to these kinds.
+Request and evidence checks still apply to these kinds.
 Full artifact inventories and logs are not
 attached to each completion. Detailed artifacts stay available through
 `artifact_evidence_query`; preserved training logs through `training_log_query`.
@@ -116,7 +116,7 @@ for PI and authorized coding/review children. The preliminary scientific-model
 session retains its existing publication interface and does not expose coding.
 
 The default Copilot PI deadline is 30 minutes of active session time.
-Coding and review consume that same budget. Runner execution waits are excluded.
+Coding and review count toward that deadline. Runner execution waits are excluded.
 
 `scientific_coding` accepts:
 
@@ -372,7 +372,7 @@ hints. These hints are not a complete inventory.
 
 Ordinary query pages default to small row and byte limits. `limit` selects the
 row page size. Set `max_bytes` on the request, not inside `queries`.
-All batch items share that selected-value budget.
+All batch items share that byte limit for selected values.
 Unsupported fields are rejected, not silently ignored.
 Omit `select` for complete rows. A supplied pointer cannot be empty.
 Artifact-content requests show the operation and artifact index in the console.
@@ -384,7 +384,7 @@ UTF-8 pages preserve line endings and do not split a character. The returned
 `next_offset` and verified fingerprint identify continuation;
 `expected_fingerprint` is required for a nonzero read offset. Joining pages
 in offset order reconstructs the complete original content. Full retrieval
-does not require parsing the entire artifact within the query budget.
+does not require parsing the entire artifact within the query limits.
 
 ## Training-log interface
 

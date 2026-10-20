@@ -643,7 +643,7 @@
                 <tr><td>OI-015</td><td>A recipe restore can replace unrelated sources and remove scientific tools. The saved record can obscure the actual experiment.</td><td><span class="tag">Closed</span></td><td>A restore names exact source files and preserves unselected files and laboratory tools. Source records and parameters show the actual experiment. Scientific intent remains PI work.</td></tr>
                 <tr><td>OI-016</td><td>A new inquiry can repeat resolved work or inherit an outdated next question.</td><td><span class="tag">Closed</span></td><td>The PI preserves inquiry boundaries. Goal review can revise the next question from current evidence.</td></tr>
                 <tr><td>OI-017</td><td>The PI cannot inspect required values inside a saved artifact.</td><td><span class="tag">Closed</span></td><td>The evidence tool reads selected values from the recorded file. It checks the fingerprint before access.</td></tr>
-                <tr><td>OI-018</td><td>Unclear query arguments can cause repeated errors or return too much evidence.</td><td><span class="tag">Closed</span></td><td>The query interface defines budgets and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records.</td></tr>
+                <tr><td>OI-018</td><td>Unclear query arguments can cause repeated errors or return too much evidence.</td><td><span class="tag">Closed</span></td><td>The query interface defines limits and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records.</td></tr>
                 <tr><td>OI-019</td><td>The current goal gap can contradict the final official result.</td><td><span class="tag">Closed</span></td><td>The brief uses the official result for the current gap. It labels the earlier PI record as historical. Closure does not imply campaign success.</td></tr>
                 <tr><td>OI-022</td><td>Extra process output can corrupt the exit code and cause a false rejection.</td><td><span class="tag">Closed</span></td><td>The process helper returns one exit code. It keeps unrelated output separate from that value. Retry limits and operation checks are unchanged.</td></tr>
                 <tr><td>OI-023</td><td>A search through a permitted folder can expose protected files below that folder.</td><td><span class="tag">Closed</span></td><td>Search tools exclude protected files before they inspect content or return paths. This repair does not create an operating-system sandbox.</td></tr>
@@ -652,7 +652,7 @@
                 <tr><td>OI-029</td><td>A malformed operation request can reach the submission channel.</td><td><span class="tag">Closed</span></td><td>The shared schema checks the operation wrapper before dispatch. Invalid structures receive a specific error. Scientific decisions are unchanged.</td></tr>
                 <tr><td>OI-030</td><td>A correction request can lose or change the coder's original file scope.</td><td><span class="tag">Closed</span></td><td>The coding tool reuses the stored file scope for the same coder. It rejects changed scope and invalid task identifiers. Clarification cost remains under OI-026.</td></tr>
                 <tr><td>OI-031</td><td>The PI can select an incorrect file when it copies an artifact filename. Full records can obscure the required metadata.</td><td><span class="tag">Closed</span></td><td>Compact lookups identify recorded operations and artifacts. The interface checks artifact fingerprints before execution. Complete artifacts remain accessible. Runner does not select scientific evidence.</td></tr>
-                <tr><td>OI-032</td><td>A limit on complete JSON files can block access to a small required value.</td><td><span class="tag">Closed</span></td><td>The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit budgets.</td></tr>
+                <tr><td>OI-032</td><td>A limit on complete JSON files can block access to a small required value.</td><td><span class="tag">Closed</span></td><td>The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit limits.</td></tr>
                 <tr><td>OI-034</td><td>Repeated scans of a large JSON file can delay each query.</td><td><span class="tag">Closed</span></td><td>The reader reuses validation and scan locations. It limits cached records and still checks file fingerprints. Cold reads and explicit query limits remain intentional.</td></tr>
                 <tr><td>OI-035</td><td>A temporary remote Git error can stop publication of completed work.</td><td><span class="tag">Closed</span></td><td>The helper retries specified server errors with the same commit and branch. The retry count is limited. Campaign repositories never push.</td></tr>
               </tbody>
@@ -691,7 +691,7 @@
         </div>
       </details>
       <h3>Work outside the numbered register</h3>
-      <p>The console still needs visible progress for model requests. The PI also needs clear guidance about the remaining budget and session checkpoints. Faster responses do not demonstrate recovery from a stalled request.</p>
+      <p>The console still needs visible progress for model requests. The PI also needs clear guidance about session checkpoints. Faster responses do not demonstrate recovery from a stalled request.</p>
       <p>The <a href="../copilot-sdk-consolidation-plan.md">SDK consolidation plan</a> retains two proposed tools. One changes the PI system message. The other reads named sections from context documents. Provider migration is complete.</p>
       <p>These entries do not authorize runtime changes or campaign operations.</p>
       <details style="margin-top: 16px">
@@ -721,6 +721,11 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">20 October: remove cost guidance from PI decisions</h3>
+        <p>The goal-review prompt no longer asks the PI to compare costs. The program contract no longer repeats its comparison and eligibility reminders.</p>
+        <p>PI-facing descriptions use limits instead of budget terminology. Execution limits and maintainer usage records are unchanged. The effect on assessment decisions remains unconfirmed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">20 October: clear issue descriptions and separate tables</h3>
         <p>All 37 descriptions state the problem without internal campaign labels. Separate tables show open work, changes that need evidence, closed issues, and inactive entries.</p>
