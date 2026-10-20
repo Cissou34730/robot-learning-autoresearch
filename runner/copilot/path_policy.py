@@ -111,6 +111,15 @@ def read_target(target: str) -> Path:
     from runner.copilot.copilot_scoped_search import linked_path
 
     path = physical_target(target)
+    if paths.SPLIT and path.is_relative_to(paths.HARNESS_ROOT):
+        relative = path.relative_to(paths.HARNESS_ROOT)
+        if ".." in relative.parts:
+            raise ValueError("Read paths must not contain parent traversal.")
+        # Contract reads resolve into the harness; campaign files live elsewhere.
+        if paths.is_campaign_owned(relative) and not linked_path(
+            paths.HARNESS_ROOT, path
+        ):
+            return paths.locate(relative)
     if paths.SPLIT and path.is_relative_to(ROOT):
         relative = path.relative_to(ROOT)
         if ".." in relative.parts:

@@ -57,6 +57,19 @@ def test_logical_paths_cannot_escape_their_root(split_roots, relative):
         paths.locate(relative)
 
 
+def test_harness_rooted_campaign_view_resolves_to_campaign(split_roots, monkeypatch):
+    from runner.copilot import path_policy, tool_policy
+
+    harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    hook = tool_policy.scoped_tool_hook()
+    target = harness / "robot_learning/scenario/environment.py"
+    result = hook({"toolName": "view", "toolArgs": {"path": str(target)}}, None)
+    assert result == {
+        "modifiedArgs": {"path": str(campaign / "robot_learning/scenario/environment.py")}
+    }
+
+
 def test_single_folder_mode_keeps_the_existing_layout(monkeypatch, tmp_path):
     monkeypatch.setattr(paths, "ROOT", tmp_path)
     monkeypatch.setattr(paths, "SPLIT", False)
