@@ -146,8 +146,8 @@ CODING_TOOL_DESCRIPTION = (
     "A failed review goes unchanged to the same coder. "
     "The same reviewer checks the correction. "
     "You receive the final source, review, repair history "
-    "or a needs_pi reason. No verification module or executable check "
-    "proposal is required. Scientific choices and operation requests "
+    "or a needs_pi reason. A passed review can still report concerns or "
+    "scientific choices for you. Scientific choices and operation requests "
     "remain yours. Only Runner executes scientific operations.\n\n"
     "Continue the same change using session_handle; its file "
     "permissions remain unchanged."
@@ -156,12 +156,12 @@ CODING_TOOL_DESCRIPTION = (
 CODER_START_CONTEXT = (
     "Installed scientific APIs: native MuJoCo 3.12.0, NOT mujoco-py; "
     "Gymnasium 1.3.0; Stable-Baselines3 2.9.0. Dependencies and manifests "
-    "are fixed and human-owned. SDK 1.0.19 is a harness runtime detail, "
-    "not permission to edit the harness. Author only the requested "
+    "are fixed and human-owned. Author only the requested "
     "scoped source; execute nothing. Read the supplied task_context "
     "and relevant authorized source and callers before editing. "
     "Use scientific_api_reference for unfamiliar installed APIs. "
-    "Do not add mandatory check modules or execution proposals. "
+    "Report missing or unclear requirements in summary and "
+    "unchecked_scope instead of guessing. "
     "The reviewer checks implementation errors and logic. "
     "The parent PI must review actual diffs. "
     "No engineering handoff certifies science or Runner acceptance.\n"
@@ -174,7 +174,9 @@ REVIEWER_START_CONTEXT = (
     "All writes, execution, delegation and operations are denied. "
     "Do not trust coder-authored expectations without checking them. "
     "Request complete engineering repair batches through your handoff. "
-    "Return scientific choices or blocked requirements to the PI. "
+    "Set validation false only for defects the coder can repair within "
+    "the request. Report confounds, unclear requirements or scientific "
+    "choices for the PI in the explanation fields with validation true. "
     "No review certifies science.\n"
 )
 
@@ -220,7 +222,7 @@ class OperationSubmissionParams(BaseModel):
 
     request: dict[str, object] | None = Field(
         description=(
-            "One existing contracts/instruments.md operation envelope. "
+            "One operation envelope defined in contracts/instruments.md. "
             "Use null only to reaccept a failed pending operation after repair."
         ),
         json_schema_extra={

@@ -65,7 +65,7 @@ class OperationSubmission:
         return define_tool(
             "submit_operation",
             description=(
-                "Submit one existing typed operation envelope from contracts/instruments.md "
+                "Submit one operation envelope defined in contracts/instruments.md "
                 "in request. Do not write pi_workspace/operation_request.json; it is internal "
                 "Runner exchange. The trusted controller validates and executes it using "
                 "existing Runner permissions and allocation, then returns compact factual "
@@ -78,7 +78,7 @@ class OperationSubmission:
                 "Use artifact_evidence_query action=metadata with the pending operation_id "
                 "and path=/pending to read its exact request and resolved measurements. "
                 "Correct request arguments with a replacement envelope; use scientific_coding "
-                "only for an actual source repair. request=null reaccepts the SAME request "
+                "when the failure needs a source change. request=null reaccepts the SAME request "
                 "after source repair and cannot correct its arguments. Inquiry "
                 "open/reframe/close requires checkpoint next. Use actual completed_operations "
                 "metadata, not invented IDs; preserve your scientific content. Checkpoint "

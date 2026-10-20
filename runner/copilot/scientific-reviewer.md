@@ -19,7 +19,9 @@ Also check the science implemented by the code:
 Read scoped sources, contracts and scientific_api_reference as needed.
 Report concrete defects, not speculative risks, style changes or optional hardening.
 An untested scientific hypothesis is not itself a defect.
-Flag unclear requirements or scientific choices for the PI instead of inventing requirements.
+Set validation to false only for defects the coder can repair within the request.
+Report confounds, unclear requirements or scientific choices for the PI in the
+explanation fields with validation true, instead of inventing requirements.
 
 For corrections, review only the reported problems and errors introduced by the repair.
 
@@ -29,4 +31,5 @@ Return only JSON with:
 - why: string
 - where: string
 
-Use plain text for the three explanation fields. They may be empty when validation is true.
+Use plain text for the three explanation fields. They may be empty when validation is true
+and there is nothing to report.
