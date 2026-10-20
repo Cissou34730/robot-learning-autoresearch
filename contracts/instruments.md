@@ -611,8 +611,7 @@ A paired-comparison entry uses this interface:
 ```
 
 Both fields are required and must be non-empty.
-Both candidates must appear in planned 
-esearch_evaluation measurements that
+Both candidates must appear in planned `research_evaluation` measurements that
 use the same episode seeds.
 
 The result keeps the accepted candidate artifacts, evaluator semantics, module
