@@ -25,6 +25,51 @@ WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+
 MAX_CONSOLE_POINTER_LENGTH = 96
 
 
+CONTEXT_BAND_TOKENS = 50_000
+
+
+# Reader results that completed as tool calls but did not return the evidence asked for.
+RESULT_ISSUE_TOOLS = {
+    "artifact_evidence_query",
+    "training_log_query",
+    "training_series_statistics",
+    "success_rate_pass_probability",
+}
+RESULT_ISSUE_STATUSES = {
+    "artifact_budget_exhausted",
+    "artifact_unavailable",
+    "attempt_required",
+    "budget_exhausted",
+    "field_absent",
+    "filter_field_absent",
+    "fingerprint_mismatch",
+    "invalid_request",
+    "logs_unavailable",
+    "metric_absent",
+    "no_finite_values",
+    "no_logs",
+    "no_matching_rows",
+    "parse_budget_exhausted",
+    "query_failed",
+    "traversal_budget_exhausted",
+}
+
+
+def result_issue(content: object) -> str | None:
+    if not isinstance(content, str) or not content.lstrip().startswith("{"):
+        return None
+    try:
+        result = json.loads(content)
+    except ValueError:
+        return None
+    status = result.get("status") if isinstance(result, dict) else None
+    if status not in RESULT_ISSUE_STATUSES:
+        return None
+    detail = result.get("error") or result.get("recovery") or ""
+    detail = " ".join(str(detail).split())[:200]
+    return f"{status}: {detail}" if detail else status
+
+
 UUID_SUFFIX_PATTERN = re.compile(
     r"(?<!\w)(?:"
     r"[0-9a-fA-F]{1,8}|"
@@ -384,6 +429,8 @@ class Console:
         self.session_error: str | None = None
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
+        self.model_calls = 0
+        self._context_band = 0
 
     def line(self, text: str) -> None:
         self._close_message()
@@ -528,6 +575,19 @@ class Console:
         reason = " ".join(compact_console_text(error).split())
         operation = f"{name} ({target})" if target else name
         self.line(f"  x {operation} failed: {reason}")
+
+    def tool_issue(self, name: str, issue: str) -> None:
+        self.line(f"  x {name}: {issue}")
+
+    def model_call(self, input_tokens: int | None) -> None:
+        self.model_calls += 1
+        band = (input_tokens or 0) // CONTEXT_BAND_TOKENS
+        if band > self._context_band:
+            self._context_band = band
+            self.line(
+                f"  ~ context {input_tokens / 1000:.0f}k tokens "
+                f"at model call {self.model_calls}"
+            )
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
         if tool_call_id:

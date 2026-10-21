@@ -894,6 +894,7 @@ function New-ScientificSessionPrompt {
         }
     )
     if ($includedFiles.Count -gt 0) {
+        Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
         $sourceGuidance = "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again unless an operation changes them. The latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
     }
     $submissionGuidance = if ($transition) {

@@ -1972,6 +1972,8 @@ def execute_pending_operation() -> int:
             subject,
             str(error),
         )
+        # The card already shows the error; the entry point skips the duplicate traceback.
+        error.operation_reported = True
         raise
     if exit_code == 130:
         console.boundary("warning", "OPERATION PAUSED", subject)
@@ -2393,6 +2395,10 @@ def run_with_stop_control() -> int:
     except repository.PublicationError as error:
         print(f"ERROR: publication failed: {error}", file=sys.stderr)
         return PUBLICATION_FAILURE_EXIT_CODE
+    except Exception as error:
+        if getattr(error, "operation_reported", False):
+            return 1
+        raise
 
 
 if __name__ == "__main__":

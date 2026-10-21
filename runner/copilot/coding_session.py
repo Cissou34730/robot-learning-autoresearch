@@ -575,6 +575,13 @@ class ScientificCoding:
             self.review_reports[coder_handle] = review_report
             if pending_repair is not None:
                 pending_repair["follow_up_review"] = review_report.model_dump()
+            verdict = (
+                "passed"
+                if review_report.validation
+                else "failed: "
+                + " ".join(review_report.what_is_wrong.split())[:160]
+            )
+            self.console.line(f"  > scientific_coding: {mode} review {verdict}")
         if (
             not isinstance(review_report, ReviewReport)
             or review["status"] != "completed"

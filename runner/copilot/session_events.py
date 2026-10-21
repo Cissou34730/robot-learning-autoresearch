@@ -10,7 +10,7 @@ from runner.copilot.constants import (
     MODEL_CALL_RETRY_DELAY_SECONDS,
     MODEL_CALL_RETRY_LIMIT,
 )
-from runner.copilot.copilot_console import Console
+from runner.copilot.copilot_console import RESULT_ISSUE_TOOLS, Console, result_issue
 from runner.copilot.path_policy import (
     CODING_PERMISSION_DENIAL,
     CODING_SCOPE_DENIAL,
@@ -63,10 +63,15 @@ def event_handler(
             ):
                 name, arguments = tool or ("tool", None)
                 console.tool_failed(data.error, name, arguments)
+            elif data.success and tool is not None and tool[0] in RESULT_ISSUE_TOOLS:
+                issue = result_issue(getattr(data.result, "content", None))
+                if issue:
+                    console.tool_issue(tool[0], issue)
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):
             console.usage.add_assistant_usage(data)
+            console.model_call(data.input_tokens)
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
         elif isinstance(data, SessionIdleData) and (coding is None or not coding.busy):
