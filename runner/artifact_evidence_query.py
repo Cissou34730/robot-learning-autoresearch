@@ -454,6 +454,45 @@ def resolve_artifact_reference(state: dict, reference: dict) -> dict:
     }
 
 
+def recorded_artifact_structure(state: dict, reference: dict) -> dict:
+    """Recorded structure-only inventory of one completed measurement artifact."""
+    selected = ArtifactReference.model_validate(reference)
+    operation_id = selected.operation_id.strip()
+    try:
+        _, provenance = _recorded_artifact(
+            state, repository.current_campaign_id(state),
+            operation_id, selected.artifact_index,
+        )
+    except ArtifactUnavailableError as error:
+        raise ValueError(
+            f"evidence input {operation_id}/{selected.artifact_index} is unavailable: "
+            f"{error.args[0] if error.args else error}"
+        ) from error
+    event = next(
+        item for item in state["operation_events"] if item.get("id") == operation_id
+    )
+    structure = next(
+        (
+            measurement["metrics"].get("evaluation_artifact_contents")
+            for measurement in event["result"]["measurements"]
+            if isinstance(measurement, dict)
+            and isinstance(measurement.get("metrics"), dict)
+            and isinstance(measurement["metrics"].get("evaluation_artifact"), str)
+            and repository.canonical_repo_path(
+                measurement["metrics"]["evaluation_artifact"]
+            ) == provenance["artifact_path"]
+        ),
+        None,
+    )
+    return {
+        **{
+            key: provenance.get(key)
+            for key in ("operation_id", "artifact_index", "artifact_path", "label")
+        },
+        "recorded_structure": structure,
+    }
+
+
 def _operation_summary(event: dict) -> dict:
     request = event.get("request") or {}
     return {

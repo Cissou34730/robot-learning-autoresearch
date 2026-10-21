@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from runner import protocol
+from runner.artifact_evidence_query import ArtifactReference
 
 # The preliminary analyst retains its existing publication/tool contract.
 RESEARCH_TOOLS = [
@@ -88,6 +89,16 @@ class ScientificCodingParams(BaseModel):
         ),
     )
     session_handle: str | None = Field(default=None, min_length=1)
+    evidence_inputs: list[ArtifactReference] | None = Field(
+        default=None,
+        min_length=1,
+        max_length=10,
+        description=(
+            "New calls only: recorded measurement artifacts the change will read, as "
+            "{operation_id, artifact_index}. The coder and reviewer receive each "
+            "artifact's recorded structure (JSON paths and field names, no values)."
+        ),
+    )
 
     @model_validator(mode="after")
     def require_initial_scope(self) -> ScientificCodingParams:
@@ -95,6 +106,11 @@ class ScientificCodingParams(BaseModel):
             raise ValueError(
                 "A new coding call requires allowed_paths. "
                 "A correction requires the returned session_handle and intent."
+            )
+        if self.session_handle and self.evidence_inputs:
+            raise ValueError(
+                "evidence_inputs belong to a new coding call; a correction reuses "
+                "the original task context."
             )
         return self
 
@@ -141,7 +157,9 @@ CODING_TOOL_DESCRIPTION = (
     "in source_context. The child "
     "does not receive your conversation. The harness supplies current "
     "scenario, authority and operation-contract text to both authors "
-    "and reviewers, without expanding their file permissions.\n\n"
+    "and reviewers, without expanding their file permissions. "
+    "When the change reads recorded measurement artifacts, list them in "
+    "evidence_inputs so the coder sees their recorded field structure.\n\n"
     "An independent reviewer examines the initial delivery. "
     "A failed review goes unchanged to the same coder. "
     "The same reviewer checks the correction. "

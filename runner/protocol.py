@@ -482,7 +482,10 @@ def validate_measurement_inputs(entry: dict) -> None:
     for name, reference in inputs.items():
         if not isinstance(name, str) or not name.isidentifier():
             raise ValueError("python_module input names must be identifiers")
-        ArtifactReference.model_validate(reference)
+        if isinstance(reference, dict) and set(reference) == {"candidate"}:
+            _nonempty(reference, "candidate", f"python_module input '{name}' candidate")
+        else:
+            ArtifactReference.model_validate(reference)
     used_inputs = set()
     for argument in entry["args"]:
         matches = list(re.finditer(r"\{input:([^{}]+)\}", argument))
@@ -564,10 +567,19 @@ def resolved_measurement_inputs(spec: dict, state: dict) -> dict:
     resolved = {}
     for name, reference in spec.get("inputs", {}).items():
         try:
-            resolved[name] = resolve_artifact_reference(state, reference)
+            if set(reference) == {"candidate"}:
+                candidate = resolve_candidate(state, str(reference["candidate"]))
+                resolved[name] = {
+                    "candidate": candidate["id"],
+                    "artifact_path": f"{candidate['artifact']}/model.zip",
+                    "model_fingerprint": candidate["fingerprint"],
+                }
+            else:
+                resolved[name] = resolve_artifact_reference(state, reference)
         except (
             ArtifactUnavailableError,
             FingerprintMismatchError,
+            KeyError,
             OSError,
             ValueError,
         ) as error:
@@ -1144,12 +1156,20 @@ def operation_body_schema(kind: str) -> dict:
                     "label": {"type": "string"},
                     "inputs": {
                         "type": "object",
-                        "additionalProperties": body(
-                            {
-                                "operation_id": text,
-                                "artifact_index": {"type": "integer", "minimum": 0},
-                            }
-                        ),
+                        "additionalProperties": {
+                            "oneOf": [
+                                body(
+                                    {
+                                        "operation_id": text,
+                                        "artifact_index": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                        },
+                                    }
+                                ),
+                                body({"candidate": text}),
+                            ]
+                        },
                     },
                 },
                 ("label", "inputs"),

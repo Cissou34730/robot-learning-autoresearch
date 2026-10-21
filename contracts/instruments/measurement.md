@@ -78,13 +78,23 @@ Use this interface:
   "inputs": {
     "type": "object",
     "additionalProperties": {
-      "type": "object",
-      "properties": {
-        "operation_id": {"type": "string"},
-        "artifact_index": {"type": "integer"}
-      },
-      "required": ["operation_id", "artifact_index"],
-      "additionalProperties": false
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "operation_id": {"type": "string"},
+            "artifact_index": {"type": "integer"}
+          },
+          "required": ["operation_id", "artifact_index"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {"candidate": {"type": "string"}},
+          "required": ["candidate"],
+          "additionalProperties": false
+        }
+      ]
     }
   }
 }
@@ -105,7 +115,10 @@ The artifact must be a campaign JSON path under
 `campaigns/brief.md` gives the exact evaluation root for the current campaign.
 
 `inputs` binds PI-selected names to recorded JSON artifacts from completed
-measurements in the current campaign. Names must be identifiers.
+measurements in the current campaign, or to a model candidate. Names must be
+identifiers. A candidate input names a candidate ID or role and resolves to the
+`model.zip` file in that candidate's verified archive; the saved runtime and
+normalization files are beside it.
 Each argument placeholder `{input:NAME}` uses a declared name.
 Every declared input must appear in the arguments.
 The output artifact cannot overwrite a named input.

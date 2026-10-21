@@ -38,7 +38,11 @@ Coding and review count toward it. Waiting for Runner execution does not.
   the frozen `pi_workspace/scientific_model.md`;
 - `source_context`: optional PI-selected requirements, caller context and errors;
 - `session_handle`: optional returned native child identity for same-change
-  corrections within this bounded context.
+  corrections within this bounded context;
+- `evidence_inputs`: optional, new calls only; up to 10 recorded measurement
+  artifacts that the changed code will read, each as `operation_id` and
+  `artifact_index`. The coder and the reviewer receive each artifact's recorded
+  structure inventory: JSON paths and field names, without values.
 
 New calls require `intent` and `allowed_paths`. A correction supplies
 `session_handle` and `intent`, with optional `source_context`. Omitted scope

@@ -396,6 +396,15 @@ class ScientificCoding:
             await self._require_idle_children(params.session_handle)
         else:
             context = load_task_context(paths.HARNESS_ROOT if paths.SPLIT else ROOT)
+            if params.evidence_inputs:
+                from runner import repository
+                from runner.artifact_evidence_query import recorded_artifact_structure
+
+                state = repository.load_state(allow_missing_artifact=True)
+                context["evidence_inputs"] = [
+                    recorded_artifact_structure(state, reference)
+                    for reference in params.evidence_inputs
+                ]
         return binding, context, coding_snapshot(frozenset(binding["allowed_paths"]))
 
     async def _require_idle_children(self, coder_handle: str) -> None:
