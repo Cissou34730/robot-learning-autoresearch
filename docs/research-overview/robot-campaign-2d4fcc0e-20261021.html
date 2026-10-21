@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Campaign 2d4fcc0e passed its official test with 200 of 200 successes. This report explains the result, the evidence and the effect of the recent harness changes.">
+    <title>Campaign 2d4fcc0e (21 October 2026): official pass at 200/200</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 72px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        main {
+            max-width: 1120px;
+            margin: auto;
+            padding: 32px 24px 64px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: -.025em;
+        }
+
+        h2 {
+            font-size: 1.55rem;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        p+p {
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--cp-link);
+            text-underline-offset: 3px;
+        }
+
+        code {
+            font: .88em Consolas, "Courier New", Courier, monospace;
+            overflow-wrap: anywhere;
+        }
+
+        button {
+            font: inherit;
+            padding: 8px 12px;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            border-color: var(--cp-accent);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--cp-accent);
+            outline-offset: 4px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .eyebrow {
+            color: var(--cp-accent);
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            font-size: 1.12rem;
+            max-width: 850px;
+            margin-top: 16px;
+        }
+
+        .muted,
+        .small {
+            color: var(--cp-text-muted);
+        }
+
+        .small {
+            font-size: .86rem;
+        }
+
+        .snapshot {
+            margin-top: 12px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin: 24px 0;
+            padding: 12px 16px;
+            background: var(--cp-bg-elevated);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+        }
+
+        section {
+            margin-top: 36px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .four {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .card {
+            padding: 20px;
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            box-shadow: 0 1px 2px var(--cp-border);
+            min-width: 0;
+        }
+
+        .metric {
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            line-height: 1.2;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ok {
+            color: var(--cp-success);
+        }
+
+        .bad {
+            color: var(--cp-danger);
+        }
+
+        .note {
+            padding: 16px 20px;
+            background: var(--cp-accent-soft);
+            border-left: 4px solid var(--cp-accent);
+            border-radius: .625rem;
+            margin-top: 16px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: .92rem;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--cp-border);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--cp-surface-soft);
+            color: var(--cp-text-muted);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .steps {
+            padding-left: 24px;
+        }
+
+        li+li {
+            margin-top: 8px;
+        }
+
+        details {
+            margin-top: 16px;
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            background: var(--cp-surface);
+        }
+
+        summary {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .details-body {
+            padding: 0 16px 16px;
+        }
+
+        dl {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 12px 16px;
+        }
+
+        dt {
+            font-weight: 600;
+        }
+
+        dd {
+            margin: 0;
+        }
+
+        .diagram {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+        }
+
+        .diagram svg {
+            display: block;
+            width: min(100%, 760px);
+            height: auto;
+            margin: auto;
+        }
+
+        .diagram figcaption {
+            margin-top: 12px;
+        }
+
+        .svg-label {
+            fill: var(--cp-text);
+            font: 14px "Segoe UI", Aptos, Calibri, sans-serif;
+        }
+
+        .svg-small {
+            fill: var(--cp-text-muted);
+            font: 12px "Segoe UI", Aptos, Calibri, sans-serif;
+        }
+
+        footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--cp-border);
+        }
+
+        @media (max-width: 800px) {
+
+            .four,
+            .two {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 520px) {
+            main {
+                padding: 24px 16px 48px;
+            }
+
+            .four,
+            .two {
+                grid-template-columns: 1fr;
+            }
+
+            dl {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+        }
+
+        @media print {
+
+            button,
+            nav {
+                display: none;
+            }
+
+            main {
+                max-width: none;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+
+            .table-wrap {
+                overflow: visible;
+            }
+
+            tr,
+            .card {
+                break-inside: avoid;
+            }
+
+            details .details-body {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="top"><span></span><button id="theme-toggle" type="button">Change theme</button></div>
+            <p class="eyebrow">Campaign 2d4fcc0e / final report</p>
+            <h1>Campaign 2d4fcc0e (21 October 2026): official pass at 200/200</h1>
+            <p class="intro">The final controller passed all 200 official cases. The goal was 196. The two previous
+                completed campaigns failed at 189/200.</p>
+            <p class="intro">The PI found a defect with time-resolved traces and repaired it. The PI then gave the
+                policy the elbow branch that the shoulder limit allows. That change removed the last failures on new
+                episodes.</p>
+            <p class="snapshot small">Campaign: <code>2d4fcc0e</code>. Harness commit: <code>7f562d91</code>. Local
+                time: UTC+2. Launch: 07:02. Official assessment: 10:53.</p>
+            <nav aria-label="Report sections"><a href="#summary">Summary</a><a href="#task">Task</a><a
+                    href="#controller">Final controller</a><a href="#timeline">Timeline</a><a
+                    href="#results">Results</a><a href="#went-well">What went well</a><a href="#issues">Issues</a><a
+                    href="#changes">Harness changes</a><a href="#follow-up">Follow-up</a><a href="#limits">Limits</a>
+            </nav>
+        </header>
+
+        <section id="summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">1. Summary</h2>
+            <div class="grid four">
+                <article class="card">
+                    <p class="metric ok">200 / 200</p>
+                    <p>Official successes.</p>
+                    <p class="small">The test passed.</p>
+                </article>
+                <article class="card">
+                    <p class="metric ok">100%</p>
+                    <p>Official success rate.</p>
+                    <p class="small">The goal was 98%.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">4 runs</p>
+                    <p>Each run completed 120,832 steps.</p>
+                    <p class="small">The PI made 17 measurements.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">4 inquiries</p>
+                    <p>Four bounded research questions.</p>
+                    <p class="small">There were 15 allowed inquiries.</p>
+                </article>
+            </div>
+            <div class="note">
+                <p><strong>Outcome:</strong> T4 checkpoint 120,832 scored 200/200 on the official test.</p>
+                <p>Before the test, T4 scored 400/400 on two new local panels and 200/200 on the task-reference panel.
+                    On the same new episodes, T2 scored 391/400. T4 won 9 paired episodes and T2 won none.</p>
+                <p>The campaign used 77.749 AIU. The PI used 59.857 AIU, the coder 13.295 AIU and the reviewer 4.597
+                    AIU. The time from launch to the official result was 3 hours 51 minutes. About 46 minutes of that
+                    time
+                    was a pause while the maintainer's laptop was closed.</p>
+            </div>
+        </section>
+
+        <section id="task" aria-labelledby="task-title">
+            <h2 id="task-title">2. The task</h2>
+            <div class="card">
+                <p>A two-joint planar arm in MuJoCo had an upper arm of 0.12 m and a forearm of 0.10 m. Each joint could
+                    turn from -170 to +170 degrees. Targets appeared 0.06 to 0.20 m from the base at any bearing. The
+                    hand had to stay within 1 cm of a target for 100 uninterrupted steps during a 500-step episode. The
+                    goal was at least 196 successes in the official 200-episode assessment. That assessment was
+                    terminal: it ended the campaign.</p>
+                <p style="margin-top:12px">The PI was the AI principal investigator. The PI made scientific decisions.
+                    Runner was the harness software. It ran operations and recorded facts. Coder and reviewer were AI
+                    agents that changed and checked code for the PI. An inquiry was a bounded research question opened
+                    by the PI.</p>
+            </div>
+        </section>
+
+        <section id="controller" aria-labelledby="controller-title">
+            <h2 id="controller-title">3. The final controller</h2>
+            <div class="card">
+                <p>T4 is a hybrid controller. It is not a policy that learned the task alone.</p>
+                <p>For each target, the saved controller calculates the joint angles of one elbow branch. It selects
+                    the branch that the joint limits allow. A PD term moves the joints toward those angles. The PPO
+                    policy adds its learned action. The policy also observes the remaining distance to the selected
+                    joint angles. A slew limiter then limits the change in action at each 20 ms step.</p>
+                <p>All of these parts are in the saved controller runtime. The official test ran the same runtime.</p>
+            </div>
+            <figure class="diagram card">
+                <svg viewBox="0 0 760 170" role="img" aria-labelledby="ctrl-title ctrl-desc">
+                    <title id="ctrl-title">Structure of the T4 controller</title>
+                    <desc id="ctrl-desc">The target goes to an elbow-branch selection step. The selected joint angles
+                        feed a PD term and the PPO policy. Their actions are added. A slew limiter then sends the
+                        action to the arm.</desc>
+                    <rect x="10" y="55" width="100" height="50" rx="10" fill="var(--cp-surface-soft)"
+                        stroke="var(--cp-border-strong)"></rect>
+                    <text x="60" y="85" text-anchor="middle" class="svg-label">Target</text>
+                    <rect x="150" y="55" width="140" height="50" rx="10" fill="var(--cp-accent-soft)"
+                        stroke="var(--cp-accent)"></rect>
+                    <text x="220" y="77" text-anchor="middle" class="svg-label">Select elbow</text>
+                    <text x="220" y="95" text-anchor="middle" class="svg-small">branch (analytic)</text>
+                    <rect x="330" y="10" width="130" height="50" rx="10" fill="var(--cp-accent-soft)"
+                        stroke="var(--cp-accent)"></rect>
+                    <text x="395" y="32" text-anchor="middle" class="svg-label">PD term</text>
+                    <text x="395" y="50" text-anchor="middle" class="svg-small">toward branch</text>
+                    <rect x="330" y="100" width="130" height="50" rx="10" fill="var(--cp-surface-soft)"
+                        stroke="var(--cp-border-strong)"></rect>
+                    <text x="395" y="122" text-anchor="middle" class="svg-label">PPO policy</text>
+                    <text x="395" y="140" text-anchor="middle" class="svg-small">learned action</text>
+                    <circle cx="510" cy="80" r="16" fill="var(--cp-surface)" stroke="var(--cp-border-strong)"></circle>
+                    <text x="510" y="85" text-anchor="middle" class="svg-label">+</text>
+                    <rect x="555" y="55" width="100" height="50" rx="10" fill="var(--cp-surface-soft)"
+                        stroke="var(--cp-border-strong)"></rect>
+                    <text x="605" y="77" text-anchor="middle" class="svg-label">Slew</text>
+                    <text x="605" y="95" text-anchor="middle" class="svg-small">limiter</text>
+                    <rect x="690" y="55" width="60" height="50" rx="10" fill="var(--cp-surface-soft)"
+                        stroke="var(--cp-border-strong)"></rect>
+                    <text x="720" y="85" text-anchor="middle" class="svg-label">Arm</text>
+                    <path d="M110 80 H150" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M290 80 L330 35" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M290 80 L330 125" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M460 35 L496 72" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M460 125 L496 88" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M526 80 H555" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                    <path d="M655 80 H690" stroke="var(--cp-border-strong)" stroke-width="2" fill="none"></path>
+                </svg>
+                <figcaption class="small">Schematic only. Shaded boxes are the parts that T4 added to the T2 design.
+                    T2 already had the PPO policy and the slew limiter.</figcaption>
+            </figure>
+        </section>
+
+        <section id="timeline" aria-labelledby="timeline-title">
+            <h2 id="timeline-title">4. Timeline</h2>
+            <p>A task-reference panel is a fixed set of 200 practice episodes. It is not the official test. A fresh
+                local panel uses new episode seeds in the PI's research evaluation. A paired panel runs two controllers
+                on the same episodes.</p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Operation</th>
+                            <th scope="col">What happened</th>
+                            <th scope="col">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>07:02</td>
+                            <td>Launch</td>
+                            <td>The campaign started on the clean harness commit <code>7f562d91</code>.</td>
+                            <td>Campaign 2d4fcc0e.</td>
+                        </tr>
+                        <tr>
+                            <td>07:16</td>
+                            <td>Analyst</td>
+                            <td>The preliminary analyst wrote the scientific model.</td>
+                            <td>Model ready.</td>
+                        </tr>
+                        <tr>
+                            <td>07:25-08:11</td>
+                            <td>Startup S1, first attempt</td>
+                            <td>The coder wrote the plant measurement tool in 7 minutes. The maintainer's laptop was
+                                then
+                                closed during the review.</td>
+                            <td>The session ended with a timeout. No operation completed. This was not a harness
+                                defect.</td>
+                        </tr>
+                        <tr>
+                            <td>08:34</td>
+                            <td>M1, startup S1 resumed</td>
+                            <td>The PI measured the compiled arm geometry, the joint limits and the target plane.</td>
+                            <td>Local geometry recorded. The protected target-plane question stayed open.</td>
+                        </tr>
+                        <tr>
+                            <td>08:37</td>
+                            <td>E2, goal review S2</td>
+                            <td>The PI opened I1: does a fixed 2 cm target-plane error block success, or is the gap a
+                                learning and hold problem?</td>
+                            <td>I1 began.</td>
+                        </tr>
+                        <tr>
+                            <td>08:43</td>
+                            <td>T1, inquiry S3</td>
+                            <td>Fresh PPO training, seed 0. Targets covered the full 0.06-0.20 m radius range.</td>
+                            <td>New training run.</td>
+                        </tr>
+                        <tr>
+                            <td>08:45-08:47</td>
+                            <td>M2, E4</td>
+                            <td>T1 checkpoint 120,832 was measured on the task-reference panel.</td>
+                            <td>192/200. No 2 cm floor existed. I1 closed with a limited answer.</td>
+                        </tr>
+                        <tr>
+                            <td>08:52-08:57</td>
+                            <td>M3, M4, goal review S4</td>
+                            <td>The PI measured T1 checkpoint 115,712 and then T1 on a fresh local panel.</td>
+                            <td>T1:115,712 scored 171/200. T1 scored 191/200 on new episodes: 5 never reached, 4 lost
+                                the hold.</td>
+                        </tr>
+                        <tr>
+                            <td>08:57</td>
+                            <td>E8</td>
+                            <td>The PI compared the official prospects of T1 with further work. The PI noted that the
+                                development panel can overstate success. The PI opened I2 on time-resolved controller
+                                behavior.</td>
+                            <td>I2 began.</td>
+                        </tr>
+                        <tr>
+                            <td>09:07-09:11</td>
+                            <td>M5, M6, inquiry S5</td>
+                            <td>A new trace tool recorded joint angles and actions over time.</td>
+                            <td>Actions oscillated near the joint limits, in failures and in successes.</td>
+                        </tr>
+                        <tr>
+                            <td>09:22</td>
+                            <td>T2, inquiry S6</td>
+                            <td>Training continued from T1 with seed 1. A slew limiter allowed 0.5 action units of
+                                change
+                                per 20 ms step.</td>
+                            <td>New training run.</td>
+                        </tr>
+                        <tr>
+                            <td>09:25-09:27</td>
+                            <td>M7, M8, E11</td>
+                            <td>T2 was measured on a fresh local panel and on the task-reference panel.</td>
+                            <td>199/200 and 196/200. T2 became best-known.</td>
+                        </tr>
+                        <tr>
+                            <td>09:31-09:35</td>
+                            <td>M9, M10, inquiry S7 and S8</td>
+                            <td>T1 and T2 ran on a paired fresh panel. Traces then examined the remaining T2 failures.
+                            </td>
+                            <td>T1 190 versus T2 195. T2 won 5 episodes and lost none. Failures were near the shoulder
+                                limit.</td>
+                        </tr>
+                        <tr>
+                            <td>09:42-09:44</td>
+                            <td>M11, E15, inquiry S9</td>
+                            <td>The PI removed the limiter from T2 in a small ablation.</td>
+                            <td>Without the limiter, all 10 episodes failed. I2 closed with a positive answer.</td>
+                        </tr>
+                        <tr>
+                            <td>09:50-09:51</td>
+                            <td>M12, E17, goal review S10</td>
+                            <td>The PI compared two T2 checkpoints. The PI then compared official prospects with
+                                further work. Fresh results were below 98%. The PI opened I3.</td>
+                            <td>T2:115,712 and T2:120,832 both scored 194/200. I3 began.</td>
+                        </tr>
+                        <tr>
+                            <td>10:04-10:15</td>
+                            <td>T3, M13-M15, E19, inquiry S11</td>
+                            <td>T3 added a reward term toward an analytic joint-angle goal. Traces checked the elbow
+                                branch.</td>
+                            <td>T3 193 and 191 versus T2 192 and 192. T3 did not use the alternate branch. I3 closed as
+                                a negative result for this implementation only.</td>
+                        </tr>
+                        <tr>
+                            <td>10:19</td>
+                            <td>E21, goal review S12</td>
+                            <td>The PI noted that T3 never gave the branch to the policy. The PI opened I4 for a
+                                branch-conditioned controller. T2 had 972/1000 (97.2%) on pooled fresh panels.</td>
+                            <td>I4 began.</td>
+                        </tr>
+                        <tr>
+                            <td>10:23-10:41</td>
+                            <td>E23, T4, inquiry S13</td>
+                            <td>The PI restored the T2 environment and reward as the clean parent. T4 continued from T2
+                                with seed 3. It added the branch observation and the PD term.</td>
+                            <td>New training run.</td>
+                        </tr>
+                        <tr>
+                            <td>10:46-10:49</td>
+                            <td>M16, M17, E24, E25</td>
+                            <td>T4 and T2 ran on two new paired panels and on the task-reference panel. Traces checked
+                                the executed branch.</td>
+                            <td>T4 400/400 versus T2 391/400. T4 200/200 on task-reference. I4 closed with a positive
+                                answer.</td>
+                        </tr>
+                        <tr>
+                            <td>10:53</td>
+                            <td>E27, goal review S14</td>
+                            <td>The PI requested the official test of T4 checkpoint 120,832. The PI stated that the
+                                checkpoint was selected from development results.</td>
+                            <td>Request accepted.</td>
+                        </tr>
+                        <tr>
+                            <td>10:53</td>
+                            <td>Official assessment</td>
+                            <td>The terminal test ended the campaign.</td>
+                            <td>PASSED: 200/200, or 100%.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="small" style="margin-top:12px">The campaign had 14 scientific sessions and 1 analyst session: 1
+                startup, 5 goal reviews and 8 inquiry sessions. It had 4 training runs, 17 measurements and 27 recorded
+                events.</p>
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+            <h2 id="results-title">5. Results</h2>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Measurement</th>
+                            <th scope="col">Controller and evaluation</th>
+                            <th scope="col">Successes</th>
+                            <th scope="col">What it shows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>M2</td>
+                            <td>T1:120,832, task-reference panel</td>
+                            <td>192/200 (96%)</td>
+                            <td>Eight timeouts with final errors of 1.00-1.49 cm. No fixed 2 cm floor.</td>
+                        </tr>
+                        <tr>
+                            <td>M3</td>
+                            <td>T1:115,712, task-reference panel</td>
+                            <td>171/200 (85.5%)</td>
+                            <td>Checkpoints from the same run can differ by a large amount.</td>
+                        </tr>
+                        <tr>
+                            <td>M4</td>
+                            <td>T1:120,832, fresh local panel, seeds from 9000</td>
+                            <td>191/200 (95.5%)</td>
+                            <td>Five episodes never reached the target. Four lost the hold.</td>
+                        </tr>
+                        <tr>
+                            <td>M7</td>
+                            <td>T2:120,832, fresh local panel, seeds from 10000</td>
+                            <td>199/200 (99.5%)</td>
+                            <td>The slew limiter improved this panel.</td>
+                        </tr>
+                        <tr>
+                            <td>M8</td>
+                            <td>T2:120,832, task-reference panel</td>
+                            <td>196/200 (98%)</td>
+                            <td>T2 became best-known.</td>
+                        </tr>
+                        <tr>
+                            <td>M9</td>
+                            <td>T1 and T2, paired fresh panel, seeds from 10200</td>
+                            <td>T1 190, T2 195</td>
+                            <td>T2 won 5 episodes and lost none.</td>
+                        </tr>
+                        <tr>
+                            <td>M11</td>
+                            <td>T2 without the limiter, 10 episodes</td>
+                            <td>0/10</td>
+                            <td>The limiter is necessary for T2.</td>
+                        </tr>
+                        <tr>
+                            <td>M12-M15</td>
+                            <td>T2 checkpoints and T3, fresh local panels</td>
+                            <td>T2 194, 192, 192. T3 193, 191</td>
+                            <td>T3 gave no improvement. Pooled T3 and T2 scores were both 384/400.</td>
+                        </tr>
+                        <tr>
+                            <td>M16</td>
+                            <td>T4:120,832 and T2, two paired fresh panels, seeds from 11000 and 11200</td>
+                            <td>T4 400/400, T2 391/400</td>
+                            <td>T4 won 9 episodes and lost none. T4:55,296 scored 399/400.</td>
+                        </tr>
+                        <tr>
+                            <td>M16</td>
+                            <td>T4:120,832, task-reference panel</td>
+                            <td>200/200 (100%)</td>
+                            <td>No failure on the practice panel.</td>
+                        </tr>
+                        <tr>
+                            <td>Official</td>
+                            <td>T4:120,832, terminal 200-episode assessment</td>
+                            <td>200/200 (100%)</td>
+                            <td>Passed the goal of 196/200.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>Pooled T2 result:</strong> T2:120,832 scored 199, 195, 194, 192 and 192 on five fresh
+                    panels. That is 972/1000, or 97.2%. This is below the 98% goal. At this point the PI chose further
+                    work, not the official test.</p>
+                <p>The two M16 panels used seeds that the PI had not used to design or select T4.</p>
+            </div>
+        </section>
+
+        <section id="went-well" aria-labelledby="went-well-title">
+            <h2 id="went-well-title">6. What went well</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>Diagnostics led to repairs</h3>
+                    <p>Each diagnostic had a clear next action. The traces in I2 located oscillation near the joint
+                        limits. The limiter repaired it. A small ablation then showed that the limiter was necessary.
+                    </p>
+                    <p>The traces in I3 showed that T3 did not use the other elbow branch. This led to the design of
+                        T4.</p>
+                </article>
+                <article class="card">
+                    <h3>Balanced goal reviews</h3>
+                    <p>At 97.2% on pooled fresh panels, the PI chose further work. At 400/400, the PI requested the
+                        official test.</p>
+                    <p>Both decisions compared the official prospects of the best candidate with the prospects of
+                        further work. Both decisions noted that development results can overstate success.</p>
+                </article>
+                <article class="card">
+                    <h3>Honest negative result</h3>
+                    <p>I3 closed as a negative result for the tested implementation only. The PI did not claim that
+                        the method itself failed. The next inquiry changed the part that T3 had omitted.</p>
+                </article>
+                <article class="card">
+                    <h3>Clean launch and evidence</h3>
+                    <p>The launch check confirmed a clean harness. Protected evaluations ran normally. The PI used
+                        paired panels with new seeds before the official test.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="issues" aria-labelledby="issues-title">
+            <h2 id="issues-title">7. Issues and observations</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>The pass uses a hybrid controller</h3>
+                    <p>T4 uses an analytic branch choice and a PD term with the learned policy. The pass shows that
+                        this hybrid controller meets the goal.</p>
+                    <p>It does not show that PPO alone can meet the goal. The maintainer accepts the hybrid design for
+                        this task.</p>
+                </article>
+                <article class="card">
+                    <h3>One extra trace</h3>
+                    <p>M17 traced the executed branch after M16 had already shown 400/400. This trace did not change
+                        the next action. It took about one minute.</p>
+                </article>
+                <article class="card">
+                    <h3>Same-panel reuse</h3>
+                    <p>T2 was selected as best-known partly from the task-reference panel. The PI used that panel
+                        again for later comparisons.</p>
+                    <p>The final selection of T4 also used new paired panels. This reduces the risk of an optimistic
+                        estimate. It does not remove it.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="changes" aria-labelledby="changes-title">
+            <h2 id="changes-title">8. Did the recent harness changes help?</h2>
+            <p>Commit <code>2b52e36a</code> (20 October) let an inquiry state a development step. It also said that a
+                repair is a valid action when evidence locates a defect. Commit <code>7f562d91</code> (21 October)
+                refused launch on a harness with changes. It also added goal-review guidance: compare official
+                prospects with further work, and consider selection bias.</p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Measure</th>
+                            <th scope="col">1c940d68<br><span class="small">20 Oct, 11:20</span></th>
+                            <th scope="col">758843c0<br><span class="small">20 Oct, 18:11</span></th>
+                            <th scope="col">4a65a241<br><span class="small">21 Oct, 00:06</span></th>
+                            <th scope="col">2d4fcc0e<br><span class="small">21 Oct, 07:02</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Changes active</td>
+                            <td>Before both commits.</td>
+                            <td><code>2b52e36a</code>.</td>
+                            <td>Harness with uncommitted changes.</td>
+                            <td><code>2b52e36a</code> and <code>7f562d91</code>.</td>
+                        </tr>
+                        <tr>
+                            <td>Time to end</td>
+                            <td>47 minutes.</td>
+                            <td>3 hours 16 minutes.</td>
+                            <td>About 6 hours 16 minutes. The maintainer stopped it.</td>
+                            <td>3 hours 51 minutes, with a 46-minute pause while the laptop was closed.</td>
+                        </tr>
+                        <tr>
+                            <td>Inquiries</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>No progress.</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>Training runs and measurements</td>
+                            <td>3 runs, 4 measurements.</td>
+                            <td>3 runs, 11 measurements.</td>
+                            <td>Protected evaluations were rejected all campaign.</td>
+                            <td>4 runs, 17 measurements.</td>
+                        </tr>
+                        <tr>
+                            <td>Cost</td>
+                            <td>Not recorded here.</td>
+                            <td>60.871 AIU.</td>
+                            <td>205.786 AIU.</td>
+                            <td>77.749 AIU.</td>
+                        </tr>
+                        <tr>
+                            <td>Official result</td>
+                            <td>94.5% (189/200), failed.</td>
+                            <td>94.5% (189/200), failed.</td>
+                            <td>None.</td>
+                            <td>100% (200/200), passed.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>Launch check:</strong> it worked. Campaign 4a65a241 started with uncommitted harness changes.
+                    Runner then rejected every protected evaluation, and the PI repeated checkpoint-only sessions. The
+                    new check refuses such a launch before the campaign starts.</p>
+                <p><strong>Goal review:</strong> the PI made two correct decisions. It deferred at 97.2% and assessed at
+                    400/400. The selection-bias sentence appeared in the PI's reasons at each review.</p>
+                <p><strong>Diagnostic versus repair:</strong> the diagnostics in this campaign fed repairs. T2 and T4
+                    were repairs of located defects.</p>
+                <p>One campaign cannot prove the cause of the improvement. The campaigns used different seeds and
+                    different PI choices.</p>
+            </div>
+        </section>
+
+        <section id="follow-up" aria-labelledby="follow-up-title">
+            <h2 id="follow-up-title">9. Possible follow-up</h2>
+            <p>This item needs maintainer approval. It is not implemented.</p>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>F1. Repeat the campaign on the same harness.</strong></td>
+                            <td>One pass does not show how often the harness reaches the goal.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="small" style="margin-top:12px">On 21 October the maintainer closed OI-005 on the evidence of
+                this campaign.</p>
+        </section>
+
+        <section id="limits" aria-labelledby="limits-title">
+            <h2 id="limits-title">10. Limits of this analysis</h2>
+            <ul class="steps">
+                <li>This report covers one campaign. It cannot prove that the harness changes caused the pass.</li>
+                <li>The comparison campaigns used different random seeds and different PI choices.</li>
+                <li>Campaign 4a65a241 ran on a harness with uncommitted changes. Its results are not comparable with
+                    completed campaigns.</li>
+                <li>This report does not count tool-call failures. The campaign made 881 tool calls in total.</li>
+            </ul>
+            <details>
+                <summary>Terms in this report</summary>
+                <div class="details-body">
+                    <dl>
+                        <dt>Assessment</dt>
+                        <dd>The official 200-episode test. It ends the campaign.</dd>
+                        <dt>Checkpoint</dt>
+                        <dd>A saved policy from one point during training.</dd>
+                        <dt>Elbow branch</dt>
+                        <dd>One of the two joint-angle solutions that put the hand on the same target.</dd>
+                        <dt>Episode</dt>
+                        <dd>One attempt to reach a target and hold the hand near it.</dd>
+                        <dt>Fresh local panel</dt>
+                        <dd>A set of new episodes in the PI's research evaluation. It is not the official test.</dd>
+                        <dt>Inquiry</dt>
+                        <dd>A bounded research question opened by the PI.</dd>
+                        <dt>Paired panel</dt>
+                        <dd>Two controllers run on the same episodes, so that each episode can be compared.</dd>
+                        <dt>PD term</dt>
+                        <dd>A fixed control term that moves the joints toward set angles in proportion to the error and
+                            its rate of change.</dd>
+                        <dt>Policy</dt>
+                        <dd>The learned controller that selects the arm's actions.</dd>
+                        <dt>Slew limiter</dt>
+                        <dd>A rule that limits how much the action can change in one control step.</dd>
+                        <dt>Task-reference panel</dt>
+                        <dd>A fixed set of 200 practice episodes. It is not the official test.</dd>
+                    </dl>
+                </div>
+            </details>
+        </section>
+        <footer>
+            <p class="small">This report uses the records in <code>campaigns/results.jsonl</code>,
+                <code>runner/state/research_state.json</code> and the campaign usage file. It does not claim that the
+                follow-up items have been implemented or tested.
+            </p>
+        </footer>
+    </main>
+    <script>
+        document.getElementById("theme-toggle").addEventListener("click", () => {
+            const theme = document.documentElement.getAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
+        });
+    </script>
+</body>
+
+</html>
