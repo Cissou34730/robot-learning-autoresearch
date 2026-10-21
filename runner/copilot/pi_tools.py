@@ -71,11 +71,11 @@ TRAINING_SERIES_DESCRIPTION = (
 )
 
 WILSON_DESCRIPTION = (
-    "Read-only 95% Wilson score interval for a success proportion. Provide "
-    "successes and trials as counts from the records; the tool reads no campaign "
-    "files and does not verify the counts. Returns the proportion and its lower and "
-    "upper bounds. The interval assumes independent trials with one common success "
-    "probability. It does not judge claims or decide significance."
+    "Wilson score intervals for up to 20 success proportions at a two-sided "
+    "confidence level you choose. Supply labelled success and trial counts read "
+    "from the records; the tool reads no files and does not verify counts. With an "
+    "optional threshold rate, each interval is reported as above, below or "
+    "including it. Assumes independent trials with one common success probability."
 )
 
 API_REFERENCE_DESCRIPTION = (

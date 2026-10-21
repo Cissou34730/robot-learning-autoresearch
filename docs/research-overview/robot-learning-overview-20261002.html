@@ -860,7 +860,8 @@
         </p>
         <p>Two optional numeric tools compute values without judging claims.
           <code>training_series_statistics</code> summarizes one training metric over a step window and evaluates
-          thresholds that the PI chooses. <code>wilson_proportion_interval</code> returns a 95% Wilson interval from
+          thresholds that the PI chooses. <code>wilson_proportion_interval</code> returns Wilson intervals at a confidence level the PI
+          chooses, from
           counts that the PI supplies.
         </p>
         <p class="small muted">Read-only review uses high reasoning. Max reasoning applies to Copilot scientific-model
@@ -1334,7 +1335,8 @@
               <td>Reported success rates are point values. They do not state the uncertainty that comes from the
                 number of episodes behind each value.</td>
               <td><span class="tag">Open</span></td>
-              <td>Optional tool <code>wilson_proportion_interval</code> computes a 95% Wilson interval from counts
+              <td>Optional tool <code>wilson_proportion_interval</code> computes Wilson intervals at a PI-chosen
+                confidence level from counts
                 that the PI supplies (21 October). The episode count behind each training-log <code>success_rate</code>
                 value is not verified, so that metric has no known trial count. Verify it before relying on intervals
                 for training-log values.</td>
@@ -1829,6 +1831,12 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">21 October: Wilson tool takes the PI's confidence level</h3>
+        <p><code>wilson_proportion_interval</code> no longer fixes 95%. The PI chooses the confidence level, supplies up
+          to 20 labelled proportions and can add a threshold rate. Each interval is reported as above, below or
+          including it. The previous version was not called in campaign <code>60ec83bd</code>.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: optional numeric tools for the PI</h3>
         <p>Added <code>training_series_statistics</code> (window summary of one training metric with optional

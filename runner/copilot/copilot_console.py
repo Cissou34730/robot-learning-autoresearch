@@ -344,7 +344,8 @@ _TOOL_DETAIL = {
     "training_log_query": _training_log_detail,
     "training_series_statistics": _training_series_detail,
     "wilson_proportion_interval": lambda arguments: (
-        f"{arguments.get('successes', '-')}/{arguments.get('trials', '-')}"
+        f"confidence={arguments.get('confidence', '-')} | "
+        f"proportions={len(arguments.get('proportions') or [])}"
     ),
     "scientific_coding": lambda _: "bounded coding / PI source review required",
     "scientific_api_reference": _api_reference_detail,

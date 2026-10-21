@@ -355,10 +355,18 @@ the computed value and whether the comparison holds. A `min` or `max` check
 also gives the number of rows that do not meet the comparison and the first and
 last of their steps. Checks are optional.
 
-`wilson_proportion_interval` returns the 95% Wilson score interval for
-`successes` out of `trials`. The PI supplies both counts; the tool reads no
-campaign files and does not verify the counts. The interval assumes
-independent trials with one common success probability.
+`wilson_proportion_interval` returns Wilson score intervals for up to 20
+proportions. The PI supplies:
+
+- `confidence`, the two-sided confidence level, from 0.5 to 0.999;
+- `proportions`, each with a `label`, `successes` and `trials`;
+- an optional `threshold` rate.
+
+Each result gives the proportion and its lower and upper bounds. With a
+threshold, each result also states whether the interval is `above`, `below` or
+`includes` that rate. The tool reads no campaign files and does not verify the
+counts. The interval assumes independent trials with one common success
+probability.
 
 These tools compute numbers from the supplied data. They do not judge claims,
 decide significance, certify development performance or choose a candidate.
