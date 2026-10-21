@@ -620,8 +620,8 @@
           independent local campaign repository containing PI science, state and artifacts. Campaign commits never push.
         </p>
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
-          refuses submissions even though Runner records an active session. This recovery mismatch is open as OI-037;
-          folder and training-log repairs do not fix it.</p>
+          refuses submissions even though Runner records an active session. The maintainer closed OI-037 on
+          21 October without claiming verified recovery. Folder and training-log repairs do not fix it.</p>
         <p><strong>Latest result:</strong> <code>2d4fcc0e</code> passed the official assessment at 200/200 on 21
           October. See its <a href="robot-campaign-2d4fcc0e-20261021.html">campaign report</a>. The final controller
           combines an analytic elbow-branch choice and a PD term with the learned PPO policy. One pass does not show
@@ -663,15 +663,15 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">24 closed issues; five open investigations</h3>
+          <h3 style="margin-top: 12px">26 closed issues; four open investigations</h3>
           <ul>
             <li>The 19 October reconciliation closes 15 bounded fixes and retires obsolete OI-010. All 37 issue IDs
               remain visible.</li>
             <li>On 21 October the maintainer closed OI-005, OI-014 and OI-036 from campaign
               <code>2d4fcc0e</code>. OI-006 is retired because 120k remains fixed.</li>
-            <li>One context change is observed; one native error-recovery mechanism still needs real recovery
-              evidence.</li>
-            <li>Open work is OI-021, OI-024, OI-025, OI-026 and OI-037.</li>
+            <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery.</li>
+            <li>One context change remains under observation.</li>
+            <li>Open work is OI-021, OI-024, OI-025 and OI-026.</li>
             <li>Engineering closure does not claim scientific success or authorize campaign recovery.</li>
           </ul>
           <p class="small"><a href="../harness-experiment-log.md">Read the source register</a>. <a href="#issues">Read
@@ -1161,21 +1161,22 @@
         the <a href="../harness-experiment-log.md#outstanding-issue-register">Markdown register</a>. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
         Retirement does not establish an optimal allocation.</p>
+      <p>The maintainer also closed OI-033 and OI-037 without a verified recovery claim.</p>
       <p>Each description states the problem without internal campaign labels. The next column states the required
         action or the completed repair. Historical evidence remains separate.</p>
       <p>This register owns current status decisions. Older review tables and campaign reports preserve their
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">5</p>
+          <p class="metric">4</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">2</p>
+          <p class="metric">1</p>
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">24</p>
+          <p class="metric">26</p>
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
@@ -1259,7 +1260,8 @@
             effect remains uncertain.</p>
           <p><strong>Needs recovery check:</strong> The retry code exists. Recovery from a real service error of the
             same type remains unconfirmed.</p>
-          <p><strong>Closed:</strong> The recorded evidence supports the repair of the defined defect.</p>
+          <p><strong>Closed:</strong> Work ended through a supported repair or an explicit maintainer decision.
+            The entry states the closure basis.</p>
           <p><strong>Retired:</strong> The concern no longer requires a separate repair. This status does not claim a
             repair.</p>
           <p><strong>Paused:</strong> The maintainer suspended the proposed change.</p>
@@ -1271,7 +1273,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 5</h3>
+      <h3 id="open-issues">Open issues — 4</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -1285,15 +1287,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>OI-037</td>
-              <td>A fatal conversation can reject new requests while Runner still records an active session. A restart
-                resumes the unusable conversation.</td>
-              <td><span class="tag">Open</span></td>
-              <td>Track recovery in <a href="https://github.com/Cissou34730/robot-learning-autoresearch/issues/61">GitHub
-                  #61</a>. Preserve completed operations. Require maintainer approval before recovery.
-                A fresh campaign does not demonstrate recovery.</td>
-            </tr>
             <tr>
               <td>OI-021</td>
               <td>The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias
@@ -1329,9 +1322,9 @@
           </tbody>
         </table>
       </div>
-      <h3 id="observed-issues">Changes that need more evidence — 2</h3>
-      <p>One context change shows intended behavior in campaign records. One retry mechanism still needs evidence of recovery
-        from a real service error. Successful ordinary sessions do not demonstrate that recovery.</p>
+      <h3 id="observed-issues">Changes that need more evidence — 1</h3>
+      <p>Context compaction shows intended behavior in campaign records.
+        Its effect on sustained context growth and cost remains unconfirmed.</p>
       <div class="card table-wrap wide">
         <table>
           <thead>
@@ -1350,23 +1343,15 @@
               <td>Observe context growth across a longer campaign. Keep the complete history accessible. Do not infer a
                 context repair from faster model responses.</td>
             </tr>
-            <tr>
-              <td>OI-033</td>
-              <td>A recoverable error from the language-model service can stop a conversation after the coder completes
-                its work.</td>
-              <td><span class="tag">Needs recovery check</span></td>
-              <td>Observe recovery from a real service error of the same type. Check the retry limit and final error
-                report. Do not repeat the coder's work or scientific operations.</td>
-            </tr>
           </tbody>
         </table>
       </div>
-      <h3 id="closed-issues">Closed issues — 24</h3>
-      <p>Recorded reproductions, regression checks, or actual use support these repairs. Closure concerns the defined
-        defect, not scientific success or every future case. An unrelated official assessment is not a condition for
-        closure.</p>
+      <h3 id="closed-issues">Closed issues — 26</h3>
+      <p>Most closures reflect recorded repairs. OI-033 and OI-037 were closed by maintainer decision without
+        verified recovery. Closure does not establish scientific success or cover every future case.
+        An unrelated official assessment is not a condition for closure.</p>
       <details>
-        <summary>Show the 24 closed issues and their repairs</summary>
+        <summary>Show the 26 closed issues and their closure basis</summary>
         <div class="details-body">
           <div class="table-wrap wide">
             <table>
@@ -1375,7 +1360,7 @@
                   <th scope="col">ID</th>
                   <th scope="col">Original issue</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Repair and limit</th>
+                  <th scope="col">Closure basis and limit</th>
                 </tr>
               </thead>
               <tbody>
@@ -1421,7 +1406,7 @@
                   <td>A request to save a session can list the wrong completed operations.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>The interface supplies the session identity and exact operation list. Rejections show submitted
-                    and expected values. Fatal recovery remains under OI-037.</td>
+                    and expected values. This repair does not recover a fatal conversation.</td>
                 </tr>
                 <tr>
                   <td>OI-011</td>
@@ -1534,6 +1519,14 @@
                     syntax checks, fingerprints, and explicit limits.</td>
                 </tr>
                 <tr>
+                  <td>OI-033</td>
+                  <td>A recoverable error from the language-model service can stop a conversation after the coder completes
+                    its work.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 21 October. The retry mechanism exists, but recovery from the
+                    original service error was not verified. No further recovery work is requested.</td>
+                </tr>
+                <tr>
                   <td>OI-034</td>
                   <td>Repeated scans of a large JSON file can delay each query.</td>
                   <td><span class="tag">Closed</span></td>
@@ -1554,6 +1547,14 @@
                   <td>T4's saved runtime contains the required controller and episode state. The same artifact scored
                     400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source
                     inspection with measured use. It does not claim identical trajectories across different panels.</td>
+                </tr>
+                <tr>
+                  <td>OI-037</td>
+                  <td>A fatal conversation can reject new requests while Runner still records an active session. A restart
+                    resumes the unusable conversation.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 21 October, together with GitHub #61. No recovery repair or
+                    successful recovery verification is claimed. Completed operations and evidence are unchanged.</td>
                 </tr>
               </tbody>
             </table>
@@ -1660,7 +1661,7 @@
             require this qualification.</p>
           <p>The retry mechanism under OI-033 permits five retries with five-second waits. Offline checks confirm the
             mechanism, not recovery from the original service failure. The cause of that original request failure
-            remains unknown.</p>
+            remains unknown. The maintainer closed OI-033 without requesting further recovery verification.</p>
           <p>The Git mechanism under OI-035 permits three retries with 60-second waits. It does not repair the remote
             service or repeat scientific work.</p>
         </div>
@@ -1690,24 +1691,22 @@
             </tr>
             <tr>
               <td><a href="https://github.com/Cissou34730/robot-learning-autoresearch/issues/41">#41</a></td>
-              <td>Deferred</td>
-              <td>The issue distinguishes the current split and ownership checks from its historical proposal.
-                No broad refactor is approved.</td>
+              <td>Closed by maintainer decision</td>
+              <td>The historical structural proposal is not planned.
+                Closure does not claim that every proposed refactor was implemented.</td>
             </tr>
             <tr>
               <td><a href="https://github.com/Cissou34730/robot-learning-autoresearch/issues/61">#61</a></td>
-              <td>Open</td>
-              <td>Tracks OI-037 fatal-conversation recovery.
-                The passing fresh campaign does not exercise this defect.</td>
+              <td>Closed by maintainer decision</td>
+              <td>OI-037 tracking ended without a recovery repair or verification claim.</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p>GitHub #37 and OI-037 are different issues.</p>
+      <p>No GitHub issues remain open at this review.</p>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Reproduce OI-037 with a targeted harness check before proposing recovery.
-          Preserve completed operations. A full campaign is not the first check.</li>
         <li>Trace OI-025 from preserved values through the query response to the PI statement.
           Distinguish tool defects from interpretation errors before proposing a harness repair.</li>
         <li>Classify OI-024 reruns and OI-026 review work by their actual information gain or corrected defect.
@@ -1792,6 +1791,13 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">21 October: maintainer-directed closures</h3>
+        <p>Closed OI-037, OI-033 and GitHub #61/#41 on explicit maintainer instruction.
+          These are decision closures, not verified recovery repairs or completed structural refactors.</p>
+        <p>Recovery is no longer an active priority. All 37 OI IDs remain: four open, one awaiting evidence,
+          26 closed and six inactive. No GitHub issue remains open. No runtime code, campaign state or evidence changed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: approved tracker and GitHub reconciliation</h3>
         <p>Closed OI-005, OI-014 and OI-036 from recorded decision, implementation and saved-controller evidence.
@@ -1890,9 +1896,9 @@
           <li><code>3ce7063</code> and <code>2c4bfde</code> restore the caller's folder after launch and reset, so
             reset-then-launch commands resolve correctly.</li>
           <li>Full reset backups were removed. Ignored artifacts are local files, not Git backups.</li>
-          <li>OI-037 remains open: resuming a conversation after <code>validation_fatal</code> can leave it refusing
+          <li>OI-037 was open at this review: resuming a conversation after <code>validation_fatal</code> can leave it refusing
             submissions while Runner still records an active session. Reset is a new campaign, not recovery of that
-            session.</li>
+            session. The maintainer closed the item on 21 October without claiming verified recovery.</li>
         </ul>
         <h3>14 October (historical)</h3>
         <ul>
@@ -2199,8 +2205,8 @@
             <tr>
               <td>Fatal-session recovery</td>
               <td>Reconcile a conversation told to stop with a durable scientific session that remains active.</td>
-              <td>Open as OI-037. The current launcher resumes the persisted conversation; no completed operation may be
-                blindly replayed.</td>
+              <td>OI-037 was closed by maintainer decision on 21 October without claiming verified recovery.
+                No completed operation may be blindly replayed.</td>
             </tr>
             <tr>
               <td>Runner state ignored in protected checks</td>
