@@ -1123,6 +1123,28 @@ def _validate_pending_data(kind: str, data: object) -> None:
                     or set(entry["inputs"]) != set(entry["input_artifacts"])
                 ):
                     raise ValueError("pending measurement input bindings are invalid")
+            if entry["instrument"] in {
+                "research_evaluation",
+                "task_reference",
+            } and "repeats_earlier_measurements" in entry:
+                fields = fields | {"repeats_earlier_measurements"}
+                repeats = entry["repeats_earlier_measurements"]
+                if not isinstance(repeats, list):
+                    raise TypeError(
+                        "pending measurement repeats_earlier_measurements must be a list"
+                    )
+                for repeat in repeats:
+                    repeat = _require_exact_fields(
+                        repeat,
+                        {"operation_id", "label", "shared_episodes"},
+                        "pending measurement repeat",
+                    )
+                    for field in ("operation_id", "label"):
+                        _nonempty(repeat, field, f"pending measurement repeat {field}")
+                    _positive_integer(
+                        repeat["shared_episodes"],
+                        "pending measurement repeat shared_episodes",
+                    )
             _require_exact_fields(
                 entry,
                 fields,

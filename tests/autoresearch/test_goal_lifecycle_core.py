@@ -1802,6 +1802,83 @@ def test_measurement_reports_earlier_measurement_of_same_episodes():
     ) == []
 
 
+@pytest.mark.parametrize("instrument", ["research_evaluation", "task_reference"])
+def test_repeated_measurement_preserves_repeat_metadata_through_pending_state(
+    monkeypatch, tmp_path, instrument
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Repeat a candidate measurement.")
+    candidate = _candidate(
+        "T1:checkpoint-10", _artifact(tmp_path / "archive" / "candidate")
+    )
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    contract = {"panel": "reference", "panel_version": 1, "episodes": 2, "seed": 100}
+    monkeypatch.setattr(
+        run_experiment, "_task_reference_contract", lambda: dict(contract)
+    )
+    entry = {
+        "instrument": instrument,
+        "candidate": candidate["id"],
+        "label": "repeat-panel",
+    }
+    if instrument == "research_evaluation":
+        entry.update(episodes=2, seed=100)
+    request = {
+        "measurement": {
+            "description": "Repeat the same candidate on the same episodes.",
+            "rationale": "Record the diagnostic replay without counting new samples.",
+            "measurements": [entry],
+        }
+    }
+
+    def evaluate(
+        _artifact, seed, *, episodes, output_path, task_reference=False, **_kwargs
+    ):
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        if task_reference:
+            metrics.update(contract)
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
+
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    run_experiment.accept_operation(request, state)
+    assert run_experiment.execute_pending_operation() == 0
+    state = repository.load_state(allow_missing_artifact=True)
+    pending = run_experiment.accept_operation(request, state)
+    expected = [{"operation_id": "M1", "label": "repeat-panel", "shared_episodes": 2}]
+    field = run_experiment.REPEATS_FIELD
+    assert pending["data"]["measurements"][0][field] == expected
+    reloaded = repository.load_state(allow_missing_artifact=True)
+    assert reloaded["pending_operation"]["data"]["measurements"][0][field] == expected
+
+    invalid = repository.read_state()
+    repeat = invalid["pending_operation"]["data"]["measurements"][0][field][0]
+    repeat["shared_episodes"] = 0
+    with pytest.raises(ValueError, match="shared_episodes must be at least 1"):
+        repository.write_state(invalid)
+    repeat["shared_episodes"] = 2
+    repeat["unexpected"] = True
+    with pytest.raises(ValueError, match="pending measurement repeat requires exactly"):
+        repository.write_state(invalid)
+    invalid["pending_operation"]["data"]["measurements"][0][field] = {}
+    with pytest.raises(TypeError, match="repeats_earlier_measurements must be a list"):
+        repository.write_state(invalid)
+
+    assert run_experiment.execute_pending_operation() == 0
+    completed = repository.read_state()["operation_events"][-1]
+    assert completed["id"] == "M2"
+    assert completed["result"]["measurements"][0]["metrics"][field] == expected
+
+
 def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path):
     research = tmp_path / "campaigns"
     research.mkdir()
