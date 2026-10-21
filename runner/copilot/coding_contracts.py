@@ -200,19 +200,21 @@ def _excerpt(text: str, start: str, end: str) -> str:
 def load_task_context(root: Path) -> dict[str, str]:
     """Fixed contract text given to every coder and reviewer."""
     authority = (root / "contracts" / "authority.md").read_text(encoding="utf-8")
-    instruments = (root / "contracts" / "instruments.md").read_text(encoding="utf-8")
+    parts = root / "contracts" / "instruments"
+    coding = (parts / "coding.md").read_text(encoding="utf-8")
+    measurement = (parts / "measurement.md").read_text(encoding="utf-8")
     return {
         "authority": _excerpt(
             authority, "## Installed scientific stack", "## PI sessions"
         ),
         "scenario": (root / "contracts" / "scenario.md").read_text(encoding="utf-8"),
         "saved_controller": _excerpt(
-            instruments,
+            coding,
             "## Saved controller execution",
             "## Scientific coding interface",
         ),
         "python_module": _excerpt(
-            instruments, "A `python_module` entry", "A paired-comparison entry"
+            measurement, "A `python_module` entry", "A paired-comparison entry"
         ),
     }
 

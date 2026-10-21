@@ -66,7 +66,8 @@ class OperationSubmission:
             "submit_operation",
             description=(
                 "Submit one operation envelope defined in contracts/instruments.md "
-                "in request. Do not write pi_workspace/operation_request.json; it is internal "
+                "in request; each operation body is defined in contracts/instruments/. "
+                "Do not write pi_workspace/operation_request.json; it is internal "
                 "Runner exchange. The trusted controller validates and executes it using "
                 "existing Runner permissions and allocation, then returns compact factual "
                 "result/errors and current state directly to this conversation. Detailed "

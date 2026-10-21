@@ -860,7 +860,8 @@
         </p>
         <p>Two optional numeric tools compute values without judging claims.
           <code>training_series_statistics</code> summarizes one training metric over a step window and evaluates
-          thresholds that the PI chooses. <code>wilson_proportion_interval</code> returns Wilson intervals at a confidence level the PI
+          thresholds that the PI chooses. <code>wilson_proportion_interval</code> returns Wilson intervals at a
+          confidence level the PI
           chooses, from
           counts that the PI supplies.
         </p>
@@ -1831,6 +1832,13 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">21 October: instrument contract split by use</h3>
+        <p>Each PI session had read the whole 37k-character <code>contracts/instruments.md</code> one to three times.
+          The core file now holds the request envelope, operations by session and the session record. The other
+          sections moved verbatim to <code>contracts/instruments/</code>, and the launcher names the file for each
+          permitted operation. Coder excerpts are unchanged. The token effect is unmeasured.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: shorter PI tool descriptions</h3>
         <p>The four longest PI tool descriptions now state purpose, modes and partial-result rules only, at 54 to 83

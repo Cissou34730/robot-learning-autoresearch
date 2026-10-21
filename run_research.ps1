@@ -870,7 +870,21 @@ function New-ScientificSessionPrompt {
         "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
     }
     else {
-        "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
+        $contractFiles = [ordered]@{
+            measurement = "contracts/instruments/measurement.md"
+            training = "contracts/instruments/training.md"
+            model_role = "contracts/instruments/training.md"
+            restore_recipe = "contracts/instruments/training.md"
+            inquiry = "contracts/instruments/inquiry.md"
+            campaign_conclusion = "contracts/instruments/inquiry.md"
+            checkpoint = "contracts/instruments.md"
+        }
+        $contractList = @(
+            $availability.allowed_operations |
+                Where-Object { $contractFiles.Contains([string]$_) } |
+                ForEach-Object { "$_ in $($contractFiles[[string]$_])" }
+        ) -join "; "
+        "When ready to act, read the request envelope in contracts/instruments.md and the contract for the operation you choose: $contractList. Submit one scientific action."
     }
     $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Continue within this context until checkpoint or terminal commitment ends it."
 

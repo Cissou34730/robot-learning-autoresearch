@@ -31,6 +31,12 @@ PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
     "contracts/authority.md",
     "contracts/instruments.md",
+    "contracts/instruments/coding.md",
+    "contracts/instruments/inquiry.md",
+    "contracts/instruments/measurement.md",
+    "contracts/instruments/readers.md",
+    "contracts/instruments/scientific-model.md",
+    "contracts/instruments/training.md",
     "contracts/program.md",
     "contracts/scenario.md",
 }

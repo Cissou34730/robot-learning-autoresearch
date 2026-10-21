@@ -2,7 +2,8 @@
 
 This contract states what each campaign role may read, write and execute.
 `contracts/program.md` defines the research lifecycle.
-`contracts/instruments.md` defines operation formats and acceptance rules.
+`contracts/instruments.md` and its parts in `contracts/instruments/` define
+operation formats and acceptance rules.
 
 ## Installed scientific stack
 

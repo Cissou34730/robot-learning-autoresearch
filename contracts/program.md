@@ -18,7 +18,8 @@ PI. The PI decides unclear requirements, changes of scientific intent and
 unresolved repairs. Inspect the changed source, the independent review and the
 reported limitations before relying on a change. Engineering review does not
 execute checks, certify science or replace the PI's scientific judgment.
-`contracts/instruments.md` defines the delegation and evidence-reader
+`contracts/instruments/coding.md` and `contracts/instruments/readers.md` define
+the delegation and evidence-reader
 mechanics; they are not additional lifecycle phases.
 
 Distinguish concrete code errors from untested behavior and unclear
@@ -193,8 +194,8 @@ An inquiry may close with unresolved causes. Carry their decision consequences
 into goal review. Closing the inquiry does not itself justify continuing the
 broader direction or requesting assessment.
 
-The session context states the training allocation; `contracts/instruments.md`
-defines how training requests use it.
+The session context states the training allocation;
+`contracts/instruments/training.md` defines how training requests use it.
 
 An inquiry reframe is a scientific-session boundary: after recording the
 reframe, the PI checkpoints before any further operation and resumes the
@@ -321,7 +322,8 @@ deeper inspection:
 
 - `contracts/scenario.md` defines the human goal and protected assessment;
 - `pi_workspace/scientific_model.md` is the campaign-start physical reference;
-- `contracts/instruments.md` defines mechanical operation contracts;
+- `contracts/instruments.md` and `contracts/instruments/` define mechanical
+  operation contracts;
 - `contracts/authority.md` defines file ownership and role permissions;
 - the scientific session record and referenced artifacts preserve current
   evidence.

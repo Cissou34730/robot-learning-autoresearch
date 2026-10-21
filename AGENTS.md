@@ -22,8 +22,9 @@ Keep three audiences separate:
   reserved from campaign reads.
 - Campaign agents: `contracts/`, `campaigns/brief.md`, session prompts in the
   launch scripts and tool descriptions in `runner/copilot/`. The coder and
-  reviewer receive fixed excerpts from `contracts/authority.md` and
-  `contracts/instruments.md` (see `load_task_context`).
+  reviewer receive fixed excerpts from `contracts/authority.md`,
+  `contracts/instruments/coding.md` and `contracts/instruments/measurement.md`
+  (see `load_task_context`).
 
 Text that campaign agents receive states the current rules only. Keep
 maintainer reasoning, change history, incident references and launcher
@@ -31,8 +32,9 @@ guardrails out of it. The unattended inquiry cap (`-MaxInquiries`) is a
 maintainer guardrail: never expose it, its value or its remaining count to
 campaign agents.
 
-When `contracts/authority.md` changes its section headings, update the
-excerpt boundaries in `runner/copilot/coding_contracts.py`.
+When `contracts/authority.md`, `contracts/instruments/coding.md` or
+`contracts/instruments/measurement.md` changes its excerpt boundaries, update
+`runner/copilot/coding_contracts.py`.
 `tests/autoresearch/test_ownership_registry.py` checks its human-owned list
 against enforcement.
 

@@ -28,7 +28,8 @@ writable files are bound mechanically to the explicit request. Native start
 instructions state the locked scientific API versions. Coder and reviewer
 receive fixed task context from `load_task_context` in
 `runner/copilot/coding_contracts.py`: the scenario, an excerpt of
-`contracts/authority.md` and excerpts of `contracts/instruments.md`.
+`contracts/authority.md` and excerpts of `contracts/instruments/coding.md` and
+`contracts/instruments/measurement.md`.
 
 Each new assignment receives an independent native review with high
 reasoning. Corrections reuse that reviewer to check only the reported problems
