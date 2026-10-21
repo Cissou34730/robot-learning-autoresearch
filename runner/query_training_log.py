@@ -32,13 +32,10 @@ class TrainingLogQueryParams(BaseModel):
     action: Literal["discover", "records", "raw"] = Field(
         default="discover",
         description=(
-            "discover returns attempt, timestep and metric names without record values. "
-            "records parses preserved metric snapshots, filters timesteps and "
-            "projects metrics before paging. raw retrieves original log bytes "
-            "in readable UTF-8 pages (or base64 for arbitrary bytes), without "
-            "parsing or summarizing. Repeat with next_offset and fingerprints; "
-            "concatenate page content for the entire log. "
-            "Failed training logs are execution history, not scientific evidence."
+            "discover returns attempts, timesteps and metric names without values. "
+            "records returns selected metrics over a timestep window in row pages. "
+            "raw returns the original log in byte pages. Continue with next_offset "
+            "and the returned fingerprints."
         ),
     )
     operation_id: str = Field(

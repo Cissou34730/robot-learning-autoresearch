@@ -122,18 +122,12 @@ class ArtifactEvidenceQueryParams(BaseModel):
     action: Literal["discover", "query", "batch", "read", "operations", "metadata"] = (
         Field(
             description=(
-                "discover lists paths; query or batch selects, filters, projects or "
-                "aggregates values. read retrieves the entire original artifact in "
-                "byte pages. operations queries the operation index; metadata queries "
-                "one operation's record, artifacts, checkpoints or accepted pending "
-                "request and resolved measurements without opening artifact data. "
-                "Original reads return "
-                "readable UTF-8 byte pages (or base64 for other encodings), including "
-                "oversized objects/artifacts. Repeat "
-                "read with next_offset and the verified fingerprint; concatenate "
-                "page content in offset order for exact reconstruction. UTF-8 "
-                "pages never split a character; offsets still count original bytes. "
-                "Selection occurs before query output limits. No implicit summarization."
+                "discover lists paths. query or batch selects, filters, projects or "
+                "aggregates values. read returns the complete original artifact in "
+                "byte pages; continue with next_offset and expected_fingerprint. "
+                "operations queries the operation index. metadata queries one "
+                "operation's record, artifacts, checkpoints or accepted pending "
+                "request without opening artifact data."
             ),
         )
     )
