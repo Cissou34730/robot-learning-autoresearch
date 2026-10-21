@@ -92,7 +92,8 @@ Campaign roles can read `contracts/`, `campaigns/`, `pi_workspace/` and the
 PI-owned scientific files. The preliminary session can also read all of
 `robot_learning/`. Runner, benchmark, test, maintainer and launch files are
 reserved in every session. A readable directory does not make the reserved
-files below it readable.
+files below it readable. `campaigns/results.jsonl` is read through
+`artifact_evidence_query` by operation, not through `view` or search.
 
 ## Campaign files
 

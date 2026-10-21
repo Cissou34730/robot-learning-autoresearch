@@ -336,4 +336,6 @@ not the complete campaign history or every checkpoint's metadata.
 All checkpoint metadata remains in the candidate artifacts and completed
 training records. No checkpoint is nominated by its position in the index.
 `campaigns/results.jsonl` and `campaigns/EXPERIMENTS.md` preserve full operation
-history. Artifact discovery remains available through the evidence tool.
+history. `artifact_evidence_query` reads the full records of
+`campaigns/results.jsonl` by operation. Artifact discovery remains available
+through the evidence tool.

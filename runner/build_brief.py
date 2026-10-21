@@ -171,8 +171,8 @@ def _event_detail_lines(event: dict) -> list[str]:
                 + _compact(json.dumps(summaries, sort_keys=True))
             )
             lines.append(
-                "    Complete seed panels: `campaigns/results.jsonl`, "
-                f"operation `{event['id']}`."
+                "    Complete seed panels: `artifact_evidence_query` action=metadata, "
+                f"operation `{event['id']}`, path /record."
             )
         return lines
     if event["kind"] == "training":
@@ -561,7 +561,8 @@ def render_research_brief() -> str:
         "",
         (
             "- Full operation records, including all checkpoint metadata, paired "
-            "comparisons and execution errors: `campaigns/results.jsonl`."
+            "comparisons and execution errors: `artifact_evidence_query` "
+            "action=metadata with the operation ID, path /record."
         ),
         "- Chronological operation index: `campaigns/EXPERIMENTS.md`.",
         (

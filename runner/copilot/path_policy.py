@@ -36,6 +36,13 @@ FILE_READ_DENIAL = (
 )
 
 
+RESULTS_READ_DENIAL = (
+    "Read campaign results through artifact_evidence_query, not this file: "
+    "action=operations lists operations (filter with where/select); "
+    "action=metadata with operation_id and path=/record returns one complete record."
+)
+
+
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
     "assessment.py",
@@ -220,6 +227,8 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
         )
     ):
         return FILE_READ_DENIAL
+    if relative == "campaigns/results.jsonl":
+        return RESULTS_READ_DENIAL
     if preliminary and relative.startswith("robot_learning/"):
         return None
     if is_pi_writable_path(target):
