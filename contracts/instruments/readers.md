@@ -185,18 +185,24 @@ the computed value and whether the comparison holds. A `min` or `max` check
 also gives the number of rows that do not meet the comparison and the first and
 last of their steps. Checks are optional.
 
-`wilson_proportion_interval` returns Wilson score intervals for up to 20
-proportions. The PI supplies:
+`success_rate_pass_probability` relates measured success counts to a
+success-rate target. The PI supplies:
 
-- `confidence`, the two-sided confidence level, from 0.5 to 0.999;
-- `proportions`, each with a `label`, `successes` and `trials`;
-- an optional `threshold` rate.
+- `target`, the `trials` of the panel that decides the goal and the
+  `successes` it requires;
+- `evidence`, up to 20 entries, each with a `label`, `successes` and `trials`;
+  the PI decides which panels an entry pools;
+- `confidence`, the two-sided interval level, from 0.5 to 0.999.
 
-Each result gives the proportion and its lower and upper bounds. With a
-threshold, each result also states whether the interval is `above`, `below` or
-`includes` that rate. The tool reads no campaign files and does not verify the
-counts. The interval assumes independent trials with one common success
-probability.
+For each entry the result gives the proportion, its Wilson interval, whether
+the interval is `above`, `below` or `includes` the target rate, and the
+probability that a new target panel reaches the required successes. That
+probability uses a uniform prior and the beta-binomial predictive distribution.
+The result also gives the true success rate at which the target panel passes
+with probability 0.5, 0.8 and 0.95. The tool reads no campaign files and does
+not verify the counts. It assumes independent episodes with one common success
+probability, representative of the target panel. Counts of a candidate selected
+as the best of several are optimistic.
 
 These tools compute numbers from the supplied data. They do not judge claims,
 decide significance, certify development performance or choose a candidate.

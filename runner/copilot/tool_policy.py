@@ -26,7 +26,7 @@ PI_CUSTOM_TOOLS = (
     "artifact_evidence_query",
     "training_log_query",
     "training_series_statistics",
-    "wilson_proportion_interval",
+    "success_rate_pass_probability",
     "scientific_coding",
     "scientific_api_reference",
     "submit_operation",

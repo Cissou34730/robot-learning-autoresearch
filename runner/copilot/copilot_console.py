@@ -343,9 +343,11 @@ _TOOL_DETAIL = {
     "artifact_evidence_query": _artifact_query_detail,
     "training_log_query": _training_log_detail,
     "training_series_statistics": _training_series_detail,
-    "wilson_proportion_interval": lambda arguments: (
-        f"confidence={arguments.get('confidence', '-')} | "
-        f"proportions={len(arguments.get('proportions') or [])}"
+    "success_rate_pass_probability": lambda arguments: (
+        f"target {(arguments.get('target') or {}).get('successes', '-')}/"
+        f"{(arguments.get('target') or {}).get('trials', '-')} | "
+        f"evidence={len(arguments.get('evidence') or [])} | "
+        f"confidence={arguments.get('confidence', '-')}"
     ),
     "scientific_coding": lambda _: "bounded coding / PI source review required",
     "scientific_api_reference": _api_reference_detail,

@@ -765,6 +765,7 @@ function New-ScientificSessionPrompt {
         @(
             if ($session.kind -eq "goal_review") {
                 "Compare the strongest candidate's prospects on the official panel with the prospects of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
+                "success_rate_pass_probability estimates the probability that a candidate reaches a success-rate goal on the official panel from the counts you choose."
                 "Neither an untested variant nor a candidate near the threshold justifies a choice by itself. Compare the evidence for each."
                 "When judging a candidate's prospects on the official panel, consider whether the episodes behind its development result were also used to select it or design its changes; such a result tends to overstate its performance on new episodes."
             }

@@ -40,12 +40,14 @@ TRAINING_SERIES_DESCRIPTION = (
     "history, not scientific evidence."
 )
 
-WILSON_DESCRIPTION = (
-    "Wilson score intervals for up to 20 success proportions at a two-sided "
-    "confidence level you choose. Supply labelled success and trial counts read "
-    "from the records; the tool reads no files and does not verify counts. With an "
-    "optional threshold rate, each interval is reported as above, below or "
-    "including it. Assumes independent trials with one common success probability."
+PASS_PROBABILITY_DESCRIPTION = (
+    "How likely is a candidate to reach a success-rate target? Give the target panel "
+    "(trials and required successes, from the scenario) and your measured success "
+    "counts, one entry per panel or pooled set you choose. Returns, per entry, the "
+    "probability that a new target panel reaches the target, an interval at your "
+    "confidence level and whether it lies above, below or across the target rate; "
+    "plus the true success rate needed for a 50%, 80% or 95% pass probability. Reads "
+    "no files. Assumes independent episodes representative of the target panel."
 )
 
 API_REFERENCE_DESCRIPTION = (
@@ -92,7 +94,10 @@ def evidence_tools(args, authorize, coding, operations) -> list:
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
-    from runner.proportion_interval import WilsonParams, query_wilson_interval
+    from runner.proportion_interval import (
+        PassProbabilityParams,
+        query_pass_probability,
+    )
     from runner.query_training_log import TrainingLogQueryParams, query_training_log
     from runner.scientific_api_reference import (
         ScientificAPIReferenceParams,
@@ -122,9 +127,9 @@ def evidence_tools(args, authorize, coding, operations) -> list:
             campaign_id=campaign_id,
         )
 
-    def wilson_proportion_interval(params, invocation) -> str:
+    def success_rate_pass_probability(params, invocation) -> str:
         authorize(invocation)
-        return query_wilson_interval(params.model_dump())
+        return query_pass_probability(params.model_dump())
 
     def authorize_api_reader(invocation) -> None:
         if getattr(invocation, "agent_id", None) is None:
@@ -187,10 +192,10 @@ def evidence_tools(args, authorize, coding, operations) -> list:
             skip_permission=True,
         ),
         define_tool(
-            "wilson_proportion_interval",
-            description=WILSON_DESCRIPTION,
-            handler=wilson_proportion_interval,
-            params_type=WilsonParams,
+            "success_rate_pass_probability",
+            description=PASS_PROBABILITY_DESCRIPTION,
+            handler=success_rate_pass_probability,
+            params_type=PassProbabilityParams,
             defer="auto",
             skip_permission=True,
         ),
