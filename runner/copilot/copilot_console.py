@@ -246,6 +246,20 @@ def _training_log_detail(arguments: dict) -> str:
     return " | ".join(part for part in parts if part)
 
 
+def _training_series_detail(arguments: dict) -> str:
+    window = f"steps {arguments.get('from_step', 0)}..{arguments.get('to_step', 'end')}"
+    parts = [
+        str(arguments.get("operation_id", "-")),
+        str(arguments.get("metric", "-")),
+        window,
+    ]
+    if "attempt" in arguments:
+        parts.append(f"attempt={arguments['attempt']}")
+    if arguments.get("checks"):
+        parts.append(f"checks={len(arguments['checks'])}")
+    return " | ".join(parts)
+
+
 def _api_reference_detail(arguments: dict) -> str:
     values = (
         arguments.get("library", "-"),
@@ -328,6 +342,10 @@ def _patch_detail(arguments: object) -> str:
 _TOOL_DETAIL = {
     "artifact_evidence_query": _artifact_query_detail,
     "training_log_query": _training_log_detail,
+    "training_series_statistics": _training_series_detail,
+    "wilson_proportion_interval": lambda arguments: (
+        f"{arguments.get('successes', '-')}/{arguments.get('trials', '-')}"
+    ),
     "scientific_coding": lambda _: "bounded coding / PI source review required",
     "scientific_api_reference": _api_reference_detail,
     "powershell": _powershell_detail,

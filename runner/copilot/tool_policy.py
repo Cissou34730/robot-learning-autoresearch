@@ -25,6 +25,8 @@ RUNNER_LOCKED_DENIAL = "Runner is executing or this bounded session has ended."
 PI_CUSTOM_TOOLS = (
     "artifact_evidence_query",
     "training_log_query",
+    "training_series_statistics",
+    "wilson_proportion_interval",
     "scientific_coding",
     "scientific_api_reference",
     "submit_operation",

@@ -149,6 +149,8 @@ def session_options(
         .add_custom("glob")
         .add_custom("artifact_evidence_query")
         .add_custom("training_log_query")
+        .add_custom("training_series_statistics")
+        .add_custom("wilson_proportion_interval")
         .add_custom("scientific_api_reference")
     )
     if external is not None:

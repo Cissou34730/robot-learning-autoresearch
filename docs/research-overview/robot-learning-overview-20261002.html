@@ -663,15 +663,16 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">26 closed issues; four open investigations</h3>
+          <h3 style="margin-top: 12px">26 closed issues; six open investigations</h3>
           <ul>
-            <li>The 19 October reconciliation closes 15 bounded fixes and retires obsolete OI-010. All 37 issue IDs
+            <li>The 19 October reconciliation closes 15 bounded fixes and retires obsolete OI-010. All 39 issue IDs
               remain visible.</li>
             <li>On 21 October the maintainer closed OI-005, OI-014 and OI-036 from campaign
-              <code>2d4fcc0e</code>. OI-006 is retired because 120k remains fixed.</li>
+              <code>2d4fcc0e</code>. OI-006 is retired because 120k remains fixed.
+            </li>
             <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery.</li>
             <li>One context change remains under observation.</li>
-            <li>Open work is OI-021, OI-024, OI-025 and OI-026.</li>
+            <li>Open work is OI-021, OI-024, OI-025, OI-026, OI-038 and OI-039.</li>
             <li>Engineering closure does not claim scientific success or authorize campaign recovery.</li>
           </ul>
           <p class="small"><a href="../harness-experiment-log.md">Read the source register</a>. <a href="#issues">Read
@@ -856,6 +857,11 @@
         <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and
           <code>training_log_query</code>. Large results identify continuation. Partial content never appears as
           complete evidence.
+        </p>
+        <p>Two optional numeric tools compute values without judging claims.
+          <code>training_series_statistics</code> summarizes one training metric over a step window and evaluates
+          thresholds that the PI chooses. <code>wilson_proportion_interval</code> returns a 95% Wilson interval from
+          counts that the PI supplies.
         </p>
         <p class="small muted">Read-only review uses high reasoning. Max reasoning applies to Copilot scientific-model
           preparation, not the reviewer. Engineering checks do not establish scientific effectiveness.</p>
@@ -1157,7 +1163,7 @@
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
       <h2 id="issues-heading">Open work and closed issues</h2>
-      <p><strong>Status and description review: 21 October 2026.</strong> All 37 issue IDs match
+      <p><strong>Status and description review: 21 October 2026.</strong> All 39 issue IDs match
         the <a href="../harness-experiment-log.md#outstanding-issue-register">Markdown register</a>. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
         Retirement does not establish an optimal allocation.</p>
@@ -1168,7 +1174,7 @@
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">4</p>
+          <p class="metric">6</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -1273,7 +1279,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 4</h3>
+      <h3 id="open-issues">Open issues — 6</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -1308,8 +1314,12 @@
               <td>The PI can confuse measurement fields or state conclusions that the data do not support. Later
                 accurate summaries do not explain the earlier errors.</td>
               <td><span class="tag">Open</span></td>
-              <td>Trace each disputed conclusion from the artifact through the query reply to the saved scientific
-                record. Preserve the historical evidence.</td>
+              <td>T4 trace complete (21 October): the query reply was complete and correct (79 records, not
+                truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through
+                120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI
+                interpretation error, no tool defect found. Optional tool <code>training_series_statistics</code>
+                (window summary with PI-chosen checks) was added on 21 October. No campaign has used it, so its effect
+                on this error is unmeasured. Preserve the historical evidence.</td>
             </tr>
             <tr>
               <td>OI-026</td>
@@ -1318,6 +1328,25 @@
               <td><span class="tag">Open</span></td>
               <td>Separate clarification from corrections of real coding defects. Compare equivalent work with
                 role-specific costs. Return missing scientific decisions to the PI. Keep independent review.</td>
+            </tr>
+            <tr>
+              <td>OI-038</td>
+              <td>Reported success rates are point values. They do not state the uncertainty that comes from the
+                number of episodes behind each value.</td>
+              <td><span class="tag">Open</span></td>
+              <td>Optional tool <code>wilson_proportion_interval</code> computes a 95% Wilson interval from counts
+                that the PI supplies (21 October). The episode count behind each training-log <code>success_rate</code>
+                value is not verified, so that metric has no known trial count. Verify it before relying on intervals
+                for training-log values.</td>
+            </tr>
+            <tr>
+              <td>OI-039</td>
+              <td>The paired success difference between candidate and reference has an exact sign-test p-value but
+                no confidence interval.</td>
+              <td><span class="tag">Open</span></td>
+              <td>Researcher-owned: the statistic belongs to the PI-owned comparison code in the campaign repository.
+                No harness tool is planned. Protected paired counts are unchanged. Track whether campaigns need the
+                interval.</td>
             </tr>
           </tbody>
         </table>
@@ -1520,7 +1549,8 @@
                 </tr>
                 <tr>
                   <td>OI-033</td>
-                  <td>A recoverable error from the language-model service can stop a conversation after the coder completes
+                  <td>A recoverable error from the language-model service can stop a conversation after the coder
+                    completes
                     its work.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>Closed by maintainer decision on 21 October. The retry mechanism exists, but recovery from the
@@ -1542,7 +1572,8 @@
                 </tr>
                 <tr>
                   <td>OI-036</td>
-                  <td>A controller can work in research evaluation but omit required behavior in protected evaluation.</td>
+                  <td>A controller can work in research evaluation but omit required behavior in protected evaluation.
+                  </td>
                   <td><span class="tag">Closed</span></td>
                   <td>T4's saved runtime contains the required controller and episode state. The same artifact scored
                     400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source
@@ -1550,7 +1581,8 @@
                 </tr>
                 <tr>
                   <td>OI-037</td>
-                  <td>A fatal conversation can reject new requests while Runner still records an active session. A restart
+                  <td>A fatal conversation can reject new requests while Runner still records an active session. A
+                    restart
                     resumes the unusable conversation.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>Closed by maintainer decision on 21 October, together with GitHub #61. No recovery repair or
@@ -1579,7 +1611,8 @@
               <tbody>
                 <tr>
                   <td>OI-006</td>
-                  <td>The effect of the 120,000-step training allocation on cost and scientific progress remains unknown.
+                  <td>The effect of the 120,000-step training allocation on cost and scientific progress remains
+                    unknown.
                     This allocation is not the PI session deadline.</td>
                   <td><span class="tag">Retired</span></td>
                   <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
@@ -1642,7 +1675,8 @@
             gives the details. It is one campaign, not a controlled comparison.</p>
           <p>The latest source records are <code>campaigns/results.jsonl</code>,
             <code>runner/state/research_state.json</code> and
-            <code>reports/session_usage/2d4fcc0e-6634-4fa3-ba58-b06bfa149c34.jsonl</code>.</p>
+            <code>reports/session_usage/2d4fcc0e-6634-4fa3-ba58-b06bfa149c34.jsonl</code>.
+          </p>
           <p>Four 120k allocations produced 483,328 actual training steps and 96 archived candidates.
             Usage was 77.7488285 AIU: PI/preparation 59.8567265, coders 13.2948005 and reviewers 4.5973015.
             This is 27.7% above <code>758843c0</code> at 60.8711035 AIU. Lower total cost is not demonstrated.</p>
@@ -1651,7 +1685,8 @@
             three-candidate evaluation limit and final benchmark remain fixed.</p>
           <p>The PI overstated the training-success plateau. Twelve reports between steps 58,368 and 69,632
             were 0.99, not 1.00. Evaluation scores remain correct. This observation belongs under OI-025,
-            not a new issue. The laptop interruption is not evidence of a harness stall or fatal-conversation recovery.</p>
+            not a new issue. The laptop interruption is not evidence of a harness stall or fatal-conversation recovery.
+          </p>
           <p>The earlier review used <code>campaigns/results.jsonl</code>, <code>campaigns/brief.md</code>,
             <code>reports/session_usage/df7f6838-a5d1-4d18-9306-43ee4840cb3a.jsonl</code>, and the associated native
             session events.
@@ -1687,7 +1722,8 @@
               <td><a href="https://github.com/Cissou34730/robot-learning-autoresearch/issues/37">#37</a></td>
               <td>Closed as not planned</td>
               <td>The proposed mandatory statistical stopping contract is not the selected design.
-                This closure does not claim its implementation. PI assessment decisions remain scientific judgments.</td>
+                This closure does not claim its implementation. PI assessment decisions remain scientific judgments.
+              </td>
             </tr>
             <tr>
               <td><a href="https://github.com/Cissou34730/robot-learning-autoresearch/issues/41">#41</a></td>
@@ -1707,8 +1743,10 @@
       <p>No GitHub issues remain open at this review.</p>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Trace OI-025 from preserved values through the query response to the PI statement.
-          Distinguish tool defects from interpretation errors before proposing a harness repair.</li>
+        <li>Observe whether the PI uses <code>training_series_statistics</code> and
+          <code>wilson_proportion_interval</code> in the next campaign, and whether OI-025 errors recur. Do not make
+          the tools mandatory.
+        </li>
         <li>Classify OI-024 reruns and OI-026 review work by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
       </ol>
@@ -1792,11 +1830,21 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
+        <h3 style="margin-top: 0">21 October: optional numeric tools for the PI</h3>
+        <p>Added <code>training_series_statistics</code> (window summary of one training metric with optional
+          PI-chosen threshold checks) and <code>wilson_proportion_interval</code> (95% Wilson interval from
+          PI-supplied counts). Neither is mandatory or judges claims. A trend interval was rejected because training
+          curves are autocorrelated.</p>
+        <p>Opened OI-038 and OI-039. All 39 OI IDs remain: six open, one awaiting evidence, 26 closed and six
+          inactive. Validation used a minimal reproduction only; the effect on PI behavior is unmeasured.</p>
+      </div>
+      <div class="card timeline">
         <h3 style="margin-top: 0">21 October: maintainer-directed closures</h3>
         <p>Closed OI-037, OI-033 and GitHub #61/#41 on explicit maintainer instruction.
           These are decision closures, not verified recovery repairs or completed structural refactors.</p>
         <p>Recovery is no longer an active priority. All 37 OI IDs remain: four open, one awaiting evidence,
-          26 closed and six inactive. No GitHub issue remains open. No runtime code, campaign state or evidence changed.</p>
+          26 closed and six inactive. No GitHub issue remains open. No runtime code, campaign state or evidence changed.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: approved tracker and GitHub reconciliation</h3>
@@ -1896,7 +1944,8 @@
           <li><code>3ce7063</code> and <code>2c4bfde</code> restore the caller's folder after launch and reset, so
             reset-then-launch commands resolve correctly.</li>
           <li>Full reset backups were removed. Ignored artifacts are local files, not Git backups.</li>
-          <li>OI-037 was open at this review: resuming a conversation after <code>validation_fatal</code> can leave it refusing
+          <li>OI-037 was open at this review: resuming a conversation after <code>validation_fatal</code> can leave it
+            refusing
             submissions while Runner still records an active session. Reset is a new campaign, not recovery of that
             session. The maintainer closed the item on 21 October without claiming verified recovery.</li>
         </ul>

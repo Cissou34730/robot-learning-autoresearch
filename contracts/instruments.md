@@ -333,6 +333,37 @@ Preserved failure logs describe execution history, not scientific evidence.
 Neither parsed metrics nor raw-log retrieval certifies development
 performance or chooses a candidate. The PI interprets the returned data.
 
+## Numeric summary tools
+
+`training_series_statistics` computes a summary of one metric in one
+preserved training log. It uses the same operation identity, attempt selection
+and log fingerprint as `training_log_query`. The PI supplies:
+
+- `operation_id` and the exact `metric` name;
+- `attempt`, required when the operation has more than one log;
+- optional inclusive `from_step` and `to_step` bounds;
+- optional `checks`, at most 20.
+
+The result gives the row count, the first and last values with their steps,
+the minimum and maximum with their first step and the number of rows at that
+value, the mean and the sample standard deviation. Rows without a finite value
+are excluded and counted. A missing metric returns the available metric names.
+
+Each check names a statistic (`min`, `max`, `mean`, `first` or `last`), a
+comparison (`>=` or `<=`) and a threshold that the PI chooses. The result gives
+the computed value and whether the comparison holds. A `min` or `max` check
+also gives the number of rows that do not meet the comparison and the first and
+last of their steps. Checks are optional.
+
+`wilson_proportion_interval` returns the 95% Wilson score interval for
+`successes` out of `trials`. The PI supplies both counts; the tool reads no
+campaign files and does not verify the counts. The interval assumes
+independent trials with one common success probability.
+
+These tools compute numbers from the supplied data. They do not judge claims,
+decide significance, certify development performance or choose a candidate.
+The PI interprets the results.
+
 ## Operations by session
 
 The operation kinds have these purposes:

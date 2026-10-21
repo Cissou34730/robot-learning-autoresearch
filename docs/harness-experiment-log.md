@@ -175,8 +175,8 @@ preserves the detailed analysis.
 
 **Status and description review: 21 October 2026.**
 
-Four issues require work. One change needs more evidence. Twenty-six issues
-are closed. Six entries are inactive. All 37 issue IDs remain.
+Six issues require work. One change needs more evidence. Twenty-six issues
+are closed. Six entries are inactive. All 39 issue IDs remain.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim.
@@ -204,7 +204,7 @@ Retirement does not claim that this allocation is optimal.
 The descriptions use short sentences and consistent technical terms.
 This review does not certify compliance with the official ASD-STE100 dictionary.
 
-### Open issues — 4
+### Open issues — 6
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
@@ -213,8 +213,10 @@ This register does not authorize runtime changes or campaign operations.
 |---|---|---|---|
 | OI-021 | The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias later scientific choices. | **Open** | Complete the impact analysis before a prompt change. Then derive the required capabilities from the robot and task. Preserve the physical analysis. |
 | OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
-| OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | Trace each disputed conclusion from the artifact through the query reply to the saved scientific record. Preserve the historical evidence. |
+| OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
 | OI-026 | Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision. | **Open** | Separate clarification from corrections of real coding defects. Compare equivalent work with role-specific costs. Return missing scientific decisions to the PI. Keep independent review. |
+| OI-038 | Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value. | **Open** | Optional tool `wilson_proportion_interval` computes a 95% Wilson interval from counts that the PI supplies (2026-10-21). The episode count behind each training-log `success_rate` value is not verified, so that metric has no known trial count. Verify it before relying on intervals for training-log values. |
+| OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Researcher-owned: the statistic belongs to the PI-owned comparison code in the campaign repository. No harness tool is planned. Protected paired counts are unchanged. Track whether campaigns need the interval. |
 
 ### Changes that need more evidence — 1
 
@@ -324,9 +326,9 @@ No GitHub issues remain open at this review.
 
 ### Next maintainer actions
 
-1. Trace OI-025 from preserved values through the query response to the
-   PI statement. Distinguish tool defects from interpretation errors before
-   proposing a harness repair.
+1. Observe whether the PI uses `training_series_statistics` and
+   `wilson_proportion_interval` in the next campaign, and whether OI-025
+   errors recur. Do not make the tools mandatory.
 2. Classify OI-024 reruns and OI-026 review work by their actual information
    gain or corrected defect. Do not equate all repetition with waste.
 
@@ -493,6 +495,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-21 | Subsession: optional numeric tools for the PI | Added two read-only PI tools. `training_series_statistics` summarizes one metric of one preserved training log over a step window (rows, first, last, min and max with steps and counts, mean, sample sd). It also evaluates optional PI-chosen threshold checks, and min/max checks report the rows that do not meet the comparison. `wilson_proportion_interval` returns a 95% Wilson interval from PI-supplied counts. Both are documented in `contracts/instruments.md` and listed in `contracts/authority.md`. Neither tool is mandatory or judges claims. A trend interval was rejected because training curves are autocorrelated. Opened OI-038 (proportion uncertainty) and OI-039 (paired-difference interval, researcher-owned). Validation: a minimal `uv run` reproduction only, with no campaign run. The effect on PI behavior is unmeasured. |
 | 2026-10-21 | Maintainer-directed recovery and structural-item closures | Closed OI-037, OI-033 and GitHub #61/#41 on explicit maintainer instruction. These are decision closures, not verified recovery repairs or completed structural refactors. Removed recovery from the active priorities. All 37 OI IDs remain: four open, one awaiting evidence, 26 closed and six inactive. No GitHub issue remains open. No runtime code, campaign state or evidence changed. |
 | 2026-10-21 | Approved tracker and GitHub reconciliation | Closed OI-005/014/036 from recorded decision, implementation and saved-controller evidence. Retired OI-006 because 120k remains fixed. All 37 IDs remain: five open, two awaiting evidence, 24 closed and six inactive. GitHub #11 is superseded, #37 is not planned, and #41 remains deferred with current context. New #61 tracks OI-037. Costs remain visible: `2d4fcc0e` used 77.7488285 AIU versus 60.8711035 for `758843c0`. No runtime or campaign change was made. |
 | 2026-10-21 | Dirty-harness launch refusal and goal-review guidance | Commit `7f562d91`. Campaign `4a65a241` launched with uncommitted harness changes. Runner rejected every protected evaluation, and the PI repeated checkpoint-only sessions for about six hours (205.786 AIU) until the maintainer stopped it. `run_research.ps1` now refuses to launch or resume while the harness worktree has uncommitted or untracked changes. Goal review now compares the official prospects of the strongest candidate with further work, says that neither an untested variant nor a near-threshold candidate justifies a choice by itself, and asks the PI to consider selection bias. The diagnostic sentence now reads "Choose a diagnostic when its possible outcomes would lead to different next actions." Campaign `2d4fcc0e` then ran on the clean commit and passed the official assessment at 200/200 (77.749 AIU). Both goal reviews compared prospects: the PI deferred at 97.2% and assessed at 400/400. The maintainer closed OI-005 on this evidence. The first startup attempt timed out because the maintainer's laptop was closed, not because of a harness defect. One campaign does not isolate the cause. See the [campaign report](research-overview/robot-campaign-2d4fcc0e-20261021.html). |

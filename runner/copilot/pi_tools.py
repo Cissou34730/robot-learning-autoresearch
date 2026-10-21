@@ -57,6 +57,27 @@ TRAINING_LOG_DESCRIPTION = (
     "Failed/pending-failure logs are execution history, NOT scientific evidence."
 )
 
+TRAINING_SERIES_DESCRIPTION = (
+    "Read-only numeric summary of one metric in one preserved training log. Select "
+    "operation_id, the exact metric name, attempt when several logs exist, and an "
+    "optional inclusive from_step/to_step window. Returns the row count; first and "
+    "last values with steps; minimum and maximum with first step and number of rows "
+    "at that value; mean and sample standard deviation. Optional checks compare "
+    "min, max, mean, first or last with a threshold you choose (>= or <=) and return "
+    "the value and holds true/false; min and max checks also return the number and "
+    "first/last steps of rows that do not meet the comparison. Checks are optional "
+    "and do not judge claims. Rows without a finite value are excluded and counted. "
+    "Failed/pending-failure logs are execution history, NOT scientific evidence."
+)
+
+WILSON_DESCRIPTION = (
+    "Read-only 95% Wilson score interval for a success proportion. Provide "
+    "successes and trials as counts from the records; the tool reads no campaign "
+    "files and does not verify the counts. Returns the proportion and its lower and "
+    "upper bounds. The interval assumes independent trials with one common success "
+    "probability. It does not judge claims or decide significance."
+)
+
 API_REFERENCE_DESCRIPTION = (
     "Read-only installed API definitions for mujoco, gymnasium or stable_baselines3. "
     "Select library and a public dotted symbol relative to that library. "
@@ -106,11 +127,13 @@ def evidence_tools(args, authorize, coding, operations) -> list:
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
+    from runner.proportion_interval import WilsonParams, query_wilson_interval
     from runner.query_training_log import TrainingLogQueryParams, query_training_log
     from runner.scientific_api_reference import (
         ScientificAPIReferenceParams,
         read_reference,
     )
+    from runner.training_series import TrainingSeriesParams, query_training_series
 
     campaign_id = str(args.campaign_id or "")
 
@@ -125,6 +148,18 @@ def evidence_tools(args, authorize, coding, operations) -> list:
         return query_training_log(
             params.model_dump(exclude_none=True), campaign_id=campaign_id
         )
+
+    async def training_series_statistics(params, invocation) -> str:
+        authorize(invocation)
+        return await asyncio.to_thread(
+            query_training_series,
+            params.model_dump(exclude_none=True),
+            campaign_id=campaign_id,
+        )
+
+    def wilson_proportion_interval(params, invocation) -> str:
+        authorize(invocation)
+        return query_wilson_interval(params.model_dump())
 
     def authorize_api_reader(invocation) -> None:
         if getattr(invocation, "agent_id", None) is None:
@@ -175,6 +210,22 @@ def evidence_tools(args, authorize, coding, operations) -> list:
             description=TRAINING_LOG_DESCRIPTION,
             handler=training_log_query,
             params_type=TrainingLogQueryParams,
+            defer="auto",
+            skip_permission=True,
+        ),
+        define_tool(
+            "training_series_statistics",
+            description=TRAINING_SERIES_DESCRIPTION,
+            handler=training_series_statistics,
+            params_type=TrainingSeriesParams,
+            defer="auto",
+            skip_permission=True,
+        ),
+        define_tool(
+            "wilson_proportion_interval",
+            description=WILSON_DESCRIPTION,
+            handler=wilson_proportion_interval,
+            params_type=WilsonParams,
             defer="auto",
             skip_permission=True,
         ),
