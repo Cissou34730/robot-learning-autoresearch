@@ -84,6 +84,9 @@ changes. It is not needed merely to resume a stopped campaign.
 The semicolon is not a success-only condition: if reset fails, inspect the error
 before launching.
 
+`run_research.ps1` refuses to start, including a resume, while the harness
+worktree has uncommitted or untracked changes. Commit or discard them first.
+
 Baseline v3 is a scientific recipe, not a trained model. Its reset initializes
 empty campaign history and leaves scientific-model preparation pending. The
 harness stays unchanged. See [reset details](docs/reset-research.md).

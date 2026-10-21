@@ -98,6 +98,11 @@ Development criteria inform the comparison; they do not add assessment
 eligibility requirements. No numerical confidence estimate or repeated
 measurement is required. The Runner does not judge readiness.
 
+Neither an untested variant nor a candidate near the threshold justifies a
+choice by itself. A development result tends to overstate performance on new
+episodes when the same episodes were also used to select the candidate or
+design its changes.
+
 Official assessment is a terminal commitment: its pass or fail result ends
 this campaign. It is not a development probe followed by another inquiry.
 
@@ -145,9 +150,9 @@ A candidate comparison asks which complete artifact performs better.
 A mechanism test asks whether an explanation accounts for an observed
 difference. If that explanation would change the next direction, choose a
 comparison or diagnostic that distinguishes it from consequential alternatives.
-A diagnostic is worth its cost when its possible outcomes lead to different
-next actions. When completed evidence already locates a defect, repairing it is
-a valid next action.
+Choose a diagnostic when its possible outcomes would lead to different next
+actions. When completed evidence already locates a defect, repairing it is a
+valid next action.
 
 When factors change together, report the result as a property of the compared
 artifacts, not of the intended factor alone. An unexplained candidate difference

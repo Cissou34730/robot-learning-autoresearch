@@ -41,6 +41,17 @@ if ($ListModels) {
     exit $LASTEXITCODE
 }
 
+$harnessChanges = @(git -C $PSScriptRoot status --porcelain --untracked-files=all)
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not read the harness Git status. No campaign was started."
+}
+if ($harnessChanges.Count -gt 0) {
+    throw (
+        "The harness worktree has uncommitted changes. Commit or discard them before launching a campaign. No campaign was started.`n" +
+        ($harnessChanges -join "`n")
+    )
+}
+
 . "$PSScriptRoot\researcher_mutex.ps1"
 Set-ResearchPaths -HarnessRoot $PSScriptRoot -CampaignRoot $CampaignRoot
 $CampaignRoot = (Get-Location).Path
@@ -753,8 +764,9 @@ function New-ScientificSessionPrompt {
     else {
         @(
             if ($session.kind -eq "goal_review") {
-                "Compare the strongest candidate's prospects with the expected contribution of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
-                "An untested variant or unresolved cause does not justify another inquiry by itself."
+                "Compare the strongest candidate's prospects on the official panel with the prospects of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
+                "Neither an untested variant nor a candidate near the threshold justifies a choice by itself. Compare the evidence for each."
+                "When judging a candidate's prospects on the official panel, consider whether the episodes behind its development result were also used to select it or design its changes; such a result tends to overstate its performance on new episodes."
             }
             else {
                 "State the unresolved distinction or the development step the operation addresses, and how its outcome could produce or select a better candidate."
@@ -774,7 +786,7 @@ function New-ScientificSessionPrompt {
             }
             else {
                 "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction."
-                "A diagnostic is worth its cost when its possible outcomes lead to different next actions. When completed evidence already locates a defect, repairing it is a valid next action."
+                "Choose a diagnostic when its possible outcomes would lead to different next actions. When completed evidence already locates a defect, repairing it is a valid next action."
                 "Checkpoint when the session's deliverable is complete or useful intermediate work is ready to preserve. Record supported findings, limitations and remaining work even if no research direction is settled."
                 if ($session.kind -eq "inquiry") {
                     "The inquiry may remain active across sessions. Its closure condition and unresolved mechanisms do not require further work before checkpointing."
