@@ -843,7 +843,7 @@ function New-ScientificSessionPrompt {
             }
         }
         @(
-            "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
+            "Before selecting the first action, use pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
             $modelHandoff
             "From this synthesis, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence. Do not require a measurement only to restate the model."
         )
@@ -867,6 +867,35 @@ function New-ScientificSessionPrompt {
     else {
         "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
     }
+    # A resumed conversation already holds the files sent when it was created.
+    $contextFiles = @()
+    if (-not $session.backend_session_id) {
+        $contextFiles = if ($transition) {
+            @("contracts/instruments.md")
+        }
+        else {
+            @(
+                "campaigns/brief.md"
+                "contracts/scenario.md"
+                "contracts/instruments.md"
+                "contracts/program.md"
+                "pi_workspace/scientific_model.md"
+            )
+        }
+    }
+    $fence = '````'
+    $includedFiles = @(
+        foreach ($relative in $contextFiles) {
+            $root = if ($relative.StartsWith("contracts/")) { $PSScriptRoot } else { (Get-Location).Path }
+            $path = Join-Path $root ($relative -replace "/", "\")
+            if (Test-Path -LiteralPath $path -PathType Leaf) {
+                "File $relative (current at session start):`n$fence`n$((Get-Content -LiteralPath $path -Raw).TrimEnd())`n$fence"
+            }
+        }
+    )
+    if ($includedFiles.Count -gt 0) {
+        $sourceGuidance = "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again unless an operation changes them. The latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
+    }
     $submissionGuidance = if ($transition) {
         "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
     }
@@ -885,7 +914,7 @@ function New-ScientificSessionPrompt {
                 Where-Object { $contractFiles.Contains([string]$_) } |
                 ForEach-Object { "$_ in $($contractFiles[[string]$_])" }
         ) -join "; "
-        "When ready to act, read the request envelope in contracts/instruments.md and the contract for the operation you choose: $contractList. Submit one scientific action."
+        "When ready to act, use the request envelope in contracts/instruments.md and read the contract for the operation you choose: $contractList. Submit one scientific action."
     }
     $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Continue within this context until checkpoint or terminal commitment ends it."
 
@@ -911,6 +940,7 @@ function New-ScientificSessionPrompt {
         $correction
         $sourceGuidance
         $submissionGuidance
+        $includedFiles
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
