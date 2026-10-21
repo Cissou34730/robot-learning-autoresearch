@@ -141,6 +141,11 @@ A policy checkpoint is a separate training artifact.
 
 Every field is required.
 All string fields must be non-empty.
+`current_goal_gap` states the gap in numbers: the goal from
+`contracts/scenario.md`, the best candidate's measured result with the panels it
+combines, and the improvement still needed. When the goal is a success rate,
+include the estimated probability of reaching it, for example from
+`success_rate_pass_probability`.
 `next_question` depends on the session kind:
 
 - startup, or an inquiry session that closed its inquiry: the proposed question
