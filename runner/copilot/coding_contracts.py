@@ -7,7 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from runner import protocol
-from runner.artifact_evidence_query import ArtifactReference
+from runner.artifact_evidence_query import ArtifactReference, CandidateReference
 
 # The preliminary analyst retains its existing publication/tool contract.
 RESEARCH_TOOLS = [
@@ -89,14 +89,15 @@ class ScientificCodingParams(BaseModel):
         ),
     )
     session_handle: str | None = Field(default=None, min_length=1)
-    evidence_inputs: list[ArtifactReference] | None = Field(
+    evidence_inputs: list[ArtifactReference | CandidateReference] | None = Field(
         default=None,
         min_length=1,
         max_length=10,
         description=(
-            "New calls only: recorded measurement artifacts the change will read, as "
-            "{operation_id, artifact_index}. The coder and reviewer receive each "
-            "artifact's recorded structure (JSON paths and field names, no values)."
+            "New calls only: recorded evidence the change will read. A measurement "
+            "artifact {operation_id, artifact_index} gives its recorded structure "
+            "(JSON paths and field names, no values); a candidate {candidate} gives "
+            "its archive file names and artifact.json metadata."
         ),
     )
 

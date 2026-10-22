@@ -398,11 +398,17 @@ class ScientificCoding:
             context = load_task_context(paths.HARNESS_ROOT if paths.SPLIT else ROOT)
             if params.evidence_inputs:
                 from runner import repository
-                from runner.artifact_evidence_query import recorded_artifact_structure
+                from runner.artifact_evidence_query import (
+                    CandidateReference,
+                    recorded_artifact_structure,
+                    recorded_candidate_metadata,
+                )
 
                 state = repository.load_state(allow_missing_artifact=True)
                 context["evidence_inputs"] = [
-                    recorded_artifact_structure(state, reference)
+                    recorded_candidate_metadata(state, reference.model_dump())
+                    if isinstance(reference, CandidateReference)
+                    else recorded_artifact_structure(state, reference.model_dump())
                     for reference in params.evidence_inputs
                 ]
         return binding, context, coding_snapshot(frozenset(binding["allowed_paths"]))

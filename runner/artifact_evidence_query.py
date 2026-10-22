@@ -438,6 +438,40 @@ class ArtifactReference(BaseModel):
     artifact_index: int = Field(ge=0, lt=MAX_ARTIFACTS_PER_OPERATION, strict=True)
 
 
+class CandidateReference(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    candidate: str = Field(min_length=1, description="Candidate ID or role.")
+
+
+MAX_CANDIDATE_METADATA_BYTES = 16_384
+
+
+def recorded_candidate_metadata(state: dict, reference: dict) -> dict:
+    """Archive file names and artifact.json of one verified candidate."""
+    from runner import protocol
+
+    selected = CandidateReference.model_validate(reference)
+    try:
+        candidate = protocol.resolve_candidate(state, selected.candidate)
+    except KeyError as error:
+        raise ValueError(f"evidence input {selected.candidate!r}: {error}") from error
+    archive = repository.resolve_repo_path(candidate["artifact"])
+    metadata_path = archive / "artifact.json"
+    metadata = None
+    if (
+        metadata_path.is_file()
+        and metadata_path.stat().st_size <= MAX_CANDIDATE_METADATA_BYTES
+    ):
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    return {
+        "candidate": candidate["id"],
+        "archive_path": candidate["artifact"],
+        "archive_files": sorted(path.name for path in archive.iterdir() if path.is_file()),
+        "artifact_json": metadata,
+    }
+
+
 def resolve_artifact_reference(state: dict, reference: dict) -> dict:
     selected = ArtifactReference.model_validate(reference)
     path, provenance = _recorded_artifact(
