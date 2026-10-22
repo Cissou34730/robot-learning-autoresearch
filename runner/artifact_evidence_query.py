@@ -620,6 +620,11 @@ def _query_metadata(state: dict, args: dict, campaign_id: str) -> str:
             "status": "traversal_budget_exhausted", "evidence_state": "not_inspected",
             "error": str(error), "max_traversed_nodes": MAX_NODES,
         }
+    if args["action"] == "operations" and response.get("absence_reason") == "path_absent":
+        response["recovery"] = (
+            "Operation rows are a list (/0, /1, ...), not keyed by ID. Use "
+            'where {"path": "/id", "equals": "<ID>"} or action=metadata with operation_id.'
+        )
     return json.dumps({
         **response, "action": args["action"], "scope": "recorded_metadata_only",
         "campaign_id": campaign_id, "operation_id": args.get("operation_id"),
@@ -1252,12 +1257,13 @@ def _query_artifact(args: dict[str, Any], campaign_id: str, resources: ExitStack
         if action == "discover":
             prefix = args.get("prefix") or "/"
             budget = [0]
+            paths: list[str] = []
+            seen: set[str] = set()
+            root_paths: list[str] = []
             try:
                 roots = _matches(value, prefix, budget)
-                paths: list[str] = []
-                seen: set[str] = set()
                 for path, root in roots:
-                    root_paths: list[str] = []
+                    root_paths = []
                     _discover(
                         root,
                         _pattern_path(path, prefix),
@@ -1274,17 +1280,29 @@ def _query_artifact(args: dict[str, Any], campaign_id: str, resources: ExitStack
                     if len(paths) >= MAX_PATHS:
                         break
             except TraversalBudgetExceededError as error:
+                partial = paths + [item for item in root_paths if item not in seen]
+                bounded_partial, _ = _bounded_strings(partial[:MAX_PATHS])
                 return json.dumps(
                     {
                         "status": "traversal_budget_exhausted",
                         "action": "discover",
-                        "evidence_state": "not_inspected",
+                        "evidence_state": (
+                            "present_not_inspected" if partial else "not_inspected"
+                        ),
                         "provenance": provenance,
                         "prefix": prefix,
+                        "partial_paths": bounded_partial,
+                        "partial_paths_complete": False,
                         "limit": "max_traversed_nodes",
                         "max_traversed_nodes": MAX_NODES,
                         "error": str(error),
-                        "recovery": "Use action=read for complete raw artifact retrieval.",
+                        "recovery": (
+                            "partial_paths were found before the limit and are "
+                            "incomplete. Discover a narrower prefix, query known "
+                            "paths directly, or read the recorded structure with "
+                            "action=metadata, path=/record/result/measurements/"
+                            "<index>/metrics/evaluation_artifact_contents."
+                        ),
                         "bounded": True,
                     }
                 )
