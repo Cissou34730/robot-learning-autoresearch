@@ -1770,6 +1770,10 @@
         review ranked it first. If built, Runner must rebuild the runtime from PI-owned source rather than accept a
         PI-written runtime file, and the maintainer must first decide whether controller-only candidates are
         eligible.</p>
+      <p>Later, re-evaluate: an on-demand evidence-reader action returning one candidate's recorded measurements,
+        without a pushed candidate list that could anchor the PI.</p>
+      <p>Low priority: smaller training allocations in inquiries. The PI used the full 120,000 steps in every run,
+        including startup where fewer are allowed, and a run takes minutes.</p>
       <p>These entries do not authorize runtime changes or campaign operations.</p>
       <details style="margin-top: 16px">
         <summary>Prompt-stack review R1 to R8</summary>
@@ -1839,6 +1843,12 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">22 October: pass probability from recorded measurements</h3>
+        <p>The review found T1's 192/200 attributed to T2 in a session record. The pass-probability tool can now pool
+          recorded measurements by operation and candidate; Runner reads the counts, lists the sources and refuses a
+          reference that matches no measurement. Typed counts remain available.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">22 October: episode-seed exposure across instruments</h3>
         <p>An external review found that the final "fresh" panel M19 reused all 200 seeds of PI-written M15, with no
