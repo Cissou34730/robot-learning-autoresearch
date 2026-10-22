@@ -868,8 +868,14 @@ function New-ScientificSessionPrompt {
         "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
     }
     # A resumed conversation already holds the files sent when it was created.
+    $conversationExists = (
+        $script:PISessionInvocation -gt 0 -or
+        ($session.backend_session_id -and (Test-Path -LiteralPath (
+            Join-Path $HOME ".copilot\session-state\$($session.backend_session_id)"
+        )))
+    )
     $contextFiles = @()
-    if (-not $session.backend_session_id) {
+    if (-not $conversationExists) {
         $contextFiles = if ($transition) {
             @("contracts/instruments.md")
         }
