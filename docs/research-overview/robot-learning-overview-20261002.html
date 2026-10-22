@@ -1766,7 +1766,10 @@
       <p>Optional, postponed (22 October): a Runner operation that builds a new candidate from an existing
         candidate's weights plus the current PI-owned runtime source. In <code>49e58c12</code> a controller added to
         T2's saved runtime scored 199/200 and 200/200 on research panels but could not reach protected evaluation.
-        Postponed because it could pull campaigns toward endless controller tuning instead of learning.</p>
+        Postponed because it could pull campaigns toward endless controller tuning instead of learning. An external
+        review ranked it first. If built, Runner must rebuild the runtime from PI-owned source rather than accept a
+        PI-written runtime file, and the maintainer must first decide whether controller-only candidates are
+        eligible.</p>
       <p>These entries do not authorize runtime changes or campaign operations.</p>
       <details style="margin-top: 16px">
         <summary>Prompt-stack review R1 to R8</summary>
@@ -1836,6 +1839,12 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">22 October: episode-seed exposure across instruments</h3>
+        <p>An external review found that the final "fresh" panel M19 reused all 200 seeds of PI-written M15, with no
+          warning from Runner. Research evaluations now list earlier measurements of any candidate or instrument on the
+          same seeds, and PI-written modules can declare their seeds. The PI decides whether reuse matters.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">22 October: campaign 49e58c12 passes at 198/200; follow-up changes</h3>
         <p>T6:checkpoint-20480 passed the official assessment at 99.0% after 4 inquiries, for 126.566 AIU. The PI used
