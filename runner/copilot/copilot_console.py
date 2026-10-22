@@ -128,13 +128,19 @@ YELLOW = "\033[33m"
 RED = "\033[31m"
 
 
-_TOOL_COLORS = {
-    "submit_operation": "\033[1;32m",
-    "scientific_coding": "\033[1;34m",
-    "training_series_statistics": "\033[35m",
-    "success_rate_pass_probability": "\033[35m",
-    "episode_outcome_breakdown": "\033[35m",
-}
+_TOOL_COLORS = dict.fromkeys(
+    (
+        "artifact_evidence_query",
+        "training_log_query",
+        "training_series_statistics",
+        "success_rate_pass_probability",
+        "episode_outcome_breakdown",
+        "scientific_api_reference",
+        "scientific_coding",
+        "submit_operation",
+    ),
+    "\033[1;34m",
+)
 
 
 _STATUS_COLORS = {

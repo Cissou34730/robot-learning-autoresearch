@@ -62,6 +62,9 @@ _SECTION_HEADINGS = frozenset(
         "Training dynamics",
         "Candidates",
         "Next",
+        "Next question",
+        "Outcome",
+        "Usage",
         "Question",
         "Plan",
         "Selections",
@@ -261,9 +264,10 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
         return
     print(f"{timestamp} {color}=== {title} ==={_RESET}", flush=True)
     for line in body:
+        line_color = _YELLOW if line in _SECTION_HEADINGS else body_color
         wrapped = _wrap_console_text(line, initial_prefix="  ")
         print(
-            "\n".join(f"{body_color}{part}{_RESET}" for part in wrapped),
+            "\n".join(f"{line_color}{part}{_RESET}" for part in wrapped),
             flush=True,
         )
     print(flush=True)

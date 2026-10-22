@@ -1778,6 +1778,11 @@ def execute_training(state: dict, pending: dict) -> int:
     return 0
 
 
+_INSTANT_KINDS = frozenset(
+    {"inquiry", "checkpoint", "model_role", "restore_recipe", "campaign_conclusion"}
+)
+
+
 def _operation_subject(pending: dict) -> str:
     kind = str(pending["kind"])
     plan = pending["data"].get("plan")
@@ -1901,9 +1906,36 @@ def _operation_completion_detail(pending: dict) -> str:
     return "\n".join(part for part in parts if part)
 
 
+def _operation_context(state: dict) -> str:
+    session = state.get("scientific_session") or {}
+    counters = state["counters"]
+    inquiry = session.get("inquiry_id") or (state.get("active_inquiry") or {}).get("id")
+    parts = [
+        "Phase: "
+        + str(session.get("kind") or "no session").replace("_", " ")
+        + (f" {inquiry}" if inquiry else "")
+    ]
+    if session.get("id"):
+        parts.append(
+            f"session {session['id']}, operation "
+            f"{len(session.get('operation_ids') or []) + 1}"
+        )
+    parts.append(
+        f"latest E{int(counters.get('event', 0))} "
+        f"M{int(counters.get('measurement', 0))} "
+        f"T{int(counters.get('training', 0))}"
+    )
+    parts.append(
+        f"inquiries {int(counters.get('inquiry', 0))}/"
+        f"{int(state['campaign']['max_inquiries'])}"
+    )
+    return " | ".join(parts)
+
+
 def _completion_presentation(state: dict, pending: dict) -> dict:
     presentation = {
         "campaign_id": repository.current_campaign_id(state),
+        "context": _operation_context(state),
         "kind": str(pending["kind"]),
         "pending": pending,
         "session_id": str(pending["session_id"]),
@@ -1914,47 +1946,49 @@ def _completion_presentation(state: dict, pending: dict) -> dict:
     return presentation
 
 
+def _sections(*sections: tuple[str, object]) -> str:
+    return "\n".join(
+        line for heading, text in sections for line in (heading, str(text), "")
+    ).rstrip()
+
+
 def _announce_consequential_completion(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
     result = pending["data"].get("result") or {}
     kind = presentation["kind"]
+    context = presentation.get("context", "")
     if kind == "inquiry":
         action = str(result.get("action", "")).upper()
         inquiry_id = str(result.get("inquiry_id", ""))
-        detail = (
-            str(result.get("outcome") or result.get("reason") or "")
-            if action == "CLOSE"
-            else ""
-        )
-        console.boundary("inquiry", action, inquiry_id, detail)
+        request = pending["request"]["inquiry"]
+        if action == "CLOSE":
+            outcome = request.get("outcome") or result.get("outcome", "")
+            body = _sections(("Outcome", outcome))
+        else:
+            body = _sections(("Question", request.get("question", "")))
+        console.boundary("inquiry", action, inquiry_id, f"{context}\n\n{body}")
     elif kind == "checkpoint":
-        session_id = str(result.get("session_id", ""))
         plan = pending["data"].get("plan") or {}
-        console.announce(f"[session] SUMMARY SAVED | {session_id}")
         console.boundary(
             "session",
             "END",
             f"{presentation['session_id']} "
             f"{str(presentation['session_kind']).replace('_', ' ')}",
-            "\n".join(
+            f"{context}\n\n"
+            + _sections(
+                ("Outcome", plan.get("current_synthesis", "Session summary saved.")),
                 (
-                    f"Outcome: {plan.get('current_synthesis', 'Session summary saved.')}",
-                    "Next question: "
-                    + str(
-                        plan.get(
-                            "next_question",
-                            "No next inquiry question was recorded.",
-                        )
+                    "Next question",
+                    plan.get("next_question", "No next inquiry question was recorded."),
+                ),
+                (
+                    "Next",
+                    plan.get(
+                        "next_direction_or_closure",
+                        "Continue from the durable session summary.",
                     ),
-                    "Next: "
-                    + str(
-                        plan.get(
-                            "next_direction_or_closure",
-                            "Continue from the durable session summary.",
-                        )
-                    ),
-                    f"Usage: {presentation['session_usage']}",
-                )
+                ),
+                ("Usage", presentation["session_usage"]),
             ),
         )
     elif kind == "campaign_conclusion":
@@ -1969,12 +2003,11 @@ def _announce_consequential_completion(presentation: dict) -> None:
             "END",
             f"{presentation['session_id']} "
             f"{str(presentation['session_kind']).replace('_', ' ')}",
-            "\n".join(
-                (
-                    f"Outcome: {plan.get('reason', 'Campaign decision recorded.')}",
-                    f"Next: {next_transition}",
-                    f"Usage: {presentation['session_usage']}",
-                )
+            f"{context}\n\n"
+            + _sections(
+                ("Outcome", plan.get("reason", "Campaign decision recorded.")),
+                ("Next", next_transition),
+                ("Usage", presentation["session_usage"]),
             ),
         )
         status = str(result.get("status", "")).replace("_", " ")
@@ -1989,12 +2022,15 @@ def _announce_consequential_completion(presentation: dict) -> None:
 
 def _announce_completed_operation(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
-    console.boundary(
-        "operation",
-        "COMPLETE",
-        _operation_subject(pending),
-        _operation_completion_detail(pending),
-    )
+    kind = pending["kind"]
+    # Inquiry, checkpoint and conclusion cards already carry the operation and its context.
+    if kind not in {"inquiry", "checkpoint", "campaign_conclusion"}:
+        detail = _operation_completion_detail(pending)
+        if kind in _INSTANT_KINDS:
+            detail = "\n".join(
+                part for part in (presentation.get("context"), detail) if part
+            )
+        console.boundary("operation", "COMPLETE", _operation_subject(pending), detail)
     _announce_consequential_completion(presentation)
 
 
@@ -2037,14 +2073,19 @@ def execute_pending_operation() -> int:
     detail = _operation_request_detail(pending)
     presentation = _completion_presentation(state, pending)
     action = "REQUEST" if pending["progress"] == "accepted" else "RESUME"
-    console.boundary("operation", action, subject, detail)
     kind = pending["kind"]
+    if action == "RESUME" or kind not in _INSTANT_KINDS:
+        console.boundary(
+            "operation",
+            action,
+            subject,
+            "\n".join(part for part in (presentation["context"], detail) if part),
+        )
     try:
         if pending["progress"] == "completed":
             _finalize_operation(state, pending)
             _announce_completed_operation(presentation)
             return 0
-        console.boundary("operation", "START", subject)
         if kind == "measurement":
             exit_code = execute_measurement(state, pending)
         elif kind == "training":
