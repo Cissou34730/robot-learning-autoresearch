@@ -42,12 +42,14 @@ TRAINING_SERIES_DESCRIPTION = (
 
 PASS_PROBABILITY_DESCRIPTION = (
     "How likely is a candidate to reach a success-rate target? Give the target panel "
-    "(trials and required successes, from the scenario) and your measured success "
-    "counts, one entry per panel or pooled set you choose. Returns, per entry, the "
+    "(trials and required successes, from the scenario) and evidence entries: either "
+    "recorded measurements to pool, as {operation_id, candidate, optional label}, "
+    "which Runner reads from the records, or typed counts. Returns, per entry, the "
     "probability that a new target panel reaches the target, an interval at your "
     "confidence level and whether it lies above, below or across the target rate; "
-    "plus the true success rate needed for a 50%, 80% or 95% pass probability. Reads "
-    "no files. Assumes independent episodes representative of the target panel."
+    "plus the true success rate needed for a 50%, 80% or 95% pass probability. "
+    "Recorded entries also list their sources and shared episodes. Assumes "
+    "independent episodes representative of the target panel."
 )
 
 API_REFERENCE_DESCRIPTION = (
@@ -129,7 +131,9 @@ def evidence_tools(args, authorize, coding, operations) -> list:
 
     def success_rate_pass_probability(params, invocation) -> str:
         authorize(invocation)
-        return query_pass_probability(params.model_dump())
+        return query_pass_probability(
+            params.model_dump(exclude_none=True), campaign_id=campaign_id
+        )
 
     def authorize_api_reader(invocation) -> None:
         if getattr(invocation, "agent_id", None) is None:

@@ -190,19 +190,29 @@ success-rate target. The PI supplies:
 
 - `target`, the `trials` of the panel that decides the goal and the
   `successes` it requires;
-- `evidence`, up to 20 entries, each with a `label`, `successes` and `trials`;
-  the PI decides which panels an entry pools;
+- `evidence`, up to 20 entries, each with a `label` and either:
+  - `recorded`, a list of completed `research_evaluation` or `task_reference`
+    measurements to pool, each as `operation_id`, `candidate` (ID or role) and
+    an optional measurement `label` when the candidate appears twice; Runner
+    reads successes and episodes from the records, or
+  - typed `successes` and `trials`;
+  the PI decides which measurements an entry pools;
 - `confidence`, the two-sided interval level, from 0.5 to 0.999.
+
+A recorded reference that matches no single measurement is rejected with the
+candidate measurements that operation recorded. A recorded entry also lists its
+sources and the number of episodes they share; shared episodes are not
+independent samples.
 
 For each entry the result gives the proportion, its Wilson interval, whether
 the interval is `above`, `below` or `includes` the target rate, and the
 probability that a new target panel reaches the required successes. That
 probability uses a uniform prior and the beta-binomial predictive distribution.
 The result also gives the true success rate at which the target panel passes
-with probability 0.5, 0.8 and 0.95. The tool reads no campaign files and does
-not verify the counts. It assumes independent episodes with one common success
-probability, representative of the target panel. Counts of a candidate selected
-as the best of several are optimistic.
+with probability 0.5, 0.8 and 0.95. Typed counts are not verified. The tool
+assumes independent episodes with one common success probability,
+representative of the target panel. Counts of a candidate selected as the best
+of several are optimistic.
 
 These tools compute numbers from the supplied data. They do not judge claims,
 decide significance, certify development performance or choose a candidate.

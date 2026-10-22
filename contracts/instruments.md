@@ -145,7 +145,8 @@ All string fields must be non-empty.
 `contracts/scenario.md`, the best candidate's measured result with the panels it
 combines, and the improvement still needed. When the goal is a success rate,
 include the estimated probability of reaching it, for example from
-`success_rate_pass_probability`.
+`success_rate_pass_probability` with recorded measurements, so that each count
+comes from the record of the cited operation and candidate.
 `next_question` depends on the session kind:
 
 - startup, or an inquiry session that closed its inquiry: the proposed question
