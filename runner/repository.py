@@ -1145,6 +1145,39 @@ def _validate_pending_data(kind: str, data: object) -> None:
                         repeat["shared_episodes"],
                         "pending measurement repeat shared_episodes",
                     )
+            if (
+                entry["instrument"] == "research_evaluation"
+                and "episodes_seen_in_earlier_measurements" in entry
+            ):
+                fields = fields | {"episodes_seen_in_earlier_measurements"}
+                exposure = entry["episodes_seen_in_earlier_measurements"]
+                if not isinstance(exposure, list):
+                    raise TypeError(
+                        "pending measurement episodes_seen_in_earlier_measurements "
+                        "must be a list"
+                    )
+                for seen in exposure:
+                    seen = _require_exact_fields(
+                        seen,
+                        {
+                            "operation_id",
+                            "label",
+                            "instrument",
+                            "candidate",
+                            "shared_episodes",
+                        },
+                        "pending measurement exposure",
+                    )
+                    for field in ("operation_id", "label", "instrument"):
+                        _nonempty(seen, field, f"pending measurement exposure {field}")
+                    if seen["candidate"] is not None:
+                        _nonempty(
+                            seen, "candidate", "pending measurement exposure candidate"
+                        )
+                    _positive_integer(
+                        seen["shared_episodes"],
+                        "pending measurement exposure shared_episodes",
+                    )
             _require_exact_fields(
                 entry,
                 fields,

@@ -132,6 +132,8 @@ Arguments without input placeholders remain unchanged.
 Execution errors identify the accepted module arguments and declared output.
 A successful module exit without that output is an operation failure.
 Runner reports these facts without diagnosing the source or selecting a repair.
+When a module runs episodes, its artifact can list their seeds in a top-level
+`episode_seeds` array; Runner then reports overlap with other measurements.
 
 A paired-comparison entry uses this interface:
 
@@ -157,6 +159,17 @@ earlier completed measurement of the same saved artifact and instrument, its
 result lists `repeats_earlier_measurements` with the earlier operation ID,
 label and number of shared episodes. Shared episodes reproduce recorded
 outcomes; they are not independent confirmation.
+
+An episode seed also identifies the same situation for other candidates. When a
+`research_evaluation` measurement shares episode seeds with any other earlier
+completed measurement, its result lists `episodes_seen_in_earlier_measurements`
+with each earlier operation ID, label, instrument, candidate and number of
+shared episodes. A `python_module` artifact can declare the episode seeds it
+used as a top-level `episode_seeds` list of non-negative integers. Its result
+then records them as `declared_episode_seed_ranges` and lists the same overlap
+with earlier measurements. A malformed declaration fails the measurement.
+Earlier exposure does not change a result; the PI decides whether the
+situations are fresh enough for the intended use.
 
 ### Artifact contents metadata
 

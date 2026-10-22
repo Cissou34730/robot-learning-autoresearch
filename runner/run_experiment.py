@@ -30,6 +30,9 @@ ACCEPTED_REQUEST_VERSION = 1
 TIMESTEPS = 120_000
 PUBLICATION_FAILURE_EXIT_CODE = 3
 REPEATS_FIELD = "repeats_earlier_measurements"
+EXPOSURE_FIELD = "episodes_seen_in_earlier_measurements"
+DECLARED_SEEDS_FIELD = "declared_episode_seed_ranges"
+MAX_DECLARED_EPISODE_SEEDS = 100_000
 
 
 class FrozenOperationMismatch(ValueError):
@@ -281,6 +284,14 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             )
             if repeats:
                 spec[REPEATS_FIELD] = repeats
+            if spec["instrument"] == "research_evaluation":
+                exposure = _earlier_episode_exposure(
+                    state,
+                    _episode_seeds(int(spec["seed"]), int(spec["episodes"])),
+                    exclude={item["operation_id"] for item in repeats},
+                )
+                if exposure:
+                    spec[EXPOSURE_FIELD] = exposure
         return {
             "measurements": planned,
             "paired_comparisons": protocol.planned_paired_comparisons(
@@ -811,6 +822,81 @@ def _episode_seeds(seed: int, episodes: int) -> set[int]:
     return set(range(seed, seed + episodes))
 
 
+def _seed_ranges(seeds: set[int]) -> list[list[int]]:
+    ranges: list[list[int]] = []
+    for seed in sorted(seeds):
+        if ranges and seed == ranges[-1][1] + 1:
+            ranges[-1][1] = seed
+        else:
+            ranges.append([seed, seed])
+    return ranges
+
+
+def _declared_episode_seeds(evidence: dict) -> set[int] | None:
+    """Seeds a PI-owned module declares in its artifact's top-level episode_seeds."""
+    declared = evidence.get("episode_seeds")
+    if declared is None:
+        return None
+    if (
+        not isinstance(declared, list)
+        or len(declared) > MAX_DECLARED_EPISODE_SEEDS
+        or not all(
+            isinstance(seed, int) and not isinstance(seed, bool) and seed >= 0
+            for seed in declared
+        )
+    ):
+        raise ValueError(
+            "python_module artifact episode_seeds must be a list of non-negative "
+            f"integers with at most {MAX_DECLARED_EPISODE_SEEDS} entries"
+        )
+    return set(declared)
+
+
+def _measured_episode_seeds(item: dict) -> set[int]:
+    metrics = item.get("metrics") if isinstance(item, dict) else None
+    if not isinstance(metrics, dict):
+        return set()
+    if item.get("instrument") == "research_evaluation":
+        try:
+            return _episode_seeds(int(metrics["seed"]), int(metrics["episodes"]))
+        except (KeyError, TypeError, ValueError):
+            return set()
+    return {
+        seed
+        for start, end in metrics.get(DECLARED_SEEDS_FIELD) or []
+        for seed in range(start, end + 1)
+    }
+
+
+def _earlier_episode_exposure(
+    state: dict, seeds: set[int], *, exclude: set[str] = frozenset()
+) -> list[dict]:
+    """Earlier completed measurements of any candidate or instrument on these seeds."""
+    exposure: list[dict] = []
+    for event in state.get("operation_events", []):
+        if (
+            event.get("kind") != "measurement"
+            or event.get("status") != "completed"
+            or event.get("id") in exclude
+        ):
+            continue
+        result = event.get("result")
+        measurements = result.get("measurements") if isinstance(result, dict) else None
+        for item in measurements if isinstance(measurements, list) else []:
+            shared = len(seeds & _measured_episode_seeds(item))
+            if shared:
+                exposure.append(
+                    {
+                        "operation_id": event["id"],
+                        "label": item.get("label"),
+                        "instrument": item.get("instrument"),
+                        "candidate": item.get("candidate"),
+                        "shared_episodes": shared,
+                    }
+                )
+    return exposure
+
+
 def _earlier_measurements_of_same_episodes(
     state: dict,
     spec: dict,
@@ -883,6 +969,8 @@ def _measurement_result(
         record["evaluation_semantics"] = semantics
     if spec.get(REPEATS_FIELD):
         record[REPEATS_FIELD] = copy.deepcopy(spec[REPEATS_FIELD])
+    if spec.get(EXPOSURE_FIELD):
+        record[EXPOSURE_FIELD] = copy.deepcopy(spec[EXPOSURE_FIELD])
     return {
         "instrument": spec["instrument"],
         "candidate": spec["candidate"],
@@ -1171,6 +1259,17 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         archived_path,
                         "sealed python_module measurement artifact",
                     )
+                declared_seeds = _declared_episode_seeds(evidence)
+                seed_facts = (
+                    {}
+                    if declared_seeds is None
+                    else {
+                        DECLARED_SEEDS_FIELD: _seed_ranges(declared_seeds),
+                        EXPOSURE_FIELD: _earlier_episode_exposure(
+                            state, declared_seeds
+                        ),
+                    }
+                )
                 partials.append(
                     {
                         "instrument": "python_module",
@@ -1191,6 +1290,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                             "evaluation_artifact_contents": (
                                 repository.measurement_artifact_contents(evidence)
                             ),
+                            **seed_facts,
                         },
                     }
                 )
