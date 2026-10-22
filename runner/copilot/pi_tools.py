@@ -52,6 +52,16 @@ PASS_PROBABILITY_DESCRIPTION = (
     "independent episodes representative of the target panel."
 )
 
+EPISODE_OUTCOME_DESCRIPTION = (
+    "Episode-level outcomes of recorded research_evaluation or task_reference "
+    "measurements, as {operation_id, candidate, optional label}. With one measurement: "
+    "successes and an interval at your confidence level. With two measurements of the "
+    "same episodes: paired counts (both, first only, second only, neither), an exact "
+    "sign test and the first measurement's share of discordant episodes. Optional "
+    "strata split every result into bins of a numeric per-episode field (rows path, "
+    "field and edges you choose), such as a target radius."
+)
+
 API_REFERENCE_DESCRIPTION = (
     "Read installed definitions from mujoco, gymnasium or stable_baselines3. Select "
     "library and a public dotted symbol relative to it; omit symbol for the library "
@@ -96,6 +106,7 @@ def evidence_tools(args, authorize, coding, operations) -> list:
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
+    from runner.episode_outcomes import EpisodeOutcomeParams, query_episode_outcomes
     from runner.proportion_interval import (
         PassProbabilityParams,
         query_pass_probability,
@@ -133,6 +144,14 @@ def evidence_tools(args, authorize, coding, operations) -> list:
         authorize(invocation)
         return query_pass_probability(
             params.model_dump(exclude_none=True), campaign_id=campaign_id
+        )
+
+    async def episode_outcome_breakdown(params, invocation) -> str:
+        authorize(invocation)
+        return await asyncio.to_thread(
+            query_episode_outcomes,
+            params.model_dump(exclude_none=True),
+            campaign_id=campaign_id,
         )
 
     def authorize_api_reader(invocation) -> None:
@@ -200,6 +219,14 @@ def evidence_tools(args, authorize, coding, operations) -> list:
             description=PASS_PROBABILITY_DESCRIPTION,
             handler=success_rate_pass_probability,
             params_type=PassProbabilityParams,
+            defer="auto",
+            skip_permission=True,
+        ),
+        define_tool(
+            "episode_outcome_breakdown",
+            description=EPISODE_OUTCOME_DESCRIPTION,
+            handler=episode_outcome_breakdown,
+            params_type=EpisodeOutcomeParams,
             defer="auto",
             skip_permission=True,
         ),

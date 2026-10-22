@@ -1346,9 +1346,11 @@
               <td>The paired success difference between candidate and reference has an exact sign-test p-value but
                 no confidence interval.</td>
               <td><span class="tag">Open</span></td>
-              <td>Researcher-owned: the statistic belongs to the PI-owned comparison code in the campaign repository.
-                No harness tool is planned. Protected paired counts are unchanged. Track whether campaigns need the
-                interval.</td>
+              <td>Optional tool <code>episode_outcome_breakdown</code> (22 October) reads recorded measurements and
+                gives the exact sign test and a Wilson interval for the first measurement's share of discordant
+                episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this
+                comparison in each campaign (607 lines in <code>e7dbbece</code>). Protected paired counts and the
+                PI-owned <code>comparison.py</code> are unchanged. Track use.</td>
             </tr>
           </tbody>
         </table>
@@ -1745,10 +1747,11 @@
       <p>No GitHub issues remain open at this review.</p>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>In the next campaign, check whether the first message now carries the context files (console
-          <code>CONTEXT</code> line) and whether repeated reads of the scenario, program and brief fall. Compare AIU per
-          PI session and peak context with <code>49e58c12</code> (5.10 AIU, 143k median peak). Check use of candidate
-          <code>evidence_inputs</code> and the new discovery hints. Do not make the tools mandatory.
+        <li>In the next campaign, check whether frozen-weight runtime tests now lead to a training run that carries
+          the change, instead of repeated controller variants or attempts to preserve a runtime in a measurement
+          artifact. Check use of <code>episode_outcome_breakdown</code> and count PI-built lab modules that duplicate
+          it. Compare AIU per PI session with <code>e7dbbece</code> (2.88) and <code>49e58c12</code> (5.10). Do not
+          make the tools mandatory.
         </li>
         <li>Classify OI-024 reruns and OI-026 review work by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -1763,13 +1766,11 @@
       <p>A text-only comparison could screen instruction changes with one fixed decision brief and one response
         under each instruction version. This remains a proposal, not campaign replay or scientific validation.
         No framework or new testing infrastructure is approved.</p>
-      <p>Optional, postponed (22 October): a Runner operation that builds a new candidate from an existing
-        candidate's weights plus the current PI-owned runtime source. In <code>49e58c12</code> a controller added to
-        T2's saved runtime scored 199/200 and 200/200 on research panels but could not reach protected evaluation.
-        Postponed because it could pull campaigns toward endless controller tuning instead of learning. An external
-        review ranked it first. If built, Runner must rebuild the runtime from PI-owned source rather than accept a
-        PI-written runtime file, and the maintainer must first decide whether controller-only candidates are
-        eligible.</p>
+      <p>Decided (22 October): runtime changes reach a candidate only through training. The PI-owned runtime source
+        may contain any logic; a fresh or transfer training run carries it into the candidate. Frozen-weight runtime
+        tests are diagnostics, and measurement artifacts never become candidates. The repackaging operation is not
+        built: controller-only work recurred in three campaigns without a route to assessment, and a training route
+        keeps the result a learned policy.</p>
       <p>Later, re-evaluate: an on-demand evidence-reader action returning one candidate's recorded measurements,
         without a pushed candidate list that could anchor the PI.</p>
       <p>Low priority: smaller training allocations in inquiries. The PI used the full 120,000 steps in every run,
@@ -1843,6 +1844,16 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">22 October: campaign e7dbbece stopped; runtime rule and outcome tool</h3>
+        <p>The maintainer stopped <code>e7dbbece</code> during I5 after 2 training runs and 12 measurements, for
+          71.315 AIU. T2 reached 192/200 on the task reference, then the PI spent two inquiries on runtime changes to
+          frozen T2 weights and tried to preserve one inside a measurement artifact. The contracts now state that
+          runtime changes reach a candidate only through training. A new optional tool,
+          <code>episode_outcome_breakdown</code>, gives paired counts, an exact sign test and success by stratum from
+          recorded measurements.
+        </p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">22 October: pass probability from recorded measurements</h3>
         <p>The review found T1's 192/200 attributed to T2 in a session record. The pass-probability tool can now pool
@@ -2471,7 +2482,8 @@
               <td>21 Oct, 22:55 CEST</td>
               <td>Official pass: 198/200 (99%). Five completed training runs from six attempts, four inquiries and
                 126.566 AIU. The final controller is hybrid.</td>
-              <td><a href="robot-campaign-49e58c12-20261022.html">Result, decisions, resources and harness limits</a></td>
+              <td><a href="robot-campaign-49e58c12-20261022.html">Result, decisions, resources and harness limits</a>
+              </td>
             </tr>
             <tr>
               <td><code>2d4fcc0e</code></td>

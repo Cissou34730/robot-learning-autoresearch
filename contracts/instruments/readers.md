@@ -214,6 +214,31 @@ assumes independent episodes with one common success probability,
 representative of the target panel. Counts of a candidate selected as the best
 of several are optimistic.
 
+`episode_outcome_breakdown` reads the episode results of recorded
+`research_evaluation` or `task_reference` measurements. The PI supplies:
+
+- `measurements`, one or two references, each as `operation_id`, `candidate`
+  (ID or role) and an optional measurement `label`;
+- optional `strata`: `rows`, a JSON Pointer to per-episode rows that carry
+  `episode_seed` (default `/episode_results`), the numeric `field` of those
+  rows, and increasing `edges`, from 2 to 21; the last bin includes its upper
+  edge;
+- `confidence`, the two-sided interval level, from 0.5 to 0.999.
+
+Runner verifies each artifact fingerprint and checks its episode results
+against the recorded episode and success counts. For each measurement the
+result gives successes, trials and a Wilson interval. Two measurements must
+cover the same episode seeds under the same instrument and evaluation
+semantics or task-reference panel. Their result adds paired counts: both
+succeed, only the first, only the second, neither; the exact two-sided sign
+test over the episodes where exactly one succeeds; and the Wilson interval of
+the first measurement's share of those episodes. Strata repeat these results
+for each bin, using the field values of the first measurement, and count
+episodes outside the edges or without a value. Research-evaluation rows that
+carry fields such as target radius can lie in another section of the
+artifact; `artifact_evidence_query` with `action=discover` shows them.
+Edges chosen after seeing the outcomes make stratum differences optimistic.
+
 These tools compute numbers from the supplied data. They do not judge claims,
 decide significance, certify development performance or choose a candidate.
 The PI interprets the results.

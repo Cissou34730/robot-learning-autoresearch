@@ -21,6 +21,16 @@ which can apply additional control logic outside the saved runtime. Identical
 artifact fingerprints do not establish identical applied commands across these
 environments.
 
+Only a training operation creates a candidate. Training and its checkpoint
+export use `make_policy_io()` in `robot_learning/scenario/policy_io.py`, so
+each candidate carries the runtime that this source defined when it was
+trained. A runtime change becomes part of a candidate only when that source
+contains it and a training run uses it, with `fresh` or `transfer`
+initialization. A `python_module` measurement that runs an existing
+candidate's weights with another runtime is a diagnostic: it can justify a
+training run, but it does not create, modify or replace a candidate.
+Measurement artifacts never become candidates.
+
 ## Scientific coding interface
 
 `scientific_coding` delegates a bounded change to PI-owned source: a new

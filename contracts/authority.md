@@ -75,8 +75,8 @@ In an ordinary session the PI has these tools:
   `rg` to find files;
 - `artifact_evidence_query` for JSON evidence and `training_log_query` for
   preserved training logs;
-- `training_series_statistics` and `success_rate_pass_probability` for numeric
-  summaries;
+- `training_series_statistics`, `success_rate_pass_probability` and
+  `episode_outcome_breakdown` for numeric summaries;
 - `scientific_api_reference` for installed library definitions;
 - `scientific_coding` to delegate source changes;
 - `submit_operation` to request operations from Runner.
@@ -119,7 +119,8 @@ scientific code, diagnose failures, choose repairs or interpret results.
 The campaign-start session writes `pi_workspace/scientific_model.md`. Its
 tools are `view`, `rg`, `glob`, `apply_patch` limited to that file, a
 restricted inspection shell, `artifact_evidence_query`, `training_log_query`,
-`training_series_statistics`, `success_rate_pass_probability`
+`training_series_statistics`, `success_rate_pass_probability`,
+`episode_outcome_breakdown`
 and `scientific_api_reference`. The shell permits read-only Git for code
 provenance; Git history is not scientific evidence. The session does not
 expose `scientific_coding` or `submit_operation`.

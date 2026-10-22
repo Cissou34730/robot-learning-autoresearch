@@ -27,6 +27,7 @@ PI_CUSTOM_TOOLS = (
     "training_log_query",
     "training_series_statistics",
     "success_rate_pass_probability",
+    "episode_outcome_breakdown",
     "scientific_coding",
     "scientific_api_reference",
     "submit_operation",

@@ -166,39 +166,53 @@ def _episode_identity(item: dict) -> set:
     return {(*panel, index) for index in range(int(metrics["episodes"]))}
 
 
+def recorded_measurement(
+    state: dict, reference: RecordedReference
+) -> tuple[dict, dict]:
+    """The completed operation and the one candidate measurement a reference names."""
+    candidate = _candidate_id(state, reference.candidate.strip())
+    event = next(
+        (
+            item
+            for item in state.get("operation_events", [])
+            if item.get("id") == reference.operation_id.strip()
+        ),
+        None,
+    )
+    if (
+        not event
+        or event.get("kind") != "measurement"
+        or event.get("status") != "completed"
+    ):
+        raise ValueError(f"{reference.operation_id} is not a completed measurement")
+    items = [
+        item
+        for item in event["result"]["measurements"]
+        if item.get("instrument") in {"research_evaluation", "task_reference"}
+    ]
+    matches = [
+        item
+        for item in items
+        if item.get("candidate") == candidate
+        and (reference.label is None or item.get("label") == reference.label)
+    ]
+    if len(matches) != 1:
+        recorded = [(item.get("candidate"), item.get("label")) for item in items]
+        raise ValueError(
+            f"{reference.operation_id} has {len(matches)} measurements of "
+            f"{candidate}"
+            + (f" labelled {reference.label!r}" if reference.label else "")
+            + f"; recorded candidate measurements: {recorded}"
+        )
+    return event, matches[0]
+
+
 def recorded_counts(state: dict, references: list[RecordedReference]) -> dict:
     """Pool successes and episodes of recorded candidate measurements."""
-    events = {event.get("id"): event for event in state.get("operation_events", [])}
     sources, seen, shared = [], set(), 0
     for reference in references:
-        candidate = _candidate_id(state, reference.candidate.strip())
-        event = events.get(reference.operation_id.strip())
-        if (
-            not event
-            or event.get("kind") != "measurement"
-            or event.get("status") != "completed"
-        ):
-            raise ValueError(f"{reference.operation_id} is not a completed measurement")
-        items = [
-            item
-            for item in event["result"]["measurements"]
-            if item.get("instrument") in {"research_evaluation", "task_reference"}
-        ]
-        matches = [
-            item
-            for item in items
-            if item.get("candidate") == candidate
-            and (reference.label is None or item.get("label") == reference.label)
-        ]
-        if len(matches) != 1:
-            recorded = [(item.get("candidate"), item.get("label")) for item in items]
-            raise ValueError(
-                f"{reference.operation_id} has {len(matches)} measurements of "
-                f"{candidate}"
-                + (f" labelled {reference.label!r}" if reference.label else "")
-                + f"; recorded candidate measurements: {recorded}"
-            )
-        item = matches[0]
+        event, item = recorded_measurement(state, reference)
+        candidate = item["candidate"]
         metrics = item["metrics"]
         trials = int(metrics["episodes"])
         successes = metrics.get("successes")

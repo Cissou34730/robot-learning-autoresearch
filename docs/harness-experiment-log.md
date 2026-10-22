@@ -216,7 +216,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
 | OI-026 | Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision. | **Open** | Separate clarification from corrections of real coding defects. Compare equivalent work with role-specific costs. Return missing scientific decisions to the PI. Keep independent review. |
 | OI-038 | Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value. | **Open** | Optional tool `success_rate_pass_probability` (2026-10-21) gives Wilson intervals at a PI-chosen level and the probability that a new target panel reaches the goal, from counts that the PI supplies. Its earlier form, `wilson_proportion_interval`, was never called in campaigns `60ec83bd` and `573d538c`. The episode count behind each training-log `success_rate` value is not verified, so that metric has no known trial count. Verify it before relying on intervals for training-log values. |
-| OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Researcher-owned: the statistic belongs to the PI-owned comparison code in the campaign repository. No harness tool is planned. Protected paired counts are unchanged. Track whether campaigns need the interval. |
+| OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this comparison in each campaign (607 lines in `e7dbbece`). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. |
 
 ### Changes that need more evidence — 1
 
@@ -326,11 +326,12 @@ No GitHub issues remain open at this review.
 
 ### Next maintainer actions
 
-1. In the next campaign, check whether the first message now carries the
-   context files (console `CONTEXT` line) and whether repeated reads of
-   `contracts/scenario.md`, `program.md` and the brief fall. Compare AIU per PI
-   session and peak context with `49e58c12` (5.10 AIU, 143k median peak).
-   Check use of candidate `evidence_inputs` and the new discovery hints.
+1. In the next campaign, check whether frozen-weight runtime tests now lead to
+   a training run that carries the change (rule B in
+   `contracts/instruments/coding.md`), instead of repeated controller variants
+   or attempts to preserve a runtime in a measurement artifact. Check use of
+   `episode_outcome_breakdown` and count PI-built lab modules that duplicate
+   it. Compare AIU per PI session with `e7dbbece` (2.88) and `49e58c12` (5.10).
    Do not make the tools mandatory.
 2. Classify OI-024 reruns and OI-026 review work by their actual information
    gain or corrected defect. Do not equate all repetition with waste.
@@ -350,18 +351,16 @@ These priorities authorize neither repairs nor campaign operations.
   decision brief and one response under each instruction version.
   This remains a proposal, not campaign replay or scientific validation.
   No framework or new testing infrastructure is approved.
-- Optional, postponed (2026-10-22): a Runner operation that builds a new
-  candidate from an existing candidate's weights and normalization plus the
-  current PI-owned runtime source. In `49e58c12` a controller added to T2's
-  saved runtime scored 199/200 and 200/200 on research panels but could not
-  reach protected evaluation, because only training creates candidates. The
-  maintainer postponed it: it could pull campaigns toward endless controller
-  tuning instead of learning. Evaluate later. An external review (2026-10-22)
-  ranked it first. If built, Runner must rebuild the saved runtime from
-  PI-owned source with the parent's weights, never accept a PI-written runtime
-  file (cloudpickle can carry arbitrary code), and the maintainer must first
-  decide whether controller-only candidates are eligible under the scenario's
-  learned-policy goal.
+- Decided (2026-10-22): runtime changes reach a candidate only through
+  training (rule B). The PI-owned runtime source may contain any logic; a
+  training run with `fresh` or `transfer` initialization carries it into the
+  candidate. Frozen-weight runtime tests are diagnostics, and measurement
+  artifacts never become candidates. The repackaging operation (a candidate
+  from existing weights plus new runtime source, without training) is not
+  built. Reason: controller-only work recurred in three campaigns without a
+  route to assessment (`573d538c` I4 and I5, `49e58c12` T2 controller at
+  199/200, `e7dbbece` I4 and I5); a training route keeps the result a learned
+  policy and needs no Runner-built runtime from PI source.
 - Later, re-evaluate (2026-10-22): an on-demand `artifact_evidence_query`
   action returning one candidate's recorded measurements (operation,
   instrument, label, seeds, result). It answers the same factual-memory issue
@@ -520,6 +519,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-22 | Campaign `e7dbbece` stopped; rule B and `episode_outcome_breakdown` | The maintainer stopped `e7dbbece` during I5 after 5 inquiries, 2 training runs and 12 completed measurements, for 71.315 AIU (PI 46.118 over 16 sessions, coders 18.108, reviewers 7.089). No official assessment. T2:checkpoint-120832 (full 6–20 cm exposure) scored 192/200 on the task reference and 191/200 and 190/200 on fresh research panels. First-message files were included and re-reads stopped. From I4 on, the PI tested runtime changes on frozen T2 weights: branch redirection 193/200 against 189/200 (4 rescued, 0 lost), near-target damping 161/200 against 186/200. I5 then tried to preserve the M11 runtime bytes inside a measurement artifact; M13 failed on its own runtime hash check. No training followed after T2. Follow-up: `contracts/instruments/coding.md` states that runtime changes reach a candidate only through training, that frozen-weight runtime tests are diagnostics and that measurement artifacts never become candidates. New optional tool `episode_outcome_breakdown` gives per-measurement successes with Wilson intervals, paired counts with an exact sign test for two measurements of the same episodes, and bins of a PI-chosen per-episode field; it verifies fingerprints and recorded counts. Validation on `e7dbbece`: M4 T2 against T1 by radius reproduces the PI's M5 (inner 103/105 against 52/105) and M6 paired counts match Runner's (52 and 5); the 64 MB M8 artifact is read lazily; mismatched episode sets, absent fields and a foreign campaign are refused. Failing tests were identical before and after (46 with the campaign root set). |
 | 2026-10-22 | Pass probability from recorded measurements | The external review found E11 attributing T1's 192/200 on M1, and T1's 13.1% pass estimate, to T2. `success_rate_pass_probability` evidence entries can now pool recorded `research_evaluation` or `task_reference` measurements by operation and candidate, with an optional measurement label; Runner reads the counts, lists the sources and counts episodes shared between them. A reference that matches no single measurement is refused with that operation's recorded candidates. Typed counts remain available. The `current_goal_gap` rule asks for counts from the record of the cited operation and candidate. Validation on `49e58c12`: the E11 reference (T2 on M1) is refused; pooled T6:checkpoint-55296 on M12 and M19 reproduces the PI's 396/400 and 85.8%; pooling M19 twice reports 200 shared episodes; runtime and ownership tests pass. A pushed candidate list was rejected to avoid anchoring; an on-demand candidate lookup is deferred. |
 | 2026-10-22 | Episode-seed exposure across candidates and instruments | An external review of `49e58c12` found that M19, presented as a fresh confirmation panel (seeds 20268001 to 20268200), reused all 200 seeds of PI-written M15, and Runner gave no indication: repeat detection covered only the same saved artifact and instrument. The PI then estimated a 96.99% pass chance from M19 as if independent. Research evaluations now list `episodes_seen_in_earlier_measurements` for any earlier measurement of any candidate or instrument on the same seeds. `python_module` artifacts can declare a top-level `episode_seeds` list; Runner records it as ranges and reports the same overlap. The coder's `python_module` excerpt mentions the declaration. The PI decides whether reuse matters. Validation: the M15/M19 case flags 200 shared episodes once M15 declares its seeds; the pending validator accepts the field and rejects malformed entries; failing tests were identical before and after (12 stale fixtures). The same review found E11 attributing T1's 192/200 and 13.1% pass estimate to T2; that factual-memory issue is open for discussion. |
 | 2026-10-22 | Campaign `49e58c12` and follow-up changes | Campaign `49e58c12` passed the official assessment at 99.0% (198/200) with T6:checkpoint-20480, after 4 inquiries, 6 training runs and 19 measurements, for 126.566 AIU (PI 87.979, coders 28.107, reviewers 10.480). A PC reboot interrupted session S13; no operation was left pending and the campaign resumed. `success_rate_pass_probability` was called in every session kind; the PI pooled only independent panels, stated the numeric goal gap and assessed at an estimated 97.0% pass chance. No `campaigns/results.jsonl` read occurred. Peak PI context rose (median 143k) and AIU per PI session rose to 5.10. The first-message files were never sent: Runner sets `backend_session_id` at session start, so the launcher's new-conversation check was always false. A T2 runtime controller scored 199/200 and 200/200 on research panels but had no route to protected evaluation (postponed optional item below). Follow-up commits: the new-conversation check uses the launcher invocation count or the SDK session folder; `evidence_inputs` accepts a candidate (archive files and `artifact.json`); discovery past the node limit returns the paths found and a recovery hint, and a missing operations path explains list-indexed rows; the console shows the coding request, child patches and a per-minute child heartbeat, colours tool names and operation status, summarizes pass-probability evidence and series checks, and colours context at 100k and 150k. Validation used reproductions on the finished campaign's state and the existing suites; failing tests were identical before and after each change (13 in the runtime, lifecycle, session, launcher, stop-control and coding set). One campaign cannot attribute the pass or the cost to these changes. |

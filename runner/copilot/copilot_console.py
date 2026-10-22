@@ -34,6 +34,7 @@ RESULT_ISSUE_TOOLS = {
     "training_log_query",
     "training_series_statistics",
     "success_rate_pass_probability",
+    "episode_outcome_breakdown",
 }
 RESULT_ISSUE_STATUSES = {
     "artifact_budget_exhausted",
@@ -132,6 +133,7 @@ _TOOL_COLORS = {
     "scientific_coding": "\033[1;34m",
     "training_series_statistics": "\033[35m",
     "success_rate_pass_probability": "\033[35m",
+    "episode_outcome_breakdown": "\033[35m",
 }
 
 
@@ -433,6 +435,17 @@ _TOOL_DETAIL = {
         f"evidence={len(arguments.get('evidence') or [])} | "
         f"confidence={arguments.get('confidence', '-')}"
     ),
+    "episode_outcome_breakdown": lambda arguments: (
+        " vs ".join(
+            f"{item.get('operation_id', '-')} {item.get('candidate', '-')}"
+            for item in arguments.get("measurements") or []
+        )
+        + (
+            f" | strata {(arguments.get('strata') or {}).get('field', '-')}"
+            if arguments.get("strata")
+            else ""
+        )
+    ),
     "scientific_coding": lambda _: "bounded coding / PI source review required",
     "scientific_api_reference": _api_reference_detail,
     "powershell": _powershell_detail,
@@ -636,6 +649,19 @@ class Console:
                     f"{item.get('trials')} -> pass {chance:.1%} "
                     f"({item.get('interval_vs_target_rate')} target rate)",
                     color,
+                )
+        elif name == "episode_outcome_breakdown":
+            for item in result.get("measurements", []):
+                self.line(
+                    f"  = {item.get('operation_id')} {item.get('candidate')}: "
+                    f"{item.get('successes')}/{item.get('trials')}"
+                )
+            paired = result.get("paired")
+            if paired:
+                self.line(
+                    f"  = paired: first only {paired.get('first_only_success')} | "
+                    f"second only {paired.get('second_only_success')} | "
+                    f"sign test p {paired.get('sign_test_p_value', 1.0):.3g}"
                 )
         elif name == "training_series_statistics":
             window = result.get("window") or {}
