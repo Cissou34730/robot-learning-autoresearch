@@ -11,6 +11,7 @@ import shutil
 import sys
 import time
 from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -1826,23 +1827,34 @@ def _operation_request_detail(pending: dict) -> str:
         return "\n".join(
             (
                 *_scientific_delta_lines(pending),
-                f"Why: {request['description']}",
-                f"Rationale: {request['rationale']}",
+                "Why",
+                str(request["description"]),
+                "",
+                "Rationale",
+                str(request["rationale"]),
+                "",
+                "Plan",
                 (
-                    f"Plan: {int(request['steps']):,} steps | "
+                    f"{int(request['steps']):,} steps | "
                     f"seed {int(request['seed'])} | {request['initialization']}"
+                    + (f" from {request['parent']}" if request.get("parent") else "")
                 ),
             )
         )
     if kind == "measurement":
         lines = [
-            f"Why: {request['description']}",
-            f"Rationale: {request['rationale']}",
+            "Why",
+            str(request["description"]),
+            "",
+            "Rationale",
+            str(request["rationale"]),
+            "",
+            "Panels",
         ]
         for index, measurement in enumerate(request["measurements"], start=1):
             instrument = str(measurement["instrument"]).replace("_", " ")
             parts = [
-                f"Panel {index}: {instrument}",
+                f"{index}. {instrument}",
                 str(measurement.get("candidate") or measurement.get("module") or ""),
             ]
             if measurement.get("episodes") is not None:
@@ -1876,34 +1888,74 @@ def _operation_completion_detail(pending: dict) -> str:
     kind = pending["kind"]
     parts: list[str] = []
     if kind == "measurement":
+        parts.append("Results")
         for index, measurement in enumerate(result.get("measurements", []), start=1):
             metrics = measurement.get("metrics") or {}
             row = [
-                f"Result {index}: {measurement.get('candidate', '')}",
+                f"{index}. {measurement.get('candidate') or measurement.get('module') or ''}",
                 str(measurement.get("instrument", "")).replace("_", " "),
             ]
-            if metrics.get("success_percent") is not None:
+            if metrics.get("successes") is not None and metrics.get("episodes"):
+                row.append(
+                    f"{int(metrics['successes'])}/{int(metrics['episodes'])} "
+                    f"({float(metrics['success_percent']):.1f}%)"
+                )
+            elif metrics.get("success_percent") is not None:
                 row.append(f"success {float(metrics['success_percent']):.1f}%")
-            if metrics.get("episodes") is not None:
-                row.append(f"{int(metrics['episodes'])} episodes")
+            if measurement.get("label"):
+                row.append(str(measurement["label"]))
             parts.append(" | ".join(part for part in row if part))
-        comparisons = len(result.get("paired_comparisons", []))
+            seen = [
+                *(metrics.get("repeats_earlier_measurements") or []),
+                *(metrics.get("episodes_seen_in_earlier_measurements") or []),
+            ]
+            if seen:
+                parts.append(
+                    "   episodes seen before: "
+                    + ", ".join(
+                        f"{item.get('operation_id')} ({item.get('shared_episodes')})"
+                        for item in seen
+                    )
+                )
+        comparisons = result.get("paired_comparisons") or []
         if comparisons:
-            parts.append(f"Paired comparisons: {comparisons}")
+            parts.extend(("", "Paired comparison"))
+            for item in comparisons:
+                parts.append(
+                    f"{item.get('candidate')} only {item.get('candidate_wins')} | "
+                    f"{item.get('reference')} only {item.get('reference_wins')} | "
+                    f"{item.get('episodes')} shared episodes"
+                )
     elif kind == "training":
         parts.append(f"{int(result.get('completed_steps', 0)):,} steps")
-        dynamics = result.get("learning_dynamics") or []
-        for item in dynamics:
-            parts.append(
-                f"{item['candidate']} | steps {int(item['training_steps']):,} | "
-                f"reward {item.get('ep_rew_mean')} | "
-                f"success {item.get('training_success')}"
-            )
+        dynamics = [
+            item
+            for item in result.get("learning_dynamics") or []
+            if isinstance(item, dict)
+        ]
+        if dynamics:
+            parts.extend(("", "Candidates", f"{len(dynamics)} archived"))
+            scored = [
+                item for item in dynamics if item.get("training_success") is not None
+            ]
+            highlights = {
+                "last": max(dynamics, key=lambda item: int(item["training_steps"]))
+            }
+            if scored:
+                highlights["highest training success"] = max(
+                    scored, key=lambda item: float(item["training_success"])
+                )
+            for name, item in highlights.items():
+                parts.append(
+                    f"{name}: {item['candidate']} | steps {int(item['training_steps']):,} | "
+                    f"reward {item.get('ep_rew_mean')} | "
+                    f"success {item.get('training_success')}"
+                )
     elif kind == "model_role":
         parts.append(f"{result.get('action')} | {result.get('candidate')}")
     elif kind == "restore_recipe":
         parts.append(str(result.get("candidate", "")))
-    return "\n".join(part for part in parts if part)
+    return "\n".join(parts).strip("\n")
 
 
 def _operation_context(state: dict) -> str:
@@ -1929,7 +1981,26 @@ def _operation_context(state: dict) -> str:
         f"inquiries {int(counters.get('inquiry', 0))}/"
         f"{int(state['campaign']['max_inquiries'])}"
     )
-    return " | ".join(parts)
+    campaign = ["Campaign:"]
+    elapsed = _campaign_elapsed_seconds(state)
+    if elapsed is not None:
+        campaign[0] += f" {console.format_duration(elapsed)} elapsed"
+    usage = console.usage_aiu(repository.current_campaign_id(state))
+    if usage is not None:
+        campaign.append(f"{usage:.1f} AIU")
+    best = (state.get("model_roles") or {}).get("best_known")
+    campaign.append(f"best-known {best or 'none'}")
+    return " | ".join(parts) + "\n" + " | ".join(campaign)
+
+
+def _campaign_elapsed_seconds(state: dict) -> float | None:
+    try:
+        started = datetime.fromisoformat(str(state["campaign"]["started_at"]))
+    except (KeyError, ValueError):
+        return None
+    if started.tzinfo is None:
+        started = started.replace(tzinfo=UTC)
+    return (datetime.now(UTC) - started).total_seconds()
 
 
 def _completion_presentation(state: dict, pending: dict) -> dict:
@@ -2027,7 +2098,7 @@ def _announce_completed_operation(presentation: dict) -> None:
     if kind not in {"inquiry", "checkpoint", "campaign_conclusion"}:
         detail = _operation_completion_detail(pending)
         if kind in _INSTANT_KINDS:
-            detail = "\n".join(
+            detail = "\n\n".join(
                 part for part in (presentation.get("context"), detail) if part
             )
         console.boundary("operation", "COMPLETE", _operation_subject(pending), detail)
@@ -2079,7 +2150,7 @@ def execute_pending_operation() -> int:
             "operation",
             action,
             subject,
-            "\n".join(part for part in (presentation["context"], detail) if part),
+            "\n\n".join(part for part in (presentation["context"], detail) if part),
         )
     try:
         if pending["progress"] == "completed":

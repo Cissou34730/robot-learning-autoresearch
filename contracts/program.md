@@ -95,14 +95,11 @@ campaign-level decisions:
 - open one bounded inquiry connected directly to the current goal gap.
 
 The PI decides. Neither choice requires complete mechanism resolution.
-Development criteria inform the comparison; they do not add assessment
-eligibility requirements. No numerical confidence estimate or repeated
-measurement is required. The Runner does not judge readiness.
 
-Neither an untested variant nor a candidate near the threshold justifies a
-choice by itself. A development result tends to overstate performance on new
-episodes when the same episodes were also used to select the candidate or
-design its changes.
+A development result near the threshold does not establish the candidate's
+rate, and further work does not need an already tested intervention. A
+development result tends to overstate performance on new episodes when the same
+episodes were also used to select the candidate or design its changes.
 
 Official assessment is a terminal commitment: its pass or fail result ends
 this campaign. It is not a development probe followed by another inquiry.

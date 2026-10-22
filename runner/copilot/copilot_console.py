@@ -649,11 +649,14 @@ class Console:
         if name == "success_rate_pass_probability":
             for item in result.get("evidence", []):
                 chance = item.get("pass_probability", 0.0)
+                bounds = item.get("pass_probability_at_interval_bounds") or {}
                 color = GREEN if chance >= 0.8 else YELLOW if chance >= 0.5 else RED
                 self.line(
                     f"  = {str(item.get('label'))[:70]}: {item.get('successes')}/"
                     f"{item.get('trials')} -> pass {chance:.1%} "
-                    f"({item.get('interval_vs_target_rate')} target rate)",
+                    f"(at interval bounds {bounds.get('lower', 0.0):.1%}-"
+                    f"{bounds.get('upper', 0.0):.1%}; "
+                    f"{item.get('interval_vs_target_rate')} target rate)",
                     color,
                 )
         elif name == "episode_outcome_breakdown":

@@ -65,6 +65,10 @@ _SECTION_HEADINGS = frozenset(
         "Next question",
         "Outcome",
         "Usage",
+        "Why",
+        "Rationale",
+        "Panels",
+        "Results",
         "Question",
         "Plan",
         "Selections",
@@ -84,6 +88,8 @@ _SECTION_HEADINGS = frozenset(
         "Frozen model",
     }
 )
+_CONTEXT_PREFIXES = ("Phase: ", "Campaign: ")
+_CONTEXT = "\033[36m"
 
 # A heartbeat is rewritten in place and reaches the log only on this cadence:
 # long enough that a run does not become a wall of near-identical counters,
@@ -264,7 +270,13 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
         return
     print(f"{timestamp} {color}=== {title} ==={_RESET}", flush=True)
     for line in body:
-        line_color = _YELLOW if line in _SECTION_HEADINGS else body_color
+        line_color = (
+            _YELLOW
+            if line in _SECTION_HEADINGS
+            else _CONTEXT
+            if line.startswith(_CONTEXT_PREFIXES)
+            else body_color
+        )
         wrapped = _wrap_console_text(line, initial_prefix="  ")
         print(
             "\n".join(f"{line_color}{part}{_RESET}" for part in wrapped),
@@ -387,6 +399,11 @@ def _usage_rows(campaign_id: str, session_id: str | None = None) -> list[dict]:
         ):
             rows.append(row)
     return rows
+
+
+def usage_aiu(campaign_id: str) -> float | None:
+    rows = _usage_rows(campaign_id)
+    return sum(float(row.get("aiu") or 0) for row in rows) if rows else None
 
 
 def usage_summary(campaign_id: str, session_id: str | None = None) -> str:

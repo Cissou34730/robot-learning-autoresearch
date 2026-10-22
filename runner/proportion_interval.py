@@ -287,6 +287,14 @@ def query_pass_probability(args: dict[str, Any], campaign_id: str = "") -> str:
                 "pass_probability": pass_probability(
                     entry["successes"], entry["trials"], params.target
                 ),
+                "pass_probability_at_interval_bounds": {
+                    "lower": binomial_pass_probability(
+                        interval["lower"], params.target
+                    ),
+                    "upper": binomial_pass_probability(
+                        interval["upper"], params.target
+                    ),
+                },
             }
         )
     return json.dumps(

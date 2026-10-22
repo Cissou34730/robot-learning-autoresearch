@@ -208,8 +208,9 @@ For each entry the result gives the proportion, its Wilson interval, whether
 the interval is `above`, `below` or `includes` the target rate, and the
 probability that a new target panel reaches the required successes. That
 probability uses a uniform prior and the beta-binomial predictive distribution.
-The result also gives the true success rate at which the target panel passes
-with probability 0.5, 0.8 and 0.95. Typed counts are not verified. The tool
+The result also gives the pass probability when the true rate equals the
+interval's lower or upper bound, and the true success rate at which the target
+panel passes with probability 0.5, 0.8 and 0.95. Typed counts are not verified. The tool
 assumes independent episodes with one common success probability,
 representative of the target panel. Counts of a candidate selected as the best
 of several are optimistic.

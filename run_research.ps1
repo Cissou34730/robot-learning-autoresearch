@@ -766,7 +766,7 @@ function New-ScientificSessionPrompt {
             if ($session.kind -eq "goal_review") {
                 "Compare the strongest candidate's prospects on the official panel with the prospects of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
                 "success_rate_pass_probability estimates the probability that a candidate reaches a success-rate goal on the official panel from the counts you choose."
-                "Neither an untested variant nor a candidate near the threshold justifies a choice by itself. Compare the evidence for each."
+                "A development result near the threshold does not establish the candidate's rate, and further work does not need an already tested intervention. Compare the evidence for each."
                 "When judging a candidate's prospects on the official panel, consider whether the episodes behind its development result were also used to select it or design its changes; such a result tends to overstate its performance on new episodes."
             }
             else {
@@ -889,16 +889,7 @@ function New-ScientificSessionPrompt {
             )
         }
     }
-    $fence = '````'
-    $includedFiles = @(
-        foreach ($relative in $contextFiles) {
-            $root = if ($relative.StartsWith("contracts/")) { $PSScriptRoot } else { (Get-Location).Path }
-            $path = Join-Path $root ($relative -replace "/", "\")
-            if (Test-Path -LiteralPath $path -PathType Leaf) {
-                "File $relative (current at session start):`n$fence`n$((Get-Content -LiteralPath $path -Raw).TrimEnd())`n$fence"
-            }
-        }
-    )
+    $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)
     if ($includedFiles.Count -gt 0) {
         Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
         $sourceGuidance = "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again unless an operation changes them. The latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
@@ -952,6 +943,19 @@ function New-ScientificSessionPrompt {
     return ($sections -join "`n`n")
 }
 
+function Get-FirstMessageFiles {
+    param([string[]]$Paths)
+
+    $fence = '````'
+    foreach ($relative in $Paths) {
+        $root = if ($relative.StartsWith("contracts/")) { $PSScriptRoot } else { (Get-Location).Path }
+        $path = Join-Path $root ($relative -replace "/", "\")
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+            "File $relative (current at session start):`n$fence`n$((Get-Content -LiteralPath $path -Raw).TrimEnd())`n$fence"
+        }
+    }
+}
+
 function Test-OperationRequest {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
@@ -991,6 +995,20 @@ function Invoke-ScientificModelPhase {
     param([Parameter(Mandatory)]$State)
 
     $goal = Get-HumanGoalSummary -State $State
+    $robotFiles = @(
+        Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot "contracts\robots") -File |
+            Where-Object { $_.Length -gt 0 -and $_.Name -ne "__init__.py" } |
+            Sort-Object Name |
+            ForEach-Object { "contracts/robots/$($_.Name)" }
+    )
+    $contextFiles = @(
+        "contracts/scenario.md"
+        "contracts/task_spec.py"
+        $robotFiles
+        "contracts/instruments/scientific-model.md"
+    )
+    $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)
+    Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
     $prompt = @(
         $modelAnalystPersona
         "Human goal: $goal"
@@ -999,6 +1017,8 @@ function Invoke-ScientificModelPhase {
         "Code under robot_learning/ is the current recipe. Its rewards, training environments and observation construction are design choices, not properties of the robot; label any statement drawn from them as such."
         "The document has four registers, with these headings: Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
+        "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again. Open other definitions as the analysis requires."
+        $includedFiles
     ) -join "`n`n"
 
     $script:PISessionId = $null
