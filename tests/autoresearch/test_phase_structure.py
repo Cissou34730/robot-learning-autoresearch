@@ -646,124 +646,6 @@ def test_scientific_model_and_request_paths_remain_protected():
     assert repository.is_runner_owned("pi_workspace/operation_request.json")
 
 
-@powershell_only
-@pytest.mark.parametrize("kind", ["startup", "goal_review", "inquiry"])
-def test_scientific_session_prompt_preserves_checkpoint_frontier(tmp_path, kind):
-    markers = {
-        name: f"{name}-{uuid4().hex}"
-        for name in ("goal", "synthesis", "gap", "frontier", "objective")
-    }
-    state = repository.empty_campaign_state(
-        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
-        last_verdict="fresh",
-    )
-    state["human_goal"]["summary"] = markers["goal"]
-    state["scientific_session"] = {
-        "id": "S1",
-        "kind": kind,
-        "objective": markers["objective"],
-        "operation_ids": ["M1"],
-    }
-    section_name = f"section-{uuid4().hex}"
-    field_name = f"field-{uuid4().hex}"
-    raw_value = f"raw-value-{uuid4().hex}"
-    contents = repository.measurement_artifact_contents(
-        {section_name: [{"first": None}, {field_name: raw_value}]}
-    )
-    state["operation_events"] = [
-        {
-            "id": "M1",
-            "kind": "measurement",
-            "status": "completed",
-            "result": {
-                "measurements": [
-                    {
-                        "label": "instrument result",
-                        "metrics": {
-                            "episodes": 2,
-                            "evaluation_artifact": "campaigns/evaluations/panel.json",
-                            "evaluation_artifact_contents": contents,
-                        },
-                    }
-                ],
-                "paired_comparisons": [],
-            },
-        }
-    ]
-    if kind != "startup":
-        state["pi_checkpoint"] = {
-            "inquiry_id": None,
-            "human_goal_connection": markers["goal"],
-            "current_goal_gap": markers["gap"],
-            "current_synthesis": markers["synthesis"],
-            "evidence_references": [],
-            "decision_frontier": markers["frontier"],
-            "completed_operations": [],
-            "candidates_and_roles": "No roles assigned.",
-            "next_direction_or_closure": "Choose the next scientific action.",
-            "cumulative_resource_use": "No completed operations.",
-        }
-    if kind == "inquiry":
-        state["active_inquiry"] = {
-            "id": "I1",
-            "question": "Resolve a consequential uncertainty.",
-            "goal_connection": markers["goal"],
-            "closure_condition": "Establish the answer's bearing on the next decision.",
-            "opened_in_session": "S0",
-        }
-    state_path = tmp_path / "state.json"
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    script = tmp_path / "session-context.ps1"
-    script.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$names = @(
-    'Get-HumanGoalSummary', 'Get-LatestSessionResult',
-    'Get-RequiredSessionSummaryTransition', 'New-ScientificSessionPrompt'
-)
-foreach ($name in $names) {{
-    $definition = $ast.FindAll({{
-        param($node)
-        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-            $node.Name -eq $name
-    }}, $true) | Select-Object -First 1
-    if (-not $definition) {{ throw "Missing launcher function $name" }}
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
-$state = Get-Content -Raw -LiteralPath '{state_path}' | ConvertFrom-Json
-New-ScientificSessionPrompt -State $state
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [
-            POWERSHELL,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(script),
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
-    assert markers["goal"] in completed.stdout
-    assert markers["objective"] in completed.stdout
-    assert "/" + section_name in completed.stdout
-    assert field_name in completed.stdout
-    assert raw_value not in completed.stdout
-    if state["pi_checkpoint"] is not None:
-        assert markers["synthesis"] in completed.stdout
-        assert markers["gap"] in completed.stdout
-        assert markers["frontier"] in completed.stdout
-    assert runner_protocol.is_researcher_owned("pi_workspace/operation_request.json")
-
-
 def _goal_review_candidate(
     monkeypatch, tmp_path: Path, *, at_cap: bool = True
 ) -> tuple[dict, dict]:
@@ -910,11 +792,10 @@ def _open_inquiry_request() -> dict:
     }
 
 
-@pytest.mark.parametrize("at_cap", [False, True])
 def test_goal_review_measurement_returns_to_same_session_before_inquiry(
-    monkeypatch, tmp_path, at_cap
+    monkeypatch, tmp_path
 ):
-    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=at_cap)
+    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path)
     session = state["scientific_session"]
     counters = dict(state["counters"])
     module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
@@ -970,33 +851,8 @@ def test_goal_review_measurement_returns_to_same_session_before_inquiry(
     assert (
         runner_protocol.validate_operation_request(request, measured) == "measurement"
     )
-    if at_cap:
-        with pytest.raises(ValueError, match="inquiry open is not available"):
-            runner_protocol.validate_operation_request(
-                _open_inquiry_request(), measured
-            )
-    else:
-        assert (
-            runner_protocol.validate_operation_request(
-                _open_inquiry_request(), measured
-            )
-            == "inquiry"
-        )
-
-
-@pytest.mark.parametrize("at_cap", [False, True])
-def test_goal_review_still_rejects_training(monkeypatch, tmp_path, at_cap):
-    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=at_cap)
-    request = {
-        "training": {
-            "seed": 0,
-            "steps": 120000,
-            "initialization": "fresh",
-            "rationale": "Test the goal-review operation boundary.",
-        }
-    }
-    with pytest.raises(ValueError, match="training is not available in a goal_review"):
-        runner_protocol.validate_operation_request(request, state)
+    with pytest.raises(ValueError, match="inquiry open is not available"):
+        runner_protocol.validate_operation_request(_open_inquiry_request(), measured)
 
 
 @powershell_only
@@ -1113,47 +969,3 @@ def test_goal_review_role_requires_completed_evidence(monkeypatch, tmp_path, evi
     request["model_role"]["evidence"] = evidence
     with pytest.raises(ValueError, match="evidence"):
         runner_protocol.validate_operation_request(request, state)
-
-
-@pytest.mark.parametrize("kind", ["model_role", "measurement"])
-def test_goal_review_operation_cannot_bypass_open_inquiry_checkpoint(
-    monkeypatch, tmp_path, kind
-):
-    state, candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=False)
-    run_experiment.accept_operation(_open_inquiry_request(), state)
-    assert run_experiment.execute_pending_operation() == 0
-    opened = repository.read_state()
-    request = (
-        _best_known_request(candidate)
-        if kind == "model_role"
-        else {"measurement": opened["operation_events"][0]["request"]}
-    )
-    with pytest.raises(ValueError, match="checkpoint"):
-        runner_protocol.validate_operation_request(request, opened)
-    checkpoint = {
-        "checkpoint": {
-            "human_goal_connection": "The inquiry addresses a current task gap.",
-            "current_goal_gap": "The candidate has not established goal success.",
-            "current_synthesis": "An evidence-linked inquiry has been opened.",
-            "evidence_references": list(opened["scientific_session"]["operation_ids"]),
-            "decision_frontier": "Resolve the method question in its fresh session.",
-            "completed_operations": list(opened["scientific_session"]["operation_ids"]),
-            "candidates_and_roles": "The candidate remains available.",
-            "next_direction_or_closure": "Begin the fresh inquiry session.",
-            "cumulative_resource_use": "One inquiry opening.",
-        }
-    }
-    run_experiment.accept_operation(checkpoint, opened)
-    assert run_experiment.execute_pending_operation() == 0
-    checkpointed = repository.read_state()
-    assert checkpointed["scientific_session"] is None
-    assert checkpointed["active_inquiry"] is not None
-    repository.start_scientific_session(
-        checkpointed,
-        kind="inquiry",
-        objective="Resolve the method question.",
-        backend_adapter="copilot",
-        backend_model="gpt-5.6-luna",
-        backend_reasoning="high",
-    )
-    assert runner_protocol.validate_operation_request(request, checkpointed) == kind

@@ -136,7 +136,7 @@ uv run pytest tests\autoresearch\test_campaign_paths.py -q
 The Python environment and dependency lock belong to the harness. Campaign PI
 agents cannot install dependencies or run maintainer tests.
 
-The Copilot harness integration uses Python SDK 1.0.19. Install the locked
+The Copilot harness integration uses Python SDK 1.0.26. Install the locked
 scientific stack and agent runtime with `uv sync --locked --group researcher`.
 Native coding subagents, permissions and custom evidence tools remain in that
 runtime. Inference can use GitHub Copilot, OpenCode Zen or OpenCode Go.
@@ -170,7 +170,7 @@ Configure it locally, never in repository files or chat.
 The public OpenCode catalogue supplies model protocols, endpoints and limits.
 The cache refreshes after 24 hours; without any saved catalogue the free
 DeepSeek model remains available. Every model uses the protocol and endpoint
-listed in the catalogue. SDK 1.0.19 supports
+listed in the catalogue. SDK 1.0.26 supports
 Chat Completions, Responses and Anthropic routes, not native Google transport.
 Unsupported selections never substitute another model.
 

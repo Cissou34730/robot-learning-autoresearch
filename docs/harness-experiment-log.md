@@ -173,13 +173,15 @@ preserves the detailed analysis.
 
 ## Outstanding issue register
 
-**Status and description review: 21 October 2026.**
+**Status and description review: 22 October 2026.**
 
-Six issues require work. One change needs more evidence. Twenty-six issues
-are closed. Six entries are inactive. All 39 issue IDs remain.
+Five issues require work. One change needs more evidence. Thirty issues
+are closed. Eleven entries are inactive. All 47 issue IDs remain.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
-The maintainer also closed OI-033 and OI-037 without a verified recovery claim.
+The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
+and OI-021, OI-026, OI-038 and OI-046 by decision on 22 October.
+OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is retired because the training allocation remains a fixed constraint.
 Retirement does not claim that this allocation is optimal.
 
@@ -204,33 +206,34 @@ Retirement does not claim that this allocation is optimal.
 The descriptions use short sentences and consistent technical terms.
 This review does not certify compliance with the official ASD-STE100 dictionary.
 
-### Open issues — 6
+### Open issues — 5
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
 
 | ID | Issue | Status | Next action |
 |---|---|---|---|
-| OI-021 | The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias later scientific choices. | **Open** | Complete the impact analysis before a prompt change. Then derive the required capabilities from the robot and task. Preserve the physical analysis. |
 | OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
-| OI-026 | Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision. | **Open** | Separate clarification from corrections of real coding defects. Compare equivalent work with role-specific costs. Return missing scientific decisions to the PI. Keep independent review. |
-| OI-038 | Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value. | **Open** | Optional tool `success_rate_pass_probability` (2026-10-21) gives Wilson intervals at a PI-chosen level and the probability that a new target panel reaches the goal, from counts that the PI supplies. Its earlier form, `wilson_proportion_interval`, was never called in campaigns `60ec83bd` and `573d538c`. The episode count behind each training-log `success_rate` value is not verified, so that metric has no known trial count. Verify it before relying on intervals for training-log values. |
 | OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this comparison in each campaign (607 lines in `e7dbbece`). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. |
+| OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
+| OI-041 | The PI role arrives in the first user message. The SDK system message stays at its default. | **Open** | Decided 2026-10-22: `customize` mode on SDK 1.0.26 (runtime 1.0.103). Remove or replace the coding-agent parts that conflict with the PI role: the identity, `code_change_rules`, the coding tone, and in `runtime_instructions` the `autonomy_and_persistence` ("bias to action"), `subagent_usage` ("use custom agents sparingly"), editing, destructive-action, session-folder, GitHub-reference and commit-trailer blocks. Keep `safety`, `tool_instructions`, system notifications and tool-use guidelines. Replace the tone with a scientific reporting tone. Move campaign-invariant content into the system prompt: the PI role, the authority boundaries, `scenario.md`, `program.md`, core `instruments.md` and the frozen scientific model; the opening analyst gets its own prompt with its contract files. Each moved file leaves the first-message list, and the path policy refuses re-reads of exactly those files. **Warning:** context compaction ran in PI inquiry sessions of `49e58c12`, `573d538c`, `4a65a241` and `fd2afc2e` (about 220k tokens reduced to about 25k), which removes first-message content. Before re-reads are blocked, verify that the customized system message survives compaction unchanged; the console must flag every compaction with the tokens removed. Keep the coder and reviewer prompts separate and check whether they inherit the session system message. Evaluate scientific outcomes separately from the prompt integration. |
 
 ### Changes that need more evidence — 1
 
-Context compaction shows intended behavior in campaign records.
-Its effect on sustained context growth and cost remains unconfirmed.
+Context compaction and context-size reductions show intended behavior in
+campaign records. Their effect on sustained context growth over a long campaign
+remains unconfirmed.
 
 | ID | Issue | Status | Remaining check |
 |---|---|---|---|
-| OI-008 | Repeated context can increase cost and obscure current evidence. | **Observed** | Observe context growth across a longer campaign. Keep the complete history accessible. Do not infer a context repair from faster model responses. |
+| OI-008 | Repeated context can increase cost and obscure current evidence. | **Observed** | Size reductions since 21 October: per-operation instrument files instead of one contract; first-message context files for PI sessions (effective from `e7dbbece`) and for the opening scientific-model session (2026-10-22); `campaigns/results.jsonl` read through `artifact_evidence_query`; context bands in the console. PI AIU per session: `49e58c12` 5.10, `e7dbbece` 2.88, `6882b9ec` 2.80, `cfa88359` 3.29. After startup the PI re-reads almost no contract files. The opening session's `contracts/scenario.md` re-reads fell from 21 to 0 in `cfa88359`; it still re-read `authority.md` (11) and `policy_runtime.py` (6), which are now included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep the complete history accessible. Do not infer a context repair from faster model responses. |
 
-### Closed issues — 26
+### Closed issues — 30
 
 Most closures reflect recorded repairs.
-OI-033 and OI-037 were closed by maintainer decision without verified recovery.
+OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by maintainer
+decision; OI-033 and OI-037 without verified recovery.
 Closure does not establish scientific success or cover every future case.
 An unrelated official assessment is not a condition for closure.
 
@@ -249,8 +252,10 @@ An unrelated official assessment is not a condition for closure.
 | OI-017 | The PI cannot inspect required values inside a saved artifact. | **Closed** | The evidence tool reads selected values from the recorded file. It checks the fingerprint before access. |
 | OI-018 | Unclear query arguments can cause repeated errors or return too much evidence. | **Closed** | The query interface defines limits and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records. |
 | OI-019 | The current goal gap can contradict the final official result. | **Closed** | The brief uses the official result for the current gap. It labels the earlier PI record as historical. Closure does not imply campaign success. |
+| OI-021 | The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias later scientific choices. | **Closed** | Closed by maintainer decision on 22 October. The preliminary session builds the physical model from the human-owned definitions of the robot, simulator and task, labels recipe code as a design choice and selects no intervention; the PI selects interventions. The planned impact analysis was not completed. |
 | OI-022 | Extra process output can corrupt the exit code and cause a false rejection. | **Closed** | The process helper returns one exit code. It keeps unrelated output separate from that value. Retry limits and operation checks are unchanged. |
 | OI-023 | A search through a permitted folder can expose protected files below that folder. | **Closed** | Search tools exclude protected files before they inspect content or return paths. This repair does not create an operating-system sandbox. |
+| OI-026 | Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision. | **Closed** | Closed by maintainer decision on 22 October. Coders receive contract excerpts and the recorded structure of selected evidence (`evidence_inputs`); missing scientific decisions return to the PI; independent review remains. Coding and review cost 7.1 of 30.1 AIU in `cfa88359`. No separate clarification-cost measurement was completed. |
 | OI-027 | A failed session can report an old success state or omit the actual error. | **Closed** | The response retains errors and reports timeout or interruption explicitly. This repair reports the outcome. It does not recover the session. |
 | OI-028 | Publication can fail after Runner accepts a replacement request, without an explicit publication error. | **Closed** | Runner preserves the publication error across the process boundary. The controller reports a fatal publication failure without a repeat of the operation. |
 | OI-029 | A malformed operation request can reach the submission channel. | **Closed** | The shared schema checks the operation wrapper before dispatch. Invalid structures receive a specific error. Scientific decisions are unchanged. |
@@ -262,8 +267,10 @@ An unrelated official assessment is not a condition for closure.
 | OI-035 | A temporary remote Git error can stop publication of completed work. | **Closed** | The helper retries specified server errors with the same commit and branch. The retry count is limited. Campaign repositories never push. |
 | OI-036 | A controller can work in research evaluation but omit required behavior in protected evaluation. | **Closed** | T4's saved runtime contains the required controller and episode state. The same artifact scored 400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source inspection with measured use. It does not claim identical trajectories across different panels. |
 | OI-037 | A fatal conversation can reject new requests while Runner still records an active session. A restart resumes the unusable conversation. | **Closed** | Closed by maintainer decision on 21 October, together with GitHub #61. No recovery repair or successful recovery verification is claimed. Completed operations and evidence are unchanged. |
+| OI-038 | Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value. | **Closed** | Closed by maintainer decision on 22 October. `success_rate_pass_probability` gives Wilson intervals, the pass probability and the pass probability at the interval bounds from measured counts. Training-log success rates average the last 100 training episodes in the PI-owned checkpoint callback; consecutive values share episodes and use the training distribution, so they are trend indicators, not samples. The contracts already state that training facts do not establish development performance. |
+| OI-046 | A runtime change tested on frozen weights has no route to protected evaluation. | **Closed** | Closed by maintainer decision on 22 October (rule B in `contracts/instruments/coding.md`): runtime changes reach a candidate only through training; frozen-weight runtime tests are diagnostics; measurement artifacts never become candidates. The repackaging operation is not built. In `cfa88359` the PI trained T2 fresh with a reflection in its policy I/O and passed at 199/200. |
 
-### Inactive entries — 6
+### Inactive entries — 11
 
 These entries do not authorize implementation.
 The historical evidence remains valid.
@@ -276,6 +283,11 @@ The historical evidence remains valid.
 | OI-012 | The proposal permits separate publication of a frozen policy. | **Proposal** | The maintainer did not approve or implement the proposal. This proposal does not authorize campaign recovery. |
 | OI-013 | The proposal removes the fifteen-inquiry limit. | **Withdrawn** | The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches that limit. The resume mechanism is unchanged. |
 | OI-020 | One proposed issue combined unrelated assessment concerns and task-specific terms. | **Withdrawn** | The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific observations remain in their campaign analysis. This entry does not authorize a generic repair. |
+| OI-042 | Each new session receives whole context files. Only named sections could reduce cost further. | **Proposal** | Distant future. One PI-selected named-sections context tool, as in the [SDK consolidation plan](copilot-sdk-consolidation-plan.md). Reconsider after OI-008 shows the remaining context cost. |
+| OI-043 | Instruction changes are tested only in full campaigns. | **Proposal** | Replay one recorded PI decision point with the same fixed evidence under the old and the new instructions, with no operations, and compare the chosen action. Precedent: two fixed-evidence replays of the pre-I13 goal-review boundary of `79395c88` under OI-016; both chose differently from the campaign. A replay is not campaign evidence. No framework or test infrastructure is approved. |
+| OI-044 | The PI can attribute a recorded measurement to the wrong candidate. | **Proposal** | Implement an on-demand `artifact_evidence_query` action that returns one candidate's recorded measurements if a campaign shows this error again. Precedent: E11 in `49e58c12` attributed T1's 192/200 to T2. Recorded references in `success_rate_pass_probability` already cover the counts behind pass estimates. |
+| OI-045 | Inquiry training requests must use the full 120,000-step allocation. | **Proposal** | Low priority. Archived checkpoints already expose early steps, and a run takes minutes. The allocation stays fixed under OI-006. |
+| OI-047 | Code paths used only for external inference providers remain when the PI runs on GitHub Copilot. | **Proposal** | Low priority. Remove the `read` tool, `read_alias` and `json_editors` if external providers are no longer used. |
 
 ### Evidence and review limits
 
@@ -333,45 +345,14 @@ No GitHub issues remain open at this review.
    `episode_outcome_breakdown` and count PI-built lab modules that duplicate
    it. Compare AIU per PI session with `e7dbbece` (2.88) and `49e58c12` (5.10).
    Do not make the tools mandatory.
-2. Classify OI-024 reruns and OI-026 review work by their actual information
-   gain or corrected defect. Do not equate all repetition with waste.
+2. Classify OI-024 reruns by their actual information gain or corrected
+   defect. Do not equate all repetition with waste.
 
 These priorities authorize neither repairs nor campaign operations.
 
 ### Follow-up outside the numbered register
 
-- The console still needs visible progress for model requests.
-  The PI also needs clear guidance about session checkpoints.
-  Faster responses do not demonstrate recovery from a stalled request.
-- The [SDK consolidation plan](copilot-sdk-consolidation-plan.md) retains two proposed tools.
-  One changes the PI system message.
-  The other reads named sections from context documents.
-  Provider migration is complete.
-- A text-only comparison could screen instruction changes with one fixed
-  decision brief and one response under each instruction version.
-  This remains a proposal, not campaign replay or scientific validation.
-  No framework or new testing infrastructure is approved.
-- Decided (2026-10-22): runtime changes reach a candidate only through
-  training (rule B). The PI-owned runtime source may contain any logic; a
-  training run with `fresh` or `transfer` initialization carries it into the
-  candidate. Frozen-weight runtime tests are diagnostics, and measurement
-  artifacts never become candidates. The repackaging operation (a candidate
-  from existing weights plus new runtime source, without training) is not
-  built. Reason: controller-only work recurred in three campaigns without a
-  route to assessment (`573d538c` I4 and I5, `49e58c12` T2 controller at
-  199/200, `e7dbbece` I4 and I5); a training route keeps the result a learned
-  policy and needs no Runner-built runtime from PI source.
-- Later, re-evaluate (2026-10-22): an on-demand `artifact_evidence_query`
-  action returning one candidate's recorded measurements (operation,
-  instrument, label, seeds, result). It answers the same factual-memory issue
-  as recorded pass-probability references, without a pushed candidate list
-  that could anchor the PI. Re-evaluate after observing recorded references.
-- Low priority (2026-10-22): smaller training allocations in inquiries. The
-  external review suggested it because the winner was a 20,480-step
-  checkpoint. All six training requests in `49e58c12` used 120,000 steps,
-  including startup where fewer are allowed. Archived checkpoints already
-  expose early steps, and a run takes minutes against an hours-long campaign.
-- These entries do not authorize runtime changes or campaign operations.
+The former follow-up items are now OI-040 to OI-047 in the register above.
 
 ## Capped campaign `90563aac`: regression follow-up backlog
 
@@ -519,6 +500,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-22 | Campaign `cfa88359` passed at 199/200; opening-session files | Official assessment passed at 99.5% (199/200) with T2:checkpoint-95232 about 67 minutes after the first session, for 30.09 AIU (PI 23.0 over 7 sessions, coders 4.95, reviewers 2.15), the lowest recorded cost. 2 inquiries, 2 fresh training runs, 7 measurements. T1 (full 6–20 cm range) scored 127/200 with failures concentrated at 0°–90°; the M3 mechanism test showed T1's actions violated planar reflection symmetry; T2 trained fresh with a reflection canonicalization in the PI-owned policy I/O (the rule B route) scored 199–200/200 against T1's 111/200 on M4. The PI did not assess on the selection-affected M4: it ran a fresh research panel (200/200) and `task_reference` (200/200) in M7, then assessed citing 96.99% pass probability and 67.43% at the interval's lower bound. `episode_outcome_breakdown` was called 8 times. Maintainer replay: 1998/2000 (99.9%) on fresh protected episodes. The opening-session first message removed its `contracts/scenario.md` re-reads (21 to 0) and cut its tool calls from 84 to 56, but its AIU stayed at 6.9 because it re-read `authority.md` 11 times and `policy_runtime.py` 6 times; both are now included. Weak points: M6 repeated M5 after a correction; one training seed. One campaign cannot attribute the pass to the harness changes. |
 | 2026-10-22 | Campaign `6882b9ec` failed at 193/200; root cause | 5 inquiries, 4 training runs, 10 measurements (M6 failed after a PI evaluator change), 68.63 AIU (PI 44.8 over 16 sessions, coders 17.54, reviewers 6.29). Every change was tested by training (rule B held): T2 joint-limit inputs 107/200, T3 substep hold 3/200, T4 transfer from T1 with an occupancy reward 198/200 (M8, used for checkpoint selection) and 197/200 (M9). `episode_outcome_breakdown` was called 14 times; no `task_reference` was run. The PI assessed T4:checkpoint-115712 at an estimated 64% pass chance from M9 alone. Maintainer replay outside the campaign record: the official panel reproduces 193/200; 2,000 fresh episodes give 1927/2000 (96.35%, 95% interval 95.5–97.2%) in both the protected environment and the PI research environment, so there is no environment gap. At that rate the official pass chance was 14% and a panel of at least 197 occurs 6% of the time. Root cause: (1) a weakness the PI found in I1 stayed unresolved: radius 15–19 cm at angles −155° to −120°, 5% of episodes, where T4 fails 31%; 5 of the 7 official failures lie there. (2) Assessment rested on one 200-episode panel (M9) that held 2 sector episodes instead of about 10; the PI's M10 stratified analysis read "no clear geometry weakness" from those 2 episodes (OI-025 type). (3) Every research panel had 200 episodes; a 2,000-episode research evaluation takes about 5 minutes and would have shown 96.4%. The pass-probability figure was correct under its stated assumptions, and its interval (95.7–99.5%) contained the true rate, but one 200-episode panel cannot separate 96% from 98%. No harness change caused the failure, but goal-review text favoured assessment: "Neither an untested variant nor a candidate near the threshold justifies a choice by itself" was read as requiring a tested intervention before further work (the PI wrote "no identified, evidence-backed intervention" despite the I1 sector), and "No numerical confidence estimate or repeated measurement is required" read as one panel being enough. Follow-up: `contracts/program.md` and the goal-review prompt now say that a development result near the threshold does not establish the candidate's rate and that further work does not need an already tested intervention; the defensive sentences about eligibility, required estimates and Runner readiness are removed; `success_rate_pass_probability` also returns the pass probability at the interval bounds (197/200: 64.1%, bounds 6.5% to 99.6%). A goal-review sentence that recommends larger panels was rejected because it could drive endless measurement. The console shows Why, Rationale, Panels and Results as sections, a campaign line (elapsed time, AIU, best-known), success counts with labels, earlier episode exposure, paired counts, and a compact training summary. |
 | 2026-10-22 | Campaign `e7dbbece` stopped; rule B and `episode_outcome_breakdown` | The maintainer stopped `e7dbbece` during I5 after 5 inquiries, 2 training runs and 12 completed measurements, for 71.315 AIU (PI 46.118 over 16 sessions, coders 18.108, reviewers 7.089). No official assessment. T2:checkpoint-120832 (full 6–20 cm exposure) scored 192/200 on the task reference and 191/200 and 190/200 on fresh research panels. First-message files were included and re-reads stopped. From I4 on, the PI tested runtime changes on frozen T2 weights: branch redirection 193/200 against 189/200 (4 rescued, 0 lost), near-target damping 161/200 against 186/200. I5 then tried to preserve the M11 runtime bytes inside a measurement artifact; M13 failed on its own runtime hash check. No training followed after T2. Follow-up: `contracts/instruments/coding.md` states that runtime changes reach a candidate only through training, that frozen-weight runtime tests are diagnostics and that measurement artifacts never become candidates. New optional tool `episode_outcome_breakdown` gives per-measurement successes with Wilson intervals, paired counts with an exact sign test for two measurements of the same episodes, and bins of a PI-chosen per-episode field; it verifies fingerprints and recorded counts. Validation on `e7dbbece`: M4 T2 against T1 by radius reproduces the PI's M5 (inner 103/105 against 52/105) and M6 paired counts match Runner's (52 and 5); the 64 MB M8 artifact is read lazily; mismatched episode sets, absent fields and a foreign campaign are refused. Failing tests were identical before and after (46 with the campaign root set). |
 | 2026-10-22 | Pass probability from recorded measurements | The external review found E11 attributing T1's 192/200 on M1, and T1's 13.1% pass estimate, to T2. `success_rate_pass_probability` evidence entries can now pool recorded `research_evaluation` or `task_reference` measurements by operation and candidate, with an optional measurement label; Runner reads the counts, lists the sources and counts episodes shared between them. A reference that matches no single measurement is refused with that operation's recorded candidates. Typed counts remain available. The `current_goal_gap` rule asks for counts from the record of the cited operation and candidate. Validation on `49e58c12`: the E11 reference (T2 on M1) is refused; pooled T6:checkpoint-55296 on M12 and M19 reproduces the PI's 396/400 and 85.8%; pooling M19 twice reports 200 shared episodes; runtime and ownership tests pass. A pushed candidate list was rejected to avoid anchoring; an on-demand candidate lookup is deferred. |

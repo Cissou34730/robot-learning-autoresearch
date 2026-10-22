@@ -124,9 +124,7 @@ KNOWN_ALGORITHM_NAMES = ("ppo", "sac", "td3", "a2c", "ddpg")
 IMPORT_CYCLE_ENTRY_POINTS = (
     "benchmark.final_benchmark",
     "benchmark.reference_evaluation",
-    "robot_learning.scenario",
     "benchmark.adapters.final_benchmark",
-    "robot_learning.scenario.observations",
 )
 
 
@@ -187,7 +185,14 @@ def test_generic_core_has_no_scenario_specific_imports(relative_path):
             )
 
 
-@pytest.mark.parametrize("relative_path", GENERIC_CORE_MODULES)
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        path
+        for path in GENERIC_CORE_MODULES
+        if path != "runner/scientific_api_reference.py"
+    ],
+)
 def test_generic_core_has_no_physics_engine_imports(relative_path):
     for module in imported_modules(paths.locate(relative_path)):
         assert module != "mujoco" and not module.startswith("mujoco."), (

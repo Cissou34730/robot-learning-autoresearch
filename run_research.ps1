@@ -1005,6 +1005,8 @@ function Invoke-ScientificModelPhase {
         "contracts/scenario.md"
         "contracts/task_spec.py"
         $robotFiles
+        "contracts/authority.md"
+        "contracts/policy_runtime.py"
         "contracts/instruments/scientific-model.md"
     )
     $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)

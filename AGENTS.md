@@ -66,7 +66,7 @@ commands.
 ## Environment
 
 The locked stack is native `mujoco==3.12.0`, `gymnasium==1.3.0`,
-`stable-baselines3==2.9.0` and `github-copilot-sdk==1.0.19`. Dependencies are
+`stable-baselines3==2.9.0` and `github-copilot-sdk==1.0.26`. Dependencies are
 human-owned. Run all project Python through `uv run`. Never invoke system
 `python`, `python3`, `pytest` or `ruff`, or the interpreter inside `.venv`.
 

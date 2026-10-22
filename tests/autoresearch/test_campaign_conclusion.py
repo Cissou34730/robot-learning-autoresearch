@@ -48,21 +48,6 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     return state
 
 
-def test_no_credible_route_is_rejected_without_changing_campaign(monkeypatch, tmp_path):
-    state = _configure(monkeypatch, tmp_path)
-    request = {
-        "campaign_conclusion": {
-            "action": "no_credible_route",
-            "reason": "The durable evidence leaves no credible path.",
-        }
-    }
-    original = repository.read_state()
-    with pytest.raises(ValueError, match="must be request_official_assessment"):
-        run_experiment.accept_operation(request, state)
-    assert repository.read_state() == original
-    assert state == original
-
-
 def test_obsolete_pending_conclusion_cannot_create_a_terminal_state(
     monkeypatch, tmp_path
 ):

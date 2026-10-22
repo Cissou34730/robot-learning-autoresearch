@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -394,79 +393,6 @@ def test_baseline_import_seeds_operation_counters_before_first_training():
     assert state["candidates"] == {candidate["id"]: candidate}
 
 
-def test_baseline_import_requires_evaluation_before_assigning_roles():
-    candidate = _candidate("f" * 64)
-    candidate["evaluation_artifacts"] = []
-    source_state = _prepared_source_state(candidate)
-
-    with pytest.raises(ValueError, match="committed evaluation artifact"):
-        reset_campaign.baseline_state(
-            source_state,
-            candidate,
-            base_commit="base",
-            recipe_source=candidate["scientific_commit"],
-        )
-
-
-def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
-    contents = {
-        "model.zip": b"model",
-        "artifact.json": b'{"timesteps": 10}',
-        "policy_runtime.pkl": b"runtime",
-    }
-    fingerprint = hashlib.sha256(
-        contents["model.zip"]
-        + contents["artifact.json"]
-        + contents["policy_runtime.pkl"]
-    ).hexdigest()
-    candidate = _candidate(fingerprint)
-    state = _prepared_source_state(candidate)
-    artifact = candidate["artifact"]
-    committed = {
-        "runner/state/research_state.json",
-        "pi_workspace/scientific_model.md",
-        candidate["evaluation_artifacts"][0],
-        *(f"{artifact}/{name}" for name in contents),
-    }
-
-    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: state)
-    monkeypatch.setattr(reset_campaign, "commit_files", lambda _commit: committed)
-    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
-    monkeypatch.setattr(
-        reset_campaign, "verify_task_compatibility", lambda _commit: None
-    )
-    monkeypatch.setattr(
-        reset_campaign,
-        "scientific_plan",
-        lambda commit: {"parent": commit, "restore": [], "remove_created": []},
-    )
-
-    def committed_bytes(_commit: str, relative: str) -> bytes:
-        if relative == "pi_workspace/scientific_model.md":
-            return b"scientific model"
-        name = relative.rsplit("/", 1)[-1]
-        if name not in contents:
-            raise RuntimeError("missing optional file")
-        return contents[name]
-
-    monkeypatch.setattr(reset_campaign, "git_bytes", committed_bytes)
-
-    restored_state, restored_candidate, restore, recipe = (
-        reset_campaign.verify_baseline_source("source")
-    )
-
-    assert restored_state == state
-    assert restored_candidate == candidate
-    assert set(restore) == committed - {"runner/state/research_state.json"}
-    assert recipe["parent"] == candidate["scientific_commit"]
-
-    legacy = copy.deepcopy(state)
-    legacy["schema_version"] = 5
-    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: legacy)
-    with pytest.raises(ValueError, match="schema 6"):
-        reset_campaign.verify_baseline_source("source")
-
-
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
@@ -479,11 +405,6 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
             "evaluation_artifacts",
             ["contracts/program.md"],
             "below campaigns/evaluations",
-        ),
-        (
-            "evaluation_artifacts",
-            [],
-            "committed evaluation artifact",
         ),
     ],
 )

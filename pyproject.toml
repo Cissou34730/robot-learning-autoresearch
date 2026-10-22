@@ -34,5 +34,5 @@ dev = [
     "tensorboard>=2.21.0",
 ]
 researcher = [
-    "github-copilot-sdk>=1.0.19",
+    "github-copilot-sdk>=1.0.26",
 ]

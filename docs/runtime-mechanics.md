@@ -6,7 +6,7 @@ Campaign agents cannot read this file. PI-facing rules live in
 
 ## Agent runtime
 
-The Copilot agent runtime uses `github-copilot-sdk==1.0.19`. Its native
+The Copilot agent runtime uses `github-copilot-sdk==1.0.26`. Its native
 subagents, hooks and custom tools are the agent runtime. The scientific stack
 and Runner operations stay separate from the SDK.
 

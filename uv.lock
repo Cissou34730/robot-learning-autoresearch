@@ -177,7 +177,7 @@ wheels = [
 
 [[package]]
 name = "github-copilot-sdk"
-version = "1.0.19"
+version = "1.0.26"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -185,7 +185,7 @@ dependencies = [
     { name = "python-dateutil" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/a5/4aca0e11ab250bcc5893cca442815c2dfa62191545a8d6d3d906db1125ac/github_copilot_sdk-1.0.19-py3-none-any.whl", hash = "sha256:25222c170e75d8beee29056ad68155d5345b79542b59315a3dafd40a0a3a12dd", size = 794259, upload-time = "2026-10-09T16:13:09.617Z" },
+    { url = "https://files.pythonhosted.org/packages/c4/3e/d9d1e86ade8143b98516c3b9b3cb061d984993658e1f43766d4a58d75a62/github_copilot_sdk-1.0.26-py3-none-any.whl", hash = "sha256:0854a5a34e3d89a8392ddafff5de78df2071937354f97c4865536b3c5ba15abe", size = 924388, upload-time = "2026-10-22T16:34:28.245Z" },
 ]
 
 [[package]]
@@ -884,7 +884,7 @@ dev = [
     { name = "ruff", specifier = ">=0.16.4" },
     { name = "tensorboard", specifier = ">=2.21.0" },
 ]
-researcher = [{ name = "github-copilot-sdk", specifier = ">=1.0.19" }]
+researcher = [{ name = "github-copilot-sdk", specifier = ">=1.0.26" }]
 
 [[package]]
 name = "ruff"
