@@ -622,10 +622,10 @@
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
           refuses submissions even though Runner records an active session. The maintainer closed OI-037 on
           21 October without claiming verified recovery. Folder and training-log repairs do not fix it.</p>
-        <p><strong>Latest result:</strong> <code>2d4fcc0e</code> passed the official assessment at 200/200 on 21
-          October. See its <a href="robot-campaign-2d4fcc0e-20261021.html">campaign report</a>. The final controller
-          combines an analytic elbow-branch choice and a PD term with the learned PPO policy. One pass does not show
-          how often the harness reaches the goal.</p>
+        <p><strong>Latest documented result:</strong> <code>49e58c12</code> passed the official assessment at 198/200 on
+          22 October. See its <a href="robot-campaign-49e58c12-20261022.html">campaign report</a>. The final controller
+          combines a learned PPO policy with a gated analytic joint controller. The finish was less defensive, but
+          resource use increased. One pass does not show how often the harness reaches the goal.</p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Historical evidence:</strong> <code>dc48cc2f</code> passed at 196/200 in its <a
@@ -1863,7 +1863,8 @@
           the first-message files were never sent because of a launcher check defect.</p>
         <p>Follow-up: the launcher check is fixed, coders can receive candidate metadata, discovery past its limit
           returns partial paths with a hint, and the console shows coding progress and colours tools, statuses,
-          probabilities and context size.</p>
+          probabilities and context size. The <a href="robot-campaign-49e58c12-20261022.html">final campaign report</a>
+          separates the official pass from the evidence-label errors and the later harness changes.</p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: campaign 573d538c fails at 195/200; follow-up changes</h3>
@@ -2465,6 +2466,13 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><code>49e58c12</code></td>
+              <td>21 Oct, 22:55 CEST</td>
+              <td>Official pass: 198/200 (99%). Five completed training runs from six attempts, four inquiries and
+                126.566 AIU. The final controller is hybrid.</td>
+              <td><a href="robot-campaign-49e58c12-20261022.html">Result, decisions, resources and harness limits</a></td>
+            </tr>
             <tr>
               <td><code>2d4fcc0e</code></td>
               <td>21 Oct, 07:02 CEST</td>

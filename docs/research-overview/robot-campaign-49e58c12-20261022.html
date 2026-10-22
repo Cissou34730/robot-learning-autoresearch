@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Campaign 49e58c12 passed its official test at 198/200. A plain-English report on the controller, decisions, evidence, resource use and remaining harness limits.">
+    <title>Campaign 49e58c12: official pass at 198/200</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        main { max-width: 1120px; margin: auto; padding: 32px 24px 64px; }
+        h1, h2, h3, p { margin: 0; }
+        h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
+        h2 { margin-bottom: 16px; font-size: 1.55rem; line-height: 1.3; }
+        h3 { margin-bottom: 8px; font-size: 1.1rem; }
+        p + p { margin-top: 8px; }
+        a { color: var(--cp-link); text-underline-offset: 3px; }
+        code { font: .88em Consolas, "Courier New", Courier, monospace; overflow-wrap: anywhere; }
+        button {
+            padding: 8px 12px;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            font: inherit;
+            cursor: pointer;
+        }
+        button:hover { border-color: var(--cp-accent); }
+        :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+        .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .eyebrow { margin-bottom: 12px; color: var(--cp-accent); font-size: .85rem; font-weight: 700; }
+        .intro { max-width: 900px; margin-top: 16px; font-size: 1.15rem; }
+        .small, .muted { color: var(--cp-text-muted); }
+        .small { font-size: .9rem; }
+        .snapshot { margin-top: 16px; }
+        nav { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 24px; }
+        section { margin-top: 40px; }
+        .grid { display: grid; gap: 16px; }
+        .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .card, .note, details {
+            padding: 20px;
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            background: var(--cp-surface);
+            box-shadow: 0 1px 2px var(--cp-border);
+        }
+        .note { margin-top: 16px; border-left: 4px solid var(--cp-accent); background: var(--cp-bg-elevated); }
+        .metric { margin-bottom: 8px; font-size: 1.9rem; line-height: 1.2; font-weight: 700; }
+        .ok { color: var(--cp-success); }
+        .label { font-weight: 600; }
+        .table-wrap { overflow-x: auto; padding: 0; }
+        table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+        caption { padding: 16px; text-align: left; color: var(--cp-text-muted); }
+        th, td { padding: 12px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
+        th { background: var(--cp-surface-soft); font-weight: 600; }
+        tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+        .wide table { min-width: 640px; }
+        .spaced { margin-top: 16px; }
+        .flow { padding: 16px; border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface-soft); }
+        .flow-label { margin: 12px 0; text-align: center; color: var(--cp-text-muted); }
+        ul { margin: 0; padding-left: 24px; }
+        li + li { margin-top: 8px; }
+        details { margin-top: 16px; }
+        summary { cursor: pointer; font-weight: 600; }
+        details[open] summary { margin-bottom: 16px; }
+        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--cp-border); }
+        @media (max-width: 760px) {
+            .four, .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 480px) {
+            main { padding: 20px 16px 40px; }
+            .four, .two { grid-template-columns: minmax(0, 1fr); }
+            .top { align-items: flex-start; }
+        }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+        @media print {
+            main { max-width: none; padding: 0; }
+            button, nav { display: none; }
+            .card, .note, details { box-shadow: none; }
+            .table-wrap { overflow: visible; }
+            .wide table { min-width: 0; }
+            h2, h3 { break-after: avoid; }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="top">
+                <a href="robot-learning-overview-20261002.html#reports">All campaign reports</a>
+                <button id="theme-toggle" type="button">Change theme</button>
+            </div>
+            <p class="eyebrow">Campaign 49e58c12 / final report / 22 October 2026</p>
+            <h1>A real success, but not a cheaper campaign</h1>
+            <p class="intro">The final controller passed the official test with <strong>198 successes in 200 episodes</strong>.
+                The goal was 196. The PI investigated failures, tested changes and accepted uncertainty before the final test.</p>
+            <p class="intro">The finish was less defensive. The campaign still used more AI resources than the previous
+                two completed campaigns. Large reads and incorrect evidence labels remained.</p>
+            <p class="snapshot small">Harness: <code>c5e21381</code>. Start: 21 October, 22:55.
+                Official result: 22 October, 08:03:39. Times are local, UTC+2. This report covers the completed campaign,
+                not the newer campaign.</p>
+            <nav aria-label="Report sections">
+                <a href="#summary">Summary</a><a href="#task">Task</a><a href="#controller">Controller</a>
+                <a href="#timeline">Research path</a><a href="#results">Results</a><a href="#behavior">Decisions</a>
+                <a href="#resources">Resources</a><a href="#status">Harness status</a><a href="#sources">Sources and limits</a>
+            </nav>
+        </header>
+
+        <section id="summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">1. The result</h2>
+            <div class="grid four">
+                <article class="card">
+                    <p class="metric ok">198 / 200</p><p class="label">Official successes</p>
+                    <p class="small">99%. Two successes above the required count.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">20,480</p><p class="label">Selected T6 checkpoint</p>
+                    <p class="small">An early saved model, not the end of training.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">5 runs</p><p class="label">Completed training</p>
+                    <p class="small">604,160 actual steps across those runs.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">126.57</p><p class="label">AI usage units</p>
+                    <p class="small">54.6% more than the previous completed campaign.</p>
+                </article>
+            </div>
+            <div class="note">
+                <p><strong>Final selection:</strong> <code>T6:checkpoint-20480</code>. The official result belongs to this
+                    exact saved controller. Its recorded fingerprint identifies the complete package.</p>
+                <p>There were four inquiries and eighteen scientific sessions, plus initial physical-model preparation.
+                    Nineteen measurement attempts produced eighteen completed operations. Six training attempts produced
+                    five completed runs. Failed attempts are execution history, not scientific evidence.</p>
+                <p>The campaign ended with no pending operation, active inquiry or scientific session.</p>
+            </div>
+        </section>
+
+        <section id="task" aria-labelledby="task-title">
+            <h2 id="task-title">2. What the arm had to do</h2>
+            <div class="card">
+                <p>A simulated two-joint arm had to reach targets 6 to 20 cm from its base, at any bearing.
+                    Its hand had to stay within 1 cm of the target for 100 uninterrupted control steps.
+                    Each episode allowed 500 control steps. The official goal was at least 196 successes in 200 episodes.</p>
+                <p>The <strong>PI</strong> was the AI principal investigator. It chose the scientific direction.
+                    <strong>Runner</strong> ran operations, enforced boundaries and recorded facts.
+                    Coder and reviewer agents changed and checked scientific code for the PI.</p>
+                <p>A <strong>checkpoint</strong> was a model saved during training. A <strong>panel</strong> was a set of
+                    test episodes. The protected <strong>task-reference</strong> panel supported development.
+                    A <strong>research</strong> panel used the PI-owned evaluator. Neither was the official assessment,
+                    which ended the campaign.</p>
+            </div>
+        </section>
+
+        <section id="controller" aria-labelledby="controller-title">
+            <h2 id="controller-title">3. What the winning controller did</h2>
+            <div class="card">
+                <p><strong>T6 was a hybrid controller.</strong> It combined a learned PPO policy with an analytic joint controller.
+                    The result does not show that the neural policy learned the whole task alone.</p>
+                <p>The saved runtime checked two possible elbow postures for the target. These are called elbow branches.
+                    In one region, the positive-elbow solution needed a shoulder angle outside the allowed range.</p>
+                <p>The analytic controller acted when that solution exceeded the shoulder limit by more than 6 degrees
+                    and the negative-elbow solution was feasible. Otherwise, the learned policy supplied the command
+                    through the existing action filter.</p>
+                <div class="flow spaced"><strong>Target and joint state:</strong> check the two elbow solutions and the joint limits.</div>
+                <p class="flow-label">Choose the saved runtime's action path</p>
+                <div class="grid two">
+                    <div class="flow"><strong>Outside the gated region</strong><p>Use the learned PPO command through the action filter.</p></div>
+                    <div class="flow"><strong>Inside the gated region</strong><p>Use a clipped PD command toward the feasible negative-elbow posture.</p></div>
+                </div>
+                <p class="flow-label">Apply the chosen action to the arm</p>
+                <p>A <strong>PD controller</strong> combines a position correction with damping to reduce motion.
+                    These calculations belonged to the saved runtime used in evaluation.</p>
+                <p class="spaced">T6 transferred from T2 and completed another 120,832 training steps.
+                    The final model was saved after 20,480 steps of that run. Selecting an early model did not reduce
+                    the training already performed or the campaign's total resource use.</p>
+            </div>
+        </section>
+
+        <section id="timeline" aria-labelledby="timeline-title">
+            <h2 id="timeline-title">4. How the research progressed</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>The main decisions, in order. Scores below are development results unless marked official.</caption>
+                    <thead><tr><th scope="col">Stage</th><th scope="col">Work and evidence</th><th scope="col">What followed</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">Startup: cover the task</th>
+                            <td>T1 widened training targets from 14-20 cm to 6-20 cm. Its terminal model scored
+                                192/200 on task-reference and 189/200 on research evaluation.</td>
+                            <td>The PI then investigated unstable motion near the target.</td></tr>
+                        <tr><th scope="row">I1: reduce action changes</th>
+                            <td>T2 added a training penalty for rapid changes in action. It scored 197/200 against T1's
+                                192/200 on a new paired research panel. On an earlier panel, it scored 195/200 against 189/200.</td>
+                            <td>T2 became best-known. A further trained action-filter variant, T3, did not improve the comparison.
+                                The PI kept that conclusion limited to the tested version.</td></tr>
+                        <tr><th scope="row">I2: expose filter state</th>
+                            <td>T4 failed when the observation changed from 11 values to 13. After repair, T5 included the
+                                previous applied control. Its tested models scored 197/200 against T2's 198/200 on the new panel.</td>
+                            <td>This version did not establish an improvement. The failed T4 attempt was not treated as
+                                evidence against the scientific idea.</td></tr>
+                        <tr><th scope="row">I3: investigate elbow branches</th>
+                            <td>Ten T2 failures on three panels clustered at negative bearings. Geometry and trajectory
+                                evidence suggested a joint-limit problem and unstable holds. T6 added the gated controller.</td>
+                            <td>Two T6 models each scored 196/200 against T2's 193/200 on a new panel, and 199/200 against
+                                195/200 on a repeated guard panel.</td></tr>
+                        <tr><th scope="row">I3: test unchanged weights</th>
+                            <td>A small failure-selected replay was followed by M15, a full paired panel.
+                                With T2 weights unchanged, the routed intervention scored 200/200 against 195/200.</td>
+                            <td>All five baseline failures were rescued, with no lost baseline success.
+                                This supported the combined intervention, not a unique causal explanation.</td></tr>
+                        <tr><th scope="row">I4: save and test the package</th>
+                            <td>M16 preserved T2's weights and normalization in a saved runtime. It scored 199/200 against
+                                196/200 on another research panel. However, it was not a registered candidate.</td>
+                            <td>Runner refused its task-reference request before execution.
+                                The PI used archived T6 candidates instead of treating this as a policy failure.</td></tr>
+                        <tr><th scope="row">Choose an archived model</th>
+                            <td>M17 gave T6 checkpoint 55,296 a task-reference score of 198/200, against T2's 195/200.
+                                It rescued four T2 failures but lost one T2 success.</td>
+                            <td>The PI promoted the net-better model despite that individual regression.</td></tr>
+                        <tr><th scope="row">Choose the final checkpoint</th>
+                            <td>M18 tested three unmeasured T6 models. Checkpoints 20,480 and 25,600 each scored 199/200.
+                                M19 then gave both, and checkpoint 55,296, a research score of 200/200.</td>
+                            <td>The PI acknowledged the tie, chose 20,480 and requested the official assessment.
+                                It passed at 198/200.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+            <h2 id="results-title">5. Read the final scores correctly</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>The final selection compared whole saved controllers, not isolated design changes.</caption>
+                    <thead><tr><th scope="col">Candidate</th><th scope="col">Task-reference</th><th scope="col">M19 research</th><th scope="col">Official</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">T2:checkpoint-115712</th><td>195/200, M16</td><td>Not measured here</td><td>Not assessed</td></tr>
+                        <tr><th scope="row">T6:checkpoint-55296</th><td>198/200, M17</td><td>200/200</td><td>Not assessed</td></tr>
+                        <tr><th scope="row">T6:checkpoint-20480</th><td>199/200, M18</td><td>200/200</td><td><strong class="ok">198/200: passed</strong></td></tr>
+                        <tr><th scope="row">T6:checkpoint-25600</th><td>199/200, M18</td><td>200/200</td><td>Not assessed</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>The official pass is valid. M19 was not an untouched campaign panel.</strong>
+                    Its 200 seeds, 20268001-20268200, were already used by M15.
+                    M19 was a first test of these T6 checkpoints on those seeds, not a first use of those situations in the campaign.</p>
+                <p>The PI called M19 fresh and independent. That wording overstated the evidence.
+                    It does not erase the measured comparisons or invalidate the separate official result.</p>
+                <p>The modeled pass chance of 96.99% came from 200/200 research successes under a statistical model.
+                    It assumed independent episodes representative of a future panel. Candidate selection and earlier
+                    exposure make that number optimistic. It was not a verified official pass probability.</p>
+            </div>
+            <p class="spaced">The selected checkpoint still failed task-reference seed 7485.
+                Checkpoint 25,600 tied it on both final development panels.
+                The evidence did not prove that 20,480 was better than 25,600.</p>
+        </section>
+
+        <section id="behavior" aria-labelledby="behavior-title">
+            <h2 id="behavior-title">6. Better decisions, with remaining weaknesses</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>What went well</h3>
+                    <ul>
+                        <li>The PI used geometry, trajectories and intervention tests. It did not stop at a plausible explanation.</li>
+                        <li>It followed a selected-failure replay with a full paired panel. The latter was stronger evidence
+                            of a useful intervention.</li>
+                        <li>It treated unsuccessful filter variants as limited results, not proof that every similar method would fail.</li>
+                        <li>It promoted a net-better candidate despite one lost T2 success. Zero individual losses did not become a final veto.</li>
+                        <li>It used already saved checkpoints instead of another training run near the end.</li>
+                        <li>It requested the official assessment despite remaining causal questions and a task-reference failure.</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>What remained weak</h3>
+                    <ul>
+                        <li>Evidence labels drifted. In E11, a T1 score of 192/200 from M1 was attributed to T2.</li>
+                        <li>M19 reused M15's seeds but was described as new, independent evidence.</li>
+                        <li>Large reads remained. Evidence and training-log replies totaled about 2.11 million characters.
+                            Several replies were about 65-75k characters.</li>
+                        <li>Core files were repeatedly opened. The harness had failed to include them in the first message,
+                            so this was not simply a PI reading failure.</li>
+                        <li>A useful saved-runtime package could not enter protected evaluation through the available candidate workflow.</li>
+                    </ul>
+                </article>
+            </div>
+            <p class="spaced">The PI called the pass-probability tool 21 times and the training-statistics tool six times.
+                Those tools improved calculation and risk reporting. They did not check manually supplied candidate identities.</p>
+            <p>Reading became narrower near the finish: the largest evidence/log reply in the final six sessions was about 19k characters.
+                The whole campaign still cannot be described as having solved large reading.</p>
+            <div class="note">
+                <p><strong>Judgment:</strong> the finish was less defensive. The PI accepted useful net gains and acted with uncertainty.
+                    That is behavior worth retaining. The unresolved causal questions do not justify requiring another
+                    round of ablations before acknowledging this success.</p>
+                <p>The tests did not isolate elbow-branch selection from PD stabilization, retraining or the learned policy's contribution.
+                    The official result established that the complete saved controller passed, not why each part was necessary.</p>
+            </div>
+        </section>
+
+        <section id="resources" aria-labelledby="resources-title">
+            <h2 id="resources-title">7. Resource use increased</h2>
+            <p>AIU means the AI usage units recorded by the runtime. It is not a currency amount.</p>
+            <div class="grid two spaced">
+                <div class="card table-wrap">
+                    <table>
+                        <caption>Final usage by role.</caption>
+                        <thead><tr><th scope="col">Role</th><th scope="col">AIU</th></tr></thead>
+                        <tbody>
+                            <tr><th scope="row">PI and initial preparation</th><td>87.979</td></tr>
+                            <tr><th scope="row">Scientific coders</th><td>28.107</td></tr>
+                            <tr><th scope="row">Scientific reviewers</th><td>10.480</td></tr>
+                            <tr><th scope="row">Total</th><td><strong>126.566</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card table-wrap">
+                    <table>
+                        <caption>Separate campaigns, not a controlled experiment.</caption>
+                        <thead><tr><th scope="col">Campaign</th><th scope="col">Official result</th><th scope="col">AIU</th></tr></thead>
+                        <tbody>
+                            <tr><th scope="row"><a href="robot-campaign-2d4fcc0e-20261021.html">2d4fcc0e</a></th><td>200/200, pass</td><td>77.749</td></tr>
+                            <tr><th scope="row">573d538c</th><td>195/200, fail</td><td>81.856</td></tr>
+                            <tr><th scope="row">49e58c12</th><td>198/200, pass</td><td>126.566</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <p class="spaced">This campaign used 54.6% more AIU than the previous failed campaign and 62.8% more than the earlier success.
+                The outcome improved over the previous run. Resource efficiency did not.</p>
+            <p>Elapsed time was about 9 hours 8 minutes. The maintainer log records a PC reboot during S13 and a later resume.
+                That interval was not continuous model work. Wall-clock duration alone cannot establish model speed or a model stall.</p>
+        </section>
+
+        <section id="status" aria-labelledby="status-title">
+            <h2 id="status-title">8. What this says about the harness</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>Status at this review. Later changes did not cause this campaign's pass.</caption>
+                    <thead><tr><th scope="col">Area</th><th scope="col">Evidence and status</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">Repeated-measurement state</th>
+                            <td><strong>Worked in this run.</strong> M8 and M9 carried repeat annotations without the earlier fatal
+                                pending-state rejection. This supports the repaired path, not every possible recovery case.</td></tr>
+                        <tr><th scope="row">Implementation failures</th>
+                            <td><strong>Recovered within ongoing work.</strong> T4's observation-shape error and M13's wrong
+                                runtime-shape assumption were repaired. The failed attempts supplied no scientific outcome.</td></tr>
+                        <tr><th scope="row">First-message files</th>
+                            <td><strong>Broken during this campaign; fixed afterward.</strong> The launcher treated an assigned
+                                session ID as proof that the conversation already existed, so it did not include the files.
+                                Commit <code>04e9db4e</code> changed that check.</td></tr>
+                        <tr><th scope="row">Candidate inputs and evidence discovery</th>
+                            <td><strong>Changed afterward.</strong> <code>349ee732</code> allowed candidate evidence inputs.
+                                <code>12540db3</code> returned partial discovery paths and clearer missing-path hints.
+                                This campaign did not test those changes.</td></tr>
+                        <tr><th scope="row">Console visibility</th>
+                            <td><strong>Changed afterward.</strong> <code>79e58506</code> added coding visibility and clearer
+                                tool, status and context colors. Do not credit it for behavior before the official result.</td></tr>
+                        <tr><th scope="row">Seed exposure and score attribution</th>
+                            <td><strong>Errors observed; follow-up tools added afterward.</strong> <code>fcf345be</code> added
+                                cross-candidate/module seed-exposure reporting. <code>1ff03799</code> allowed probability
+                                estimates to reference recorded measurements. Live effectiveness needs later evidence.</td></tr>
+                        <tr><th scope="row">Saving a new runtime without training</th>
+                            <td><strong>Postponed by the maintainer.</strong> The M16 package had research gains but no route
+                                to protected candidate evaluation. Any new route needs a decision about controller-only
+                                candidates under the learned-policy goal. This report does not authorize it.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="spaced">Keep the stronger scientific decisions. Check the later harness changes on later runs.
+                Do not close factual-memory or evidence-selection concerns solely because the official test passed.</p>
+        </section>
+
+        <section id="sources" aria-labelledby="sources-title">
+            <h2 id="sources-title">9. Sources and limits</h2>
+            <div class="card">
+                <ul>
+                    <li><strong>Campaign:</strong> <code>49e58c12-28d3-4aed-9183-3188d4462d48</code>.
+                        The local campaign commit <code>c56dcf5</code> stores its final
+                        <code>runner/state/research_state.json</code>. It records the official outcome, selected artifact,
+                        operation history and final state.</li>
+                    <li><strong>Final decisions:</strong> M15-M19 and E20-E30 in that history.
+                        The native S13-S18 conversations preserve the public tool exchanges and decisions.</li>
+                    <li><strong>Winning scientific source:</strong> campaign commit
+                        <code>e2ebb41acd2a4cd1e3bd1d8bd4880f31d82a99ae</code>, published by T6.</li>
+                    <li><strong>Usage:</strong>
+                        <code>reports/session_usage/49e58c12-28d3-4aed-9183-3188d4462d48.jsonl</code> in the local campaign repository.</li>
+                    <li><strong>Maintainer record:</strong> <a href="../harness-experiment-log.md">harness experiment log</a>.
+                        It records later fixes, the interruption and the postponed runtime-package proposal.</li>
+                </ul>
+            </div>
+            <details>
+                <summary>Exact artifact identity and evidence availability</summary>
+                <p>Selected model: <code>T6:checkpoint-20480</code>.</p>
+                <p>Fingerprint: <code>b7fc673c94f71ac1bb4f82a5662d374476ba2aeac94a7755eb55b1b526f2069f</code>.</p>
+                <p>Recorded package:
+                    <code>campaigns/checkpoints/retained/49e58c12-28d3-4aed-9183-3188d4462d48/t6-cf2b5378d-b7fc673c94f71ac1bb4f82a5662d374476ba2aeac94a7755eb55b1b526f2069f</code>.</p>
+                <p>The earlier read-only review checked final development artifact hashes, episode totals and the saved
+                    official artifact identity while those files existed. A later Fresh reset removed the raw evaluation directory.</p>
+                <p>This report uses those earlier checks, the preserved final Git record, usage records and native conversations.
+                    It is not a raw-data backup. Git alone cannot restore the deleted measurements.
+                    The official state stores the score summary and artifact identity, not a per-episode official dataset.</p>
+            </details>
+            <p class="spaced">One successful campaign does not show how often the harness succeeds.
+                These runs differed in scientific choices and evidence. They cannot isolate the effect of each harness change.</p>
+        </section>
+
+        <footer class="small">
+            <p>Prepared on 22 October 2026 for the maintainer. No campaign code, state or operations were changed to produce this report.</p>
+        </footer>
+    </main>
+    <script>
+        const themeButton = document.getElementById("theme-toggle");
+        const updateThemeLabel = () => {
+            const dark = document.documentElement.getAttribute("data-theme") === "dark";
+            themeButton.textContent = dark ? "Use light theme" : "Use dark theme";
+            themeButton.setAttribute("aria-pressed", String(dark));
+        };
+        themeButton.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+            updateThemeLabel();
+        });
+        updateThemeLabel();
+    </script>
+</body>
+
+</html>
