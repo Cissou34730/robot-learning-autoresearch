@@ -11,6 +11,12 @@ from runner.copilot import opencode_provider as provider
 from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
 from runner.copilot.coding_session import ScientificCoding
 from runner.copilot.copilot_console import Console, tool_detail
+from runner.copilot.pi_tools import scoped_search
+from runner.copilot.system_prompt import (
+    REFERENCE_READ_DENIAL,
+    reference_paths,
+    system_message,
+)
 from runner.copilot.tool_policy import scoped_tool_hook, tool_denial
 
 SOURCE = "robot_learning/training/environment.py"
@@ -204,6 +210,52 @@ def test_preliminary_editors_reach_only_the_scientific_model():
     assert tool_denial("create", model, preliminary=True, json_editors=True) is None
     assert tool_denial("create", {"path": SOURCE}, preliminary=True, json_editors=True)
     assert tool_denial("create", model, json_editors=True)
+
+
+def test_reference_files_are_refused_to_the_pi_and_analyst_not_the_coder():
+    model = {"path": "pi_workspace/scientific_model.md"}
+    program = {"path": "contracts/program.md"}
+    assert tool_denial("view", program) == REFERENCE_READ_DENIAL
+    assert tool_denial("view", model) == REFERENCE_READ_DENIAL
+    assert tool_denial("view", program, preliminary=True) is None
+    assert (
+        tool_denial("view", {"path": "contracts/authority.md"}, preliminary=True)
+        == REFERENCE_READ_DENIAL
+    )
+    scope = {
+        "coding_paths": frozenset({SOURCE}),
+        "read_paths": frozenset({SOURCE, "pi_workspace/scientific_model.md"}),
+    }
+    assert tool_denial("view", model, **scope) is None
+
+
+def test_search_refuses_an_explicit_reference_target():
+    args = adapter.parse_args(["p", "--session-id", "s"])
+    search = scoped_search(args, None, lambda _: None)
+    with pytest.raises(ValueError, match="system prompt"):
+        search.target("contracts/program.md")
+    assert search.target("robot_learning").is_dir()
+
+
+def test_each_reference_file_is_in_the_system_message_once():
+    for preliminary in (False, True):
+        sections = system_message(preliminary, lambda _: None)["sections"]
+        reference = sections["custom_instructions"]["content"]
+        for path in reference_paths(preliminary):
+            assert reference.count(f"File {path}:\n") == 1, path
+
+
+def test_runtime_blocks_are_replaced_or_removed_and_missing_ones_reported():
+    warnings = []
+    sections = system_message(False, warnings.append)["sections"]
+    text = sections["runtime_instructions"]["action"](
+        "<system_notifications>\nkeep\n</system_notifications>\n"
+        "<autonomy_and_persistence>\nBias to action\n</autonomy_and_persistence>\n"
+        "<subagent_usage>\nsparingly\n</subagent_usage>\n"
+    )
+    assert "keep" in text and "submit_operation" in text
+    assert "Bias to action" not in text and "sparingly" not in text
+    assert len(warnings) == 1 and "exploration_and_reading_files" in warnings[0]
 
 
 def test_coder_is_confined_to_its_binding():

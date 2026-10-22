@@ -314,19 +314,12 @@ or no-credible-route campaign ending.
 
 ## Context routing
 
-`campaigns/brief.md` is the compact current context. Its source references route
-deeper inspection:
-
-- `contracts/scenario.md` defines the human goal and protected assessment;
-- `pi_workspace/scientific_model.md` is the campaign-start physical reference;
-- `contracts/instruments.md` and `contracts/instruments/` define mechanical
-  operation contracts;
-- `contracts/authority.md` defines file ownership and role permissions;
-- the scientific session record and referenced artifacts preserve current
-  evidence.
-
-Detailed sources remain available on demand; every session need not reread
-every document.
+The campaign reference in the system prompt holds the current content of
+`contracts/scenario.md`, `contracts/authority.md`, this program,
+`contracts/instruments.md` and its parts, `contracts/policy_runtime.py` and
+`pi_workspace/scientific_model.md`. `campaigns/brief.md` is the compact current
+context. The scientific session record and referenced artifacts preserve
+current evidence.
 
 The brief contains current references and an index of training operations,
 not the complete campaign history or every checkpoint's metadata.

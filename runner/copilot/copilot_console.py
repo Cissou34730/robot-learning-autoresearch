@@ -712,6 +712,21 @@ class Console:
             self.denied_calls.add(tool_call_id)
         self.line(f"  x {reason.splitlines()[0]}")
 
+    def warning(self, text: str) -> None:
+        self.line(f"  ! {text}", YELLOW)
+
+    def compaction(self, data) -> None:
+        if not data.success:
+            self.warning(f"context compaction failed: {data.error or 'unknown error'}")
+            return
+        before = data.pre_compaction_tokens or 0
+        after = data.post_compaction_tokens or 0
+        self._context_band = after // CONTEXT_BAND_TOKENS
+        self.warning(
+            f"context compacted: {before / 1000:.0f}k -> {after / 1000:.0f}k tokens, "
+            f"{data.messages_removed or 0} messages replaced by a summary"
+        )
+
     def file_changed(self, operation: str, path: str) -> None:
         operation_request = (
             Path(path).as_posix().endswith("pi_workspace/operation_request.json")

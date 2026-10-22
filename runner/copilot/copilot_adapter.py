@@ -62,6 +62,7 @@ from runner.copilot.session_events import (
     event_handler,
     permission_handler,
 )
+from runner.copilot.system_prompt import system_message
 from runner.copilot.tool_policy import scoped_tool_hook
 from runner.copilot.usage import record_usage
 from runner.stop_control import stop_requested, wait_for_stop_request
@@ -179,6 +180,7 @@ def session_options(
         ),
         "tools": tools,
         "available_tools": available,
+        "system_message": system_message(args.preliminary, console.warning),
         "working_directory": str(ROOT),
         "streaming": True,
         "enable_file_change_tracking": True,

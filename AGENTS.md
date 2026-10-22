@@ -21,7 +21,10 @@ Keep three audiences separate:
 - Runner: `runner/`, `benchmark/`, `tools/` and the launch scripts. These are
   reserved from campaign reads.
 - Campaign agents: `contracts/`, `campaigns/brief.md`, session prompts in the
-  launch scripts and tool descriptions in `runner/copilot/`. The coder and
+  launch scripts, the PI and analyst system prompts in
+  `runner/copilot/system_prompt.py` and tool descriptions in `runner/copilot/`.
+  The system prompts carry the campaign reference files listed there; the path
+  policy refuses PI and analyst reads of those files. The coder and
   reviewer receive fixed excerpts from `contracts/authority.md`,
   `contracts/instruments/coding.md` and `contracts/instruments/measurement.md`
   (see `load_task_context`).

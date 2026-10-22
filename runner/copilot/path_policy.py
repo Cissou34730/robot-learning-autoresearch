@@ -238,6 +238,16 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
     return None
 
 
+def reference_read_denial(target: str, *, preliminary: bool = False) -> str | None:
+    """Refuse main-PI and analyst reads of files already in the system prompt."""
+    from runner.copilot.system_prompt import REFERENCE_READ_DENIAL, reference_paths
+
+    relative = _repository_relative_target(target)
+    if relative in {path.casefold() for path in reference_paths(preliminary)}:
+        return REFERENCE_READ_DENIAL
+    return None
+
+
 def is_reserved_execution(target: str | None) -> bool:
     if not target:
         return False

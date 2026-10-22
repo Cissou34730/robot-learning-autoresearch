@@ -17,6 +17,7 @@ from runner.copilot.path_policy import (
     file_read_denial,
     physical_target,
     read_target,
+    reference_read_denial,
     scoped_edit_denial,
 )
 
@@ -95,7 +96,7 @@ def _view_denial(arguments, preliminary) -> str | None:
     reason = file_read_denial(target, preliminary=preliminary)
     if not reason and physical_target(target).is_dir():
         return "Use scoped glob for directory enumeration, not view."
-    return reason
+    return reason or reference_read_denial(target, preliminary=preliminary)
 
 
 def _allowed_tools(coding_paths, preliminary, json_editors) -> list[str]:

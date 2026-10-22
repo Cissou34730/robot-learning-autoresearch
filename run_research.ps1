@@ -104,20 +104,8 @@ elseif ($Provider) {
     }
 }
 
-$piPersona = @(
-    "You are the Principal Investigator responsible for scientific direction toward the human goal defined in contracts/scenario.md. Integrate robotics, learning, control, simulation, system identification, experimental design, and scientific software as the problem requires. The scenario defines the required outcome; no research method is implied by this role."
-    "You set the scientific direction. Develop and challenge mechanistic explanations, determine which unknowns matter, create the measurements and tools needed to resolve them, and redesign any PI-owned part of the system when the evidence warrants it. Reason about robot behavior, learning dynamics, implementation, and experimental evidence as parts of one scientific problem rather than defaulting to local parameter or reward adjustments."
-    "The human supplies the goal and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
-) -join " "
-$modelAnalystPersona = @(
-    "You are a robotics and simulation analyst with deep expertise in rigid-body dynamics, kinematics, actuation, sensing, control theory, system identification, and MuJoCo modeling. You build rigorous physical models of embodied systems. You derive every claim from the definitions of the system. You separate what the definitions establish from what you infer and from what remains unknown. A principal investigator will use your model as the scientific foundation of a research campaign. The principal investigator chooses the research. You supply the physical understanding."
-) -join " "
-$scientificModelUseGuidance = @(
-    "Use pi_workspace/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
-    "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
-) -join " "
 $startupPhaseObjective = @'
-Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
+Establish the initial scientific direction as contracts/program.md 'Campaign startup' defines.
 '@
 $scientificModelPhaseObjective = @'
 Construct the physical and scientific model of the robot and the task. The model exists before any training or campaign evidence.
@@ -671,7 +659,6 @@ function New-ScientificSessionPrompt {
         [string]$ValidationError
     )
 
-    $goal = Get-HumanGoalSummary -State $State
     $checkpoint = $State.pi_checkpoint
     $completedEvents = @(
         $State.operation_events | Where-Object { $_.status -eq "completed" }
@@ -765,21 +752,12 @@ function New-ScientificSessionPrompt {
         @(
             if ($session.kind -eq "goal_review") {
                 "Compare the strongest candidate's prospects on the official panel with the prospects of further bounded work. Use completed evidence and its limits for both choices. Explain why the chosen action is preferable now."
-                "success_rate_pass_probability estimates the probability that a candidate reaches a success-rate goal on the official panel from the counts you choose."
-                "A development result near the threshold does not establish the candidate's rate, and further work does not need an already tested intervention. Compare the evidence for each."
-                "When judging a candidate's prospects on the official panel, consider whether the episodes behind its development result were also used to select it or design its changes; such a result tends to overstate its performance on new episodes."
             }
             else {
                 "State the unresolved distinction or the development step the operation addresses, and how its outcome could produce or select a better candidate."
             }
-            "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
-            "Interpret training proxies in the context of the exposure and runtime that produced them. Select checkpoints relevant to the decision when that context changes. Proxy rank alone does not determine which artifacts deserve measurement."
+            "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal."
-            "Update the case for the research direction using results accumulated across inquiries. Limit method claims to what the tested implementation exercised. A negative result does not disprove the method. Compare a proposed method with the implementation already tested, using source changes, recorded runtime and saved-component comparisons when available; a new description does not establish a new method. Repeated work can be useful. State what additional evidence it supplies."
-            "Candidate selection compares complete artifacts. A mechanism test distinguishes a causal explanation from consequential alternatives; choose it when that explanation would change the next direction. Keep an unexplained candidate difference at artifact level, and treat planned discriminating evidence that failed or remains unavailable as unresolved."
-            if ($session.kind -ne "goal_review") {
-                "Unresolved causes need not block inquiry closure. Preserve their consequences for the next decision. Closure itself justifies neither continuing the broader direction nor requesting assessment."
-            }
             if ($session.kind -eq "goal_review") {
                 "For a measurement, explain how its possible outcomes would affect the campaign-level choice."
                 "Record the chosen assessment or inquiry and its evidence-based reason."
@@ -787,20 +765,13 @@ function New-ScientificSessionPrompt {
             }
             else {
                 "Explain how the decision-relevant possible outcomes of the selected operation would affect the direction."
-                "Choose a diagnostic when its possible outcomes would lead to different next actions. When completed evidence already locates a defect, repairing it is a valid next action."
-                "Checkpoint when the session's deliverable is complete or useful intermediate work is ready to preserve. Record supported findings, limitations and remaining work even if no research direction is settled."
-                if ($session.kind -eq "inquiry") {
-                    "The inquiry may remain active across sessions. Its closure condition and unresolved mechanisms do not require further work before checkpointing."
-                }
             }
-            "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis and decision_frontier. contracts/instruments.md defines next_question for each session kind."
             if ($session.kind -eq "goal_review") {
                 "In goal review, next_question must exactly match the question of the inquiry opened in this session."
             }
             elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
                 "While the inquiry remains active, next_question must exactly match its current question."
             }
-            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             if ($session.kind -ne "startup") {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             }
@@ -830,23 +801,7 @@ function New-ScientificSessionPrompt {
         )
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
-        $modelHandoff = "The decision-relevant synthesis is in campaigns/brief.md under 'Initial scientific model'."
-        $modelPath = Join-Path (Get-Location) "pi_workspace\scientific_model.md"
-        if (Test-Path -LiteralPath $modelPath -PathType Leaf) {
-            $modelText = Get-Content -LiteralPath $modelPath -Raw
-            $selectedSynthesis = [regex]::Match(
-                $modelText,
-                "(?ms)^## Decision-relevant synthesis\s+(.*?)(?=^## |\z)"
-            ).Groups[1].Value.Trim()
-            if ($selectedSynthesis) {
-                $modelHandoff = "Decision-relevant synthesis from the initial scientific model:`n$selectedSynthesis"
-            }
-        }
-        @(
-            "Before selecting the first action, use pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
-            $modelHandoff
-            "From this synthesis, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence. Do not require a measurement only to restate the model."
-        )
+        "From the decision-relevant synthesis of the scientific model, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence. Do not require a measurement only to restate the model."
     }
     else {
         @()
@@ -861,13 +816,8 @@ function New-ScientificSessionPrompt {
     else {
         "Training allocation: $Timesteps steps per run."
     }
-    $sourceGuidance = if ($session.kind -eq "startup") {
-        "Begin with pi_workspace/scientific_model.md and campaigns/brief.md. Consult contracts/scenario.md and other evidence as needed."
-    }
-    else {
-        "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
-    }
-    # A resumed conversation already holds the files sent when it was created.
+    $sourceGuidance = "Begin with campaigns/brief.md and the latest scientific session record. Consult other evidence as the scientific question requires."
+    # A resumed conversation already holds the brief sent when it was created.
     $conversationExists = (
         $script:PISessionInvocation -gt 0 -or
         ($session.backend_session_id -and (Test-Path -LiteralPath (
@@ -875,27 +825,16 @@ function New-ScientificSessionPrompt {
         )))
     )
     $contextFiles = @()
-    if (-not $conversationExists) {
-        $contextFiles = if ($transition) {
-            @("contracts/instruments.md")
-        }
-        else {
-            @(
-                "campaigns/brief.md"
-                "contracts/scenario.md"
-                "contracts/instruments.md"
-                "contracts/program.md"
-                "pi_workspace/scientific_model.md"
-            )
-        }
+    if (-not $conversationExists -and -not $transition) {
+        $contextFiles = @("campaigns/brief.md")
     }
     $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)
     if ($includedFiles.Count -gt 0) {
         Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
-        $sourceGuidance = "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again unless an operation changes them. The latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
+        $sourceGuidance = "campaigns/brief.md is included at the end of this message; the latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
     }
     $submissionGuidance = if ($transition) {
-        "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+        "Use the scientific session record contract in contracts/instruments.md in the campaign reference and preserve the transition decision, evidence, remaining goal gap, and next direction."
     }
     else {
         $contractFiles = [ordered]@{
@@ -912,17 +851,12 @@ function New-ScientificSessionPrompt {
                 Where-Object { $contractFiles.Contains([string]$_) } |
                 ForEach-Object { "$_ in $($contractFiles[[string]$_])" }
         ) -join "; "
-        "When ready to act, use the request envelope in contracts/instruments.md and read the contract for the operation you choose: $contractList. Submit one scientific action."
+        "When ready to act, use the request envelope in contracts/instruments.md and the contract for the operation you choose: $contractList. Both are in the campaign reference. Submit one scientific action."
     }
-    $submissionGuidance += " Call submit_operation with the request object. Results and changed state return directly to this conversation. Continue within this context until checkpoint or terminal commitment ends it."
 
     $sections = @(
-        $piPersona
-        "Human goal: $goal"
-        "The essential task conditions and protected boundaries are defined in contracts/scenario.md."
         $handoffContext
         $startupHandoffGuidance
-        $scientificModelUseGuidance
         "Current scientific understanding: $synthesis"
         "Completed evidence relative to the goal and its recorded interpretive limits: $bestEvidence $(Get-LatestSessionResult -State $State)"
         "Current goal gap: $gap"
@@ -931,7 +865,6 @@ function New-ScientificSessionPrompt {
             "Active inquiry: $inquiry"
         }
         "Current objective: $objective"
-        "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $decisionGuidance
         $legalOperations
         $trainingAllocation
@@ -995,32 +928,13 @@ function Invoke-ScientificModelPhase {
     param([Parameter(Mandatory)]$State)
 
     $goal = Get-HumanGoalSummary -State $State
-    $robotFiles = @(
-        Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot "contracts\robots") -File |
-            Where-Object { $_.Length -gt 0 -and $_.Name -ne "__init__.py" } |
-            Sort-Object Name |
-            ForEach-Object { "contracts/robots/$($_.Name)" }
-    )
-    $contextFiles = @(
-        "contracts/scenario.md"
-        "contracts/task_spec.py"
-        $robotFiles
-        "contracts/authority.md"
-        "contracts/policy_runtime.py"
-        "contracts/instruments/scientific-model.md"
-    )
-    $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)
-    Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
     $prompt = @(
-        $modelAnalystPersona
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
-        "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task."
+        "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task in the campaign reference."
         "Code under robot_learning/ is the current recipe. Its rewards, training environments and observation construction are design choices, not properties of the robot; label any statement drawn from them as such."
         "The document has four registers, with these headings: Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
-        "The current content of $($contextFiles -join ', ') is included at the end of this message; do not open these files again. Open other definitions as the analysis requires."
-        $includedFiles
     ) -join "`n`n"
 
     $script:PISessionId = $null
@@ -1031,7 +945,6 @@ function Invoke-ScientificModelPhase {
     }
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
-            $modelAnalystPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
             "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all four required registers substantive and source-recoverable. Make the synthesis decision-relevant. Each register is a level-two heading (##) with its content directly under it. Move topic sections inside a register and change their headings to level three (###)."
@@ -1232,11 +1145,7 @@ try {
                 (
                     "Advance $($state.active_inquiry.id) with a session-sized deliverable, " +
                     "not necessarily a complete answer to the inquiry. Choose the deliverable " +
-                    "from completed evidence and the remaining scientific question. " +
-                    "Checkpoint supported findings, limitations and remaining work when " +
-                    "that deliverable is complete or useful intermediate work is ready to preserve. " +
-                    "The inquiry may remain active across sessions. Close it when completed " +
-                    "evidence warrants closure."
+                    "from completed evidence and the remaining scientific question."
                 )
             }
             $startArguments = @(

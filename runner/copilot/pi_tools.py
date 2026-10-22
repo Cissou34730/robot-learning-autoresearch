@@ -10,7 +10,7 @@ from pathlib import Path
 from copilot import ToolResult
 from pydantic import BaseModel, ConfigDict, Field
 
-from runner.copilot.path_policy import ROOT, file_read_denial
+from runner.copilot.path_policy import ROOT, file_read_denial, reference_read_denial
 from runner.copilot.tool_policy import scoped_tool_hook
 
 ARTIFACT_EVIDENCE_DESCRIPTION = (
@@ -259,6 +259,7 @@ def scoped_search(args, client, authorize):
         lambda path: file_read_denial(path, preliminary=args.preliminary),
         rg_path,
         authorize,
+        lambda path: reference_read_denial(path, preliminary=args.preliminary),
     )
 
 
@@ -278,7 +279,9 @@ def _read_lines(path: Path, params: ReadParams) -> str:
                 continue
             size += len(line.encode("utf-8"))
             if size > MAX_OUTPUT_BYTES and not params.forceReadLargeFiles:
-                raise ValueError("Read exceeds the page limit. Use a narrower view_range.")
+                raise ValueError(
+                    "Read exceeds the page limit. Use a narrower view_range."
+                )
             lines.append(line)
     return "".join(lines)
 

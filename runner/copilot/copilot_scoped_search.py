@@ -132,9 +132,11 @@ class ScopedSearch:
         denial: Callable[[str], str | None],
         rg_executable: Path | None,
         authorize: Callable,
+        reference: Callable[[str], str | None] = lambda _: None,
     ) -> None:
         self.root = root.resolve()
         self.denial = denial
+        self.reference = reference
         self.rg_executable = rg_executable
         self.authorize = authorize
         self.harness_root = (
@@ -175,6 +177,9 @@ class ScopedSearch:
         path = raw.resolve()
         if not path.is_relative_to(self.owner(path)) or self.denial(str(path)):
             raise ValueError("Search path is outside the readable repository surface.")
+        reason = self.reference(str(path))
+        if reason:
+            raise ValueError(reason)
         return path
 
     def files(self, paths: str | list[str] | None) -> tuple[list[Path], bool]:

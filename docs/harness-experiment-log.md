@@ -217,7 +217,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
 | OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this comparison in each campaign (607 lines in `e7dbbece`). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. |
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
-| OI-041 | The PI role arrives in the first user message. The SDK system message stays at its default. | **Open** | Decided 2026-10-22: `customize` mode on SDK 1.0.26 (runtime 1.0.103). Remove or replace the coding-agent parts that conflict with the PI role: the identity, `code_change_rules`, the coding tone, and in `runtime_instructions` the `autonomy_and_persistence` ("bias to action"), `subagent_usage` ("use custom agents sparingly"), editing, destructive-action, session-folder, GitHub-reference and commit-trailer blocks. Keep `safety`, `tool_instructions`, system notifications and tool-use guidelines. Replace the tone with a scientific reporting tone. Move campaign-invariant content into the system prompt: the PI role, the authority boundaries, `scenario.md`, `program.md`, core `instruments.md` and the frozen scientific model; the opening analyst gets its own prompt with its contract files. Each moved file leaves the first-message list, and the path policy refuses re-reads of exactly those files. **Warning:** context compaction ran in PI inquiry sessions of `49e58c12`, `573d538c`, `4a65a241` and `fd2afc2e` (about 220k tokens reduced to about 25k), which removes first-message content. Before re-reads are blocked, verify that the customized system message survives compaction unchanged; the console must flag every compaction with the tokens removed. Keep the coder and reviewer prompts separate and check whether they inherit the session system message. Evaluate scientific outcomes separately from the prompt integration. |
+| OI-041 | The PI role arrives in the first user message. The SDK system message stays at its default. | **Open** | Decided 2026-10-22: `customize` mode on SDK 1.0.26 (runtime 1.0.103). Remove or replace the coding-agent parts that conflict with the PI role: the identity, `code_change_rules`, the coding tone, and in `runtime_instructions` the `autonomy_and_persistence` ("bias to action"), `subagent_usage` ("use custom agents sparingly"), editing, destructive-action, session-folder, GitHub-reference and commit-trailer blocks. Keep `safety`, `tool_instructions`, system notifications and tool-use guidelines. Replace the tone with a scientific reporting tone. Move campaign-invariant content into the system prompt: the PI role, the authority boundaries, `scenario.md`, `program.md`, core `instruments.md` and the frozen scientific model; the opening analyst gets its own prompt with its contract files. Each moved file leaves the first-message list, and the path policy refuses re-reads of exactly those files. **Warning:** context compaction ran in PI inquiry sessions of `49e58c12`, `573d538c`, `4a65a241` and `fd2afc2e` (about 220k tokens reduced to about 25k), which removes first-message content. Before re-reads are blocked, verify that the customized system message survives compaction unchanged; the console must flag every compaction with the tokens removed. Keep the coder and reviewer prompts separate and check whether they inherit the session system message. Evaluate scientific outcomes separately from the prompt integration. The approved plan is in [OI-041 system-prompt plan](#oi-041-system-prompt-plan-22-october); work is on branch `system-prompt`. |
 
 ### Changes that need more evidence — 1
 
@@ -353,6 +353,114 @@ These priorities authorize neither repairs nor campaign operations.
 ### Follow-up outside the numbered register
 
 The former follow-up items are now OI-040 to OI-047 in the register above.
+
+### OI-041 system-prompt plan (22 October)
+
+Approved by the maintainer on 22 October. Branch `system-prompt`.
+
+**SDK sections (PI and opening analyst).** Mode `customize`.
+
+| Section | Action |
+|---|---|
+| `identity` | Replace with the role text (A). |
+| `tone` | Replace with the scientific tone (B). |
+| `tool_efficiency`, `safety`, `tool_instructions` | Keep. |
+| `environment_context` | Keep. Replace with working directory and OS only if it lists hidden harness folders. |
+| `code_change_rules` | Remove. |
+| `guidelines`, `last_instructions` | Inspect; remove coding-agent wording. |
+| `custom_instructions` | Replace with the campaign reference. |
+| `runtime_instructions` | Keep `system_notifications`, `preamble_messages`, `tool_use_guidelines`. Replace `exploration_and_reading_files` (C) and `autonomy_and_persistence` (D). Remove `subagent_usage`, `editing_constraints`, `destructive_actions`, `session_context`, `github_reference_formatting`, `git_commit_trailer`. Warn on the console when a targeted block is absent. |
+
+**Texts.**
+
+- A (PI): "You are the Principal Investigator of an autonomous robot-learning
+  research campaign." + `$piPersona` (scenario reference points to the
+  campaign reference) + `$scientificModelUseGuidance` + "Direct every decision
+  toward the human goal and distinguish evidence from conjecture."
+  A (analyst): `$modelAnalystPersona`.
+- B: "Write as for a laboratory record. Separate observation, inference and
+  conjecture. Give each number with its denominator, its uncertainty and the
+  operation or artifact it comes from. Claim no more than the tested
+  implementation and the recorded evidence show. Be concise."
+- C: "The campaign reference in this prompt holds the current content of the
+  contracts and the scientific model. These files do not change during the
+  campaign. Read results, artifacts and other files as the scientific question
+  requires."
+- D (PI only): "No human answers questions during the campaign. Call
+  submit_operation with the request object. Results and changed state return
+  directly to this conversation. Continue within this context until checkpoint
+  or terminal commitment ends it."
+
+**Campaign reference.** Each file once, labelled by path, under "Current
+content. These files do not change during this campaign."
+
+- PI: `contracts/scenario.md`, `contracts/authority.md`, `contracts/program.md`,
+  `contracts/instruments.md`, all five `contracts/instruments/*.md` operation
+  parts (measurement, training, inquiry, coding, readers; may be reduced later),
+  `contracts/policy_runtime.py`, `pi_workspace/scientific_model.md`.
+- Analyst: `contracts/scenario.md`, `contracts/task_spec.py`, the robot files,
+  `contracts/authority.md`, `contracts/policy_runtime.py`,
+  `contracts/instruments/scientific-model.md`.
+
+**Read refusal.** The path policy refuses `view`/`read` and `rg` targeting a
+reference file for the main PI and the analyst: "Its current content is in your
+system prompt." Coder and reviewer reads stay allowed.
+
+**PI first message.**
+
+- Remove (moved): persona, model-use guidance, "Direct every decision…",
+  "Human goal: …", "essential task conditions… scenario.md", the startup
+  pointer to the model and program, the copied model synthesis, the pointer to
+  program/instruments for the session record, source guidance variants, the
+  submit_operation sentences (now D).
+- Remove (repeat `program.md`): near-threshold and overstatement sentences;
+  checkpoint nomination; training proxies; update the case / repeated work;
+  candidate selection and mechanism test; diagnostic choice and defect repair;
+  unresolved causes at closure; checkpoint timing and inquiry persistence;
+  "Existing PI-owned implementations…"; the `success_rate_pass_probability`
+  description.
+- Keep: launcher-only guidance by session kind (goal-review prospects
+  comparison, measurement outcome effect, record the choice, residual
+  failures; non-goal-review distinction and outcome effect; inquiry drift),
+  `next_question` rules, transition rules, allowed operations, training
+  allocation, correction, state blocks, brief.
+- Rewrite: source guidance ("campaigns/brief.md is included below; the latest
+  scientific session record is summarized above…"); submission ("use the
+  request envelope and the contract for the operation you choose; both are in
+  the campaign reference. Submit one scientific action."); transition contract
+  pointer; startup objective ("…as program.md 'Campaign startup' defines");
+  inquiry objective (first two sentences).
+
+**Analyst first message.** Remove the persona (also from the retry) and the
+"do not open again" sentence; point to the scenario and definitions in the
+campaign reference.
+
+**Contract.** `contracts/program.md` "Context routing": the reference holds the
+contracts and the scientific model; the brief is the compact current context.
+
+**Console.** A warning card on each compaction with tokens before and after
+and messages removed.
+
+**Checks.** Rendering probe (show the final prompts); compaction probe (a
+system-prompt marker survives compaction); subagent probe (coder and reviewer
+do not inherit the PI system message); targeted tests (read refusal for PI,
+not for coder; each reference file once). Judge behavior on the next fresh
+campaign.
+
+**Known limit.** Continuation and repair messages rebuild the whole first
+message; the remaining guidance repeats in the same conversation.
+
+**Status (22 October, implemented on `system-prompt`, not yet used by a
+campaign).** Rendering: the PI system prompt is 108k characters with 11
+reference files, the analyst prompt 24k with 7. Replacing the `identity` group
+also drops tone and tool efficiency, so the role replaces `preamble` and a
+transform removes the remaining coding-agent lines of the group. Tool
+instructions also lose the GitHub CLI, GitHub MCP and code-search blocks.
+Compaction probe: two forced compactions (down to 24k tokens; system part
+constant at 22,062 tokens), after which the model quoted the scenario
+sentence exactly. Subagent probe: a custom agent's system message is its own
+prompt plus the SDK safety text; it does not contain the PI role or the
+reference. `environment_context` lists no hidden folders and is kept.
 
 ## Capped campaign `90563aac`: regression follow-up backlog
 

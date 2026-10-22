@@ -66,7 +66,9 @@ def test_harness_rooted_campaign_view_resolves_to_campaign(split_roots, monkeypa
     target = harness / "robot_learning/scenario/environment.py"
     result = hook({"toolName": "view", "toolArgs": {"path": str(target)}}, None)
     assert result == {
-        "modifiedArgs": {"path": str(campaign / "robot_learning/scenario/environment.py")}
+        "modifiedArgs": {
+            "path": str(campaign / "robot_learning/scenario/environment.py")
+        }
     }
 
 
@@ -146,12 +148,12 @@ def test_pi_contract_reads_route_to_harness_without_write_access(
 
     harness, campaign = split_roots
     monkeypatch.setattr(path_policy, "ROOT", campaign)
-    contract = harness / "contracts" / "scenario.md"
+    contract = harness / "contracts" / "task_spec.py"
     contract.parent.mkdir()
     contract.write_text("task", encoding="utf-8")
     hook = scoped_tool_hook()
     decision = hook(
-        {"toolName": "view", "toolArgs": {"path": "contracts/scenario.md"}}, {}
+        {"toolName": "view", "toolArgs": {"path": "contracts/task_spec.py"}}, {}
     )
     assert decision["modifiedArgs"]["path"] == str(contract)
     assert path_policy.file_read_denial(str(contract)) is None
@@ -189,10 +191,14 @@ def test_scoped_search_covers_both_roots_but_prunes_reserved_files(
     assert search.target("contracts/scenario.md") == harness / "contracts/scenario.md"
 
 
-@pytest.mark.parametrize("preliminary", [False, True])
 @pytest.mark.parametrize(
-    "relative",
-    ["contracts/scenario.md", "contracts/robots/arm.xml", "contracts/authority.md"],
+    ("preliminary", "relative"),
+    [
+        (False, "contracts/task_spec.py"),
+        (False, "contracts/robots/arm.xml"),
+        (True, "contracts/program.md"),
+        (True, "contracts/instruments/measurement.md"),
+    ],
 )
 def test_campaign_absolute_contract_reads_route_before_authorization(
     split_roots, monkeypatch, preliminary, relative

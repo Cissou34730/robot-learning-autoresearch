@@ -33,6 +33,7 @@ def event_handler(
         AssistantMessageData,
         AssistantMessageDeltaData,
         AssistantUsageData,
+        SessionCompactionCompleteData,
         SessionErrorData,
         SessionIdleData,
         SessionWorkspaceFileChangedData,
@@ -77,6 +78,8 @@ def event_handler(
             console.model_call(data.input_tokens)
         elif isinstance(data, SessionErrorData):
             console.error(data.message or "unknown session error")
+        elif isinstance(data, SessionCompactionCompleteData):
+            console.compaction(data)
         elif isinstance(data, SessionIdleData) and (coding is None or not coding.busy):
             finished.set()
 
