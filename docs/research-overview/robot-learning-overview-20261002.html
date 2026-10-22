@@ -622,10 +622,11 @@
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
           refuses submissions even though Runner records an active session. The maintainer closed OI-037 on
           21 October without claiming verified recovery. Folder and training-log repairs do not fix it.</p>
-        <p><strong>Latest documented result:</strong> <code>49e58c12</code> passed the official assessment at 198/200 on
-          22 October. See its <a href="robot-campaign-49e58c12-20261022.html">campaign report</a>. The final controller
-          combines a learned PPO policy with a gated analytic joint controller. The finish was less defensive, but
-          resource use increased. One pass does not show how often the harness reaches the goal.</p>
+        <p><strong>Latest documented result:</strong> <code>cfa88359</code> passed the official assessment at 199/200 on
+          22 October. See its <a href="robot-campaign-cfa88359-20261022.html">campaign report</a>. A symmetry-aware
+          coordinate mapping kept the learned policy in control, with no analytic-controller takeover.
+          Two training runs and independent final validation used 30.095 AIU in 66 minutes 23 seconds.
+          One training seed and one official pass do not establish repeatability.</p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Historical evidence:</strong> <code>dc48cc2f</code> passed at 196/200 in its <a
@@ -2486,6 +2487,13 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><code>cfa88359</code></td>
+              <td>22 Oct, 17:00 CEST</td>
+              <td>Official pass: 199/200 (99.5%). Two training runs, two inquiries, seven completed measurements and
+                30.095 AIU. Symmetry-aware learned policy; no analytic-controller takeover.</td>
+              <td><a href="robot-campaign-cfa88359-20261022.html">Result, symmetry, validation and resource use</a></td>
+            </tr>
             <tr>
               <td><code>49e58c12</code></td>
               <td>21 Oct, 22:55 CEST</td>
