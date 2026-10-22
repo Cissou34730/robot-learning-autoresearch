@@ -50,6 +50,7 @@ from runner.copilot.usage import record_usage
 
 CODER = "scientific-coder"
 REVIEWER = "scientific-reviewer"
+CHILD_HEARTBEAT_SECONDS = 60
 NO_CHECK_EXECUTED = "No scientific check has been executed by this tool."
 TERMINAL_TASK_STATES = {"cancelled", "completed", "failed"}
 CHILD_USAGE_FIELDS = (
@@ -85,7 +86,9 @@ class ScientificCoding:
         self.active_agent = agent
         self.active_handle = handle
         self.binding = binding
-        self.child_console = CodingConsole()
+        self.child_console = CodingConsole(
+            self.console, "reviewer" if agent == REVIEWER else "coder"
+        )
         self.child_events = None
         self.completed.clear()
         self.stop_response = ""
@@ -359,6 +362,17 @@ class ScientificCoding:
         self.busy = True
         task = asyncio.current_task()
         self.active_tasks.add(task)
+        intent_line = " ".join(params.intent.split())[:140]
+        scope = (
+            f"correction of {params.session_handle[:8]}"
+            if params.session_handle
+            else (
+                f"writes {', '.join(binding['allowed_paths'])} | "
+                f"reads {len(binding['read_paths'])} files | "
+                f"evidence {len(params.evidence_inputs or [])}"
+            )
+        )
+        self.console.line(f"  > scientific_coding: request | {scope} | {intent_line}")
         result = {
             "status": "error",
             "review_required": True,
@@ -648,6 +662,7 @@ class ScientificCoding:
         report = None
         exit_code = EXIT_RUNTIME_FAILURE
         cancelled = False
+        heartbeat = asyncio.create_task(self._heartbeat(agent, started))
         try:
             await self._dispatch_child(agent, prompt, binding, handle)
             report = await self._child_report(agent, result)
@@ -669,6 +684,7 @@ class ScientificCoding:
             result["error"] = f"{type(error).__name__}: {error}"
             exit_code = EXIT_SESSION_ERROR
         finally:
+            heartbeat.cancel()
             override, interrupted = await self._quiesce(agent, result)
             exit_code = exit_code if override is None else override
             cancelled = cancelled or interrupted
@@ -676,6 +692,18 @@ class ScientificCoding:
         if cancelled:
             raise asyncio.CancelledError
         return report if result["status"] == "completed" else None
+
+    async def _heartbeat(self, agent: str, started: float) -> None:
+        role = "reviewer" if agent == REVIEWER else "coder"
+        while True:
+            await asyncio.sleep(CHILD_HEARTBEAT_SECONDS)
+            usage = self.child_console
+            self.console.line(
+                f"  ~ scientific_coding: {role} working "
+                f"{(time.monotonic() - started) / 60:.0f}m | "
+                f"context {usage.last_input_tokens / 1000:.0f}k | "
+                f"{usage.model_calls} model calls | {usage.usage.tool_calls} tool calls"
+            )
 
     async def _dispatch_child(self, agent, prompt, binding, handle) -> None:
         from copilot.generated.rpc import (

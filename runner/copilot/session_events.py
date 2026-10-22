@@ -64,9 +64,12 @@ def event_handler(
                 name, arguments = tool or ("tool", None)
                 console.tool_failed(data.error, name, arguments)
             elif data.success and tool is not None and tool[0] in RESULT_ISSUE_TOOLS:
-                issue = result_issue(getattr(data.result, "content", None))
+                content = getattr(data.result, "content", None)
+                issue = result_issue(content)
                 if issue:
                     console.tool_issue(tool[0], issue)
+                else:
+                    console.tool_result(tool[0], content)
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):

@@ -115,23 +115,62 @@ _MARKER_COLORS = {
     "+": "\033[32m",
     "-": "\033[31m",
     "~": "\033[36m",
+    "=": "\033[35m",
     "!": "\033[1;91m",
     "--": "\033[1;96m",
     "[session]": "\033[95m",
 }
 
 
-def format_console_line(text: str) -> str:
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RED = "\033[31m"
+
+
+_TOOL_COLORS = {
+    "submit_operation": "\033[1;32m",
+    "scientific_coding": "\033[1;34m",
+    "training_series_statistics": "\033[35m",
+    "success_rate_pass_probability": "\033[35m",
+}
+
+
+_STATUS_COLORS = {
+    "completed": GREEN,
+    "checkpointed": GREEN,
+    "needs_pi": YELLOW,
+    "timeout": YELLOW,
+    "cancelled": YELLOW,
+}
+
+
+def _colored_tool_remainder(remainder: str) -> str:
+    name, separator, rest = remainder.partition(":")
+    color = _TOOL_COLORS.get(name)
+    if color is None:
+        return remainder
+    if name == "submit_operation" and rest.strip():
+        status = rest.strip().split(";")[0].split()[0]
+        status_color = _STATUS_COLORS.get(status, RED)
+        rest = rest.replace(status, f"{status_color}{status}{_RESET}", 1)
+    return f"{color}{name}{_RESET}{separator}{rest}"
+
+
+def format_console_line(text: str, color: str | None = None) -> str:
     if not sys.stdout.isatty():
         return text
     stripped = text.lstrip()
     indent = text[: len(text) - len(stripped)]
     marker, separator, remainder = stripped.partition(" ")
-    color = _MARKER_COLORS.get(marker, "\033[36m")
     timestamp = f"{_DIM}[{datetime.now(UTC).astimezone():%H:%M:%S}]{_RESET}"
-    if marker in {"x", "!", "--"}:
+    if color is not None:
         return f"{timestamp} {indent}{color}{stripped}{_RESET}"
-    return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
+    marker_color = _MARKER_COLORS.get(marker, "\033[36m")
+    if marker in {"x", "!", "--"}:
+        return f"{timestamp} {indent}{marker_color}{stripped}{_RESET}"
+    if marker == ">":
+        remainder = _colored_tool_remainder(remainder)
+    return f"{timestamp} {indent}{marker_color}{marker}{_RESET}{separator}{remainder}"
 
 
 def compact_console_path(target: str) -> str:
@@ -430,11 +469,12 @@ class Console:
         self.denied_calls: set[str] = set()
         self.active_tools: dict[str, tuple[str, object]] = {}
         self.model_calls = 0
+        self.last_input_tokens = 0
         self._context_band = 0
 
-    def line(self, text: str) -> None:
+    def line(self, text: str, color: str | None = None) -> None:
         self._close_message()
-        print(format_console_line(text), flush=True)
+        print(format_console_line(text, color), flush=True)
 
     def _close_message(self) -> None:
         """End the model's block, so the next fact starts at column zero."""
@@ -579,14 +619,57 @@ class Console:
     def tool_issue(self, name: str, issue: str) -> None:
         self.line(f"  x {name}: {issue}")
 
+    def tool_result(self, name: str, content: object) -> None:
+        """One line per number the PI will reason from; the full result stays in its context."""
+        try:
+            result = json.loads(content) if isinstance(content, str) else None
+        except ValueError:
+            return
+        if not isinstance(result, dict) or result.get("status") != "computed":
+            return
+        if name == "success_rate_pass_probability":
+            for item in result.get("evidence", []):
+                chance = item.get("pass_probability", 0.0)
+                color = GREEN if chance >= 0.8 else YELLOW if chance >= 0.5 else RED
+                self.line(
+                    f"  = {str(item.get('label'))[:70]}: {item.get('successes')}/"
+                    f"{item.get('trials')} -> pass {chance:.1%} "
+                    f"({item.get('interval_vs_target_rate')} target rate)",
+                    color,
+                )
+        elif name == "training_series_statistics":
+            window = result.get("window") or {}
+            self.line(
+                f"  = {result.get('metric')}: {window.get('rows')} rows | "
+                f"min {window.get('min', {}).get('value')} | "
+                f"max {window.get('max', {}).get('value')} | "
+                f"last {window.get('last', {}).get('value')}"
+            )
+            for check in result.get("checks", []):
+                verdict = "holds" if check.get("holds") else "fails"
+                self.line(
+                    f"  = check {check.get('statistic')} {check.get('comparison')} "
+                    f"{check.get('threshold')}: {verdict} (value {check.get('value')})",
+                    GREEN if check.get("holds") else RED,
+                )
+
     def model_call(self, input_tokens: int | None) -> None:
         self.model_calls += 1
+        self.last_input_tokens = input_tokens or 0
         band = (input_tokens or 0) // CONTEXT_BAND_TOKENS
         if band > self._context_band:
             self._context_band = band
+            color = (
+                RED
+                if self.last_input_tokens >= 150_000
+                else YELLOW
+                if self.last_input_tokens >= 100_000
+                else None
+            )
             self.line(
                 f"  ~ context {input_tokens / 1000:.0f}k tokens "
-                f"at model call {self.model_calls}"
+                f"at model call {self.model_calls}",
+                color,
             )
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
@@ -618,10 +701,28 @@ class Console:
 
 
 class CodingConsole(Console):
-    """Collect child accounting without printing its conversation or diffs."""
+    """Collect child accounting; forward only file names of child patches to the parent."""
 
-    def line(self, text: str) -> None:
+    def __init__(self, parent: Console | None = None, agent: str = "") -> None:
+        super().__init__()
+        self.parent = parent
+        self.agent = agent
+
+    def line(self, text: str, color: str | None = None) -> None:
         pass
+
+    def tool(
+        self, name: str, arguments: object, tool_call_id: str | None = None
+    ) -> None:
+        super().tool(name, arguments, tool_call_id)
+        if self.parent is not None and name == "apply_patch":
+            files = _patch_detail(arguments)
+            if files:
+                self.parent.line(f"  + {self.agent} patch: {files}")
+
+    def model_call(self, input_tokens: int | None) -> None:
+        self.model_calls += 1
+        self.last_input_tokens = input_tokens or 0
 
     def delta(self, text: str) -> None:
         pass
