@@ -326,11 +326,12 @@ No GitHub issues remain open at this review.
 
 ### Next maintainer actions
 
-1. In the next campaign, check whether the PI uses
-   `success_rate_pass_probability` in goal review, states `current_goal_gap`
-   in numbers, uses candidate inputs and `evidence_inputs`, and stops reading
-   `campaigns/results.jsonl` directly. Compare cost per PI session with
-   `573d538c`. Do not make the tools mandatory.
+1. In the next campaign, check whether the first message now carries the
+   context files (console `CONTEXT` line) and whether repeated reads of
+   `contracts/scenario.md`, `program.md` and the brief fall. Compare AIU per PI
+   session and peak context with `49e58c12` (5.10 AIU, 143k median peak).
+   Check use of candidate `evidence_inputs` and the new discovery hints.
+   Do not make the tools mandatory.
 2. Classify OI-024 reruns and OI-026 review work by their actual information
    gain or corrected defect. Do not equate all repetition with waste.
 
@@ -349,6 +350,13 @@ These priorities authorize neither repairs nor campaign operations.
   decision brief and one response under each instruction version.
   This remains a proposal, not campaign replay or scientific validation.
   No framework or new testing infrastructure is approved.
+- Optional, postponed (2026-10-22): a Runner operation that builds a new
+  candidate from an existing candidate's weights and normalization plus the
+  current PI-owned runtime source. In `49e58c12` a controller added to T2's
+  saved runtime scored 199/200 and 200/200 on research panels but could not
+  reach protected evaluation, because only training creates candidates. The
+  maintainer postponed it: it could pull campaigns toward endless controller
+  tuning instead of learning. Evaluate later.
 - These entries do not authorize runtime changes or campaign operations.
 
 ## Capped campaign `90563aac`: regression follow-up backlog
@@ -497,6 +505,7 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-22 | Campaign `49e58c12` and follow-up changes | Campaign `49e58c12` passed the official assessment at 99.0% (198/200) with T6:checkpoint-20480, after 4 inquiries, 6 training runs and 19 measurements, for 126.566 AIU (PI 87.979, coders 28.107, reviewers 10.480). A PC reboot interrupted session S13; no operation was left pending and the campaign resumed. `success_rate_pass_probability` was called in every session kind; the PI pooled only independent panels, stated the numeric goal gap and assessed at an estimated 97.0% pass chance. No `campaigns/results.jsonl` read occurred. Peak PI context rose (median 143k) and AIU per PI session rose to 5.10. The first-message files were never sent: Runner sets `backend_session_id` at session start, so the launcher's new-conversation check was always false. A T2 runtime controller scored 199/200 and 200/200 on research panels but had no route to protected evaluation (postponed optional item below). Follow-up commits: the new-conversation check uses the launcher invocation count or the SDK session folder; `evidence_inputs` accepts a candidate (archive files and `artifact.json`); discovery past the node limit returns the paths found and a recovery hint, and a missing operations path explains list-indexed rows; the console shows the coding request, child patches and a per-minute child heartbeat, colours tool names and operation status, summarizes pass-probability evidence and series checks, and colours context at 100k and 150k. Validation used reproductions on the finished campaign's state and the existing suites; failing tests were identical before and after each change (13 in the runtime, lifecycle, session, launcher, stop-control and coding set). One campaign cannot attribute the pass or the cost to these changes. |
 | 2026-10-21 | Campaign `573d538c` and follow-up changes | Campaign `573d538c` ran with the numeric tools, shorter descriptions and the instrument split. It failed the official assessment at 97.5% (195/200; the goal is 196) with T2:checkpoint-80896, after 6 inquiries, 5 training runs and 18 measurements, for 81.856 AIU (PI 56.955, coders 17.805, reviewers 7.096). T2 reached 98.5% on the task reference by I3. I4 (slew limiter) and I5 (target braking) were limited negative results. I6 ran diagnostics. The PI assessed on a pooled 980/1,000. No research and protected scores diverged, so the moved saved-controller section showed no effect. `wilson_proportion_interval` was never called; `training_series_statistics` was called 7 times. A diagnostic module failed four times in a row (M13 to M16): wrong field names, wrong success location, an expected episode absent, and a candidate folder passed instead of its `model.zip`. One campaign cannot attribute the failure to the harness changes. Follow-up commits: `success_rate_pass_probability` replaces the Wilson tool and goal review names it; `current_goal_gap` is stated in numbers; `python_module` inputs accept a candidate and `scientific_coding` accepts `evidence_inputs` (recorded field structure for the coder and reviewer); `view` and search on `campaigns/results.jsonl` redirect to `artifact_evidence_query`; a new PI conversation receives the brief, scenario, core instruments, program and scientific model inline; the console shows reader failure statuses, context growth, review verdicts, a single operation-failure card and the included files. Validation used minimal reproductions and the existing suites. Failing tests were identical before and after each change: 21 in the lifecycle, phase, session, launcher and stop-control set and 6 in the brief set, all with stale fixtures. |
 | 2026-10-21 | Split `contracts/instruments.md` by use | In campaigns `2d4fcc0e` and `60ec83bd`, every PI session read the whole 37k-character file one to three times; 32 of 35 reads took the whole file. The core file now keeps the index, paths, request envelope, operations by session and the scientific session record (7.2k). The other sections moved verbatim to `contracts/instruments/`: `measurement.md`, `training.md` (with model role and recipe restoration), `inquiry.md` (with campaign conclusion), `coding.md` (with saved controller execution), `readers.md` and `scientific-model.md`. The only text change in the moved sections is one link to the saved-controller section, which now points into `coding.md`. The launcher now names the contract file for each currently permitted operation kind. Coder and reviewer excerpts are byte-identical to before. The new files are protected context paths. `program.md`, `authority.md`, `AGENTS.md` and the `submit_operation` description name the parts. A rough estimate is about 5% fewer campaign input tokens if the PI reads only the parts it uses; the effect is unmeasured. Nine phase-structure and researcher-session tests fail on the parent commit as well (for example, goal-review training now fails on field validation before the session check); they were not changed. |
 | 2026-10-21 | Shorter PI tool descriptions | Rewrote the descriptions of `artifact_evidence_query`, `training_log_query`, `training_series_statistics` and `scientific_api_reference` to state purpose, modes and when a result is partial or not evidence: from 218/104/124/105 words to 83/54/55/62. Transport details such as UTF-8, base64 and fingerprint rules now appear only in the parameter fields and `contracts/instruments.md`. The `action` field descriptions of both readers were shortened in the same way. The starting context is about 11k tokens, so the expected token saving is small; the aim is clarity. The effect on PI behavior is unmeasured. `test_training_log_lookup_uses_the_training_operation_id` fails on the parent commit as well (path ownership in `runner/paths.py`); it is unrelated and was not changed. |

@@ -1745,10 +1745,10 @@
       <p>No GitHub issues remain open at this review.</p>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>In the next campaign, check whether the PI uses <code>success_rate_pass_probability</code> in goal review,
-          states the goal gap in numbers, uses candidate inputs and <code>evidence_inputs</code>, and stops reading
-          <code>campaigns/results.jsonl</code> directly. Compare cost per PI session with <code>573d538c</code>. Do not
-          make the tools mandatory.
+        <li>In the next campaign, check whether the first message now carries the context files (console
+          <code>CONTEXT</code> line) and whether repeated reads of the scenario, program and brief fall. Compare AIU per
+          PI session and peak context with <code>49e58c12</code> (5.10 AIU, 143k median peak). Check use of candidate
+          <code>evidence_inputs</code> and the new discovery hints. Do not make the tools mandatory.
         </li>
         <li>Classify OI-024 reruns and OI-026 review work by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -1763,6 +1763,10 @@
       <p>A text-only comparison could screen instruction changes with one fixed decision brief and one response
         under each instruction version. This remains a proposal, not campaign replay or scientific validation.
         No framework or new testing infrastructure is approved.</p>
+      <p>Optional, postponed (22 October): a Runner operation that builds a new candidate from an existing
+        candidate's weights plus the current PI-owned runtime source. In <code>49e58c12</code> a controller added to
+        T2's saved runtime scored 199/200 and 200/200 on research panels but could not reach protected evaluation.
+        Postponed because it could pull campaigns toward endless controller tuning instead of learning.</p>
       <p>These entries do not authorize runtime changes or campaign operations.</p>
       <details style="margin-top: 16px">
         <summary>Prompt-stack review R1 to R8</summary>
@@ -1832,6 +1836,16 @@
       <p class="section-label">6 / RECENT CHANGES</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">22 October: campaign 49e58c12 passes at 198/200; follow-up changes</h3>
+        <p>T6:checkpoint-20480 passed the official assessment at 99.0% after 4 inquiries, for 126.566 AIU. The PI used
+          the pass-probability tool in every session kind, stated a numeric goal gap and assessed at an estimated 97.0%
+          pass chance. It never read <code>results.jsonl</code> directly. Peak context and cost per session rose, and
+          the first-message files were never sent because of a launcher check defect.</p>
+        <p>Follow-up: the launcher check is fixed, coders can receive candidate metadata, discovery past its limit
+          returns partial paths with a hint, and the console shows coding progress and colours tools, statuses,
+          probabilities and context size.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">21 October: campaign 573d538c fails at 195/200; follow-up changes</h3>
         <p>T2 reached 98.5% on the task reference early. Two later interventions brought no gain, and the PI assessed
