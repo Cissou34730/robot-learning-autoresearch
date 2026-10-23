@@ -620,6 +620,7 @@ async def serve_session(args, client, channel, command: dict) -> int:
                 time.monotonic() - started,
                 exit_code,
             )
+            announce_usage(invocation_args)
         except (OSError, ValueError) as exc:
             print(f"Session usage could not be recorded: {exc}", file=sys.stderr)
     status, message = session_outcome(exit_code, invocation_args, error)
@@ -668,6 +669,18 @@ async def serve(args) -> int:
             await writer.wait_closed()
 
 
+def announce_usage(args) -> None:
+    """Report this session's recorded usage, including its coding children."""
+    if not args.campaign_id or not args.session_id:
+        return
+    from runner import console as runner_console
+
+    runner_console.announce(
+        f"[session] USAGE | {args.phase or 'session'} | "
+        f"{runner_console.usage_summary(args.campaign_id, args.session_id)}"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     args.usage_console = Console()
@@ -687,6 +700,7 @@ def main(argv: list[str] | None = None) -> int:
             record_usage(
                 args, args.usage_console.usage, time.monotonic() - started, exit_code
             )
+            announce_usage(args)
         except (OSError, ValueError) as error:
             # Accounting failure must not invalidate a scientific deliverable.
             print(f"Session usage could not be recorded: {error}", file=sys.stderr)

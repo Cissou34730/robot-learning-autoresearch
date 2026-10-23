@@ -1232,7 +1232,9 @@ def execute_measurement(state: dict, pending: dict) -> int:
                     except ValueError as error:
                         raise FrozenOperationMismatch(str(error)) from error
                     if inputs != spec.get("input_artifacts", {}):
-                        raise FrozenOperationMismatch("accepted python_module inputs changed")
+                        raise FrozenOperationMismatch(
+                            "accepted python_module inputs changed"
+                        )
                     output_path = repository.resolve_repo_path(spec["artifact"])
                     output_path.parent.mkdir(parents=True, exist_ok=True)
                     output_path.unlink(missing_ok=True)
@@ -1280,7 +1282,8 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         "metrics": {
                             **(
                                 {"input_artifacts": spec["input_artifacts"]}
-                                if "input_artifacts" in spec else {}
+                                if "input_artifacts" in spec
+                                else {}
                             ),
                             "evaluation_artifact": repository.repo_relative_path(
                                 archived_path
@@ -1538,7 +1541,9 @@ def _saved_component_comparisons(
     }
     prior_by_operation: dict[str, list[dict]] = {}
     for candidate in state["candidates"].values():
-        prior_by_operation.setdefault(candidate["origin_operation"], []).append(candidate)
+        prior_by_operation.setdefault(candidate["origin_operation"], []).append(
+            candidate
+        )
 
     comparisons: list[dict] = []
     for operation_id, prior_candidates in prior_by_operation.items():
@@ -2059,7 +2064,6 @@ def _announce_consequential_completion(presentation: dict) -> None:
                         "Continue from the durable session summary.",
                     ),
                 ),
-                ("Usage", presentation["session_usage"]),
             ),
         )
     elif kind == "campaign_conclusion":
@@ -2078,7 +2082,6 @@ def _announce_consequential_completion(presentation: dict) -> None:
             + _sections(
                 ("Outcome", plan.get("reason", "Campaign decision recorded.")),
                 ("Next", next_transition),
-                ("Usage", presentation["session_usage"]),
             ),
         )
         status = str(result.get("status", "")).replace("_", " ")
@@ -2197,7 +2200,8 @@ def execute_pending_operation() -> int:
 def check_operation(*, from_stdin: bool = False) -> int:
     try:
         request = json.loads(
-            sys.stdin.read() if from_stdin
+            sys.stdin.read()
+            if from_stdin
             else paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")
         )
         state = repository.load_state(allow_missing_artifact=True)

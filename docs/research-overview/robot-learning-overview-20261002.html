@@ -1189,7 +1189,7 @@
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">11</p>
+          <p class="metric">13</p>
           <p class="metric-label">Inactive entries</p>
         </article>
       </div>
@@ -1323,9 +1323,10 @@
               <td><span class="tag">Open</span></td>
               <td>Optional tool <code>episode_outcome_breakdown</code> (22 October) reads recorded measurements and
                 gives the exact sign test and a Wilson interval for the first measurement's share of discordant
-                episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this
-                comparison in each campaign (607 lines in <code>e7dbbece</code>). Protected paired counts and the
-                PI-owned <code>comparison.py</code> are unchanged. Track use.</td>
+                episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code>
+                the PI rebuilt this comparison itself (607 lines). Protected paired counts and the
+                PI-owned <code>comparison.py</code> are unchanged. Track use. Use: 8 calls in <code>cfa88359</code>,
+                45 in <code>5d94bf8a</code>.</td>
             </tr>
             <tr>
               <td>OI-040</td>
@@ -1348,7 +1349,11 @@
                 files. <strong>Warning:</strong> compaction ran in PI inquiry sessions of four campaigns (about 220k
                 tokens reduced to 25k). Verify that the system message survives compaction before blocking re-reads;
                 the console must flag every compaction. Keep the coder and reviewer prompts separate. The approved plan
-                and its status are in the harness experiment log; work is on branch <code>system-prompt</code>.</td>
+                and its status are in the harness experiment log; work is on branch <code>system-prompt</code>. First
+                campaign
+                <code>5d94bf8a</code> failed at 193/200: mechanics held; the analyst's lean reading delayed full-range
+                training; the plateau and assessment decision repeat <code>6882b9ec</code>.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -1642,7 +1647,7 @@
           </div>
         </div>
       </details>
-      <h3 id="inactive-issues">Inactive entries — 11</h3>
+      <h3 id="inactive-issues">Inactive entries — 13</h3>
       <p>These entries do not authorize implementation. The historical evidence remains valid.</p>
       <details>
         <summary>Show the retired, paused, proposed, and withdrawn entries</summary>
@@ -1743,6 +1748,23 @@
                   <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
                     <code>json_editors</code> if external providers are no longer used.
                   </td>
+                </tr>
+                <tr>
+                  <td>OI-048</td>
+                  <td>The robot contract files carry a scenario-specific name (<code>two_joint_arm.py</code> and
+                    <code>.xml</code>).
+                  </td>
+                  <td><span class="tag">Proposal</span></td>
+                  <td>Rename them to a generic name and update every reference. Open question: one neutral name
+                    (<code>robot.*</code>) or a name per scenario.</td>
+                </tr>
+                <tr>
+                  <td>OI-049</td>
+                  <td>The opening analyst shares the PI's system-prompt construction.</td>
+                  <td><span class="tag">Proposal</span></td>
+                  <td>After the next campaign, give the analyst its own system prompt for building a complete
+                    physical model. In <code>5d94bf8a</code> it read 6 files instead of 38 and omitted the training
+                    range.</td>
                 </tr>
               </tbody>
             </table>

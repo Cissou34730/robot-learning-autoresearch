@@ -68,6 +68,97 @@ campaign-result report.
 Current commands: [README](../README.md), [reset guide](reset-research.md),
 [split design and correction record](harness-campaign-split.md).
 
+## Failed campaign `5d94bf8a` (23 October)
+
+**Outcome.** The official assessment failed at 193/200 (96.5%) with
+T3:checkpoint-40960. This was the first campaign on branch `system-prompt`
+(OI-041, `3afe89f2`). It ran 4 h 45 min with 31 PI sessions, 13 inquiries,
+7 training runs and 35 measurements (3 failed), for 151.17 AIU (PI 102.95,
+coders 34.85, reviewers 13.37). Model and reasoning settings were the same as
+in `cfa88359` and `6882b9ec` (gpt-6-luna; PI high, analyst max).
+
+| Campaign | Result | Wall time | PI sessions | Inquiries | Training (fresh/transfer) | Measurements | AIU |
+|---|---|---|---|---|---|---|---|
+| `2d4fcc0e` | passed 200/200 | — | — | — | 4 runs | — | 77.7 |
+| `6882b9ec` | failed 193/200 | 146 min | 15 | 5 | 3/1 | 10 | 68.6 |
+| `cfa88359` | passed 199/200 | 65 min | 6 | 2 | 2/0 | 7 | 30.1 |
+| `5d94bf8a` | failed 193/200 | 285 min | 31 | 13 | 1/6 | 35 | 151.2 |
+
+**Scientific path.**
+
+| Phase | Time | AIU | Events |
+|---|---|---|---|
+| 1. Baseline and range gap | 0–50 min | 20.6 | The analyst model omitted the 14–20 cm training range. Startup trained T1 on the unchanged recipe (110/160). I1 traces led the PI to the range gap. T2, a transfer with 6–20 cm targets, scored 157/160, then 195/200 research and 196/200 task reference. |
+| 2. Selection and sector | 50–105 min | 22.2 | Checkpoint comparisons in I2–I4 and a five-arm goal-review measurement (M5). I5 located failures in a rear bearing sector. T3, a transfer with 50:50 sector oversampling, gave no clear gain (193–197/200). I6 screened another T3 checkpoint. |
+| 3. Six interventions | 105–270 min | 100.1 (66%) | All started from T3 weights and all were negative: T4 capture-speed cost 190 against 193/200; T5 shell progress reward 190 against 195; T6 velocity-servo overlay 174 against 194; T7 IK feasibility cue 128 against 194; frozen 5° shoulder shield 380 against 393/400; frozen predictive projection 375 against 383/400. The phase also had 12 trace diagnostics and 3 failed measurements; M19 and M20 failed identically on the PI's own float check. |
+| 4. Assessment | 270–285 min | 8.2 | M34 390/400; M35 task reference 198/200; assessment 193/200. |
+
+Six inquiries contained one operation each. The 14 goal reviews cost 34.4
+AIU. Twelve measurements ran outside inquiries.
+
+**Cause of the plateau (maintainer analysis).** The failure is one-sided.
+Over its 2,600 research episodes, T3:checkpoint-40960 fails 61/240 (25.4%)
+at bearings −150° to −120°, 0/216 in the mirror bin 120° to 150°, and
+15/2,144 (0.7%) elsewhere. The same weakness is present in T1 (14/27 against
+0/20 in the mirror bin) and T2:checkpoint-90112 (26/131 against 0/125), so it
+passed through the transfer chain. The arm, its ±170° joint limits, zero
+gravity and the reset are mirror-symmetric about the x axis; the asymmetry
+belongs to the learned policy, not the task. The PI described a "rear
+sector" with shoulder-limit proximity and never compared the mirror sector.
+In `cfa88359` the PI tested reflection symmetry and passed with a
+reflection-canonicalized policy I/O trained fresh. `6882b9ec` failed with the
+same weakness (−155° to −120°, 31%). Neither scientific model, before or
+after OI-041, states the mirror symmetry.
+
+**Assessment decision.** Pooled research evidence for T3 was 2,524/2,600
+(97.1%), a pass chance of about 0.3; the PI cited 0.267 and 0.382 for its two
+evaluation versions. It chose the fixed task-reference panel, 198/200 (0.778),
+because that panel uses the protected execution path. The panel composition
+is normal (45/200 rear-sector episodes, 22.5%); it held 2 sector failures where
+about 5 were expected. The task reference is one fixed 200-episode panel, and
+the PI had changed its research evaluation semantics during the campaign
+(`604d52985c97` to `d844c174d575`). The decision repeats `6882b9ec`.
+
+**Effect of OI-041.**
+
+- Mechanics as intended: no reference re-read in 31 PI sessions; three
+  compactions (236k to 44k, 249k to 64k, 267k to 79k tokens) kept the 23k-token
+  system part, with no later re-read. PI AIU per session at equal depth:
+  sessions 1–6 2.53 (`cfa88359` 2.68, `6882b9ec` 3.13), sessions 7–15 2.14
+  (`6882b9ec` 2.13). `view` calls per session 4.7 against 7.3 and 8.1.
+- Attributable regression: the analyst read 6 files instead of 38 and
+  omitted the training range, and the startup message no longer carries the
+  model synthesis. Startup trained the unchanged recipe; full-range exposure
+  came about 30 minutes later. `cfa88359` and `6882b9ec` trained the full range
+  in their first run. The scientific-model phase cost 3.52 AIU against 6.89
+  (`cfa88359`) and 6.87 (`6882b9ec`), with 17 tool calls against 56 and 84 and
+  322 s against 493 and 651 s. The new model was better structured but lost
+  the training-range gap and the singular start posture.
+- Not attributable from this campaign: the plateau and the assessment
+  decision repeat `6882b9ec`, which ran before OI-041.
+- Probable contributor, not verified: a more defensive PI. Six inquiries
+  only validated or compared checkpoints; all six interventions protected T3
+  (transfers or frozen overlays) instead of retraining a changed method. Per
+  10k characters of PI records, against `6882b9ec` and `cfa88359`: "limited"
+  2.3 (1.2, 0.3), "fresh panel" 1.8 (0.7, 0.3), "pre-specified" 1.7 (0, 0),
+  method-level terms 0.8 (1.0, 4.8). The system prompt gives `program.md`,
+  whose guidance is mostly limits on claims, system-level weight on every
+  turn. The new tone adds "Claim no more than the tested implementation and
+  the recorded evidence show", and the SDK "bias to action" text, the only
+  counterweight, was removed. One campaign cannot separate this from
+  run-to-run variation.
+
+**Candidate follow-ups (not approved).**
+
+1. Analyst: read the full recipe, including training environment and reward,
+   and state the system's physical symmetries and invariances.
+2. Startup message: restore the model's decision-relevant synthesis.
+3. Inquiry objective: restore the persistence sentence.
+4. Rebalance the system prompt: remove the caution added by the new tone.
+
+New capabilities, such as task-reference panels with PI-chosen seeds, wait
+until the core behavior is fixed (maintainer decision, 23 October).
+
 ## Completed campaign `2d4fcc0e` (21 October)
 
 **Outcome:** T4 checkpoint 120,832 passed the official assessment at 200/200.
@@ -215,9 +306,9 @@ This register does not authorize runtime changes or campaign operations.
 |---|---|---|---|
 | OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
-| OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": the PI rebuilt this comparison in each campaign (607 lines in `e7dbbece`). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. |
+| OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": in `e7dbbece` the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. Use: 8 calls in `cfa88359`, 45 in `5d94bf8a`. |
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
-| OI-041 | The PI role arrives in the first user message. The SDK system message stays at its default. | **Open** | Decided 2026-10-22: `customize` mode on SDK 1.0.26 (runtime 1.0.103). Remove or replace the coding-agent parts that conflict with the PI role: the identity, `code_change_rules`, the coding tone, and in `runtime_instructions` the `autonomy_and_persistence` ("bias to action"), `subagent_usage` ("use custom agents sparingly"), editing, destructive-action, session-folder, GitHub-reference and commit-trailer blocks. Keep `safety`, `tool_instructions`, system notifications and tool-use guidelines. Replace the tone with a scientific reporting tone. Move campaign-invariant content into the system prompt: the PI role, the authority boundaries, `scenario.md`, `program.md`, core `instruments.md` and the frozen scientific model; the opening analyst gets its own prompt with its contract files. Each moved file leaves the first-message list, and the path policy refuses re-reads of exactly those files. **Warning:** context compaction ran in PI inquiry sessions of `49e58c12`, `573d538c`, `4a65a241` and `fd2afc2e` (about 220k tokens reduced to about 25k), which removes first-message content. Before re-reads are blocked, verify that the customized system message survives compaction unchanged; the console must flag every compaction with the tokens removed. Keep the coder and reviewer prompts separate and check whether they inherit the session system message. Evaluate scientific outcomes separately from the prompt integration. The approved plan is in [OI-041 system-prompt plan](#oi-041-system-prompt-plan-22-october); work is on branch `system-prompt`. |
+| OI-041 | The PI role arrives in the first user message. The SDK system message stays at its default. | **Open** | Decided 2026-10-22: `customize` mode on SDK 1.0.26 (runtime 1.0.103). Remove or replace the coding-agent parts that conflict with the PI role: the identity, `code_change_rules`, the coding tone, and in `runtime_instructions` the `autonomy_and_persistence` ("bias to action"), `subagent_usage` ("use custom agents sparingly"), editing, destructive-action, session-folder, GitHub-reference and commit-trailer blocks. Keep `safety`, `tool_instructions`, system notifications and tool-use guidelines. Replace the tone with a scientific reporting tone. Move campaign-invariant content into the system prompt: the PI role, the authority boundaries, `scenario.md`, `program.md`, core `instruments.md` and the frozen scientific model; the opening analyst gets its own prompt with its contract files. Each moved file leaves the first-message list, and the path policy refuses re-reads of exactly those files. **Warning:** context compaction ran in PI inquiry sessions of `49e58c12`, `573d538c`, `4a65a241` and `fd2afc2e` (about 220k tokens reduced to about 25k), which removes first-message content. Before re-reads are blocked, verify that the customized system message survives compaction unchanged; the console must flag every compaction with the tokens removed. Keep the coder and reviewer prompts separate and check whether they inherit the session system message. Evaluate scientific outcomes separately from the prompt integration. The approved plan is in [OI-041 system-prompt plan](#oi-041-system-prompt-plan-22-october); work is on branch `system-prompt`. First campaign `5d94bf8a` failed at 193/200: mechanics held (no re-reads, compaction kept the reference, equal per-session cost); the analyst's lean reading delayed full-range training; the plateau and assessment decision repeat `6882b9ec`. See [Failed campaign `5d94bf8a`](#failed-campaign-5d94bf8a-23-october). |
 
 ### Changes that need more evidence — 1
 
@@ -270,7 +361,7 @@ An unrelated official assessment is not a condition for closure.
 | OI-038 | Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value. | **Closed** | Closed by maintainer decision on 22 October. `success_rate_pass_probability` gives Wilson intervals, the pass probability and the pass probability at the interval bounds from measured counts. Training-log success rates average the last 100 training episodes in the PI-owned checkpoint callback; consecutive values share episodes and use the training distribution, so they are trend indicators, not samples. The contracts already state that training facts do not establish development performance. |
 | OI-046 | A runtime change tested on frozen weights has no route to protected evaluation. | **Closed** | Closed by maintainer decision on 22 October (rule B in `contracts/instruments/coding.md`): runtime changes reach a candidate only through training; frozen-weight runtime tests are diagnostics; measurement artifacts never become candidates. The repackaging operation is not built. In `cfa88359` the PI trained T2 fresh with a reflection in its policy I/O and passed at 199/200. |
 
-### Inactive entries — 11
+### Inactive entries — 13
 
 These entries do not authorize implementation.
 The historical evidence remains valid.
@@ -288,6 +379,8 @@ The historical evidence remains valid.
 | OI-044 | The PI can attribute a recorded measurement to the wrong candidate. | **Proposal** | Implement an on-demand `artifact_evidence_query` action that returns one candidate's recorded measurements if a campaign shows this error again. Precedent: E11 in `49e58c12` attributed T1's 192/200 to T2. Recorded references in `success_rate_pass_probability` already cover the counts behind pass estimates. |
 | OI-045 | Inquiry training requests must use the full 120,000-step allocation. | **Proposal** | Low priority. Archived checkpoints already expose early steps, and a run takes minutes. The allocation stays fixed under OI-006. |
 | OI-047 | Code paths used only for external inference providers remain when the PI runs on GitHub Copilot. | **Proposal** | Low priority. Remove the `read` tool, `read_alias` and `json_editors` if external providers are no longer used. |
+| OI-048 | The robot contract files carry a scenario-specific name (`contracts/robots/two_joint_arm.py` and `.xml`). | **Proposal** | Rename them to a generic name and update every reference in contracts, benchmark, runner and tests. Open question for the maintainer: one neutral name (`robot.*`) or a name chosen per scenario. |
+| OI-049 | The opening analyst shares the PI's system-prompt construction and differs only in a few sections. | **Proposal** | After the next campaign, give the analyst its own system prompt, designed for building a complete physical model. Evidence: in `5d94bf8a` the analyst read 6 files instead of 38 and omitted the 14–20 cm training range. |
 
 ### Evidence and review limits
 
@@ -462,6 +555,37 @@ sentence exactly. Subagent probe: a custom agent's system message is its own
 prompt plus the SDK safety text; it does not contain the PI role or the
 reference. `environment_context` lists no hidden folders and is kept.
 
+**Adaptation after `5d94bf8a` (23 October, maintainer-approved).** The
+laboratory tone and the neutral autonomy text removed every push to act while
+`program.md`, mostly limits on claims, gained system-level weight. Our own
+texts replace them; nothing returns to the SDK defaults or the old launcher
+wording.
+
+- Tone: "Report as a scientist briefing a colleague: lead with what you found
+  and what you will do next, then the evidence. Give numbers with their
+  source. State uncertainty where it changes a decision, not as a disclaimer.
+  Be concise."
+- PI initiative (autonomy block): act on the evidence; measure again only
+  when the result could change the next action; after a failed approach,
+  separate idea from implementation, and answer a plateau with a different
+  method (representation, controller structure, training from scratch); a
+  gain that leaves the main failure in place is partial; an inquiry continues
+  across tests until answered or redirected; the `submit_operation` sentences.
+- PI exploration: explain results from the physics (geometry, dynamics,
+  limits, symmetries); a performance difference between conditions the physics
+  treats as equivalent comes from the policy or the recipe.
+- Analyst exploration: read the simulator configuration and the whole recipe,
+  including training environment and reward; derive workspace, dynamics,
+  limits, symmetries and invariances; record where the recipe departs from the
+  task. Analyst autonomy: complete the model in this session.
+- Reference header: the documents define the task, the rules and what a
+  result may claim; for the PI, "They limit claims, not the methods you may
+  try."
+- `run_research.ps1` is unchanged: the removed launcher lines are in
+  `program.md` or the persona, or the new texts cover them.
+- The analyst gets its own complete system prompt after the next campaign
+  (OI-049).
+
 ## Capped campaign `90563aac`: regression follow-up backlog
 
 The maintainer authorized this backlog update, not runtime repairs, prompt
@@ -608,6 +732,8 @@ operations and must remain separate from campaign execution:
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-23 | OI-041 adaptation; console fixes; OI-048/049 | System prompt: our own tone, PI initiative, physics-first exploration, analyst full-recipe exploration and a reference header that limits claims, not methods (see the OI-041 plan section). `run_research.ps1` unchanged. Console: multi-line boundary details stay on separate lines when output is piped, so TRAINING RESULTS prints one checkpoint per line; the session END card no longer shows "Usage: usage unavailable" (the usage row is written after the card), and each session prints `[session] USAGE` once its usage is recorded. New proposals OI-048 (generic robot file names) and OI-049 (own analyst system prompt). OI-039 wording corrected. |
+| 2026-10-23 | Campaign `5d94bf8a` failed at 193/200; first OI-041 campaign | 4 h 45 min, 31 PI sessions, 13 inquiries, 7 training runs (6 transfers), 35 measurements, 151.17 AIU (PI 102.95, coders 34.85, reviewers 13.37). Best T3:checkpoint-40960 plateaued at 97.1% (2,524/2,600 research episodes) from about 105 minutes; six later interventions were negative and cost 100 AIU. Maintainer analysis: one-sided failure at bearings −150° to −120° (25.4%) against 0% in the mirror bin, present since T1 and inherited through transfers; same weakness as `6882b9ec`; `cfa88359` passed by reflection canonicalization. Assessment rested on the fixed task-reference panel (198/200) over pooled research evidence. OI-041 mechanics held (0 re-reads, 3 compactions, equal per-session cost); the analyst's lean reading delayed full-range training. Details: [Failed campaign `5d94bf8a`](#failed-campaign-5d94bf8a-23-october). |
 | 2026-10-22 | Campaign `cfa88359` passed at 199/200; opening-session files | Official assessment passed at 99.5% (199/200) with T2:checkpoint-95232 about 67 minutes after the first session, for 30.09 AIU (PI 23.0 over 7 sessions, coders 4.95, reviewers 2.15), the lowest recorded cost. 2 inquiries, 2 fresh training runs, 7 measurements. T1 (full 6–20 cm range) scored 127/200 with failures concentrated at 0°–90°; the M3 mechanism test showed T1's actions violated planar reflection symmetry; T2 trained fresh with a reflection canonicalization in the PI-owned policy I/O (the rule B route) scored 199–200/200 against T1's 111/200 on M4. The PI did not assess on the selection-affected M4: it ran a fresh research panel (200/200) and `task_reference` (200/200) in M7, then assessed citing 96.99% pass probability and 67.43% at the interval's lower bound. `episode_outcome_breakdown` was called 8 times. Maintainer replay: 1998/2000 (99.9%) on fresh protected episodes. The opening-session first message removed its `contracts/scenario.md` re-reads (21 to 0) and cut its tool calls from 84 to 56, but its AIU stayed at 6.9 because it re-read `authority.md` 11 times and `policy_runtime.py` 6 times; both are now included. Weak points: M6 repeated M5 after a correction; one training seed. One campaign cannot attribute the pass to the harness changes. |
 | 2026-10-22 | Campaign `6882b9ec` failed at 193/200; root cause | 5 inquiries, 4 training runs, 10 measurements (M6 failed after a PI evaluator change), 68.63 AIU (PI 44.8 over 16 sessions, coders 17.54, reviewers 6.29). Every change was tested by training (rule B held): T2 joint-limit inputs 107/200, T3 substep hold 3/200, T4 transfer from T1 with an occupancy reward 198/200 (M8, used for checkpoint selection) and 197/200 (M9). `episode_outcome_breakdown` was called 14 times; no `task_reference` was run. The PI assessed T4:checkpoint-115712 at an estimated 64% pass chance from M9 alone. Maintainer replay outside the campaign record: the official panel reproduces 193/200; 2,000 fresh episodes give 1927/2000 (96.35%, 95% interval 95.5–97.2%) in both the protected environment and the PI research environment, so there is no environment gap. At that rate the official pass chance was 14% and a panel of at least 197 occurs 6% of the time. Root cause: (1) a weakness the PI found in I1 stayed unresolved: radius 15–19 cm at angles −155° to −120°, 5% of episodes, where T4 fails 31%; 5 of the 7 official failures lie there. (2) Assessment rested on one 200-episode panel (M9) that held 2 sector episodes instead of about 10; the PI's M10 stratified analysis read "no clear geometry weakness" from those 2 episodes (OI-025 type). (3) Every research panel had 200 episodes; a 2,000-episode research evaluation takes about 5 minutes and would have shown 96.4%. The pass-probability figure was correct under its stated assumptions, and its interval (95.7–99.5%) contained the true rate, but one 200-episode panel cannot separate 96% from 98%. No harness change caused the failure, but goal-review text favoured assessment: "Neither an untested variant nor a candidate near the threshold justifies a choice by itself" was read as requiring a tested intervention before further work (the PI wrote "no identified, evidence-backed intervention" despite the I1 sector), and "No numerical confidence estimate or repeated measurement is required" read as one panel being enough. Follow-up: `contracts/program.md` and the goal-review prompt now say that a development result near the threshold does not establish the candidate's rate and that further work does not need an already tested intervention; the defensive sentences about eligibility, required estimates and Runner readiness are removed; `success_rate_pass_probability` also returns the pass probability at the interval bounds (197/200: 64.1%, bounds 6.5% to 99.6%). A goal-review sentence that recommends larger panels was rejected because it could drive endless measurement. The console shows Why, Rationale, Panels and Results as sections, a campaign line (elapsed time, AIU, best-known), success counts with labels, earlier episode exposure, paired counts, and a compact training summary. |
 | 2026-10-22 | Campaign `e7dbbece` stopped; rule B and `episode_outcome_breakdown` | The maintainer stopped `e7dbbece` during I5 after 5 inquiries, 2 training runs and 12 completed measurements, for 71.315 AIU (PI 46.118 over 16 sessions, coders 18.108, reviewers 7.089). No official assessment. T2:checkpoint-120832 (full 6–20 cm exposure) scored 192/200 on the task reference and 191/200 and 190/200 on fresh research panels. First-message files were included and re-reads stopped. From I4 on, the PI tested runtime changes on frozen T2 weights: branch redirection 193/200 against 189/200 (4 rescued, 0 lost), near-target damping 161/200 against 186/200. I5 then tried to preserve the M11 runtime bytes inside a measurement artifact; M13 failed on its own runtime hash check. No training followed after T2. Follow-up: `contracts/instruments/coding.md` states that runtime changes reach a candidate only through training, that frozen-weight runtime tests are diagnostics and that measurement artifacts never become candidates. New optional tool `episode_outcome_breakdown` gives per-measurement successes with Wilson intervals, paired counts with an exact sign test for two measurements of the same episodes, and bins of a PI-chosen per-episode field; it verifies fingerprints and recorded counts. Validation on `e7dbbece`: M4 T2 against T1 by radius reproduces the PI's M5 (inner 103/105 against 52/105) and M6 paired counts match Runner's (52 and 5); the 64 MB M8 artifact is read lazily; mismatched episode sets, absent fields and a foreign campaign are refused. Failing tests were identical before and after (46 with the campaign root set). |

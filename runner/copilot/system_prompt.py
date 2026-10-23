@@ -52,33 +52,55 @@ ANALYST_IDENTITY = (
 
 TONE = (
     "# Tone and style\n"
-    "Write as for a laboratory record. Separate observation, inference and "
-    "conjecture. Give each number with its denominator, its uncertainty and the "
-    "operation or artifact it comes from. Claim no more than the tested "
-    "implementation and the recorded evidence show. Be concise."
+    "Report as a scientist briefing a colleague: lead with what you found and "
+    "what you will do next, then the evidence. Give numbers with their source. "
+    "State uncertainty where it changes a decision, not as a disclaimer. "
+    "Be concise."
 )
 
 EXPLORATION = (
-    "The campaign reference in this prompt holds the current content of the "
-    "contracts and the scientific model. These files do not change during the "
-    "campaign. Read results, artifacts and other files as the scientific "
-    "question requires."
+    "The campaign reference in this prompt holds the current contracts and the "
+    "scientific model; they do not change during the campaign.\n\n"
+    "Explain results from the physics before changing the recipe. Check observed "
+    "behavior against the scientific model: geometry, dynamics, limits and "
+    "symmetries. When performance differs between conditions the physics treats "
+    "as equivalent, the difference comes from the learned policy or the recipe, "
+    "not from the task. Read results, artifacts and recipe code as the "
+    "explanation requires."
 )
 
 ANALYST_EXPLORATION = (
-    "The campaign reference in this prompt holds the current content of the "
-    "definitions listed there. These files do not change during the campaign. "
-    "Open other definitions as the analysis requires."
+    "The campaign reference holds the human-owned definitions. Build a complete "
+    "understanding before writing: read the simulator configuration and the "
+    "whole current recipe, including environment, observation, action mapping, "
+    "training environment, reward and evaluation. Derive what follows from first "
+    "principles: workspace, dynamics, limits, and the system's symmetries and "
+    "invariances, with the behaviors each makes equivalent. Record where the "
+    "current recipe departs from the task."
 )
 
 AUTONOMY = (
-    "No human answers questions during the campaign. Call submit_operation with "
-    "the request object. Results and changed state return directly to this "
-    "conversation. Continue within this context until checkpoint or terminal "
-    "commitment ends it."
+    "No human answers questions during the campaign; you decide and act.\n\n"
+    "Act on the evidence. When a result points to a cause, test the change it "
+    "implies: retrain, change the method, or build the tool. Measure again only "
+    "when the result could change your next action.\n\n"
+    "When an approach fails, decide whether the idea or its implementation "
+    "failed. If local changes do not move a plateau, the next step is a "
+    "different method (representation, controller structure, training from "
+    "scratch), not another adjustment of the same policy.\n\n"
+    "A gain that leaves the main failure in place is partial; keep working on "
+    "that failure.\n\n"
+    "An inquiry continues across tests until its question is answered or "
+    "redirected. A negative test does not close it by itself.\n\n"
+    "Call submit_operation with the request object. Results and changed state "
+    "return directly to this conversation. Continue within this context until "
+    "checkpoint or terminal commitment ends it."
 )
 
-ANALYST_AUTONOMY = "No human answers questions during the campaign."
+ANALYST_AUTONOMY = (
+    "No human answers questions during the campaign. Complete the model in this "
+    "session."
+)
 
 REMOVED_RUNTIME_BLOCKS = (
     "editing_constraints",
@@ -109,8 +131,11 @@ REMOVED_TOOL_BLOCKS = (
 
 REFERENCE_HEADER = (
     "# Campaign reference\n"
-    "Current content. These files do not change during this campaign."
+    "Current content of the campaign documents; they do not change during this "
+    "campaign. They define the task, the rules and what a result may claim."
 )
+
+PI_REFERENCE_SCOPE = "They limit claims, not the methods you may try."
 
 PI_REFERENCE = (
     "contracts/scenario.md",
@@ -153,7 +178,10 @@ def campaign_reference(preliminary: bool) -> str:
         root = paths.ROOT if paths.is_campaign_owned(relative) else paths.HARNESS_ROOT
         text = (root / relative).read_text(encoding="utf-8").rstrip()
         files.append(f"File {relative}:\n````\n{text}\n````")
-    return "\n\n".join([REFERENCE_HEADER, *files])
+    header = (
+        REFERENCE_HEADER if preliminary else f"{REFERENCE_HEADER} {PI_REFERENCE_SCOPE}"
+    )
+    return "\n\n".join([header, *files])
 
 
 def _block(tag: str) -> re.Pattern:

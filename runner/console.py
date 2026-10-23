@@ -235,7 +235,15 @@ def announce(message: str) -> None:
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
     prefix = f"{timestamp} "
     if not sys.stdout.isatty():
-        print(leading_break + prefix + " ".join(text.split()), flush=True)
+        first, *rest = text.splitlines() or [""]
+        indent = " " * len(prefix)
+        print(
+            leading_break
+            + prefix
+            + " ".join(first.split())
+            + "".join(f"\n{indent}{line.rstrip()}" for line in rest),
+            flush=True,
+        )
         return
     wrapped = _wrap_console_text(text, initial_prefix=prefix)
     if text.startswith("[") and "]" in text:
@@ -294,7 +302,11 @@ def boundary(scope: str, action: str, subject: str = "", detail: str = "") -> No
         )
         card(normalized_scope, title, tuple(detail.splitlines()) if detail else ())
         return
-    body = " | ".join(part for part in (action.upper(), subject, detail) if part)
+    head = " | ".join(part for part in (action.upper(), subject) if part)
+    if "\n" in detail:
+        announce(f"[{normalized_scope}] {head}\n{detail}")
+        return
+    body = " | ".join(part for part in (head, detail) if part)
     announce(f"[{normalized_scope}] {body}")
 
 
