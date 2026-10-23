@@ -59,39 +59,35 @@ TONE = (
 )
 
 EXPLORATION = (
-    "The campaign reference in this prompt holds the current contracts and the "
-    "scientific model; they do not change during the campaign.\n\n"
-    "Explain results from the physics before changing the recipe. Check observed "
-    "behavior against the scientific model: geometry, dynamics, limits and "
-    "symmetries. When performance differs between conditions the physics treats "
-    "as equivalent, the difference comes from the learned policy or the recipe, "
-    "not from the task. Read results, artifacts and recipe code as the "
-    "explanation requires."
+    "The scientific model and the campaign reference in this prompt do not "
+    "change during the campaign.\n\n"
+    "The scientific model describes the physical system. Explain each result "
+    "through it before choosing a change. When performance differs between "
+    "conditions the physics treats as equivalent, the difference comes from the "
+    "learned policy or the recipe, not from the task. Read results, artifacts "
+    "and recipe code as the explanation requires."
 )
 
 ANALYST_EXPLORATION = (
-    "The campaign reference holds the human-owned definitions. Build a complete "
-    "understanding before writing: read the simulator configuration and the "
-    "whole current recipe, including environment, observation, action mapping, "
-    "training environment, reward and evaluation. Derive what follows from first "
-    "principles: workspace, dynamics, limits, and the system's symmetries and "
-    "invariances, with the behaviors each makes equivalent. Record where the "
-    "current recipe departs from the task."
+    "Build a complete understanding of the system before writing: use the "
+    "definitions in the campaign reference and read the whole current recipe. "
+    "Derive from first principles what the system can and cannot do, and which "
+    "conditions it treats as equivalent. Record where the current recipe "
+    "departs from the task."
 )
 
 AUTONOMY = (
     "No human answers questions during the campaign; you decide and act.\n\n"
-    "Act on the evidence. When a result points to a cause, test the change it "
-    "implies: retrain, change the method, or build the tool. Measure again only "
-    "when the result could change your next action.\n\n"
+    "Act on the evidence. When a result points to a cause, derive the change "
+    "from the robot's mechanics and the evidence, implement it, and test it. "
+    "Measure again only when the result could change your next action.\n\n"
     "When an approach fails, decide whether the idea or its implementation "
-    "failed. If local changes do not move a plateau, the next step is a "
-    "different method (representation, controller structure, training from "
-    "scratch), not another adjustment of the same policy.\n\n"
+    "failed. When adjustments within one method stop improving the result, "
+    "change the method.\n\n"
     "A gain that leaves the main failure in place is partial; keep working on "
     "that failure.\n\n"
     "An inquiry continues across tests until its question is answered or "
-    "redirected. A negative test does not close it by itself.\n\n"
+    "redirected; a negative test does not close it by itself.\n\n"
     "Call submit_operation with the request object. Results and changed state "
     "return directly to this conversation. Continue within this context until "
     "checkpoint or terminal commitment ends it."
@@ -137,6 +133,14 @@ REFERENCE_HEADER = (
 
 PI_REFERENCE_SCOPE = "They limit claims, not the methods you may try."
 
+SCIENTIFIC_MODEL = "pi_workspace/scientific_model.md"
+
+MODEL_HEADER = (
+    "# Scientific model\n"
+    "The physical model of the robot and the task you study. It was written "
+    "before campaign evidence and does not change during the campaign."
+)
+
 PI_REFERENCE = (
     "contracts/scenario.md",
     "contracts/authority.md",
@@ -148,7 +152,7 @@ PI_REFERENCE = (
     "contracts/instruments/coding.md",
     "contracts/instruments/readers.md",
     "contracts/policy_runtime.py",
-    "pi_workspace/scientific_model.md",
+    SCIENTIFIC_MODEL,
 )
 
 REFERENCE_READ_DENIAL = "Its current content is in your system prompt."
@@ -172,16 +176,27 @@ def reference_paths(preliminary: bool) -> tuple[str, ...]:
     )
 
 
+def _reference_file(relative: str) -> str:
+    root = paths.ROOT if paths.is_campaign_owned(relative) else paths.HARNESS_ROOT
+    text = (root / relative).read_text(encoding="utf-8").rstrip()
+    return f"File {relative}:\n````\n{text}\n````"
+
+
 def campaign_reference(preliminary: bool) -> str:
-    files = []
-    for relative in reference_paths(preliminary):
-        root = paths.ROOT if paths.is_campaign_owned(relative) else paths.HARNESS_ROOT
-        text = (root / relative).read_text(encoding="utf-8").rstrip()
-        files.append(f"File {relative}:\n````\n{text}\n````")
+    files = [
+        _reference_file(relative)
+        for relative in reference_paths(preliminary)
+        if relative != SCIENTIFIC_MODEL
+    ]
     header = (
         REFERENCE_HEADER if preliminary else f"{REFERENCE_HEADER} {PI_REFERENCE_SCOPE}"
     )
     return "\n\n".join([header, *files])
+
+
+def pi_preamble() -> str:
+    """The role, then the physics it reasons with, ahead of every rule."""
+    return "\n\n".join([PI_IDENTITY, MODEL_HEADER, _reference_file(SCIENTIFIC_MODEL)])
 
 
 def _block(tag: str) -> re.Pattern:
@@ -247,7 +262,7 @@ def system_message(preliminary: bool, warn: Callable[[str], None]) -> dict:
             "identity": {"action": _identity_transform},
             "preamble": {
                 "action": "replace",
-                "content": ANALYST_IDENTITY if preliminary else PI_IDENTITY,
+                "content": ANALYST_IDENTITY if preliminary else pi_preamble(),
             },
             "tone": {"action": "replace", "content": TONE},
             "tool_efficiency": {"action": _efficiency_transform},

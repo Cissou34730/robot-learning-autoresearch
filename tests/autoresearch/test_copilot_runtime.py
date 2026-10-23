@@ -240,9 +240,13 @@ def test_search_refuses_an_explicit_reference_target():
 def test_each_reference_file_is_in_the_system_message_once():
     for preliminary in (False, True):
         sections = system_message(preliminary, lambda _: None)["sections"]
-        reference = sections["custom_instructions"]["content"]
+        text = "\n".join(
+            section["content"]
+            for section in sections.values()
+            if isinstance(section.get("content"), str)
+        )
         for path in reference_paths(preliminary):
-            assert reference.count(f"File {path}:\n") == 1, path
+            assert text.count(f"File {path}:\n") == 1, path
 
 
 def test_runtime_blocks_are_replaced_or_removed_and_missing_ones_reported():
