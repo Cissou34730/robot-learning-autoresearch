@@ -254,11 +254,17 @@ def test_runtime_blocks_are_replaced_or_removed_and_missing_ones_reported():
     sections = system_message(False, warnings.append)["sections"]
     text = sections["runtime_instructions"]["action"](
         "<system_notifications>\nkeep\n</system_notifications>\n"
+        "<exploration_and_reading_files>\nExamine\n</exploration_and_reading_files>\n"
         "<autonomy_and_persistence>\nBias to action\n</autonomy_and_persistence>\n"
         "<subagent_usage>\nsparingly\n</subagent_usage>\n"
     )
     assert "keep" in text and "submit_operation" in text
-    assert "Bias to action" not in text and "sparingly" not in text
+    assert "Examine" not in text and "Bias to action" not in text
+    assert "sparingly" not in text and not warnings
+    sections = system_message(True, warnings.append)["sections"]
+    sections["runtime_instructions"]["action"](
+        "<autonomy_and_persistence>\nBias to action\n</autonomy_and_persistence>\n"
+    )
     assert len(warnings) == 1 and "exploration_and_reading_files" in warnings[0]
 
 
