@@ -829,9 +829,16 @@ function New-ScientificSessionPrompt {
         $contextFiles = @("campaigns/brief.md")
     }
     $includedFiles = @(Get-FirstMessageFiles -Paths $contextFiles)
+    $modelFile = @(Get-FirstMessageFiles -Paths @(
+        if ($contextFiles.Count -gt 0) { "pi_workspace/scientific_model.md" }
+    ))
+    $roleLine = "You are the Principal Investigator described in your system prompt."
+    if ($modelFile.Count -gt 0) {
+        $roleLine += " The scientific model of the system you study follows."
+    }
     if ($includedFiles.Count -gt 0) {
-        Write-Status "CONTEXT | first message includes $($contextFiles -join ', ') ($((($includedFiles -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
-        $sourceGuidance = "campaigns/brief.md is included at the end of this message; the latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
+        Write-Status "CONTEXT | first message includes pi_workspace/scientific_model.md, $($contextFiles -join ', ') ($((($modelFile + $includedFiles) -join '').Length / 1000).ToString('0'))k chars)" -Color Magenta -Label session
+        $sourceGuidance = "The scientific model is included at the start of this message and campaigns/brief.md at the end; the latest scientific session record is summarized above. Consult other evidence as the scientific question requires."
     }
     $submissionGuidance = if ($transition) {
         "Use the scientific session record contract in contracts/instruments.md in the campaign reference and preserve the transition decision, evidence, remaining goal gap, and next direction."
@@ -855,6 +862,8 @@ function New-ScientificSessionPrompt {
     }
 
     $sections = @(
+        $roleLine
+        $modelFile
         $handoffContext
         $startupHandoffGuidance
         "Current scientific understanding: $synthesis"
@@ -929,6 +938,7 @@ function Invoke-ScientificModelPhase {
 
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
+        "You are the robotics and simulation analyst described in your system prompt."
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task in the campaign reference."

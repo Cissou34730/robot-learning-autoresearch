@@ -216,7 +216,7 @@ def test_reference_files_are_refused_to_the_pi_and_analyst_not_the_coder():
     model = {"path": "pi_workspace/scientific_model.md"}
     program = {"path": "contracts/program.md"}
     assert tool_denial("view", program) == REFERENCE_READ_DENIAL
-    assert tool_denial("view", model) == REFERENCE_READ_DENIAL
+    assert tool_denial("view", model) is None
     assert tool_denial("view", program, preliminary=True) is None
     assert (
         tool_denial("view", {"path": "contracts/authority.md"}, preliminary=True)

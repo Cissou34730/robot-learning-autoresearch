@@ -59,21 +59,18 @@ TONE = (
 )
 
 EXPLORATION = (
-    "The scientific model and the campaign reference in this prompt do not "
-    "change during the campaign.\n\n"
-    "The scientific model describes the physical system. Explain each result "
-    "through it before choosing a change. When performance differs between "
-    "conditions the physics treats as equivalent, the difference comes from the "
-    "learned policy or the recipe, not from the task. Read results, artifacts "
-    "and recipe code as the explanation requires."
+    "The campaign reference in this prompt does not change during the campaign. "
+    "The scientific model of the system you study is in the first message of "
+    "each session and in pi_workspace/scientific_model.md.\n\n"
+    "Explain each result through the scientific model before choosing a change. "
+    "Read results, artifacts and recipe code as the explanation requires."
 )
 
 ANALYST_EXPLORATION = (
     "Build a complete understanding of the system before writing: use the "
     "definitions in the campaign reference and read the whole current recipe. "
-    "Derive from first principles what the system can and cannot do, and which "
-    "conditions it treats as equivalent. Record where the current recipe "
-    "departs from the task."
+    "Derive from first principles what the system can and cannot do. Record "
+    "where the current recipe departs from the task."
 )
 
 AUTONOMY = (
@@ -133,14 +130,6 @@ REFERENCE_HEADER = (
 
 PI_REFERENCE_SCOPE = "They limit claims, not the methods you may try."
 
-SCIENTIFIC_MODEL = "pi_workspace/scientific_model.md"
-
-MODEL_HEADER = (
-    "# Scientific model\n"
-    "The physical model of the robot and the task you study. It was written "
-    "before campaign evidence and does not change during the campaign."
-)
-
 PI_REFERENCE = (
     "contracts/scenario.md",
     "contracts/authority.md",
@@ -152,7 +141,6 @@ PI_REFERENCE = (
     "contracts/instruments/coding.md",
     "contracts/instruments/readers.md",
     "contracts/policy_runtime.py",
-    SCIENTIFIC_MODEL,
 )
 
 REFERENCE_READ_DENIAL = "Its current content is in your system prompt."
@@ -183,20 +171,11 @@ def _reference_file(relative: str) -> str:
 
 
 def campaign_reference(preliminary: bool) -> str:
-    files = [
-        _reference_file(relative)
-        for relative in reference_paths(preliminary)
-        if relative != SCIENTIFIC_MODEL
-    ]
+    files = [_reference_file(relative) for relative in reference_paths(preliminary)]
     header = (
         REFERENCE_HEADER if preliminary else f"{REFERENCE_HEADER} {PI_REFERENCE_SCOPE}"
     )
     return "\n\n".join([header, *files])
-
-
-def pi_preamble() -> str:
-    """The role, then the physics it reasons with, ahead of every rule."""
-    return "\n\n".join([PI_IDENTITY, MODEL_HEADER, _reference_file(SCIENTIFIC_MODEL)])
 
 
 def _block(tag: str) -> re.Pattern:
@@ -262,7 +241,7 @@ def system_message(preliminary: bool, warn: Callable[[str], None]) -> dict:
             "identity": {"action": _identity_transform},
             "preamble": {
                 "action": "replace",
-                "content": ANALYST_IDENTITY if preliminary else pi_preamble(),
+                "content": ANALYST_IDENTITY if preliminary else PI_IDENTITY,
             },
             "tone": {"action": "replace", "content": TONE},
             "tool_efficiency": {"action": _efficiency_transform},
