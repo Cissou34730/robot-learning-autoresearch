@@ -1,8 +1,6 @@
 # Autoresearch terminal report (single-screen TUI)
 
-Implementation of the autoresearch terminal report specification, now owned by
-GitHub issue #62 (https://github.com/Cissou34730/robot-learning-autoresearch/issues/62):
-one read-only
+Implementation of `docs/autoresearch-terminal-report-spec.md`: one read-only
 Textual screen for Windows Terminal that shows campaign context, PI-selected
 models, conditional execution progress and chronological output. The PI stays
 autonomous; scrolling is a reading action and never touches campaign
