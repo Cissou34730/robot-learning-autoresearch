@@ -12,6 +12,7 @@ from runner import repository as runner_repository
 
 ROOT = paths.ROOT
 NA = "unavailable"
+USAGE_ROLES = ("analyst", "pi", "scientific_coder", "scientific_reviewer")
 
 
 def read_json(path: Path) -> dict:
@@ -437,6 +438,30 @@ def candidate_rows(campaign: dict) -> list[list[object]]:
     ]
 
 
+def usage_role(row: dict) -> str:
+    role = row.get("role") or NA
+    # The opening analyst records the PI role in its own phase.
+    if role == "pi" and row.get("phase") == "scientific model":
+        return "analyst"
+    return role
+
+
+def role_usage(usage: list[dict]) -> list[list[object]]:
+    roles: dict[str, list[dict]] = defaultdict(list)
+    for row in usage:
+        roles[usage_role(row)].append(row)
+    return [
+        [
+            role,
+            len(rows),
+            usage_total(rows, "aiu"),
+            usage_total(rows, "tool_calls"),
+            usage_total(rows, "duration_seconds"),
+        ]
+        for role, rows in roles.items()
+    ]
+
+
 def resource_metrics(campaign: dict) -> dict[str, str]:
     usage = campaign["usage"]
     derived = []
@@ -457,7 +482,7 @@ def resource_metrics(campaign: dict) -> dict[str, str]:
         )
         derived.append(item)
     return {
-        "Recorded PI invocations": str(len(usage)),
+        "Recorded invocations (all roles)": str(len(usage)),
         "Backend sessions": str(len({row.get("session_id") for row in usage})),
         "Models / reasoning": "; ".join(
             f"{model} / {reasoning}: {count}"
@@ -473,9 +498,9 @@ def resource_metrics(campaign: dict) -> dict[str, str]:
             derived, "new_input_tokens"
         ),
         "Output tokens": usage_total(usage, "output_tokens"),
-        "AIU": usage_total(usage, "aiu"),
+        "AIU (all roles)": usage_total(usage, "aiu"),
         "Tool calls": usage_total(usage, "tool_calls"),
-        "PI duration, seconds": usage_total(usage, "duration_seconds"),
+        "Duration, seconds (all roles)": usage_total(usage, "duration_seconds"),
         "Nonzero exits": str(sum(row.get("exit_code", 0) != 0 for row in usage)),
     }
 
@@ -511,8 +536,16 @@ def comparison_metrics(campaign: dict) -> dict[str, str]:
         "Terminal state": cell(
             state["terminal_state"]["status"] if state["terminal_state"] else None
         ),
-        "PI invocations": str(len(campaign["usage"])),
-        "PI duration, seconds": usage_total(campaign["usage"], "duration_seconds"),
+        "Invocations (all roles)": str(len(campaign["usage"])),
+        "Duration, seconds (all roles)": usage_total(
+            campaign["usage"], "duration_seconds"
+        ),
+        **{
+            f"AIU, {role}": usage_total(
+                [row for row in campaign["usage"] if usage_role(row) == role], "aiu"
+            )
+            for role in USAGE_ROLES
+        },
     }
 
 
@@ -878,11 +911,16 @@ def campaign_sections(campaign: dict) -> list[str]:
         ],
     )
 
-    lines += ["### PI resource accounting", ""]
+    lines += ["### Resource accounting", ""]
     metrics = resource_metrics(campaign)
     lines += table(["Resource fact", "Recorded value"], list(metrics.items()))
     lines += table(
+        ["Role", "Invocations", "AIU", "Tool calls", "Seconds"],
+        role_usage(campaign["usage"]),
+    )
+    lines += table(
         [
+            "Role",
             "Phase",
             "Session",
             "Attempt",
@@ -898,6 +936,7 @@ def campaign_sections(campaign: dict) -> list[str]:
         ],
         [
             [
+                usage_role(row),
                 row.get("phase"),
                 row.get("session_id"),
                 row.get("attempt"),
