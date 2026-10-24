@@ -145,8 +145,16 @@ A paired-comparison entry uses this interface:
 ```
 
 Both fields are required and must be non-empty.
-Both candidates must appear in planned `research_evaluation` measurements that
-use the same episode seeds.
+The candidate must appear in a planned `research_evaluation` measurement. The
+reference either appears in a planned `research_evaluation` measurement on the
+same episode seeds, or has an earlier completed `research_evaluation` of the
+same saved artifact on those seeds under the current evaluation semantics. In
+the second case Runner pairs the candidate with the recorded reference outcomes
+instead of running the reference again; deterministic episodes reproduce them
+exactly.
+
+The development panel is the `research_evaluation` with seed 100000 and 400
+episodes.
 
 The result keeps the accepted candidate artifacts, evaluator semantics, module
 sources, PI-owned scientific changes, and effective parameters.

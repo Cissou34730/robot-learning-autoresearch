@@ -37,6 +37,7 @@ PROPOSAL_ERRORS = (
 ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
 TIMESTEPS = 120_000
+MAX_TIMESTEPS = 360_000
 PUBLICATION_FAILURE_EXIT_CODE = 3
 REPEATS_FIELD = "repeats_earlier_measurements"
 EXPOSURE_FIELD = "episodes_seen_in_earlier_measurements"
@@ -394,10 +395,10 @@ def _training_allocation(request: dict, state: dict) -> int:
                 f"training allocation is maintainer-owned: startup steps must "
                 f"not exceed {allocation:,}; got {request['steps']!r}"
             )
-    elif request["steps"] != allocation:
+    elif not allocation <= request["steps"] <= MAX_TIMESTEPS:
         raise ValueError(
-            f"training allocation is maintainer-owned: steps must equal "
-            f"{allocation:,}, not {request['steps']!r}"
+            f"training allocation is maintainer-owned: steps must be between "
+            f"{allocation:,} and {MAX_TIMESTEPS:,}, not {request['steps']!r}"
         )
     return request["steps"]
 
@@ -1416,6 +1417,23 @@ def execute_measurement(state: dict, pending: dict) -> int:
         reference_evidence = contributing_evidence(
             frozen["reference_measurement_indexes"]
         )
+        stored_sources: list[str] = []
+        for stored in frozen.get(protocol.STORED_REFERENCE_FIELD, []):
+            try:
+                evidence = repository.measurement_evidence(stored["metrics"])
+            except (OSError, TypeError, ValueError) as error:
+                raise FrozenOperationMismatch(
+                    f"stored reference measurement {stored['operation_id']}: {error}"
+                ) from error
+            evidence["episode_results"] = [
+                item
+                for item in evidence["episode_results"]
+                if int(item["episode_seed"]) in shared_seeds
+            ]
+            evidence["episodes"] = len(evidence["episode_results"])
+            if evidence["episodes"]:
+                reference_evidence.append(evidence)
+                stored_sources.append(stored["metrics"]["evaluation_artifact"])
         comparison = execution.requested_paired_comparisons(
             {
                 "paired_comparisons": [
@@ -1443,8 +1461,11 @@ def execute_measurement(state: dict, pending: dict) -> int:
             reference_model_fingerprint=frozen["reference_model_fingerprint"],
             shared_episode_seeds=list(frozen["shared_episode_seeds"]),
             source_artifacts=[
-                partials[index]["metrics"]["evaluation_artifact"]
-                for index in contributing_indexes
+                *(
+                    partials[index]["metrics"]["evaluation_artifact"]
+                    for index in contributing_indexes
+                ),
+                *stored_sources,
             ],
         )
         comparisons.append(comparison)
@@ -2469,6 +2490,7 @@ def run_official_assessment() -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
+    parser.add_argument("--max-timesteps", type=int, default=MAX_TIMESTEPS)
     parser.add_argument("--check-operation", action="store_true")
     parser.add_argument("--check-operation-input", action="store_true")
     parser.add_argument("--operation-state-input", action="store_true")
@@ -2491,13 +2513,16 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if args.timesteps <= 0:
         parser.error("--timesteps must be positive")
+    if args.max_timesteps < args.timesteps:
+        parser.error("--max-timesteps must not be below --timesteps")
     return args
 
 
 def main() -> int:
-    global TIMESTEPS
+    global TIMESTEPS, MAX_TIMESTEPS
     args = parse_args()
     TIMESTEPS = args.timesteps
+    MAX_TIMESTEPS = args.max_timesteps
     if args.operation_state_input:
         state = json.loads(sys.stdin.read())
         print(json.dumps(protocol.session_operation_availability(state)))

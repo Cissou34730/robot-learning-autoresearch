@@ -1007,6 +1007,81 @@ def test_paired_comparison_uses_only_the_exact_frozen_shared_episodes(
     assert comparison["source_artifacts"] == [all_artifacts[1], all_artifacts[0]]
 
 
+def test_paired_comparison_reuses_the_stored_reference_on_shared_seeds(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Compare against a stored reference.")
+    first = _candidate("T1:checkpoint-10", _artifact(tmp_path / "first", b"first"))
+    second = _candidate("T2:checkpoint-10", _artifact(tmp_path / "second", b"second"))
+    state["candidates"] = {first["id"]: first, second["id"]: second}
+    repository.write_state(state)
+    evaluated = []
+
+    def evaluate(artifact, seed, *, label, episodes, output_path, **_kwargs):
+        del label
+        evaluated.append(str(artifact))
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {
+                    "episode": index,
+                    "episode_seed": seed + index,
+                    "success": (seed + index) % 2 == 0,
+                }
+                for index in range(episodes)
+            ],
+        }
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
+
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+
+    def measure(candidate: str, comparisons: list[dict]) -> dict:
+        request = {
+            "measurement": {
+                "description": "Measure on the shared panel.",
+                "rationale": "The paired result informs the next decision.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate,
+                        "episodes": 3,
+                        "seed": 100,
+                    }
+                ],
+                "paired_comparisons": comparisons,
+            }
+        }
+        pending = run_experiment.accept_operation(request, repository.read_state())
+        assert run_experiment.execute_pending_operation() == 0
+        return pending
+
+    measure(first["id"], [])
+    stored_artifact = repository.read_state()["operation_events"][-1]["result"][
+        "measurements"
+    ][0]["metrics"]["evaluation_artifact"]
+    pending = measure(
+        second["id"], [{"candidate": second["id"], "reference": first["id"]}]
+    )
+
+    frozen = pending["data"]["paired_comparisons"][0]
+    assert frozen["reference_measurement_indexes"] == []
+    assert [
+        item["metrics"]["evaluation_artifact"]
+        for item in frozen["reference_stored_measurements"]
+    ] == [stored_artifact]
+    assert len(evaluated) == 2
+    comparison = repository.read_state()["operation_events"][-1]["result"][
+        "paired_comparisons"
+    ][0]
+    assert comparison["episodes"] == 3
+    assert comparison["shared_episode_seeds"] == [100, 101, 102]
+    assert comparison["source_artifacts"][-1] == stored_artifact
+
+
 @pytest.mark.parametrize("damage", ["corrupt", "remove"])
 def test_measurement_recovery_rejects_damaged_partial_artifact(
     monkeypatch, tmp_path, damage
@@ -1457,9 +1532,10 @@ def test_measurement_reports_earlier_measurement_of_same_episodes():
     assert repeats(
         {"instrument": "research_evaluation", "seed": 140, "episodes": 50}
     ) == [{"operation_id": "M2", "label": "M2", "shared_episodes": 10}]
-    assert repeats(
-        {"instrument": "research_evaluation", "seed": 150, "episodes": 50}
-    ) == []
+    assert (
+        repeats({"instrument": "research_evaluation", "seed": 150, "episodes": 50})
+        == []
+    )
 
 
 @pytest.mark.parametrize("instrument", ["research_evaluation", "task_reference"])

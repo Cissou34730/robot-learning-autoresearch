@@ -110,14 +110,19 @@ def test_startup_training_requests_respect_maintainer_ceiling(
         assert state == before
 
 
-@pytest.mark.parametrize("steps", [5, 10, 11])
-def test_inquiry_training_requests_still_require_full_allocation(monkeypatch, steps):
+@pytest.mark.parametrize(
+    ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
+)
+def test_inquiry_training_requests_stay_between_allocation_and_maximum(
+    monkeypatch, steps, accepted
+):
     monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
+    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 30)
     request = _training()["training"]
     request["steps"] = steps
     state = {"scientific_session": {"kind": "inquiry"}}
 
-    if steps == 10:
+    if accepted:
         assert run_experiment._training_allocation(request, state) == steps
     else:
         with pytest.raises(ValueError, match="maintainer-owned"):

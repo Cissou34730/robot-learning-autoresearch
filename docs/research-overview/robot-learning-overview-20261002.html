@@ -1945,7 +1945,9 @@
                   <td><span class="tag">Retired</span></td>
                   <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
                     Continue maintainer cost monitoring without asking the PI to optimize economic cost.
-                    Retirement does not establish an optimal allocation.</td>
+                    Retirement does not establish an optimal allocation. Superseded in part on 24 October: the
+                    standard allocation stays 120k, but an inquiry run may extend to <code>-MaxTimesteps</code>
+                    (default 360k).</td>
                 </tr>
                 <tr>
                   <td>OI-007</td>
@@ -2010,9 +2012,9 @@
                 <tr>
                   <td>OI-045</td>
                   <td>Inquiry training requests must use the full 120,000-step allocation.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Low priority. Archived checkpoints already expose early steps, and a run takes minutes. The
-                    allocation stays fixed under OI-006.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed on 24 October: an inquiry run now lies between the allocation (120k) and the maintainer
+                    maximum (<code>-MaxTimesteps</code>, default 360k). Startup stays at most the allocation.</td>
                 </tr>
                 <tr>
                   <td>OI-047</td>
@@ -2041,6 +2043,16 @@
                   <td>After the next campaign, give the analyst its own system prompt for building a complete
                     physical model. In <code>5d94bf8a</code> it read 6 files instead of 38 and omitted the training
                     range.</td>
+                </tr>
+                <tr>
+                  <td>OI-050</td>
+                  <td>The harness lifecycle is much heavier than a human robot-learning lab's workflow.</td>
+                  <td><span class="tag">Proposal</span></td>
+                  <td>Discuss later; no change authorized. Compare each lifecycle element (one operation at a time,
+                    inquiries with closure conditions, checkpoints and goal reviews, early statistics, numeric-only
+                    evidence, session rebuilds, coder/reviewer split) with the constraint it serves: compute
+                    capacity, LLM context exhaustion, no physical robot or vision model, coding efficiency and
+                    safety. <code>efd58acc</code>: 32 sessions, 14 inquiries, about 126 AIU on an easy task.</td>
                 </tr>
               </tbody>
             </table>
