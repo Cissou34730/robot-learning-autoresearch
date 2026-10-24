@@ -21,6 +21,7 @@ class _ControlledSources(DemoSources):
         self.calls: int = 0
         self.active_inquiry: dict | None = None
         self.synthesis_switch: str = ""
+        self.campaign_id: str | None = None
 
     def read(self):
         from tui.demo import demo_snapshot_args
@@ -31,6 +32,8 @@ class _ControlledSources(DemoSources):
             state["active_inquiry"] = self.active_inquiry
         if self.synthesis_switch:
             state["pi_checkpoint"]["current_synthesis"] = self.synthesis_switch
+        if self.campaign_id is not None:
+            state["campaign"]["id"] = self.campaign_id
         return state, records, usage_rows
 
 
@@ -529,6 +532,31 @@ async def _light_palette():
         await pilot.pause()
         assert app._palette.name == "light"
         assert "Autoresearch" in str(app.query_one("#context").render())
+
+
+def test_new_campaign_clears_previous_output():
+    _run(_campaign_switch())
+
+
+async def _campaign_switch():
+    sources = _ControlledSources()
+    app = CampaignReport(demo=True, sources=sources)
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        app._append(datetime.now(tz=UTC), "OLD CAMPAIGN OUTPUT")
+        await pilot.pause()
+        assert "OLD CAMPAIGN OUTPUT" in "\n".join(strip.text for strip in out.lines)
+        app.refresh_snapshot()
+        await pilot.pause()
+        assert "OLD CAMPAIGN OUTPUT" in "\n".join(strip.text for strip in out.lines)
+        sources.campaign_id = "new-campaign-id"
+        app.refresh_snapshot()
+        await pilot.pause()
+        rendered = "\n".join(strip.text for strip in out.lines)
+        assert "OLD CAMPAIGN OUTPUT" not in rendered
+        assert "new-campaign-id" in rendered
+        assert app._campaign_id == "new-campaign-id"
 
 
 def test_training_status_shows_last_training_proxy():

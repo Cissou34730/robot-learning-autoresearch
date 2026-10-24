@@ -332,6 +332,12 @@ class OutputLog(RichLog):
             for listener in self._follow_listeners:
                 listener(bottom, self._missed)
 
+    def reset_campaign(self) -> None:
+        """Drop the previous campaign's rendered history."""
+        self.clear()
+        self._following = True
+        self._missed = 0
+
     def append_texts(self, items: list) -> None:
         """Append pre-built Text display lines, honoring the follow state."""
         was_bottom = self._at_bottom()
@@ -509,6 +515,7 @@ class CampaignReport(App):
         self._pi_seen: deque = deque(maxlen=256)
         self._pi_stream: dict = {}
         self._feed_campaign: str | None = None
+        self._campaign_id: str | None = None
 
     # ------------------------------------------------------------------
     # Composition
@@ -579,6 +586,38 @@ class CampaignReport(App):
         # The per-campaign file is known only once the campaign identity is read.
         self._feed = None
 
+    def _switch_campaign(self, campaign_id: str | None) -> None:
+        """Clear campaign-scoped display state when a new campaign appears."""
+        campaign = str(campaign_id) if campaign_id else ""
+        if not campaign:
+            return
+        previous = self._campaign_id
+        if previous is not None and campaign != previous:
+            self._reset_campaign_view()
+        self._campaign_id = campaign
+
+    def _reset_campaign_view(self) -> None:
+        self.query_one("#output", OutputLog).reset_campaign()
+        self.snapshot = None
+        self._attached = False
+        self._context_rows = 0
+        self._progress_rows = 0
+        self._training_rows = 0
+        self._training = None
+        self._evaluation = None
+        self._stage_started = None
+        self._last_activity = ""
+        self._last_session = ""
+        self._last_liveness = None
+        self._observed_signature = None
+        self._last_error = ""
+        self._source_note_sent = False
+        self._pi_seen.clear()
+        self._pi_stream.clear()
+        if not self._demo and self._events_path is None:
+            self._feed = None
+            self._feed_campaign = None
+
     def _ensure_feed(self, campaign_id: str | None) -> None:
         """Follow this campaign's own file; a reset cannot surface old events."""
         if self._demo or self._events_path is not None or not campaign_id:
@@ -601,6 +640,7 @@ class CampaignReport(App):
                 "Campaign state file unavailable - recorded operations shown without state-derived roles"
             )
         campaign_id = (state or {}).get("campaign", {}).get("id")
+        self._switch_campaign(campaign_id)
         self._ensure_feed(campaign_id)
         if isinstance(self._feed, JsonlFeed) and campaign_id:
             self._feed.campaign_id = str(campaign_id)
